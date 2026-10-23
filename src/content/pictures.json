@@ -244,6 +244,897 @@
         "trellis"
       ],
       "family": "pink-bloom"
+    },
+    {
+      "id": "maple-path",
+      "album": "landscapes",
+      "title": "Maple Path",
+      "medium": "photo",
+      "file": "pictures/landscapes/maple-path.webp",
+      "cols": 2,
+      "rows": 3,
+      "px": [
+        768,
+        1152
+      ],
+      "palette": [
+        "rust",
+        "amber",
+        "red",
+        "ochre",
+        "brown"
+      ],
+      "subjects": [
+        "forest",
+        "path",
+        "maple",
+        "footbridge",
+        "autumn"
+      ],
+      "family": "autumn-rust"
+    },
+    {
+      "id": "harvest-table",
+      "album": "food",
+      "title": "Harvest Table",
+      "medium": "painting",
+      "file": "pictures/food/harvest-table.webp",
+      "cols": 3,
+      "rows": 2,
+      "px": [
+        1152,
+        768
+      ],
+      "palette": [
+        "rust",
+        "amber",
+        "red",
+        "ochre",
+        "brown"
+      ],
+      "subjects": [
+        "pumpkins",
+        "apples",
+        "pears",
+        "grapes",
+        "still life"
+      ],
+      "family": "autumn-rust"
+    },
+    {
+      "id": "apple-orchard",
+      "album": "people",
+      "title": "The Apple Picker",
+      "medium": "painting",
+      "file": "pictures/people/apple-orchard.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "rust",
+        "amber",
+        "red",
+        "ochre",
+        "brown"
+      ],
+      "subjects": [
+        "grandmother",
+        "apples",
+        "basket",
+        "orchard",
+        "shawl"
+      ],
+      "family": "autumn-rust"
+    },
+    {
+      "id": "ivy-lane",
+      "album": "travel",
+      "title": "Ivy Lane",
+      "medium": "photo",
+      "file": "pictures/travel/ivy-lane.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        768
+      ],
+      "palette": [
+        "rust",
+        "amber",
+        "red",
+        "ochre",
+        "brown"
+      ],
+      "subjects": [
+        "lane",
+        "ivy",
+        "brick houses",
+        "street lamp",
+        "autumn"
+      ],
+      "family": "autumn-rust"
+    },
+    {
+      "id": "blue-domes",
+      "album": "travel",
+      "title": "Blue Domes",
+      "medium": "photo",
+      "file": "pictures/travel/blue-domes.webp",
+      "cols": 2,
+      "rows": 3,
+      "px": [
+        768,
+        1152
+      ],
+      "palette": [
+        "azure",
+        "cobalt",
+        "turquoise",
+        "white",
+        "navy"
+      ],
+      "subjects": [
+        "Santorini",
+        "domes",
+        "white houses",
+        "sea",
+        "bell tower"
+      ],
+      "family": "sea-blue"
+    },
+    {
+      "id": "wave-coast",
+      "album": "landscapes",
+      "title": "Lighthouse Surf",
+      "medium": "painting",
+      "file": "pictures/landscapes/wave-coast.webp",
+      "cols": 3,
+      "rows": 2,
+      "px": [
+        1152,
+        768
+      ],
+      "palette": [
+        "azure",
+        "cobalt",
+        "turquoise",
+        "white",
+        "navy"
+      ],
+      "subjects": [
+        "waves",
+        "rocks",
+        "lighthouse",
+        "seabirds",
+        "coast"
+      ],
+      "family": "sea-blue"
+    },
+    {
+      "id": "hydrangeas",
+      "album": "flowers",
+      "title": "Blue Hydrangeas",
+      "medium": "photo",
+      "file": "pictures/flowers/hydrangeas.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "azure",
+        "cobalt",
+        "turquoise",
+        "white",
+        "navy"
+      ],
+      "subjects": [
+        "hydrangeas",
+        "garden",
+        "picket fence",
+        "cottage door"
+      ],
+      "family": "sea-blue"
+    },
+    {
+      "id": "net-mender",
+      "album": "people",
+      "title": "The Net Mender",
+      "medium": "painting",
+      "file": "pictures/people/net-mender.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "azure",
+        "cobalt",
+        "turquoise",
+        "white",
+        "navy"
+      ],
+      "subjects": [
+        "fisherman",
+        "nets",
+        "harbour",
+        "boats",
+        "ropes"
+      ],
+      "family": "sea-blue"
+    },
+    {
+      "id": "wheat-farm",
+      "album": "landscapes",
+      "title": "Wheat and Cypress",
+      "medium": "painting",
+      "file": "pictures/landscapes/wheat-farm.webp",
+      "cols": 3,
+      "rows": 2,
+      "px": [
+        1152,
+        768
+      ],
+      "palette": [
+        "gold",
+        "straw",
+        "honey",
+        "sky blue",
+        "cream"
+      ],
+      "subjects": [
+        "wheat field",
+        "farmhouse",
+        "cypress",
+        "haystacks",
+        "clouds"
+      ],
+      "family": "golden-wheat"
+    },
+    {
+      "id": "bread-table",
+      "album": "food",
+      "title": "Baker's Table",
+      "medium": "photo",
+      "file": "pictures/food/bread-table.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        384
+      ],
+      "palette": [
+        "gold",
+        "straw",
+        "honey",
+        "sky blue",
+        "cream"
+      ],
+      "subjects": [
+        "bread",
+        "baguettes",
+        "wheat",
+        "honey",
+        "flour"
+      ],
+      "family": "golden-wheat"
+    },
+    {
+      "id": "sunflower-vase",
+      "album": "flowers",
+      "title": "Sunflowers",
+      "medium": "painting",
+      "file": "pictures/flowers/sunflower-vase.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        768
+      ],
+      "palette": [
+        "gold",
+        "straw",
+        "honey",
+        "sky blue",
+        "cream"
+      ],
+      "subjects": [
+        "sunflowers",
+        "vase",
+        "window",
+        "table"
+      ],
+      "family": "golden-wheat"
+    },
+    {
+      "id": "wheat-walk",
+      "album": "people",
+      "title": "Summer Walk",
+      "medium": "photo",
+      "file": "pictures/people/wheat-walk.webp",
+      "cols": 2,
+      "rows": 3,
+      "px": [
+        768,
+        1152
+      ],
+      "palette": [
+        "gold",
+        "straw",
+        "honey",
+        "sky blue",
+        "cream"
+      ],
+      "subjects": [
+        "girl",
+        "straw hat",
+        "wheat field",
+        "farmhouse",
+        "golden hour"
+      ],
+      "family": "golden-wheat"
+    },
+    {
+      "id": "lavender-rows",
+      "album": "landscapes",
+      "title": "Lavender Rows",
+      "medium": "photo",
+      "file": "pictures/landscapes/lavender-rows.webp",
+      "cols": 3,
+      "rows": 2,
+      "px": [
+        1152,
+        768
+      ],
+      "palette": [
+        "lavender",
+        "violet",
+        "purple",
+        "sage",
+        "stone"
+      ],
+      "subjects": [
+        "lavender",
+        "farmhouse",
+        "tree",
+        "hills",
+        "Provence"
+      ],
+      "family": "lavender"
+    },
+    {
+      "id": "wisteria-door",
+      "album": "travel",
+      "title": "Wisteria Door",
+      "medium": "painting",
+      "file": "pictures/travel/wisteria-door.webp",
+      "cols": 2,
+      "rows": 3,
+      "px": [
+        768,
+        1152
+      ],
+      "palette": [
+        "lavender",
+        "violet",
+        "purple",
+        "sage",
+        "stone"
+      ],
+      "subjects": [
+        "wisteria",
+        "cottage",
+        "door",
+        "bicycle",
+        "cobblestones"
+      ],
+      "family": "lavender"
+    },
+    {
+      "id": "lilac-bouquet",
+      "album": "flowers",
+      "title": "Lilacs",
+      "medium": "painting",
+      "file": "pictures/flowers/lilac-bouquet.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "lavender",
+        "violet",
+        "purple",
+        "sage",
+        "stone"
+      ],
+      "subjects": [
+        "lilacs",
+        "vase",
+        "book",
+        "teacup"
+      ],
+      "family": "lavender"
+    },
+    {
+      "id": "figs-grapes",
+      "album": "food",
+      "title": "Figs and Grapes",
+      "medium": "photo",
+      "file": "pictures/food/figs-grapes.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "lavender",
+        "violet",
+        "purple",
+        "sage",
+        "stone"
+      ],
+      "subjects": [
+        "figs",
+        "grapes",
+        "plums",
+        "blackberries",
+        "cheese"
+      ],
+      "family": "lavender"
+    },
+    {
+      "id": "tea-terraces",
+      "album": "landscapes",
+      "title": "Tea Terraces",
+      "medium": "photo",
+      "file": "pictures/landscapes/tea-terraces.webp",
+      "cols": 3,
+      "rows": 2,
+      "px": [
+        1152,
+        768
+      ],
+      "palette": [
+        "green",
+        "emerald",
+        "lime",
+        "moss",
+        "cream"
+      ],
+      "subjects": [
+        "tea plantation",
+        "terraces",
+        "pickers",
+        "hills",
+        "mist"
+      ],
+      "family": "fresh-green"
+    },
+    {
+      "id": "market-greens",
+      "album": "food",
+      "title": "Market Greens",
+      "medium": "painting",
+      "file": "pictures/food/market-greens.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "green",
+        "emerald",
+        "lime",
+        "moss",
+        "cream"
+      ],
+      "subjects": [
+        "vegetables",
+        "peas",
+        "basil",
+        "artichokes",
+        "market"
+      ],
+      "family": "fresh-green"
+    },
+    {
+      "id": "greenhouse",
+      "album": "people",
+      "title": "The Greenhouse",
+      "medium": "photo",
+      "file": "pictures/people/greenhouse.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "green",
+        "emerald",
+        "lime",
+        "moss",
+        "cream"
+      ],
+      "subjects": [
+        "gardener",
+        "greenhouse",
+        "ferns",
+        "pots",
+        "seedlings"
+      ],
+      "family": "fresh-green"
+    },
+    {
+      "id": "green-alley",
+      "album": "travel",
+      "title": "Green Shutters",
+      "medium": "painting",
+      "file": "pictures/travel/green-alley.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        768
+      ],
+      "palette": [
+        "green",
+        "emerald",
+        "lime",
+        "moss",
+        "cream"
+      ],
+      "subjects": [
+        "alley",
+        "shutters",
+        "vines",
+        "steps",
+        "cat"
+      ],
+      "family": "fresh-green"
+    },
+    {
+      "id": "venice-canal",
+      "album": "travel",
+      "title": "Canal Lights",
+      "medium": "painting",
+      "file": "pictures/travel/venice-canal.webp",
+      "cols": 2,
+      "rows": 3,
+      "px": [
+        768,
+        1152
+      ],
+      "palette": [
+        "deep blue",
+        "indigo",
+        "amber",
+        "gold",
+        "teal"
+      ],
+      "subjects": [
+        "Venice",
+        "canal",
+        "gondolas",
+        "bridge",
+        "lamps"
+      ],
+      "family": "blue-hour"
+    },
+    {
+      "id": "lantern-market",
+      "album": "food",
+      "title": "Night Market",
+      "medium": "photo",
+      "file": "pictures/food/lantern-market.webp",
+      "cols": 3,
+      "rows": 2,
+      "px": [
+        1152,
+        768
+      ],
+      "palette": [
+        "deep blue",
+        "indigo",
+        "amber",
+        "gold",
+        "teal"
+      ],
+      "subjects": [
+        "street food",
+        "lanterns",
+        "dumplings",
+        "grill",
+        "market"
+      ],
+      "family": "blue-hour"
+    },
+    {
+      "id": "lantern-child",
+      "album": "people",
+      "title": "The Lantern Walk",
+      "medium": "painting",
+      "file": "pictures/people/lantern-child.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "deep blue",
+        "indigo",
+        "amber",
+        "gold",
+        "teal"
+      ],
+      "subjects": [
+        "child",
+        "lantern",
+        "village",
+        "fireflies",
+        "cottages"
+      ],
+      "family": "blue-hour"
+    },
+    {
+      "id": "lake-village",
+      "album": "landscapes",
+      "title": "Lakeside Evening",
+      "medium": "photo",
+      "file": "pictures/landscapes/lake-village.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        384
+      ],
+      "palette": [
+        "deep blue",
+        "indigo",
+        "amber",
+        "gold",
+        "teal"
+      ],
+      "subjects": [
+        "lake",
+        "village",
+        "church",
+        "mountains",
+        "jetty"
+      ],
+      "family": "blue-hour"
+    },
+    {
+      "id": "cherry-bowl",
+      "album": "food",
+      "title": "Cherries",
+      "medium": "photo",
+      "file": "pictures/food/cherry-bowl.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "red",
+        "crimson",
+        "cherry",
+        "white",
+        "green"
+      ],
+      "subjects": [
+        "cherries",
+        "cherry pie",
+        "cream",
+        "tablecloth"
+      ],
+      "family": "berry-red"
+    },
+    {
+      "id": "tulip-rows",
+      "album": "flowers",
+      "title": "Tulip Fields",
+      "medium": "painting",
+      "file": "pictures/flowers/tulip-rows.webp",
+      "cols": 3,
+      "rows": 2,
+      "px": [
+        1152,
+        768
+      ],
+      "palette": [
+        "red",
+        "crimson",
+        "cherry",
+        "white",
+        "green"
+      ],
+      "subjects": [
+        "tulips",
+        "windmill",
+        "canal",
+        "farmhouse",
+        "poplars"
+      ],
+      "family": "berry-red"
+    },
+    {
+      "id": "red-tram",
+      "album": "travel",
+      "title": "The Red Tram",
+      "medium": "photo",
+      "file": "pictures/travel/red-tram.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        768
+      ],
+      "palette": [
+        "red",
+        "crimson",
+        "cherry",
+        "white",
+        "green"
+      ],
+      "subjects": [
+        "tram",
+        "Lisbon",
+        "street",
+        "balconies",
+        "geraniums"
+      ],
+      "family": "berry-red"
+    },
+    {
+      "id": "red-umbrella",
+      "album": "people",
+      "title": "The Red Umbrella",
+      "medium": "painting",
+      "file": "pictures/people/red-umbrella.webp",
+      "cols": 2,
+      "rows": 3,
+      "px": [
+        768,
+        1152
+      ],
+      "palette": [
+        "red",
+        "crimson",
+        "cherry",
+        "white",
+        "green"
+      ],
+      "subjects": [
+        "woman",
+        "umbrella",
+        "rain",
+        "Paris",
+        "flower stall"
+      ],
+      "family": "berry-red"
+    },
+    {
+      "id": "lemon-coast",
+      "album": "travel",
+      "title": "Lemon Coast",
+      "medium": "painting",
+      "file": "pictures/travel/lemon-coast.webp",
+      "cols": 3,
+      "rows": 3,
+      "px": [
+        1152,
+        1152
+      ],
+      "palette": [
+        "lemon",
+        "yellow",
+        "white",
+        "turquoise",
+        "green"
+      ],
+      "subjects": [
+        "Amalfi",
+        "lemons",
+        "pergola",
+        "village",
+        "sea"
+      ],
+      "family": "lemon-yellow"
+    },
+    {
+      "id": "lemon-tart",
+      "album": "food",
+      "title": "Lemon Tart",
+      "medium": "photo",
+      "file": "pictures/food/lemon-tart.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "lemon",
+        "yellow",
+        "white",
+        "turquoise",
+        "green"
+      ],
+      "subjects": [
+        "lemon tart",
+        "lemons",
+        "lemonade",
+        "mint"
+      ],
+      "family": "lemon-yellow"
+    },
+    {
+      "id": "daffodil-meadow",
+      "album": "flowers",
+      "title": "Daffodil Meadow",
+      "medium": "photo",
+      "file": "pictures/flowers/daffodil-meadow.webp",
+      "cols": 3,
+      "rows": 3,
+      "px": [
+        1152,
+        1152
+      ],
+      "palette": [
+        "lemon",
+        "yellow",
+        "white",
+        "turquoise",
+        "green"
+      ],
+      "subjects": [
+        "daffodils",
+        "meadow",
+        "blossom",
+        "stone wall",
+        "cottage"
+      ],
+      "family": "lemon-yellow"
+    },
+    {
+      "id": "canal-bicycle",
+      "album": "people",
+      "title": "Canal Colours",
+      "medium": "photo",
+      "file": "pictures/people/canal-bicycle.webp",
+      "cols": 2,
+      "rows": 3,
+      "px": [
+        768,
+        1152
+      ],
+      "palette": [
+        "lemon",
+        "yellow",
+        "white",
+        "turquoise",
+        "green"
+      ],
+      "subjects": [
+        "woman",
+        "bicycle",
+        "tulips",
+        "painted houses",
+        "canal"
+      ],
+      "family": "lemon-yellow"
     }
   ]
 }
