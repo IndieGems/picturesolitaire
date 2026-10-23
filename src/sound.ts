@@ -12,7 +12,8 @@
 //
 // Make every sound the game plays obey both: route all audio through one master
 // gain node or bus, set it from masterGain() and again on onMutedChange and
-// onSettingsChange, so a sound added later cannot slip past.
+// onSettingsChange, so a sound added later cannot slip past. That bus is in
+// src/audio/engine.ts; play every sound through it (src/audio/sounds.ts).
 //
 // On desktop the Arcade may start the game before the player has pressed
 // anything, so an AudioContext created at boot starts suspended: resume it on
@@ -59,11 +60,33 @@ export function setMuted(next: boolean): void {
 }
 
 /**
+ * Load the game's audio (src/audio/) once the first screen has been drawn,
+ * without ever holding it up: its code is a chunk of its own, fetched when the
+ * page is idle, and its sounds load after that. Music starts as soon as it is
+ * ready; where the browser holds sound back, the first tap releases it.
+ */
+function startAudioWhenIdle(): void {
+  const go = () => {
+    import("./audio")
+      .then((audio) => audio.startAudio())
+      .catch((err) => console.warn("[sound] the game's audio did not start", err));
+  };
+  // Two frames: whatever the first screen draws at start-up is on screen.
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() => {
+      if ("requestIdleCallback" in window) requestIdleCallback(go, { timeout: 1500 });
+      else setTimeout(go, 200);
+    }),
+  );
+}
+
+/**
  * Read the saved setting, tell the Arcade what it is, and follow the Arcade's
- * mute from then on. `reportMuted` is held until the bridge is up, so this is
- * safe to call at start-up.
+ * mute from then on, and start the game's audio. `reportMuted` is held until
+ * the bridge is up, so this is safe to call at start-up.
  */
 export async function startSound(): Promise<void> {
+  startAudioWhenIdle();
   await loadSettings();
   show(chosenValue("muted") === true);
   gem.reportMuted(muted);

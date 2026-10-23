@@ -4,9 +4,11 @@ The originals as gemforge generated them (gen-audio). Nothing imports this
 folder, so Vite never ships it; the game plays compressed copies from
 `public/audio/`, encoded from these.
 
-## Status (2026-10-23, WIP)
+## Status
 
-All generated, none encoded or wired yet.
+Encoded into public/audio/ by `encode.mjs` (its header says how to run it;
+the trims below are in it) and played by src/audio/. The table is what each
+original holds.
 
 | file | for | main event (trim to) | notes |
 | --- | --- | --- | --- |
@@ -26,17 +28,8 @@ All generated, none encoded or wired yet.
 | won.mp3 | board won (music cue, 8 s) | 0-7.8 s | also the win sting |
 | bed.mp3 | background music, 90 s | 0-86.5 s | loop: crossfade last ~4 s into the start at run time |
 
-## Next
-
-1. Encode each: trim as above, 3 ms fade in, short fade out, high-pass 60 Hz,
-   peak-normalise to about -2 dBFS (music: loudness-normalise to about
-   -20 LUFS). Ship Ogg Opus (effects mono ~40 kbps, won/bed stereo ~48 kbps)
-   plus an MP3 fallback for browsers that cannot decode Opus.
-   ffmpeg is not installed: `npm i ffmpeg-static` in a scratch folder.
-2. src/audio/: one AudioContext after createGem, master gain from
-   masterGain() (src/sound.ts) on mute/settings change, music and effects
-   buses following onAudioChannels (src/gem.ts), suspend on onArcadePause
-   and page hidden, resume on the first lift only if suspended. Load after
-   the first screen. Listen to src/events.ts; stack:deal pans by column and
-   rises in pitch left to right; music ducks under board:won.
-3. startSound() in src/sound.ts starts it (no main.ts line needed).
+Shipped: Ogg Opus (effects mono 40 kbps, won/bed stereo 48 kbps), about
+690 KB in all, plus an MP3 fallback for a browser that cannot decode Opus.
+The bed is real stereo (side only 4 dB under mid): keep it stereo.
+slide, merge and restart came out faint in the originals and are lifted by
+normalising; regenerate them if they sound thin in play.
