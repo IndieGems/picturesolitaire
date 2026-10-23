@@ -1,0 +1,23 @@
+{
+  "name": "picturesolitaire",
+  "version": "0.1.0",
+  "private": true,
+  "author": "IndieGems",
+  "type": "module",
+  "scripts": {
+    "dev": "gemctl serve start . --dev",
+    "build": "tsc --noEmit && vite build && gem-sdk-stamp dist && node tools/legal-header.mjs",
+    "preview": "gemctl serve start .",
+    "typecheck": "tsc --noEmit"
+  },
+  "gem": {
+    "out": "dist"
+  },
+  "dependencies": {
+    "@indiegems/gem-web-sdk": "15.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vite": "^6.4.3"
+  }
+}

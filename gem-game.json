@@ -1,0 +1,28 @@
+{
+  "//": "Created when this project was added to the Gem tools. Declare dev processes, editors and launch settings here.",
+  "schema": 1,
+  "dev": {
+    "game": {
+      "process": {
+        "id": "vite",
+        "command": [
+          "node",
+          "node_modules/vite/bin/vite.js"
+        ],
+        "ports": [
+          {
+            "name": "port",
+            "env": "GEM_VITE_PORT"
+          }
+        ],
+        "ready": [
+          {
+            "name": "port",
+            "prefix": "GEM_VITE_PORT "
+          }
+        ]
+      },
+      "url": "http://127.0.0.1:{vite.port}/"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+# Dependencies and build output
+node_modules/
+dist/
+# Per-machine scratch: the in-game report inbox (screenshots and packages).
+.gem/
+# Release-readiness reviews: per-machine scratch (evidence and rebuilt candidates).
+release-readiness/
+# Per-machine agent settings (the Editor writes its status hooks here).
+.claude/settings.local.json
