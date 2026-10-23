@@ -956,7 +956,12 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
     applyLayout();
     redrawAll(shown);
   }
+  let sized: (() => void) | null = null;
   const ro = new ResizeObserver(() => {
+    if (sized && host.clientWidth && host.clientHeight) {
+      sized();
+      sized = null;
+    }
     if (busy || drag || selected) resizePending = true;
     else relayout();
   });
@@ -971,8 +976,11 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
   busy++;
   void (async () => {
     await preload(art.map((a) => a.url), 2500);
+    // a board opened in a box not on screen yet deals once the box has its size
+    if (!host.clientWidth || !host.clientHeight) await new Promise<void>((r) => (sized = r));
     if (destroyed) return;
     busy--;
+    relayout();
     await run2(opening);
     clockOn();
     // the next board's pictures, quietly, once this one is dealt

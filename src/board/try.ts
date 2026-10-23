@@ -6,6 +6,11 @@ import { on, type GameEvents } from "../events";
 const q = new URLSearchParams(location.search);
 const host = document.getElementById("host")!;
 const bar = document.getElementById("bar")!;
+// ?hidden=ms: open the board in a box not on screen yet, as the screens may
+if (q.has("hidden")) {
+  document.getElementById("app")!.style.display = "none";
+  setTimeout(() => (document.getElementById("app")!.style.display = ""), Number(q.get("hidden")) || 800);
+}
 const board = openBoard(host, Number(q.get("level") ?? 1));
 const log: string[] = [];
 const names: (keyof GameEvents)[] = ["piece:lift", "piece:cancel", "piece:move", "piece:merge", "piece:split", "picture:complete", "picture:clear", "cards:fall", "stack:deal", "helper:undo", "helper:hint", "helper:shuffle", "board:restart", "board:won", "board:start", "board:changed", "board:stuck"];
