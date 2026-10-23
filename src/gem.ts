@@ -21,7 +21,12 @@
 
 import { createGem, type GemPrefs } from "@indiegems/gem-web-sdk/sdk";
 
+/** The Arcade's Music and Sound switches (its Gem menu's quick row). */
+export type AudioChannels = { music: boolean; sounds: boolean };
+
 const prefsHandlers = new Set<(prefs: GemPrefs) => void>();
+const pauseHandlers = new Set<(paused: boolean) => void>();
+const channelHandlers = new Set<(channels: AudioChannels) => void>();
 
 export const gem = createGem({
   // No `allowedEmbedders`. The SDK always allows the Gem Arcade's website and
@@ -46,7 +51,38 @@ export const gem = createGem({
   onPrefs: (prefs) => {
     for (const handler of prefsHandlers) handler(prefs);
   },
+
+  // The Arcade paused the game (its menu is open, or it parked the game while
+  // the player browses) or let it go on. Handed to every `onArcadePause`.
+  onPause: (paused) => {
+    for (const handler of pauseHandlers) handler(paused);
+  },
+
+  // The Arcade's Music and Sound switches. PASSING this is what tells the
+  // Arcade the game can silence its music and its effects separately; without
+  // it, the Arcade's Music switch does nothing here. Handed to every
+  // `onAudioChannels` (src/audio/ follows it).
+  onAudioChannels: (channels) => {
+    for (const handler of channelHandlers) handler(channels);
+  },
 });
+
+/** Run `handler` whenever the Arcade pauses or resumes the game. Returns the unsubscribe. */
+export function onArcadePause(handler: (paused: boolean) => void): () => void {
+  pauseHandlers.add(handler);
+  return () => pauseHandlers.delete(handler);
+}
+
+/**
+ * Run `handler` with the Arcade's Music and Sound switches now, if the Arcade
+ * has sent them, and again whenever either changes. Both are `true` until the
+ * Arcade says otherwise. Returns the unsubscribe.
+ */
+export function onAudioChannels(handler: (channels: AudioChannels) => void): () => void {
+  channelHandlers.add(handler);
+  if (gem.prefs) handler({ music: gem.prefs.music !== false, sounds: gem.prefs.sounds !== false });
+  return () => channelHandlers.delete(handler);
+}
 
 /**
  * Run `handler` with the player's preferences now, if the Arcade has sent
