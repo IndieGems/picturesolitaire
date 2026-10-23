@@ -1,0 +1,171 @@
+// The campaign: which board the player plays next. Kept in the CLOUD, in the
+// player's "campaign" save slot (declared in the game config, save_schemas),
+// never in browser storage (AGENTS.md: every build runs on a new web address).
+//
+// The game standard's rules for it ("All player data lives in the CLOUD"):
+//   - the first screen never waits for the read more than about a second;
+//     until it lands, home shows the defaults, and a Play pressed meanwhile
+//     waits a little longer for it (startLevel), then plays on the defaults;
+//   - a failed read is tried again, with a backoff, and at once when the
+//     connection comes back or the page is shown again: writes wait for it,
+//     so a read given up on would mean nothing of the session is ever saved;
+//   - no write leaves the device before the account's copy is read, and the
+//     two are merged (the furthest level wins), so a board won during the
+//     first seconds never writes this device's defaults over real progress;
+//   - writes are debounced, sent again on a timer when they fail, and flushed
+//     when the page is hidden or closed.
+//
+// Unframed (a plain tab) there is no player: progress lives for the session.
+
+import { gem, onWillTerminate } from "../gem";
+import { onOnline, suspect } from "./online";
+
+const SLOT = "campaign";
+
+export interface Campaign {
+  v: 1;
+  /** The board to play next, from 1. */
+  level: number;
+  /** Boards won, in all (a replayed board counts again). */
+  won: number;
+}
+
+const fresh = (): Campaign => ({ v: 1, level: 1, won: 0 });
+
+let state: Campaign = fresh();
+let read = false;
+let dirty = false;
+let pushTimer: number | undefined;
+let retryTimer: number | undefined;
+let readTries = 0;
+let reading = false;
+const listeners = new Set<() => void>();
+const framed = window.self !== window.top;
+
+let landed!: () => void;
+/** Resolves once the account's copy has been read (or there is none to read). */
+export const cloudRead: Promise<void> = new Promise((r) => (landed = r));
+
+/** Where the player is: read-only, call `won()` to move on. */
+export function campaign(): Readonly<Campaign> {
+  return state;
+}
+
+/** Hear when the campaign changes (the cloud copy landed, a board was won). Returns the unsubscribe. */
+export function onCampaign(fn: () => void): () => void {
+  listeners.add(fn);
+  return () => void listeners.delete(fn);
+}
+
+function changed(): void {
+  for (const fn of [...listeners]) fn();
+}
+
+function valid(x: unknown): x is Campaign {
+  const c = x as Campaign | null;
+  return !!c && typeof c === "object" && Number.isInteger(c.level) && c.level >= 1;
+}
+
+function merge(a: Campaign, b: Campaign): Campaign {
+  return { v: 1, level: Math.max(a.level, b.level), won: Math.max(a.won ?? 0, b.won ?? 0) };
+}
+
+/** A refusal is an answer: the platform is there, and asking again will not change it. */
+function refusal(err: unknown): boolean {
+  const code = (err as { code?: string } | null)?.code;
+  return typeof code === "string" && ["not_found", "invalid", "too_large", "forbidden"].includes(code);
+}
+
+async function readCloud(): Promise<void> {
+  if (read || reading) return;
+  reading = true;
+  clearTimeout(retryTimer);
+  try {
+    await gem.awaitIdentity(10_000);
+    const got = await gem.me.saves.get<Campaign>(SLOT, { timeoutMs: 10_000 });
+    if (valid(got)) state = merge(state, got);
+    finishRead();
+  } catch (err) {
+    if (refusal(err)) {
+      // not_found on a read is a new player (or a slot not declared on this channel yet)
+      if ((err as { code?: string }).code !== "not_found") console.warn("[campaign] read refused:", err);
+      finishRead();
+    } else {
+      suspect();
+      const wait = Math.min(30_000, 2000 * 2 ** readTries++);
+      retryTimer = window.setTimeout(() => void readCloud(), wait);
+    }
+  } finally {
+    reading = false;
+  }
+}
+
+function finishRead(): void {
+  read = true;
+  landed();
+  changed();
+  if (dirty) schedulePush(0);
+}
+
+function schedulePush(ms = 800): void {
+  dirty = true;
+  if (!read || !framed) return;
+  clearTimeout(pushTimer);
+  pushTimer = window.setTimeout(() => void push(), ms);
+}
+
+async function push(timeoutMs = 10_000): Promise<void> {
+  if (!dirty || !read) return;
+  dirty = false;
+  try {
+    await gem.me.saves.put(SLOT, state, { timeoutMs });
+  } catch (err) {
+    if (refusal(err)) {
+      console.warn("[campaign] save refused:", err);
+      return;
+    }
+    // no answer: keep it, and send it again on a timer, not only at the next change
+    suspect();
+    dirty = true;
+    clearTimeout(pushTimer);
+    pushTimer = window.setTimeout(() => void push(), 5000);
+  }
+}
+
+/** A board was won: the next one is the player's to play (a replay of an earlier board moves nothing). */
+export function won(level: number): void {
+  state = { v: 1, level: Math.max(state.level, level + 1), won: state.won + 1 };
+  changed();
+  schedulePush();
+}
+
+/** Start reading. Call once, at boot. */
+export function loadCampaign(): void {
+  if (!framed) {
+    read = true;
+    landed();
+    return;
+  }
+  void readCloud();
+  onOnline((up) => {
+    if (!up) return;
+    if (!read) void readCloud();
+    else if (dirty) void push();
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && !read) void readCloud();
+    if (document.visibilityState === "hidden" && dirty) void push(3000);
+  });
+  addEventListener("pagehide", () => {
+    if (dirty) void push(2000);
+  });
+  onWillTerminate((graceMs) => {
+    if (dirty) void push(Math.max(1000, graceMs - 500));
+  });
+}
+
+/** Wait for the account's copy, at most `ms`; true if it landed. */
+export function waitForCloud(ms: number): Promise<boolean> {
+  if (read) return Promise.resolve(true);
+  return Promise.race([cloudRead.then(() => true), new Promise<boolean>((r) => setTimeout(() => r(false), ms))]);
+}

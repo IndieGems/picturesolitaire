@@ -1,0 +1,263 @@
+/* The screens around the board: home, the board's top row and helper row, the
+   cards over them (win, restart, no connection) and the settings screen.
+
+   THE LOOK is design/concepts/game-l.png: a cold blue-grey winter-dusk table,
+   warm amber light from the top corners, and chrome that is plump and round
+   with no sharp corner anywhere.
+
+   TWO MATERIALS, never mixed (the game standard, "Only buttons look like
+   buttons"; AGENTS.md names them):
+   - A BUTTON is opaque frosted white, raised on a thick blue-grey lip with a
+     drop shadow, and sinks when pressed: .btn (round: .btn.round; the main
+     action in warm amber: .btn.amber).
+   - INFORMATION is frosted glass: see-through pale, flat, no lip and no drop
+     shadow, slate ink: .glass (the level pill, the stats, the cards' panels).
+   The amber count badge sits ON a helper button and belongs to it. */
+
+:root {
+  --ink: #26344a;
+  --ink-soft: #55657c;
+  --frost-hi: #fbfdff;
+  --frost-lo: #dde6f0;
+  --lip: #9aabbf;
+  --lip-dark: #6d7f96;
+  --amber-hi: #ffc46b;
+  --amber-lo: #f09a2e;
+  --amber-lip: #b8661a;
+  --glass: rgba(232, 240, 248, 0.82);
+  --glass-line: rgba(255, 255, 255, 0.75);
+  --shade: rgba(12, 18, 30, 0.62);
+  --table: #313c4b;
+  --round: "Fredoka", ui-rounded, "Nunito", "Segoe UI", system-ui, sans-serif;
+
+  /* The Gem's middle and height (the SDK writes --gem-reserved-*; the
+     fallback is where the Arcade puts it on a full-bleed game). Every top-row
+     control is centred on --gem-mid, level with the Gem. */
+  --gem-mid: var(--gem-reserved-tl-center-y, var(--gem-reserved-tr-center-y, calc(max(8px, var(--safe-top)) + 22px)));
+  --gem-size: var(--gem-reserved-tl-control-height, var(--gem-reserved-tr-control-height, 44px));
+  --btn: 48px; /* the top row's buttons */
+  --row-h: max(var(--btn), var(--gem-size));
+  /* the top row's ends: clear of whatever the Arcade keeps in each top corner */
+  --row-left: max(12px, var(--safe-left), calc(var(--reserved-tl-width) + 8px));
+  --row-right: max(12px, var(--safe-right), calc(var(--reserved-tr-width) + 8px));
+  --pair-gap: 16px; /* Back and the gear, a fingertip apart */
+  --row-bottom: calc(var(--gem-mid) + var(--row-h) / 2);
+  --foot: max(12px, var(--safe-bottom), var(--reserved-bl-height), var(--reserved-br-height));
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  overflow: hidden;
+  background: #151b24; /* beside the portrait column on a wide screen */
+  font-family: var(--round);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Paused (the Arcade's menu, a hidden page): every CSS animation stands still. */
+html.paused *, html.paused *::before, html.paused *::after { animation-play-state: paused !important; }
+
+/* Portrait: on a screen wider than a tall phone the game is a column in the middle. */
+#app {
+  position: fixed; inset: 0; margin: 0 auto; width: 100%; max-width: min(100vw, 62dvh);
+  overflow: hidden; color: var(--ink);
+  background:
+    radial-gradient(circle at 4% 2%, rgba(255, 178, 84, 0.42), rgba(255, 178, 84, 0) 30%),
+    radial-gradient(circle at 96% 2%, rgba(255, 178, 84, 0.36), rgba(255, 178, 84, 0) 28%),
+    radial-gradient(ellipse 120% 80% at 50% 45%, #4a5769 0%, #364152 55%, #252e3b 100%),
+    var(--table);
+}
+@media (min-aspect-ratio: 3/4) { #app { box-shadow: 0 0 60px rgba(0, 0, 0, 0.6); } }
+
+.screen { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.screen[hidden] { display: none; }
+
+/* ---------- buttons ---------- */
+
+.btn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-width: 44px; min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px;
+  font: 600 16px/1 var(--round); color: var(--ink); cursor: pointer;
+  background: linear-gradient(180deg, var(--frost-hi) 0%, var(--frost-lo) 100%);
+  box-shadow: inset 0 2px 0 #fff, inset 0 -2px 4px rgba(120, 140, 165, 0.25), 0 5px 0 var(--lip), 0 9px 14px rgba(6, 12, 24, 0.45);
+  transform: translateY(0); transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.2s;
+  touch-action: manipulation;
+}
+.btn:active:not(:disabled), .btn.pressed { transform: translateY(4px); box-shadow: inset 0 2px 0 #fff, inset 0 -2px 4px rgba(120, 140, 165, 0.25), 0 1px 0 var(--lip), 0 3px 6px rgba(6, 12, 24, 0.4); }
+.btn svg { width: 24px; height: 24px; flex: none; }
+.btn:focus-visible { outline: 3px solid var(--amber-hi); outline-offset: 4px; }
+.btn.round { padding: 0; width: var(--size, 48px); height: var(--size, 48px); border-radius: 50%; }
+.btn.amber {
+  color: #fff; text-shadow: 0 2px 0 rgba(150, 70, 0, 0.45);
+  background: linear-gradient(180deg, var(--amber-hi) 0%, var(--amber-lo) 100%);
+  box-shadow: inset 0 2px 0 rgba(255, 240, 210, 0.9), inset 0 -3px 6px rgba(170, 80, 0, 0.3), 0 5px 0 var(--amber-lip), 0 10px 16px rgba(6, 12, 24, 0.45);
+}
+.btn.amber:active:not(:disabled) { box-shadow: inset 0 2px 0 rgba(255, 240, 210, 0.9), inset 0 -3px 6px rgba(170, 80, 0, 0.3), 0 1px 0 var(--amber-lip), 0 3px 6px rgba(6, 12, 24, 0.4); }
+/* A button resting for now (Undo before the first move, a helper used up): faded, still there. */
+.btn.resting { opacity: 0.45; }
+.btn:disabled { cursor: default; }
+
+/* ---------- information ---------- */
+
+.glass {
+  background: var(--glass); color: var(--ink);
+  border: 1.5px solid var(--glass-line); border-radius: 999px;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+
+/* ---------- the top row (every screen): information left, Back and the gear at the right end ---------- */
+
+.top-pill {
+  position: absolute; z-index: 2;
+  top: calc(var(--gem-mid) - var(--row-h) / 2); height: var(--row-h);
+  left: var(--row-left);
+  right: calc(var(--row-right) + var(--btn) + var(--pair-gap) + var(--btn) + 12px);
+  display: flex; align-items: center; justify-content: center; padding: 0 16px;
+  font: 600 20px/1 var(--round); letter-spacing: 0.01em; white-space: nowrap; overflow: hidden;
+}
+.top-back {
+  position: absolute; z-index: 2;
+  top: calc(var(--gem-mid) - var(--btn) / 2);
+  right: calc(var(--row-right) + var(--btn) + var(--pair-gap));
+}
+/* the gear (src/settings-screen.ts): the row's right end, on every screen, over every card */
+#settings-button {
+  position: absolute; z-index: 50;
+  top: calc(var(--gem-mid) - var(--btn) / 2);
+  right: var(--row-right);
+}
+#settings-button svg { width: 28px; height: 28px; }
+
+/* ---------- home ---------- */
+
+.home { align-items: center; justify-content: center; padding: calc(var(--row-bottom) + 12px) 20px calc(var(--foot) + 24px); gap: 26px; }
+.home .emblem { display: grid; grid-template-columns: repeat(3, 58px); gap: 10px; transform: rotate(-4deg); }
+.home .emblem i {
+  display: block; height: 58px; border-radius: 16px;
+  background: linear-gradient(160deg, #56657b, #3a4658);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.18), 0 5px 0 #263040, 0 10px 14px rgba(0, 0, 0, 0.45);
+  position: relative;
+}
+.home .emblem i::after { content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; margin: -6px; border-radius: 50%; background: radial-gradient(circle, #ffd28a, #f39a2c); box-shadow: 0 0 10px rgba(255, 170, 60, 0.8); }
+.home .emblem i:nth-child(2) { transform: translateY(-10px); }
+.home h1 {
+  margin: 0; text-align: center; font: 600 clamp(32px, 10vw, 46px)/1.05 var(--round); color: #f4f8fc;
+  text-shadow: 0 3px 0 rgba(30, 40, 56, 0.8), 0 0 26px rgba(255, 190, 110, 0.35);
+}
+.home .where { padding: 8px 20px; font-size: 18px; font-weight: 600; }
+.home .play { min-width: 210px; min-height: 68px; padding: 0 34px; font-size: 26px; }
+.home .play svg { width: 28px; height: 28px; }
+
+/* ---------- the board ---------- */
+
+.board-screen { padding-top: calc(var(--row-bottom) + 8px); }
+.board-host { position: relative; flex: 1; min-height: 0; }
+.helpers {
+  flex: none; display: flex; align-items: center; gap: 12px;
+  padding: 10px max(14px, var(--safe-right)) calc(var(--foot) + 6px) max(14px, var(--safe-left));
+}
+.helpers .spacer { flex: 1; }
+.helpers .restart { min-height: 48px; padding: 0 16px 0 13px; font-size: 16px; }
+.helpers .restart svg { width: 20px; height: 20px; }
+.helper { --size: 60px; }
+.helper svg { width: 28px; height: 28px; }
+/* the count: a fat amber badge on the button's upper right */
+.helper .badge {
+  position: absolute; top: -6px; right: -6px; min-width: 26px; height: 26px; padding: 0 6px; border-radius: 13px;
+  display: grid; place-items: center; font: 700 15px/1 var(--round); color: #fff;
+  background: linear-gradient(180deg, var(--amber-hi), var(--amber-lo));
+  box-shadow: 0 0 0 2.5px var(--frost-hi), 0 2px 4px rgba(0, 0, 0, 0.35);
+  text-shadow: 0 1px 0 rgba(150, 70, 0, 0.5);
+}
+.helper.spent .badge { background: linear-gradient(180deg, #b9c4d2, #93a0b2); text-shadow: none; }
+@media (max-width: 370px) {
+  .helpers { gap: 10px; }
+  .helper { --size: 56px; }
+}
+
+/* ---------- cards over the screen ---------- */
+
+.veil {
+  position: absolute; inset: 0; z-index: 20; display: grid; place-items: center; overflow-y: auto; overscroll-behavior: contain;
+  padding: calc(var(--row-bottom) + 10px) 16px calc(var(--foot) + 12px);
+  background: var(--shade);
+  animation: veil-in 0.25s ease both;
+}
+.veil[hidden] { display: none; }
+@keyframes veil-in { from { opacity: 0; } }
+.card {
+  width: min(360px, 100%); padding: 24px 22px 26px; border-radius: 30px; text-align: center;
+  background: rgba(236, 242, 249, 0.94); border: 2px solid var(--glass-line); color: var(--ink);
+  animation: card-in 0.4s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+@keyframes card-in { from { opacity: 0; transform: translateY(18px) scale(0.94); } }
+.card h2 { margin: 0 0 8px; font: 600 26px/1.15 var(--round); }
+.card p { margin: 0 0 18px; font-size: 16px; line-height: 1.35; color: var(--ink-soft); }
+.card .row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.card .row .btn { min-height: 52px; min-width: 132px; font-size: 18px; }
+
+/* the win card: the board's pictures whole, then moves and time, then Next */
+.win .card { padding-top: 22px; }
+.win .gallery { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px; margin: 14px 0 18px; --u: 34px; }
+.win .gallery figure {
+  margin: 0; width: calc(var(--u) * var(--c)); height: calc(var(--u) * var(--r));
+  border-radius: 12px; overflow: hidden; border: 4px solid #f6f9fc;
+  box-shadow: 0 0 0 1px rgba(110, 130, 155, 0.35), 0 6px 12px rgba(20, 30, 45, 0.3);
+  background: #dfe6ee;
+  animation: picture-in 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both; animation-delay: calc(0.15s + var(--i) * 0.09s);
+}
+.win .gallery img { display: block; width: 100%; height: 100%; object-fit: cover; }
+@keyframes picture-in { from { opacity: 0; transform: scale(0.6); } }
+.win .stats { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; }
+.win .stat { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 104px; padding: 9px 16px; border-radius: 20px; }
+.win .stat b { font: 600 22px/1 var(--round); }
+.win .stat span { font-size: 13px; font-weight: 500; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.08em; }
+.win .next { min-width: 200px; min-height: 60px; font-size: 22px; }
+
+/* no connection: over every card but the board in hand, nothing to press, and it goes by itself */
+.veil.offline { z-index: 45; }
+.offline .card h2 { margin-bottom: 10px; }
+.offline .card p { margin-bottom: 14px; }
+.offline .waiting { display: inline-flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; color: var(--ink-soft); }
+.offline .waiting i { width: 16px; height: 16px; border-radius: 50%; border: 3px solid var(--lip); border-top-color: var(--amber-lo); animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Less motion (the Arcade's setting or the device's) stops the pops and slides; the cards still come. */
+html.less-motion .card, html.less-motion .win .gallery figure, html.less-motion .veil { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .card, .win .gallery figure, .veil { animation: none; }
+}
+
+/* ---------- the settings screen (src/settings-screen.ts) ---------- */
+
+#settings-screen {
+  width: min(340px, calc(100vw - 32px)); padding: 22px 22px 24px; border: 2px solid var(--glass-line); border-radius: 30px;
+  background: rgba(236, 242, 249, 0.97); color: var(--ink); font-family: var(--round);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+#settings-screen::backdrop { background: var(--shade); }
+#settings-screen h2 { margin: 0 0 12px; text-align: center; font: 600 26px/1.15 var(--round); }
+#settings-screen .set-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 56px; font-size: 18px; font-weight: 500; }
+#settings-screen .set-row[hidden] { display: none; }
+#settings-screen .set-row + .set-row { border-top: 1.5px solid rgba(150, 168, 190, 0.35); }
+/* a switch: a round knob in a pill track, amber when on */
+#settings-screen input[type="checkbox"] {
+  appearance: none; -webkit-appearance: none; position: relative; flex: none; margin: 0; cursor: pointer;
+  width: 60px; height: 34px; border-radius: 17px; background: #b9c5d3; box-shadow: inset 0 2px 4px rgba(40, 60, 90, 0.3);
+  transition: background 0.2s;
+}
+#settings-screen input[type="checkbox"]::after {
+  content: ""; position: absolute; top: 3px; left: 3px; width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(180deg, var(--frost-hi), var(--frost-lo)); box-shadow: 0 2px 3px rgba(20, 30, 50, 0.4);
+  transition: transform 0.2s;
+}
+#settings-screen input[type="checkbox"]:checked { background: linear-gradient(180deg, var(--amber-hi), var(--amber-lo)); }
+#settings-screen input[type="checkbox"]:checked::after { transform: translateX(26px); }
+/* the slider: a fat track and a round knob, 44px tall to touch */
+#settings-screen input[type="range"] { -webkit-appearance: none; appearance: none; flex: 1; max-width: 170px; height: 44px; margin: 0; background: transparent; cursor: pointer; }
+#settings-screen input[type="range"]::-webkit-slider-runnable-track { height: 10px; border-radius: 5px; background: #b9c5d3; box-shadow: inset 0 2px 3px rgba(40, 60, 90, 0.3); }
+#settings-screen input[type="range"]::-moz-range-track { height: 10px; border-radius: 5px; background: #b9c5d3; }
+#settings-screen input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; margin-top: -9px; border-radius: 50%; background: linear-gradient(180deg, var(--amber-hi), var(--amber-lo)); box-shadow: 0 2px 4px rgba(20, 30, 50, 0.45); }
+#settings-screen input[type="range"]::-moz-range-thumb { width: 28px; height: 28px; border: 0; border-radius: 50%; background: linear-gradient(180deg, var(--amber-hi), var(--amber-lo)); }
+#settings-screen .close { display: flex; width: 100%; margin-top: 16px; min-height: 52px; font-size: 18px; }

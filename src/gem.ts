@@ -27,6 +27,7 @@ export type AudioChannels = { music: boolean; sounds: boolean };
 const prefsHandlers = new Set<(prefs: GemPrefs) => void>();
 const pauseHandlers = new Set<(paused: boolean) => void>();
 const channelHandlers = new Set<(channels: AudioChannels) => void>();
+const terminateHandlers = new Set<(graceMs: number) => void>();
 
 export const gem = createGem({
   // No `allowedEmbedders`. The SDK always allows the Gem Arcade's website and
@@ -65,7 +66,19 @@ export const gem = createGem({
   onAudioChannels: (channels) => {
     for (const handler of channelHandlers) handler(channels);
   },
+
+  // The Arcade is about to close the game, and says how long it will wait:
+  // the moment to send what is not saved yet (src/ui/progress.ts).
+  onWillTerminate: (notice) => {
+    for (const handler of terminateHandlers) handler(notice.graceMs);
+  },
 });
+
+/** Run `handler(graceMs)` when the Arcade is about to close the game. Returns the unsubscribe. */
+export function onWillTerminate(handler: (graceMs: number) => void): () => void {
+  terminateHandlers.add(handler);
+  return () => terminateHandlers.delete(handler);
+}
 
 /** Run `handler` whenever the Arcade pauses or resumes the game. Returns the unsubscribe. */
 export function onArcadePause(handler: (paused: boolean) => void): () => void {
