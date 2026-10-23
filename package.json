@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit"
   },
   "gem": {
+    "gameId": "9c562125-f155-4601-a349-f66ca3c5f2b6",
     "out": "dist"
   },
   "dependencies": {
