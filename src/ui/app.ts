@@ -305,9 +305,13 @@ function showWin(): void {
  * screen's height (never bigger than 46px, never under 18px).
  */
 const GAP = 10;
+/** A phone held sideways: the same question as the stylesheet's sideways block. */
+const SIDEWAYS = matchMedia("(orientation: landscape) and (max-height: 560px)");
 function layoutGallery(pics: BoardPicture[]): HTMLElement {
-  const width = Math.min(360, app.clientWidth - 32) - 44 - 4;
-  const height = Math.max(120, Math.min(300, app.clientHeight * 0.34));
+  // upright the gallery has the card's width and a third of the height; sideways, the card's left
+  // column and the height under its title
+  const width = SIDEWAYS.matches ? Math.min(720, app.clientWidth - 32) * 0.55 - 34 : Math.min(360, app.clientWidth - 32) - 44 - 4;
+  const height = SIDEWAYS.matches ? Math.max(110, app.clientHeight - 210) : Math.max(120, Math.min(300, app.clientHeight * 0.34));
   let best: { u: number; rows: BoardPicture[][] } = { u: 0, rows: [pics] };
   for (let n = 1; n <= Math.min(3, pics.length); n++) {
     // fill n rows, each picture into the row with the fewest columns so far (biggest first)
