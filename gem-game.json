@@ -23,6 +23,35 @@
         ]
       },
       "url": "http://127.0.0.1:{vite.port}/"
+    },
+    "processes": [
+      {
+        "id": "soundboard",
+        "command": [
+          "node",
+          "tools/sound-board/server.mjs"
+        ],
+        "ports": [
+          {
+            "name": "port",
+            "env": "SOUNDBOARD_PORT"
+          }
+        ],
+        "ready": [
+          {
+            "name": "port",
+            "prefix": "SOUNDBOARD_PORT "
+          }
+        ]
+      }
+    ]
+  },
+  "editors": [
+    {
+      "id": "sound-board",
+      "label": "Sound board",
+      "kind": "web",
+      "url": "http://127.0.0.1:{soundboard.port}/"
     }
-  }
+  ]
 }
