@@ -93,7 +93,9 @@ const helpers = h(
   helper("hint", "hint", t("board.hint")),
   helper("shuffle", "shuffle", t("board.shuffle")),
 );
-const boardScreen = h("section", { class: "screen board-screen", hidden: "" }, levelPill, back, host, helpers);
+// one short line at the board's foot when it is stuck: a dead end, or no way to win from here
+const stuckNote = h("div", { class: "stuck-note glass", role: "status", hidden: "" });
+const boardScreen = h("section", { class: "screen board-screen", hidden: "" }, levelPill, back, host, stuckNote, helpers);
 
 // the cards
 const winVeil = h("div", { class: "veil win", hidden: "", role: "dialog", "aria-modal": "true" });
@@ -177,6 +179,7 @@ function openLevel(level: number): void {
     host.replaceChildren();
     boardWon = false;
     boardLevel = level;
+    stuckNote.hidden = true;
     levelPill.textContent = t("board.level", { level });
     // the board reports its helpers and undo through board:changed, once at start too
     drawHelpers({ undo: 3, hint: 3, shuffle: 3 }, false);
@@ -220,6 +223,14 @@ helperBtns.hint.btn.addEventListener("click", () => board?.hint());
 helperBtns.shuffle.btn.addEventListener("click", () => board?.shuffle());
 
 on("board:changed", ({ canUndo, helpers: counts }) => drawHelpers(counts, canUndo));
+
+// Stuck: only Undo or Restart helps, so the line says so, and stays until the player does something.
+on("board:stuck", ({ doomed }) => {
+  stuckNote.textContent = t(doomed ? "board.doomed" : "board.stuck");
+  stuckNote.hidden = false;
+});
+const unstick = () => (stuckNote.hidden = true);
+for (const type of ["piece:lift", "helper:undo", "helper:shuffle", "board:restart", "board:start", "board:won"] as const) on(type, unstick);
 
 // Restart is free; the card only checks it was meant. Before the first move there is nothing to lose.
 restartBtn.addEventListener("click", () => {

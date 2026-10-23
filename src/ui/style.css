@@ -169,6 +169,15 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
   padding: 10px max(14px, var(--safe-right)) calc(var(--foot) + 6px) max(14px, var(--safe-left));
 }
 .helpers .spacer { flex: 1; }
+/* the stuck line: information, at the board's foot just above the helpers, never across its middle */
+.stuck-note {
+  position: absolute; z-index: 3; left: 50%; transform: translateX(-50%);
+  bottom: calc(var(--foot) + 6px + 60px + 16px); width: max-content; max-width: calc(100% - 24px);
+  padding: 8px 16px; border-radius: 18px; text-align: center; white-space: nowrap;
+  font: 600 15px/1.25 var(--round); pointer-events: none;
+  animation: veil-in 0.25s ease both;
+}
+.stuck-note[hidden] { display: none; }
 .helpers .restart { min-height: 48px; padding: 0 16px 0 13px; font-size: 16px; }
 .helpers .restart :is(svg, .ico) { width: 20px; height: 20px; }
 .helper { --size: 60px; }
