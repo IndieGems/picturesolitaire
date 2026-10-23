@@ -218,6 +218,11 @@ twice) belong in this file beside the how-to, so there is one copy
 and one place to look.
 
 - **Art follows the chosen look.** `design/concepts/game-l.png` is the style reference for every piece of art, however it is made (an image generator, sprites drawn in code, three.js materials, Blender): open it before making any. For a generated image pass it as the reference and draw only the new subject from it; for a pose or variant of an existing sprite, use that sprite instead. `style.visual` in `design.json` says the look in words, and where they disagree with the picture the words win.
+- **Except the puzzle pictures themselves.** game-l.png governs the table and the chrome only. Each picture on the cards is a photograph or a painted illustration in its own medium, at full fidelity: never generate one from game-l.png, and never tint, filter or frame-colour it.
+- **Moves never get refused** (creator, 2026-10-23). A move is done whenever the moved piece fits on the board. The cards it covers go to where it came from, shifted back by the move: a merged piece it covers fully moves whole, one it covers partly splits and only the covered part moves. Merges are not stored: cards are joined whenever correct neighbours touch, so pieces split and rejoin by themselves.
+- **Gravity is per column and ignores merges**; after a clear, cards fall first, then the stacks refill column by column, left to right (creator's provisional choice; keep the stagger short and tunable).
+- **Helpers in the first build: 3 undo, 3 hint, 3 shuffle at the start of every board**, nothing saved, earned or sold; restart is free. The creator has not chosen how helpers are earned: ask before building any economy for them.
+- **Cards are square cells.** A picture's size in cells (2×2, 2×3, 3×2, 1×2…) is its aspect ratio; it is cut into one card per cell.
 
 ## Keeping this file small
 
