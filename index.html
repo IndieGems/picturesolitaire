@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#252e3b" />
   <title>picturesolitaire</title>
   <style>
     /* Edge insets: the notch and the home indicator. Position anything anchored
@@ -32,7 +33,9 @@
       --reserved-br-width: var(--gem-reserved-br-width, 0px);
       --reserved-br-height: var(--gem-reserved-br-height, 0px);
     }
-    html, body { margin: 0; height: 100%; background: #0b0e12; color: #cdd6e4; font: 14px system-ui, sans-serif; }
+    /* The winter-dusk table's colour and the round type, so the loading text
+       already sits on the game's own ground (src/ui/style.css draws the rest). */
+    html, body { margin: 0; height: 100%; background: #252e3b; color: #dfe7f1; font: 600 16px ui-rounded, "Segoe UI", system-ui, sans-serif; }
     /* A long press, a drag, a double tap, a pinch and a swipe are the game's,
        never the browser's: nothing selects (text fields opt back in: iOS will
        not type into one under user-select: none), iOS shows no long-press
@@ -45,12 +48,12 @@
     img { -webkit-user-drag: none; }
     * { touch-action: pan-x pan-y; }
     html, body { overscroll-behavior: none; }
-    #boot { position: absolute; inset: 0; display: grid; place-items: center; }
+    #boot { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; }
   </style>
 </head>
 <body>
   <!-- Static boot content: paints before any JS parses. -->
-  <div id="boot">loading picturesolitaire&hellip;</div>
+  <div id="boot">Loading Picture Solitaire&hellip;</div>
   <script type="module">import("./src/main.ts");</script>
 </body>
 </html>
