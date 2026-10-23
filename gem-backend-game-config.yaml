@@ -1,0 +1,13 @@
+# picturesolitaire game config: data the game reads without a new build.
+# Ship with: gemctl config upload --dry-run, then gemctl config upload --channel dev
+# (the gemctl:game-config skill). `gemctl config schema` is the authority on fields.
+
+save_schemas:
+  # The campaign: the board the player plays next, and boards won (src/ui/progress.ts).
+  # A few dozen bytes; the ceiling leaves room to grow without letting it run away.
+  - key: campaign
+    access_self_read: true
+    access_self_write: true
+    access_game_server_read: true
+    access_game_server_write: true
+    max_size_bytes: 16384
