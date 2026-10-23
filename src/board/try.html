@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>board test</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #2c3746; font: 14px system-ui, sans-serif; }
+    #app { position: fixed; inset: 0; background: #2c3746 url(/art/table.webp) center top / cover; display: flex; flex-direction: column; }
+    #top { height: 64px; flex: none; }
+    #host { position: relative; flex: 1 1 0; min-height: 0; overflow: hidden; }
+    #bar { flex: none; height: 76px; display: flex; gap: 10px; align-items: center; justify-content: center; }
+    #bar button { min-width: 64px; min-height: 44px; border-radius: 22px; border: 0; background: #e9eef5; font: inherit; }
+  </style>
+</head>
+<body>
+  <!-- A test bench for the board alone (dev only, never built): ?level=3, ?tilt=1 -->
+  <div id="app"><div id="top"></div><div id="host"></div><div id="bar"></div></div>
+  <script type="module" src="./try.ts"></script>
+</body>
+</html>

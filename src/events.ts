@@ -38,6 +38,12 @@ export interface GameEvents {
    * start): what the helper buttons should show now.
    */
   "board:changed": { canUndo: boolean; helpers: { undo: number; hint: number; shuffle: number } };
+  /**
+   * The player is stuck: `doomed` false means a dead end (the board is full
+   * and no picture has all its cards on it), true means Hint found no way to
+   * win from here. Either way only Undo or Restart helps.
+   */
+  "board:stuck": { doomed: boolean };
   /** Every picture restored: the board is won. */
   "board:won": { level: string; moves: number; ms: number };
   /** A board opened and play can begin. */
