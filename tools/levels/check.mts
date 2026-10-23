@@ -1,0 +1,88 @@
+// Re-proves every shipped board. Run: node tools/levels/check.mts [file ...]
+// (default src/content/levels/campaign.json). Exit code 0 = every board passes.
+//
+// For each board:
+//   - its pictures are in the catalogue at the same size, and the stacks hold
+//     every card of every picture exactly once;
+//   - DETERMINISM: the generator deals exactly these stacks from the board's
+//     id and seed (src/game/levels/generate.ts, dealFor), so the same id and
+//     seed give the same deal on every device;
+//   - the opening has nothing joined or finished and is not a dead end;
+//   - PROOF: the stored line, moves only (no undo, hint or shuffle), replays on
+//     the real rules (src/game/rules.ts) to a won board;
+//   - the solver agrees the deal is winnable (exact, not a timed guess), and the
+//     axes stored with the board are what the deal measures.
+// @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
+
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { cardsOf, isDeadEnd, isWon, joinCount, replay, start } from "../../src/game/rules.ts";
+import { Game } from "../../src/game/solver/index.ts";
+import { along, careless, chain, traps } from "../../src/game/solver/metrics.ts";
+import { dealFor } from "../../src/game/levels/generate.ts";
+
+const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
+const catalogue = new Map(JSON.parse(readFileSync(join(root, "src/content/pictures.json"), "utf8")).pictures.map((p) => [p.id, p]));
+const files = process.argv.slice(2);
+if (!files.length) files.push(join(root, "src/content/levels/campaign.json"));
+
+let boards = 0;
+let failed = 0;
+for (const file of files) {
+  const data = JSON.parse(readFileSync(file, "utf8"));
+  const ids = new Set();
+  for (const l of data.levels) {
+    boards++;
+    const problems = [];
+    const fail = (msg) => problems.push(msg);
+    try {
+      if (ids.has(l.id)) fail("id used twice");
+      ids.add(l.id);
+      if (![0, 1, 2].includes(l.peek)) fail(`peek ${l.peek}`);
+      for (const p of l.pictures) {
+        const c = catalogue.get(p.id);
+        if (!c) fail(`no picture ${p.id} in the catalogue`);
+        else if (c.cols !== p.cols || c.rows !== p.rows) fail(`${p.id} is ${c.cols}x${c.rows} in the catalogue, ${p.cols}x${p.rows} here`);
+      }
+      const want = l.pictures.flatMap((_, i) => cardsOf(l.pictures, i)).sort((a, b) => a - b);
+      const have = l.stacks.flat().sort((a, b) => a - b);
+      if (want.join() !== have.join()) fail("the stacks do not hold every card exactly once");
+      const deal = { cols: l.cols, rows: l.rows, pictures: l.pictures, stacks: l.stacks, seed: l.seed };
+      const again = dealFor({ id: l.id, cols: l.cols, rows: l.rows, pictures: l.pictures, targets: {} }, l.seed);
+      if (JSON.stringify(again.stacks) !== JSON.stringify(l.stacks)) fail("the generator does not deal these stacks from this id and seed");
+      const s = start(deal).state;
+      if (s.cleared.length || joinCount(s) > 0) fail("something is joined or finished at the opening");
+      if (isDeadEnd(s)) fail("the opening is a dead end");
+      const line = l.line.map(([from, to]) => ({ from, to }));
+      let won = false;
+      try {
+        won = isWon(replay(deal, line));
+      } catch (err) {
+        fail(`the line breaks: ${err.message}`);
+      }
+      if (!won) fail("the line does not win");
+      const game = new Game(s);
+      if (!game.wins(game.root)) fail("the solver says the deal cannot be won");
+      if (l.axes && won) {
+        const a = l.axes;
+        const ch = chain(game);
+        const cl = Math.round(careless(game) * 1000) / 1000;
+        const tr = traps(game, along(game, deal, line));
+        if (a.chain !== ch) fail(`chain is ${ch}, the data says ${a.chain}`);
+        if (Math.abs(a.careless - cl) > 0.001) fail(`careless win is ${cl}, the data says ${a.careless}`);
+        if (a.traps !== tr) fail(`traps are ${tr}, the data says ${a.traps}`);
+        if (a.peek !== l.peek) fail("axes.peek differs from peek");
+        if (a.lineMoves !== l.line.length) fail("axes.lineMoves differs from the line");
+      }
+    } catch (err) {
+      fail(`check crashed: ${err.stack}`);
+    }
+    if (problems.length) {
+      failed++;
+      console.error(`FAIL ${l.id}: ${problems.join("; ")}`);
+    }
+  }
+}
+console.log(failed ? `${failed} of ${boards} boards FAILED` : `all ${boards} boards proved: each line wins on the real rules with no helpers`);
+process.exitCode = failed ? 1 : 0;

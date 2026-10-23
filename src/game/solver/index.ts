@@ -38,22 +38,39 @@ function ranked(game: Game, s: State): Option[] {
 }
 
 /**
- * Carry `o` out on `s`: strictly (the result is exactly the planned position)
- * when possible, else any result that is still winning. The cheapest way.
+ * How hard to try, in order: STRICT takes only the planned position, else any
+ * result that is still winning (a refill that finishes another picture by
+ * chance, say); DEEP also tries one rearranging move first, which costs a few
+ * hundred trial moves, so it comes last.
  */
-function carry(game: Game, s: State, o: Option, strict: boolean): Realised | null {
-  return realise(s, o.step, (t) => {
-    const n = game.nodeOf(t);
-    const k = game.key(n);
-    return strict ? k === o.key : game.wins(n, k);
-  });
+const PASSES = [
+  { strict: true, deep: false },
+  { strict: false, deep: false },
+  { strict: true, deep: true },
+  { strict: false, deep: true },
+];
+type Pass = (typeof PASSES)[number];
+
+/** Carry `o` out on `s`, the cheapest way this pass allows. */
+function carry(game: Game, s: State, o: Option, pass: Pass): Realised | null {
+  return realise(
+    s,
+    o.step,
+    (t) => {
+      const n = game.nodeOf(t);
+      const k = game.key(n);
+      return pass.strict ? k === o.key : game.wins(n, k);
+    },
+    pass.deep,
+    !pass.strict,
+  );
 }
 
-/** The cheapest winning step to take now, carried out. Clears before draws. */
-function bestStep(game: Game, s: State, strict = true): { o: Option; r: Realised }[] {
+/** The winning steps this pass can carry out now, best first: clears, then fewest moves. */
+function bestStep(game: Game, s: State, pass: Pass): { o: Option; r: Realised }[] {
   const out: { o: Option; r: Realised }[] = [];
   for (const o of ranked(game, s)) {
-    const r = carry(game, s, o, strict);
+    const r = carry(game, s, o, pass);
     if (r) out.push({ o, r });
   }
   // clears first (stable), then by moves needed
@@ -69,8 +86,8 @@ function bestStep(game: Game, s: State, strict = true): { o: Option; r: Realised
 function lineFrom(game: Game, s: State, tries = { left: 2000 }): Line | null {
   if (isWon(s)) return { moves: [], steps: [] };
   if (!game.wins(game.nodeOf(s))) return null;
-  for (const strict of [true, false]) {
-    for (const { o, r } of bestStep(game, s, strict)) {
+  for (const pass of PASSES) {
+    for (const { o, r } of bestStep(game, s, pass)) {
       if (--tries.left < 0) return null;
       const rest = lineFrom(game, r.state, tries);
       if (rest) return { moves: [...r.moves, ...rest.moves], steps: [o.step, ...rest.steps] };
@@ -113,8 +130,8 @@ export function nextMove(s: State, budget = 200_000): { move: Move } | { doomed:
   const game = new Game(s, budget);
   try {
     if (!game.wins(game.root)) return { doomed: true };
-    for (const strict of [true, false]) {
-      const best = bestStep(game, s, strict)[0];
+    for (const pass of PASSES) {
+      const best = bestStep(game, s, pass)[0];
       if (best) return { move: best.r.moves[0]! };
     }
     return { unknown: true };

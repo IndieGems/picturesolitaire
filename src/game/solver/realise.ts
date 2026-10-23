@@ -74,7 +74,7 @@ function transfer(s: State, donors: number[], to: number): Realised | null {
  * Null if the open columns under it cannot be built up, or a move would clear
  * or deal anything before the picture itself.
  */
-function clearAt(s: State, pic: number, c0: number, r0: number): Realised | null {
+function clearAt(s: State, pic: number, c0: number, r0: number, loose: boolean): Realised | null {
   const { cols: pc, rows: pr } = s.pictures[pic]!;
   const W = s.cols;
   const moves: Move[] = [];
@@ -107,8 +107,9 @@ function clearAt(s: State, pic: number, c0: number, r0: number): Realised | null
     for (let i = 0; i < n; i++) if (t.board[target(i)] === base + i) k++;
     return k;
   };
-  for (let guard = 0; guard <= n; guard++) {
-    if (s.cleared.length > cleared) return s.cleared.includes(pic) ? { moves, state: s } : null;
+  for (let guard = 0; guard <= n + (loose ? 6 : 0); guard++) {
+    if (s.cleared.includes(pic)) return { moves, state: s };
+    if (!loose && s.cleared.length > cleared) return null;
     const now = placed(s);
     let best: { m: Move; t: State; v: number } | null = null;
     for (let i = 0; i < n; i++) {
@@ -123,7 +124,8 @@ function clearAt(s: State, pic: number, c0: number, r0: number): Realised | null
         const out = move(s, m);
         if (!out) continue;
         const done = out.state.cleared.includes(pic);
-        if (!done && (out.state.cleared.length !== cleared || !sameStacks(s, out.state))) continue;
+        // strictly, nothing else may clear or deal on the way; loosely it may (the caller judges the result)
+        if (!done && !loose && (out.state.cleared.length !== cleared || !sameStacks(s, out.state))) continue;
         const v = done ? Infinity : placed(out.state);
         if (v > now && (!best || v > best.v)) best = { m, t: out.state, v };
       }
@@ -136,7 +138,7 @@ function clearAt(s: State, pic: number, c0: number, r0: number): Realised | null
 }
 
 /** Every way to carry out `step` that this realiser knows, cheapest first, as a lazy list. */
-function* ways(s: State, step: Step): Generator<Realised> {
+function* ways(s: State, step: Step, loose: boolean): Generator<Realised> {
   if (step.kind === "clear") {
     const { cols: pc, rows: pr } = s.pictures[step.pic]!;
     // at the bottom (open columns are built up to it), or higher where every
@@ -148,7 +150,7 @@ function* ways(s: State, step: Step): Generator<Realised> {
         let tall = true;
         for (let c = c0; c < c0 + pc; c++) if (isOpen(s, c) && height(s, c) < s.rows - r0) tall = false;
         if (r0 !== s.rows - pr && !tall) continue;
-        const r = clearAt(s, step.pic, c0, r0);
+        const r = clearAt(s, step.pic, c0, r0, loose);
         if (r) found.push(r);
       }
     }
@@ -177,12 +179,14 @@ function* ways(s: State, step: Step): Generator<Realised> {
 
 /**
  * Carry out `step` on the real board: the cheapest way whose result `accept`
- * takes. When no direct way works, one rearranging move first (a move that
- * clears and deals nothing) is tried, which unjoins a stuck card or moves an
- * accidental join away. Null if none of that works.
+ * takes. With `loose`, other pictures may clear (and stacks deal) on the way. With `deep`, when no direct way works, one rearranging move first (a
+ * move that clears and deals nothing) is tried, which unjoins a stuck card or
+ * moves an accidental join away; that costs a few hundred trial moves, so
+ * callers try every step shallow before any deep. Null if none of that works.
  */
-export function realise(s: State, step: Step, accept: (t: State) => boolean): Realised | null {
-  for (const r of ways(s, step)) if (accept(r.state)) return r;
+export function realise(s: State, step: Step, accept: (t: State) => boolean, deep = true, loose = false): Realised | null {
+  for (const r of ways(s, step, loose)) if (accept(r.state)) return r;
+  if (!deep) return null;
   // one rearranging move, then the direct ways: prefer moves that break the fewest joins
   const preps: { m: Move; t: State; j: number }[] = [];
   for (const m of allMoves(s)) {
@@ -194,7 +198,7 @@ export function realise(s: State, step: Step, accept: (t: State) => boolean): Re
   }
   preps.sort((a, b) => b.j - a.j);
   for (const { m, t } of preps) {
-    for (const r of ways(t, step)) if (accept(r.state)) return { moves: [m, ...r.moves], state: r.state };
+    for (const r of ways(t, step, loose)) if (accept(r.state)) return { moves: [m, ...r.moves], state: r.state };
   }
   return null;
 }
