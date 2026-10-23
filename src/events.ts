@@ -13,8 +13,11 @@ export interface GameEvents {
   "piece:lift": { cards: number };
   /** A lifted piece was put back where it was (cancelled drag, second tap on itself). */
   "piece:cancel": Record<string, never>;
-  /** A move landed: `cards` moved, `displaced` cards slid back to where it came from. */
-  "piece:move": { cards: number; displaced: number };
+  /**
+   * A move landed: `cards` moved, `displaced` cards slid back to where it came
+   * from. `ms`: from now until the moved piece touches down.
+   */
+  "piece:move": { cards: number; displaced: number; ms?: number };
   /** Correct neighbours touched and joined; `size` is the joined piece's card count. */
   "piece:merge": { pictureId: string; size: number };
   /** A merged piece came apart (covered by a move, or broken by gravity). */
@@ -23,8 +26,8 @@ export interface GameEvents {
   "picture:complete": { pictureId: string; cells: Cell[] };
   /** The completed picture left the board. */
   "picture:clear": { pictureId: string };
-  /** Cards fell into gaps. */
-  "cards:fall": { cards: number };
+  /** Cards fell into gaps. `ms`: from now until the first of them lands. */
+  "cards:fall": { cards: number; ms?: number };
   /** A stack dealt a card into its column. `left` is what the stack still holds. */
   "stack:deal": { col: number; left: number };
   /** Helpers. `left` is how many remain on this board. */

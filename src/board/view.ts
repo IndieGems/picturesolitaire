@@ -32,21 +32,33 @@ export interface Geometry {
   height: number;
   left: number;
   top: number;
-  /** A stack's face (its top card): size, and its top inside the stack row. */
+  /** The stacks' row: its height, a stack's face (its top card) and that face's top in the row. */
+  stackH: number;
   face: number;
   faceTop: number;
+  /** How far the second upcoming card fans out above the first, and the most layers a pile shows. */
+  fan: number;
+  layers: number;
 }
+
+/** The stacks' row, as fractions of a card: roomy, and compact for a short box (a phone held sideways). */
+const ROOMY = { row: 1.18, gap: 0.2, face: 0.8, top: 0.22, fan: 0.2, layers: 6 };
+const COMPACT = { row: 0.8, gap: 0.1, face: 0.62, top: 0.1, fan: 0.09, layers: 3 };
+/** Cards smaller than this (CSS px) with the roomy stacks: use the compact ones. */
+const COMPACT_BELOW = 56;
 
 /** Fit the stacks and the grid, with square cards, inside a host of w x h. */
 export function layout(w: number, h: number, cols: number, rows: number): Geometry {
   const pad = Math.max(10, Math.min(18, w * 0.035));
   const G = TUNING.gutter;
   const unitsW = cols + (cols - 1) * G;
-  const unitsH = TUNING.stackRow + TUNING.stackGap + rows + (rows - 1) * G;
-  const s = Math.max(24, Math.floor(Math.min((w - 2 * pad) / unitsW, (h - 2 * 6) / unitsH, TUNING.maxCard)));
+  const size = (st: typeof ROOMY) => Math.floor(Math.min((w - 2 * pad) / unitsW, (h - 2 * 6) / (st.row + st.gap + rows + (rows - 1) * G), TUNING.maxCard));
+  // the roomy stacks, unless the box is so short (a phone held sideways) that cards would come out small
+  const st = size(ROOMY) < COMPACT_BELOW && size(COMPACT) > size(ROOMY) ? { ...COMPACT, row: TUNING.stackRow * (COMPACT.row / ROOMY.row) } : { ...ROOMY, row: TUNING.stackRow, gap: TUNING.stackGap };
+  const s = Math.max(24, size(st));
   const g = Math.max(3, Math.round(s * G));
   const width = cols * s + (cols - 1) * g;
-  const gridY = Math.round(s * (TUNING.stackRow + TUNING.stackGap));
+  const gridY = Math.round(s * (st.row + st.gap));
   const height = gridY + rows * s + (rows - 1) * g;
   return {
     cols, rows, s, g,
@@ -54,8 +66,11 @@ export function layout(w: number, h: number, cols: number, rows: number): Geomet
     width, height,
     left: Math.round((w - width) / 2),
     top: Math.max(0, Math.round((h - height) / 2)),
-    face: Math.round(s * 0.8),
-    faceTop: Math.round(s * 0.22),
+    stackH: Math.round(s * st.row),
+    face: Math.round(s * st.face),
+    faceTop: Math.round(s * st.top),
+    fan: Math.round(s * st.fan),
+    layers: st.layers,
   };
 }
 
@@ -177,11 +192,11 @@ export interface StackView {
   el: HTMLDivElement;
 }
 
-/** Draw one stack: its pile (as many layers as it has cards, up to 6) and the upcoming cards the level shows. */
+/** Draw one stack: its pile (as many layers as it has cards, up to the layout's most) and the upcoming cards the level shows. */
 export function drawStack(
   sv: StackView, geo: Geometry, stack: readonly Card[], peek: number, art: Art[], pictures: readonly Picture[], backUrl: string,
 ): void {
-  const { face, faceTop, s } = geo;
+  const { face, faceTop, s, fan } = geo;
   sv.el.replaceChildren();
   const x0 = Math.round((s - face) / 2);
   if (!stack.length) {
@@ -192,7 +207,7 @@ export function drawStack(
     return;
   }
   const step = Math.max(2, Math.round(face * 0.035));
-  const layers = Math.min(6, stack.length);
+  const layers = Math.min(geo.layers, stack.length);
   for (let i = layers - 1; i >= 0; i--) {
     const img = document.createElement("img");
     img.className = i ? "bd-back under" : "bd-back";
@@ -209,7 +224,7 @@ export function drawStack(
     f.classList.add("bd-peek");
     const wrap = document.createElement("div");
     wrap.className = "bd-peek-at";
-    wrap.style.cssText = `left:${x0}px;top:${i === 0 ? faceTop : faceTop - Math.round(s * 0.2)}px;width:${face}px;height:${face}px`;
+    wrap.style.cssText = `left:${x0}px;top:${i === 0 ? faceTop : faceTop - fan}px;width:${face}px;height:${face}px`;
     if (i > 0) wrap.style.filter = "brightness(0.82)";
     wrap.append(f);
     sv.el.append(wrap);

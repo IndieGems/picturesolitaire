@@ -19,7 +19,7 @@ import CATALOGUE from "../content/pictures.json";
 import { emit } from "../events";
 import { gem, onArcadePause, onPlayerPrefs } from "../gem";
 import { level as levelOf, levelCount } from "../game/levels.ts";
-import { nextMove } from "../game/plan.ts";
+import { nextMove } from "../game/solver/index.ts";
 import {
   EMPTY, allMoves, clampTarget, isDeadEnd, isWon, joinCount, move, pieceAt, pieces, picOf, shuffle as shuffleRule, start,
   type Action, type Card, type Move, type State, type Step,
@@ -163,6 +163,8 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
   let won = false;
   let destroyed = false;
   let pendingRestart = false;
+  /** The opening deal has played: the clock may run. */
+  let opened = false;
   let activeMs = 0;
   let since: number | null = null;
   let geo: Geometry = layout(host.clientWidth || 360, host.clientHeight || 480, deal.cols, deal.rows);
@@ -177,7 +179,8 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
     if (since !== null) activeMs += performance.now() - since;
     since = null;
   };
-  const onVisible = () => (document.visibilityState === "hidden" ? clockOff() : clockOn());
+  const onScreenNow = () => host.clientWidth > 0 && host.clientHeight > 0 && document.visibilityState !== "hidden";
+  const onVisible = () => (document.visibilityState === "hidden" ? clockOff() : opened && onScreenNow() && clockOn());
   document.addEventListener("visibilitychange", onVisible);
 
   // ---------------------------------------------------------------- layout and drawing
@@ -191,7 +194,7 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
     for (let c = 0; c < geo.cols; c++) {
       const el = document.createElement("div");
       el.className = "bd-stack";
-      el.style.cssText = `left:${c * (geo.s + geo.g)}px;width:${geo.s}px;height:${Math.round(geo.s * TUNING.stackRow)}px`;
+      el.style.cssText = `left:${c * (geo.s + geo.g)}px;width:${geo.s}px;height:${geo.stackH}px`;
       stacksEl.append(el);
       stacks.push({ el });
     }
@@ -308,22 +311,29 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
    * Each piece breaks into parts that move alike; a part is its own frame on
    * the way. `timing` sets each part's motion from its offset in cells.
    */
-  async function slideCards(
+  function slideCards(
     from: State, dest: Map<Card, number>,
     timing: (dc: number, dr: number) => { ms: number; ease?: (t: number) => number; arc?: boolean },
     lifted?: PieceView | null,
-  ): Promise<void> {
+  ): { done: Promise<void>; firstMs: number; liftedMs: number } {
     const ps = pieces(from);
     const jobs: Promise<void>[] = [];
+    let firstMs = Infinity;
+    let liftedMs = 0;
     const p = geo.s + geo.g;
-    for (const cells of ps.list) {
+    // match every piece to the view showing it BEFORE any view is moved on
+    const sameCells = (a: number[], b: number[]) => a.length === b.length && a.every((c, i) => c === b[i]);
+    const shownBy = ps.list.map((cells) =>
+      lifted && sameCells(lifted.cells, cells) ? lifted : live.find((v) => v !== lifted && sameCells(v.cells, cells)),
+    );
+    ps.list.forEach((cells, pieceIndex) => {
       const offs = cells.map((c) => {
         const to = dest.get(from.board[c]!);
         return to === undefined ? 0 : to - c;
       });
-      const isLifted = lifted && lifted.cells.length === cells.length && lifted.cells.every((c, i) => c === cells[i]);
-      if (!isLifted && offs.every((o) => o === 0)) continue;
-      const old = isLifted ? lifted! : live.find((v) => v.cells.length === cells.length && v.cells.every((c, i) => c === cells[i]));
+      const old = shownBy[pieceIndex];
+      const isLifted = !!lifted && old === lifted;
+      if (!isLifted && offs.every((o) => o === 0)) return;
       // split the piece into parts that move alike and touch
       const parts: number[][] = [];
       const seen = new Set<number>();
@@ -360,8 +370,15 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
         const tx = v.ox + dc * p;
         const ty = v.oy + dr * p;
         const x0 = v.x, y0 = v.y, k0 = v.k;
-        const tm = timing(dc, dr);
+        let tm = timing(dc, dr);
+        if (v === lifted) {
+          // the piece in hand goes the way it has left to go: short after a drag, longer after a tap
+          const left = Math.hypot(tx - x0, ty - y0) / p;
+          tm = { ms: Math.round(Math.min(TUNING.slideMs * 1.6, TUNING.dropMs + 90 * left)) };
+          liftedMs = tm.ms;
+        }
         if (off !== 0 || v === lifted) {
+          firstMs = Math.min(firstMs, tm.ms);
           v.el.classList.add("moving");
           jobs.push(
             tween(tm.ms, (t) => {
@@ -377,8 +394,8 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
         v.cells = to;
         v.key = keyOf(v.cards, to);
       });
-    }
-    await Promise.all(jobs);
+    });
+    return { done: Promise.all(jobs).then(() => {}), firstMs: Number.isFinite(firstMs) ? firstMs : 0, liftedMs };
   }
 
   /** Show `steps`, from what is on screen to `target`. */
@@ -389,19 +406,21 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
       if (step.kind === "move") {
         const dest = new Map<Card, number>();
         for (const x of [...step.moved, ...step.displaced]) dest.set(x.card, x.to);
-        emit("piece:move", { cards: step.moved.length, displaced: step.displaced.length });
-        await slideCards(shown, dest, (dc, dr) => {
+        const slid = slideCards(shown, dest, (dc, dr) => {
           const far = Math.hypot(dc, dr);
           return { ms: Math.round(TUNING.slideMs * Math.min(1.6, 0.7 + 0.3 * far)) };
         }, lifted);
+        emit("piece:move", { cards: step.moved.length, displaced: step.displaced.length, ms: slid.liftedMs || slid.firstMs });
+        await slid.done;
         lifted = null;
       } else if (step.kind === "fall") {
         const dest = new Map(step.slides.map((x) => [x.card, x.to] as [Card, number]));
-        emit("cards:fall", { cards: step.slides.length });
-        await slideCards(shown, dest, (_dc, dr) => ({ ms: Math.round(TUNING.fallMs * Math.sqrt(Math.max(1, dr))), ease: ease.fall }));
+        const slid = slideCards(shown, dest, (_dc, dr) => ({ ms: Math.round(TUNING.fallMs * Math.sqrt(Math.max(1, dr))), ease: ease.fall }));
+        emit("cards:fall", { cards: step.slides.length, ms: slid.firstMs });
+        await slid.done;
       } else if (step.kind === "shuffle") {
         const dest = new Map(step.slides.map((x) => [x.card, x.to] as [Card, number]));
-        await slideCards(shown, dest, () => ({ ms: TUNING.shuffleMs, ease: ease.inOut, arc: true }));
+        await slideCards(shown, dest, () => ({ ms: TUNING.shuffleMs, ease: ease.inOut, arc: true })).done;
       } else if (step.kind === "clear") {
         await celebrate(step.pictures);
       } else if (step.kind === "deal") {
@@ -679,6 +698,11 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
   }
 
   function onMove(e: PointerEvent): void {
+    // a mouse let go outside the frame: no pointerup ever came, so this is the drop
+    if (e.pointerType === "mouse" && e.buttons === 0 && (drag?.id === e.pointerId || press?.id === e.pointerId)) {
+      onUp(e);
+      return;
+    }
     if (drag && e.pointerId === drag.id) {
       const g = toGrid(e.clientX, e.clientY);
       drag.px = g.x;
@@ -766,6 +790,12 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
   stage.addEventListener("pointerup", onUp);
   stage.addEventListener("pointercancel", onCancel);
   stage.addEventListener("lostpointercapture", onCancel);
+  // the window lost focus mid-drag (an alert, another app): put the piece back
+  const onBlur = () => {
+    if (drag) onCancel(new PointerEvent("pointercancel", { pointerId: drag.id }));
+    press = null;
+  };
+  addEventListener("blur", onBlur);
 
   // ---------------------------------------------------------------- playing
 
@@ -820,7 +850,6 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
       settleBack(lifted);
       return;
     }
-    clockOn();
     history.push(state);
     actions.push(m);
     state = out.state;
@@ -847,7 +876,7 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
     const stay = new Map([...dest].filter(([card]) => from.board.includes(card)));
     const onlyStaying: State = { ...from, board: from.board.map((c) => (c !== EMPTY && dest.has(c) ? c : EMPTY)) };
     // views of leaving cards are gone; slide the rest from where they are
-    await Promise.all([...fades, slideCards(onlyStaying, stay, () => ({ ms: TUNING.slideMs, ease: ease.inOut }))]);
+    await Promise.all([...fades, slideCards(onlyStaying, stay, () => ({ ms: TUNING.slideMs, ease: ease.inOut })).done]);
     reconcile(onlyStaying, target, false);
     for (const v of live) {
       if (v.cards.some((c) => !from.board.includes(c))) {
@@ -873,6 +902,7 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
       await Promise.all(out);
       emit("board:restart", {});
       await opening();
+      if (onScreenNow()) clockOn();
     } finally {
       busy--;
     }
@@ -958,10 +988,14 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
   }
   let sized: (() => void) | null = null;
   const ro = new ResizeObserver(() => {
-    if (sized && host.clientWidth && host.clientHeight) {
+    const onScreen = host.clientWidth > 0 && host.clientHeight > 0;
+    if (sized && onScreen) {
       sized();
       sized = null;
     }
+    // the screens keep a board in hand while the player is at home: its time stands still there
+    if (!onScreen) clockOff();
+    else if (opened && onScreenNow()) clockOn();
     if (busy || drag || selected) resizePending = true;
     else relayout();
   });
@@ -982,7 +1016,8 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
     busy--;
     relayout();
     await run2(opening);
-    clockOn();
+    opened = true;
+    if (onScreenNow()) clockOn();
     // the next board's pictures, quietly, once this one is dealt
     if (n < levelCount()) void preload(levelOf(n + 1).deal.pictures.map((p) => urlOf(p.id, p.cols, p.rows)), 10_000, true);
   })();
@@ -1070,6 +1105,7 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
       stopAll();
       clockOff();
       document.removeEventListener("visibilitychange", onVisible);
+      removeEventListener("blur", onBlur);
       stage.remove();
     },
   };
