@@ -223,6 +223,7 @@ and one place to look.
 - **Gravity is per column and ignores merges**; after a clear, cards fall first, then the stacks refill column by column, left to right (creator's provisional choice; keep the stagger short and tunable).
 - **Helpers in the first build: 3 undo, 3 hint, 3 shuffle at the start of every board**, nothing saved, earned or sold; restart is free. The creator has not chosen how helpers are earned: ask before building any economy for them.
 - **Cards are square cells.** A picture's size in cells (2×2, 2×3, 3×2, 1×2…) is its aspect ratio; it is cut into one card per cell.
+- **Two materials (the standard's "Only buttons look like buttons").** A button is opaque frosted white (or amber for the main action) raised on a thick blue-grey lip with a drop shadow; information is flat see-through frosted glass with no lip and no shadow (`src/ui/style.css`, `.btn` and `.glass`). Never dress a label, count or status as a `.btn`.
 
 ## Keeping this file small
 

@@ -157,7 +157,9 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
 /* ---------- the board ---------- */
 
 .board-screen { padding-top: calc(var(--row-bottom) + 8px); }
-.board-host { position: relative; flex: 1; min-height: 0; }
+/* The board's box: fixed between the top row and the helper row; the board fits itself inside
+   (stacks and grid, gameplay's) and nothing of it ever spills out. */
+.board-host { position: relative; flex: 1 1 0; min-height: 0; overflow: hidden; contain: layout paint; }
 .helpers {
   flex: none; display: flex; align-items: center; gap: 12px;
   padding: 10px max(14px, var(--safe-right)) calc(var(--foot) + 6px) max(14px, var(--safe-left));
