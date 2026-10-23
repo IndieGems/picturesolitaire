@@ -2,7 +2,8 @@
 
     python tools/art/pictures.py prompt <id>              print the full prompt and size
     python tools/art/pictures.py gen <raw-dir> <id>...    submit generations (gemforge, BILLS per id)
-    python tools/art/pictures.py process <raw-dir> <id>... raw PNG -> tools/art/masters + public/pictures
+    python tools/art/pictures.py process <raw-dir> <id>... raw PNG -> tools/art/masters + public/pictures (+ thumb)
+    python tools/art/pictures.py thumbs [<id>...]         Albums-screen thumbs from the masters (default: all)
     python tools/art/pictures.py catalogue                write src/content/pictures.json
     python tools/art/pictures.py sheet <out.png> <id>...  contact sheet with the card cuts drawn on
 
@@ -104,6 +105,40 @@ def cmd_process(raw, ids):
         out.parent.mkdir(parents=True, exist_ok=True)
         im.resize((cw * cell, ch * cell), Image.LANCZOS).save(out, "WEBP", quality=80, method=6)
         print(pid, im.size, "->", out.relative_to(ROOT), f"{out.stat().st_size // 1024} KB")
+        make_thumb(pid)
+
+
+THUMB_LONG = 320  # the Albums screen's picture size, long side
+
+
+def thumb_rel(pid):
+    return f"pictures/thumbs/{pid}.webp"
+
+
+def make_thumb(pid):
+    """A light copy for the Albums screen: THUMB_LONG px on the long side, from the master."""
+    im = Image.open(master_path(pid)).convert("RGB")
+    k = THUMB_LONG / max(im.size)
+    im = im.resize((round(im.width * k), round(im.height * k)), Image.LANCZOS)
+    out = PUBLIC / thumb_rel(pid)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    # Best quality that fits the budget; busy squares step down, never below q40.
+    for q in range(80, 39, -4):
+        im.save(out, "WEBP", quality=q, method=6)
+        if out.stat().st_size <= THUMB_BUDGET:
+            break
+    return im.size, out.stat().st_size
+
+
+THUMB_BUDGET = 24 * 1024
+
+
+def cmd_thumbs(ids):
+    p = plan()
+    for pid in ids or [e["id"] for e in p["pictures"]]:
+        if master_path(pid).exists():
+            size, b = make_thumb(pid)
+            print(pid, size, f"{b // 1024} KB")
 
 
 def cmd_catalogue():
@@ -116,7 +151,8 @@ def cmd_catalogue():
             continue
         pictures.append({
             "id": e["id"], "album": e["album"], "title": e["title"], "medium": e["medium"],
-            "file": rel, "cols": e["cols"], "rows": e["rows"], "px": [e["cols"] * cell, e["rows"] * cell],
+            "file": rel, "thumb": thumb_rel(e["id"]),
+            "cols": e["cols"], "rows": e["rows"], "px": [e["cols"] * cell, e["rows"] * cell],
             "palette": p["families"][e["family"]]["palette"], "subjects": e["subjects"], "family": e["family"],
         })
     used = {x["album"] for x in pictures}
@@ -182,6 +218,8 @@ if __name__ == "__main__":
         cmd_gen(rest[0], rest[1:])
     elif c == "process":
         cmd_process(rest[0], rest[1:])
+    elif c == "thumbs":
+        cmd_thumbs(rest)
     elif c == "catalogue":
         cmd_catalogue()
     elif c == "sheet":
