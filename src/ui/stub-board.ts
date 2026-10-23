@@ -6,6 +6,7 @@
 
 import { emit } from "../events";
 import type { BoardHandle, BoardPicture, HelperCounts } from "./board-api";
+import CATALOGUE from "../content/pictures.json";
 
 const LEVELS = 12;
 const SHADES = ["#c98b6b", "#8fb0c9", "#d9c27a", "#9cc49a", "#c79bc4", "#e0a07a"];
@@ -55,6 +56,10 @@ export function openBoard(host: HTMLElement, level: number): BoardHandle {
     if (won) return;
     won = true;
     changed();
+    for (const p of pictures) {
+      emit("picture:complete", { pictureId: p.id, cells: [] });
+      emit("picture:clear", { pictureId: p.id });
+    }
     emit("board:won", { level: String(level), moves: Math.max(moves, 17), ms: Math.round(performance.now() - started) + 92_000 });
   });
   root.append(solve);
@@ -73,12 +78,13 @@ export function openBoard(host: HTMLElement, level: number): BoardHandle {
     return true;
   };
 
-  const pictures: BoardPicture[] = [
-    { id: "a", src: picture("#c98b6b", "#f3d1a6"), cols: 2, rows: 2 },
-    { id: "b", src: picture("#8fb0c9", "#e6eef5"), cols: 3, rows: 2 },
-    { id: "c", src: picture("#9cc49a", "#e3f0c9"), cols: 2, rows: 3 },
-    { id: "d", src: picture("#c79bc4", "#f2dcef"), cols: 1, rows: 2 },
-  ];
+  // four real pictures of the catalogue, so the win card and the albums show real art
+  const pictures: BoardPicture[] = CATALOGUE.pictures
+    .slice((level - 1) % CATALOGUE.pictures.length)
+    .concat(CATALOGUE.pictures)
+    .slice(0, 4)
+    .map((p) => ({ id: p.id, src: `${import.meta.env.BASE_URL}${p.file}`, cols: p.cols, rows: p.rows }));
+
 
   return {
     undo() {
@@ -118,10 +124,4 @@ export function openBoard(host: HTMLElement, level: number): BoardHandle {
       root.remove();
     },
   };
-}
-
-/** A plain two-tone stand-in picture, as a data address. */
-function picture(a: string, b: string): string {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" preserveAspectRatio="none"><rect width="10" height="10" fill="${b}"/><circle cx="6" cy="4" r="3" fill="${a}"/><rect y="7" width="10" height="3" fill="${a}" opacity=".6"/></svg>`;
-  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }

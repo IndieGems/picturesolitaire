@@ -3,6 +3,8 @@
 //   home  --Play-->  board  --won-->  win card  --Next-->  the next board
 //     ^                |  Back
 //     +----------------+   (the board in hand is kept; Play returns to it)
+//   home  --Albums-->  albums  -->  an album  -->  a picture, full screen
+//                      (albums.ts; each Back goes one step up)
 //
 // Over them: the restart card (Restart is free, so the card only checks it was
 // meant), the win card, and the "No connection" card, which covers every
@@ -24,7 +26,8 @@ import { t } from "./i18n";
 import { ICONS, type IconName } from "./icons";
 import { screenChanged } from "./browser";
 import { online, onOnline, pretend } from "./online";
-import { campaign, loadCampaign, onCampaign, waitForCloud, won } from "./progress";
+import { campaign, loadCampaign, onCampaign, pretendRestored, restore, waitForCloud, won } from "./progress";
+import { createAlbums } from "./albums";
 import { levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
 
 // ---------- a little DOM ----------
@@ -54,6 +57,7 @@ const app = h("div", { id: "app" });
 const homeWhere = h("div", { class: "where glass" });
 const homePlayLabel = h("span");
 const homePlay = button("amber play", "home.play", icon("play"), homePlayLabel);
+const homeAlbums = button("albums", "home.albums", icon("albums"), t("home.albums"));
 const home = h(
   "section",
   { class: "screen home", "aria-label": t("game.title") },
@@ -61,6 +65,7 @@ const home = h(
   h("h1", {}, t("game.title")),
   homeWhere,
   homePlay,
+  homeAlbums,
 );
 
 // the board: the level, Back, the board, the helpers
@@ -105,11 +110,15 @@ const offlineVeil = h(
   ),
 );
 
-app.append(home, boardScreen, winVeil, restartVeil, offlineVeil);
+// the albums (albums.ts): the list, one album, and the full-screen picture
+const albumsUi = createAlbums({ home: () => goHome(), show: (which) => show(which) });
+
+app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, albumsUi.viewer, winVeil, restartVeil, offlineVeil);
 
 // ---------- state ----------
 
-let screen: "home" | "board" = "home";
+type Screen = "home" | "board" | "albums" | "album";
+let screen: Screen = "home";
 let board: BoardHandle | null = null;
 let boardLevel = 0;
 /** The board in hand was won; its card is up (or about to be). */
@@ -120,10 +129,13 @@ let waiting: number | null = null;
 const levels = () => levelCount();
 const allDone = () => campaign().level > levels();
 
-function show(next: "home" | "board"): void {
+function show(next: Screen): void {
   screen = next;
   home.hidden = next !== "home";
   boardScreen.hidden = next !== "board";
+  albumsUi.listScreen.hidden = next !== "albums";
+  albumsUi.albumScreen.hidden = next !== "album";
+  if (next !== "album") albumsUi.closeViewer();
   screenChanged();
   drawOffline();
 }
@@ -146,6 +158,8 @@ homePlay.addEventListener("click", async () => {
   const level = allDone() ? 1 : campaign().level;
   openLevel(level);
 });
+
+homeAlbums.addEventListener("click", () => albumsUi.openList());
 
 // ---------- the board ----------
 
@@ -234,6 +248,9 @@ restartBtn.addEventListener("click", () => {
 // ---------- the win card ----------
 
 let lastWin: { level: number; moves: number; ms: number } | null = null;
+
+// every picture restored is the player's to keep: saved with the board's end (won), one write a board
+on("picture:clear", ({ pictureId }) => restore(pictureId));
 
 on("board:won", ({ level, moves, ms }) => {
   const n = Number(level) || boardLevel;
@@ -338,11 +355,17 @@ onOnline((up) => {
 
 // ---------- the page ----------
 
-// Every button press, for its click sound (src/audio/ listens).
-document.addEventListener("click", (e) => {
-  const b = (e.target as Element | null)?.closest?.("button");
-  if (b && !b.disabled) emit("ui:press", { id: b.dataset.press ?? b.id ?? "button" });
-});
+// Every interface button press, for its click sound (src/audio/ listens). Heard
+// on the way down, before the button's own handler can disable it or swap the
+// screen; a ghost tap the page refused (browser.ts) makes no sound.
+document.addEventListener(
+  "click",
+  (e) => {
+    const b = (e.target as Element | null)?.closest?.("button");
+    if (b && !b.disabled && !e.defaultPrevented && !b.closest(".board-host")) emit("ui:press", { id: b.dataset.press || b.id || "button" });
+  },
+  true,
+);
 
 // Less motion: the Arcade's setting reaches the CSS (the device's does by media query).
 onPlayerPrefs((prefs) => document.documentElement.classList.toggle("less-motion", prefs.reducedMotion === true));
@@ -365,6 +388,7 @@ export async function startApp(): Promise<void> {
 
   loadCampaign();
   onCampaign(drawHome);
+  onCampaign(albumsUi.redraw);
   drawHome();
   document.body.append(app);
   mountSettings(app);
@@ -372,5 +396,10 @@ export async function startApp(): Promise<void> {
   show("home");
   void startSound();
 
-  if (import.meta.env.DEV) (window as unknown as { __ps: unknown }).__ps = { offline: pretend, openLevel, campaign };
+  if (import.meta.env.DEV) {
+    (window as unknown as { __ps: unknown }).__ps = { offline: pretend, openLevel, campaign, restored: pretendRestored };
+    // ?restored=id,id shows those pictures as restored in the albums (never saved)
+    const fake = new URLSearchParams(location.search).get("restored");
+    if (fake) pretendRestored(fake.split(",").filter(Boolean));
+  }
 }

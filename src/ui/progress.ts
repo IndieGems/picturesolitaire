@@ -1,4 +1,5 @@
-// The campaign: which board the player plays next. Kept in the CLOUD, in the
+// The campaign: which board the player plays next, and every picture they have
+// restored (what the albums show). Kept in the CLOUD, in the
 // player's "campaign" save slot (declared in the game config, save_schemas),
 // never in browser storage (AGENTS.md: every build runs on a new web address).
 //
@@ -28,9 +29,11 @@ export interface Campaign {
   level: number;
   /** Boards won, in all (a replayed board counts again). */
   won: number;
+  /** Every picture restored, by catalogue id, each once (src/content/pictures.json). */
+  restored: string[];
 }
 
-const fresh = (): Campaign => ({ v: 1, level: 1, won: 0 });
+const fresh = (): Campaign => ({ v: 1, level: 1, won: 0, restored: [] });
 
 let state: Campaign = fresh();
 let read = false;
@@ -67,7 +70,8 @@ function valid(x: unknown): x is Campaign {
 }
 
 function merge(a: Campaign, b: Campaign): Campaign {
-  return { v: 1, level: Math.max(a.level, b.level), won: Math.max(a.won ?? 0, b.won ?? 0) };
+  const restored = [...new Set([...(a.restored ?? []), ...(Array.isArray(b.restored) ? b.restored.filter((id) => typeof id === "string") : [])])];
+  return { v: 1, level: Math.max(a.level, b.level), won: Math.max(a.won ?? 0, b.won ?? 0), restored };
 }
 
 /** A refusal is an answer: the platform is there, and asking again will not change it. */
@@ -132,11 +136,37 @@ async function push(timeoutMs = 10_000): Promise<void> {
   }
 }
 
-/** A board was won: the next one is the player's to play (a replay of an earlier board moves nothing). */
+/** A board was won: the next one is the player's to play (a replay of an earlier board moves nothing). Saved now. */
 export function won(level: number): void {
-  state = { v: 1, level: Math.max(state.level, level + 1), won: state.won + 1 };
+  state = { ...state, level: Math.max(state.level, level + 1), won: state.won + 1 };
   changed();
   schedulePush();
+}
+
+/**
+ * A picture was restored (it left the board whole). Kept at once, saved with
+ * the board's end (won) or when the page is left: one write per board, not
+ * one per picture.
+ */
+export function restore(pictureId: string): void {
+  if (state.restored.includes(pictureId)) return;
+  state = { ...state, restored: [...state.restored, pictureId] };
+  dirty = true;
+  changed();
+}
+
+/** Pictures shown as restored for checking the albums by hand (dev server only); never saved. */
+const pretended = new Set<string>();
+
+/** Has the player restored this picture? */
+export function isRestored(pictureId: string): boolean {
+  return state.restored.includes(pictureId) || pretended.has(pictureId);
+}
+
+/** Checking the albums by hand: show these pictures as restored, for this page only. */
+export function pretendRestored(ids: string[]): void {
+  for (const id of ids) pretended.add(id);
+  changed();
 }
 
 /** Start reading. Call once, at boot. */

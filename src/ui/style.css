@@ -15,19 +15,19 @@
    The amber count badge sits ON a helper button and belongs to it. */
 
 :root {
-  --ink: #26344a;
+  --ink: #34435a;
   --ink-soft: #55657c;
   --frost-hi: #fbfdff;
   --frost-lo: #dde6f0;
   --lip: #9aabbf;
   --lip-dark: #6d7f96;
-  --amber-hi: #ffc46b;
-  --amber-lo: #f09a2e;
-  --amber-lip: #b8661a;
+  --amber-hi: #f6c27a;
+  --amber-lo: #e99645;
+  --amber-lip: #ad6424;
   --glass: rgba(232, 240, 248, 0.82);
   --glass-line: rgba(255, 255, 255, 0.75);
   --shade: rgba(12, 18, 30, 0.62);
-  --table: #313c4b;
+  --table: #2c3746;
   --round: "Fredoka", ui-rounded, "Nunito", "Segoe UI", system-ui, sans-serif;
 
   /* The Gem's middle and height (the SDK writes --gem-reserved-*; the
@@ -62,16 +62,21 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
 #app {
   position: fixed; inset: 0; margin: 0 auto; width: 100%; max-width: min(100vw, 62dvh);
   overflow: hidden; color: var(--ink);
-  background:
-    radial-gradient(circle at 4% 2%, rgba(255, 178, 84, 0.42), rgba(255, 178, 84, 0) 30%),
-    radial-gradient(circle at 96% 2%, rgba(255, 178, 84, 0.36), rgba(255, 178, 84, 0) 28%),
-    radial-gradient(ellipse 120% 80% at 50% 45%, #4a5769 0%, #364152 55%, #252e3b 100%),
-    var(--table);
+  /* the winter-dusk table (the art member's): lanterns in the top corners, a calm dark middle */
+  background: var(--table) url("/art/table.webp") center top / cover no-repeat;
 }
 @media (min-aspect-ratio: 3/4) { #app { box-shadow: 0 0 60px rgba(0, 0, 0, 0.6); } }
 
 .screen { position: absolute; inset: 0; display: flex; flex-direction: column; }
 .screen[hidden] { display: none; }
+
+/* ---------- glyphs ---------- */
+
+/* the art member's glyph (src/ui/icons.ts) as a mask over the ink colour */
+.ico {
+  display: inline-block; flex: none; width: 24px; height: 24px; background-color: currentColor;
+  -webkit-mask: var(--src) center / contain no-repeat; mask: var(--src) center / contain no-repeat;
+}
 
 /* ---------- buttons ---------- */
 
@@ -85,7 +90,7 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
   touch-action: manipulation;
 }
 .btn:active:not(:disabled), .btn.pressed { transform: translateY(4px); box-shadow: inset 0 2px 0 #fff, inset 0 -2px 4px rgba(120, 140, 165, 0.25), 0 1px 0 var(--lip), 0 3px 6px rgba(6, 12, 24, 0.4); }
-.btn svg { width: 24px; height: 24px; flex: none; }
+.btn :is(svg, .ico) { width: 24px; height: 24px; flex: none; }
 .btn:focus-visible { outline: 3px solid var(--amber-hi); outline-offset: 4px; }
 .btn.round { padding: 0; width: var(--size, 48px); height: var(--size, 48px); border-radius: 50%; }
 .btn.amber {
@@ -100,7 +105,7 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
   background: linear-gradient(180deg, rgba(251, 253, 255, 0.5), rgba(221, 230, 240, 0.5));
   box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.5), 0 5px 0 rgba(154, 171, 191, 0.5), 0 9px 14px rgba(6, 12, 24, 0.25);
 }
-.btn.resting > svg { opacity: 0.4; }
+.btn.resting > :is(svg, .ico) { opacity: 0.4; }
 .btn:disabled { cursor: default; }
 
 /* ---------- information ---------- */
@@ -132,19 +137,18 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
   top: calc(var(--gem-mid) - var(--btn) / 2);
   right: var(--row-right);
 }
-#settings-button svg { width: 28px; height: 28px; }
+#settings-button :is(svg, .ico) { width: 28px; height: 28px; }
 
 /* ---------- home ---------- */
 
 .home { align-items: center; justify-content: center; padding: calc(var(--row-bottom) + 12px) 20px calc(var(--foot) + 24px); gap: 26px; }
 .home .emblem { display: grid; grid-template-columns: repeat(3, 58px); gap: 10px; transform: rotate(-4deg); }
+/* three chubby stacks, as on the board: the art member's card back, a few deep */
 .home .emblem i {
-  display: block; height: 58px; border-radius: 16px;
-  background: linear-gradient(160deg, #56657b, #3a4658);
-  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.18), 0 5px 0 #263040, 0 10px 14px rgba(0, 0, 0, 0.45);
-  position: relative;
+  display: block; height: 58px; position: relative;
+  background: url("/art/stack-back.webp") center / contain no-repeat;
+  filter: drop-shadow(0 3px 0 #1f2834) drop-shadow(0 6px 0 #1a222d) drop-shadow(0 8px 10px rgba(0, 0, 0, 0.45));
 }
-.home .emblem i::after { content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; margin: -6px; border-radius: 50%; background: radial-gradient(circle, #ffd28a, #f39a2c); box-shadow: 0 0 10px rgba(255, 170, 60, 0.8); }
 .home .emblem i:nth-child(2) { transform: translateY(-10px); }
 .home h1 {
   margin: 0; text-align: center; font: 600 clamp(32px, 10vw, 46px)/1.05 var(--round); color: #f4f8fc;
@@ -152,7 +156,7 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
 }
 .home .where { padding: 8px 20px; font-size: 18px; font-weight: 600; }
 .home .play { min-width: 210px; min-height: 68px; padding: 0 34px; font-size: 26px; }
-.home .play svg { width: 28px; height: 28px; }
+.home .play :is(svg, .ico) { width: 28px; height: 28px; }
 
 /* ---------- the board ---------- */
 
@@ -166,9 +170,9 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
 }
 .helpers .spacer { flex: 1; }
 .helpers .restart { min-height: 48px; padding: 0 16px 0 13px; font-size: 16px; }
-.helpers .restart svg { width: 20px; height: 20px; }
+.helpers .restart :is(svg, .ico) { width: 20px; height: 20px; }
 .helper { --size: 60px; }
-.helper svg { width: 28px; height: 28px; }
+.helper :is(svg, .ico) { width: 28px; height: 28px; }
 /* the count: a fat amber badge on the button's upper right */
 .helper .badge {
   position: absolute; top: -6px; right: -6px; min-width: 26px; height: 26px; padding: 0 6px; border-radius: 13px;
@@ -271,3 +275,78 @@ html.less-motion .card, html.less-motion .win .gallery figure, html.less-motion 
 #settings-screen input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; margin-top: -9px; border-radius: 50%; background: linear-gradient(180deg, var(--amber-hi), var(--amber-lo)); box-shadow: 0 2px 4px rgba(20, 30, 50, 0.45); }
 #settings-screen input[type="range"]::-moz-range-thumb { width: 28px; height: 28px; border: 0; border-radius: 50%; background: linear-gradient(180deg, var(--amber-hi), var(--amber-lo)); }
 #settings-screen .close { display: flex; width: 100%; margin-top: 16px; min-height: 52px; font-size: 18px; }
+
+/* ---------- home's second button ---------- */
+
+.home .albums { min-width: 180px; min-height: 54px; padding: 0 26px; font-size: 19px; }
+.home .albums :is(svg, .ico) { width: 24px; height: 24px; }
+
+/* ---------- menu screens: the top row over a scrolling column ---------- */
+
+.menu-screen { padding-top: calc(var(--row-bottom) + 10px); }
+.menu-screen .scroll {
+  flex: 1 1 0; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain;
+  padding: 8px max(16px, var(--safe-right)) calc(var(--foot) + 24px) max(16px, var(--safe-left));
+  scrollbar-width: thin; scrollbar-color: rgba(220, 230, 242, 0.35) transparent;
+}
+
+/* the list of albums: each row a button, with a › */
+.album-list { display: flex; flex-direction: column; gap: 16px; max-width: 520px; margin: 0 auto; }
+.btn.album-row {
+  width: 100%; min-height: 84px; padding: 10px 14px 10px 10px; border-radius: 26px;
+  justify-content: flex-start; gap: 14px; text-align: left;
+}
+.album-row .cover { flex: none; width: 62px; height: 62px; border-radius: 14px; overflow: hidden; background: #dfe6ee; box-shadow: inset 0 0 0 3px #f4f8fc; }
+.album-row .cover img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.album-row .cover .back { width: 100%; height: 100%; border-radius: 0; }
+.album-row .words { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.album-row .words b { font: 600 19px/1.15 var(--round); }
+.album-row .words span { font-size: 14px; font-weight: 500; color: var(--ink-soft); }
+.album-row .chev { flex: none; color: var(--lip-dark); }
+.album-row .chev :is(svg, .ico) { width: 22px; height: 22px; }
+
+/* the plain back of a card: a picture not restored yet, in its shape and nothing more */
+.back {
+  position: relative; border-radius: 14px;
+  background: linear-gradient(160deg, #56657b, #3a4658);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.16), inset 0 0 0 3px rgba(20, 28, 40, 0.25);
+}
+/* the cards it is cut into, as faint gutters: a picture still to restore, never a glimpse of it */
+.back::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  background-image: linear-gradient(to right, rgba(16, 22, 32, 0.32) 2px, transparent 2px), linear-gradient(to bottom, rgba(16, 22, 32, 0.32) 2px, transparent 2px);
+  background-size: calc(100% / var(--c, 1)) calc(100% / var(--r, 1)); background-position: -1px -1px;
+}
+.back::after { content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; margin: -6px; border-radius: 50%; background: radial-gradient(circle, #ffd28a, #f39a2c); box-shadow: 0 0 8px rgba(255, 170, 60, 0.7); }
+
+/* one album: how many are restored, then the pictures in two (three) columns */
+.album-count { width: fit-content; margin: 2px auto 16px; padding: 7px 16px; font-size: 15px; font-weight: 600; }
+.shelf { column-count: 2; column-gap: 14px; max-width: 620px; margin: 0 auto; }
+@media (min-width: 520px) { .shelf { column-count: 3; } }
+.tile { display: block; width: 100%; margin: 0 0 16px; padding: 0; border: 0; background: none; break-inside: avoid; font: inherit; color: inherit; text-align: center; }
+.tile .frame { display: block; width: 100%; aspect-ratio: var(--c) / var(--r); border-radius: 16px; overflow: hidden; }
+/* a restored picture: in the board's pale card frame, raised, and it opens */
+.tile.restored { cursor: pointer; touch-action: manipulation; }
+.tile.restored .frame {
+  border: 5px solid #f3f7fb; background: #dfe6ee;
+  box-shadow: 0 4px 0 #9aabbf, 0 9px 14px rgba(6, 12, 24, 0.45);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.tile.restored:active .frame { transform: translateY(3px); box-shadow: 0 1px 0 #9aabbf, 0 3px 6px rgba(6, 12, 24, 0.4); }
+.tile.restored:focus-visible { outline: none; }
+.tile.restored:focus-visible .frame { outline: 3px solid var(--amber-hi); outline-offset: 3px; }
+.tile.restored img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.tile .caption { display: block; margin-top: 8px; padding: 0 4px; font-size: 14px; font-weight: 500; line-height: 1.25; color: #e8eef6; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6); }
+
+/* ---------- one picture, full screen ---------- */
+
+.viewer { position: absolute; inset: 0; z-index: 30; background: rgba(10, 14, 22, 0.97); animation: veil-in 0.2s ease both; }
+.viewer[hidden] { display: none; }
+.viewer .viewer-stage {
+  position: absolute; left: 0; right: 0; top: calc(var(--row-bottom) + 8px); bottom: var(--foot);
+  overflow: hidden; touch-action: none; cursor: grab;
+}
+.viewer .viewer-stage:active { cursor: grabbing; }
+.viewer .viewer-zoom { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
+.viewer img { position: absolute; display: block; border-radius: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+html.less-motion .viewer { animation: none; }
