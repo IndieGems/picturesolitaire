@@ -99,7 +99,33 @@ def play():
     return svg('<path d="M18 13 L36 24 L18 35 Z" fill="' + SLATE + '" stroke-width="6"/>')
 
 
-ICONS = {"gear": gear, "back": back, "undo": undo, "hint": hint, "shuffle": shuffle, "restart": restart, "play": play}
+def next_():
+    # The back arrow, mirrored.
+    return svg('<path d="M11 24 H35"/><path d="M25.5 13.5 L36 24 L25.5 34.5"/>')
+
+
+def home():
+    # A plump house: round-cornered roof and body, a rounded door.
+    return svg('<path d="M8.5 23 L24 10 L39.5 23"/>'
+               '<path d="M13 21 V36.5 A2.5 2.5 0 0 0 15.5 39 H32.5 A2.5 2.5 0 0 0 35 36.5 V21"/>'
+               '<path d="M20.5 39 V31 A3.5 3.5 0 0 1 27.5 31 V39" stroke-width="4.5"/>')
+
+
+def chevron():
+    # A single › for list rows; drawn narrow so it sits at the end of a row.
+    return svg('<path d="M19 12 L31 24 L19 36"/>')
+
+
+def photos():
+    # Two stacked photographs: the back one peeking out, the front one with hills and a sun.
+    return svg('<path d="M15 11.5 H36 A4 4 0 0 1 40 15.5 V31" stroke-width="4"/>'
+               '<rect x="7.5" y="17" width="27" height="22" rx="4.5"/>'
+               '<path d="M11.5 35 L18.5 27 L23.5 32 L26.5 29 L31 34" stroke-width="3.5"/>'
+               '<circle cx="27.5" cy="23" r="1.6" fill="' + SLATE + '" stroke-width="2.5"/>')
+
+
+ICONS = {"gear": gear, "back": back, "undo": undo, "hint": hint, "shuffle": shuffle, "restart": restart, "play": play,
+         "next": next_, "home": home, "chevron": chevron, "photos": photos}
 
 
 def main():
