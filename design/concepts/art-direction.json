@@ -1,0 +1,209 @@
+{
+  "concepts": [
+    {
+      "round": "game",
+      "letter": "a",
+      "file": "design/concepts/game-a.png",
+      "id": "tame-s02",
+      "name": "Graphic Arena Prints",
+      "tier": "tame",
+      "kind": "mobile",
+      "seed": {
+        "base_game": "Severed (2016, mobile, dungeon crawler)",
+        "twist_from": "Super Smash Bros. Ultimate (2018, Nintendo Switch)",
+        "twist": "colour grading and atmosphere"
+      },
+      "style": "Built as: a 2D mobile puzzle drawn in Severed's illustration manner: flat shapes with no outlines, every form a few large angular colour planes, two flat tones per plane (a lit side and a shadow side), crisp hard edges, no gradients on the cards, little texture. Surfaces: cards are upright rectangles with slightly clipped corners and a thick flat magenta border; each print is a bold flat-shape illustration (a teal heron, a gold sunflower, a coral lighthouse on a purple sea) whose big shapes run across card edges; the table is a deep indigo field. Colour grading after Super Smash Bros. Ultimate: high contrast and saturated, a bright white key light from top centre, a radial burst of pale light streaks behind the board, crisp rim light on card edges, deep focus with everything sharp, the board filling the screen at hand scale. Effect: the restored print flashes white, then a ring of sharp star sparkles and light streaks bursts outward from it. Readable: each print owns one dominant colour family, so its fragments read as a set at fingertip size; the locked block wears one thick gold outline around its whole shape; the indigo table stays darker and calmer than every card. Interface (same art style): the five stacks as clipped-corner card piles with flat magenta backs and a white chevron; an angular gold ribbon slanting across the top centre reading 'LEVEL 12'; three angular shards along the bottom edge that fill gold as prints are restored.",
+      "date": "2026-10-23"
+    },
+    {
+      "round": "game",
+      "letter": "b",
+      "file": "design/concepts/game-b.png",
+      "id": "tame-s04",
+      "name": "Anime Harbour Dusk",
+      "tier": "tame",
+      "kind": "mobile",
+      "seed": {
+        "base_style": "frame-by-frame 2D anime with cut-ins: Hand-drawn 2D sprites that burst into full-screen anime clips and explosive light shows for special moves (as in Epic Seven)",
+        "twist_from": "Moonglow Bay (2021, Windows, Xbox One)",
+        "twist": "lighting"
+      },
+      "style": "Built as: a 2D mobile puzzle in polished anime illustration: clean thin dark-brown line art, cel shading in two flat tones with one soft gradient highlight per surface, painted soft-edged background art inside the prints. Surfaces: cards are upright rectangles with rounded corners and a thin silver frame; each print is an anime background-art scene or study (a harbour with lanterns, a flowering branch, a kingfisher, a seaside rail station) whose line work continues across card edges. Lighting after Moonglow Bay: dusk, cool blue-violet ambient light with warm lantern-orange pools glowing from inside the prints, soft light low from the left, soft-edged shadows under each card; deep focus, the board at hand scale on a dim blue night table. Effect: the restored print bursts into an anime cut-in: the whole picture sweeps across the upper screen in a slanted frame with white speed lines and an orange light flare. Readable: every print has its own lit colour (lantern orange, blossom pink, kingfisher blue), the locked block shares one bright silver outline, and the night table stays darker and lower in contrast than the cards. Interface (same art style): the five stacks as rounded card piles with deep-blue backs and a silver crescent crest; a small glowing lantern at top centre holding '3/8'; a hint button shaped like a silver crescent at bottom right.",
+      "date": "2026-10-23"
+    },
+    {
+      "round": "game",
+      "letter": "c",
+      "file": "design/concepts/game-c.png",
+      "id": "moderate-s02",
+      "name": "Deco Sea Fog",
+      "tier": "moderate",
+      "kind": "blend",
+      "seed": {
+        "game_a": "Call of the Sea (2020, Windows, Xbox One)",
+        "game_b": "Dredge (2023, Nintendo Switch, PlayStation 4)"
+      },
+      "style": "Built as: flat-shaded low-poly forms after Dredge: every surface a single flat tone per facet, hard faceted edges, no outlines, low detail, and a thin fog that pales whatever sits farther back. Ornament and colour after Call of the Sea: 1930s art-deco framing and saturated tropical colour. Surfaces: cards are upright rectangles framed in thin gold art-deco borders with stepped corners and sunburst fans; each print is a low-poly 1930s travel or nature plate (a teal lagoon with coral-pink flowers, a jungle orchid, a lone fishing boat with a yellow lamp, a stepped deco lighthouse) whose facets run across card edges; the table is dark teal-grey water seen flat from above. Light: overcast grey-green from above, soft fog, warm lamp-yellow glowing in a few prints, faint soft shadows; deep focus, the board at hand scale. Effect: a restored print clears its fog in a widening ring, its colours jump to full tropical saturation, and a gold deco sunburst fans out behind it. Readable: each print keeps its own saturated hue against the muted fog, fragments share big facets across edges, the locked block takes one gold stepped outline, and the water table stays darker and greyer than every card. Interface (same art style): the five stacks as deco card piles with dark teal backs and a gold fan motif; a gold deco medallion at top centre holding '5/12'; a hint button as a small faceted lamp glowing lamp-yellow at bottom right.",
+      "date": "2026-10-23"
+    },
+    {
+      "round": "game",
+      "letter": "d",
+      "file": "design/concepts/game-d.png",
+      "id": "moderate-s01",
+      "name": "Looping Line Pixels",
+      "tier": "moderate",
+      "kind": "borrow",
+      "seed": {
+        "game": "The Artful Escape (2021, Windows, Xbox One)",
+        "trait": "line work",
+        "rest_from": "Large-cluster pixel art: broad connected flat colour shapes, few lone pixels, geometric",
+        "rest_deck": "rendering:modern"
+      },
+      "style": "Built as: large-cluster pixel art at a coarse visible pixel size: every form made of broad connected flat colour shapes with few lone pixels, geometric stair-stepped edges, flat fills only, no gradients, no dithering. Line work borrowed from The Artful Escape: long, thin, flowing contour lines one pixel wide that sweep in unbroken curves around each subject and trail off into loose swirls, drawn in a brighter tint of the shape they wrap. Surfaces: cards are upright pixel rectangles with a two-pixel pale frame; each print is a pixel plate (a green fern, an orange-sunset harbour, a blue-and-white bird, a red-striped lighthouse) built from five or six big clusters, its sweeping contour lines crossing card edges; the table is one flat dark field. Light: flat, even and frontal, no cast shadows, deep focus, the board at hand scale. Effect: a restored print's contour lines light up and race around it in one bright looping stroke, then spiral outward in pixel swirls. Readable: each print's big clusters and its continuous contour line make neighbours easy to find; the locked block's frames merge into one shared bright pixel outline; the dark table sits far lower in contrast than the cards. Interface (same art style): the five stacks as pixel card piles with a looping-line motif on their backs; a level number in chunky pixel numerals inside a curling line at top centre, '7'; a hint button as a pixel spiral in a circle at bottom right.",
+      "date": "2026-10-23"
+    },
+    {
+      "round": "game",
+      "letter": "e",
+      "file": "design/concepts/game-e.png",
+      "id": "medium-s02",
+      "name": "Halftone Hardframe",
+      "tier": "medium",
+      "kind": "borrow",
+      "seed": {
+        "game": "Armored Core 3 (2002, PlayStation 2)",
+        "trait": "shape language",
+        "rest_from": "CMYK rosette halftone: four rotated colour dot screens forming small circular rosettes",
+        "rest_deck": "rendering"
+      },
+      "style": "Built as: everything printed in CMYK rosette halftone: four rotated dot screens of cyan, magenta, yellow and black forming small visible rosettes, every colour area built only from dots, shading only by dot density, and one plate slightly out of register at card edges. Shape language after Armored Core 3: hard angular forms, chamfered corners, segmented panels with straight seam lines, nothing round. Surfaces: cards are upright rectangles with chamfered corners and a thick black panel frame split by short seam lines; each print is a halftone plate whose subjects are cut into angular faceted shapes (a fern of stacked chevrons, a heron of sharp wedges, a lighthouse of stacked panels, a mountain railway in hard steps); the table is a paper-white field with a faint grey seam grid. Light: flat print lighting, no cast shadows, deep focus, the board at hand scale. Effect: when a print is restored its four plates snap into perfect registration with a sharp jolt, the rosettes tighten, and a ring of chamfered magenta panels flashes outward. Readable: each print is dominated by one ink (a cyan print, a magenta print, a yellow print, a black print), fragments share hard straight edges that line up across card borders, and the locked block takes one thick black chamfered frame around its whole shape. Interface (same art style): the five stacks as chamfered card piles with black backs and a yellow registration cross; a panel readout at top centre in hard stencil numerals, '04/09'; a hint button as a chamfered hexagon with a cyan crosshair at bottom right.",
+      "date": "2026-10-23"
+    },
+    {
+      "round": "game",
+      "letter": "f",
+      "file": "design/concepts/game-f.png",
+      "id": "medium-s04",
+      "name": "Four-Colour Handheld",
+      "tier": "medium",
+      "kind": "borrow",
+      "seed": {
+        "game": "Mr. Do! (1982, Arcade)",
+        "trait": "line work",
+        "rest_from": "Game Boy Color palettes: four-colour palettes per tile, bright handheld colour",
+        "rest_deck": "rendering"
+      },
+      "style": "Built as: 8-bit pixel art at low resolution, each card a tile drawn in its own four-colour palette in the bright Game Boy Color manner: flat fills, no gradients, no anti-aliasing, large visible pixels. Line work after Mr. Do!: chunky one-pixel black outlines around every subject, stair-stepped diagonals, rounded blobby forms. Surfaces: cards are upright pixel rectangles with a one-pixel black border and a light inner rim; each print is a bright pixel plate (a red flowering branch on yellow, a green parrot on sky blue, a purple-and-orange travel poster with a steam train, a white lighthouse on teal) whose black outlines continue across card edges; the table is a black field. Light: flat and frontal, no shadows, deep focus, the board at hand scale, the screen reading like a handheld game blown up to large pixels. Effect: a restored print flashes through its four colours in a quick palette cycle, then pixel stars pop outward in a burst. Readable: every print has its own four-colour palette, so fragments of the same print match by palette at a glance; its outlines join across card edges; the locked block shares one blinking white pixel frame; the black table keeps every card popping. Interface (same art style): the five stacks as pixel card piles with red backs and a white diamond mark; a score in chunky pixel numerals at top centre, '0450'; a hint button as a pixel light bulb at bottom right.",
+      "date": "2026-10-23"
+    },
+    {
+      "round": "game",
+      "letter": "g",
+      "file": "design/concepts/game-g.png",
+      "id": "wild-s01",
+      "name": "Hand-Tinted Tingatinga",
+      "tier": "wild",
+      "kind": "recipe",
+      "seed": {
+        "card_a": "Tingatinga: Glossy bright animals, flat colour, repeating stylised patterns, dense jungle borders",
+        "deck_a": "art-history",
+        "card_b": "Film colorization: Hand-tinted black-and-white, waxy pastel skin, limited washed color",
+        "deck_b": "film-animation-comics"
+      },
+      "style": "Built as: Tingatinga painting fused with hand-tinted black-and-white film: every subject is a flat-colour Tingatinga shape with a glossy enamel sheen, filled with repeating stylised patterns (dots, stripes, scales), laid over grey black-and-white photographic tones and tinted in waxy, washed pastel colour that does not quite stay inside the lines. Surfaces: cards are upright rectangles with dense patterned jungle borders of leaves and dots; each print is a hand-tinted plate (a spotted leopard among washed-green leaves, a giraffe under a pastel-pink sky, a striped bird on a flowering branch, a grey lighthouse coast tinted yellow) whose patterns and outlines run across card edges; the table is a grey photographic field. Finish: flat shapes with crisp edges, a thin dark outline round each animal, glossy highlights as single white streaks, no cast shadows, deep focus, the board at hand scale. Effect: a restored print floods from grey to full glossy Tingatinga colour in one wave, and a ring of patterned leaves spreads out from it. Readable: every print has its own tint and its own pattern (spots, stripes, scales, zigzags), so fragments match by pattern at a glance; the locked block shares one bold patterned outline; the grey table stays quieter than every card. Interface (same art style): the five stacks as card piles with patterned dot-and-leaf backs; a round pastel-tinted badge at top centre holding '2/6'; a hint button painted as a flat glossy bird at bottom right.",
+      "date": "2026-10-23"
+    },
+    {
+      "round": "game",
+      "letter": "h",
+      "file": "design/concepts/game-h.png",
+      "id": "wild-s04",
+      "name": "Mist Shore Silhouettes",
+      "tier": "wild",
+      "kind": "blend",
+      "seed": {
+        "game_a": "Endling: Extinction is Forever (2022, Windows, Nintendo Switch)",
+        "game_b": "Bientôt l'Été (2012, PC)"
+      },
+      "style": "Built as: softly painted 2.5D shapes with low detail after Endling: each subject a smooth simplified silhouette with a soft rim of light. Atmosphere after Bientôt l'Été: a pale grey sea mist in which sky and water merge with no horizon line, near-monochrome, sparse and empty. Surfaces: cards are upright rectangles with thin pale grey frames and soft rounded corners; each print is a near-monochrome plate with one quiet accent colour (a fox silhouette on a dusk-blue ridge, a pale heron in mist with an amber eye, a dark fern frond against a rose dawn, a lone figure on an empty grey beach under a green-grey sky) whose silhouette lines cross card edges; the table is a soft grey field. Light: diffuse and cool, low from the right at early dusk, soft-edged faint shadows; silhouettes sharp in deep focus against the mist; vast empty space inside each print, the board itself at hand scale. Effect: a restored print's mist drifts slowly away and its accent colour blooms, with a few pale light motes rising. Readable: each print owns one accent colour and one strong dark silhouette, so fragments read by shape and hue through the mist; the locked block shares one thin bright rim outline; the grey table stays paler and lower in contrast than the dark silhouettes. Interface (same art style): the five stacks as pale card piles with a single painted wave line on their backs; a thin handwritten numeral at top centre, '3 of 7', floating in the mist; a hint button as a soft glowing dot at bottom right.",
+      "date": "2026-10-23"
+    },
+    {
+      "round": "game",
+      "letter": "i",
+      "file": "design/concepts/game-i.png",
+      "id": "moderate-s03",
+      "name": "Soft Tile Spotlight",
+      "tier": "moderate",
+      "kind": "anchored",
+      "seed": {
+        "look": "photographs and painted illustrations on picture cards, in a clean minimal mobile interface",
+        "game": "Tom Clancy's Splinter Cell: Conviction (2010, Xbox 360, Windows)",
+        "trait": "animation feel and effects",
+        "game_b": "Threes (2014, iOS, Android)",
+        "trait_b": "interface and typography"
+      },
+      "style": "Built as: every card shows its photograph or painted illustration at full fidelity, untouched; only the chrome around the cards is styled. Interface and typography after Threes: cards sit in soft rounded off-white frames with a thicker bottom lip that reads as a flat soft shadow, corners well rounded, on a plain pale blue-grey table with no texture; accents only in Threes' salmon pink and sky blue; numerals in a round, friendly sans-serif. Animation and effects after Splinter Cell: Conviction: the moment a picture completes, the rest of the board drains to black-and-white for a beat while the finished picture stays in full colour, and its name is projected across the cards in large flat white capitals ('AUTUMN WOOD') before colour returns. Surfaces: stacks are rounded off-white card piles with a salmon-pink back and one sky-blue stripe; a locked block's frames merge into one rounded frame with a single shared lip. Light: flat and even, no cast shadows beyond the frame lips, deep focus, the board at hand scale. Readable: gutters between cards are wide enough that each fragment's detail is clear, and the pictures keep their own overlapping colours with nothing tinting them. Interface (same art style): a slim top bar with 'LEVEL 6' in round sans-serif at centre and a round off-white gear at the right end; two round off-white helper buttons with small number badges at bottom right.",
+      "date": "2026-10-23"
+    },
+    {
+      "round": "game",
+      "letter": "j",
+      "file": "design/concepts/game-j.png",
+      "id": "tame-s01",
+      "name": "Snowlit Round Table",
+      "tier": "tame",
+      "kind": "anchored",
+      "seed": {
+        "look": "photographs and painted illustrations on picture cards, in a clean minimal mobile interface",
+        "game": "Resident Evil Village (2023, mobile, survival horror)",
+        "trait": "colour grading and atmosphere",
+        "game_b": "Obi Island: Kingdom of Dreams (2022, mobile, life sim)",
+        "trait_b": "shape language"
+      },
+      "style": "Built as: every card shows its photograph or painted illustration at full fidelity, untouched; the table and the interface carry the style. Colour grading and atmosphere after Resident Evil Village: a cold, desaturated blue-grey winter dusk on the table, soft snow drifting past the table's edges, warm amber candlelight glowing from the top bar, light low and warm from above against cool shadow, soft-edged shadows under each card. Shape language after Obi Island: everything in the chrome plump and round, card frames thick with fully rounded corners like soft pillows, stacks as chubby rounded piles, buttons as fat circles and pills, no sharp corner anywhere. Surfaces: card frames pale frosted blue-white; stack backs deep blue-grey with one round amber dot; the table a dim blue-grey field. Effect: a completed picture glows amber at its edges, its cards round into one plump frame, and a soft puff of snowflakes bursts from it. Readable: thin even gutters and plain frames keep the pictures the star, every fragment's detail clear; locked cards share one plump frame. Deep focus, the board at hand scale. Interface (same art style): a pill-shaped top bar holding 'Level 6' in round type at centre and a fat round gear at the right end; two round helper buttons with amber number badges at bottom right.",
+      "date": "2026-10-23"
+    },
+    {
+      "round": "game",
+      "letter": "k",
+      "file": "design/concepts/game-k.png",
+      "id": "moderate-s05",
+      "name": "Woodland Painted Slabs",
+      "tier": "moderate",
+      "kind": "anchored",
+      "seed": {
+        "look": "photographs and painted illustrations on picture cards, in a clean minimal mobile interface",
+        "game": "The Wild at Heart (2021, Windows, Mac)",
+        "trait": "setting and era",
+        "game_b": "Disco Elysium (2019, Windows, Mac)",
+        "trait_b": "shape language"
+      },
+      "style": "Built as: every card shows its photograph or painted illustration at full fidelity, untouched; the table and the interface carry the style. Setting after The Wild at Heart: the board lies in an overgrown storybook woodland clearing seen straight down, moss, ferns and tangled roots painted around the table's edge only, a timeless childhood-adventure mood. Shape language after Disco Elysium: the chrome built from chunky angular painted slabs with broken, faceted straight edges and visible broad brush strokes, no rounded corners; card frames as thin dark slab borders with slightly irregular straight cuts. Surfaces: a deep moss-green table, frames in dark bark-brown paint, stacks as angular dark-green painted piles with one pale leaf-green slash mark. Light: dappled daylight from above through the canopy falling on the table's edges, soft shadows, deep focus, the board at hand scale. Effect: a completed picture's frame breaks into angular painted shards that fly outward while a ring of fern fronds unfurls around it. Readable: thin gutters and plain dark frames keep the pictures the star, every fragment's detail clear; locked cards share one angular slab frame. Interface (same art style): an angular painted slab across the top with 'LEVEL 6' in slim condensed capitals at centre and an angular gear at the right end; two faceted helper buttons with small leaf-green badges at bottom right.",
+      "date": "2026-10-23"
+    },
+    {
+      "round": "game",
+      "letter": "l",
+      "file": "design/concepts/game-l.png",
+      "id": "tame-s01-merged",
+      "name": "Snowlit Round Table, merged",
+      "tier": "tame",
+      "kind": "anchored",
+      "seed": {
+        "look": "photographs and painted illustrations on picture cards, in a clean minimal mobile interface",
+        "game": "Resident Evil Village (2023, mobile, survival horror)",
+        "trait": "colour grading and atmosphere",
+        "game_b": "Obi Island: Kingdom of Dreams (2022, mobile, life sim)",
+        "trait_b": "shape language"
+      },
+      "style": "Built as: every card shows its photograph or painted illustration at full fidelity, untouched; the table and the interface carry the style. Colour grading and atmosphere after Resident Evil Village: a cold, desaturated blue-grey winter dusk on the table, soft snow drifting past the table's edges, warm amber candlelight glowing from the top bar, light low and warm from above against cool shadow, soft-edged shadows under each card. Shape language after Obi Island: everything in the chrome plump and round, card frames thick with fully rounded corners like soft pillows, stacks as chubby rounded piles, buttons as fat circles and pills, no sharp corner anywhere. Surfaces: card frames pale frosted blue-white; stack backs deep blue-grey with one round amber dot; the table a dim blue-grey field. Effect: when a card is placed beside its correct neighbour it plays a small scale pop and the two join into one seamless card: one continuous plump frame with no gap or seam, nothing drawn over the picture (no lock, glow or outline), and the merged piece moves as one. Readable: thin even gutters and plain frames keep the pictures the star, every fragment's detail clear. Deep focus, the board at hand scale. Interface (same art style): a pill-shaped top bar holding 'Level 6' in round type at centre and a fat round gear at the right end; two round helper buttons with amber number badges at bottom right.",
+      "date": "2026-10-23"
+    }
+  ],
+  "chosen": {
+    "game": "design/concepts/game-l.png"
+  }
+}

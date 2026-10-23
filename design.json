@@ -1,0 +1,103 @@
+{
+  "designFormat": 1,
+  "pitch": "Read all the design files in the docs folder of this project",
+  "concept": {
+    "summary": "A portrait picture-solitaire puzzle. You swap scattered card fragments on a grid until each picture, a varied mix of photographs and painted illustrations, is whole again; finished pictures clear and new cards drop from the stacks above. Working out which fragment belongs to which picture is the challenge, because the pictures on a board share colours and textures on purpose. A relaxed main campaign and a separate challenge route share one set of rules, and every board can be won without help.",
+    "genre": "Picture solitaire: a card-tableau jigsaw in the line of Jigsaw Drop and Picture Blast Solitaire",
+    "coreLoop": "Swap picture cards on the grid (drag one onto another, or tap one then the other) until a picture's fragments sit in the right arrangement; a card placed beside its correct neighbour merges with it into one seamless piece that moves as one. A finished picture is shown whole and cleared, the cards above fall into the gap, and new cards drop from the stacks above, so the player keeps choosing which picture to finish next until the board and stacks are empty.",
+    "fantasy": "A restorer of prints: you mend scattered pictures and bring them back whole. Set aside for now: the creator wants the gameplay right first, and the restoration framing may be layered on afterwards."
+  },
+  "style": {
+    "visual": "The pictures are the star: every card shows its photograph or painted illustration at full fidelity, never tinted, filtered or restyled; only the table and the interface carry the look. The table is a cold, desaturated blue-grey winter dusk with soft snow drifting past its edges and warm amber candlelight from lanterns in the top corners, light low and warm from above against cool shadow, soft-edged shadows under each card, everything in deep focus. The chrome is plump and round with no sharp corner anywhere: cards sit in thick pale frosted blue-white frames with fully rounded corners and thin even gutters; the stacks are chubby rounded piles with deep blue-grey backs and one round amber dot; the top bar is a pale pill holding the level in round type, with a fat round gear at its right end; the helper buttons are fat pale circles with amber number badges at bottom right. Correct neighbours merge into one seamless card inside one continuous rounded frame, with a small scale pop and nothing drawn over the picture: no lock, glow or outline.",
+    "tone": "Calm and unhurried while you think, then a warm, satisfying flourish when a picture snaps whole.",
+    "references": [
+      "Jigsaw Drop: Solitaire Puzzle (Runyou)",
+      "Picture Blast Solitaire (Joyteractive / Gismart)"
+    ]
+  },
+  "platforms": [
+    "phone",
+    "desktop"
+  ],
+  "orientation": {
+    "primary": "portrait"
+  },
+  "scope": {
+    "size": "medium",
+    "sessionLength": "A few minutes: a relaxed board takes 2-4 minutes, a challenge board a little longer; a sitting is one to a handful of boards, 5-15 minutes.",
+    "players": "Solo, plus a shared daily puzzle (the same deal for everyone) so friends can compare how they did."
+  },
+  "pillars": [
+    "Readable at phone size: every card is big and sharp enough to study on a small screen, and the player always sees what is moving and why. Readable never means obvious: which picture a card belongs to should take a close look.",
+    "Control the pacing and the difficulty well: players CAN get stuck, but there is always a way to play the board without a hint or booster and win."
+  ],
+  "antiGoals": [
+    "No timers or move limits: time and moves can be shown afterwards, challenge targets are optional, and going over still restores the picture.",
+    "No pay or ad gate to finish: no board needs a booster, an ad or a purchase to be won, and the game never deals an unwinnable board.",
+    "No guilds, chat or leagues: social stays at the shared daily puzzle and friendly comparison."
+  ],
+  "notes": [
+    "The research behind this design is in docs/ (overview, deep dive, improvement proposal). Its proposals are the starting point the creator chose from, not rules on their own; where this file and the research differ, this file wins.",
+    "Two lanes: a relaxed main campaign and a separate challenge route, neither blocking the other. The challenge route uses the deeper rules on purpose: merged pieces that need room (clear small pictures to make space for big ones) and clear order that matters, with an optional par.",
+    "Movement: any card swaps with any other card. A card placed beside its correct neighbour plays a small scale pop and joins it into one contiguous piece, a single seamless picture in one frame, and that piece now moves as one unit. Nothing is drawn over the art to show it: no lock, glow or outline (design/references/jigsaw-drop-merged-piece.png). Tap-then-tap works everywhere drag does.",
+    "Gravity: every card rests on the card below it or on the floor of the board. When a picture clears, the cards above it fall into the gap and new cards drop from the stack above each column. A merged piece is not joined for good: if it is placed so that part of it sits over an empty cell, the unsupported part breaks off along the column line and falls (design/references/jigsaw-drop-merged-piece-breaks.png).",
+    "Still to settle with the creator before building: how a moved merged piece displaces the cards where it lands when the shapes differ, and the exact order of falling and refilling when several columns open at once.",
+    "Whether the player can see the next card waiting on each stack is set per level (0, 1 or 2 upcoming cards). It is a pacing and difficulty dial: early levels show them so clears are readable, later ones may hide them.",
+    "Getting stuck is real: a player can reach a dead end. Restarting the board is always free and always leads back to a winnable deal. Undo, hint and shuffle are helpers, never needed to win.",
+    "Every deal, authored or generated, is checked by a solver and keeps a known winning line that uses no helpers. A solver that runs out of time proves nothing and must not be read as 'unsolvable'.",
+    "How players get helpers is not decided yet. On the Gem Arcade, Coins buy cosmetics only, so helpers come from play, a rewarded ad or a Gem purchase: ask the creator before building any of them.",
+    "Difficulty is tuned on separate axes, never one number: how alike the fragments look, pieces per picture, board size, the shapes of merged pieces, how much of the stacks shows, and how long the chain of clears that depend on each other is. Boards alternate demand and relief.",
+    "The pictures are a varied mix of photorealistic images and painted illustrations (flowers, food, landscapes, people, architecture, travel, still life), grouped into themed albums. The mix of photos and paintings is what keeps the variety interesting.",
+    "Telling which fragments belong together is the heart of the puzzle, so pictures on one board share colours, textures and subjects on purpose (several warm sunsets, two pink flower scenes). Never colour-code pictures: no picture gets its own palette, and no frame, tint or border gives away which picture a card belongs to. How alike a board's pictures are is a difficulty dial set per level; each fragment still carries enough detail for a careful eye to place it.",
+    "The interface is clean and simple and lets the pictures be the star, as in Jigsaw Drop: plain card frames, a calm table, a slim top bar. The creator's reference screenshots are in design/references/.",
+    "The chosen concept (design/concepts/game-l.png) shows the cards with a slight perspective and thick raised frames. Try it in play; if it makes the pictures harder to read or compare, switch to a straight-on view of the cards, because the pictures being clear wins over the look.",
+    "A finished picture is shown whole before it leaves the board and is kept in its album, where the player can view and zoom it later.",
+    "Medium scope: illustrated story chapters and seasonal events are deliberately left for later, if players want them.",
+    "'Solitaire' means a solo card-tableau presentation, not card-game rules: no suits, foundations or ace-to-king runs."
+  ],
+  "review": {
+    "state": "draft"
+  },
+  "history": [
+    {
+      "date": "2026-10-23",
+      "summary": "First design from the creator's interview, translating the research in docs/ into the structured fields: portrait only, medium size, two lanes (relaxed campaign and challenge route), restorer-of-prints fantasy, free restart with helpers optional, next-card visibility set per level. The look (style.visual) and concept art are still to come."
+    },
+    {
+      "date": "2026-10-23",
+      "summary": "The creator rejected the first round of 8 concepts (A-H): colour-coded pictures make the puzzle too easy. Pictures are now a mix of photographs and painted illustrations that share colours on purpose, the interface is clean with the pictures as the star, 'readable' means legible rather than obvious, and the restoration framing is set aside until the gameplay is right. Jigsaw Drop reference screenshots saved in design/references/."
+    },
+    {
+      "date": "2026-10-23",
+      "summary": "Picked game concept L (Snowlit Round Table, merged) from 12 drawn with gem-concept-art; full art direction in design/concepts/art-direction.json"
+    },
+    {
+      "date": "2026-10-23",
+      "summary": "Movement rules from the creator's Jigsaw Drop screenshots: correct neighbours merge seamlessly with a small scale pop and nothing drawn over the art; cards fall under gravity; a merged piece placed partly over an empty cell breaks along the column line and the unsupported part falls. Reference screenshots added to design/references/."
+    },
+    {
+      "date": "2026-10-23",
+      "summary": "No variations or UI mockups: L's interface stands. The creator flagged that L's slight perspective may need to become a straight-on view of the cards if it does not play well; noted."
+    }
+  ],
+  "concepts": {
+    "game": {
+      "chosen": "design/concepts/game-l.png",
+      "options": [
+        "design/concepts/game-a.png",
+        "design/concepts/game-b.png",
+        "design/concepts/game-c.png",
+        "design/concepts/game-d.png",
+        "design/concepts/game-e.png",
+        "design/concepts/game-f.png",
+        "design/concepts/game-g.png",
+        "design/concepts/game-h.png",
+        "design/concepts/game-i.png",
+        "design/concepts/game-j.png",
+        "design/concepts/game-k.png",
+        "design/concepts/game-l.png"
+      ],
+      "note": "Creator picked J (round 2), then asked that merged cards join seamlessly as one solid image with a small scale effect and nothing over the art, no lock and no glow; L is J edited to show that."
+    }
+  }
+}

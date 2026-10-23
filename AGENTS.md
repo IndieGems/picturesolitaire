@@ -217,6 +217,8 @@ from the code, and the traps that would otherwise be walked into
 twice) belong in this file beside the how-to, so there is one copy
 and one place to look.
 
+- **Art follows the chosen look.** `design/concepts/game-l.png` is the style reference for every piece of art, however it is made (an image generator, sprites drawn in code, three.js materials, Blender): open it before making any. For a generated image pass it as the reference and draw only the new subject from it; for a pose or variant of an existing sprite, use that sprite instead. `style.visual` in `design.json` says the look in words, and where they disagree with the picture the words win.
+
 ## Keeping this file small
 
 Every session loads this file in full before any work starts, so its
