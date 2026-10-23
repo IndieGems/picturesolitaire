@@ -33,6 +33,11 @@ export interface GameEvents {
   "helper:shuffle": { left: number };
   /** The board was started over. */
   "board:restart": Record<string, never>;
+  /**
+   * The board settled after a move, undo, shuffle or restart (and once at
+   * start): what the helper buttons should show now.
+   */
+  "board:changed": { canUndo: boolean; helpers: { undo: number; hint: number; shuffle: number } };
   /** Every picture restored: the board is won. */
   "board:won": { level: string; moves: number; ms: number };
   /** A board opened and play can begin. */
