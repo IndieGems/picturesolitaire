@@ -7,7 +7,7 @@
 
 import { on } from "../events";
 import { loadSettings } from "../settings";
-import { devProbe, load, play, wireEngine } from "./engine";
+import { devProbe, load, play, wireEngine, type Voice } from "./engine";
 import { duckMusic, startMusic } from "./music";
 import { LOAD_ORDER } from "./sounds";
 
@@ -59,29 +59,52 @@ function dealTick(col: number): void {
   });
 }
 
+// --- When a card touches down ----------------------------------------------------
+//
+// The board emits piece:move and cards:fall as their animations START, so the
+// tap waits for the card to arrive. When the board says how long that takes
+// (`ms`), the tap lands at 85% of it (its ease-out reads as arrived by then);
+// until it does, these are its usual times (src/board/tuning.ts: a drop
+// settles in about 170 ms, a one-row fall in 150 ms).
+const MOVE_LANDS = 0.13;
+const FALL_LANDS = 0.13;
+
+function landsIn(payload: object, fallback: number): number {
+  const ms = (payload as { ms?: unknown }).ms;
+  return typeof ms === "number" && ms >= 0 ? Math.min(ms * 0.85, 600) / 1000 : fallback;
+}
+
+/** The flourish still ringing, cut short if the win cue starts over it. */
+let flourish: Voice | null = null;
+
 function listen(): void {
   on("piece:lift", () => play("lift"));
   // Put back where it was: the landing tap, lighter.
   on("piece:cancel", () => play("land", { gain: 0.6, rate: 1.08 }));
-  on("piece:move", ({ cards, displaced }) => {
+  on("piece:move", (p) => {
     // A bigger piece lands a little lower and fuller.
-    play("land", cards > 1 ? { gain: 1.15, rate: 0.9 } : {});
-    if (displaced > 0) play("slide", { delay: 0.06, gain: Math.min(1.2, 0.8 + displaced * 0.06) });
+    play("land", { delay: landsIn(p, MOVE_LANDS), ...(p.cards > 1 ? { gain: 1.15, rate: 0.9 } : {}) });
+    // The pushed-aside cards swish as they travel.
+    if (p.displaced > 0) play("slide", { delay: 0.04, gain: Math.min(1.2, 0.8 + p.displaced * 0.06) });
   });
   // The more of a picture is joined, the brighter the snap.
   on("piece:merge", ({ size }) => play("merge", { rate: 1 + Math.min(Math.max(size - 2, 0), 8) * 0.03 }));
   on("piece:split", () => play("split"));
   on("picture:complete", () => {
-    play("complete");
+    flourish = play("complete");
     duckMusic(0.5, 2.6, 1.6);
   });
-  on("cards:fall", ({ cards }) => play("fall", { gain: Math.min(1.2, 0.7 + cards * 0.05) }));
+  on("cards:fall", (p) => play("fall", { delay: landsIn(p, FALL_LANDS), gain: Math.min(1.2, 0.7 + p.cards * 0.05) }));
   on("stack:deal", ({ col }) => dealTick(col));
   on("helper:undo", () => play("undo"));
   on("helper:hint", () => play("hint"));
   on("helper:shuffle", () => play("shuffle"));
   on("board:restart", () => play("restart"));
+  on("board:stuck", () => play("stuck"));
   on("board:won", () => {
+    // The last flourish's tail would blur the win cue's first chord.
+    flourish?.fadeOut(0.5);
+    flourish = null;
     play("won");
     duckMusic(0.2, 7, 3);
   });

@@ -37,6 +37,7 @@ const SOUNDS = [
   { name: "shuffle", label: "Shuffle", moment: "The Shuffle helper." },
   { name: "restart", label: "Restart", moment: "The board is started over." },
   { name: "ui", label: "Button", moment: "Any button in the menus and screens." },
+  { name: "stuck", label: "Stuck", moment: "The player is stuck: a dead end, or Hint finds no way. The hint chime, lower and softer." },
   { name: "won", label: "Board won", moment: "Every picture restored: the board is won. It is the win sting too." },
 ];
 
@@ -44,11 +45,13 @@ const SOUNDS = [
 async function levels() {
   try {
     const { EFFECTS, MUSIC } = await import(pathToFileURL(join(project, "src/audio/sounds.ts")).href);
-    return { effects: Object.fromEntries(Object.entries(EFFECTS).map(([k, v]) => [k, v.gain])), music: MUSIC.gain, crossfade: MUSIC.crossfade };
+    const effects = Object.fromEntries(Object.entries(EFFECTS).map(([k, v]) => [k, { gain: v.gain, rate: v.rate ?? 1, file: v.file ?? k }]));
+    return { effects, music: MUSIC.gain, crossfade: MUSIC.crossfade };
   } catch {
     return { effects: {}, music: 0.3, crossfade: 4 };
   }
 }
+const fileOf = (name, lv) => lv.effects[name]?.file ?? name;
 
 async function readChoices() {
   try {
@@ -89,8 +92,9 @@ const server = createServer(async (req, res) => {
       return send(res, 200, "text/html; charset=utf-8", await readFile(join(here, "index.html")));
     }
     if (req.method === "GET" && url.pathname === "/api/sounds") {
-      const sounds = SOUNDS.map((s) => ({ ...s, kind: s.kind ?? "effect", present: existsSync(join(audioDir, `${s.name}.ogg`)) }));
-      return send(res, 200, "application/json", JSON.stringify({ sounds, levels: await levels(), choices: (await readChoices()).sounds ?? {} }));
+      const lv = await levels();
+      const sounds = SOUNDS.map((s) => ({ ...s, kind: s.kind ?? "effect", present: existsSync(join(audioDir, `${fileOf(s.name, lv)}.ogg`)) }));
+      return send(res, 200, "application/json", JSON.stringify({ sounds, levels: lv, choices: (await readChoices()).sounds ?? {} }));
     }
     const audio = /^\/audio\/([a-z0-9-]+)\.(ogg|mp3)$/.exec(url.pathname);
     if (req.method === "GET" && audio) {

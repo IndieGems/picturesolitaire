@@ -19,9 +19,14 @@ export type EffectName =
   | "shuffle"
   | "restart"
   | "ui"
-  | "won";
+  | "won"
+  | "stuck";
 
 export type EffectDef = {
+  /** The file in public/audio/, when it is not the effect's own name. */
+  file?: string;
+  /** Playback rate, when it is not 1 (0.749 is a fourth lower). */
+  rate?: number;
   /** Level, 0 to 1, before the master volume. */
   gain: number;
   /** Random pitch spread per play (0.04 = ±4%), so repeats don't sound stamped. */
@@ -52,6 +57,9 @@ export const EFFECTS: Record<EffectName, EffectDef> = {
   // sting too, so it rides the effects bus: a player who switched music off
   // still hears that they won.
   won: { gain: 0.85, jitter: 0, minGap: 1 },
+  // The player is stuck (a dead end, or Hint finds no way): the hint chime,
+  // a fourth lower and softer. A gentle "hm", never an alarm.
+  stuck: { file: "hint", rate: 0.749, gain: 0.3, jitter: 0, minGap: 2 },
 };
 
 /** The order effects load in: what a first move needs comes first. */

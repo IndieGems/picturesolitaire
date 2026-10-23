@@ -175,27 +175,35 @@ const MAX_VOICES = 16;
 let voices = 0;
 const lastPlayed = new Map<EffectName, number>();
 
+/** A playing effect, to cut short when something more important starts. */
+export type Voice = { fadeOut(seconds: number): void };
+
+/** The file an effect plays: its own name unless its table row names another. */
+export function fileOf(name: EffectName): string {
+  return EFFECTS[name].file ?? name;
+}
+
 /**
  * Play an effect now. Dropped, never queued, when nothing could be heard
  * (suspended, muted, the Arcade's Sound switch off), so a backlog never
  * bursts out on resume. An effect not loaded yet starts loading instead.
  */
-export function play(name: EffectName, opts: PlayOptions = {}): void {
-  if (!audible()) return;
-  const buffer = buffers.get(name);
+export function play(name: EffectName, opts: PlayOptions = {}): Voice | null {
+  if (!audible()) return null;
+  const buffer = buffers.get(fileOf(name));
   if (!buffer) {
-    void load(name);
-    return;
+    void load(fileOf(name));
+    return null;
   }
   const def = EFFECTS[name];
   const at = ctx.currentTime + Math.max(0, opts.delay ?? 0);
-  if (at - (lastPlayed.get(name) ?? -Infinity) < def.minGap) return;
-  if (voices >= MAX_VOICES) return;
+  if (at - (lastPlayed.get(name) ?? -Infinity) < def.minGap) return null;
+  if (voices >= MAX_VOICES) return null;
   lastPlayed.set(name, at);
 
   const source = ctx.createBufferSource();
   source.buffer = buffer;
-  source.playbackRate.value = (opts.rate ?? 1) * (1 + (Math.random() * 2 - 1) * def.jitter);
+  source.playbackRate.value = (def.rate ?? 1) * (opts.rate ?? 1) * (1 + (Math.random() * 2 - 1) * def.jitter);
   const level = ctx.createGain();
   level.gain.value = def.gain * (opts.gain ?? 1);
   source.connect(level);
@@ -214,6 +222,17 @@ export function play(name: EffectName, opts: PlayOptions = {}): void {
     level.disconnect();
   };
   source.start(at);
+  return {
+    fadeOut(seconds) {
+      const now = ctx.currentTime;
+      level.gain.setTargetAtTime(0, now, seconds / 3);
+      try {
+        source.stop(now + seconds);
+      } catch {
+        // Already stopped: nothing to cut.
+      }
+    },
+  };
 }
 
 // --- Checks (development only) ------------------------------------------------
