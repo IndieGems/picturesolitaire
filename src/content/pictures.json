@@ -1,0 +1,249 @@
+{
+  "albums": [
+    {
+      "id": "flowers",
+      "title": "Flowers"
+    },
+    {
+      "id": "food",
+      "title": "Food & Still Life"
+    },
+    {
+      "id": "landscapes",
+      "title": "Landscapes"
+    },
+    {
+      "id": "people",
+      "title": "People"
+    },
+    {
+      "id": "travel",
+      "title": "Travel"
+    }
+  ],
+  "pictures": [
+    {
+      "id": "dusk-harbour",
+      "album": "travel",
+      "title": "Harbour at Dusk",
+      "medium": "painting",
+      "file": "pictures/travel/dusk-harbour.webp",
+      "cols": 3,
+      "rows": 2,
+      "px": [
+        1152,
+        768
+      ],
+      "palette": [
+        "orange",
+        "peach",
+        "coral",
+        "gold",
+        "violet"
+      ],
+      "subjects": [
+        "harbour",
+        "boats",
+        "bell tower",
+        "sunset",
+        "water"
+      ],
+      "family": "warm-dusk"
+    },
+    {
+      "id": "dune-caravan",
+      "album": "landscapes",
+      "title": "Dunes at Sundown",
+      "medium": "photo",
+      "file": "pictures/landscapes/dune-caravan.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        384
+      ],
+      "palette": [
+        "orange",
+        "peach",
+        "coral",
+        "gold",
+        "violet"
+      ],
+      "subjects": [
+        "desert",
+        "dunes",
+        "camels",
+        "sunset",
+        "sand"
+      ],
+      "family": "warm-dusk"
+    },
+    {
+      "id": "poppy-sunset",
+      "album": "flowers",
+      "title": "Poppies at Sunset",
+      "medium": "photo",
+      "file": "pictures/flowers/poppy-sunset.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "orange",
+        "peach",
+        "coral",
+        "gold",
+        "violet"
+      ],
+      "subjects": [
+        "poppies",
+        "field",
+        "sunset",
+        "hills"
+      ],
+      "family": "warm-dusk"
+    },
+    {
+      "id": "candle-oranges",
+      "album": "food",
+      "title": "Oranges by Candlelight",
+      "medium": "painting",
+      "file": "pictures/food/candle-oranges.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "orange",
+        "peach",
+        "coral",
+        "gold",
+        "violet"
+      ],
+      "subjects": [
+        "oranges",
+        "candle",
+        "copper jug",
+        "bread",
+        "still life"
+      ],
+      "family": "warm-dusk"
+    },
+    {
+      "id": "blossom-lane",
+      "album": "travel",
+      "title": "Blossom Lane",
+      "medium": "photo",
+      "file": "pictures/travel/blossom-lane.webp",
+      "cols": 2,
+      "rows": 3,
+      "px": [
+        768,
+        1152
+      ],
+      "palette": [
+        "pink",
+        "blush",
+        "rose",
+        "cream",
+        "fresh green"
+      ],
+      "subjects": [
+        "cherry blossom",
+        "lane",
+        "lanterns",
+        "pagoda",
+        "Kyoto"
+      ],
+      "family": "pink-bloom"
+    },
+    {
+      "id": "peony-jug",
+      "album": "flowers",
+      "title": "Peonies in a Jug",
+      "medium": "painting",
+      "file": "pictures/flowers/peony-jug.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "pink",
+        "blush",
+        "rose",
+        "cream",
+        "fresh green"
+      ],
+      "subjects": [
+        "peonies",
+        "jug",
+        "bouquet",
+        "lace",
+        "window"
+      ],
+      "family": "pink-bloom"
+    },
+    {
+      "id": "berry-cake",
+      "album": "food",
+      "title": "Strawberry Layer Cake",
+      "medium": "photo",
+      "file": "pictures/food/berry-cake.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "pink",
+        "blush",
+        "rose",
+        "cream",
+        "fresh green"
+      ],
+      "subjects": [
+        "cake",
+        "strawberries",
+        "raspberries",
+        "macarons",
+        "teacup"
+      ],
+      "family": "pink-bloom"
+    },
+    {
+      "id": "rose-hat",
+      "album": "people",
+      "title": "The Rose Hat",
+      "medium": "painting",
+      "file": "pictures/people/rose-hat.webp",
+      "cols": 2,
+      "rows": 3,
+      "px": [
+        768,
+        1152
+      ],
+      "palette": [
+        "pink",
+        "blush",
+        "rose",
+        "cream",
+        "fresh green"
+      ],
+      "subjects": [
+        "woman",
+        "straw hat",
+        "roses",
+        "garden",
+        "trellis"
+      ],
+      "family": "pink-bloom"
+    }
+  ]
+}
