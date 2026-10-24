@@ -36,6 +36,13 @@ export interface PickSpec {
   must?: string[];
   /** At most this many pictures of a size, by cards: { 9: 1 } is one 3x3 at most (the default). */
   most?: Record<number, number>;
+  /**
+   * Rank lookalike families by the MEAN use of their eligible pictures, not
+   * the sum. The sum favours a family with few eligible pictures (the yellow
+   * family has only two that are not 3x3), so over a long pool it comes up far
+   * too often. The campaign and challenge route were made with the sum and keep it.
+   */
+  meanFamilies?: boolean;
 }
 
 export const shapeOf = (p: { cols: number; rows: number }) => `${p.cols}x${p.rows}`;
@@ -73,7 +80,11 @@ export function pick(
     const usedFam = new Set<string>();
     // a family per group, the cheapest-to-use first (with some randomness)
     const famOrder = families
-      .map((f) => ({ f, c: eligible.filter((p) => p.family === f).reduce((n, p) => n + use(p), 0) + rnd() * noise * 4 }))
+      .map((f) => {
+        const members = eligible.filter((p) => p.family === f);
+        const sum = members.reduce((n, p) => n + use(p), 0);
+        return { f, c: (spec.meanFamilies ? sum / members.length : sum) + rnd() * noise * 4 };
+      })
       .sort((a, b) => a.c - b.c)
       .map((x) => x.f);
     let ok = true;

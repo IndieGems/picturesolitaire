@@ -47,7 +47,7 @@ for (const file of files) {
       if (![0, 1, 2].includes(l.peek)) fail(`peek ${l.peek}`);
       if (l.par !== undefined && l.par !== l.line.length) fail(`par ${l.par} but the line has ${l.line.length} moves`);
       if (l.date !== undefined) {
-        if (!/^d{4}-d{2}-d{2}$/.test(l.date) || l.id !== `d${l.date}`) fail(`date ${l.date} and id ${l.id} do not match`);
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(l.date) || l.id !== `d${l.date}`) fail(`date ${l.date} and id ${l.id} do not match`);
         const next = lastDate && new Date(Date.parse(lastDate + "T00:00:00Z") + 86400000).toISOString().slice(0, 10);
         if (lastDate && l.date !== next) fail(`date ${l.date} does not follow ${lastDate}`);
         lastDate = l.date;
