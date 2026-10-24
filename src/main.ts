@@ -17,6 +17,9 @@ import { gem } from "./gem";
 import { t } from "./ui/i18n";
 
 const boot = document.getElementById("boot");
+// The tab's title is the game's name in the player's language (index.html carries the English
+// one for the moment before this runs: the Arcade's header reads it).
+document.title = t("game.title");
 if (boot) boot.textContent = t("boot.loading");
 
 // How long the first screen waits for the Arcade's handshake: 3 s, never the
