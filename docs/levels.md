@@ -32,22 +32,22 @@ daily puzzle in [daily.md](daily.md).
 | 12 | build | 7 | 3 autumn rust | 9 2 2 6 2 6 2 | 1x2 2x1 2x3 3x2 3x3 | 4x5 | 29 (9) | 1 | 3 | 94% | 0 | 26 |
 | 13 | demand | 7 | 2 sea blue, 2 warm dusk | 6 2 6 4 4 4 6 | 2x1 2x2 2x3 3x2 | 4x5 | 32 (12) | 1 | 3 | 69% | 1 | 26 |
 | 14 | relief | 6 | 2 pink bloom | 4 4 4 2 4 4 | 2x1 2x2 | 4x5 | 22 (2) | 2 | 2 | 100% | 0 | 15 |
-| 15 | demand | 6 | 3 sea blue | 4 4 9 4 6 6 | 2x2 3x2 3x3 | 4x5 | 33 (13) | 1 | 4 | 67% | 1 | 36 |
+| 15 | demand | 6 | 3 sea blue | 4 4 9 4 6 6 | 2x2 3x2 3x3 | 4x5 | 33 (13) | 1 | 4 | 75% | 1 | 33 |
 | 16 | relief | 6 | 2 pink bloom, 2 golden wheat | 4 6 2 2 6 6 | 1x2 2x1 2x2 2x3 3x2 | 4x5 | 26 (6) | 1 | 2 | 100% | 0 | 15 |
 | 17 | build | 7 | 3 lavender, 2 autumn rust | 4 6 2 6 6 2 6 | 1x2 2x2 2x3 3x2 | 4x5 | 32 (12) | 1 | 3 | 79% | 1 | 26 |
 | 18 | demand | 7 | 3 warm dusk | 2 4 9 6 4 4 2 | 1x2 2x1 2x2 3x2 3x3 | 4x5 | 31 (11) | 0 | 3 | 67% | 1 | 27 |
 | 19 | relief | 6 | 2 lemon yellow | 4 6 2 4 4 6 | 2x1 2x2 2x3 3x2 | 4x5 | 26 (6) | 1 | 2 | 100% | 0 | 21 |
-| 20 | demand | 8 | 3 berry red, 2 sea blue | 6 2 4 2 6 2 6 6 | 1x2 2x2 2x3 3x2 | 4x5 | 34 (14) | 1 | 4 | 65% | 1 | 25 |
+| 20 | demand | 8 | 3 berry red, 2 sea blue | 6 2 4 2 6 2 6 6 | 1x2 2x2 2x3 3x2 | 4x5 | 34 (14) | 1 | 4 | 62% | 1 | 28 |
 | 21 | build | 6 | 4 pink bloom | 4 6 6 4 6 6 | 2x2 2x3 3x2 | 4x5 | 32 (12) | 1 | 3 | 78% | 1 | 24 |
 | 22 | relief | 7 | 2 lavender, 2 sea blue | 2 4 4 4 4 4 4 | 2x1 2x2 | 4x5 | 26 (6) | 2 | 2 | 100% | 0 | 20 |
 | 23 | demand | 7 | 4 blue hour, 2 lemon yellow | 2 2 4 6 9 4 6 | 2x1 2x2 2x3 3x2 3x3 | 4x5 | 33 (13) | 0 | 4 | 67% | 1 | 27 |
 | 24 | build | 7 | 3 autumn rust | 4 2 6 6 4 2 6 | 1x2 2x2 2x3 3x2 | 4x5 | 30 (10) | 1 | 3 | 89% | 0 | 27 |
-| 25 | demand | 8 | 4 sea blue, 3 warm dusk | 6 2 4 2 6 4 4 6 | 2x1 2x2 2x3 3x2 | 4x5 | 34 (14) | 0 | 4 | 44% | 2 | 26 |
+| 25 | demand | 8 | 4 sea blue, 3 warm dusk | 6 2 4 2 6 4 4 6 | 2x1 2x2 2x3 3x2 | 4x5 | 34 (14) | 0 | 4 | 44% | 1 | 35 |
 | 26 | relief | 6 | 3 fresh green | 6 2 2 6 4 6 | 1x2 2x2 2x3 3x2 | 4x5 | 26 (6) | 1 | 3 | 100% | 0 | 20 |
-| 27 | demand | 8 | 4 lavender, 2 berry red, 2 golden wheat | 4 4 6 4 2 2 6 6 | 1x2 2x2 2x3 3x2 | 4x5 | 34 (14) | 0 | 4 | 50% | 1 | 27 |
-| 28 | build | 6 | 4 pink bloom, 2 berry red | 4 6 4 6 6 6 | 2x2 2x3 3x2 | 4x5 | 32 (12) | 1 | 4 | 67% | 1 | 23 |
+| 27 | demand | 8 | 4 lavender, 2 berry red, 2 golden wheat | 4 4 6 4 2 2 6 6 | 1x2 2x2 2x3 3x2 | 4x5 | 34 (14) | 0 | 4 | 54% | 2 | 29 |
+| 28 | build | 6 | 4 pink bloom, 2 berry red | 4 6 4 6 6 6 | 2x2 2x3 3x2 | 4x5 | 32 (12) | 1 | 4 | 80% | 1 | 28 |
 | 29 | relief | 6 | 3 golden wheat, 3 warm dusk | 2 4 6 4 6 6 | 2x1 2x2 2x3 3x2 | 4x5 | 28 (8) | 1 | 3 | 100% | 0 | 25 |
-| 30 | finale | 8 | 4 fresh green, 3 lemon yellow | 6 9 2 4 2 4 4 6 | 1x2 2x2 2x3 3x2 3x3 | 4x5 | 37 (17) | 0 | 5 | 38% | 1 | 34 |
+| 30 | finale | 8 | 4 fresh green, 3 lemon yellow | 6 9 2 4 2 4 4 6 | 1x2 2x2 2x3 3x2 3x3 | 4x5 | 37 (17) | 0 | 5 | 48% | 2 | 38 |
 
 Every picture's appearances across the 30 boards: 3 to 6 (mean 4.6).
 

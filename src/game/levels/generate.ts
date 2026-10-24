@@ -52,11 +52,21 @@ export interface Spec {
   /** Store the par line (fewest moves found) instead of the solver's first line. */
   par?: ParOptions | true;
   /**
-   * No single move from the opening may leave the board at a dead end (full,
-   * with no picture whole on it). The relaxed campaign's rule (creator's lead,
-   * 2026-10-23): its traps come later, never on the first move.
+   * A safe start, the relaxed campaign's rule (lead, 2026-10-23; "clear order
+   * that matters" belongs to the challenge route): every picture that can be
+   * finished from the opening can be finished first, anywhere, without
+   * dooming the board, and no single move from the opening leaves it at a dead
+   * end. Traps later in a board are fine.
    */
   safeFirstMove?: boolean;
+}
+
+/**
+ * The first clears (picture and place) that doom the board, judged on the
+ * abstract game: a "doomed" there is certain (abstract.ts).
+ */
+export function doomingFirstClears(game: Game): Step[] {
+  return game.options(game.root).filter((o) => !game.wins(o.next, o.key)).map((o) => o.step);
 }
 
 /** The moves from the opening that leave the board at a dead end at once. */
@@ -141,7 +151,7 @@ export function judge(spec: Spec, deal: Deal): Made | Verdict {
   if (!inside(bw, spec.targets.bigWait)) return "wait";
   const ot = unavoidable(game, "clear");
   if (!inside(ot, spec.targets.orderTraps)) return "order";
-  if (spec.safeFirstMove && deadFirstMoves(deal).length) return "opening";
+  if (spec.safeFirstMove && (doomingFirstClears(game).length || deadFirstMoves(deal).length)) return "opening";
   const a = solveDeal(deal);
   if (!("win" in a)) return "unproven";
   let line = a.win;
