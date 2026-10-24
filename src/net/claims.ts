@@ -76,12 +76,16 @@ interface Answered {
   first?: boolean;
 }
 
-export type Verdict =
+export type Verdict = (
   | ({ status: "paid" } & Answered)
   | ({ status: "kept" } & Answered)
   | ({ status: "late" } & Answered)
   | { status: "refused"; lane: Lane; board: string; reason: string }
-  | { status: "unframed"; lane: Lane; board: string };
+  | { status: "unframed"; lane: Lane; board: string }
+) & {
+  /** True for a claim an earlier session left unanswered, sent again at this start (resumeClaims). */
+  resumed?: true;
+};
 
 interface Held {
   /** The claim's own id: the checker applies a claim to the progress record once, however often it is sent. */
@@ -90,6 +94,8 @@ interface Held {
   board: string;
   /** What it changes in progress() while it waits (kept with it, for a restart). */
   effect: HeldWin;
+  /** Left unanswered by an earlier session (resumeClaims). */
+  resumed?: true;
   body: Record<string, unknown>;
   resolve: (v: Verdict) => void;
   tries: number;
@@ -176,9 +182,10 @@ export function cueCoins(v: Verdict, from?: Element | null): boolean {
   });
 }
 
-function settle(h: Held, v: Verdict, record: unknown = null): void {
+function settle(h: Held, answer: Verdict, record: unknown = null): void {
   queue.splice(queue.indexOf(h), 1);
   void persist();
+  const v: Verdict = h.resumed ? { ...answer, resumed: true } : answer;
   // the server's word replaces the held win (a refusal just drops it)
   answered(h.id, record, v.status === "refused");
   h.resolve(v);
@@ -336,7 +343,7 @@ export async function resumeClaims(): Promise<void> {
     for (const c of list) {
       if (queue.some((h) => h.id === c.id)) continue;
       hold(c.id, c.effect);
-      queue.push({ id: c.id, lane: c.body.lane as Lane, board: String(c.body.board), effect: c.effect, body: c.body, resolve: () => {}, tries: 0, notBefore: 0 });
+      queue.push({ id: c.id, lane: c.body.lane as Lane, board: String(c.body.board), effect: c.effect, resumed: true, body: c.body, resolve: () => {}, tries: 0, notBefore: 0 });
     }
     if (list.length) console.info(`[claims] sending again ${list.length} win(s) from last time`);
     storedAny = list.length > 0;
