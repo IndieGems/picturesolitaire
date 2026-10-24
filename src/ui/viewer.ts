@@ -13,6 +13,7 @@ import { ICONS } from "./icons";
 import { t } from "./i18n";
 import { pictureTitle, pictureUrl, type Picture } from "./catalogue";
 import { screenChanged } from "./browser";
+import { pictureAspect } from "./cards";
 
 const MAX_ZOOM = 4;
 const DOUBLE_TAP_ZOOM = 2.5;
@@ -54,7 +55,7 @@ export function createViewer(): Viewer {
   stage.append(zoom);
   element.append(title, back, stage);
 
-  let aspect = 1; // width / height: a picture's cards are square, so cols / rows
+  let aspect = 1; // width / height: cols cards across, rows down, in the board's card shape (cards.ts)
   let s = 1;
   let tx = 0;
   let ty = 0;
@@ -208,7 +209,7 @@ export function createViewer(): Viewer {
   return {
     element,
     open(p) {
-      aspect = p.cols / p.rows;
+      aspect = pictureAspect(p.cols, p.rows);
       title.textContent = pictureTitle(p);
       img.src = pictureUrl(p);
       s = 1;

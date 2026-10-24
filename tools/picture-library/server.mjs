@@ -34,6 +34,9 @@ const contentDir = path.join(projectRoot, "src", "content");
 const picturesFile = path.join(contentDir, "pictures.json");
 // Art's plan, which the catalogue is written from: the families' own titles are there
 const planFile = path.join(projectRoot, "tools", "art", "pictures-plan.json");
+// a card's shape: the board's default (TUNING.cardAspect), then the game config's board JSON over it
+const tuningFile = path.join(projectRoot, "src", "board", "tuning.ts");
+const configFile = path.join(projectRoot, "gem-backend-game-config.yaml");
 const flagsFile = path.join(contentDir, "picture-flags.json");
 const LANES = ["campaign", "challenge", "daily"];
 const levelFile = (lane) => path.join(contentDir, "levels", `${lane}.json`);
@@ -95,6 +98,19 @@ async function changed(file) {
 /** The picture files sit under public/: a catalogue path is relative to it. */
 const publicPath = (rel) => (typeof rel === "string" && rel ? path.join(publicDir, ...rel.split("/")) : null);
 
+/**
+ * A card's width ÷ height, as the board reads it: the default in src/board/tuning.ts, unless the
+ * game config's board JSON (gem-backend-game-config.yaml) sets "cardAspect". 1 before there was one.
+ */
+async function cardAspect() {
+  const read = (f) => fs.readFile(f, "utf8").catch(() => "");
+  const [tuning, config] = await Promise.all([read(tuningFile), read(configFile)]);
+  const fromConfig = /"cardAspect"\s*:\s*([0-9]*\.?[0-9]+)/.exec(config);
+  const fromTuning = /\bcardAspect\s*:\s*([0-9]*\.?[0-9]+)/.exec(tuning);
+  const a = Number((fromConfig ?? fromTuning)?.[1]);
+  return a >= 0.3 && a <= 3 ? a : 1;
+}
+
 /** Today on this machine, as the daily boards date themselves (YYYY-MM-DD). */
 function today() {
   const d = new Date();
@@ -152,12 +168,12 @@ async function library() {
   const plan = await readJson(planFile, {});
   const familyTitles = {};
   for (const [id, f] of Object.entries(plan.data?.families ?? {})) if (typeof f?.title === "string") familyTitles[id] = f.title;
-  return { albums, pictures, boards, familyTitles, today: now, problems };
+  return { albums, pictures, boards, familyTitles, cardAspect: await cardAspect(), today: now, problems };
 }
 
 /** A fingerprint of every file the library is made from: the page reloads when it changes. */
 async function stamp() {
-  const files = [picturesFile, flagsFile, planFile, ...LANES.map(levelFile)];
+  const files = [picturesFile, flagsFile, planFile, tuningFile, configFile, ...LANES.map(levelFile)];
   const parts = await Promise.all(
     files.map(async (f) => {
       try {

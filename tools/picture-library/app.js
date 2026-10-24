@@ -37,7 +37,15 @@ const words = (slug) => {
   return s ? s[0].toUpperCase() + s.slice(1) : "No family";
 };
 /** A family's own title (Art's plan), else its id in words. */
-const familyName = (id) => lib?.familyTitles?.[id] ?? words(id);
+const familyName = (id) => (id === SOLO ? "No look-alikes" : lib?.familyTitles?.[id] ?? words(id));
+/** Pictures with no look-alike (a family of one, as Art gives a picture its own id) share one group. */
+const SOLO = "__solo";
+const familyOf = (p) => {
+  const f = p.family ?? "";
+  return f && lib.pictures.some((q) => q !== p && (q.family ?? "") === f) ? f : SOLO;
+};
+const mediumWord = (m) => ({ photo: "Photo", painting: "Painting", "low-poly": "Low-poly", papercut: "Paper cut" })[m] ?? words(m);
+const BUSY = ["Calm", "Some detail", "Busy"];
 const plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 const sizeOf = (p) => `${p.cols}×${p.rows}`;
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -68,6 +76,21 @@ function writeHash() {
 }
 
 const byId = (id) => lib?.pictures.find((p) => p.id === id);
+/** A card's width ÷ height (the board's tuning, read by the server). */
+const cardAspect = () => lib?.cardAspect ?? 1;
+/** The window the game shows of a picture: cols cards across, rows down, in the card's shape. */
+const windowAspect = (p) => (p.cols * cardAspect()) / p.rows;
+const imageAspect = (p) => (Array.isArray(p.px) && p.px[1] ? p.px[0] / p.px[1] : null);
+/** Made for another card shape: the game crops its edges off (centre-cropped) until it is redrawn. */
+const isCropped = (p) => {
+  const i = imageAspect(p);
+  return i !== null && Math.abs(i / windowAspect(p) - 1) > 0.01;
+};
+/** 0.75 as "3:4". */
+const ratioWords = (a) => {
+  for (let d = 1; d <= 12; d++) if (Math.abs(a * d - Math.round(a * d)) < 0.01) return `${Math.round(a * d)}:${d}`;
+  return a.toFixed(2);
+};
 const isFlagged = (p) => p.flag?.flagged === true;
 const imgUrl = (p, big = false) => {
   if (!big && p.thumbV) return `/${p.thumb}?v=${p.thumbV}`;
@@ -78,10 +101,11 @@ const imgUrl = (p, big = false) => {
 function matches(p) {
   if (view.medium && p.medium !== view.medium) return false;
   if (view.size && sizeOf(p) !== view.size) return false;
-  if (view.family && (p.family ?? "") !== view.family) return false;
+  if (view.family && familyOf(p) !== view.family) return false;
   if (view.show === "flagged" && !isFlagged(p)) return false;
   if (view.show === "ok" && isFlagged(p)) return false;
   if (view.show === "unused" && p.usedTotal > 0) return false;
+  if (view.show === "cropped" && !isCropped(p)) return false;
   if (view.find) {
     const q = view.find.toLowerCase();
     const hay = [p.title, p.id, p.album, p.family, ...(p.subjects ?? []), ...(p.palette ?? [])].join(" ").toLowerCase();
@@ -98,8 +122,9 @@ function shownInOrder() {
 
 function groups(list) {
   if (view.group === "family") {
-    const keys = [...new Set(lib.pictures.map((p) => p.family ?? ""))].sort((a, b) => familyName(a).localeCompare(familyName(b)));
-    return keys.map((k) => ({ key: k, title: familyName(k), all: lib.pictures.filter((p) => (p.family ?? "") === k).length, pictures: list.filter((p) => (p.family ?? "") === k) })).filter((g) => g.pictures.length);
+    // real families by name, then the pictures with no look-alike
+    const keys = [...new Set(lib.pictures.map(familyOf))].sort((a, b) => (a === SOLO) - (b === SOLO) || familyName(a).localeCompare(familyName(b)));
+    return keys.map((k) => ({ key: k, title: familyName(k), all: lib.pictures.filter((p) => familyOf(p) === k).length, pictures: list.filter((p) => familyOf(p) === k) })).filter((g) => g.pictures.length);
   }
   const albums = [...lib.albums];
   // a picture whose album the catalogue does not list still shows, under its own album id
@@ -123,8 +148,10 @@ function drawFilters() {
     return ac * ar - bc * br || ac - bc;
   });
   fillSelect($("size"), sizes, (s) => s.replace("×", " × "));
-  const fams = [...new Set(lib.pictures.map((p) => p.family ?? ""))].sort((a, b) => familyName(a).localeCompare(familyName(b)));
+  const fams = [...new Set(lib.pictures.map(familyOf))].sort((a, b) => (a === SOLO) - (b === SOLO) || familyName(a).localeCompare(familyName(b)));
   fillSelect($("family"), fams, familyName);
+  const media = [...new Set(lib.pictures.map((p) => p.medium).filter(Boolean))].sort((a, b) => mediumWord(a).localeCompare(mediumWord(b)));
+  fillSelect($("medium"), media, mediumWord);
   for (const id of ["find", "medium", "size", "family", "show"]) {
     const n = $(id);
     if (n !== document.activeElement) n.value = view[id];
@@ -159,7 +186,7 @@ function drawNotes() {
 function tile(p) {
   const url = imgUrl(p);
   const flagged = isFlagged(p);
-  const meta = [sizeOf(p), p.medium === "photo" ? "Photo" : p.medium === "painting" ? "Painting" : words(p.medium)];
+  const meta = [sizeOf(p), mediumWord(p.medium)];
   const metaLine = el("span", { class: "meta", text: meta.join(" · ") + " · " });
   metaLine.append(
     flagged && p.usedTotal
@@ -171,7 +198,16 @@ function tile(p) {
   return el(
     "button",
     { type: "button", class: `tile${flagged ? " flagged" : ""}`, "data-id": p.id, onclick: () => openDetail(p.id), title: flagged && p.flag.note ? `Don't use: ${p.flag.note}` : null },
-    el("span", { class: "frame" }, url ? el("img", { src: url, alt: "", loading: "lazy", decoding: "async" }) : el("span", { class: "missing", style: `--ar:${p.cols}/${p.rows}`, text: "No picture file yet" })),
+    // the picture as the game shows it: its cards' shape, centre-cropped
+    el(
+      "span",
+      { class: "frame" },
+      el(
+        "span",
+        { class: `shape ${windowAspect(p) >= 1 ? "wide" : "tall"}`, style: `--ar:${windowAspect(p)}` },
+        url ? el("img", { src: url, alt: "", loading: "lazy", decoding: "async" }) : el("span", { class: "missing", text: "No picture file yet" }),
+      ),
+    ),
     el("span", { class: "name", text: p.title ?? p.id }),
     metaLine,
   );
@@ -180,9 +216,9 @@ function tile(p) {
 function drawGrid() {
   const shown = lib.pictures.filter(matches);
   const flagged = lib.pictures.filter(isFlagged).length;
-  const families = new Set(lib.pictures.map((p) => p.family ?? "")).size;
+  const families = new Set(lib.pictures.map(familyOf).filter((f) => f !== SOLO)).size;
   $("count").textContent =
-    `${plural(lib.pictures.length, "picture")} · ${plural(lib.albums.length, "album")} · ${plural(families, "family", "families")} · ${flagged} flagged` +
+    `${plural(lib.pictures.length, "picture")} · ${plural(lib.albums.length, "album")} · ${plural(families, "family", "families")} · ${flagged} flagged · cards ${ratioWords(cardAspect())}` +
     (shown.length !== lib.pictures.length ? ` · showing ${shown.length}` : "");
   const grid = $("grid");
   const sections = groups(shown).map((g) =>
@@ -236,19 +272,35 @@ function closeDetail() {
 
 let lastOpened = "";
 
-function cutLines(p) {
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("viewBox", `0 0 ${p.cols * 100} ${p.rows * 100}`);
+/** The window the game shows of an iw × ih image, centred (x, y, w, h in image pixels). */
+function windowOf(p, iw, ih) {
+  const a = windowAspect(p);
+  if (iw / ih > a) return { x: (iw - ih * a) / 2, y: 0, w: ih * a, h: ih };
+  return { x: 0, y: (ih - iw / a) / 2, w: iw, h: iw / a };
+}
+
+/** Over the whole image: the edges the game crops off shaded, the window outlined, its card cut lines. */
+function cutLines(p, iw, ih) {
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", `0 0 ${iw} ${ih}`);
   svg.setAttribute("preserveAspectRatio", "none");
-  const line = (x1, y1, x2, y2) => {
-    for (const [stroke, width] of [["rgba(20,28,40,0.55)", 5], ["rgba(255,255,255,0.95)", 2]]) {
-      const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      Object.entries({ x1, y1, x2, y2, stroke, "stroke-width": width, "vector-effect": "non-scaling-stroke" }).forEach(([k, v]) => l.setAttribute(k, v));
-      svg.append(l);
-    }
+  const add = (tag, attrs) => {
+    const n = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+    svg.append(n);
   };
-  for (let c = 1; c < p.cols; c++) line(c * 100, 0, c * 100, p.rows * 100);
-  for (let r = 1; r < p.rows; r++) line(0, r * 100, p.cols * 100, r * 100);
+  const w = windowOf(p, iw, ih);
+  const cropped = w.w < iw - 1 || w.h < ih - 1;
+  if (cropped) {
+    add("path", { d: `M0 0H${iw}V${ih}H0Z M${w.x} ${w.y}h${w.w}v${w.h}h${-w.w}Z`, "fill-rule": "evenodd", fill: "rgba(10,14,22,0.66)" });
+    add("rect", { x: w.x, y: w.y, width: w.w, height: w.h, fill: "none", stroke: "#ffd28a", "stroke-width": 2, "vector-effect": "non-scaling-stroke" });
+  }
+  const line = (x1, y1, x2, y2) => {
+    for (const [stroke, width] of [["rgba(20,28,40,0.55)", 5], ["rgba(255,255,255,0.95)", 2]]) add("line", { x1, y1, x2, y2, stroke, "stroke-width": width, "vector-effect": "non-scaling-stroke" });
+  };
+  for (let c = 1; c < p.cols; c++) line(w.x + (c * w.w) / p.cols, w.y, w.x + (c * w.w) / p.cols, w.y + w.h);
+  for (let r = 1; r < p.rows; r++) line(w.x, w.y + (r * w.h) / p.rows, w.x + w.w, w.y + (r * w.h) / p.rows);
   return svg;
 }
 
@@ -281,12 +333,21 @@ function drawDetail(fresh = false) {
   const flagged = isFlagged(p);
   $("d-title").textContent = p.title ?? p.id;
   const album = lib.albums.find((a) => a.id === p.album)?.title ?? words(p.album);
-  $("d-sub").textContent = `${album} album · ${p.medium === "photo" ? "Photo" : p.medium === "painting" ? "Painting" : words(p.medium)}`;
+  $("d-sub").textContent = `${album} album · ${mediumWord(p.medium)}`;
 
+  // the whole image, with what the game shows of it: the catalogue's size first, else the file's own
   const cut = $("d-cut");
-  cut.style.aspectRatio = `${p.cols} / ${p.rows}`;
   const img = $("d-img");
   const url = imgUrl(p, true);
+  const drawCut = () => {
+    if (view.open !== p.id) return;
+    const iw = imageAspect(p) ? p.px[0] : img.naturalWidth || p.cols * 300;
+    const ih = imageAspect(p) ? p.px[1] : img.naturalHeight || p.rows * 400;
+    cut.style.aspectRatio = `${iw} / ${ih}`;
+    cut.querySelector("svg")?.remove();
+    cut.append(cutLines(p, iw, ih));
+  };
+  img.onload = drawCut;
   if (url) {
     if (img.getAttribute("src") !== url) img.src = url;
     img.hidden = false;
@@ -294,18 +355,24 @@ function drawDetail(fresh = false) {
     img.removeAttribute("src");
     img.hidden = true;
   }
-  cut.querySelector("svg")?.remove();
-  cut.append(cutLines(p));
-  $("d-cutnote").textContent = url ? `Cut into ${plural(p.cols * p.rows, "card")}: ${p.cols} across, ${p.rows} down.` : "No picture file yet.";
+  drawCut();
+  const cards = `Cut into ${plural(p.cols * p.rows, "card")}: ${p.cols} across, ${p.rows} down, each ${ratioWords(cardAspect())}.`;
+  $("d-cutnote").textContent = !url
+    ? "No picture file yet."
+    : isCropped(p)
+      ? `${cards} The shaded edges don't show in the game: this picture was made for another card shape and is cropped to fit until it is redrawn.`
+      : cards;
 
   const warn = $("d-warn");
   warn.hidden = !(flagged && p.usedTotal > 0);
   if (!warn.hidden) warn.replaceChildren(el("b", { text: `In ${plural(p.usedTotal, "board")}:` }), " the team needs to re-deal them.");
 
-  const fam = lib.pictures.filter((q) => (q.family ?? "") === (p.family ?? ""));
+  const solo = familyOf(p) === SOLO;
+  const fam = solo ? [p] : lib.pictures.filter((q) => familyOf(q) === familyOf(p));
   const facts = [
     ["Size", `${p.cols} × ${p.rows} cards`],
-    ["Family", `${familyName(p.family)} (${plural(fam.length, "picture")})`],
+    ["Family", solo ? "None: no look-alike" : `${familyName(p.family)} (${plural(fam.length, "picture")})`],
+    ["Busyness", Number.isInteger(p.busy) && BUSY[p.busy] ? BUSY[p.busy] : "–"],
     ["Palette", el("span", { class: "swatches" }, ...(p.palette ?? []).map((w) => el("span", { class: "swatch" }, el("i", { style: `background:${swatchColour(w)}` }), w)))],
     ["Subjects", (p.subjects ?? []).join(", ") || "–"],
     ["Image", Array.isArray(p.px) ? `${p.px[0]} × ${p.px[1]} px` : "–"],

@@ -45,6 +45,8 @@
   --glass-line: rgba(255, 255, 255, 0.75);
   --shade: rgba(12, 18, 30, 0.62);
   --table: #2c3746;
+  /* a card's width ÷ height: the board's TUNING.cardAspect, set again on every screen (cards.ts) */
+  --card-aspect: 0.75;
   --round: "Fredoka", ui-rounded, "Nunito", "Segoe UI", system-ui, sans-serif;
 
   /* The Gem's middle and height (the SDK writes --gem-reserved-*; the
@@ -183,11 +185,11 @@ html.less-motion .home-note { animation: none; }
 /* --k: home grows with a big column (a tablet), 1 on a phone up to 1.7 (app.ts sets it), so a
    tablet's home reads as a tablet screen, not a phone screen floating in the middle */
 .home { --k: 1; align-items: center; justify-content: center; padding: calc(var(--row-bottom) + 12px) 20px calc(var(--foot) + 24px); gap: calc(26px * var(--k)); }
-.home .emblem { display: grid; grid-template-columns: repeat(3, calc(58px * var(--k))); gap: calc(10px * var(--k)); transform: rotate(-4deg); }
+.home .emblem { display: grid; grid-template-columns: repeat(3, calc(52px * var(--k))); gap: calc(10px * var(--k)); transform: rotate(-4deg); }
 /* three chubby stacks, as on the board: the art member's card back, a few deep */
 .home .emblem i {
-  display: block; height: calc(58px * var(--k)); position: relative;
-  background: var(--stack-back, url("/art/stack-back.webp")) center / contain no-repeat;
+  display: block; height: calc(52px * var(--k) / var(--card-aspect)); position: relative;
+  background: var(--stack-back, url("/art/stack-back.webp")) center / 100% 100% no-repeat;
   filter: drop-shadow(0 3px 0 #1f2834) drop-shadow(0 6px 0 #1a222d) drop-shadow(0 8px 10px rgba(0, 0, 0, 0.45));
 }
 .home .emblem i:nth-child(2) { transform: translateY(calc(-10px * var(--k))); }
@@ -286,7 +288,7 @@ html.less-motion .home-note { animation: none; }
   box-shadow: inset 0 0 0 1px #8b97a8; pointer-events: none;
 }
 .win .gallery figure {
-  --fr: 12px; margin: 0; width: calc(var(--u) * var(--c)); height: calc(var(--u) * var(--r));
+  --fr: 12px; margin: 0; width: calc(var(--u) * var(--c) * var(--card-aspect)); height: calc(var(--u) * var(--r));
   border-radius: var(--fr); overflow: hidden;
   box-shadow: 0 2px 0 #7f8b9c, 0 6px 12px rgba(20, 30, 45, 0.3);
   animation: picture-in 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both; animation-delay: calc(0.15s + var(--i) * 0.09s);
@@ -374,7 +376,7 @@ html.less-motion .card, html.less-motion .win .gallery figure, html.less-motion 
   width: 100%; min-height: 84px; padding: 10px 14px 10px 10px; border-radius: 26px;
   justify-content: flex-start; gap: 14px; text-align: left;
 }
-.album-row .cover { --fr: 14px; flex: none; width: 62px; height: 62px; border-radius: var(--fr); overflow: hidden; }
+.album-row .cover { --fr: 14px; flex: none; width: calc(68px * var(--card-aspect)); height: 68px; border-radius: var(--fr); overflow: hidden; }
 .album-row .cover img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .album-row .cover .back { width: 100%; height: 100%; border-radius: 0; }
 .album-row .words { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
@@ -402,7 +404,7 @@ html.less-motion .card, html.less-motion .win .gallery figure, html.less-motion 
 .shelf { column-count: 2; column-gap: 14px; max-width: 620px; margin: 0 auto; }
 @media (min-width: 520px) { .shelf { column-count: 3; } }
 .tile { display: block; width: 100%; margin: 0 0 16px; padding: 0; border: 0; background: none; break-inside: avoid; font: inherit; color: inherit; text-align: center; }
-.tile .frame { --fr: 16px; display: block; width: 100%; aspect-ratio: var(--c) / var(--r); border-radius: var(--fr); overflow: hidden; }
+.tile .frame { --fr: 16px; display: block; width: 100%; aspect-ratio: calc(var(--c) * var(--card-aspect)) / var(--r); border-radius: var(--fr); overflow: hidden; }
 /* a restored picture: in the board's pale card frame, raised, and it opens */
 .tile.restored { cursor: pointer; touch-action: manipulation; }
 .tile.restored .frame {
@@ -623,7 +625,7 @@ html.less-motion .card .coins-chip { animation: none; }
 }
 .viewer .viewer-stage:active { cursor: grabbing; }
 .viewer .viewer-zoom { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
-.viewer img { position: absolute; display: block; border-radius: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+.viewer img { position: absolute; display: block; object-fit: cover; border-radius: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
 html.less-motion .viewer { animation: none; }
 
 /* ---------- a phone held sideways ----------

@@ -46,6 +46,7 @@ import { KEEPSAKE } from "../net/keepsake";
 import { knownTable, startTables, tableTitle, thumbOf } from "./tables";
 import { keepFitted } from "./fit";
 import { WORDMARK } from "./wordmark";
+import { cardAspect, syncCardAspect } from "./cards";
 import { mountParticles } from "./particles";
 import { levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
 
@@ -212,6 +213,8 @@ const boardNumber = (n: number) => ((n - 1) % levels()) + 1;
 
 function show(next: Screen): void {
   screen = next;
+  // every picture and card drawn from here on takes the board's card shape (cards.ts)
+  syncCardAspect();
   home.hidden = next !== "home";
   boardScreen.hidden = next !== "board";
   albumsUi.listScreen.hidden = next !== "albums";
@@ -607,6 +610,7 @@ function drawCoins(win: Win): void {
 
 function showWin(): void {
   if (!lastWin || !board) return;
+  syncCardAspect();
   const gallery = layoutGallery(board.pictures());
   if (lastWin.kind === "challenge") return void showChallengeWin(lastWin, gallery);
   if (lastWin.kind === "daily") return void showDailyWin(lastWin, gallery);
@@ -759,9 +763,9 @@ function showChallengeWin(w: Extract<Win, { kind: "challenge" }>, gallery: HTMLE
 }
 
 /**
- * The board's pictures whole, in one to three rows, each card of a picture one
- * unit square, the unit as big as fits the card's width and a share of the
- * screen's height (never bigger than 46px, never under 18px).
+ * The board's pictures whole, in one to three rows, each card of a picture in the board's card
+ * shape (cards.ts: --u its height, --u x aspect its width), as big as fits the win card's width
+ * and a share of the screen's height (a card never taller than 54px, never under 22px).
  */
 const GAP = 10;
 /** A phone held sideways: the same question as the stylesheet's sideways block. */
@@ -771,18 +775,19 @@ function layoutGallery(pics: BoardPicture[]): HTMLElement {
   // column and the height under its title
   const width = SIDEWAYS.matches ? Math.min(720, app.clientWidth - 32) * 0.55 - 34 : Math.min(360, app.clientWidth - 32) - 44 - 4;
   const height = SIDEWAYS.matches ? Math.max(110, app.clientHeight - 210) : Math.max(120, Math.min(300, app.clientHeight * 0.34));
+  const aspect = cardAspect();
   let best: { u: number; rows: BoardPicture[][] } = { u: 0, rows: [pics] };
   for (let n = 1; n <= Math.min(3, pics.length); n++) {
     // fill n rows, each picture into the row with the fewest columns so far (biggest first)
     const rows: BoardPicture[][] = Array.from({ length: n }, () => []);
     const cols = (row: BoardPicture[]) => row.reduce((sum, p) => sum + p.cols, 0);
     for (const p of [...pics].sort((a, b) => b.cols - a.cols)) rows.reduce((a, b) => (cols(b) < cols(a) ? b : a)).push(p);
-    const byWidth = Math.min(...rows.map((r) => (width - GAP * (r.length - 1)) / Math.max(1, cols(r))));
+    const byWidth = Math.min(...rows.map((r) => (width - GAP * (r.length - 1)) / Math.max(1, cols(r) * aspect)));
     const tall = rows.reduce((sum, r) => sum + Math.max(0, ...r.map((p) => p.rows)), 0);
-    const u = Math.min(46, byWidth, (height - GAP * (n - 1)) / Math.max(1, tall));
+    const u = Math.min(54, byWidth, (height - GAP * (n - 1)) / Math.max(1, tall));
     if (u > best.u + 0.5) best = { u, rows };
   }
-  const gallery = h("div", { class: "gallery", style: `--u:${Math.max(18, Math.floor(best.u))}px;--gap:${GAP}px` });
+  const gallery = h("div", { class: "gallery", style: `--u:${Math.max(22, Math.floor(best.u))}px;--gap:${GAP}px` });
   let i = 0;
   for (const row of best.rows) {
     if (!row.length) continue;
