@@ -252,6 +252,15 @@ export interface StackView {
 }
 
 /** Draw one stack: its pile (as many layers as it has cards, up to the layout's most) and the upcoming cards the level shows. */
+/**
+ * A face-down card's look: the table's own card back when the screens set
+ * --stack-back on :root (an absolute url(...)), else `fallback`. A CSS
+ * background, so a new table shows at once, with nothing to call.
+ */
+export function backImage(fallback: string): string {
+  return `var(--stack-back, url("${fallback}"))`;
+}
+
 export function drawStack(
   sv: StackView, geo: Geometry, stack: readonly Card[], peek: number, art: Art[], pictures: readonly Picture[], backUrl: string,
 ): void {
@@ -268,13 +277,11 @@ export function drawStack(
   const step = Math.max(2, Math.round(face * 0.035));
   const layers = Math.min(geo.layers, stack.length);
   for (let i = layers - 1; i >= 0; i--) {
-    const img = document.createElement("img");
-    img.className = i ? "bd-back under" : "bd-back";
-    img.src = backUrl;
-    img.alt = "";
-    img.draggable = false;
-    img.style.cssText = `left:${x0}px;top:${faceTop + i * step}px;width:${face}px;height:${face}px;${i ? `filter:brightness(${(1 - i * 0.1).toFixed(2)})` : ""}`;
-    sv.el.append(img);
+    const back = document.createElement("div");
+    back.className = i ? "bd-back under" : "bd-back";
+    back.style.cssText = `left:${x0}px;top:${faceTop + i * step}px;width:${face}px;height:${face}px;${i ? `filter:brightness(${(1 - i * 0.1).toFixed(2)})` : ""}`;
+    back.style.backgroundImage = backImage(backUrl);
+    sv.el.append(back);
   }
   // the level's upcoming cards, face up: the next on the pile, the one after it fanned behind
   const shown = Math.min(peek, stack.length);

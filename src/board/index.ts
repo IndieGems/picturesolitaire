@@ -28,7 +28,7 @@ import {
 import { ease, setBatterySaver, setPaused, stopAll, tween, wait, run } from "./pace.ts";
 import { TUNING, applyTuning } from "./tuning.ts";
 import {
-  addRing, cellAt, drawPiece, drawRing, drawStack, keyOf, layout, mountDefs, nearestCell, place,
+  addRing, backImage, cellAt, drawPiece, drawRing, drawStack, keyOf, layout, mountDefs, nearestCell, place,
   type Art, type Geometry, type PieceView, type StackView,
 } from "./view.ts";
 
@@ -552,13 +552,12 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     v.y = sy;
     v.k = sk;
     v.el.style.visibility = "hidden";
-    let cover: HTMLImageElement | null = null;
+    let cover: HTMLDivElement | null = null;
     if (hidden) {
-      cover = document.createElement("img");
+      cover = document.createElement("div");
       cover.className = "bd-cover";
-      cover.src = backUrl;
-      cover.alt = "";
-      cover.style.cssText = `left:${m}px;top:${m}px;width:${geo.s}px;height:${geo.s}px;border-radius:${Math.round(geo.s * 0.14)}px`;
+      cover.style.backgroundImage = backImage(backUrl);
+      cover.style.cssText += `;left:${m}px;top:${m}px;width:${geo.s}px;height:${geo.s}px;border-radius:${Math.round(geo.s * 0.14)}px`;
       v.el.append(cover);
     }
     place(v);
