@@ -9,7 +9,7 @@ darker middle where the cards sit) and keeps the same chrome: frosted frames and
 buttons are drawn by the game and do not change per table. What changes per table:
 
   <name>-table.webp       the background, 1080x1920 (cover, centre top), like public/art/table.webp
-  <name>-stack-back.webp  the card back of the stacks, 256x256 with alpha
+  <name>-stack-back.webp  the card back of the stacks, 384x512 (portrait 3:4) with alpha
   <name>-particles.png    a strip of square frames drifting at the edges (snow, leaves...)
   <name>-thumb.webp       a 320x400 preview for the table picker (the top of the table)
 Every file name carries the table's name: the platform refuses a build in which two
@@ -108,9 +108,10 @@ def particles(master, out):
 
 
 def stack_back(master, out):
-    im = Image.open(master).convert("RGBA")
-    im = im.crop(im.getchannel("A").point(lambda v: 255 if v > 200 else 0).getbbox())
-    im.resize((256, 256), Image.LANCZOS).save(out, "WEBP", quality=85, alpha_quality=90, method=6)
+    sys.dont_write_bytecode = True
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from chrome import cut_back  # noqa: E402  (one cut for every table's back)
+    cut_back(Image.open(master).convert("RGBA")).save(out, "WEBP", quality=72, alpha_quality=75, method=6)
 
 
 def build():
@@ -153,7 +154,7 @@ def icon(name, pid):
     table = Image.open(OUT / name / f"{name}-table.webp").convert("RGB")
     w = table.width
     im = table.crop((0, 0, w, w)).resize((1024, 1024), Image.LANCZOS).convert("RGBA")
-    back = Image.open(OUT / name / f"{name}-stack-back.webp").convert("RGBA").resize((420, 420), Image.LANCZOS)
+    back = Image.open(OUT / name / f"{name}-stack-back.webp").convert("RGBA").resize((315, 420), Image.LANCZOS)
     for k in range(3, -1, -1):
         b = back.copy()
         if k:
