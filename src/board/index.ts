@@ -16,7 +16,7 @@
 
 import "./board.css";
 import CATALOGUE from "../content/pictures.json";
-import { emit } from "../events";
+import { emit, type GameEvents } from "../events";
 import { gem, onArcadePause, onPlayerPrefs } from "../gem";
 import { level as levelOf, levelCount, type Level } from "../game/levels.ts";
 import { nextMove } from "../game/solver/index.ts";
@@ -190,13 +190,15 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   let opened = false;
   let activeMs = 0;
   let since: number | null = null;
+  /** The win, as a claim needs it, from the moment the rules say the board is won (board:solved). */
+  let solved: GameEvents["board:solved"] | null = null;
   let geo: Geometry = layout(host.clientWidth || 360, host.clientHeight || 480, deal.cols, deal.rows);
   let live: PieceView[] = [];
   const stacks: StackView[] = [];
 
   // --- the clock for "time" on the win card: only while the board is in view
   const clockOn = () => {
-    if (since === null && !won) since = performance.now();
+    if (since === null && !won && !solved) since = performance.now();
   };
   const clockOff = () => {
     if (since !== null) activeMs += performance.now() - since;
@@ -899,8 +901,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     changed();
     if (isWon(state) && !won) {
       won = true;
-      clockOff();
-      emit("board:won", { level: name, moves: state.moves, ms: Math.round(activeMs), line: actions.map((a) => ("shuffle" in a ? { shuffle: true as const, board: [...a.board], stacks: a.stacks.map((st) => [...st]) } : { ...a })) });
+      announceIfSolved();
+      emit("board:won", solved!);
     } else if (isDeadEnd(state)) {
       emit("board:stuck", { doomed: false });
     }
@@ -932,6 +934,23 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     if (want.join("|") !== have.join("|") || !sameStacksShown) console.error("[board] the screen is out of step with the rules", { want, have });
   }
 
+  /**
+   * The rules say the board is won: say so at once, before the finish plays,
+   * so a game closed during the finish still has its win (the claim goes out
+   * on this). Once per board; board:won then reports the same numbers.
+   */
+  function announceIfSolved(): void {
+    if (solved || !isWon(state)) return;
+    clockOff();
+    solved = {
+      level: name,
+      moves: state.moves,
+      ms: Math.round(activeMs),
+      line: actions.map((a) => ("shuffle" in a ? { shuffle: true as const, board: [...a.board], stacks: a.stacks.map((st) => [...st]) } : { ...a })),
+    };
+    emit("board:solved", solved);
+  }
+
   async function play(m: Move, lifted: PieceView): Promise<void> {
     const out = move(state, m);
     if (!out) {
@@ -943,6 +962,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     history.push(state);
     actions.push(m);
     state = out.state;
+    announceIfSolved();
     await run2(() => show(out.steps, lifted));
   }
 
@@ -986,6 +1006,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       plans = [{ at: 0, line: lvl.line }];
       helpers = { ...TUNING.helpers };
       won = false;
+      solved = null;
       activeMs = 0;
       since = null;
       selected = null;
@@ -1298,11 +1319,14 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       actions.push(out.action);
       plans.push({ at: actions.length, line: out.line });
       state = out.state;
+      announceIfSolved();
       emit("helper:shuffle", { left: helpers.shuffle });
       void run2(() => show(out.steps));
     },
     restart() {
       stopHint();
+      // solved, the finish still playing: the win stands and the card follows
+      if (solved && !won) return;
       if (busy) {
         pendingRestart = true;
         return;

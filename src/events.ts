@@ -65,6 +65,15 @@ export interface GameEvents {
    * `moves` is the number of moves in it.
    */
   "board:won": { level: string; moves: number; ms: number; line: Action[] };
+  /**
+   * The board is won, said the moment the rules say so: right after the
+   * winning move (or a shuffle whose clear empties the board), BEFORE the
+   * finish plays. The same payload as board:won, which follows after the
+   * finish for the win card. Send anything that must not be lost (the win
+   * claim, saved progress) on this one: a game closed during the finish has
+   * still said it.
+   */
+  "board:solved": { level: string; moves: number; ms: number; line: Action[] };
   /** A board opened and play can begin. */
   "board:start": { level: string };
   /** Any button pressed in the interface (for its click sound). */
