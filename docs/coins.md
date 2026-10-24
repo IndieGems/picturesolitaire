@@ -12,9 +12,9 @@ shortest known win, rounded to 5. Campaign boards 10 to 40, challenge boards 10 
 
 ## The hourly maths (the standard: about 500 an hour of ordinary play)
 
-- Campaign: 30 boards, 840 Coins in all (740 without the onboarding prize).
+- Campaign: 30 boards, 850 Coins in all (750 without the onboarding prize).
   The design puts a relaxed board at 2 to 4 minutes. At 3 minutes a board, 26 a board
-  is about 510 Coins an hour; at 2 minutes 766, at 4 minutes 383.
+  is about 517 Coins an hour; at 2 minutes 776, at 4 minutes 388.
 - Challenge route: 20 boards, 540 Coins in all, 27 a board on average.
   At 4 minutes a board that is about 405 an hour; at 5 minutes 324.
 - Daily: 50 once a day, on top.
@@ -40,22 +40,22 @@ shortest known win, rounded to 5. Campaign boards 10 to 40, challenge boards 10 
 | c12 | campaign 12 | 26 | 30 |
 | c13 | campaign 13 | 26 | 30 |
 | c14 | campaign 14 | 15 | 15 |
-| c15 | campaign 15 | 36 | 40 |
+| c15 | campaign 15 | 33 | 35 |
 | c16 | campaign 16 | 15 | 15 |
 | c17 | campaign 17 | 26 | 30 |
 | c18 | campaign 18 | 27 | 30 |
 | c19 | campaign 19 | 21 | 25 |
-| c20 | campaign 20 | 30 | 35 |
+| c20 | campaign 20 | 28 | 30 |
 | c21 | campaign 21 | 24 | 25 |
 | c22 | campaign 22 | 20 | 20 |
 | c23 | campaign 23 | 27 | 30 |
 | c24 | campaign 24 | 27 | 30 |
-| c25 | campaign 25 | 26 | 30 |
+| c25 | campaign 25 | 35 | 40 |
 | c26 | campaign 26 | 20 | 20 |
-| c27 | campaign 27 | 27 | 30 |
-| c28 | campaign 28 | 23 | 25 |
+| c27 | campaign 27 | 29 | 30 |
+| c28 | campaign 28 | 28 | 30 |
 | c29 | campaign 29 | 25 | 30 |
-| c30 | campaign 30 | 34 | 35 |
+| c30 | campaign 30 | 38 | 40 |
 | ch01 | challenge 1 | 19 | 20 |
 | ch02 | challenge 2 | 21 | 25 |
 | ch03 | challenge 3 | 19 | 20 |
