@@ -6,24 +6,11 @@
   <meta name="theme-color" content="#252e3b" />
   <title>Picture Mend</title>
   <style>
-    /* Edge insets: the notch and the home indicator. Position anything anchored
-       to an edge with these, never with a bare env(): inside the arcade env() is
-       wrong in both directions, and the SDK writes --gem-safe-* from what the arcade
-       measured. The env() fallback covers a plain tab. */
     :root {
       --safe-top: var(--gem-safe-top, env(safe-area-inset-top, 0px));
       --safe-right: var(--gem-safe-right, env(safe-area-inset-right, 0px));
       --safe-bottom: var(--gem-safe-bottom, env(safe-area-inset-bottom, 0px));
       --safe-left: var(--gem-safe-left, env(safe-area-inset-left, 0px));
-      /* The corners the Arcade covers with its own controls: under the Gem
-         Arcade, its Gem button, top-left. Each is measured from that corner of
-         the game and moves with the layout, so keep anything the player must
-         read or press past them: a Home / Back button just right of the Gem
-         (left: var(--reserved-tl-width)), the game's own settings button
-         top-right (src/settings-screen.ts):
-         top: max(var(--safe-top), var(--reserved-tr-height)) + a gap.
-         0px outside the arcade; an SDK that predates them gets them inside
-         --safe-top instead, which the max() covers. */
       --reserved-tl-width: var(--gem-reserved-tl-width, 0px);
       --reserved-tl-height: var(--gem-reserved-tl-height, 0px);
       --reserved-tr-width: var(--gem-reserved-tr-width, 0px);
@@ -33,15 +20,7 @@
       --reserved-br-width: var(--gem-reserved-br-width, 0px);
       --reserved-br-height: var(--gem-reserved-br-height, 0px);
     }
-    /* The winter-dusk table's colour and the round type, so the loading text
-       already sits on the game's own ground (src/ui/style.css draws the rest). */
     html, body { margin: 0; height: 100%; background: #252e3b; color: #dfe7f1; font: 600 16px ui-rounded, "Segoe UI", system-ui, sans-serif; }
-    /* A long press, a drag, a double tap, a pinch and a swipe are the game's,
-       never the browser's: nothing selects (text fields opt back in: iOS will
-       not type into one under user-select: none), iOS shows no long-press
-       preview, no picture drags away, nothing zooms, and a swipe down never
-       pulls the page to refresh. src/main.ts refuses the browser's menu and
-       iOS's own pinch. A canvas the player drags on sets touch-action: none. */
     html, body { -webkit-user-select: none; user-select: none; }
     input, textarea, [contenteditable] { -webkit-user-select: text; user-select: text; }
     html, body { -webkit-touch-callout: none; }
@@ -52,7 +31,6 @@
   </style>
 </head>
 <body>
-  <!-- Static boot content: paints before any JS parses. -->
   <div id="boot">Loading Picture Mend&hellip;</div>
   <script type="module">import("./src/main.ts");</script>
 </body>

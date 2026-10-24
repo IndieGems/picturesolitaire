@@ -14,6 +14,23 @@
      shadow, slate ink: .glass (the level pill, the stats, the cards' panels).
    The amber count badge sits ON a helper button and belongs to it. */
 
+/* WHAT index.html's inline style sets, before any script runs (its own comments would
+   ship in the page as written, so the notes live here, where the build strips them):
+   - --safe-top/right/bottom/left: the notch and the home indicator. Anything anchored to
+     an edge uses these, never a bare env(): inside the Arcade env() is wrong in both
+     directions, and the SDK writes --gem-safe-* from what the Arcade measured; the env()
+     fallback covers a plain tab.
+   - --reserved-{tl,tr,bl,br}-{width,height}: the corners the Arcade covers with its own
+     controls (its Gem, top-left), each measured from its corner and moving with the
+     layout; 0px outside the Arcade. An SDK that predates them puts them in --safe-top,
+     which the max() of the top row covers.
+   - the page's ground (the table's colour and the round type), so the loading text sits
+     on the game's own colours;
+   - the page is not a web page: nothing selects (text fields opt back in: iOS will not
+     type into one under user-select: none), no long-press preview, no picture drags
+     away, nothing zooms (touch-action: pan-x pan-y), and a swipe down never pulls the
+     page to refresh (overscroll-behavior: none). src/ui/browser.ts refuses the
+     browser's menu and iOS's own pinch. */
 :root {
   --ink: #34435a;
   --ink-soft: #55657c;
