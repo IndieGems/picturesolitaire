@@ -23,6 +23,16 @@ save_schemas:
     access_game_server_read: true
     access_game_server_write: true
     max_size_bytes: 32768
+  # Wins the checker has not answered yet (src/net/claims.ts), kept so a win made
+  # just before the game closed is sent at the next start. The device's own word
+  # and nothing more: the checker replays each claim and applies each claim id once.
+  # At most 20 claims of a few KB each.
+  - key: claims
+    access_self_read: true
+    access_self_write: true
+    access_game_server_read: true
+    access_game_server_write: false
+    max_size_bytes: 131072
 
 config:
   # The board's tuning (src/board/tuning.ts has the defaults, and what each one

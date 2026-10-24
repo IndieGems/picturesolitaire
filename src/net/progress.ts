@@ -192,10 +192,11 @@ async function takeInOldSave(): Promise<unknown> {
   return answer.progress;
 }
 
-/** Start reading. Call once, at boot. */
+/** Start reading. Call once, at boot. Also sends again any win a previous session left unanswered. */
 export function loadProgress(): void {
   if (!framed) return;
   void read();
+  void import("./claims").then((m) => m.resumeClaims());
   onOnline((up) => {
     if (up && !known) {
       tries = 0;

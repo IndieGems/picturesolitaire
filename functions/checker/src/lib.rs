@@ -361,11 +361,11 @@ mod function {
             return Ok((progress::normal(Some(doc)), true));
         }
         Ok(match read_save(player, crate::LEGACY)? {
-            Some(old) => {
+            Some(old) if progress::has_progress(&old) => {
                 host::log(LogLevel::Info, "taking in the old campaign save");
                 (progress::import_legacy(&old), false)
             }
-            None => (progress::empty(), false),
+            _ => (progress::empty(), false),
         })
     }
 

@@ -51,6 +51,16 @@ pub fn normal(doc: Option<Value>) -> Value {
     d
 }
 
+/// Does an old device save hold progress worth taking in? The UI's slot also
+/// holds presentation state (the guide's step) that is no progress: a slot with
+/// only that is no old save. src/net/progress.ts asks the same question.
+pub fn has_progress(old: &Value) -> bool {
+    old["level"].as_u64().is_some_and(|l| l > 1)
+        || old["won"].as_u64().is_some_and(|w| w > 0)
+        || old["restored"].as_array().is_some_and(|r| !r.is_empty())
+        || old["best"].as_object().is_some_and(|b| !b.is_empty())
+}
+
 /// Take in an old device save (the UI's "campaign" slot, written by the game
 /// before progress moved to the server): { level, won, restored, best }.
 /// Its word is the device's, accepted ONCE so nobody loses progress; from then

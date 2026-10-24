@@ -21,19 +21,25 @@
 //     "refused" (not a win the rules allow: nothing paid). The device keeps no
 //     "paid" flag; what a board has paid is the platform's progression
 //     ("board_<id>", read with gem.me.progressions.get).
-// Held claims live for this session only: there is no browser storage
-// (AGENTS.md), and a claim cannot be saved to the cloud while offline anyway.
+//   - a claim outlives the page: until it is answered it is kept in the
+//     player's own "claims" save slot (there is no browser storage: AGENTS.md),
+//     sent at once when the page is hidden or closed or the Arcade is about to
+//     close the game, and resumed at the next start (resumeClaims, which
+//     loadProgress starts). The slot is the device's word and needs no more:
+//     the checker replays every claim and applies each claim id once. A claim
+//     made offline reaches the slot when the connection is back.
 //
 // Unframed (a plain tab) there is no platform: the claim resolves "unframed"
 // at once, after a local replay that warns in the console if the line would
 // not verify.
 
 import { GemFunctionError } from "@indiegems/gem-web-sdk/sdk";
-import { gem } from "../gem";
+import { gem, onWillTerminate } from "../gem";
 import { isWon, replay, type Action, type Deal } from "../game/rules";
 import { onOnline, online, suspect } from "../ui/online";
 import { dealHash } from "./deal-hash";
-import { answered, hold } from "./progress";
+import { noAnswer, refusalOf } from "./no-answer";
+import { answered, hold, type HeldWin } from "./progress";
 import { tableOf } from "./tables";
 
 export type Lane = "campaign" | "challenge" | "daily";
@@ -80,7 +86,10 @@ export type Verdict =
 interface Held {
   /** The claim's own id: the checker applies a claim to the progress record once, however often it is sent. */
   id: string;
-  claim: WinClaim;
+  lane: Lane;
+  board: string;
+  /** What it changes in progress() while it waits (kept with it, for a restart). */
+  effect: HeldWin;
   body: Record<string, unknown>;
   resolve: (v: Verdict) => void;
   tries: number;
@@ -90,6 +99,10 @@ interface Held {
 
 const framed = window.self !== window.top;
 const queue: Held[] = [];
+/** The save slot unanswered claims are kept in (game config, save_schemas). */
+const SLOT = "claims";
+/** The most claims kept for a restart (the newest). */
+const MAX_STORED = 20;
 const listeners = new Set<(v: Verdict) => void>();
 let pumping = false;
 let timer: number | undefined;
@@ -107,7 +120,7 @@ export const pendingClaims = (): number => queue.length;
 export function claimWin(claim: WinClaim): Promise<Verdict> {
   const id = crypto.randomUUID();
   // shown at once: src/net/progress.ts applies the win until the checker answers
-  hold(id, {
+  const effect: HeldWin = {
     lane: claim.lane,
     board: claim.board,
     ...(claim.n !== undefined ? { n: claim.n } : {}),
@@ -115,7 +128,8 @@ export function claimWin(claim: WinClaim): Promise<Verdict> {
     ms: Math.max(0, Math.round(claim.ms)),
     ...(claim.date ? { date: claim.date } : {}),
     pictures: claim.deal.pictures.map((p) => p.id),
-  });
+  };
+  hold(id, effect);
   if (!framed) {
     let wins = false;
     try {
@@ -141,7 +155,8 @@ export function claimWin(claim: WinClaim): Promise<Verdict> {
   if (claim.date) body.date = claim.date;
   if (claim.n !== undefined) body.n = claim.n;
   return new Promise((resolve) => {
-    queue.push({ id, claim, body, resolve, tries: 0, notBefore: 0 });
+    queue.push({ id, lane: claim.lane, board: claim.board, effect, body, resolve, tries: 0, notBefore: 0 });
+    void persist();
     void pump();
   });
 }
@@ -163,6 +178,7 @@ export function cueCoins(v: Verdict, from?: Element | null): boolean {
 
 function settle(h: Held, v: Verdict, record: unknown = null): void {
   queue.splice(queue.indexOf(h), 1);
+  void persist();
   // the server's word replaces the held win (a refusal just drops it)
   answered(h.id, record, v.status === "refused");
   h.resolve(v);
@@ -184,7 +200,7 @@ function schedule(): void {
 }
 
 async function send(h: Held): Promise<void> {
-  const { lane, board } = h.claim;
+  const { lane, board } = h;
   let answer: Record<string, unknown>;
   try {
     answer = (await gem.functions.invoke(h.body)).json() as Record<string, unknown>;
@@ -233,7 +249,7 @@ async function pump(): Promise<void> {
   pumping = true;
   clearTimeout(timer);
   try {
-    if (!online() || document.visibilityState === "hidden") return;
+    if (!online()) return;
     // the bridge and the player first: anything sent before them is dropped
     try {
       await gem.awaitIdentity(10_000);
@@ -253,15 +269,116 @@ async function pump(): Promise<void> {
   }
 }
 
+// ---------------------------------------------------------------- outliving the page
+
+/** The stored claims have been read this session: until then nothing is written over them. */
+let resumed = false;
+let resuming = false;
+let resumeTries = 0;
+/** The slot may hold claims (so an empty list is worth writing). */
+let storedAny = false;
+let writing = false;
+let rewrite = false;
+
+/** Keep the unanswered claims in the player's "claims" slot (one writer; the latest list wins). */
+async function persist(): Promise<void> {
+  if (!framed || !resumed) return;
+  if (writing) {
+    rewrite = true;
+    return;
+  }
+  writing = true;
+  try {
+    do {
+      rewrite = false;
+      const claims = queue.slice(-MAX_STORED).map((h) => ({ id: h.id, body: h.body, effect: h.effect }));
+      if (!claims.length && !storedAny) break;
+      try {
+        await gem.me.saves.put(SLOT, { v: 1, claims }, { timeoutMs: 10_000 });
+        storedAny = claims.length > 0;
+      } catch (err) {
+        console.warn(`[claims] could not keep the unanswered claims: ${refusalOf(err)}`);
+        if (!noAnswer(err)) break; // a refusal will not change by asking again
+        suspect();
+        rewrite = true;
+        if (!online()) break; // the connection's return writes them (onOnline)
+        await new Promise((r) => setTimeout(r, 3000));
+      }
+    } while (rewrite);
+  } finally {
+    writing = false;
+  }
+}
+
+/** Is this a claim as persist() keeps it? */
+function storedClaim(x: unknown): x is { id: string; body: Record<string, unknown>; effect: HeldWin } {
+  const c = x as { id?: unknown; body?: { lane?: unknown; board?: unknown }; effect?: { pictures?: unknown } } | null;
+  return !!c && typeof c.id === "string" && !!c.body && typeof c.body.lane === "string" && typeof c.body.board === "string" && !!c.effect && Array.isArray(c.effect.pictures);
+}
+
+/**
+ * Send again the claims a previous session left unanswered (kept in the
+ * "claims" slot). Started by loadProgress(); safe to call more than once.
+ * They show in progress() at once, and their verdicts reach onVerdict.
+ */
+export async function resumeClaims(): Promise<void> {
+  if (!framed || resumed || resuming) return;
+  resuming = true;
+  try {
+    await gem.awaitIdentity(10_000);
+    let stored: { claims?: unknown[] } | null = null;
+    try {
+      stored = await gem.me.saves.get<{ claims?: unknown[] }>(SLOT, { timeoutMs: 10_000 });
+    } catch (err) {
+      if (noAnswer(err) || (err as { reason?: string }).reason !== "not_found") throw err;
+    }
+    const list = Array.isArray(stored?.claims) ? stored.claims.filter(storedClaim) : [];
+    for (const c of list) {
+      if (queue.some((h) => h.id === c.id)) continue;
+      hold(c.id, c.effect);
+      queue.push({ id: c.id, lane: c.body.lane as Lane, board: String(c.body.board), effect: c.effect, body: c.body, resolve: () => {}, tries: 0, notBefore: 0 });
+    }
+    if (list.length) console.info(`[claims] sending again ${list.length} win(s) from last time`);
+    storedAny = list.length > 0;
+    resumed = true;
+    void persist(); // the merged list: claims made before the read are kept too
+    void pump();
+  } catch (err) {
+    if (noAnswer(err)) suspect();
+    console.warn(`[claims] the unanswered claims could not be read: ${refusalOf(err)}`);
+    window.setTimeout(() => void resumeClaims(), Math.min(30_000, 2000 * 2 ** resumeTries++));
+  } finally {
+    resuming = false;
+  }
+}
+
+/** The page is going (hidden, closed, or the Arcade is about to close it): send and keep everything now. */
+function flushNow(): void {
+  for (const h of queue) h.notBefore = 0;
+  void pump();
+  void persist();
+}
+
 if (framed) {
   // what was held goes out at once when the connection or the page comes back
   onOnline((up) => {
     if (!up) return;
+    if (!resumed) void resumeClaims();
     for (const h of queue) h.notBefore = 0;
     void pump();
+    void persist();
   });
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") void pump();
-    else clearTimeout(timer);
+    else {
+      clearTimeout(timer);
+      if (queue.length) flushNow();
+    }
+  });
+  addEventListener("pagehide", () => {
+    if (queue.length) flushNow();
+  });
+  onWillTerminate(() => {
+    if (queue.length) flushNow();
   });
 }

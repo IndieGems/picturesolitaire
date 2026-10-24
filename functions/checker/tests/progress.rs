@@ -113,6 +113,16 @@ fn an_old_device_save_is_taken_in_once() {
 }
 
 #[test]
+fn a_slot_with_only_the_guide_step_is_no_old_save() {
+    assert!(!progress::has_progress(&json!({ "v": 1, "guide": 5 })));
+    assert!(!progress::has_progress(&json!({ "v": 1, "level": 1, "won": 0, "restored": [], "best": {} })));
+    assert!(progress::has_progress(&json!({ "level": 2 })));
+    assert!(progress::has_progress(&json!({ "won": 1 })));
+    assert!(progress::has_progress(&json!({ "restored": ["a"] })));
+    assert!(progress::has_progress(&json!({ "best": { "ch01": 20 } })));
+}
+
+#[test]
 fn a_damaged_record_reads_as_a_well_formed_one() {
     assert_eq!(progress::normal(Some(json!("nope"))), progress::empty());
     let d = progress::normal(Some(json!({ "campaign": { "next": 0 }, "restored": "x", "extra": 1 })));
