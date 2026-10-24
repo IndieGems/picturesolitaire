@@ -43,6 +43,25 @@
             "prefix": "SOUNDBOARD_PORT "
           }
         ]
+      },
+      {
+        "id": "pictures",
+        "command": [
+          "node",
+          "tools/picture-library/server.mjs"
+        ],
+        "ports": [
+          {
+            "name": "port",
+            "env": "PICTURES_PORT"
+          }
+        ],
+        "ready": [
+          {
+            "name": "port",
+            "prefix": "PICTURES_PORT "
+          }
+        ]
       }
     ]
   },
@@ -52,6 +71,12 @@
       "label": "Sound board",
       "kind": "web",
       "url": "http://127.0.0.1:{soundboard.port}/"
+    },
+    {
+      "id": "picture-library",
+      "label": "Picture Library",
+      "kind": "web",
+      "url": "http://127.0.0.1:{pictures.port}/"
     }
   ]
 }

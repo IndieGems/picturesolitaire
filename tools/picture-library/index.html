@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Picture Library</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header class="bar">
+      <div class="title">
+        <h1>Picture Library</h1>
+        <p class="count" id="count">Loading…</p>
+      </div>
+      <div class="seg" role="radiogroup" aria-label="Group pictures">
+        <button type="button" role="radio" data-group="album" aria-checked="true">By album</button>
+        <button type="button" role="radio" data-group="family" aria-checked="false">By look-alike family</button>
+      </div>
+      <div class="filters">
+        <input id="find" type="search" placeholder="Find a picture" aria-label="Find a picture by name or subject" />
+        <label>Kind
+          <select id="medium">
+            <option value="">All</option>
+            <option value="photo">Photos</option>
+            <option value="painting">Paintings</option>
+          </select>
+        </label>
+        <label>Size <select id="size"><option value="">All</option></select></label>
+        <label>Family <select id="family"><option value="">All</option></select></label>
+        <label>Show
+          <select id="show">
+            <option value="">Every picture</option>
+            <option value="flagged">Flagged only</option>
+            <option value="ok">Not flagged</option>
+            <option value="unused">In no board</option>
+          </select>
+        </label>
+      </div>
+    </header>
+
+    <div id="notes" class="notes"></div>
+    <main id="grid" class="sections" aria-live="polite"></main>
+
+    <div id="detail" class="veil" hidden>
+      <article class="sheet" role="dialog" aria-modal="true" aria-labelledby="d-title">
+        <div class="sheet-top">
+          <button type="button" class="btn ghost" id="d-prev" aria-label="Previous picture">‹</button>
+          <button type="button" class="btn ghost" id="d-next" aria-label="Next picture">›</button>
+          <span class="spacer"></span>
+          <button type="button" class="btn ghost" id="d-close" aria-label="Close">✕</button>
+        </div>
+        <div class="sheet-body">
+          <figure class="big">
+            <div class="cut" id="d-cut"><img id="d-img" alt="" /></div>
+            <figcaption id="d-cutnote"></figcaption>
+          </figure>
+          <section class="facts">
+            <h2 id="d-title"></h2>
+            <p class="sub" id="d-sub"></p>
+            <p class="warn" id="d-warn" hidden></p>
+            <form class="flag" id="d-flag">
+              <label class="switch">
+                <input type="checkbox" id="d-flagged" />
+                <span>Don't use this picture</span>
+              </label>
+              <input id="d-note" type="text" maxlength="200" placeholder="Why? (optional)" aria-label="Note" />
+              <div class="quick" id="d-quick"></div>
+              <div class="flag-foot">
+                <span class="saved" id="d-saved" aria-live="polite"></span>
+              </div>
+            </form>
+            <dl id="d-facts"></dl>
+            <h3>Where it's used</h3>
+            <ul class="used" id="d-used"></ul>
+            <h3>Looks like</h3>
+            <div class="alike" id="d-alike"></div>
+          </section>
+        </div>
+      </article>
+    </div>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
