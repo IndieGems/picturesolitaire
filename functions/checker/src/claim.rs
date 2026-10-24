@@ -35,10 +35,26 @@ pub struct Known {
     pub deal: Deal,
 }
 
-/// Every deal compiled in (build.rs gathers them).
-pub fn deals() -> Vec<Known> {
+/// Everything compiled in: every deal (build.rs gathers them) and the campaign's order.
+pub struct Data {
+    pub known: Vec<Known>,
+    /// Campaign board ids in play order: position n plays campaign[(n - 1) % len].
+    pub campaign: Vec<String>,
+}
+
+pub fn data() -> Data {
     let text = include_str!(concat!(env!("OUT_DIR"), "/deals.json"));
     let data: Value = serde_json::from_str(text).expect("deals.json is the build's own output");
+    let campaign = data["campaign"].as_array().into_iter().flatten().filter_map(|v| v.as_str().map(str::to_string)).collect();
+    Data { known: known_of(&data), campaign }
+}
+
+/// Every deal compiled in.
+pub fn deals() -> Vec<Known> {
+    data().known
+}
+
+fn known_of(data: &Value) -> Vec<Known> {
     let mut out: Vec<Known> = Vec::new();
     for d in data["deals"].as_array().into_iter().flatten() {
         let Some(deal) = deal_of(d) else { continue };
@@ -151,6 +167,12 @@ pub struct Win {
     pub shuffles: u32,
     /// The time to show, held between moves x MIN_MS_PER_MOVE and MAX_MS.
     pub ms: u64,
+    /// The pictures of the board won (catalogue ids): they count as restored.
+    pub pictures: Vec<String>,
+    /// The claim's own id (the device makes one per win), so a resend changes nothing twice.
+    pub claim_id: Option<String>,
+    /// Campaign only: the position it was played at (from 1; past the last board it goes round).
+    pub n: Option<u64>,
 }
 
 /// Why a claim is not a win, as the game reads it.
@@ -190,7 +212,8 @@ fn is_date(s: &str) -> bool {
 }
 
 /// Check a claim against the compiled deals. Ok is a win the server stands behind.
-pub fn check(input: &[u8], known: &[Known]) -> Result<Win, Refusal> {
+pub fn check(input: &[u8], data: &Data) -> Result<Win, Refusal> {
+    let known = &data.known;
     let bad = |why: &str| Refusal::BadClaim(why.to_string());
     let c: Value = serde_json::from_slice(input).map_err(|_| bad("not JSON"))?;
     if c["v"].as_u64() != Some(1) {
@@ -215,6 +238,29 @@ pub fn check(input: &[u8], known: &[Known]) -> Result<Win, Refusal> {
         _ => None,
     };
     let line = line_of(&c["line"]).map_err(|e| Refusal::BadClaim(e))?;
+    let claim_id = match &c["id"] {
+        Value::Null => None,
+        Value::String(s) if !s.is_empty() && s.len() <= 64 && s.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'-' || b == b'_') => Some(s.clone()),
+        _ => return Err(bad("a claim id that is not a short token")),
+    };
+    // a campaign win names its position; a claim from before positions plays the first round
+    let n = match lane {
+        Lane::Campaign => {
+            if let Some(at) = data.campaign.iter().position(|id| *id == board) {
+                let n = match &c["n"] {
+                    Value::Null => at as u64 + 1,
+                    v => v.as_u64().filter(|n| *n >= 1 && *n < 1_000_000).ok_or_else(|| bad("a campaign position that is not a number"))?,
+                };
+                if (n - 1) % data.campaign.len() as u64 != at as u64 {
+                    return Err(bad("the campaign position is not this board's"));
+                }
+                Some(n)
+            } else {
+                None // a board that left the campaign: refused below, or an archived id
+            }
+        }
+        _ => None,
+    };
 
     let versions: Vec<&Known> = known.iter().filter(|k| k.lane == lane.name() && k.id == board).collect();
     if versions.is_empty() {
@@ -234,5 +280,6 @@ pub fn check(input: &[u8], known: &[Known]) -> Result<Win, Refusal> {
     }
     let claimed = c["ms"].as_u64().unwrap_or(0);
     let ms = claimed.max(s.moves as u64 * MIN_MS_PER_MOVE).min(MAX_MS);
-    Ok(Win { lane, board, date, moves: s.moves, shuffles: s.shuffles, ms })
+    let pictures = deal.pictures.iter().map(|p| p.id.clone()).collect();
+    Ok(Win { lane, board, date, moves: s.moves, shuffles: s.shuffles, ms, pictures, claim_id, n })
 }

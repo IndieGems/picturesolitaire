@@ -4,7 +4,7 @@
 //! vectors and passes their path in VECTORS:
 //!   VECTORS=<file> cargo test --release --test vectors -- --nocapture
 
-use checker::claim::{self, Known};
+use checker::claim;
 use checker::rules::{self, digest};
 use serde_json::Value;
 
@@ -70,13 +70,13 @@ fn rust_rules_agree_with_typescript() {
     }
 
     // ---------------------------------------------------------------- claims
-    let known: Vec<Known> = claim::deals();
+    let compiled = claim::data();
     let claims = data["claims"].as_array().expect("claims");
     for c in claims {
         let name = c["name"].as_str().unwrap_or("?");
         let input = c["input"].as_str().unwrap_or_default().as_bytes();
         let want = &c["expect"];
-        match claim::check(input, &known) {
+        match claim::check(input, &compiled) {
             Ok(win) => {
                 let ok = want["ok"] == true
                     && want["moves"].as_u64() == Some(win.moves as u64)

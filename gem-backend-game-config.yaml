@@ -3,14 +3,26 @@
 # (the gemctl:game-config skill). `gemctl config schema` is the authority on fields.
 
 save_schemas:
-  # The campaign: the board the player plays next, and boards won (src/ui/progress.ts).
-  # A few dozen bytes; the ceiling leaves room to grow without letting it run away.
+  # The UI's own slot (src/ui/progress.ts): presentation state the server does not
+  # decide (which onboarding steps the player has seen). Its old campaign fields
+  # (level, won, restored, best) are read ONCE by the win checker, to take in
+  # progress made before "progress" below existed; nothing else reads them.
   - key: campaign
     access_self_read: true
     access_self_write: true
     access_game_server_read: true
     access_game_server_write: true
     max_size_bytes: 16384
+  # The player's PROGRESS, owned by the server: the player reads it, and only the
+  # win checker (functions/checker, progress.rs) writes it, after replaying a win.
+  # The campaign position, wins, challenge bests, daily results (last ~100 days)
+  # and restored pictures: a few KB at most.
+  - key: progress
+    access_self_read: true
+    access_self_write: false
+    access_game_server_read: true
+    access_game_server_write: true
+    max_size_bytes: 32768
 
 config:
   # The board's tuning (src/board/tuning.ts has the defaults, and what each one

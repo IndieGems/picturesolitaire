@@ -59,6 +59,8 @@ fn main() {
 
     let mut deals: Vec<Value> = Vec::new();
     let mut lines: Vec<String> = Vec::new();
+    // the campaign's order (its file's order): position n plays board (n - 1) % len
+    let mut campaign: Vec<Value> = Vec::new();
     for lane in LANES {
         let file = levels.join(format!("{lane}.json"));
         println!("cargo:rerun-if-changed={}", file.display());
@@ -67,6 +69,9 @@ fn main() {
         for l in data["levels"].as_array().expect("a level file has a levels list") {
             deals.push(compact(lane, l));
             lines.push(line_of(lane, l));
+            if lane == "campaign" {
+                campaign.push(l["id"].clone());
+            }
         }
     }
     println!("cargo:rustc-env=PICTURE_MEND_LEVELS={}", levels_hash(lines));
@@ -81,7 +86,7 @@ fn main() {
     let mut seen = std::collections::HashSet::new();
     deals.retain(|d| seen.insert(d.to_string()));
     let out = Path::new(&env::var("OUT_DIR").unwrap()).join("deals.json");
-    fs::write(out, json!({ "deals": deals }).to_string()).unwrap();
+    fs::write(out, json!({ "deals": deals, "campaign": campaign }).to_string()).unwrap();
 
     // which campaign board grants which table item (src/net/tables.json)
     let tables_file = Path::new(&here).join("../../src/net/tables.json");

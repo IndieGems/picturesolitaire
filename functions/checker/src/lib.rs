@@ -16,12 +16,19 @@
 //! with (claim::LEVELS): tools/server/upload.mts records it, and the game build
 //! refuses to ship boards the uploaded checker does not know.
 //!
+//! THE PLAYER'S PROGRESS is the server's too (progress.rs): every verified win
+//! updates the "progress" save slot, which only this function writes, BEFORE
+//! anything is paid, and the verdict carries the new record. The first time, an
+//! old device save (the "campaign" slot) is taken in once. {"v":1,"what":"progress"}
+//! does only that: reads the record, taking in an old save if there is no record.
+//!
 //! Who pays is always the player who called (get-context), never anyone the
 //! input names. Every progression this writes has `function_may_grant: true`:
 //! this function is the only check on what they pay.
 
 pub mod canon;
 pub mod claim;
+pub mod progress;
 pub mod rules;
 
 /// The daily challenge's progression (gem-backend-game-config.yaml): its id and slug.
@@ -29,6 +36,10 @@ pub const DAILY_ID: &str = "6d1f3b0e-8a52-4c7e-9f14-2b6e0d9a7c31";
 pub const DAILY_SLUG: &str = "daily_picture";
 /// The run type the daily's results are posted as, and its board.
 pub const DAILY_RUN: &str = "daily_result";
+/// The save slot holding the player's progress, written only by this function.
+pub const PROGRESS: &str = "progress";
+/// The old device-written slot, taken in once (src/ui/progress.ts wrote it).
+pub const LEGACY: &str = "campaign";
 
 /// The progression slug that pays for one campaign or challenge board.
 pub fn board_slug(board: &str) -> String {
@@ -67,10 +78,11 @@ mod function {
         world: "function",
     });
 
-    use gem::functions::host::{self, ApiRequest, Caller, LogLevel};
+    use gem::functions::host::{self, ApiRequest, Caller, LogLevel, UploadRequest};
     use serde_json::{json, Value};
 
     use crate::claim::{self, Lane, Refusal, Win};
+    use crate::progress::{self, Wait};
 
     struct Function;
 
@@ -221,22 +233,24 @@ mod function {
             .and_then(|c| c["period_local_date"].as_str().map(str::to_string)))
     }
 
-    fn daily_win(game: &str, player: &str, win: &Win) -> Value {
+    /// Is the daily's date the player's own today (Ok(false)), or yesterday (Ok(true), late)? Err: the verdict.
+    fn daily_day(player: &str, win: &Win) -> Result<bool, Value> {
         let date = win.date.clone().unwrap_or_default();
-        let today = match daily_date(player, 0) {
-            Ok(Some(d)) => d,
-            Ok(None) => return retry("config"),
-            Err(v) => return v,
+        let today = match daily_date(player, 0)? {
+            Some(d) => d,
+            None => return Err(retry("config")),
         };
-        let late = if date == today {
-            false
-        } else {
-            match daily_date(player, 1) {
-                Ok(Some(d)) if d == date => true,
-                Ok(_) => return json!({ "v": 1, "status": "refused", "reason": "wrong_day", "lane": "daily", "board": win.board, "today": today }),
-                Err(v) => return v,
-            }
-        };
+        if date == today {
+            return Ok(false);
+        }
+        match daily_date(player, 1)? {
+            Some(d) if d == date => Ok(true),
+            _ => Err(json!({ "v": 1, "status": "refused", "reason": "wrong_day", "lane": "daily", "board": win.board, "today": today })),
+        }
+    }
+
+    fn daily_win(game: &str, player: &str, win: &Win, late: bool) -> Value {
+        let date = win.date.clone().unwrap_or_default();
 
         // the result, on the date's board (moves, then time); the first one a day stands
         let run = json!({ "runs": [{
@@ -280,6 +294,124 @@ mod function {
         }
     }
 
+    /// Read one of the player's save slots: Ok(None) when there is none.
+    fn read_save(player: &str, key: &str) -> Result<Option<Value>, Value> {
+        let rec = api("GET", format!("/v1/saves/players/{player}/{key}"), None).map_err(|_| retry("platform"))?;
+        if rec.status == 404 {
+            return Ok(None);
+        }
+        if !(200..300).contains(&rec.status) {
+            host::log(LogLevel::Warn, &format!("save {key} answered {}: {}", rec.status, rec.body));
+            return Err(retry(if passing(rec.status) { "platform" } else { "config" }));
+        }
+        let url = rec.body["download_url"].as_str().unwrap_or_default();
+        let got = host::download_link(url).map_err(|e| {
+            host::log(LogLevel::Warn, &format!("save {key}: download refused: {e}"));
+            retry("platform")
+        })?;
+        if got.status != 200 {
+            host::log(LogLevel::Warn, &format!("save {key}: download answered {}", got.status));
+            return Err(retry("platform"));
+        }
+        Ok(serde_json::from_slice(&got.body).ok())
+    }
+
+    /// Write one of the player's save slots, as JSON.
+    fn write_save(player: &str, key: &str, value: &Value) -> Result<(), Value> {
+        let bytes = value.to_string().into_bytes();
+        let path = format!("/v1/saves/players/{player}/{key}");
+        let started = api("POST", format!("{path}/upload-url"), Some(json!({ "size_bytes": bytes.len(), "content_type": "application/json" })))
+            .map_err(|_| retry("platform"))?;
+        if started.status != 200 {
+            host::log(LogLevel::Warn, &format!("save {key}: upload-url answered {}: {}", started.status, started.body));
+            return Err(retry(if passing(started.status) { "platform" } else { "config" }));
+        }
+        let headers = started.body["upload_headers"]
+            .as_object()
+            .into_iter()
+            .flatten()
+            .map(|(k, v)| (k.clone(), v.as_str().unwrap_or_default().to_string()))
+            .collect();
+        let sent = host::upload_link(&UploadRequest {
+            url: started.body["upload_url"].as_str().unwrap_or_default().to_string(),
+            content_type: "application/json".into(),
+            headers,
+            body: bytes,
+        })
+        .map_err(|e| {
+            host::log(LogLevel::Warn, &format!("save {key}: upload refused: {e}"));
+            retry("platform")
+        })?;
+        if !(200..300).contains(&sent.status) {
+            host::log(LogLevel::Warn, &format!("save {key}: upload answered {}", sent.status));
+            return Err(retry("platform"));
+        }
+        let done = api("POST", format!("{path}/finalize"), Some(json!({ "session_id": started.body["session_id"] }))).map_err(|_| retry("platform"))?;
+        if done.status != 200 {
+            host::log(LogLevel::Warn, &format!("save {key}: finalize answered {}: {}", done.status, done.body));
+            return Err(retry("platform"));
+        }
+        Ok(())
+    }
+
+    /// The player's progress record, and whether it is stored yet. With none
+    /// stored, an old device save ("campaign") is taken in.
+    fn read_progress(player: &str) -> Result<(Value, bool), Value> {
+        if let Some(doc) = read_save(player, crate::PROGRESS)? {
+            return Ok((progress::normal(Some(doc)), true));
+        }
+        Ok(match read_save(player, crate::LEGACY)? {
+            Some(old) => {
+                host::log(LogLevel::Info, "taking in the old campaign save");
+                (progress::import_legacy(&old), false)
+            }
+            None => (progress::empty(), false),
+        })
+    }
+
+    /// The record as the game reads it (without the claim ids it keeps).
+    fn public(doc: &Value) -> Value {
+        let mut d = doc.clone();
+        if let Some(m) = d.as_object_mut() {
+            m.remove("seen");
+        }
+        d
+    }
+
+    /// A verified win: the record first, then the payment, so a payment never
+    /// lands without its progress, and a resent claim changes the record once.
+    fn verified(game: &str, player: &str, win: &Win) -> Value {
+        let late = match win.lane {
+            Lane::Daily => match daily_day(player, win) {
+                Ok(late) => late,
+                Err(v) => return v,
+            },
+            _ => false,
+        };
+        let (mut doc, stored) = match read_progress(player) {
+            Ok(r) => r,
+            Err(v) => return v,
+        };
+        match progress::apply(&mut doc, win, win.claim_id.as_deref(), win.n) {
+            Err(Wait::Order) => return retry("order"),
+            Ok(changed) => {
+                if changed || !stored {
+                    if let Err(v) = write_save(player, crate::PROGRESS, &doc) {
+                        return v;
+                    }
+                }
+            }
+        }
+        let mut verdict = match win.lane {
+            Lane::Daily => daily_win(game, player, win, late),
+            _ => board_win(player, win),
+        };
+        if verdict["status"] != "retry" {
+            verdict["progress"] = public(&doc);
+        }
+        verdict
+    }
+
     impl Guest for Function {
         fn handle(input: Vec<u8>) -> Result<Vec<u8>, String> {
             let ctx = host::get_context();
@@ -289,8 +421,22 @@ mod function {
             if serde_json::from_slice::<Value>(&input).ok().and_then(|v| v.get("what").cloned()) == Some(json!("levels")) {
                 return Ok(json!({ "v": 1, "levels": claim::LEVELS }).to_string().into_bytes());
             }
-            let known = claim::deals();
-            let verdict = match claim::check(&input, &known) {
+            if serde_json::from_slice::<Value>(&input).ok().and_then(|v| v.get("what").cloned()) == Some(json!("progress")) {
+                let verdict = match read_progress(&player) {
+                    Ok((doc, stored)) => {
+                        if !stored && doc.get("imported").is_some() {
+                            if let Err(v) = write_save(&player, crate::PROGRESS, &doc) {
+                                return Ok(v.to_string().into_bytes());
+                            }
+                        }
+                        json!({ "v": 1, "status": "progress", "progress": public(&doc) })
+                    }
+                    Err(v) => v,
+                };
+                return Ok(verdict.to_string().into_bytes());
+            }
+            let data = claim::data();
+            let verdict = match claim::check(&input, &data) {
                 Err(r) => {
                     host::log(LogLevel::Info, &format!("refused: {r:?}"));
                     let status = if r == Refusal::UnknownDeal { "retry" } else { "refused" };
@@ -298,10 +444,7 @@ mod function {
                 }
                 Ok(win) => {
                     host::log(LogLevel::Info, &format!("won {} {} in {} moves, {} shuffles", win.lane.name(), win.board, win.moves, win.shuffles));
-                    match win.lane {
-                        Lane::Daily => daily_win(&ctx.game_id, &player, &win),
-                        _ => board_win(&player, &win),
-                    }
+                    verified(&ctx.game_id, &player, &win)
                 }
             };
             Ok(verdict.to_string().into_bytes())

@@ -6,7 +6,8 @@
 // 1. tools/server/vectors.mts plays every shipped board's line and N random
 //    games on src/game/rules.ts, and writes every state and some claims;
 // 2. the Rust port replays them (functions/checker/tests/vectors.rs) and must
-//    reach every state, and give every claim the expected verdict.
+//    reach every state, and give every claim the expected verdict;
+// 3. the progress record's rules (functions/checker/tests/progress.rs).
 // Run it after any change to src/game/rules.ts, the Shuffle helper, the level
 // files, or functions/checker/src. Needs Rust (cargo) for this machine.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
@@ -26,7 +27,7 @@ try {
   if (ts.status !== 0) throw new Error("the TypeScript side could not write the vectors");
   const rust = spawnSync(
     "cargo",
-    ["test", "--release", "--quiet", "--manifest-path", join(root, "functions/checker/Cargo.toml"), "--test", "vectors", "--", "--nocapture"],
+    ["test", "--release", "--quiet", "--manifest-path", join(root, "functions/checker/Cargo.toml"), "--test", "vectors", "--test", "progress", "--", "--nocapture"],
     { stdio: "inherit", env: { ...process.env, VECTORS: vectors } },
   );
   if (rust.error) throw rust.error;

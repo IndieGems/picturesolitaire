@@ -239,6 +239,18 @@ let older = 0;
   }
 }
 
+// campaign positions: board i plays at i + 1, and again each round after the last
+{
+  const camp = boards.filter((b) => b.lane === "campaign");
+  camp.forEach((b, i) => {
+    const base = { v: 1, lane: "campaign", board: b.id, deal: dealHash(b.deal), line: b.line, ms: 90_000, id: `claim-${b.id}` };
+    const ok = { ok: true, moves: b.line.length, shuffles: 0, ms: Math.max(90_000, b.line.length * MIN_MS_PER_MOVE) };
+    claim(`campaign ${b.id}: at its position, round 2`, { ...base, n: i + 1 + camp.length }, ok);
+    if (camp.length > 1) claim(`campaign ${b.id}: at another board's position`, { ...base, n: ((i + 1) % camp.length) + 1 }, { reason: "bad_claim" });
+  });
+  claim("a claim id that is not a short token", { v: 1, lane: "campaign", board: camp[0].id, deal: dealHash(camp[0].deal), line: camp[0].line, ms: 1, id: "has spaces!" }, { reason: "bad_claim" });
+}
+
 const b0 = boards[0];
 const base0 = { v: 1, lane: b0.lane, board: b0.id, deal: dealHash(b0.deal), line: b0.line, ms: 60_000 };
 if (b0.lane === "daily") base0.date = b0.id.slice(1);
