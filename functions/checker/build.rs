@@ -8,10 +8,32 @@
 //
 // The lane is the file's name: campaign.json -> "campaign", challenge.json ->
 // "challenge", daily.json -> "daily". Other files are not lanes the checker pays.
+//
+// It also fingerprints the level files (canon.rs, levels_hash) into
+// PICTURE_MEND_LEVELS, which the function reports and the game build checks
+// (tools/server/levels-check.mts).
 
 use std::{env, fs, path::Path};
 
 use serde_json::{json, Value};
+
+include!("src/canon.rs");
+
+/** "lane/id/dealHash" for a level as the files store it. */
+fn line_of(lane: &str, l: &Value) -> String {
+    let cards = |v: &Value| v.as_array().map(|a| a.iter().map(|c| c.as_i64().unwrap_or(0)).collect::<Vec<i64>>()).unwrap_or_default();
+    let pictures: Vec<(String, u64, u64)> = l["pictures"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .map(|p| (p["id"].as_str().unwrap_or_default().to_string(), p["cols"].as_u64().unwrap_or(0), p["rows"].as_u64().unwrap_or(0)))
+        .collect();
+    let stacks: Vec<Vec<i64>> = l["stacks"].as_array().into_iter().flatten().map(cards).collect();
+    let board = if l["board"].is_null() { None } else { Some(cards(&l["board"])) };
+    let seed = (l["seed"].as_i64().unwrap_or(0) as u64 & 0xffff_ffff) as u32;
+    let text = deal_text(l["cols"].as_u64().unwrap_or(0), l["rows"].as_u64().unwrap_or(0), &pictures, &stacks, seed, board.as_deref());
+    format!("{lane}/{}/{}", l["id"].as_str().unwrap_or_default(), fnv32(&text))
+}
 
 const LANES: [&str; 3] = ["campaign", "challenge", "daily"];
 
@@ -36,6 +58,7 @@ fn main() {
     println!("cargo:rerun-if-changed={}", levels.display());
 
     let mut deals: Vec<Value> = Vec::new();
+    let mut lines: Vec<String> = Vec::new();
     for lane in LANES {
         let file = levels.join(format!("{lane}.json"));
         println!("cargo:rerun-if-changed={}", file.display());
@@ -43,8 +66,10 @@ fn main() {
         let data: Value = serde_json::from_str(&text).unwrap_or_else(|e| panic!("{}: {e}", file.display()));
         for l in data["levels"].as_array().expect("a level file has a levels list") {
             deals.push(compact(lane, l));
+            lines.push(line_of(lane, l));
         }
     }
+    println!("cargo:rustc-env=PICTURE_MEND_LEVELS={}", levels_hash(lines));
     if let Ok(text) = fs::read_to_string(&archive) {
         let data: Value = serde_json::from_str(&text).unwrap_or_else(|e| panic!("{}: {e}", archive.display()));
         for d in data["deals"].as_array().expect("the archive has a deals list") {

@@ -103,6 +103,11 @@ fn rust_rules_agree_with_typescript() {
         }
     }
 
+    // ---------------------------------------------------------------- the level data fingerprint
+    if data["levels"].as_str() != Some(claim::LEVELS) {
+        failures.push(format!("level data fingerprint differs: ts {} rust {}", data["levels"], claim::LEVELS));
+    }
+
     println!(
         "rust: {} games, {actions} actions, {} claims, {} deal hashes checked; shuffles as {}",
         games.len(),

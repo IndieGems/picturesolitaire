@@ -86,20 +86,16 @@ fn cards(v: &Value) -> Option<Vec<i32>> {
 /// cols x rows ; picture:cols x rows,... ; stack cards joined by "," and stacks by "/" ; seed
 /// [; the cards already on the board, joined by ",", only when the deal places some]
 pub fn deal_hash(d: &Deal) -> String {
-    let pictures = d.pictures.iter().map(|p| format!("{}:{}x{}", p.id, p.cols, p.rows)).collect::<Vec<_>>().join(",");
-    let stacks = d.stacks.iter().map(|s| s.iter().map(|c| c.to_string()).collect::<Vec<_>>().join(",")).collect::<Vec<_>>().join("/");
-    let mut text = format!("{}x{};{};{};{}", d.cols, d.rows, pictures, stacks, d.seed);
-    if let Some(b) = &d.board {
-        text.push(';');
-        text.push_str(&b.iter().map(|c| c.to_string()).collect::<Vec<_>>().join(","));
-    }
-    let mut h: u32 = 0x811c_9dc5;
-    for b in text.bytes() {
-        h ^= b as u32;
-        h = h.wrapping_mul(0x0100_0193);
-    }
-    format!("{h:08x}")
+    let pictures: Vec<(String, u64, u64)> = d.pictures.iter().map(|p| (p.id.clone(), p.cols as u64, p.rows as u64)).collect();
+    let stacks: Vec<Vec<i64>> = d.stacks.iter().map(|s| s.iter().map(|&c| c as i64).collect()).collect();
+    let board: Option<Vec<i64>> = d.board.as_ref().map(|b| b.iter().map(|&c| c as i64).collect());
+    crate::canon::fnv32(&crate::canon::deal_text(d.cols as u64, d.rows as u64, &pictures, &stacks, d.seed, board.as_deref()))
 }
+
+/// The fingerprint of the level files this checker was built with (build.rs):
+/// tools/server/levels-check.mts compares it with the game's, so a game build
+/// cannot ship boards the uploaded checker does not know.
+pub const LEVELS: &str = env!("PICTURE_MEND_LEVELS");
 
 /// A line, as the board records it (src/game/rules.ts, Action).
 pub fn line_of(v: &Value) -> Result<Vec<Action>, String> {

@@ -12,10 +12,15 @@
 //! The verdict goes back as JSON; the device follows it, never the other way.
 //! Platform refusals that may pass (busy, rate limited) answer "retry".
 //!
+//! {"v":1,"what":"levels"} asks only which level data the checker was built
+//! with (claim::LEVELS): tools/server/upload.mts records it, and the game build
+//! refuses to ship boards the uploaded checker does not know.
+//!
 //! Who pays is always the player who called (get-context), never anyone the
 //! input names. Every progression this writes has `function_may_grant: true`:
 //! this function is the only check on what they pay.
 
+pub mod canon;
 pub mod claim;
 pub mod rules;
 
@@ -214,6 +219,9 @@ mod function {
             let Caller::Player(player) = ctx.caller else {
                 return Err("this function checks a player's own win: call it as a player".into());
             };
+            if serde_json::from_slice::<Value>(&input).ok().and_then(|v| v.get("what").cloned()) == Some(json!("levels")) {
+                return Ok(json!({ "v": 1, "levels": claim::LEVELS }).to_string().into_bytes());
+            }
             let known = claim::deals();
             let verdict = match claim::check(&input, &known) {
                 Err(r) => {

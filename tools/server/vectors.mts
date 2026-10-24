@@ -23,6 +23,7 @@ import { fileURLToPath } from "node:url";
 import * as R from "../../src/game/rules.ts";
 import { dealHash } from "../../src/net/deal-hash.ts";
 import { arrangeRef } from "./arrange-ref.mts";
+import { levelsHash } from "./levels-hash.mts";
 
 const { EMPTY, allMoves, isWon, move, pieces, random, start } = R;
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
@@ -268,6 +269,6 @@ try {
 // the deal hash, on every game's deal (some random ones place cards on the board)
 const hashes = games.map((g) => ({ deal: g.deal, hash: dealHash(g.deal) }));
 
-writeFileSync(out, JSON.stringify({ arrangeFrom, games, claims, hashes }));
+writeFileSync(out, JSON.stringify({ arrangeFrom, games, claims, hashes, levels: levelsHash() }));
 const actions = games.reduce((n, g) => n + g.actions.length, 0);
 console.log(`vectors: ${games.length} games (${boards.length} shipped boards, ${GAMES} random, ${rescues} with a rescue shuffle), ${actions} actions, ${claims.length} claims; shuffles checked by ${arrangeFrom}`);
