@@ -19,7 +19,7 @@
 // deal that passes, so a level is (spec, seed), and its data is checked against
 // a fresh deal from the same pair (tools/levels/check.mts).
 
-import { cardsOf, isDeadEnd, joinCount, random, start, type Deal, type Move, type Picture } from "../rules.ts";
+import { allMoves, cardsOf, isDeadEnd, joinCount, move, random, start, type Deal, type Move, type Picture } from "../rules.ts";
 import { Game, solveDeal, type Step } from "../solver/index.ts";
 import { along, careless, chain, chainOf, orderTraps, traps, unavoidable, wait } from "../solver/metrics.ts";
 import { parLine, type ParOptions } from "../solver/par.ts";
@@ -51,6 +51,21 @@ export interface Spec {
   targets: Targets;
   /** Store the par line (fewest moves found) instead of the solver's first line. */
   par?: ParOptions | true;
+  /**
+   * No single move from the opening may leave the board at a dead end (full,
+   * with no picture whole on it). The relaxed campaign's rule (creator's lead,
+   * 2026-10-23): its traps come later, never on the first move.
+   */
+  safeFirstMove?: boolean;
+}
+
+/** The moves from the opening that leave the board at a dead end at once. */
+export function deadFirstMoves(deal: Deal): Move[] {
+  const s = start(deal).state;
+  return allMoves(s).filter((m) => {
+    const out = move(s, m);
+    return out !== null && isDeadEnd(out.state);
+  });
 }
 
 export interface Measures {
@@ -108,7 +123,7 @@ export function dealFor(spec: Spec, seed: number): Deal {
 const inside = (v: number, r?: Range) => !r || (v >= r[0] - 1e-9 && v <= r[1] + 1e-9);
 
 /** Why a deal was turned down, for the generator's tally. */
-export type Verdict = "joined" | "dead" | "lost" | "careless" | "chain" | "wait" | "unproven" | "traps" | "order" | "kept";
+export type Verdict = "joined" | "dead" | "lost" | "careless" | "chain" | "wait" | "opening" | "unproven" | "traps" | "order" | "kept";
 
 /** Measure one deal and keep it if it meets the spec; else say why not. */
 export function judge(spec: Spec, deal: Deal): Made | Verdict {
@@ -126,6 +141,7 @@ export function judge(spec: Spec, deal: Deal): Made | Verdict {
   if (!inside(bw, spec.targets.bigWait)) return "wait";
   const ot = unavoidable(game, "clear");
   if (!inside(ot, spec.targets.orderTraps)) return "order";
+  if (spec.safeFirstMove && deadFirstMoves(deal).length) return "opening";
   const a = solveDeal(deal);
   if (!("win" in a)) return "unproven";
   let line = a.win;

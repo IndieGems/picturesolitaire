@@ -37,7 +37,7 @@ daily puzzle in [daily.md](daily.md).
 | 17 | build | 7 | 3 lavender, 2 autumn rust | 4 6 2 6 6 2 6 | 1x2 2x2 2x3 3x2 | 4x5 | 32 (12) | 1 | 3 | 79% | 1 | 26 |
 | 18 | demand | 7 | 3 warm dusk | 2 4 9 6 4 4 2 | 1x2 2x1 2x2 3x2 3x3 | 4x5 | 31 (11) | 0 | 3 | 67% | 1 | 27 |
 | 19 | relief | 6 | 2 lemon yellow | 4 6 2 4 4 6 | 2x1 2x2 2x3 3x2 | 4x5 | 26 (6) | 1 | 2 | 100% | 0 | 21 |
-| 20 | demand | 8 | 3 berry red, 2 sea blue | 6 2 4 2 6 2 6 6 | 1x2 2x2 2x3 3x2 | 4x5 | 34 (14) | 1 | 4 | 50% | 1 | 30 |
+| 20 | demand | 8 | 3 berry red, 2 sea blue | 6 2 4 2 6 2 6 6 | 1x2 2x2 2x3 3x2 | 4x5 | 34 (14) | 1 | 4 | 65% | 1 | 25 |
 | 21 | build | 6 | 4 pink bloom | 4 6 6 4 6 6 | 2x2 2x3 3x2 | 4x5 | 32 (12) | 1 | 3 | 78% | 1 | 24 |
 | 22 | relief | 7 | 2 lavender, 2 sea blue | 2 4 4 4 4 4 4 | 2x1 2x2 | 4x5 | 26 (6) | 2 | 2 | 100% | 0 | 20 |
 | 23 | demand | 7 | 4 blue hour, 2 lemon yellow | 2 2 4 6 9 4 6 | 2x1 2x2 2x3 3x2 3x3 | 4x5 | 33 (13) | 0 | 4 | 67% | 1 | 27 |

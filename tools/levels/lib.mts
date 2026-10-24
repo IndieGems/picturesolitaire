@@ -78,7 +78,7 @@ export function balance(plan, chosen) {
  * `reseedOf(i, attempt)` (the plan's row decides the rest). Updates `chosen`
  * and `uses`. Returns the board's record for the boards file.
  */
-export function makeBoard(plan, i, chosen, uses, { id, cols, rows, reseedOf, par, tries = 3000, attempts = 12, extra, vary = false }) {
+export function makeBoard(plan, i, chosen, uses, { id, cols, rows, reseedOf, par, tries = 3000, attempts = 12, extra, vary = false, safeFirstMove = false }) {
   const row = plan[i];
   let pictures = chosen[i];
   // with `vary`, pictures of sets that found no deal count as used more, so the next pick differs
@@ -96,7 +96,7 @@ export function makeBoard(plan, i, chosen, uses, { id, cols, rows, reseedOf, par
     // the deal is shuffled from the pictures in a fixed order, so it does not hang on how they were picked
     pictures = [...pictures].sort((a, b) => (a.id < b.id ? -1 : 1));
     const targets = { chain: row.chain, careless: row.careless, bigWait: row.bigWait, orderTraps: row.orderTraps };
-    const spec = { id, cols, rows, pictures, targets, par };
+    const spec = { id, cols, rows, pictures, targets, par, safeFirstMove };
     const tally = new Map();
     const made = generate(spec, 1, tries, tally);
     if (!made) {

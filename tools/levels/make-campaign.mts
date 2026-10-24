@@ -25,6 +25,8 @@ const levels = PLAN.map((row, i) =>
     id: `c${String(i + 1).padStart(2, "0")}`,
     ...BOARD,
     reseedOf: (i, attempt) => 0xbadcafe + i * 7919 + attempt * 104729,
+    // the relaxed campaign's rule: no first move leaves the board stuck (AGENTS.md)
+    safeFirstMove: true,
   }),
 );
 writeBoards(join(root, "src/content/levels/campaign.json"), "relaxed campaign; made by tools/levels/make-campaign.mts, checked by tools/levels/check.mts", levels);

@@ -14,7 +14,9 @@
 //     axes stored with the board are what the deal measures;
 //   - a board with a par: the par is the stored line's length (so the par is
 //     always reachable, by that line);
-//   - a daily board: its id is "d" + its date, and dates run one a day.
+//   - a daily board: its id is "d" + its date, and dates run one a day;
+//   - the relaxed campaign (campaign.json): no single move from the opening
+//     leaves the board at a dead end (AGENTS.md).
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
 import { readdirSync, readFileSync } from "node:fs";
@@ -23,7 +25,7 @@ import { fileURLToPath } from "node:url";
 import { cardsOf, isDeadEnd, isWon, joinCount, replay, start } from "../../src/game/rules.ts";
 import { Game } from "../../src/game/solver/index.ts";
 import { along, careless, chain, orderTraps, traps, unavoidable, wait } from "../../src/game/solver/metrics.ts";
-import { BIG, dealFor } from "../../src/game/levels/generate.ts";
+import { BIG, dealFor, deadFirstMoves } from "../../src/game/levels/generate.ts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const catalogue = new Map(JSON.parse(readFileSync(join(root, "src/content/pictures.json"), "utf8")).pictures.map((p) => [p.id, p]));
@@ -66,6 +68,10 @@ for (const file of files) {
       const s = start(deal).state;
       if (s.cleared.length || joinCount(s) > 0) fail("something is joined or finished at the opening");
       if (isDeadEnd(s)) fail("the opening is a dead end");
+      if (file.endsWith("campaign.json")) {
+        const dead = deadFirstMoves(deal);
+        if (dead.length) fail(`${dead.length} first move(s) leave the board stuck, e.g. ${dead[0].from} to ${dead[0].to}`);
+      }
       const line = l.line.map(([from, to]) => ({ from, to }));
       let won = false;
       try {
