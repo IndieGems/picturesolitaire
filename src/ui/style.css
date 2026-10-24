@@ -162,6 +162,12 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
   right: calc(var(--row-right) + var(--btn) + var(--pair-gap));
 }
 /* the gear (src/settings-screen.ts): the row's right end, on every screen, over every card */
+/* home's note of a win from last time that paid (app.ts): in the top row beside the gear (home has no Back) */
+.home-note { right: calc(var(--row-right) + var(--btn) + 12px); gap: 8px; font-size: 15px; animation: coins-in 0.35s ease-out both; }
+.home-note[hidden] { display: none; }
+.home-note .coin { width: 20px; height: 20px; }
+html.less-motion .home-note { animation: none; }
+
 /* a title too long for one line beside the Gem and Back: two lines, then smaller (fit.ts) */
 .top-pill.wrapped { white-space: normal; line-height: 1.08; text-align: center; }
 

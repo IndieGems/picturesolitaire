@@ -41,7 +41,7 @@ import type { Challenge } from "./challenge-data";
 import { level as campaignLevel, type Daily } from "../game/levels";
 import { createDaily } from "./daily";
 import { clock, shortDate } from "./format";
-import { claimWin, cueCoins, type Verdict } from "../net/claims";
+import { claimWin, cueCoins, onVerdict, type Verdict } from "../net/claims";
 import { KEEPSAKE } from "../net/keepsake";
 import { knownTable, startTables, tableTitle, thumbOf } from "./tables";
 import { keepFitted } from "./fit";
@@ -94,9 +94,13 @@ const wordmark = h("img", {
   decoding: "async",
 });
 const wordmarkPicture = h("picture", {}, h("source", { media: WORDMARK.bigWhere, srcset: WORDMARK.big, width: "1400", height: "675" }), wordmark);
+// a win from an earlier session that the checker accepted at this start, and paid: one line in home's
+// top row (information, never a button), its Coins flown to the Arcade's total once
+const homeNote = h("div", { class: "top-pill glass home-note", role: "status", hidden: "" });
 const home = h(
   "section",
   { class: "screen home", "aria-label": t("game.title") },
+  homeNote,
   h(
     "div",
     { class: "brand" },
@@ -214,6 +218,8 @@ function show(next: Screen): void {
   albumsUi.albumScreen.hidden = next !== "album";
   routeUi.screen.hidden = next !== "challenges";
   dailyUi.screen.hidden = next !== "daily";
+  if (next === "home") drawHomeNote();
+  else homeNote.hidden = true;
   if (next !== "album") albumsUi.closeViewer();
   screenChanged();
   drawOffline();
@@ -249,6 +255,23 @@ homePlay.addEventListener("click", async () => {
 });
 
 homeAlbums.addEventListener("click", () => albumsUi.openList());
+
+/** Paid verdicts of claims from an earlier session (Server's claims.ts marks them resumed), waiting for home. */
+const lastWins: Verdict[] = [];
+onVerdict((v) => {
+  if (v.status !== "paid" || !v.resumed || v.coins <= 0) return;
+  lastWins.push(v);
+  if (screen === "home") drawHomeNote();
+});
+/** "Your last win counted: +25 Coins", once, when home is up; nothing for a win that paid nothing. */
+function drawHomeNote(): void {
+  if (!lastWins.length) return;
+  const paid = lastWins.splice(0);
+  const coin = h("span", { class: "coin", "aria-hidden": "true" });
+  homeNote.replaceChildren(coin, h("span", {}, t("home.lastWin", { count: paid.reduce((sum, v) => sum + (v.status === "paid" ? v.coins : 0), 0) })));
+  homeNote.hidden = false;
+  for (const v of paid) cueCoins(v, coin);
+}
 homeChallenges.addEventListener("click", () => void routeUi.openRoute());
 
 // ---------- the board ----------
@@ -872,6 +895,11 @@ export async function startApp(): Promise<void> {
         hold(`dev-${id}`, { lane: "challenge", board: id, moves, ms: 0, pictures: [] });
       },
       guide,
+      /** Home's note as if a win from last time had paid `coins` (nothing is paid: the checker alone pays). */
+      lastWin(coins: number) {
+        lastWins.push({ status: "paid", lane: "campaign", board: "dev", moves: 0, coins, resumed: true });
+        if (screen === "home") drawHomeNote();
+      },
       /** The card up now shows what a paid verdict of `coins` looks like (no Coins move: the checker alone pays); `items` as granted. */
       paid(coins: number, items?: string[]) {
         if (!lastWin) return;

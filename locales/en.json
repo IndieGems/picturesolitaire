@@ -68,6 +68,8 @@
   "home.dailyDone_one": "Done in {{count}} move",
   "home.dailyDone_other": "Done in {{count}} moves",
   "home.dailyNew": "Today's board is ready",
+  "home.lastWin_one": "Your last win counted: +{{count}} Coin",
+  "home.lastWin_other": "Your last win counted: +{{count}} Coins",
   "home.level": "Level {{level}}",
   "home.play": "Play",
   "offline.reconnecting": "Reconnecting…",
