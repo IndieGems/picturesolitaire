@@ -11,7 +11,8 @@ from exactly these numbers: `python tools/art/mockup.py <out.png>`.
 | `table.webp` | the empty winter-dusk table, portrait 1080x1920 (9:16): lanterns in the top corners, snowy pine and holly on the edges, a calm dark middle. Nothing else painted in. | ~92 KB |
 | `stack-back.webp` | one stack card back, straight on, 256x256 with alpha: frosted deep blue-grey, one amber dot. | ~14 KB |
 | `snow.png` | four 32x32 white flakes in a 128x32 strip: soft small, soft large/faint, crisp, six-armed crystal. | ~2 KB |
-| `ui/icon-*.svg` | slate glyphs, 48x48 viewBox: `gear`, `back`, `undo`, `hint`, `shuffle`, `restart`, `play`. | <1 KB each |
+| `wordmark.webp` | the title "Picture Mend" in two lines, plump frosted letters on a blue-grey lip, amber dot on the i; 840x405 with alpha, cropped to the letters. Show it about 300-340 CSS px wide on a phone, never over ~420. | ~48 KB |
+| `ui/icon-*.svg` | slate glyphs, 48x48 viewBox: `gear`, `back`, `undo`, `hint`, `shuffle`, `restart`, `play`, `next`, `home`, `chevron`, `photos`. | <1 KB each |
 
 **Table:** draw it `background-size: cover; background-position: center top` with
 `background-color: #2c3746` behind it. On a phone taller than 9:16 the sides crop a
