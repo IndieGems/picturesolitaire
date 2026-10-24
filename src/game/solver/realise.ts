@@ -178,8 +178,37 @@ function* ways(s: State, step: Step, loose: boolean): Generator<Realised> {
 }
 
 /**
+ * Every way this realiser knows to carry out `step` (strict ways, then loose
+ * ones), cheapest first within each; with `deep`, then each after one
+ * rearranging move. The par search (par.ts) picks among them; results may
+ * repeat, and the caller judges each one.
+ */
+export function* realisations(s: State, step: Step, deep = false): Generator<Realised> {
+  yield* ways(s, step, false);
+  yield* ways(s, step, true);
+  if (!deep) return;
+  for (const { m, t } of preps(s)) {
+    for (const r of ways(t, step, true)) yield { moves: [m, ...r.moves], state: r.state };
+  }
+}
+
+/** Rearranging moves (nothing cleared or dealt), those that break the fewest joins first. */
+function preps(s: State): { m: Move; t: State }[] {
+  const out: { m: Move; t: State; j: number }[] = [];
+  for (const m of allMoves(s)) {
+    const o = move(s, m);
+    if (!o) continue;
+    const t = o.state;
+    if (t.cleared.length !== s.cleared.length || !sameStacks(s, t)) continue;
+    out.push({ m, t, j: joinCount(t) });
+  }
+  return out.sort((a, b) => b.j - a.j);
+}
+
+/**
  * Carry out `step` on the real board: the cheapest way whose result `accept`
- * takes. With `loose`, other pictures may clear (and stacks deal) on the way. With `deep`, when no direct way works, one rearranging move first (a
+ * takes. With `loose`, other pictures may clear (and stacks deal) on the way.
+ * With `deep`, when no direct way works, one rearranging move first (a
  * move that clears and deals nothing) is tried, which unjoins a stuck card or
  * moves an accidental join away; that costs a few hundred trial moves, so
  * callers try every step shallow before any deep. Null if none of that works.
@@ -187,17 +216,8 @@ function* ways(s: State, step: Step, loose: boolean): Generator<Realised> {
 export function realise(s: State, step: Step, accept: (t: State) => boolean, deep = true, loose = false): Realised | null {
   for (const r of ways(s, step, loose)) if (accept(r.state)) return r;
   if (!deep) return null;
-  // one rearranging move, then the direct ways: prefer moves that break the fewest joins
-  const preps: { m: Move; t: State; j: number }[] = [];
-  for (const m of allMoves(s)) {
-    const out = move(s, m);
-    if (!out) continue;
-    const t = out.state;
-    if (t.cleared.length !== s.cleared.length || !sameStacks(s, t)) continue;
-    preps.push({ m, t, j: joinCount(t) });
-  }
-  preps.sort((a, b) => b.j - a.j);
-  for (const { m, t } of preps) {
+  // one rearranging move, then the direct ways
+  for (const { m, t } of preps(s)) {
     for (const r of ways(t, step, loose)) if (accept(r.state)) return { moves: [m, ...r.moves], state: r.state };
   }
   return null;
