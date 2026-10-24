@@ -6,8 +6,10 @@ board in the game config, so **each board pays once, ever**, and a resent claim 
 replay pays nothing. Written by `node tools/server/make-config.mts`; do not edit by hand.
 
 **The rule** (agreed with the lead, 2026-10-24): about 1.1 Coins per move of the board's
-shortest known win, rounded to 5. Campaign boards 10 to 40, challenge boards 10 to 50
-(by par). Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle pays
+stored winning line, rounded to 5. Campaign boards 10 to 40, challenge boards 10 to 50.
+A campaign board's stored line is a winning line, not necessarily the shortest; a challenge
+board's is its par, the fewest moves found. Its length stands in for how long the board
+takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle pays
 50, once a day.
 
 ## The hourly maths (the standard: about 500 an hour of ordinary play)
@@ -24,7 +26,7 @@ shortest known win, rounded to 5. Campaign boards 10 to 40, challenge boards 10 
 
 ## Board by board
 
-| board | lane | shortest win (moves) | Coins |
+| board | lane | stored winning line (moves) | Coins |
 |---|---|---|---|
 | c01 | campaign 1 | 7 | 100 (onboarding prize) |
 | c02 | campaign 2 | 13 | 15 |

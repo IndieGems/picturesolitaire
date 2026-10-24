@@ -11,9 +11,11 @@
 // is verified but cannot pay (the function answers "retry", reason "config").
 //
 // THE AMOUNTS (agreed with the lead, 2026-10-24; the game standard's ~500 Coins
-// an hour): about 1.1 Coins per move of the board's shortest known win, rounded
-// to 5; 10 to 40 for a campaign board, 10 to 50 for a challenge board (by its
-// par). The first campaign board, where onboarding is played, pays the
+// an hour): about 1.1 Coins per move of the board's stored winning line, rounded
+// to 5; 10 to 40 for a campaign board, 10 to 50 for a challenge board. A
+// campaign board's stored line is A winning line, not the shortest; a challenge
+// board's is its par (the fewest moves found). The line's length stands in for
+// how long a board takes until real minutes per board are measured. The first campaign board, where onboarding is played, pays the
 // onboarding prize instead: 100. The daily pays 50, once a day.
 // Every progression is written only by the function (function_may_grant): it
 // replays the win before it moves one.
@@ -55,7 +57,7 @@ const ONBOARDING = { board: KEEP?.board ?? "c01", coins: KEEP?.coins ?? 100 };
 const DAILY_COINS = 50;
 const LANES = { campaign: { label: "Campaign board", most: 40 }, challenge: { label: "Challenge board", most: 50 } };
 
-/** A board's Coins, from the moves of its shortest known win. */
+/** A board's Coins, from the moves of its stored winning line. */
 export const coinsFor = (moves, most) => Math.max(10, Math.min(most, Math.round((moves * 1.1) / 5) * 5));
 
 /** A name-based UUID (RFC 4122 version 5) in this game's own namespace, so a board's id never changes. */
@@ -188,8 +190,10 @@ md.push("board in the game config, so **each board pays once, ever**, and a rese
 md.push("replay pays nothing. Written by `node tools/server/make-config.mts`; do not edit by hand.");
 md.push("");
 md.push("**The rule** (agreed with the lead, 2026-10-24): about 1.1 Coins per move of the board's");
-md.push("shortest known win, rounded to 5. Campaign boards 10 to 40, challenge boards 10 to 50");
-md.push(`(by par). Campaign board 1 pays the onboarding prize instead, ${ONBOARDING.coins}. The daily puzzle pays`);
+md.push("stored winning line, rounded to 5. Campaign boards 10 to 40, challenge boards 10 to 50.");
+md.push("A campaign board's stored line is a winning line, not necessarily the shortest; a challenge");
+md.push("board's is its par, the fewest moves found. Its length stands in for how long the board");
+md.push(`takes. Campaign board 1 pays the onboarding prize instead, ${ONBOARDING.coins}. The daily puzzle pays`);
 md.push(`${DAILY_COINS}, once a day.`);
 md.push("");
 md.push("## The hourly maths (the standard: about 500 an hour of ordinary play)");
@@ -213,7 +217,7 @@ md.push("  note): if boards run much faster or slower than 2 to 4 minutes, chang
 md.push("");
 md.push("## Board by board");
 md.push("");
-md.push("| board | lane | shortest win (moves) | Coins |");
+md.push("| board | lane | stored winning line (moves) | Coins |");
 md.push("|---|---|---|---|");
 for (const r of rows) md.push(`| ${r.id} | ${r.lane} ${r.n} | ${r.moves} | ${r.coins}${r.onboarding ? " (onboarding prize)" : ""} |`);
 md.push("");
