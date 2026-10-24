@@ -124,8 +124,31 @@ def photos():
                '<circle cx="27.5" cy="23" r="1.6" fill="' + SLATE + '" stroke-width="2.5"/>')
 
 
+def route():
+    # The challenge route: three round stops climbing to a flag (the route's markers are round too).
+    dot = '<circle cx="{}" cy="{}" r="3.7" fill="' + SLATE + '" stroke="none"/>'
+    return svg(dot.format(8.5, 40) + dot.format(17.5, 37) + dot.format(23.5, 30)
+               + '<path d="M30.5 33 V7.5"/>'
+               '<path d="M32 8.5 L42.5 13.5 L32 18.5 Z" fill="' + SLATE + '" stroke-width="3.5"/>')
+
+
+def lock():
+    # A plump padlock: round shackle, a solid body with a keyhole cut through it (mask).
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">'
+            f'<defs><mask id="k"><rect x="10.5" y="20.5" width="27" height="20.5" rx="5.5" fill="#fff"/>'
+            f'<circle cx="24" cy="29" r="3.2" fill="#000"/><rect x="22.4" y="29" width="3.2" height="6.5" rx="1.6" fill="#000"/></mask></defs>'
+            f'<path d="M16.5 21 V16.5 A7.5 7.5 0 0 1 31.5 16.5 V21" fill="none" stroke="{SLATE}" stroke-width="{W}" stroke-linecap="round"/>'
+            f'<rect width="48" height="48" fill="{SLATE}" mask="url(#k)"/></svg>\n')
+
+
+def check():
+    # A cleared board: one fat tick.
+    return svg('<path d="M10.5 25 L19.5 34 L37.5 14.5" stroke-width="5.5"/>')
+
+
 ICONS = {"gear": gear, "back": back, "undo": undo, "hint": hint, "shuffle": shuffle, "restart": restart, "play": play,
-         "next": next_, "home": home, "chevron": chevron, "photos": photos}
+         "next": next_, "home": home, "chevron": chevron, "photos": photos,
+         "route": route, "lock": lock, "check": check}
 
 
 def main():

@@ -28,6 +28,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter
 
+sys.dont_write_bytecode = True  # importing mockup must not leave a __pycache__ in the repo
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from mockup import (LIP, LIP_BOTTOM, LIP_TOP, R_IN, R_OUT, RIM, RIM_BOTTOM, RIM_LINE, RIM_TOP,  # noqa: E402
                     SHADOW_BLUR, SHADOW_Y, vgrad)
