@@ -1,0 +1,29 @@
+{
+  "default": "table-winter-dusk",
+  "tables": [
+    {
+      "id": "table-winter-dusk",
+      "title": "Winter Dusk",
+      "table": "art/table.webp",
+      "stackBack": "art/stack-back.webp",
+      "particles": "art/snow.png",
+      "thumb": "art/tables/winter-dusk/thumb.webp",
+      "particleKind": "snow",
+      "particleFrame": 32,
+      "particleFrames": 4,
+      "base": "#2c3746"
+    },
+    {
+      "id": "table-autumn-study",
+      "title": "Autumn Study",
+      "table": "art/tables/autumn-study/table.webp",
+      "stackBack": "art/tables/autumn-study/stack-back.webp",
+      "particles": "art/tables/autumn-study/particles.png",
+      "thumb": "art/tables/autumn-study/thumb.webp",
+      "particleKind": "leaves",
+      "particleFrame": 64,
+      "particleFrames": 4,
+      "base": "#1d130f"
+    }
+  ]
+}

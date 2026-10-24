@@ -2,7 +2,10 @@
 spec in tools/art/chrome-spec.md. It is a reference render for the gameplay member and
 a check that the table stays calmer and darker than the cards; the game does not use it.
 
-    python tools/art/mockup.py <out.png>
+    python tools/art/mockup.py <out.png> [<table image> [<stack-back image>]]
+
+The table and stack back default to the shipped winter ones; pass others to try a new
+table in the same board.
 """
 import json
 import sys
@@ -64,10 +67,10 @@ def card(canvas, x, y, w, h, s, picture_region):
     canvas.alpha_composite(layer, (int(x - pad), int(y - pad)))
 
 
-def main(out):
+def main(out, table=None, back_path=None):
     cat = json.loads((ROOT / "src/content/pictures.json").read_text(encoding="utf-8"))
     pics = {p["id"]: p for p in cat["pictures"]}
-    canvas = Image.open(ROOT / "public/art/table.webp").convert("RGBA")
+    canvas = Image.open(table or ROOT / "public/art/table.webp").convert("RGB").resize((1080, 1920), Image.LANCZOS).convert("RGBA")
     s, gap = 196, 16
     cols, rows = 4, 5
     bx = (canvas.width - (cols * s + (cols - 1) * gap)) // 2
@@ -80,7 +83,7 @@ def main(out):
         return im.crop((c * u, r * u, (c + 1) * u, (r + 1) * u))
 
     # Stacks: four chubby piles of card backs.
-    back = Image.open(ROOT / "public/art/stack-back.webp").convert("RGBA")
+    back = Image.open(back_path or ROOT / "public/art/stack-back.webp").convert("RGBA")
     for c in range(cols):
         x = bx + c * (s + gap) + s * 0.04
         w = s * 0.92
@@ -112,4 +115,4 @@ def main(out):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(*sys.argv[1:4])
