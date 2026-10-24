@@ -186,10 +186,11 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
 }
 .home .emblem i:nth-child(2) { transform: translateY(calc(-10px * var(--k))); }
 .home .brand { display: flex; flex-direction: column; align-items: center; gap: calc(22px * var(--k)); width: 100%; }
-/* Art's drawn title (2.07 : 1, its own lip and shadow): 300-340 px on a phone, never past
-   ~420 or it goes soft; a short screen gives it less so Play stays in view */
-.home h1 { margin: 0; width: min(100%, calc(340px * var(--k)), 420px, calc((100dvh - 430px) * 2.07)); min-width: 200px; line-height: 0; }
-.home .wordmark { display: block; width: 100%; height: auto; }
+/* Art's drawn title (2.07 : 1, its own lip and shadow): 300-340 px on a phone, growing with a
+   tablet's home (the 1400 px file there, sharp to ~700 px; wordmark.ts); a short screen gives it
+   less so Play stays in view */
+.home h1 { margin: 0; width: min(100%, calc(340px * var(--k)), 600px, calc((100dvh - 430px) * 2.07)); min-width: 200px; line-height: 0; }
+.home h1 picture, .home .wordmark { display: block; width: 100%; height: auto; }
 .home .where { padding: calc(8px * var(--k)) calc(20px * var(--k)); font-size: calc(18px * var(--k)); font-weight: 600; }
 .home .play { min-width: calc(210px * var(--k)); min-height: calc(68px * var(--k)); padding: 0 calc(34px * var(--k)); font-size: calc(26px * var(--k)); }
 .home .play :is(svg, .ico) { width: calc(28px * var(--k)); height: calc(28px * var(--k)); }

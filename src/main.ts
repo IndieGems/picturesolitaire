@@ -15,6 +15,7 @@
 import "./ui/browser"; // no zoom, selection or long-press menus, from the first frame
 import { gem } from "./gem";
 import { t } from "./ui/i18n";
+import { WORDMARK } from "./ui/wordmark";
 
 const boot = document.getElementById("boot");
 // The tab's title is the game's name in the player's language (index.html carries the English
@@ -38,11 +39,20 @@ function preloadFirstScreen(): void {
   font.type = "font/woff2";
   font.crossOrigin = "anonymous";
   font.href = `${import.meta.env.BASE_URL}fonts/fredoka-latin.woff2`;
-  const title = document.createElement("link");
-  title.rel = "preload";
-  title.as = "image";
-  title.href = `${import.meta.env.BASE_URL}art/wordmark.webp`;
-  document.head.append(font, title);
+  // the title in the size the screen will draw it (src/ui/wordmark.ts): a phone never fetches the big one
+  const title = (href: string, media: string) => {
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "image";
+    link.href = href;
+    link.media = media;
+    return link;
+  };
+  document.head.append(
+    font,
+    title(WORDMARK.big, WORDMARK.bigWhere),
+    title(WORDMARK.small, `not all and ${WORDMARK.bigWhere}`),
+  );
 }
 
 async function start(): Promise<void> {

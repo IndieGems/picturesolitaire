@@ -45,6 +45,7 @@ import { claimWin, cueCoins, type Verdict } from "../net/claims";
 import { KEEPSAKE } from "../net/keepsake";
 import { knownTable, startTables, tableTitle, thumbOf } from "./tables";
 import { keepFitted } from "./fit";
+import { WORDMARK } from "./wordmark";
 import { mountParticles } from "./particles";
 import { levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
 
@@ -81,17 +82,18 @@ const dailyUi = createDaily({ home: () => goHome(), show: () => show("daily"), p
 // shown once the challenge boards exist: nothing promises a screen with nothing on it
 const homeChallenges = button("tile-btn challenges", "home.challenges", icon("challenges"), h("span", {}, t("home.challenges")));
 homeChallenges.hidden = true;
-// the game's name is Art's drawn title (public/art/wordmark.webp, 840 x 405); its
-// words reach screen readers as the picture's alt
+// the game's name is Art's drawn title (wordmark.ts: the 840 px file, or the 1400 px one where home
+// draws it large); its words reach screen readers as the picture's alt
 const wordmark = h("img", {
   class: "wordmark",
-  src: `${import.meta.env.BASE_URL}art/wordmark.webp`,
+  src: WORDMARK.small,
   alt: t("game.title"),
   width: "840",
   height: "405",
   draggable: "false",
   decoding: "async",
 });
+const wordmarkPicture = h("picture", {}, h("source", { media: WORDMARK.bigWhere, srcset: WORDMARK.big, width: "1400", height: "675" }), wordmark);
 const home = h(
   "section",
   { class: "screen home", "aria-label": t("game.title") },
@@ -99,7 +101,7 @@ const home = h(
     "div",
     { class: "brand" },
     h("div", { class: "emblem", "aria-hidden": "true" }, h("i"), h("i"), h("i")),
-    h("h1", {}, wordmark),
+    h("h1", {}, wordmarkPicture),
   ),
   homeWhere,
   homePlay,
