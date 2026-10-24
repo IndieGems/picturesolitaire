@@ -28,7 +28,7 @@ import {
 import { ease, setBatterySaver, setPaused, stopAll, tween, wait, run } from "./pace.ts";
 import { TUNING, applyTuning } from "./tuning.ts";
 import {
-  cellAt, drawPiece, drawRing, drawStack, keyOf, layout, mountDefs, nearestCell, place, ringPath,
+  addRing, cellAt, drawPiece, drawRing, drawStack, keyOf, layout, mountDefs, nearestCell, place,
   type Art, type Geometry, type PieceView, type StackView,
 } from "./view.ts";
 
@@ -1079,7 +1079,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     } else {
       litView = v;
       v.el.classList.add("guide-lit");
-      v.el.querySelector("svg")?.append(ringPath(geo, v.cells));
+      addRing(geo, v);
     }
   }
   /** A little shake of the lit piece: "this one". */

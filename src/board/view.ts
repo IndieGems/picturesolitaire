@@ -192,6 +192,25 @@ export function ringPath(geo: Geometry, cells: readonly number[]): SVGPathElemen
   return p;
 }
 
+/**
+ * Put the guide's ring on piece `v`. A piece's svg keeps the coordinates of
+ * the cells it was drawn on; when it has moved or fallen since, only its
+ * element's transform says so. So the ring, built on the piece's cells now,
+ * is shifted back into the svg's own coordinates (same shape, so it fits).
+ */
+export function addRing(geo: Geometry, v: PieceView): void {
+  const svg = v.el.querySelector("svg");
+  if (!svg) return;
+  const ring = ringPath(geo, v.cells);
+  const vb = svg.viewBox.baseVal;
+  const b = box(v.cells.map((c) => [c % geo.cols, (c / geo.cols) | 0] as [number, number]), geo.s, geo.g);
+  const m = Math.ceil(geo.s * 0.16);
+  const dx = vb.x - (b.x - m);
+  const dy = vb.y - (b.y - m);
+  if (dx || dy) ring.setAttribute("transform", `translate(${dx.toFixed(2)} ${dy.toFixed(2)})`);
+  svg.append(ring);
+}
+
 /** The guide's ring on its own, round the cells where a piece should go. */
 export function drawRing(geo: Geometry, cells: readonly number[], className: string): HTMLDivElement {
   const { s, g } = geo;
