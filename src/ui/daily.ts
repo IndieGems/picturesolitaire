@@ -1,0 +1,186 @@
+// The daily puzzle: one board a day, the same for everyone on the same date,
+// on the player's own calendar.
+//
+//   Home's Daily button   today's state: ready to play, or done in N moves
+//   the board             plays as any other; its top row shows par and the moves so far
+//   the results screen    the player's result, then their friends' for the day
+//                         (fewest moves, then the quicker time), "so far" until
+//                         the day's board is final
+//
+// Which day it is comes from the platform (src/net/daily.ts, Server's), never
+// the device's clock: until the platform answers, a guess may draw the screen,
+// and it is redrawn when the real date lands or the day turns. Which board is
+// the day's is the level designer's rule (loadDaily, Gameplay's). Only the
+// player's FIRST finish of the day counts on the day's board (the win checker
+// keeps it); the screens say so plainly once the player has a result. The
+// device's note of that first finish is in the campaign save (progress.ts),
+// so Home can say "done" at once.
+
+import { text, type PlayerText } from "@indiegems/gem-web-sdk/sdk";
+import { loadDaily, type Daily } from "../game/levels";
+import { onDailyChange, standings, today, type DailyStandings, type DailyToday } from "../net/daily";
+import type { Verdict } from "../net/claims";
+import { ICONS } from "./icons";
+import { t } from "./i18n";
+import { clock, shortDate } from "./format";
+import { dailyResult } from "./progress";
+
+type Nav = {
+  /** Back: to home. */
+  home(): void;
+  /** Show the results screen. */
+  show(): void;
+  /** Play the day's board. */
+  play(d: Daily): void;
+};
+
+function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", words = ""): HTMLElementTagNameMap[K] {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (words) e.textContent = words;
+  return e;
+}
+function btn(cls: string, press: string, words: string): HTMLButtonElement {
+  const b = el("button", `btn ${cls}`, words);
+  b.type = "button";
+  b.dataset.press = press;
+  return b;
+}
+
+export function createDaily(nav: Nav) {
+  // ---- home's button: hidden until the day's board is known ----
+  const homeStatus = el("span");
+  const homeWords = el("span", "words");
+  homeWords.append(el("b", "", t("home.daily")), homeStatus);
+  const homeButton = el("button", "btn daily-btn");
+  homeButton.type = "button";
+  homeButton.dataset.press = "home.daily";
+  homeButton.hidden = true;
+  homeButton.insertAdjacentHTML("afterbegin", ICONS.daily);
+  homeButton.append(homeWords);
+
+  // ---- the results screen ----
+  const pill = el("div", "top-pill glass");
+  const back = el("button", "btn round top-back");
+  back.type = "button";
+  back.dataset.press = "daily.back";
+  back.innerHTML = ICONS.back;
+  back.setAttribute("aria-label", t("daily.back"));
+  back.addEventListener("click", nav.home);
+  const you = el("div", "daily-you glass");
+  const note = el("p", "daily-note");
+  const head = el("h2", "daily-head");
+  const list = el("ol", "daily-list");
+  const empty = el("p", "daily-empty");
+  const foot = el("div", "daily-foot");
+  const scroll = el("div", "scroll");
+  scroll.append(you, note, head, list, empty, foot);
+  const screen = el("section", "screen menu-screen daily-screen");
+  screen.hidden = true;
+  screen.append(pill, back, scroll);
+
+  let day: DailyToday | null = null;
+  let board: Daily | null = null;
+  /** The day's first finish, on its way to the checker: its row lands on the board once it is answered. */
+  let pending: Promise<Verdict> | null = null;
+  let loadToken = 0;
+
+  async function refresh(): Promise<void> {
+    const d = await today();
+    const b = await loadDaily(d.date);
+    day = d;
+    board = b;
+    drawHome();
+    if (!screen.hidden) void openResults();
+  }
+  onDailyChange(() => void refresh());
+
+  function drawHome(): void {
+    homeButton.hidden = !board;
+    if (!day || !board) return;
+    const mine = dailyResult(day.date);
+    homeStatus.textContent = mine ? t("home.dailyDone", { count: mine.moves }) : t("home.dailyNew");
+    homeButton.setAttribute("aria-label", `${t("home.daily")}: ${homeStatus.textContent}`);
+  }
+
+  homeButton.addEventListener("click", () => {
+    if (!day || !board) return;
+    if (dailyResult(day.date)) void openResults();
+    else nav.play(board);
+  });
+
+  function drawRows(st: DailyStandings): void {
+    head.textContent = st.final ? t("daily.friendsFinal") : t("daily.friendsSoFar");
+    list.replaceChildren();
+    for (const row of st.rows) {
+      const li = el("li", row.isViewer ? "glass you" : "glass");
+      const who = el("span", "who");
+      const name = row.displayName ? text.toPlain(row.displayName as PlayerText) : t("daily.anonymous");
+      who.append(el("span", "name", row.isViewer ? t("daily.you") : name));
+      if (!row.isViewer && row.discriminator) who.append(el("span", "tag", `#${row.discriminator}`));
+      const moves = el("span", "num");
+      moves.append(String(row.moves), el("small", "", t("daily.moves")));
+      const time = el("span", "num");
+      time.append(clock(row.timeMs), el("small", "", t("daily.time")));
+      li.append(el("span", "rank", String(row.rank)), who, moves, time);
+      list.append(li);
+    }
+    const others = st.rows.filter((r) => !r.isViewer).length;
+    empty.textContent = others ? "" : t("daily.noFriends");
+  }
+
+  /** Show the results screen now, and the friends' results once they come. */
+  async function openResults(): Promise<void> {
+    if (!day || !board) return;
+    const token = ++loadToken;
+    const mine = dailyResult(day.date);
+    pill.textContent = t("daily.title", { date: shortDate(day.date) });
+    you.replaceChildren(
+      el("span", "", mine ? t("daily.yours") : t("daily.notYet")),
+      ...(mine ? [el("b", "", t("daily.result", { count: mine.moves, time: clock(mine.ms) }))] : []),
+    );
+    note.textContent = mine ? t("daily.firstCounts") : "";
+    note.hidden = !mine;
+    head.textContent = t("daily.friendsSoFar");
+    list.replaceChildren();
+    empty.textContent = t("daily.loading");
+    const playBtn = mine ? btn("", "daily.again", t("daily.again")) : btn("amber", "daily.play", t("daily.play"));
+    const b = board;
+    playBtn.addEventListener("click", () => nav.play(b));
+    foot.replaceChildren(playBtn);
+    nav.show();
+    scroll.scrollTop = 0;
+    try {
+      // a first finish still on its way to the checker: wait for it a little, so its row is on the board
+      if (pending) await Promise.race([pending, new Promise((r) => setTimeout(r, 8000))]);
+      // a wait with an end: no answer in 10 s says so, and opening the screen again asks again
+      const st = await Promise.race([
+        standings(),
+        new Promise<never>((_, no) => setTimeout(() => no(new Error("no answer in 10 s")), 10_000)),
+      ]);
+      if (token !== loadToken || screen.hidden) return;
+      drawRows(st);
+    } catch (err) {
+      if (token !== loadToken) return;
+      console.warn("[daily] results did not load:", err);
+      empty.textContent = t("daily.loadFailed");
+    }
+  }
+
+  return {
+    homeButton,
+    screen,
+    /** Ask the platform which day it is, and fetch that day's board (at boot, and when the save changes). */
+    refresh,
+    /** The save changed: redraw Home's state. */
+    redraw: drawHome,
+    openResults,
+    /** The day's first finish was sent to the checker. */
+    claimed(p: Promise<Verdict>): void {
+      pending = p;
+      void p.finally(() => {
+        if (pending === p) pending = null;
+      });
+    },
+  };
+}

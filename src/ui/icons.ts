@@ -23,6 +23,7 @@ export const ICONS = {
   challenges: art("route"),
   check: art("check"),
   lock: art("lock"),
+  daily: art("daily"),
 } as const;
 
 export type IconName = keyof typeof ICONS;

@@ -8,6 +8,8 @@
 //   home  --Challenges-->  the route  -->  a challenge board  --won-->  win card
 //                          (challenges.ts; a second lane beside the campaign,
 //                          neither blocking the other)
+//   home  --Daily-->  the day's board  --won-->  win card  -->  the day's results
+//                     (daily.ts; once played, Daily opens the results)
 //
 // Over them: the restart card (Restart is free, so the card only checks it was
 // meant), the win card, and the "No connection" card, which covers every
@@ -29,13 +31,15 @@ import { t } from "./i18n";
 import { ICONS, type IconName } from "./icons";
 import { screenChanged } from "./browser";
 import { online, onOnline, pretend } from "./online";
-import { campaign, cleared, loadCampaign, onCampaign, pretendRestored, restore, waitForCloud, won } from "./progress";
+import { campaign, cleared, loadCampaign, onCampaign, playedDaily, pretendRestored, restore, waitForCloud, won } from "./progress";
 import { createAlbums } from "./albums";
 import { createChallenges } from "./challenges";
 import { createGuide, type GuideMode } from "./guide";
 import { fireworks } from "./fireworks";
 import type { Challenge } from "./challenge-data";
-import { level as campaignLevel } from "../game/levels";
+import { level as campaignLevel, type Daily } from "../game/levels";
+import { createDaily } from "./daily";
+import { clock, shortDate } from "./format";
 import { claimWin, cueCoins, type Verdict } from "../net/claims";
 import { levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
 
@@ -67,6 +71,8 @@ const homeWhere = h("div", { class: "where glass" });
 const homePlayLabel = h("span");
 const homePlay = button("amber play", "home.play", icon("play"), homePlayLabel);
 const homeAlbums = button("tile-btn albums", "home.albums", icon("albums"), h("span", {}, t("home.albums")));
+// the daily puzzle (daily.ts): its Home button shows today's state, and is hidden until the day's board is known
+const dailyUi = createDaily({ home: () => goHome(), show: () => show("daily"), play: (d) => openPlay({ kind: "daily", d }) });
 // shown once the challenge boards exist: nothing promises a screen with nothing on it
 const homeChallenges = button("tile-btn challenges", "home.challenges", icon("challenges"), h("span", {}, t("home.challenges")));
 homeChallenges.hidden = true;
@@ -92,6 +98,7 @@ const home = h(
   ),
   homeWhere,
   homePlay,
+  dailyUi.homeButton,
   h("div", { class: "more" }, homeAlbums, homeChallenges),
 );
 
@@ -146,15 +153,19 @@ const albumsUi = createAlbums({ home: () => goHome(), show: (which) => show(whic
 // the challenge route (challenges.ts)
 const routeUi = createChallenges({ home: () => goHome(), show: () => show("challenges"), play: (c) => openPlay({ kind: "challenge", c }) });
 
-app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, routeUi.screen, albumsUi.viewer, winVeil, restartVeil, offlineVeil);
+app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, routeUi.screen, dailyUi.screen, albumsUi.viewer, winVeil, restartVeil, offlineVeil);
 
 // ---------- state ----------
 
-type Screen = "home" | "board" | "albums" | "album" | "challenges";
-/** A board to play: one of the campaign's, or one on the challenge route. */
-type Play = { kind: "campaign"; level: number } | { kind: "challenge"; c: Challenge };
-const samePlay = (a: Play | null, b: Play): boolean =>
-  !!a && (a.kind === "campaign" ? b.kind === "campaign" && a.level === b.level : b.kind === "challenge" && a.c.id === b.c.id);
+type Screen = "home" | "board" | "albums" | "album" | "challenges" | "daily";
+/** A board to play: one of the campaign's, one on the challenge route, or the day's. */
+type Play = { kind: "campaign"; level: number } | { kind: "challenge"; c: Challenge } | { kind: "daily"; d: Daily };
+const samePlay = (a: Play | null, b: Play): boolean => {
+  if (!a || a.kind !== b.kind) return false;
+  if (a.kind === "campaign") return a.level === (b as typeof a).level;
+  if (a.kind === "challenge") return a.c.id === (b as typeof a).c.id;
+  return a.d.id === (b as typeof a).d.id;
+};
 
 let screen: Screen = "home";
 let board: BoardHandle | null = null;
@@ -192,6 +203,7 @@ function show(next: Screen): void {
   albumsUi.listScreen.hidden = next !== "albums";
   albumsUi.albumScreen.hidden = next !== "album";
   routeUi.screen.hidden = next !== "challenges";
+  dailyUi.screen.hidden = next !== "daily";
   if (next !== "album") albumsUi.closeViewer();
   screenChanged();
   drawOffline();
@@ -247,24 +259,24 @@ function openPlay(next: Play): void {
     // the board reports its helpers and undo through board:changed, once at start too
     drawHelpers({ undo: 3, hint: 3, shuffle: 3 }, false);
     guide.cancel();
-    board = openBoard(host, next.kind === "campaign" ? next.level : next.c.level);
+    board = openBoard(host, next.kind === "campaign" ? next.level : next.kind === "challenge" ? next.c.level : next.d);
     // the first board teaches the game, once the save says the player has not learnt it yet
     if (next.kind === "campaign" && next.level === 1) void guide.offer();
   }
   show("board");
 }
 
-/** The top row's information: the level, or a challenge's number, par and moves so far. */
+/** The top row's information: the level; on a challenge or the daily, its name over the par and the moves so far. */
 function drawPill(): void {
   if (!play) return;
-  levelPill.classList.toggle("two", play.kind === "challenge");
+  levelPill.classList.toggle("two", play.kind !== "campaign");
   if (play.kind === "campaign") {
     levelPill.replaceChildren(t("board.level", { level: play.level }));
     return;
   }
-  pillName.textContent = t("board.challenge", { n: play.c.n });
-  pillPar.textContent =
-    movesSoFar === null ? t("board.par", { par: play.c.par }) : t("board.parYou", { par: play.c.par, moves: movesSoFar });
+  const par = play.kind === "challenge" ? play.c.par : play.d.par;
+  pillName.textContent = play.kind === "challenge" ? t("board.challenge", { n: play.c.n }) : t("board.daily", { date: shortDate(play.d.date) });
+  pillPar.textContent = movesSoFar === null ? t("board.par", { par }) : t("board.parYou", { par, moves: movesSoFar });
   levelPill.replaceChildren(pillName, pillPar);
 }
 
@@ -320,7 +332,7 @@ on("board:changed", (e) => {
   drawHelpers(e.helpers, e.canUndo);
   // the moves so far, where the board reports them: a challenge's top row counts against par
   const moves = (e as { moves?: number }).moves;
-  if (typeof moves === "number" && play?.kind === "challenge") {
+  if (typeof moves === "number" && play && play.kind !== "campaign") {
     movesSoFar = moves;
     drawPill();
   }
@@ -380,6 +392,7 @@ restartBtn.addEventListener("click", () => {
 type Win = (
   | { kind: "campaign"; level: number; moves: number; ms: number; milestone: boolean }
   | { kind: "challenge"; c: Challenge; moves: number; ms: number; first: boolean; better: boolean }
+  | { kind: "daily"; d: Daily; moves: number; ms: number; first: boolean }
 ) & {
   /** The win checker's word, once it lands (it may take a while offline). */
   verdict?: Verdict;
@@ -400,17 +413,37 @@ on("board:won", ({ moves, ms, line }) => {
     // the board the guide taught on ends on the guide's own milestone card
     const milestone = play.level === 1 && guide.takeFinish();
     win = { kind: "campaign", level: play.level, moves, ms, milestone };
-  } else {
+  } else if (play.kind === "challenge") {
     // any win clears a challenge board, over par too; the save keeps the fewer moves
     const { first, better } = cleared(play.c.id, moves);
     win = { kind: "challenge", c: play.c, moves, ms, first, better };
+  } else {
+    // only the day's first finish counts on the day's board
+    win = { kind: "daily", d: play.d, moves, ms, first: playedDaily(play.d.date, moves, ms) };
   }
   lastWin = win;
   // the win checker judges and pays (src/net/claims.ts); the card never waits for it
-  const lvl = play.kind === "campaign" ? campaignLevel(play.level) : play.c.level;
-  void claimWin({ lane: play.kind, board: lvl.id, deal: lvl.deal, line, ms }).then((v) => {
+  const lvl = play.kind === "campaign" ? campaignLevel(play.level) : play.kind === "challenge" ? play.c.level : play.d;
+  const verdict = claimWin({
+    lane: play.kind,
+    board: lvl.id,
+    deal: lvl.deal,
+    line,
+    ms,
+    ...(play.kind === "daily" ? { date: play.d.date } : {}),
+  });
+  if (win.kind === "daily" && win.first) dailyUi.claimed(verdict);
+  void verdict.then((v) => {
     win.verdict = v;
-    if (lastWin === win && !winVeil.hidden) drawCoins(win);
+    if (lastWin === win && !winVeil.hidden) {
+      drawCoins(win);
+      // the checker's word on the day wins over the device's: a day closed, or another finish was first
+      const line = winVeil.querySelector(".daily-line");
+      if (win.kind === "daily" && line) {
+        if (v.status === "late") line.replaceChildren(t("daily.late"));
+        else if ("first" in v && v.first === false) line.replaceChildren(t("daily.notCounted"));
+      }
+    }
   });
   // the board fires this after its own flourish, so the card goes straight up
   showWin();
@@ -443,6 +476,7 @@ function showWin(): void {
   if (!lastWin || !board) return;
   const gallery = layoutGallery(board.pictures());
   if (lastWin.kind === "challenge") return void showChallengeWin(lastWin, gallery);
+  if (lastWin.kind === "daily") return void showDailyWin(lastWin, gallery);
   if (lastWin.milestone) return void showMilestone(gallery);
   const { level, moves, ms } = lastWin;
   const last = level >= levels();
@@ -492,6 +526,44 @@ function showMilestone(gallery: HTMLElement): void {
   fireworks(card, 6, 3000);
   emit("milestone:show", { id: "guide" });
   if (lastWin) drawCoins(lastWin);
+}
+
+/**
+ * The daily's card: the pictures, the moves and the time (what the day's board ranks
+ * by), and plainly whether this finish is the one that counts; then the day's results.
+ */
+function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement): void {
+  const line = w.verdict?.status === "late" ? t("daily.late") : w.first ? t("daily.counted") : t("daily.notCounted");
+  winVeil.replaceChildren(
+    h(
+      "div",
+      { class: "card" },
+      h("h2", {}, t("win.title")),
+      gallery,
+      h(
+        "div",
+        { class: "stats" },
+        h("div", { class: "stat glass" }, h("b", {}, String(w.moves)), h("span", {}, t("win.moves"))),
+        h("div", { class: "stat glass" }, h("b", {}, clock(w.ms)), h("span", {}, t("win.time"))),
+      ),
+      h("p", { class: "daily-line" }, line),
+      h(
+        "div",
+        { class: "row" },
+        withClick(button("", "win.home", t("win.home")), goHome),
+        withClick(button("amber next", "win.results", t("win.results")), () => {
+          hideCard(winVeil);
+          board?.destroy();
+          host.replaceChildren();
+          board = null;
+          boardWon = false;
+          void dailyUi.openResults();
+        }),
+      ),
+    ),
+  );
+  showCard(winVeil);
+  drawCoins(w);
 }
 
 /** A challenge board's card: the pictures, then "Par N · You M". No fail: over par, it is still cleared. */
@@ -567,13 +639,6 @@ function layoutGallery(pics: BoardPicture[]): HTMLElement {
   return gallery;
 }
 
-function clock(ms: number): string {
-  const s = Math.max(0, Math.round(ms / 1000));
-  const m = Math.floor(s / 60);
-  const hrs = Math.floor(m / 60);
-  const ss = String(s % 60).padStart(2, "0");
-  return hrs > 0 ? `${hrs}:${String(m % 60).padStart(2, "0")}:${ss}` : `${m}:${ss}`;
-}
 
 // ---------- cards ----------
 
@@ -642,12 +707,15 @@ export async function startApp(): Promise<void> {
   onCampaign(drawHome);
   onCampaign(albumsUi.redraw);
   onCampaign(routeUi.redraw);
+  onCampaign(dailyUi.redraw);
   drawHome();
   document.body.append(app);
   mountSettings(app);
   document.getElementById("boot")?.remove();
   show("home");
   void startSound();
+  // which day it is (the platform's word) and its board: Home's Daily button appears once they are known
+  void dailyUi.refresh();
 
   if (import.meta.env.DEV) {
     (window as unknown as { __ps: unknown }).__ps = {

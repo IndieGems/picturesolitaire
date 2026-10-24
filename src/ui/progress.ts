@@ -39,9 +39,27 @@ export interface Campaign {
   best: Record<string, number>;
   /** Steps of the first board's guide done (guide.ts); it only moves forward. */
   guide: number;
+  /**
+   * The daily puzzle: the player's first finish on their latest daily date (the
+   * platform's date, src/net/daily.ts), so Home can say "done" at once. The
+   * day's results board is the server's; this is only the device's note of it.
+   */
+  daily: DailyResult | null;
 }
 
-const fresh = (): Campaign => ({ v: 1, level: 1, won: 0, restored: [], best: {}, guide: 0 });
+export interface DailyResult {
+  /** "YYYY-MM-DD", the platform's date for the player's day. */
+  date: string;
+  moves: number;
+  ms: number;
+}
+
+const fresh = (): Campaign => ({ v: 1, level: 1, won: 0, restored: [], best: {}, guide: 0, daily: null });
+
+function dailyOf(x: unknown): DailyResult | null {
+  const d = x as DailyResult | null;
+  return d && typeof d === "object" && typeof d.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d.date) ? { date: d.date, moves: count(d.moves), ms: count(d.ms) } : null;
+}
 
 let state: Campaign = fresh();
 let read = false;
@@ -93,6 +111,8 @@ function merge(a: Campaign, b: Campaign): Campaign {
     restored,
     best,
     guide: Math.max(count(a.guide), count(b.guide)),
+    // the later day; on the same day, the copy already here (the first finish)
+    daily: ((x, y) => (!x ? y : !y ? x : y.date > x.date ? y : x))(dailyOf(a.daily), dailyOf(b.daily)),
   };
 }
 
@@ -200,6 +220,23 @@ export function cleared(id: string, moves: number): { first: boolean; better: bo
 /** The fewest moves the player cleared this challenge board in, if they have. */
 export function bestOf(id: string): number | undefined {
   return state.best[id];
+}
+
+/**
+ * The daily board of `date` was finished. Only the day's first finish is kept (and
+ * only it counts on the day's board); says whether this was it. Saved now.
+ */
+export function playedDaily(date: string, moves: number, ms: number): boolean {
+  if (state.daily && state.daily.date >= date) return false;
+  state = { ...state, daily: { date, moves, ms: Math.round(ms) } };
+  changed();
+  schedulePush();
+  return true;
+}
+
+/** The player's first finish on the daily of `date`, if they have one. */
+export function dailyResult(date: string): DailyResult | null {
+  return state.daily?.date === date ? state.daily : null;
 }
 
 /** The guide's steps done: moves only forward, saved now. */
