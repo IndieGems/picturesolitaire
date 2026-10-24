@@ -364,8 +364,9 @@ export function route(plan, old, { optsOf, seedOf, spacing, repairOnly = false, 
     console.log(`${old[i].id}: re-dealing it from the plan`);
     for (const q of old[i].pictures) uses.set(q.id, uses.get(q.id) - 1);
     chosen[i] = null;
-    // nearness to the boards either side (with spacing), so the board's pictures are ones not met near it
-    const cost = new Map(usable.map((p) => [p.id, near(i, p.id) * (spacing ? 4 : 1)]));
+    // nearness to the boards either side (with spacing), so the board's pictures are ones not met near it;
+    // then calm before busy, and new before a picture the row limits (old)
+    const cost = new Map(usable.map((p) => [p.id, near(i, p.id) * (spacing ? 4 : 1) + (p.busy ?? 0) * 2 + (plan[i].old?.has(p.id) ? 2 : 0)]));
     const recent = new Set([...(chosen[i - 1] ?? []), ...(chosen[i + 1] ?? [])].map((q) => q.id));
     const set = pick(usable, specOf(plan[i]), cost, recent, random(seedOf(i)));
     if (!set) throw new Error(`${old[i].id}: no pictures fit the plan${flags.size ? " (flagged pictures are left out)" : ""}`);

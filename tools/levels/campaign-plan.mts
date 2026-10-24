@@ -22,7 +22,8 @@
 // subjects and art styles vary (vary: no shared subject word, an album at most
 // a third of the board, a style at most half), and at most one busy picture a
 // board (busyMost). Boards 1-3 take no busy picture and at most one picture
-// from the catalogue as it was before the clear pictures came (CURRENT).
+// from the catalogue as it was before the clear pictures came (CURRENT), calm
+// ones first; with portrait 3:4 cards they are 4x4, as Jigsaw Drop opens.
 //
 // SPACING: a picture should not come back within this many boards, and one the
 // player has not met yet comes first (lib.mts spacedCost, balanceSpaced). The
@@ -68,9 +69,9 @@ const ALL = [2, 4, 6, 9];
 
 export const PLAN = [
   // ---- squares only
-  /*  1 */ { role: "intro",  count: 3, alike: [],        sizes: SQ,    cards: [12, 12], peek: 2, chain: [1, 1], careless: [1, 1] , ...FRESH },
-  /*  2 */ { role: "intro",  count: 4, alike: [],        sizes: SQ,    cards: [16, 16], peek: 2, chain: [1, 1], careless: [1, 1] , ...FRESH },
-  /*  3 */ { role: "build",  count: 6, alike: [],        sizes: SQ,    cards: [24, 24], peek: 2, chain: [2, 2], careless: [0.95, 1] , ...FRESH },
+  /*  1 */ { role: "intro",  board: [4, 4], count: 3, alike: [], sizes: SQ, cards: [12, 12], peek: 2, chain: [1, 1], careless: [1, 1], ...FRESH },
+  /*  2 */ { role: "intro",  board: [4, 4], count: 4, alike: [], sizes: SQ, cards: [16, 16], peek: 2, chain: [1, 1], careless: [1, 1], ...FRESH },
+  /*  3 */ { role: "build",  board: [4, 4], count: 5, alike: [], sizes: SQ, cards: [20, 20], peek: 2, chain: [2, 2], careless: [0.95, 1], ...FRESH },
   /*  4 */ { role: "build",  count: 6, alike: [],        sizes: SQ,    cards: [24, 24], peek: 2, chain: [2, 2], careless: [0.9, 1] },
   /*  5 */ { role: "relief", count: 5, alike: [],        sizes: SQ,    cards: [20, 20], peek: 2, chain: [1, 2], careless: [1, 1] },
   /*  6 */ { role: "build",  count: 7, alike: [],        sizes: SQ,    cards: [28, 28], peek: 2, chain: [2, 3], careless: [0.85, 1] },
