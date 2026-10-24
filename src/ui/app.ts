@@ -490,6 +490,7 @@ function showMilestone(gallery: HTMLElement): void {
   winVeil.replaceChildren(card);
   showCard(winVeil);
   fireworks(card, 6, 3000);
+  emit("milestone:show", { id: "guide" });
   if (lastWin) drawCoins(lastWin);
 }
 
@@ -649,7 +650,20 @@ export async function startApp(): Promise<void> {
   void startSound();
 
   if (import.meta.env.DEV) {
-    (window as unknown as { __ps: unknown }).__ps = { offline: pretend, openLevel, campaign, restored: pretendRestored, cleared, guide };
+    (window as unknown as { __ps: unknown }).__ps = {
+      offline: pretend,
+      openLevel,
+      campaign,
+      restored: pretendRestored,
+      cleared,
+      guide,
+      /** The card up now shows what a paid verdict of `coins` looks like (no Coins move: the checker alone pays). */
+      paid(coins: number) {
+        if (!lastWin) return;
+        lastWin.verdict = { status: "paid", lane: "campaign", board: "dev", moves: lastWin.moves, coins };
+        drawCoins(lastWin);
+      },
+    };
     // ?restored=id,id shows those pictures as restored in the albums (never saved)
     const fake = new URLSearchParams(location.search).get("restored");
     if (fake) pretendRestored(fake.split(",").filter(Boolean));

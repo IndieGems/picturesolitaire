@@ -67,6 +67,11 @@ export interface GameEvents {
   "board:start": { level: string };
   /** Any button pressed in the interface (for its click sound). */
   "ui:press": { id: string };
+  /**
+   * A milestone card just went up, the moment a player plays for (its own sound;
+   * the UI member emits it). `id`: "guide" for the first board's finish.
+   */
+  "milestone:show": { id: string };
 }
 
 type Handler<K extends keyof GameEvents> = (payload: GameEvents[K]) => void;
