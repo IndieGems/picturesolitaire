@@ -41,6 +41,8 @@ import { level as campaignLevel, type Daily } from "../game/levels";
 import { createDaily } from "./daily";
 import { clock, shortDate } from "./format";
 import { claimWin, cueCoins, type Verdict } from "../net/claims";
+import { KEEPSAKE } from "../net/keepsake";
+import { startTables, tableArt, tableTitle, thumbOf } from "./tables";
 import { levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
 
 // ---------- a little DOM ----------
@@ -457,13 +459,15 @@ on("board:won", ({ moves, ms, line }) => {
  */
 function drawCoins(win: Win): void {
   const v = win.verdict;
-  if (!v || v.status !== "paid" || v.coins <= 0) return;
   const card = winVeil.querySelector<HTMLElement>(".card");
-  if (!card) return;
+  const slot = card?.querySelector<HTMLElement>(".prize");
+  // the guide's keepsake: a table, granted by the checker with board 1's prize
+  if (slot && v && "items" in v && KEEPSAKE && v.items?.includes(KEEPSAKE.slug)) void drawKeepsake(slot, KEEPSAKE.slug);
+  if (!v || v.status !== "paid" || v.coins <= 0 || !card) return;
   const coin = h("span", { class: "coin", "aria-hidden": "true" });
-  const slot = card.querySelector<HTMLElement>(".prize");
   if (slot) {
-    slot.replaceChildren(coin, h("span", {}, t("guide.prize", { count: v.coins })));
+    slot.querySelector(".won-coins")?.remove();
+    slot.prepend(h("span", { class: "won-coins" }, coin, h("span", {}, t("guide.prize", { count: v.coins }))));
     slot.classList.add("landed");
   } else {
     card.querySelector(".coins-chip")?.remove();
@@ -501,6 +505,17 @@ function showWin(): void {
   );
   showCard(winVeil);
   drawCoins(lastWin);
+}
+
+/** The table the guide's finish won, beside its Coins: its picture, its name, and where to choose it. */
+async function drawKeepsake(slot: HTMLElement, id: string): Promise<void> {
+  const a = await tableArt(id);
+  if (!a || slot.querySelector(".won-table")) return;
+  slot.append(
+    h("span", { class: "won-table" }, h("img", { src: thumbOf(a), alt: "", draggable: "false" }), h("span", {}, tableTitle(a))),
+    h("span", { class: "prize-note" }, t("guide.tableNote")),
+  );
+  slot.classList.add("landed");
 }
 
 /**
@@ -716,6 +731,8 @@ export async function startApp(): Promise<void> {
   void startSound();
   // which day it is (the platform's word) and its board: Home's Daily button appears once they are known
   void dailyUi.refresh();
+  // the player's chosen table, once their choice and what they own are read
+  void startTables();
 
   if (import.meta.env.DEV) {
     (window as unknown as { __ps: unknown }).__ps = {
@@ -725,10 +742,10 @@ export async function startApp(): Promise<void> {
       restored: pretendRestored,
       cleared,
       guide,
-      /** The card up now shows what a paid verdict of `coins` looks like (no Coins move: the checker alone pays). */
-      paid(coins: number) {
+      /** The card up now shows what a paid verdict of `coins` looks like (no Coins move: the checker alone pays); `items` as granted. */
+      paid(coins: number, items?: string[]) {
         if (!lastWin) return;
-        lastWin.verdict = { status: "paid", lane: "campaign", board: "dev", moves: lastWin.moves, coins };
+        lastWin.verdict = { status: "paid", lane: "campaign", board: "dev", moves: lastWin.moves, coins, ...(items ? { items } : {}) };
         drawCoins(lastWin);
       },
     };

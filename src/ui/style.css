@@ -72,7 +72,8 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
   position: fixed; inset: 0; margin: 0 auto; width: 100%; max-width: min(100vw, 62dvh);
   overflow: hidden; color: var(--ink);
   /* the winter-dusk table (the art member's): lanterns in the top corners, a calm dark middle */
-  background: var(--table) url("/art/table.webp") center top / cover no-repeat;
+  /* the chosen table (src/ui/tables.ts sets these); the snowy dusk until then */
+  background: var(--table-base, var(--table)) var(--table-img, url("/art/table.webp")) center top / cover no-repeat;
 }
 @media (min-aspect-ratio: 3/4) { #app { box-shadow: 0 0 60px rgba(0, 0, 0, 0.6); } }
 
@@ -156,7 +157,7 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
 /* three chubby stacks, as on the board: the art member's card back, a few deep */
 .home .emblem i {
   display: block; height: 58px; position: relative;
-  background: url("/art/stack-back.webp") center / contain no-repeat;
+  background: var(--stack-back, url("/art/stack-back.webp")) center / contain no-repeat;
   filter: drop-shadow(0 3px 0 #1f2834) drop-shadow(0 6px 0 #1a222d) drop-shadow(0 8px 10px rgba(0, 0, 0, 0.45));
 }
 .home .emblem i:nth-child(2) { transform: translateY(-10px); }
@@ -234,11 +235,22 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
 /* rows of pictures laid out by app.ts (layoutGallery): one unit per card, as big as fits */
 .win .gallery { display: flex; flex-direction: column; align-items: center; gap: var(--gap, 10px); margin: 14px 0 18px; --u: 34px; }
 .win .gallery .line { display: flex; justify-content: center; align-items: center; gap: var(--gap, 10px); }
+/* THE PICTURE FRAME, as the board's (AGENTS.md, "Picture frames are thin"): a thin frosted rim,
+   light at the top and greyer at the foot, a hairline where it meets the picture, a thin darker
+   lip under it. --fw is its width (2px, never less), --fr its outer rounding. */
+.win .gallery figure, .tile.restored .frame, .album-row .cover {
+  position: relative; padding: var(--fw, 2px); border: 0;
+  background: linear-gradient(180deg, #e9eef5, #b0bac8);
+}
+.win .gallery figure > img, .tile.restored .frame > img, .album-row .cover > :is(img, .back) { border-radius: calc(var(--fr) - var(--fw, 2px)); }
+.win .gallery figure::after, .tile.restored .frame::after, .album-row .cover::after {
+  content: ""; position: absolute; inset: var(--fw, 2px); border-radius: calc(var(--fr) - var(--fw, 2px));
+  box-shadow: inset 0 0 0 1px #8b97a8; pointer-events: none;
+}
 .win .gallery figure {
-  margin: 0; width: calc(var(--u) * var(--c)); height: calc(var(--u) * var(--r));
-  border-radius: 12px; overflow: hidden; border: 4px solid #f6f9fc;
-  box-shadow: 0 0 0 1px rgba(110, 130, 155, 0.35), 0 6px 12px rgba(20, 30, 45, 0.3);
-  background: #dfe6ee;
+  --fr: 12px; margin: 0; width: calc(var(--u) * var(--c)); height: calc(var(--u) * var(--r));
+  border-radius: var(--fr); overflow: hidden;
+  box-shadow: 0 2px 0 #7f8b9c, 0 6px 12px rgba(20, 30, 45, 0.3);
   animation: picture-in 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both; animation-delay: calc(0.15s + var(--i) * 0.09s);
 }
 .win .gallery img { display: block; width: 100%; height: 100%; object-fit: cover; }
@@ -324,7 +336,7 @@ html.less-motion .card, html.less-motion .win .gallery figure, html.less-motion 
   width: 100%; min-height: 84px; padding: 10px 14px 10px 10px; border-radius: 26px;
   justify-content: flex-start; gap: 14px; text-align: left;
 }
-.album-row .cover { flex: none; width: 62px; height: 62px; border-radius: 14px; overflow: hidden; background: #dfe6ee; box-shadow: inset 0 0 0 3px #f4f8fc; }
+.album-row .cover { --fr: 14px; flex: none; width: 62px; height: 62px; border-radius: var(--fr); overflow: hidden; }
 .album-row .cover img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .album-row .cover .back { width: 100%; height: 100%; border-radius: 0; }
 .album-row .words { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
@@ -352,15 +364,15 @@ html.less-motion .card, html.less-motion .win .gallery figure, html.less-motion 
 .shelf { column-count: 2; column-gap: 14px; max-width: 620px; margin: 0 auto; }
 @media (min-width: 520px) { .shelf { column-count: 3; } }
 .tile { display: block; width: 100%; margin: 0 0 16px; padding: 0; border: 0; background: none; break-inside: avoid; font: inherit; color: inherit; text-align: center; }
-.tile .frame { display: block; width: 100%; aspect-ratio: var(--c) / var(--r); border-radius: 16px; overflow: hidden; }
+.tile .frame { --fr: 16px; display: block; width: 100%; aspect-ratio: var(--c) / var(--r); border-radius: var(--fr); overflow: hidden; }
 /* a restored picture: in the board's pale card frame, raised, and it opens */
 .tile.restored { cursor: pointer; touch-action: manipulation; }
 .tile.restored .frame {
-  border: 5px solid #f3f7fb; background: #dfe6ee;
-  box-shadow: 0 4px 0 #9aabbf, 0 9px 14px rgba(6, 12, 24, 0.45);
+  --fw: 2.5px;
+  box-shadow: 0 3px 0 #7f8b9c, 0 8px 12px rgba(6, 12, 24, 0.45);
   transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
-.tile.restored:active .frame { transform: translateY(3px); box-shadow: 0 1px 0 #9aabbf, 0 3px 6px rgba(6, 12, 24, 0.4); }
+.tile.restored:active .frame { transform: translateY(2px); box-shadow: 0 1px 0 #7f8b9c, 0 3px 6px rgba(6, 12, 24, 0.4); }
 .tile.restored:focus-visible { outline: none; }
 .tile.restored:focus-visible .frame { outline: 3px solid var(--amber-hi); outline-offset: 3px; }
 .tile.restored img { display: block; width: 100%; height: 100%; object-fit: cover; }
@@ -412,6 +424,35 @@ html.less-motion .marker.next::after { animation-duration: 3.4s; }
 /* ---------- the daily puzzle (src/ui/daily.ts) ---------- */
 
 /* Home's Daily button: its name over today's state */
+/* ---------- the table picker (Settings) and a table won ---------- */
+
+#settings-screen .set-tables { flex-direction: column; align-items: stretch; gap: 10px; padding: 12px 0 4px; }
+.table-picks { display: flex; gap: 12px; flex-wrap: wrap; }
+.table-pick {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; width: 84px; padding: 0; border: 0; background: none;
+  font: 500 13px/1.15 var(--round); color: var(--ink); text-align: center; cursor: pointer; touch-action: manipulation;
+}
+/* a small picture in the thin frame: the rim is the picture's own padding, the hairline an outline just inside it */
+.table-pick img, .card .prize .won-table img {
+  padding: 2px; background: linear-gradient(180deg, #e9eef5, #b0bac8); outline: 1px solid #8b97a8; outline-offset: -3px;
+}
+.table-pick img {
+  display: block; width: 84px; height: 105px; object-fit: cover; border-radius: 14px;
+  box-shadow: 0 3px 0 #7f8b9c, 0 6px 10px rgba(6, 12, 24, 0.35);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.table-pick:active img { transform: translateY(2px); box-shadow: 0 1px 0 #7f8b9c, 0 3px 6px rgba(6, 12, 24, 0.3); }
+.table-pick[aria-checked="true"] img { box-shadow: 0 0 0 3px var(--amber-lo), 0 3px 0 #7f8b9c, 0 6px 10px rgba(6, 12, 24, 0.35); }
+.table-pick[aria-checked="true"] span { font-weight: 600; }
+.table-pick:focus-visible { outline: none; }
+.table-pick:focus-visible img { outline: 3px solid var(--amber-hi); outline-offset: 3px; }
+
+/* the guide's milestone card: a table won, beside the Coins */
+.card .prize .won-coins { display: flex; align-items: center; gap: 10px; }
+.card .prize .won-table { display: flex; align-items: center; gap: 10px; font-size: 18px; color: var(--ink); }
+.card .prize .won-table img { width: 34px; height: 42px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 6px rgba(6, 12, 24, 0.35); }
+.card .prize .prize-note { flex-basis: 100%; text-align: center; font: 500 14px/1.2 var(--round); color: var(--ink-soft); }
+
 .btn.daily-btn {
   width: min(100%, 300px); min-height: 62px; padding: 0 20px; border-radius: 26px;
   justify-content: flex-start; gap: 12px; text-align: left;
@@ -501,7 +542,7 @@ html.less-motion .marker.next::after { animation-duration: 3.4s; }
 }
 /* on the guide's milestone card: the prize in its own place, kept from the start */
 .card .prize {
-  display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 46px; margin: -2px 0 16px;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; column-gap: 22px; row-gap: 8px; min-height: 46px; margin: -2px 0 16px;
   font: 600 22px/1 var(--round); color: var(--amber-lip); visibility: hidden;
 }
 .card .prize.landed { visibility: visible; animation: coins-in 0.4s ease-out both; }

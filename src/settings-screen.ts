@@ -9,12 +9,16 @@
 //
 // Every value starts from the player's Arcade-wide default until they change it
 // here (src/settings.ts). Add the game's own settings as rows below.
+//
+// The Table row (src/ui/tables.ts) lists the tables the player owns, and shows
+// only once they own more than the snowy dusk: a choice of one is no choice.
 
 import { gem } from "./gem";
 import { isMuted, onMutedChange, setMuted } from "./sound";
 import { choose, loadSettings, onSettingsChange, setting } from "./settings";
 import { t } from "./ui/i18n";
 import { ICONS } from "./ui/icons";
+import { chooseTable, chosenTable, onTableChange, ownedTableArts, tableTitle, thumbOf } from "./ui/tables";
 
 function row(text: string, input: HTMLInputElement): HTMLLabelElement {
   const label = document.createElement("label");
@@ -64,6 +68,47 @@ export function mountSettings(parent: HTMLElement = document.body): void {
   vibration.addEventListener("change", () => choose({ vibration: vibration.checked }));
   const vibrationRow = row(t("settings.vibration"), vibration);
 
+  // Table: the owned tables as small pictures, the chosen one ringed
+  const tablesList = document.createElement("div");
+  tablesList.className = "table-picks";
+  tablesList.setAttribute("role", "radiogroup");
+  tablesList.setAttribute("aria-label", t("settings.table"));
+  const tablesName = document.createElement("span");
+  tablesName.textContent = t("settings.table");
+  const tablesRow = document.createElement("div");
+  tablesRow.className = "set-row set-tables";
+  tablesRow.hidden = true;
+  tablesRow.append(tablesName, tablesList);
+  let drawing = 0;
+  async function drawTables(): Promise<void> {
+    const token = ++drawing;
+    const mine = await ownedTableArts();
+    if (token !== drawing) return;
+    tablesRow.hidden = mine.length < 2;
+    tablesList.replaceChildren(
+      ...mine.map((a) => {
+        const pick = document.createElement("button");
+        pick.type = "button";
+        pick.className = "table-pick";
+        pick.dataset.press = "settings.table";
+        pick.setAttribute("role", "radio");
+        pick.setAttribute("aria-checked", String(a.id === chosenTable()));
+        const img = document.createElement("img");
+        img.src = thumbOf(a);
+        img.alt = "";
+        img.draggable = false;
+        const name = document.createElement("span");
+        name.textContent = tableTitle(a);
+        pick.append(img, name);
+        pick.addEventListener("click", () => void chooseTable(a.id));
+        return pick;
+      }),
+    );
+  }
+  onTableChange(() => {
+    if (screen.open) void drawTables();
+  });
+
   const close = document.createElement("button");
   close.type = "button";
   close.className = "btn close";
@@ -75,7 +120,7 @@ export function mountSettings(parent: HTMLElement = document.body): void {
     if (e.target === screen) screen.close();
   });
 
-  screen.append(title, row(t("settings.sound"), sound), row(t("settings.volume"), volume), vibrationRow, close);
+  screen.append(title, row(t("settings.sound"), sound), row(t("settings.volume"), volume), vibrationRow, tablesRow, close);
 
   const render = () => {
     sound.checked = !isMuted();
@@ -88,6 +133,7 @@ export function mountSettings(parent: HTMLElement = document.body): void {
   button.addEventListener("click", () => {
     vibrationRow.hidden = !gem.vibration.available;
     render();
+    void drawTables();
     screen.showModal();
   });
 
