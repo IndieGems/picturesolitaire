@@ -7,8 +7,10 @@
 // the player makes, kept with the game's settings (gem.me.settings: it follows
 // the player), never here and never in browser storage.
 
+import { GemApiError } from "@indiegems/gem-web-sdk/sdk";
 import { gem } from "../gem";
 import { suspect } from "../ui/online";
+import { noAnswer, refusalOf } from "./no-answer";
 import { TABLES } from "./tables";
 
 export { KEEPSAKE, TABLES, type Table } from "./tables";
@@ -22,8 +24,10 @@ export async function ownsTable(slug: string): Promise<boolean> {
     await gem.awaitIdentity(10_000);
     return (await gem.me.inventory.instances(slug)).some((i) => i.quantity > 0);
   } catch (err) {
-    suspect();
-    console.warn(`[keepsake] could not read ${slug}`, err);
+    // not_found is the platform's answer for a player who holds none: they don't own it
+    if (err instanceof GemApiError && err.reason === "not_found") return false;
+    if (noAnswer(err)) suspect();
+    console.warn(`[keepsake] could not read ${slug}: ${refusalOf(err)}`);
     return false;
   }
 }

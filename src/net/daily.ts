@@ -20,6 +20,7 @@
 
 import { gem } from "../gem";
 import { onOnline, suspect } from "../ui/online";
+import { noAnswer, refusalOf } from "./no-answer";
 
 /** The daily challenge's slug and id in the game config (functions/checker/src/lib.rs has the same). */
 export const DAILY_SLUG = "daily_picture";
@@ -97,8 +98,8 @@ async function read(): Promise<DailyToday | null> {
     }
     return plain(next);
   } catch (err) {
-    suspect();
-    console.warn("[daily] the day could not be read", err);
+    if (noAnswer(err)) suspect();
+    console.warn(`[daily] the day could not be read: ${refusalOf(err)}`);
     return null;
   } finally {
     reading = null;
