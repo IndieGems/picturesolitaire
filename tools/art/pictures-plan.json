@@ -8,7 +8,8 @@
     { "id": "landscapes", "title": "Landscapes" },
     { "id": "people", "title": "People" },
     { "id": "travel", "title": "Travel" },
-    { "id": "architecture", "title": "Architecture" }
+    { "id": "architecture", "title": "Architecture" },
+    { "id": "animals", "title": "Animals" }
   ],
   "families": {
     "warm-dusk": { "title": "Warm dusk", "palette": ["orange", "peach", "coral", "gold", "violet"], "prompt": "Colour palette: a warm sunset of orange, peach, coral and gold, with soft violet shadows." },
@@ -55,7 +56,7 @@
     { "id": "berry-cake", "album": "food", "title": "Strawberry Layer Cake", "medium": "photo", "cols": 2, "rows": 2, "busy": 1, "family": "pink-bloom",
       "subjects": ["cake", "strawberries", "raspberries", "macarons", "teacup"],
       "prompt": "A photorealistic food photograph from a three-quarter angle: a pink layered sponge cake with cream, topped with strawberries and raspberries; pink macarons stacked beside it; a bowl of strawberries; rose petals and mint leaves scattered on a pale pink marble table; a teacup with a pink rose pattern." },
-    { "id": "rose-hat", "album": "people", "title": "The Rose Hat", "medium": "painting", "cols": 2, "rows": 3, "busy": 1, "family": "pink-bloom",
+    { "id": "rose-hat", "album": "people", "title": "The Rose Hat", "medium": "painting", "cols": 2, "rows": 3, "cropX": 0.45, "busy": 1, "family": "pink-bloom",
       "subjects": ["woman", "straw hat", "roses", "garden", "trellis"],
       "prompt": "An impressionist oil painting of a young woman in a wide straw hat trimmed with pink roses and a cream lace blouse, seen from the side as she looks over her shoulder, standing in a garden of blooming pink rose bushes with a stone path and an arched rose trellis behind her. Soft dappled light. Thick visible brush strokes." },
 
@@ -81,7 +82,7 @@
     { "id": "hydrangeas", "album": "flowers", "title": "Blue Hydrangeas", "medium": "photo", "cols": 2, "rows": 2, "busy": 2, "family": "sea-blue",
       "subjects": ["hydrangeas", "garden", "picket fence", "cottage door"],
       "prompt": "A photorealistic photograph of a garden full of blue and periwinkle hydrangea blooms, dozens of flower heads filling the frame at different distances, dew drops on the petals and green leaves, a white picket fence and a blue cottage door partly visible behind." },
-    { "id": "net-mender", "album": "people", "title": "The Net Mender", "medium": "painting", "cols": 2, "rows": 2, "busy": 2, "family": "sea-blue",
+    { "id": "net-mender", "album": "people", "title": "The Net Mender", "medium": "painting", "cols": 2, "rows": 2, "cropX": 0.4, "busy": 2, "family": "sea-blue",
       "subjects": ["fisherman", "nets", "harbour", "boats", "ropes"],
       "prompt": "A watercolour painting of an old fisherman in a navy sweater and cap sitting on a harbour quay mending a blue fishing net, with wooden crates, coiled ropes and floats around him, blue and white fishing boats on the water behind, and white houses on the far shore. Loose watercolour washes on textured paper." },
 
@@ -140,7 +141,7 @@
     { "id": "cherry-bowl", "album": "food", "title": "Cherries", "medium": "photo", "cols": 2, "rows": 2, "busy": 1, "family": "berry-red",
       "subjects": ["cherries", "cherry pie", "cream", "tablecloth"],
       "prompt": "A photorealistic food photograph of a white enamel bowl overflowing with glossy red cherries with stems, cherries spilling across a red-and-white checked tablecloth, a cherry pie with a lattice crust, a jug of cream and a few green cherry leaves." },
-    { "id": "tulip-rows", "album": "flowers", "title": "Tulip Fields", "medium": "painting", "cols": 3, "rows": 2, "busy": 1, "family": "berry-red",
+    { "id": "tulip-rows", "album": "flowers", "title": "Tulip Fields", "medium": "painting", "cols": 3, "rows": 2, "cropX": 0.2, "busy": 1, "family": "berry-red",
       "subjects": ["tulips", "windmill", "canal", "farmhouse", "poplars"],
       "prompt": "An impressionist oil painting of Dutch tulip fields: rows of red, crimson and white tulips converging towards a windmill and a farmhouse in the middle distance, a canal with a small boat, poplar trees, and a blue sky with clouds in the upper part. Visible brush strokes." },
     { "id": "red-tram", "album": "travel", "title": "The Red Tram", "medium": "photo", "cols": 1, "rows": 2, "busy": 2, "family": "berry-red",
@@ -195,7 +196,7 @@
     { "id": "beach-huts", "album": "travel", "title": "Beach Huts", "medium": "painting", "cols": 2, "rows": 1, "busy": 1, "family": "sugared-pastel",
       "subjects": ["beach huts", "deckchairs", "promenade", "shells", "sea"],
       "prompt": "A gouache illustration of a long row of wooden beach huts along a seaside promenade, each painted a different pastel colour, mint, powder blue, baby pink, butter yellow and white, with striped doors and little porches, deckchairs, windbreaks, a bucket and spade, towels on a rail and strings of small pastel flags; pale sand and pebbles with shells in the foreground and a strip of calm pale sea and sky at the top. Flat matte gouache with crisp shapes and fine painted detail. No people, no animals, no birds." },
-    { "id": "balloon-seller", "album": "people", "title": "The Balloon Seller", "medium": "painting", "cols": 1, "rows": 2, "busy": 1, "family": "sugared-pastel",
+    { "id": "balloon-seller", "album": "people", "title": "The Balloon Seller", "medium": "painting", "cols": 1, "rows": 2, "cropX": 0.6, "busy": 1, "family": "sugared-pastel",
       "subjects": ["balloon seller", "balloons", "girl", "park", "tulips"],
       "prompt": "A charming gouache and coloured-pencil storybook illustration in a tall narrow view: an elderly balloon seller in a powder-blue coat and cap standing in a park, holding the strings of a big cloud of pastel balloons in mint, pink, yellow, lilac and blue that fills the upper half of the picture; below him a pastel cart with a striped canopy, a little girl in a yellow dress reaching for a pink balloon, a flowerbed of tulips and daisies, a park bench and a lamp post. Soft textured strokes and fine detail. No animals, no birds." },
     { "id": "copper-spires", "album": "architecture", "title": "Green Spires", "medium": "painting", "cols": 2, "rows": 3, "busy": 2, "family": "copper-teal",
@@ -263,6 +264,15 @@
       "prompt": "A bold pop-art illustration in the style of 1960s comics: a giant waffle cone with three dripping scoops of strawberry-pink, mint and vanilla ice cream covered in rainbow sprinkles and topped with a red cherry, thick black outlines, flat bright colours and Ben-Day halftone dots, on a plain cyan background with a white starburst behind it. No speech bubbles." },
     { "id": "paper-balloon", "album": "travel", "title": "Paper Balloon", "medium": "papercut", "cols": 2, "rows": 2, "busy": 0,
       "subjects": ["hot air balloon", "paper hills", "clouds"], "palette": ["red", "yellow", "sky blue", "cream", "green"], "suffix": "close",
-      "prompt": "A layered paper-cut craft artwork photographed straight on, with soft shadows between the layers: a big striped hot air balloon in red, yellow and cream panels with a little woven basket, floating large in the middle of the picture over layered paper hills in shades of green, with a few puffy white paper clouds on a plain sky-blue paper background." }
+      "prompt": "A layered paper-cut craft artwork photographed straight on, with soft shadows between the layers: a big striped hot air balloon in red, yellow and cream panels with a little woven basket, floating large in the middle of the picture over layered paper hills in shades of green, with a few puffy white paper clouds on a plain sky-blue paper background." },
+    { "id": "ginger-cat", "album": "animals", "title": "Ginger Cat", "medium": "photo", "cols": 2, "rows": 2, "busy": 0,
+      "subjects": ["cat", "whiskers", "velvet"], "palette": ["ginger", "orange", "green", "plum"], "suffix": "close",
+      "prompt": "A close-up portrait photograph of a fluffy ginger tabby cat with bright green eyes, sitting upright and looking at the camera, its head and chest filling the picture, against a plain soft plum-purple velvet background, gentle studio light, every whisker sharp." },
+    { "id": "golden-puppy", "album": "animals", "title": "Golden Puppy", "medium": "render", "cols": 2, "rows": 2, "busy": 0,
+      "subjects": ["puppy", "collar", "paws"], "palette": ["golden", "cream", "sky blue", "red"], "suffix": "close",
+      "prompt": "A warm, glossy 3D render like a still from an animated film: a fluffy golden retriever puppy with big shiny dark eyes and a red collar, sitting and smiling with its head tilted, seen close from the front so its head, chest and big front paws fill the picture, on a plain soft sky-blue background with gentle studio light and soft fur." },
+    { "id": "chestnut-horse", "album": "animals", "title": "Chestnut Horse", "medium": "pastel", "cols": 2, "rows": 2, "busy": 0,
+      "subjects": ["horse", "mane", "blaze"], "palette": ["chestnut", "copper", "white", "teal"], "suffix": "close",
+      "prompt": "A soft pastel and chalk drawing on toned paper: the head and neck of a chestnut horse with a white blaze, a long flowing copper mane and a gentle dark eye, seen close in three-quarter view and filling the picture, against a plain deep teal paper background with loose chalk strokes and visible paper texture." }
   ]
 }

@@ -3,6 +3,7 @@
     python tools/art/pictures.py prompt <id>              print the full prompt and size
     python tools/art/pictures.py gen <raw-dir> <id>...    submit generations (gemforge, BILLS per id)
     python tools/art/pictures.py process <raw-dir> <id>... raw PNG -> tools/art/masters + public/pictures (+ thumb)
+    python tools/art/pictures.py export [<id>...]         masters -> public/pictures + thumbs, at the card aspect
     python tools/art/pictures.py thumbs [<id>...]         Albums-screen thumbs from the masters (default: all)
     python tools/art/pictures.py catalogue                write src/content/pictures.json
     python tools/art/pictures.py sheet <out.png> <id>...  contact sheet with the card cuts drawn on
@@ -14,8 +15,8 @@ picture's aspect) so a picture can be re-exported without paying to generate it 
 
 Cards are PORTRAIT cells, 3:4 (creator, 2026-10-24), so a picture of cols x rows cards
 is (cols*3):(rows*4) and ships at exactly cols*384 x rows*512 px, WebP q80. The first
-60 pictures were made for square cells (cols*384 x rows*384) and the game centre-crops
-them; `process` from their masters would re-export them at the new aspect.
+60 pictures were made for square cells; their masters keep the square-cell generation and
+`export` cuts them to the new aspect (an entry's cropX, 0 left .. 1 right, frames the subject).
 """
 import json
 import subprocess
@@ -94,16 +95,31 @@ def master_path(pid):
     return MASTERS / f"{pid}.webp"
 
 
-def crop_to(im, w, h):
-    """Centre crop to the aspect w:h."""
+def crop_to(im, w, h, x=0.5, y=0.5):
+    """Crop to the aspect w:h; x and y place the window (0 left/top .. 1 right/bottom)."""
     W, H = im.size
     if W * h > H * w:
         nw = round(H * w / h)
-        return im.crop(((W - nw) // 2, 0, (W - nw) // 2 + nw, H))
+        x0 = round((W - nw) * x)
+        return im.crop((x0, 0, x0 + nw, H))
     if W * h < H * w:
         nh = round(W * h / w)
-        return im.crop((0, (H - nh) // 2, W, (H - nh) // 2 + nh))
+        y0 = round((H - nh) * y)
+        return im.crop((0, y0, W, y0 + nh))
     return im
+
+
+def framed(e):
+    """The master cut to the picture's card aspect, framed on its subject."""
+    return crop_to(Image.open(master_path(e["id"])).convert("RGB"), *size_of(e), e.get("cropX", 0.5), e.get("cropY", 0.5))
+
+
+def export(e):
+    out = PUBLIC / "pictures" / e["album"] / f"{e['id']}.webp"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    framed(e).resize(size_of(e), Image.LANCZOS).save(out, "WEBP", quality=80, method=6)
+    make_thumb(e)
+    return out
 
 
 def cmd_process(raw, ids):
@@ -117,11 +133,16 @@ def cmd_process(raw, ids):
             continue
         im = crop_to(Image.open(src).convert("RGB"), *size_of(e))
         im.save(master_path(pid), "WEBP", quality=90, method=6)
-        out = PUBLIC / "pictures" / e["album"] / f"{pid}.webp"
-        out.parent.mkdir(parents=True, exist_ok=True)
-        im.resize(size_of(e), Image.LANCZOS).save(out, "WEBP", quality=80, method=6)
+        out = export(e)
         print(pid, im.size, "->", out.relative_to(ROOT), f"{out.stat().st_size // 1024} KB")
-        make_thumb(e)
+
+
+def cmd_export(ids):
+    p = plan()
+    for e in p["pictures"]:
+        if (not ids or e["id"] in ids) and master_path(e["id"]).exists():
+            out = export(e)
+            print(e["id"], size_of(e), f"{out.stat().st_size // 1024} KB")
 
 
 THUMB_LONG = 320  # the Albums screen's picture size, long side
@@ -137,7 +158,7 @@ def thumb_rel(pid):
 def make_thumb(e):
     """A light copy for the Albums screen: the master at the picture's card aspect (as the
     game shows it), THUMB_LONG px on the long side."""
-    im = crop_to(Image.open(master_path(e["id"])).convert("RGB"), *size_of(e))
+    im = framed(e)
     k = THUMB_LONG / max(im.size)
     im = im.resize((round(im.width * k), round(im.height * k)), Image.LANCZOS)
     out = PUBLIC / thumb_rel(e["id"])
@@ -280,6 +301,8 @@ if __name__ == "__main__":
         cmd_gen(rest[0], rest[1:])
     elif c == "process":
         cmd_process(rest[0], rest[1:])
+    elif c == "export":
+        cmd_export(rest)
     elif c == "thumbs":
         cmd_thumbs(rest)
     elif c == "catalogue":
