@@ -2,17 +2,19 @@
 // line, as moves the real rules replay to a win. Also the Hint helper's next
 // move from any position. Pure and deterministic.
 //
-// It decides the abstract game exactly (abstract.ts), then carries the line out
-// step by step on the real rules (realise.ts), backtracking to another winning
-// step if a step cannot be carried out. A line is only ever returned after the
-// real rules have played it to a win.
+// It searches the abstract game completely (abstract.ts), then carries the
+// line out step by step on the real rules (realise.ts), backtracking to
+// another winning step if a step cannot be carried out. A line is only ever
+// returned after the real rules have played it to a win, and that line is the
+// proof: an abstract "winning" alone is not (abstract.ts says why).
 //
 // The three answers, and what they mean:
 //   { win }      a line that the real rules replay to a win;
-//   { doomed }   the abstract game is lost from here: no line exists;
-//   { unknown }  the search ran out of budget, or the realiser could not carry a
-//                winning abstract line out. PROVES NOTHING: a generator rejects
-//                such a deal, it never calls it unwinnable.
+//   { doomed }   the abstract game is lost from here, so no real line exists;
+//   { unknown }  the search ran out of budget, or no winning abstract line
+//                could be carried out (rarely, because the real board is lost
+//                after all). PROVES NOTHING: a generator rejects such a deal,
+//                it never calls it unwinnable.
 
 import { isWon, replay, start, type Deal, type Move, type State } from "../rules.ts";
 import { Game, OutOfBudget, type Option, type Step } from "./abstract.ts";
@@ -122,7 +124,7 @@ export function solveDeal(deal: Deal, budget?: number): Answer {
 /**
  * The Hint helper's answer: the next move of a winning line from `s`, or
  * doomed (no way to win from here: Undo or Restart), or unknown (proves
- * nothing). On a 4 x 5 board it decides exactly, visiting a few hundred
+ * nothing). On a 4 x 5 board it searches completely, visiting a few hundred
  * abstract positions, in under 10 ms (median under 1 ms, measured on 3,600
  * positions players reach); `budget` caps the positions visited.
  */

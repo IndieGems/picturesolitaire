@@ -11,7 +11,10 @@
 //   - PROOF: the stored line, moves only (no undo, hint or shuffle), replays on
 //     the real rules (src/game/rules.ts) to a won board;
 //   - the solver agrees the deal is winnable (exact, not a timed guess), and the
-//     axes stored with the board are what the deal measures.
+//     axes stored with the board are what the deal measures;
+//   - a board with a par: the par is the stored line's length (so the par is
+//     always reachable, by that line);
+//   - a daily board: its id is "d" + its date, and dates run one a day.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
 import { readdirSync, readFileSync } from "node:fs";
@@ -19,8 +22,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { cardsOf, isDeadEnd, isWon, joinCount, replay, start } from "../../src/game/rules.ts";
 import { Game } from "../../src/game/solver/index.ts";
-import { along, careless, chain, traps } from "../../src/game/solver/metrics.ts";
-import { dealFor } from "../../src/game/levels/generate.ts";
+import { along, careless, chain, orderTraps, traps, unavoidable, wait } from "../../src/game/solver/metrics.ts";
+import { BIG, dealFor } from "../../src/game/levels/generate.ts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const catalogue = new Map(JSON.parse(readFileSync(join(root, "src/content/pictures.json"), "utf8")).pictures.map((p) => [p.id, p]));
@@ -33,6 +36,7 @@ let failed = 0;
 for (const file of files) {
   const data = JSON.parse(readFileSync(file, "utf8"));
   const ids = new Set();
+  let lastDate = null;
   for (const l of data.levels) {
     boards++;
     const problems = [];
@@ -41,6 +45,13 @@ for (const file of files) {
       if (ids.has(l.id)) fail("id used twice");
       ids.add(l.id);
       if (![0, 1, 2].includes(l.peek)) fail(`peek ${l.peek}`);
+      if (l.par !== undefined && l.par !== l.line.length) fail(`par ${l.par} but the line has ${l.line.length} moves`);
+      if (l.date !== undefined) {
+        if (!/^d{4}-d{2}-d{2}$/.test(l.date) || l.id !== `d${l.date}`) fail(`date ${l.date} and id ${l.id} do not match`);
+        const next = lastDate && new Date(Date.parse(lastDate + "T00:00:00Z") + 86400000).toISOString().slice(0, 10);
+        if (lastDate && l.date !== next) fail(`date ${l.date} does not follow ${lastDate}`);
+        lastDate = l.date;
+      }
       for (const p of l.pictures) {
         const c = catalogue.get(p.id);
         if (!c) fail(`no picture ${p.id} in the catalogue`);
@@ -75,6 +86,13 @@ for (const file of files) {
         if (a.traps !== tr) fail(`traps are ${tr}, the data says ${a.traps}`);
         if (a.peek !== l.peek) fail("axes.peek differs from peek");
         if (a.lineMoves !== l.line.length) fail("axes.lineMoves differs from the line");
+        if (a.bigWait !== undefined) {
+          const w = wait(game);
+          const bw = Math.max(0, ...l.pictures.map((p, i) => (p.cols * p.rows >= BIG ? w[i] : 0)));
+          if (a.bigWait !== bw) fail(`big wait is ${bw}, the data says ${a.bigWait}`);
+        }
+        if (a.orderTraps !== undefined && a.orderTraps !== unavoidable(game, "clear")) fail(`order traps are ${unavoidable(game, "clear")}, the data says ${a.orderTraps}`);
+        if (a.lineOrderTraps !== undefined && a.lineOrderTraps !== orderTraps(game, along(game, deal, line))) fail("line order traps differ");
       }
     } catch (err) {
       fail(`check crashed: ${err.stack}`);

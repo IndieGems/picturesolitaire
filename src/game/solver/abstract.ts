@@ -16,9 +16,9 @@
 // cards on the board are the root's plus those dealt, minus the cleared
 // pictures; and open = cards on board - rows * (columns whose stack is not
 // empty). That makes the whole space a few thousand positions on a 4 x 5
-// board, small enough to decide EXACTLY: a position is winning or doomed, and
-// the search is never cut short on those sizes. (A budget exists for bigger
-// boards; running out of it is reported as `unknown`, never as doomed.)
+// board (about ten thousand on 5 x 6), small enough to search completely.
+// (A budget exists anyway; running out of it is reported as `unknown`, never
+// as doomed.)
 //
 // Two kinds of step:
 //
@@ -33,10 +33,20 @@
 // Every step either deals a card or clears a picture, so the positions form a
 // DAG and a memoised depth-first search decides them all.
 //
-// Why nothing else is needed: assembling a picture higher than the bottom, or
-// clearing two at once, never reaches a position the steps above cannot; and
-// any real move either changes nothing abstract (a rearrangement), deals (a
-// draw), or clears. The realiser (realise.ts) turns each step into real moves,
+// What the abstraction gives up, and why it is still safe: any real move
+// either changes nothing abstract (a rearrangement), deals (a draw), or
+// clears, and assembling a picture higher than the bottom, or clearing two at
+// once, never reaches a position the steps above cannot. So every real line is
+// an abstract line, and a DOOMED answer is sound: the real board is lost too.
+// The reverse can fail, rarely: the abstract game ignores where dealt cards
+// land, so when a clear deals cards that finish another picture on their own
+// (two halves of a 2x1 dealt side by side into the top row, say), the real
+// board clears it at once while the abstract game counts that clear as
+// optional. A WINNING answer is therefore only a strong guess (1 position in
+// ~360 random 4 x 5 positions disagreed); the solver (index.ts) trusts it only
+// once the realiser has carried a line out and the real rules replayed it.
+// The measures (metrics.ts) are taken on this abstract game and share its
+// rare optimism. The realiser (realise.ts) turns each step into real moves,
 // and every line the solver hands out is replayed on the real rules before it
 // is trusted.
 
@@ -230,7 +240,7 @@ export class Game {
     return out;
   }
 
-  /** Is `n` winning? Exact; throws OutOfBudget past the budget (which proves nothing). */
+  /** Is `n` winning in the abstract game? Doomed is sound; winning is confirmed only by a realised line. Throws OutOfBudget past the budget (which proves nothing). */
   wins(n: Node, key = this.key(n)): boolean {
     const known = this.memo.get(key);
     if (known !== undefined) return known === 1;
