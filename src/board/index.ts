@@ -28,7 +28,7 @@ import {
 import { ease, setBatterySaver, setPaused, stopAll, tween, wait, run } from "./pace.ts";
 import { TUNING, applyTuning } from "./tuning.ts";
 import {
-  cellAt, drawPiece, drawStack, keyOf, layout, mountDefs, nearestCell, place,
+  cellAt, drawPiece, drawRing, drawStack, keyOf, layout, mountDefs, nearestCell, place, ringPath,
   type Art, type Geometry, type PieceView, type StackView,
 } from "./view.ts";
 
@@ -57,6 +57,15 @@ export interface BoardHandle {
   restart(): void;
   helpers(): HelperCounts;
   canUndo(): boolean;
+  /**
+   * The tutorial's guide (agreed with the UI member). "line": a ring
+   * (.guide-lit) round the piece of the next move of the level's line (the
+   * solver's, off the line), then round where it goes (.guide-target) once it
+   * is lifted; only that move is taken, by drag or tap-tap, and any other
+   * press nudges the lit piece. "hold": the board takes no moves. null:
+   * normal play. While a guide is on, Hint costs nothing.
+   */
+  guide(mode: "line" | "hold" | null): void;
   pictures(): BoardPicture[];
   destroy(): void;
 }
@@ -676,9 +685,9 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     cardsEl.append(v.el); // on top of the others
   }
 
-  function settleBack(v: PieceView): void {
+  function settleBack(v: PieceView): Promise<void> {
     const x0 = v.x, y0 = v.y, k0 = v.k;
-    void tween(TUNING.dropMs, (t) => {
+    return tween(TUNING.dropMs, (t) => {
       v.x = x0 + (v.ox - x0) * t;
       v.y = y0 + (v.oy - y0) * t;
       v.k = k0 + (1 - k0) * t;
@@ -711,6 +720,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   function startDrag(p: Press, e: PointerEvent): void {
     const v = viewWith(p.cell);
     if (!v) return;
+    if (guideMode && !(selected?.v === v) && !guideLets(p.cell)) return;
     if (selected && selected.v !== v) {
       settleBack(selected.v);
       selected = null;
@@ -741,10 +751,11 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
         return true;
       }, false),
     };
+    if (guideMode) relight();
   }
 
   function onDown(e: PointerEvent): void {
-    if (press || drag || busy || won || destroyed) return;
+    if (press || drag || busy || won || destroyed || guideMode === "hold") return;
     if (e.pointerType === "mouse" && e.button !== 0) return;
     const g = toGrid(e.clientX, e.clientY);
     const cell = cellAt(geo, g.x, g.y);
@@ -783,10 +794,16 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       drag = null;
       d.stop();
       clearPreview();
-      if (d.to !== d.from) void play({ from: d.from, to: d.to }, d.v);
+      const m = { from: d.from, to: d.to };
+      if (d.to !== d.from && guideTakes(m)) void play(m, d.v);
       else {
         emit("piece:cancel", {});
-        settleBack(d.v);
+        const home = settleBack(d.v);
+        if (guideMode) {
+          relight();
+          // home first, then "this one, but not there"
+          if (d.to !== d.from) void home.then(() => nudge(d.v));
+        }
       }
       return;
     }
@@ -804,6 +821,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       clearPreview();
       emit("piece:cancel", {});
       settleBack(d.v);
+      if (guideMode) relight();
     }
     if (press && e.pointerId === press.id) press = null;
   }
@@ -818,13 +836,20 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
         selected = null;
         emit("piece:cancel", {});
         settleBack(sel.v);
+        if (guideMode) relight();
+        return;
+      }
+      const to = clampTarget(state, sel.from, cell);
+      // the guide keeps the piece up after a wrong second tap, and shows where again
+      if (to !== sel.from && !guideTakes({ from: sel.from, to })) {
+        nudgeTarget();
         return;
       }
       selected = null;
-      const to = clampTarget(state, sel.from, cell);
       if (to === sel.from) {
         emit("piece:cancel", {});
         settleBack(sel.v);
+        if (guideMode) relight();
         return;
       }
       void play({ from: sel.from, to }, sel.v);
@@ -833,7 +858,9 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     if (cell < 0 || state.board[cell] === EMPTY) return;
     const v = viewWith(cell);
     if (!v) return;
+    if (guideMode && !guideLets(cell)) return;
     selected = { v, from: cell };
+    if (guideMode) relight();
     lift(v);
     emit("piece:lift", { cards: v.cells.length });
     const y0 = v.y;
@@ -877,6 +904,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       emit("board:stuck", { doomed: false });
     }
     if (resizePending) relayout();
+    if (guideMode) relight();
   }
 
   async function run2(fn: () => Promise<void>): Promise<void> {
@@ -909,6 +937,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       settleBack(lifted);
       return;
     }
+    unlight();
     history.push(state);
     actions.push(m);
     state = out.state;
@@ -993,6 +1022,86 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     return plan.line[done]!;
   }
 
+  // ---------------------------------------------------------------- the guide (tutorial)
+
+  let guideMode: "line" | "hold" | null = null;
+  let litView: PieceView | null = null;
+  let targetEl: HTMLDivElement | null = null;
+
+  /** The move the guide asks for: the level's line while on it, else the solver's next. */
+  function guideWants(): Move | null {
+    if (guideMode !== "line" || won) return null;
+    const m = onLine();
+    if (m) return m;
+    const n = nextMove(state, 20_000);
+    return "move" in n ? n.move : null;
+  }
+  /** `m` does what `want` does: the same piece, by the same offset. */
+  const sameMove = (m: Move, want: Move) => m.to - m.from === want.to - want.from && pieceAt(state, want.from).includes(m.from);
+  /** A press on `cell` may lift its piece: no guide, or the guide's piece. */
+  function guideLets(cell: number): boolean {
+    if (guideMode === "hold") return false;
+    const want = guideWants();
+    if (!want) return true;
+    if (pieceAt(state, want.from).includes(cell)) return true;
+    nudge(litView);
+    return false;
+  }
+  /** A move the guide takes (any move when no guide is on). */
+  function guideTakes(m: Move): boolean {
+    if (guideMode === "hold") return false;
+    const want = guideWants();
+    return !want || sameMove(m, want);
+  }
+
+  function unlight(): void {
+    if (litView) {
+      litView.el.classList.remove("guide-lit");
+      litView.el.querySelector(".bd-ring")?.remove();
+      litView = null;
+    }
+    targetEl?.remove();
+    targetEl = null;
+  }
+  /** Light what the guide asks for now: the piece to play, or (once it is lifted) where it goes. */
+  function relight(): void {
+    unlight();
+    if (guideMode !== "line" || busy || won || destroyed) return;
+    const want = guideWants();
+    if (!want) return;
+    const v = viewWith(want.from);
+    if (!v) return;
+    const lifted = drag?.v ?? selected?.v ?? null;
+    if (lifted === v) {
+      const d = want.to - want.from;
+      targetEl = drawRing(geo, pieceAt(state, want.from).map((c) => c + d), "bd-target guide-target");
+      fxEl.append(targetEl);
+    } else {
+      litView = v;
+      v.el.classList.add("guide-lit");
+      v.el.querySelector("svg")?.append(ringPath(geo, v.cells));
+    }
+  }
+  /** A little shake of the lit piece: "this one". */
+  function nudge(v: PieceView | null): void {
+    if (!v || lessMotion()) return;
+    const x0 = v.x;
+    void tween(340, (t) => {
+      v.x = x0 + Math.sin(t * Math.PI * 4) * (1 - t) * geo.s * 0.07;
+      place(v);
+    }, { ease: ease.linear }).then(() => {
+      v.x = x0;
+      place(v);
+    });
+  }
+  /** The target ring again: "there". */
+  function nudgeTarget(): void {
+    if (!targetEl) return;
+    targetEl.classList.remove("again");
+    void targetEl.offsetWidth; // restart its animation
+    targetEl.classList.add("again");
+  }
+
   function greedy(): Move | null {
     let best: Move | null = null;
     let score = joinCount(state);
@@ -1047,6 +1156,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     geo = g;
     applyLayout();
     redrawAll(shown);
+    if (guideMode) relight();
   }
   let sized: (() => void) | null = null;
   const ro = new ResizeObserver(() => {
@@ -1131,7 +1241,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
         m = "move" in next ? next.move : greedy();
       }
       if (!m) return;
-      helpers = { ...helpers, hint: helpers.hint - 1 };
+      // the tutorial's hints are free
+      if (!guideMode) helpers = { ...helpers, hint: helpers.hint - 1 };
       emit("helper:hint", { left: helpers.hint });
       void run2(() => showHint(m!));
     },
@@ -1168,6 +1279,14 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     },
     helpers: () => ({ ...helpers }),
     canUndo: () => history.length > 0 && !won,
+    guide(mode) {
+      guideMode = mode;
+      if (mode === "hold" && selected) {
+        settleBack(selected.v);
+        selected = null;
+      }
+      relight();
+    },
     pictures: () => pics.map((p, i) => ({ id: p.id, src: art[i]!.url, cols: p.cols, rows: p.rows })),
     destroy() {
       destroyed = true;

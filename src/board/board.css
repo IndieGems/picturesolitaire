@@ -38,6 +38,21 @@
 .bd-piece.ghost { z-index: 5; opacity: 0; }
 .bd-piece .bd-cover { position: absolute; display: block; }
 
+/* the guide (tutorial): a ring round the card to play, then round where it goes.
+   The screens set --guide-ring; it breathes twice when lit, then holds still. */
+.bd-ring {
+  fill: none;
+  stroke: var(--guide-ring, #74f0cf);
+  stroke-linejoin: round;
+  pointer-events: none;
+  animation: bd-ring-in 0.9s ease-in-out 2;
+}
+.bd-target { pointer-events: none; z-index: 1; }
+.bd-target.again .bd-ring { animation: bd-ring-again 0.45s ease-out 1; }
+@keyframes bd-ring-in { 0%, 100% { stroke-opacity: 1; } 50% { stroke-opacity: 0.45; } }
+@keyframes bd-ring-again { 0% { stroke-opacity: 0.2; } 100% { stroke-opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .bd-ring, .bd-target.again .bd-ring { animation: none; } }
+
 /* the stacks */
 .bd-stack { position: absolute; top: 0; }
 .bd-back { position: absolute; display: block; filter: drop-shadow(0 calc(var(--s) * 0.04) calc(var(--s) * 0.03) rgba(8, 14, 22, 0.55)); }

@@ -176,6 +176,43 @@ function svgCard(
   return el;
 }
 
+/**
+ * The guide's ring round `cells`: the piece's own rounded outline, a little
+ * outside its frame, stroked in var(--guide-ring) (the screens set it). A path
+ * in grid px, so it can go inside a piece's own svg and travel with it.
+ */
+export function ringPath(geo: Geometry, cells: readonly number[]): SVGPathElement {
+  const { s, g } = geo;
+  const xy = cells.map((c) => [c % geo.cols, (c / geo.cols) | 0] as [number, number]);
+  const out = Math.max(2, s * 0.06);
+  const p = document.createElementNS(SVGNS, "path");
+  p.setAttribute("d", path(inset(loops(xy, s, g), -out), s * 0.14 + out, Math.max(1, s * 0.14 - out)));
+  p.setAttribute("class", "bd-ring");
+  p.setAttribute("stroke-width", Math.max(3, s * 0.065).toFixed(2));
+  return p;
+}
+
+/** The guide's ring on its own, round the cells where a piece should go. */
+export function drawRing(geo: Geometry, cells: readonly number[], className: string): HTMLDivElement {
+  const { s, g } = geo;
+  const b = box(cells.map((c) => [c % geo.cols, (c / geo.cols) | 0] as [number, number]), s, g);
+  const m = Math.ceil(s * 0.16);
+  const W = b.w + 2 * m;
+  const H = b.h + 2 * m;
+  const el = document.createElement("div");
+  el.className = className;
+  el.style.cssText = `position:absolute;left:0;top:0;width:${W}px;height:${H}px;transform:translate3d(${b.x - m}px, ${b.y - m}px, 0)`;
+  const svg = document.createElementNS(SVGNS, "svg");
+  svg.setAttribute("width", String(W));
+  svg.setAttribute("height", String(H));
+  svg.setAttribute("viewBox", `${b.x - m} ${b.y - m} ${W} ${H}`);
+  svg.style.display = "block";
+  svg.style.overflow = "visible";
+  svg.append(ringPath(geo, cells));
+  el.append(svg);
+  return el;
+}
+
 /** Put the piece where its x, y and scale say. */
 export function place(v: PieceView): void {
   v.el.style.transform = `translate3d(${v.x.toFixed(2)}px, ${v.y.toFixed(2)}px, 0) scale(${v.k.toFixed(4)})`;
