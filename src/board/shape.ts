@@ -14,8 +14,8 @@ export interface Loop {
   points: [number, number][];
 }
 
-/** The boundary loops of the cells (col, row), in px for cells of size `s` and gutters `g`. */
-export function loops(cells: readonly [number, number][], s: number, g: number): Loop[] {
+/** The boundary loops of the cells (col, row), in px for cells `s` wide and `sh` tall, with gutters `g`. */
+export function loops(cells: readonly [number, number][], s: number, g: number, sh = s): Loop[] {
   const has = new Set(cells.map(([c, r]) => c * 64 + r));
   const H = (c: number, r: number) => c >= 0 && r >= 0 && has.has(c * 64 + r);
   const filled = new Set<number>();
@@ -38,6 +38,7 @@ export function loops(cells: readonly [number, number][], s: number, g: number):
     if (!F(a - 1, b)) next.set(P(a, b + 1), P(a, b));
   }
   const X = (line: number) => (line >> 1) * (s + g) + (line & 1 ? s : 0);
+  const Y = (line: number) => (line >> 1) * (sh + g) + (line & 1 ? sh : 0);
   const out: Loop[] = [];
   while (next.size) {
     const first = next.keys().next().value as number;
@@ -57,7 +58,7 @@ export function loops(cells: readonly [number, number][], s: number, g: number):
       const r = raw[(i + 1) % raw.length]!;
       const d1 = [(q >> 8) - (p >> 8), (q & 255) - (p & 255)];
       const d2 = [(r >> 8) - (q >> 8), (r & 255) - (q & 255)];
-      if (d1[0] !== d2[0] || d1[1] !== d2[1]) pts.push([X(q >> 8), X(q & 255)]);
+      if (d1[0] !== d2[0] || d1[1] !== d2[1]) pts.push([X(q >> 8), Y(q & 255)]);
     }
     out.push({ points: pts });
   }
@@ -121,8 +122,8 @@ export function path(ls: Loop[], convex: number, concave: number): string {
   return d;
 }
 
-/** The bounding box of the cells, in px. */
-export function box(cells: readonly [number, number][], s: number, g: number): { x: number; y: number; w: number; h: number } {
+/** The bounding box of the cells, in px (cells `s` wide and `sh` tall). */
+export function box(cells: readonly [number, number][], s: number, g: number, sh = s): { x: number; y: number; w: number; h: number } {
   let c0 = Infinity, c1 = -Infinity, r0 = Infinity, r1 = -Infinity;
   for (const [c, r] of cells) {
     c0 = Math.min(c0, c);
@@ -130,5 +131,5 @@ export function box(cells: readonly [number, number][], s: number, g: number): {
     r0 = Math.min(r0, r);
     r1 = Math.max(r1, r);
   }
-  return { x: c0 * (s + g), y: r0 * (s + g), w: (c1 - c0 + 1) * (s + g) - g, h: (r1 - r0 + 1) * (s + g) - g };
+  return { x: c0 * (s + g), y: r0 * (sh + g), w: (c1 - c0 + 1) * (s + g) - g, h: (r1 - r0 + 1) * (sh + g) - g };
 }

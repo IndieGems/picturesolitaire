@@ -10,6 +10,13 @@ export const TUNING = {
   helpers: { undo: 3, hint: 3, shuffle: 3 },
 
   // --- layout (tools/art/chrome-spec.md)
+  /**
+   * A card's width ÷ its height: 0.75 is the creator's 3:4 portrait card
+   * (AGENTS.md). Every other size here is a fraction of a card's WIDTH, except
+   * the stacks' row (stackRow, stackGap) and the lift, fractions of its height.
+   * The screens read this too (the win card, the albums), at draw time.
+   */
+  cardAspect: 0.75,
   /** The gap between cards. */
   gutter: 0.08,
   /**
@@ -22,7 +29,7 @@ export const TUNING = {
   /** The stacks' row above the grid, and the gap under it. */
   stackRow: 1.18,
   stackGap: 0.2,
-  /** The largest a card may be drawn, in CSS px (a desktop letterbox). */
+  /** The largest a card may be drawn, its width in CSS px (a desktop letterbox). */
   maxCard: 136,
   /**
    * The same where the main pointer is a finger (a phone, a tablet): high
@@ -36,7 +43,7 @@ export const TUNING = {
   // --- the hand
   /** How far a press travels, in CSS px, before it is a drag rather than a tap. */
   dragSlop: 8,
-  /** How far a dragged piece rises above the fingertip (touch) or the pointer (mouse). */
+  /** How far a dragged piece rises above the fingertip (touch) or the pointer (mouse), in card heights. */
   liftTouch: 0.62,
   liftMouse: 0.08,
   liftScale: 1.06,

@@ -21,8 +21,9 @@ export interface Art {
 export interface Geometry {
   cols: number;
   rows: number;
-  /** Card size and gutter, in CSS px. */
+  /** A card's width and height (portrait: TUNING.cardAspect) and the gutter, in CSS px. */
   s: number;
+  sh: number;
   g: number;
   /** The grid's top-left in the plane. */
   gridX: number;
@@ -32,16 +33,20 @@ export interface Geometry {
   height: number;
   left: number;
   top: number;
-  /** The stacks' row: its height, a stack's face (its top card) and that face's top in the row. */
+  /** The stacks' row: its height, a stack's face (its top card: width, height) and that face's top in the row. */
   stackH: number;
   face: number;
+  faceH: number;
   faceTop: number;
   /** How far the second upcoming card fans out above the first, and the most layers a pile shows. */
   fan: number;
   layers: number;
 }
 
-/** The stacks' row, as fractions of a card: roomy, and compact for a short box (a phone held sideways). */
+/**
+ * The stacks' row, as fractions of a card: roomy, and compact for a short box
+ * (a phone held sideways). `face` is of a card's width; the rest of its height.
+ */
 const ROOMY = { row: 1.18, gap: 0.2, face: 0.8, top: 0.22, fan: 0.2, layers: 6 };
 const COMPACT = { row: 0.8, gap: 0.1, face: 0.62, top: 0.1, fan: 0.09, layers: 3 };
 /** Cards smaller than this (CSS px) with the roomy stacks: use the compact ones. */
@@ -55,30 +60,38 @@ const COMPACT_BELOW = 56;
 const coarse = typeof matchMedia === "function" ? matchMedia("(pointer: coarse)") : null;
 const cardCap = () => (coarse?.matches ? TUNING.maxCardTouch : TUNING.maxCard);
 
-/** Fit the stacks and the grid, with square cards, inside a host of w x h. */
+/** A card's width ÷ height, from the tuning (kept sane against a bad config value). */
+export const cardAspect = () => (Number.isFinite(TUNING.cardAspect) ? Math.min(2, Math.max(0.4, TUNING.cardAspect)) : 0.75);
+
+/** Fit the stacks and the grid, with portrait cards (TUNING.cardAspect), inside a host of w x h. */
 export function layout(w: number, h: number, cols: number, rows: number): Geometry {
   const pad = Math.max(10, Math.min(18, w * 0.035));
   const G = TUNING.gutter;
+  const A = cardAspect();
   const unitsW = cols + (cols - 1) * G;
   const cap = cardCap();
-  const size = (st: typeof ROOMY) => Math.floor(Math.min((w - 2 * pad) / unitsW, (h - 2 * 6) / (st.row + st.gap + rows + (rows - 1) * G), cap));
+  // in card widths: the stacks' row and the rows are card heights (1/A widths), the gutters widths
+  const size = (st: typeof ROOMY) => Math.floor(Math.min((w - 2 * pad) / unitsW, (h - 2 * 6) / ((st.row + st.gap + rows) / A + (rows - 1) * G), cap));
   // the roomy stacks, unless the box is so short (a phone held sideways) that cards would come out small
   const st = size(ROOMY) < COMPACT_BELOW && size(COMPACT) > size(ROOMY) ? { ...COMPACT, row: TUNING.stackRow * (COMPACT.row / ROOMY.row) } : { ...ROOMY, row: TUNING.stackRow, gap: TUNING.stackGap };
   const s = Math.max(24, size(st));
+  const sh = Math.round(s / A);
   const g = Math.max(3, Math.round(s * G));
   const width = cols * s + (cols - 1) * g;
-  const gridY = Math.round(s * (st.row + st.gap));
-  const height = gridY + rows * s + (rows - 1) * g;
+  const gridY = Math.round(sh * (st.row + st.gap));
+  const height = gridY + rows * sh + (rows - 1) * g;
+  const face = Math.round(s * st.face);
   return {
-    cols, rows, s, g,
+    cols, rows, s, sh, g,
     gridX: 0, gridY,
     width, height,
     left: Math.round((w - width) / 2),
     top: Math.max(0, Math.round((h - height) / 2)),
-    stackH: Math.round(s * st.row),
-    face: Math.round(s * st.face),
-    faceTop: Math.round(s * st.top),
-    fan: Math.round(s * st.fan),
+    stackH: Math.round(sh * st.row),
+    face,
+    faceH: Math.round(face / A),
+    faceTop: Math.round(sh * st.top),
+    fan: Math.round(sh * st.fan),
     layers: st.layers,
   };
 }
@@ -128,11 +141,11 @@ export const keyOf = (cards: readonly Card[], cells: readonly number[]) => `${ca
  * the card on each.
  */
 export function drawPiece(geo: Geometry, art: Art[], cells: readonly number[], cards: readonly Card[], pictures: readonly Picture[]): PieceView {
-  const { s, g } = geo;
+  const { s, sh, g } = geo;
   const xy = cells.map((c) => [c % geo.cols, (c / geo.cols) | 0] as [number, number]);
-  const b = box(xy, s, g);
+  const b = box(xy, s, g, sh);
   const m = Math.ceil(s * 0.16);
-  const el = svgCard(xy, cards[0]!, cells[0]!, geo.cols, s, g, art, pictures, b, m);
+  const el = svgCard(xy, cards[0]!, cells[0]!, geo.cols, s, sh, g, art, pictures, b, m);
   const v: PieceView = {
     el, cards: [...cards], cells: [...cells], key: keyOf(cards, cells),
     ox: b.x - m, oy: b.y - m, x: b.x - m, y: b.y - m, k: 1,
@@ -141,21 +154,21 @@ export function drawPiece(geo: Geometry, art: Art[], cells: readonly number[], c
   return v;
 }
 
-/** A single card face, `size` px square, at the top-left of its own element (a stack's upcoming card). */
-export function drawFace(size: number, card: Card, art: Art[], pictures: readonly Picture[]): HTMLDivElement {
+/** A single card face, `size` px wide and `sizeH` tall, at the top-left of its own element (a stack's upcoming card). */
+export function drawFace(size: number, sizeH: number, card: Card, art: Art[], pictures: readonly Picture[]): HTMLDivElement {
   const g = Math.max(2, Math.round(size * TUNING.gutter));
-  const b = box([[0, 0]], size, g);
+  const b = box([[0, 0]], size, g, sizeH);
   const m = Math.ceil(size * 0.16);
-  const el = svgCard([[0, 0]], card, 0, 1, size, g, art, pictures, b, m);
+  const el = svgCard([[0, 0]], card, 0, 1, size, sizeH, g, art, pictures, b, m);
   el.style.transform = `translate(${-m}px, ${-m}px)`;
   return el;
 }
 
 function svgCard(
-  xy: [number, number][], card0: Card, cell0: number, cols: number, s: number, g: number,
+  xy: [number, number][], card0: Card, cell0: number, cols: number, s: number, sh: number, g: number,
   art: Art[], pictures: readonly Picture[], b: { x: number; y: number; w: number; h: number }, m: number,
 ): HTMLDivElement {
-  const L = loops(xy, s, g);
+  const L = loops(xy, s, g, sh);
   // the frame (tools/art/chrome-spec.md): the picture's window sits `rim` inside
   // the outline, its corners concentric with the outline's
   const rim = Math.max(TUNING.frameMin, s * TUNING.frame);
@@ -167,8 +180,12 @@ function svgCard(
   const [x0, y0] = xyOf(pictures, card0);
   const c0 = cell0 % cols;
   const r0 = (cell0 / cols) | 0;
+  // the whole picture's window (half a gutter round its cells), here placed so
+  // this piece's cells show their part of it; the picture is centre-cropped to
+  // the window from its own pixel size (slice: object-fit cover), so one drawn
+  // for square cells still looks right on portrait ones
   const imgX = (c0 - x0) * (s + g) - g / 2;
-  const imgY = (r0 - y0) * (s + g) - g / 2;
+  const imgY = (r0 - y0) * (sh + g) - g / 2;
   const id = `bd-clip-${++clipId}`;
   const W = b.w + 2 * m;
   const H = b.h + 2 * m;
@@ -182,7 +199,7 @@ function svgCard(
     `<g class="bd-body"><path d="${outer}" transform="translate(0 ${(s * 0.035).toFixed(2)})" fill="url(#bd-lip)"/>` +
     `<path d="${outer}" fill="url(#bd-rim)"/>` +
     `<path d="${outer}" fill="none" stroke="url(#bd-hi)" stroke-width="1.2"/></g>` +
-    `<image href="${a.url}" x="${imgX.toFixed(2)}" y="${imgY.toFixed(2)}" width="${(a.cols * (s + g)).toFixed(2)}" height="${(a.rows * (s + g)).toFixed(2)}" preserveAspectRatio="none" clip-path="url(#${id})"/>` +
+    `<image href="${a.url}" x="${imgX.toFixed(2)}" y="${imgY.toFixed(2)}" width="${(a.cols * (s + g)).toFixed(2)}" height="${(a.rows * (sh + g)).toFixed(2)}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${id})"/>` +
     `<path d="${inner}" fill="none" stroke="#8b97a8" stroke-width="1"/>` +
     `</svg>`;
   return el;
@@ -194,11 +211,11 @@ function svgCard(
  * in grid px, so it can go inside a piece's own svg and travel with it.
  */
 export function ringPath(geo: Geometry, cells: readonly number[]): SVGPathElement {
-  const { s, g } = geo;
+  const { s, sh, g } = geo;
   const xy = cells.map((c) => [c % geo.cols, (c / geo.cols) | 0] as [number, number]);
   const out = Math.max(2, s * 0.06);
   const p = document.createElementNS(SVGNS, "path");
-  p.setAttribute("d", path(inset(loops(xy, s, g), -out), s * 0.14 + out, Math.max(1, s * 0.14 - out)));
+  p.setAttribute("d", path(inset(loops(xy, s, g, sh), -out), s * 0.14 + out, Math.max(1, s * 0.14 - out)));
   p.setAttribute("class", "bd-ring");
   p.setAttribute("stroke-width", Math.max(3, s * 0.065).toFixed(2));
   return p;
@@ -215,7 +232,7 @@ export function addRing(geo: Geometry, v: PieceView): void {
   if (!svg) return;
   const ring = ringPath(geo, v.cells);
   const vb = svg.viewBox.baseVal;
-  const b = box(v.cells.map((c) => [c % geo.cols, (c / geo.cols) | 0] as [number, number]), geo.s, geo.g);
+  const b = box(v.cells.map((c) => [c % geo.cols, (c / geo.cols) | 0] as [number, number]), geo.s, geo.g, geo.sh);
   const m = Math.ceil(geo.s * 0.16);
   const dx = vb.x - (b.x - m);
   const dy = vb.y - (b.y - m);
@@ -225,8 +242,8 @@ export function addRing(geo: Geometry, v: PieceView): void {
 
 /** The guide's ring on its own, round the cells where a piece should go. */
 export function drawRing(geo: Geometry, cells: readonly number[], className: string): HTMLDivElement {
-  const { s, g } = geo;
-  const b = box(cells.map((c) => [c % geo.cols, (c / geo.cols) | 0] as [number, number]), s, g);
+  const { s, sh, g } = geo;
+  const b = box(cells.map((c) => [c % geo.cols, (c / geo.cols) | 0] as [number, number]), s, g, sh);
   const m = Math.ceil(s * 0.16);
   const W = b.w + 2 * m;
   const H = b.h + 2 * m;
@@ -273,33 +290,33 @@ export function backImage(fallback: string): string {
 export function drawStack(
   sv: StackView, geo: Geometry, stack: readonly Card[], peek: number, art: Art[], pictures: readonly Picture[], backUrl: string,
 ): void {
-  const { face, faceTop, s, fan } = geo;
+  const { face, faceH, faceTop, s, fan } = geo;
   sv.el.replaceChildren();
   const x0 = Math.round((s - face) / 2);
   if (!stack.length) {
     const slot = document.createElement("div");
     slot.className = "bd-slot";
-    slot.style.cssText = `left:${x0}px;top:${faceTop}px;width:${face}px;height:${face}px;border-radius:${Math.round(face * 0.16)}px`;
+    slot.style.cssText = `left:${x0}px;top:${faceTop}px;width:${face}px;height:${faceH}px;border-radius:${Math.round(face * 0.16)}px`;
     sv.el.append(slot);
     return;
   }
-  const step = Math.max(2, Math.round(face * 0.035));
+  const step = Math.max(2, Math.round(faceH * 0.035));
   const layers = Math.min(geo.layers, stack.length);
   for (let i = layers - 1; i >= 0; i--) {
     const back = document.createElement("div");
     back.className = i ? "bd-back under" : "bd-back";
-    back.style.cssText = `left:${x0}px;top:${faceTop + i * step}px;width:${face}px;height:${face}px;${i ? `filter:brightness(${(1 - i * 0.1).toFixed(2)})` : ""}`;
+    back.style.cssText = `left:${x0}px;top:${faceTop + i * step}px;width:${face}px;height:${faceH}px;border-radius:${Math.round(face * 0.16)}px;${i ? `filter:brightness(${(1 - i * 0.1).toFixed(2)})` : ""}`;
     back.style.backgroundImage = backImage(backUrl);
     sv.el.append(back);
   }
   // the level's upcoming cards, face up: the next on the pile, the one after it fanned behind
   const shown = Math.min(peek, stack.length);
   for (let i = shown - 1; i >= 0; i--) {
-    const f = drawFace(face, stack[i]!, art, pictures);
+    const f = drawFace(face, faceH, stack[i]!, art, pictures);
     f.classList.add("bd-peek");
     const wrap = document.createElement("div");
     wrap.className = "bd-peek-at";
-    wrap.style.cssText = `left:${x0}px;top:${i === 0 ? faceTop : faceTop - fan}px;width:${face}px;height:${face}px`;
+    wrap.style.cssText = `left:${x0}px;top:${i === 0 ? faceTop : faceTop - fan}px;width:${face}px;height:${faceH}px`;
     if (i > 0) wrap.style.filter = "brightness(0.82)";
     wrap.append(f);
     sv.el.append(wrap);
@@ -309,23 +326,21 @@ export function drawStack(
 // ---------------------------------------------------------------- cells
 
 export function cellRect(geo: Geometry, cell: number): { x: number; y: number } {
-  return { x: colOf(geo, cell) * (geo.s + geo.g), y: rowOf(geo, cell) * (geo.s + geo.g) };
+  return { x: colOf(geo, cell) * (geo.s + geo.g), y: rowOf(geo, cell) * (geo.sh + geo.g) };
 }
 
 /** The cell under a grid point (px), or -1 off the grid. */
 export function cellAt(geo: Geometry, x: number, y: number): number {
-  const p = geo.s + geo.g;
-  const c = Math.floor((x + geo.g / 2) / p);
-  const r = Math.floor((y + geo.g / 2) / p);
+  const c = Math.floor((x + geo.g / 2) / (geo.s + geo.g));
+  const r = Math.floor((y + geo.g / 2) / (geo.sh + geo.g));
   if (c < 0 || c >= geo.cols || r < 0 || r >= geo.rows) return -1;
   return r * geo.cols + c;
 }
 
 /** The nearest cell to a grid point, clamped to the grid. */
 export function nearestCell(geo: Geometry, x: number, y: number): number {
-  const p = geo.s + geo.g;
-  const c = Math.max(0, Math.min(geo.cols - 1, Math.round(x / p)));
-  const r = Math.max(0, Math.min(geo.rows - 1, Math.round(y / p)));
+  const c = Math.max(0, Math.min(geo.cols - 1, Math.round(x / (geo.s + geo.g))));
+  const r = Math.max(0, Math.min(geo.rows - 1, Math.round(y / (geo.sh + geo.g))));
   return r * geo.cols + c;
 }
 

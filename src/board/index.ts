@@ -227,7 +227,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     for (let cell = 0; cell < geo.cols * geo.rows; cell++) {
       const el = document.createElement("div");
       el.className = "bd-cell";
-      el.style.cssText = `left:${(cell % geo.cols) * (geo.s + geo.g)}px;top:${Math.floor(cell / geo.cols) * (geo.s + geo.g)}px;width:${geo.s}px;height:${geo.s}px;border-radius:${Math.round(geo.s * 0.14)}px`;
+      el.style.cssText = `left:${(cell % geo.cols) * (geo.s + geo.g)}px;top:${Math.floor(cell / geo.cols) * (geo.sh + geo.g)}px;width:${geo.s}px;height:${geo.sh}px;border-radius:${Math.round(geo.s * 0.14)}px`;
       slotsEl.append(el);
     }
   }
@@ -355,6 +355,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     let firstMs = Infinity;
     let liftedMs = 0;
     const p = geo.s + geo.g;
+    const ph = geo.sh + geo.g;
     // match every piece to the view showing it BEFORE any view is moved on
     const sameCells = (a: number[], b: number[]) => a.length === b.length && a.every((c, i) => c === b[i]);
     const shownBy = ps.list.map((cells) =>
@@ -402,7 +403,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
         const dc = (to[0]! % from.cols) - (part[0]! % from.cols);
         const dr = Math.floor(to[0]! / from.cols) - Math.floor(part[0]! / from.cols);
         const tx = v.ox + dc * p;
-        const ty = v.oy + dr * p;
+        const ty = v.oy + dr * ph;
         const x0 = v.x, y0 = v.y, k0 = v.k;
         let tm = timing(dc, dr);
         if (v === lifted) {
@@ -479,7 +480,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       const bx = v.ox + Math.ceil(geo.s * 0.16);
       const by = v.oy + Math.ceil(geo.s * 0.16);
       const bw = (Math.max(...cells.map((c) => c % geo.cols)) - Math.min(...cells.map((c) => c % geo.cols)) + 1) * (geo.s + geo.g) - geo.g;
-      const bh = (Math.max(...cells.map((c) => Math.floor(c / geo.cols))) - Math.min(...cells.map((c) => Math.floor(c / geo.cols))) + 1) * (geo.s + geo.g) - geo.g;
+      const bh = (Math.max(...cells.map((c) => Math.floor(c / geo.cols))) - Math.min(...cells.map((c) => Math.floor(c / geo.cols))) + 1) * (geo.sh + geo.g) - geo.g;
       glow.style.cssText = `left:${bx}px;top:${by}px;width:${bw}px;height:${bh}px;border-radius:${Math.round(geo.s * 0.16)}px;opacity:0`;
       cardsEl.insertBefore(glow, cardsEl.firstChild);
       const sparks: HTMLElement[] = [];
@@ -535,10 +536,10 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
 
   /** Where a card sits on stack `col`'s face: its piece element's corner, and its scale. */
   function onStackFace(col: number): { x: number; y: number; k: number } {
-    const W = geo.s + 2 * Math.ceil(geo.s * 0.16);
+    const m = Math.ceil(geo.s * 0.16);
     const cx = col * (geo.s + geo.g) + geo.s / 2;
-    const cy = -geo.gridY + geo.faceTop + geo.face / 2;
-    return { x: cx - W / 2, y: cy - W / 2, k: geo.face / geo.s };
+    const cy = -geo.gridY + geo.faceTop + geo.faceH / 2;
+    return { x: cx - geo.s / 2 - m, y: cy - geo.sh / 2 - m, k: geo.face / geo.s };
   }
 
   /**
@@ -559,7 +560,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       cover = document.createElement("div");
       cover.className = "bd-cover";
       cover.style.backgroundImage = backImage(backUrl);
-      cover.style.cssText += `;left:${m}px;top:${m}px;width:${geo.s}px;height:${geo.s}px;border-radius:${Math.round(geo.s * 0.14)}px`;
+      cover.style.cssText += `;left:${m}px;top:${m}px;width:${geo.s}px;height:${geo.sh}px;border-radius:${Math.round(geo.s * 0.14)}px`;
       v.el.append(cover);
     }
     place(v);
@@ -679,7 +680,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     return { x: x - geo.gridX, y: y - geo.gridY };
   }
 
-  const centre = (cell: number) => ({ x: (cell % geo.cols) * (geo.s + geo.g) + geo.s / 2, y: Math.floor(cell / geo.cols) * (geo.s + geo.g) + geo.s / 2 });
+  const centre = (cell: number) => ({ x: (cell % geo.cols) * (geo.s + geo.g) + geo.s / 2, y: Math.floor(cell / geo.cols) * (geo.sh + geo.g) + geo.sh / 2 });
 
   function lift(v: PieceView): void {
     v.el.classList.add("lifted");
@@ -731,7 +732,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     lift(v);
     // the hold is where the finger went down on the card, not where it has got to
     emit("piece:lift", { cards: v.cells.length });
-    const liftTo = (p.touch ? TUNING.liftTouch : TUNING.liftMouse) * geo.s;
+    const liftTo = (p.touch ? TUNING.liftTouch : TUNING.liftMouse) * geo.sh;
     drag = {
       id: p.id, v, from: p.cell, gx: p.gx - c.x, gy: p.gy - c.y, lift: 0, liftTo, px: g.x, py: g.y, to: p.cell,
       stop: run((dt) => {
@@ -744,7 +745,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
         drag.v.y = drag.v.oy + (cy - rest.y);
         drag.v.k = 1 + (TUNING.liftScale - 1) * ease.out(drag.lift);
         place(drag.v);
-        const to = clampTarget(state, drag.from, nearestCell(geo, cx - geo.s / 2, cy - geo.s / 2));
+        const to = clampTarget(state, drag.from, nearestCell(geo, cx - geo.s / 2, cy - geo.sh / 2));
         if (to !== drag.to) {
           drag.to = to;
           preview(drag.from, to, drag.v);
@@ -1142,11 +1143,10 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     const ghost = drawPiece(geo, art, cells, cells.map((c) => state.board[c]!), pics);
     ghost.el.classList.add("ghost");
     fxEl.append(ghost.el);
-    const p = geo.s + geo.g;
     const dc = (m.to % geo.cols) - (m.from % geo.cols);
     const dr = Math.floor(m.to / geo.cols) - Math.floor(m.from / geo.cols);
-    const tx = ghost.ox + dc * p;
-    const ty = ghost.oy + dr * p;
+    const tx = ghost.ox + dc * (geo.s + geo.g);
+    const ty = ghost.oy + dr * (geo.sh + geo.g);
     const x0 = ghost.x, y0 = ghost.y;
     const T = TUNING.hintMs;
     const fly = T * 0.35;
@@ -1196,7 +1196,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     const h = host.clientHeight;
     if (!w || !h) return;
     const g = layout(w, h, deal.cols, deal.rows);
-    if (g.s === geo.s && g.left === geo.left && g.top === geo.top) return;
+    if (g.s === geo.s && g.sh === geo.sh && g.left === geo.left && g.top === geo.top) return;
     geo = g;
     stopHint();
     applyLayout();
