@@ -4,7 +4,8 @@ What each of the 30 boards asks of the player, axis by axis. Made by
 `node tools/levels/make-campaign.mts` from the plan in
 `tools/levels/campaign-plan.mts`; every board's winning line is re-proved by
 `node tools/levels/check.mts`. Do not edit this table by hand: change the plan
-and run the maker.
+and run the maker. The challenge route is in [challenge.md](challenge.md), the
+daily puzzle in [daily.md](daily.md).
 
 - **Lookalikes**: pictures from the same family (they share colours and subjects).
 - **Cards per picture**: the pieces each picture is cut into.

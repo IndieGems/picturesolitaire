@@ -78,14 +78,17 @@ export function balance(plan, chosen) {
  * `reseedOf(i, attempt)` (the plan's row decides the rest). Updates `chosen`
  * and `uses`. Returns the board's record for the boards file.
  */
-export function makeBoard(plan, i, chosen, uses, { id, cols, rows, reseedOf, par, tries = 3000, attempts = 12, extra }) {
+export function makeBoard(plan, i, chosen, uses, { id, cols, rows, reseedOf, par, tries = 3000, attempts = 12, extra, vary = false }) {
   const row = plan[i];
   let pictures = chosen[i];
+  // with `vary`, pictures of sets that found no deal count as used more, so the next pick differs
+  const failed = new Map<string, number>();
   for (let attempt = 0; attempt < attempts; attempt++) {
     if (attempt > 0) {
       // this set of pictures yields no deal on target: pick another set for the board
       for (const q of chosen[i]) uses.set(q.id, uses.get(q.id) - 1);
-      pictures = pick(catalogue, specOf(row), uses, new Set([...(chosen[i - 1] ?? []), ...(chosen[i + 1] ?? [])].map((q) => q.id)), random(reseedOf(i, attempt)));
+      const seen = vary ? new Map([...uses].map(([k, v]) => [k, v + (failed.get(k) ?? 0)])) : uses;
+      pictures = pick(catalogue, specOf(row), seen, new Set([...(chosen[i - 1] ?? []), ...(chosen[i + 1] ?? [])].map((q) => q.id)), random(reseedOf(i, attempt)));
       if (!pictures) throw new Error(`${id}: no pictures fit the plan`);
       chosen[i] = pictures;
       for (const q of pictures) uses.set(q.id, uses.get(q.id) + 1);
@@ -97,6 +100,7 @@ export function makeBoard(plan, i, chosen, uses, { id, cols, rows, reseedOf, par
     const tally = new Map();
     const made = generate(spec, 1, tries, tally);
     if (!made) {
+      for (const q of pictures) failed.set(q.id, (failed.get(q.id) ?? 0) + 1);
       console.log(`${id}: pictures set ${attempt} found no deal (${[...tally].map(([k, v]) => `${k} ${v}`).join(", ")})`);
       continue;
     }
