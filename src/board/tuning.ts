@@ -1,7 +1,9 @@
 // The board's tuning numbers, in one place. These are the defaults; the game
-// config can override any of them without a new build (`kv.board` in
-// gem-backend-game-config.yaml, read once when a board opens: applyTuning).
-// Sizes are fractions of a card (one cell); times are milliseconds.
+// config can override any of them without a new build: `config: board:` in
+// gem-backend-game-config.yaml, a JSON text the SDK hands over as `kv.board`,
+// read once before the first deal (applyTuning). A key the config leaves out
+// keeps its default here. Sizes are fractions of a card (one cell); times are
+// milliseconds.
 
 export const TUNING = {
   /** Helpers at the start of every board (creator's ruling: 3 of each, not saved). */
@@ -54,6 +56,15 @@ type Tuning = typeof TUNING;
 
 /** Lay numbers from the game config over the defaults: only known keys, only numbers and booleans. */
 export function applyTuning(patch: unknown): void {
+  // the config's key-value section holds text: the numbers arrive as JSON
+  if (typeof patch === "string") {
+    try {
+      patch = JSON.parse(patch);
+    } catch {
+      console.warn("[board] kv.board in the game config is not JSON; the defaults stand");
+      return;
+    }
+  }
   if (!patch || typeof patch !== "object") return;
   const into = TUNING as unknown as Record<string, unknown>;
   for (const [k, v] of Object.entries(patch as Record<string, unknown>)) {

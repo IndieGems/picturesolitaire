@@ -21,7 +21,8 @@ export interface Level {
   line: Move[];
 }
 
-interface Stored {
+/** A board as the level files store it (any size: the board fits it to its box). */
+export interface Stored {
   id: string;
   peek: number;
   cols: number;
@@ -32,13 +33,18 @@ interface Stored {
   line: number[][];
 }
 
-const LEVELS: Level[] = (CAMPAIGN.levels as Stored[]).map((l, i) => ({
-  id: l.id,
-  number: i + 1,
-  peek: Math.max(0, Math.min(2, l.peek)) as 0 | 1 | 2,
-  deal: { cols: l.cols, rows: l.rows, pictures: l.pictures, stacks: l.stacks, seed: l.seed },
-  line: l.line.map(([from, to]) => ({ from: from!, to: to! })),
-}));
+/** A stored board as the board plays it; `number` is its place in its list, from 1. */
+export function toLevel(l: Stored, number: number): Level {
+  return {
+    id: l.id,
+    number,
+    peek: Math.max(0, Math.min(2, l.peek)) as 0 | 1 | 2,
+    deal: { cols: l.cols, rows: l.rows, pictures: l.pictures, stacks: l.stacks, seed: l.seed },
+    line: l.line.map(([from, to]) => ({ from: from!, to: to! })),
+  };
+}
+
+const LEVELS: Level[] = (CAMPAIGN.levels as Stored[]).map((l, i) => toLevel(l, i + 1));
 
 /** How many boards the campaign has. */
 export function levelCount(): number {

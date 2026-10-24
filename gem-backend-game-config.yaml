@@ -11,3 +11,47 @@ save_schemas:
     access_game_server_read: true
     access_game_server_write: true
     max_size_bytes: 16384
+
+config:
+  # The board's tuning (src/board/tuning.ts has the defaults, and what each one
+  # does). One JSON text the board reads before its first deal; a key left out
+  # keeps its default. Sizes are fractions of a card; times are milliseconds.
+  #   helpers        Undo, Hint and Shuffle at the start of every board
+  #   gutter         the gap between cards
+  #   stackRow       the stacks' row above the grid; stackGap the gap under it
+  #   maxCard        the largest a card is drawn, in screen px (desktop)
+  #   tilt           the slight perspective (true) or straight-on (false)
+  #   dragSlop       px a press travels before it is a drag, not a tap
+  #   liftTouch      how far a dragged piece rises above the finger (liftMouse: the pointer)
+  #   dropMs         a dropped piece settling; slideMs covered cards going back
+  #   fallMs         a fall of one row
+  #   dealStagger    THE refill stagger: from one dealt card to the next, left to right
+  #   dealMs         one dealt card's drop from its stack
+  #   mergePop       the pop when neighbours join (1.07 = 7% bigger), for mergePopMs
+  #   completeHoldMs a finished picture shown whole; completeLeaveMs it leaving
+  #   shuffleMs      Shuffle's cards trading places; hintMs the Hint's ghost flight
+  board: |
+    {
+      "helpers": { "undo": 3, "hint": 3, "shuffle": 3 },
+      "gutter": 0.08,
+      "stackRow": 1.18,
+      "stackGap": 0.2,
+      "maxCard": 136,
+      "tilt": false,
+      "tiltDegrees": 8,
+      "dragSlop": 8,
+      "liftTouch": 0.62,
+      "liftMouse": 0.08,
+      "liftScale": 1.06,
+      "dropMs": 150,
+      "slideMs": 240,
+      "fallMs": 150,
+      "dealStagger": 55,
+      "dealMs": 280,
+      "mergePop": 1.07,
+      "mergePopMs": 260,
+      "completeHoldMs": 1000,
+      "completeLeaveMs": 420,
+      "shuffleMs": 460,
+      "hintMs": 1300
+    }

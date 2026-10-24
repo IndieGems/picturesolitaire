@@ -18,7 +18,7 @@ import "./board.css";
 import CATALOGUE from "../content/pictures.json";
 import { emit } from "../events";
 import { gem, onArcadePause, onPlayerPrefs } from "../gem";
-import { level as levelOf, levelCount } from "../game/levels.ts";
+import { level as levelOf, levelCount, type Level } from "../game/levels.ts";
 import { nextMove } from "../game/solver/index.ts";
 import {
   EMPTY, allMoves, clampTarget, isDeadEnd, isWon, joinCount, move, pieceAt, pieces, picOf, shuffle as shuffleRule, start,
@@ -32,6 +32,7 @@ import {
 } from "./view.ts";
 
 export { levelCount };
+export type { Level };
 
 export interface HelperCounts {
   undo: number;
@@ -117,10 +118,16 @@ const keep: HTMLImageElement[] = [];
 
 // ---------------------------------------------------------------- the board
 
-export function openBoard(host: HTMLElement, n: number): BoardHandle {
+/**
+ * Open a board in `host`: campaign board `which` (from 1), or any board given
+ * whole (a challenge or the daily deal, from src/game/levels.ts), of any size.
+ * Events name the board by its campaign number, or else by its id.
+ */
+export function openBoard(host: HTMLElement, which: number | Level): BoardHandle {
   loadTuning();
   mountDefs();
-  const lvl = levelOf(n);
+  const lvl = typeof which === "number" ? levelOf(which) : which;
+  const name = typeof which === "number" ? String(which) : which.id;
   const deal = lvl.deal;
   const pics = deal.pictures;
   const art: Art[] = pics.map((p) => ({ url: urlOf(p.id, p.cols, p.rows), cols: p.cols, rows: p.rows }));
@@ -813,7 +820,7 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
     if (isWon(state) && !won) {
       won = true;
       clockOff();
-      emit("board:won", { level: String(n), moves: state.moves, ms: Math.round(activeMs) });
+      emit("board:won", { level: name, moves: state.moves, ms: Math.round(activeMs) });
     } else if (isDeadEnd(state)) {
       emit("board:stuck", { doomed: false });
     }
@@ -1005,11 +1012,15 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
 
   applyLayout();
   drawStacks(state);
-  queueMicrotask(() => emit("board:start", { level: String(n) }));
+  queueMicrotask(() => emit("board:start", { level: name }));
   changed();
   busy++;
   void (async () => {
-    await preload(art.map((a) => a.url), 2500);
+    // the pictures and the config's tuning, together, never longer than 2.5 s
+    const tuning = Promise.race([tuned, new Promise<void>((r) => setTimeout(r, 2500))]);
+    await Promise.all([preload(art.map((a) => a.url), 2500), tuning]);
+    helpers = { ...TUNING.helpers };
+    changed();
     // a board opened in a box not on screen yet deals once the box has its size
     if (!host.clientWidth || !host.clientHeight) await new Promise<void>((r) => (sized = r));
     if (destroyed) return;
@@ -1019,7 +1030,7 @@ export function openBoard(host: HTMLElement, n: number): BoardHandle {
     opened = true;
     if (onScreenNow()) clockOn();
     // the next board's pictures, quietly, once this one is dealt
-    if (n < levelCount()) void preload(levelOf(n + 1).deal.pictures.map((p) => urlOf(p.id, p.cols, p.rows)), 10_000, true);
+    if (typeof which === "number" && which < levelCount()) void preload(levelOf(which + 1).deal.pictures.map((p) => urlOf(p.id, p.cols, p.rows)), 10_000, true);
   })();
 
   // Test hooks for the play-test tool (dev builds only; the build drops this).
