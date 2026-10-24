@@ -198,11 +198,7 @@ export const nearOf = (chosen) => (i, id) =>
  * to each other.
  */
 export function balance(plan, chosen, from = 0) {
-  // with spacing, a swap's nearness is the gap it would make
-  const near = spacing
-    ? (i, id) => chosen.reduce((n, set, k) => n + (k !== i && set?.some((q) => q.id === id) ? Math.max(0, spacing - Math.abs(k - i)) : 0), 0)
-    : nearOf(chosen);
-  const seenOf = spacing ? (i) => spacedCost(chosen, i, spacing) : undefined;
+  const near = nearOf(chosen);
   for (let sweep = 0; sweep < 60; sweep++) {
     let better = false;
     for (let i = from; i < chosen.length; i++) {
@@ -348,7 +344,11 @@ export function route(plan, old, { optsOf, seedOf, spacing, repairOnly = false }
   const chosen = old.map((b) => b.pictures);
   const levels = [...old];
   const uses = usesOf(chosen);
-  const near = nearOf(chosen);
+  // with spacing, a swap's nearness is the gap it would make
+  const near = spacing
+    ? (i, id) => chosen.reduce((n, set, k) => n + (k !== i && set?.some((q) => q.id === id) ? Math.max(0, spacing - Math.abs(k - i)) : 0), 0)
+    : nearOf(chosen);
+  const seenOf = spacing ? (i) => spacedCost(chosen, i, spacing) : undefined;
   old.forEach((b, i) => {
     const bad = flaggedOn(b.pictures);
     if (!bad.length) return;

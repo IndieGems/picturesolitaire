@@ -80,8 +80,8 @@ export function pick(
   const cost = (p: CataloguePicture) => use(p) + rnd() * noise;
   const size = (p: CataloguePicture) => p.cols * p.rows;
   const minSize = Math.min(...spec.sizes);
-  const maxSize = Math.max(...spec.sizes);
-  const maxSmall = Math.max(0, ...spec.sizes.filter((z) => z < 6));
+  /** At most so many pictures of a size (fits() checks the same). */
+  const most: Record<number, number> = { 9: 1, ...spec.most };
 
   let best: { set: CataloguePicture[]; score: number } | null = null;
   for (let t = 0; t < tries; t++) {
@@ -121,10 +121,21 @@ export function pick(
     /** Can `n` more pictures (the required ones still to come among them) bring `set` into the board's card range? */
     const reachable = (set: readonly CataloguePicture[], n: number) => {
       const all = withTaken(set);
-      const free = n - (all.length - set.length);
+      let free = n - (all.length - set.length);
+      if (free < 0) return false;
       const total = all.reduce((k, p) => k + size(p), 0);
-      const bigs = Math.min(free, Math.max(0, bigLeft(all)));
-      return free >= 0 && total + free * minSize <= spec.cards[1] && total + bigs * maxSize + (free - bigs) * maxSmall >= spec.cards[0];
+      if (total + free * minSize > spec.cards[1]) return false;
+      // the most cards `free` pictures can add: the largest sizes first, within `most` and `bigMost`
+      let max = total;
+      let bigs = Math.max(0, bigLeft(all));
+      for (const z of [...spec.sizes].sort((a, b) => b - a)) {
+        const cap = Math.max(0, (most[z] ?? Infinity) - all.filter((p) => size(p) === z).length);
+        const k = Math.min(free, cap, z >= 6 ? bigs : Infinity);
+        max += k * z;
+        free -= k;
+        if (z >= 6) bigs -= k;
+      }
+      return free === 0 && max >= spec.cards[0];
     };
     const forcedFams = [...forced.keys()];
     const fitsGroup = (f: string, g: number) => !usedFam.has(f) && eligible.filter((p) => p.family === f).length >= g && (forced.get(f)?.length ?? 0) <= g;
@@ -148,6 +159,9 @@ export function pick(
         let room = bigLeft([...chosen, ...pinned]);
         for (const p of rest) {
           if (take.length >= g - pinned.length) break;
+          // within `most` (one 3x3 by default), counting what the board holds already
+          const z = size(p);
+          if ([...chosen, ...pinned, ...take].filter((q) => size(q) === z).length >= (most[z] ?? Infinity)) continue;
           if (isBig(p) && room-- <= 0) continue;
           take.push(p);
         }
