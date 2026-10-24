@@ -35,6 +35,8 @@ import { createChallenges } from "./challenges";
 import { createGuide, type GuideMode } from "./guide";
 import { fireworks } from "./fireworks";
 import type { Challenge } from "./challenge-data";
+import { level as campaignLevel } from "../game/levels";
+import { claimWin, cueCoins, type Verdict } from "../net/claims";
 import { levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
 
 // ---------- a little DOM ----------
@@ -375,30 +377,67 @@ restartBtn.addEventListener("click", () => {
 
 // ---------- the win card ----------
 
-type Win =
+type Win = (
   | { kind: "campaign"; level: number; moves: number; ms: number; milestone: boolean }
-  | { kind: "challenge"; c: Challenge; moves: number; ms: number; first: boolean; better: boolean };
+  | { kind: "challenge"; c: Challenge; moves: number; ms: number; first: boolean; better: boolean }
+) & {
+  /** The win checker's word, once it lands (it may take a while offline). */
+  verdict?: Verdict;
+  /** Its Coins have flown to the Arcade's wallet (once, ever, per win). */
+  cued?: boolean;
+};
 let lastWin: Win | null = null;
 
 // every picture restored is the player's to keep: saved with the board's end (won), one write a board
 on("picture:clear", ({ pictureId }) => restore(pictureId));
 
-on("board:won", ({ moves, ms }) => {
+on("board:won", ({ moves, ms, line }) => {
   if (!play) return;
   boardWon = true;
+  let win: Win;
   if (play.kind === "campaign") {
     won(play.level);
     // the board the guide taught on ends on the guide's own milestone card
     const milestone = play.level === 1 && guide.takeFinish();
-    lastWin = { kind: "campaign", level: play.level, moves, ms, milestone };
+    win = { kind: "campaign", level: play.level, moves, ms, milestone };
   } else {
     // any win clears a challenge board, over par too; the save keeps the fewer moves
     const { first, better } = cleared(play.c.id, moves);
-    lastWin = { kind: "challenge", c: play.c, moves, ms, first, better };
+    win = { kind: "challenge", c: play.c, moves, ms, first, better };
   }
+  lastWin = win;
+  // the win checker judges and pays (src/net/claims.ts); the card never waits for it
+  const lvl = play.kind === "campaign" ? campaignLevel(play.level) : play.c.level;
+  void claimWin({ lane: play.kind, board: lvl.id, deal: lvl.deal, line, ms }).then((v) => {
+    win.verdict = v;
+    if (lastWin === win && !winVeil.hidden) drawCoins(win);
+  });
   // the board fires this after its own flourish, so the card goes straight up
   showWin();
 });
+
+/**
+ * What the win paid, on its card, once the checker says so: a coin chip on the
+ * card's top edge (the milestone card has a place kept for it, so nothing under
+ * the player's finger moves), and the Coins flying to the Arcade's wallet once.
+ * Nothing for a win that paid nothing new.
+ */
+function drawCoins(win: Win): void {
+  const v = win.verdict;
+  if (!v || v.status !== "paid" || v.coins <= 0) return;
+  const card = winVeil.querySelector<HTMLElement>(".card");
+  if (!card) return;
+  const coin = h("span", { class: "coin", "aria-hidden": "true" });
+  const slot = card.querySelector<HTMLElement>(".prize");
+  if (slot) {
+    slot.replaceChildren(coin, h("span", {}, t("guide.prize", { count: v.coins })));
+    slot.classList.add("landed");
+  } else {
+    card.querySelector(".coins-chip")?.remove();
+    card.append(h("div", { class: "coins-chip glass", role: "status" }, coin, h("span", {}, t("win.coins", { count: v.coins }))));
+  }
+  if (!win.cued) win.cued = cueCoins(v, coin) || true;
+}
 
 function showWin(): void {
   if (!lastWin || !board) return;
@@ -427,6 +466,7 @@ function showWin(): void {
     ),
   );
   showCard(winVeil);
+  drawCoins(lastWin);
 }
 
 /**
@@ -436,7 +476,8 @@ function showWin(): void {
  * for it.
  */
 function showMilestone(gallery: HTMLElement): void {
-  const prize = h("div", { class: "prize", hidden: "" });
+  // the prize's place, kept from the start so nothing moves when the checker's word lands
+  const prize = h("div", { class: "prize", "aria-live": "polite" });
   const card = h(
     "div",
     { class: "card milestone" },
@@ -449,6 +490,7 @@ function showMilestone(gallery: HTMLElement): void {
   winVeil.replaceChildren(card);
   showCard(winVeil);
   fireworks(card, 6, 3000);
+  if (lastWin) drawCoins(lastWin);
 }
 
 /** A challenge board's card: the pictures, then "Par N · You M". No fail: over par, it is still cleared. */
@@ -486,6 +528,7 @@ function showChallengeWin(w: Extract<Win, { kind: "challenge" }>, gallery: HTMLE
     ),
   );
   showCard(winVeil);
+  drawCoins(w);
 }
 
 /**

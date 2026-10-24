@@ -1,20 +1,18 @@
 // The challenge route's boards, as the screens read them: the level-design
 // member's src/content/levels/challenge.json (ids ch01, ch02 ... in unlock
 // order, each with its par: the fewest moves the solver found, which a sharp
-// player can sometimes beat). Fetched only
-// when the route is first wanted, so the first screen never carries it.
-//
-// While the file does not exist there are no challenges, and home shows no
-// Challenges button: nothing promises a screen that has nothing on it.
+// player can sometimes beat), loaded by the gameplay member's loadChallenges
+// (src/game/levels.ts) as a chunk of its own on the first ask, so the first
+// screen never carries it.
 //
 // Dev server only: ?challenges=demo plays campaign boards as stand-in
-// challenges (par = their stored line), to check the route before the real
-// boards land. The build drops it.
+// challenges (par = their stored line), to check the route with other boards.
+// The build drops it.
 
-import { level, levelCount, toLevel, type Level, type Stored } from "../game/levels";
+import { level, levelCount, loadChallenges as loadRoute, type Level } from "../game/levels";
 
 export interface Challenge {
-  /** "ch01" ... the save keys the player's best moves by it. */
+  /** "ch01" ... the save keys the player's best moves by it, and the win checker the board. */
   id: string;
   /** Its place on the route, from 1. */
   n: number;
@@ -24,16 +22,11 @@ export interface Challenge {
   level: Level;
 }
 
-type File = { levels?: Array<Stored & { par?: number }> };
-const files = import.meta.glob<File>("../content/levels/challenge.json", { import: "default" });
-
-let loading: Promise<Challenge[]> | null = null;
-
 const demoAsked = () => import.meta.env.DEV && new URLSearchParams(location.search).get("challenges") === "demo";
 
-/** Are there challenge boards (the file is in the build)? Known without fetching it. */
+/** Are there challenge boards? They ship with the build (Levels' challenge.json), so Home offers the route. */
 export function challengesExist(): boolean {
-  return demoAsked() || Object.keys(files).length > 0;
+  return true;
 }
 
 function demo(): Challenge[] {
@@ -45,26 +38,15 @@ function demo(): Challenge[] {
   return out;
 }
 
-/** Every challenge board, in unlock order; empty when there are none (yet). */
+let loading: Promise<Challenge[]> | null = null;
+
+/** Every challenge board, in unlock order; empty when they could not be fetched (asked again next time). */
 export function loadChallenges(): Promise<Challenge[]> {
-  loading ??= (async () => {
-    if (demoAsked()) return demo();
-    const load = Object.values(files)[0];
-    if (!load) return [];
-    try {
-      const file = await load();
-      return (file.levels ?? []).map((stored, i) => ({
-        id: stored.id,
-        n: i + 1,
-        par: Math.max(1, Math.floor(stored.par ?? stored.line.length)),
-        level: toLevel(stored, i + 1),
-      }));
-    } catch (err) {
-      // a dropped fetch: no route this time, and the next call asks again
-      console.warn("[challenges] could not load:", err);
-      loading = null;
-      return [];
-    }
-  })();
+  loading ??= demoAsked()
+    ? Promise.resolve(demo())
+    : loadRoute().then((list) => {
+        if (!list.length) loading = null;
+        return list.map((c, i) => ({ id: c.id, n: i + 1, par: c.par, level: c }));
+      });
   return loading;
 }

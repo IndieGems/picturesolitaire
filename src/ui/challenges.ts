@@ -141,6 +141,8 @@ export function createChallenges(nav: Nav) {
     /** Show the route, freshly drawn, with the next board in view. */
     async openRoute(): Promise<void> {
       list = await loadChallenges();
+      // the boards could not be fetched (a dropped connection): stay where we are; the next tap asks again
+      if (!list.length) return;
       draw();
       nav.show();
       centre();

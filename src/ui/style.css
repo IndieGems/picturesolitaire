@@ -449,9 +449,29 @@ html.less-motion .marker.next::after { animation-duration: 3.4s; }
 @keyframes guide-nudge { 0%, 100% { translate: 0 0; } 30% { translate: 0 -8px; } 60% { translate: 0 2px; } }
 
 /* the guide's finish: the game's own card, a burst over it */
-.win .card.milestone { position: relative; }
+.win .card { position: relative; }
 .card .fireworks { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; border-radius: inherit; }
-.card .prize[hidden] { display: none; }
+
+/* Coins a win paid (the checker's word): an amber coin, drawn here, the Arcade's wallet takes it from there */
+.coin {
+  display: inline-block; flex: none; width: 24px; height: 24px; border-radius: 50%;
+  background: radial-gradient(circle at 36% 30%, #fff1c9 0 14%, var(--amber-hi) 15% 52%, var(--amber-lo) 53% 100%);
+  box-shadow: inset 0 0 0 2px rgba(173, 100, 36, 0.55), 0 2px 0 var(--amber-lip);
+}
+/* on a win card: a chip on the card's top edge, so nothing on the card moves */
+.card .coins-chip {
+  position: absolute; top: -18px; right: 18px; display: flex; align-items: center; gap: 7px;
+  padding: 6px 13px 6px 8px; font: 600 18px/1 var(--round); animation: coins-in 0.35s ease-out both;
+}
+/* on the guide's milestone card: the prize in its own place, kept from the start */
+.card .prize {
+  display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 46px; margin: -2px 0 16px;
+  font: 600 22px/1 var(--round); color: var(--amber-lip); visibility: hidden;
+}
+.card .prize.landed { visibility: visible; animation: coins-in 0.4s ease-out both; }
+.card .prize .coin { width: 38px; height: 38px; }
+@keyframes coins-in { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
+html.less-motion .card .coins-chip, html.less-motion .card .prize.landed { animation: none; }
 
 /* ---------- one picture, full screen ---------- */
 
