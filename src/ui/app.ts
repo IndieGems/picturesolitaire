@@ -23,7 +23,7 @@
 // opened through board-api.ts and heard through src/events.ts.
 
 import "./style.css";
-import { onArcadePause, onPlayerPrefs } from "../gem";
+import { gem, onArcadePause, onPlayerPrefs } from "../gem";
 import { emit, on } from "../events";
 import { mountSettings } from "../settings-screen";
 import { startSound } from "../sound";
@@ -34,7 +34,7 @@ import { online, onOnline, pretend } from "./online";
 import { campaign, cleared, loadCampaign, onCampaign, playedDaily, pretendRestored, restore, waitForCloud, won } from "./progress";
 import { createAlbums } from "./albums";
 import { createChallenges } from "./challenges";
-import { createGuide, type GuideMode } from "./guide";
+import { createGuide, GUIDE_FINISHED, type GuideMode } from "./guide";
 import { fireworks } from "./fireworks";
 import type { Challenge } from "./challenge-data";
 import { level as campaignLevel, type Daily } from "../game/levels";
@@ -299,9 +299,56 @@ function goHome(): void {
 back.addEventListener("click", () => {
   // a won board's card is never lost to a quick Back: it shows at once instead
   if (boardWon && winVeil.hidden) return void showWin();
+  // leaving a board in play is a break: the player chose to go back
+  void signalBreak("menu_return", "board-back");
   if (play?.kind === "challenge") return void toRoute();
   goHome();
 });
+
+// ---------- platform moments ----------
+
+/**
+ * The guided start: board 1 before its finish card is over (its card included). The
+ * Arcade is never asked for a moment there; the first comes at the first break after it.
+ */
+function inGuidedStart(): boolean {
+  if (lastWin?.kind === "campaign" && lastWin.milestone && boardWon) return true;
+  const c = campaign();
+  return play?.kind === "campaign" && play.level === 1 && c.won === 0 && c.guide < GUIDE_FINISHED;
+}
+
+/**
+ * A press that leaves a break (the game standard, "Ads are each game's choice": break
+ * ads; the SDK's platform-moments.md). The Arcade alone decides whether anything of its
+ * own shows over the paused game, and usually nothing does; `shown` grants nothing, and
+ * the game shows no ads of its own. Signalled from the press itself, once per break.
+ * Resolves when the Arcade has answered (it never rejects).
+ */
+function signalBreak(kind: "level_end" | "menu_return", placement: string): Promise<void> {
+  if (inGuidedStart()) return Promise.resolve();
+  return gem.moments.signal({ kind, placement }).then(
+    () => undefined,
+    () => undefined,
+  );
+}
+
+/**
+ * Leave a win card into play (Next): the card stops answering, the break is signalled,
+ * and the next board opens once the Arcade has answered, so nothing starts under one of
+ * its panels.
+ */
+function leaveInto(placement: string, go: () => void): void {
+  winVeil.inert = true;
+  void signalBreak("level_end", placement).then(() => {
+    winVeil.inert = false;
+    go();
+  });
+}
+/** Leave a win card to a screen with no clock (Home, the route, the results): at once, the break signalled beside it. */
+function leaveTo(placement: string, go: () => void): void {
+  void signalBreak("level_end", placement);
+  go();
+}
 
 /** Back to the challenge route, the board in hand kept unless it was won. */
 function toRoute(): void {
@@ -382,8 +429,13 @@ restartBtn.addEventListener("click", () => {
         { class: "row" },
         withClick(button("", "restart.no", t("restart.no")), () => hideCard(restartVeil)),
         withClick(button("amber", "restart.yes", icon("restart"), t("restart.yes")), () => {
-          hideCard(restartVeil);
-          board?.restart();
+          // a board given up and dealt again is a break; the new deal waits for the Arcade's answer
+          restartVeil.inert = true;
+          void signalBreak("level_end", "restart").then(() => {
+            restartVeil.inert = false;
+            hideCard(restartVeil);
+            board?.restart();
+          });
         }),
       ),
     ),
@@ -487,8 +539,8 @@ function showWin(): void {
   const { level, moves, ms } = lastWin;
   const last = level >= levels();
   const next = last
-    ? withClick(button("amber next", "win.home", icon("home"), t("win.home")), goHome)
-    : withClick(button("amber next", "win.next", t("win.next"), icon("next")), () => openLevel(level + 1));
+    ? withClick(button("amber next", "win.home", icon("home"), t("win.home")), () => leaveTo("win-home", goHome))
+    : withClick(button("amber next", "win.next", t("win.next"), icon("next")), () => leaveInto("win-next", () => openLevel(level + 1)));
   winVeil.replaceChildren(
     h(
       "div",
@@ -567,15 +619,17 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement):
       h(
         "div",
         { class: "row" },
-        withClick(button("", "win.home", t("win.home")), goHome),
-        withClick(button("amber next", "win.results", t("win.results")), () => {
-          hideCard(winVeil);
-          board?.destroy();
-          host.replaceChildren();
-          board = null;
-          boardWon = false;
-          void dailyUi.openResults();
-        }),
+        withClick(button("", "win.home", t("win.home")), () => leaveTo("daily-home", goHome)),
+        withClick(button("amber next", "win.results", t("win.results")), () =>
+          leaveTo("daily-results", () => {
+            hideCard(winVeil);
+            board?.destroy();
+            host.replaceChildren();
+            board = null;
+            boardWon = false;
+            void dailyUi.openResults();
+          }),
+        ),
       ),
     ),
   );
@@ -591,14 +645,16 @@ function showChallengeWin(w: Extract<Win, { kind: "challenge" }>, gallery: HTMLE
   const praise = better ? t("win.newBest") : moves < c.par ? t("win.underPar") : moves === c.par ? t("win.onPar") : "";
   // beside Next it is the plain one, its word alone so both fit a small phone; on the last board, the main one
   const toRouteBtn = after
-    ? withClick(button("", "win.route", t("win.route")), toRoute)
-    : withClick(button("amber next", "win.route", icon("challenges"), t("win.route")), toRoute);
+    ? withClick(button("", "win.route", t("win.route")), () => leaveTo("challenge-route", toRoute))
+    : withClick(button("amber next", "win.route", icon("challenges"), t("win.route")), () => leaveTo("challenge-route", toRoute));
   const buttons = after
     ? h(
         "div",
         { class: "row" },
         toRouteBtn,
-        withClick(button("amber next", "win.next", t("win.next"), icon("next")), () => openPlay({ kind: "challenge", c: after })),
+        withClick(button("amber next", "win.next", t("win.next"), icon("next")), () =>
+          leaveInto("challenge-next", () => openPlay({ kind: "challenge", c: after })),
+        ),
       )
     : toRouteBtn;
   winVeil.replaceChildren(
