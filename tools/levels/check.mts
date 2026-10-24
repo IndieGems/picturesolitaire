@@ -15,6 +15,8 @@
 //   - a board with a par: the par is the stored line's length (so the par is
 //     always reachable, by that line);
 //   - a daily board: its id is "d" + its date, and dates run one a day;
+//   - no board uses a picture the creator flagged "don't use"
+//     (src/content/picture-flags.json; node tools/levels/redeal.mts re-deals them);
 //   - the relaxed campaign (campaign.json): a safe start (AGENTS.md): every
 //     picture finishable from the opening can be finished first without
 //     dooming the board, and no single move from the opening leaves it stuck.
@@ -27,6 +29,7 @@ import { cardsOf, isDeadEnd, isWon, joinCount, replay, start } from "../../src/g
 import { Game } from "../../src/game/solver/index.ts";
 import { along, careless, chain, orderTraps, traps, unavoidable, wait } from "../../src/game/solver/metrics.ts";
 import { BIG, dealFor, deadFirstMoves, doomingFirstClears } from "../../src/game/levels/generate.ts";
+import { flags } from "./lib.mts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const catalogue = new Map(JSON.parse(readFileSync(join(root, "src/content/pictures.json"), "utf8")).pictures.map((p) => [p.id, p]));
@@ -36,6 +39,8 @@ if (!files.length) for (const f of readdirSync(dir).sort()) if (f.endsWith(".jso
 
 let boards = 0;
 let failed = 0;
+const flaggedUses = [];
+for (const id of flags.keys()) if (!catalogue.has(id)) console.warn(`picture-flags.json flags ${id}, which is not in the catalogue`);
 for (const file of files) {
   const data = JSON.parse(readFileSync(file, "utf8"));
   const ids = new Set();
@@ -56,6 +61,11 @@ for (const file of files) {
         lastDate = l.date;
       }
       for (const p of l.pictures) {
+        if (flags.has(p.id)) {
+          const note = flags.get(p.id).note;
+          fail(`uses flagged picture ${p.id}`);
+          flaggedUses.push({ board: l.id, line: `board ${l.id} uses flagged picture ${p.id}${note ? ` ("${note}")` : ""}` });
+        }
         const c = catalogue.get(p.id);
         if (!c) fail(`no picture ${p.id} in the catalogue`);
         else if (c.cols !== p.cols || c.rows !== p.rows) fail(`${p.id} is ${c.cols}x${c.rows} in the catalogue, ${p.cols}x${p.rows} here`);
@@ -113,5 +123,10 @@ for (const file of files) {
     }
   }
 }
+if (flaggedUses.length)
+  console.error(
+    `\nPictures flagged "don't use" are on ${new Set(flaggedUses.map((u) => u.board)).size} board(s):\n  ${flaggedUses.map((u) => u.line).join("\n  ")}\n` +
+      `Re-deal them, keeping every other board as it is: node tools/levels/redeal.mts\n`,
+  );
 console.log(failed ? `${failed} of ${boards} boards FAILED` : `all ${boards} boards proved: each line wins on the real rules with no helpers`);
 process.exitCode = failed ? 1 : 0;

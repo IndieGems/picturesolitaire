@@ -1,10 +1,13 @@
 // Builds the daily pool: one proved board per calendar date, the same deal for
 // every player on that date, written to src/content/levels/daily.json.
-// Run: node tools/levels/make-daily.mts [--to YYYY-MM-DD] [--from YYYY-MM-DD]
-//   With a pool already there, it KEEPS every board in it and appends days
-//   after the last one up to --to (default: the last day of the third month
-//   after the pool's last day... see TO_DEFAULT). A shipped date never changes:
-//   players may already have played it.
+// Run: node tools/levels/make-daily.mts [--to YYYY-MM-DD] [--redeal-from YYYY-MM-DD] [--from YYYY-MM-DD]
+//   It KEEPS every day already in the pool, re-deals any day that uses a
+//   flagged picture (picture-flags.json; lib.mts), and appends days after the
+//   last one up to --to (default: none for a pool that exists).
+//   --redeal-from DATE makes every day from DATE on again (up to the pool's
+//   last day, or --to), e.g. to bring pictures new to the catalogue in. It
+//   refuses a DATE that some player may already have reached (any date up to
+//   today in the furthest-ahead time zone, UTC+14): a played day never changes.
 //   --from only starts a new pool (default 2026-08-01, so an archive of "this
 //   month and the two before" has boards from the first day it is shown).
 // Then node tools/levels/check.mts re-proves what was written.
@@ -15,17 +18,19 @@
 // that days next to each other feel different. The weekday is the date's own
 // (a date string names one weekday everywhere), not the player's clock.
 //
-// Pictures: each day takes the pictures used least so far in the pool, never
-// one from the two days before. Each board's par line is stored ("par").
-// Deterministic: the same pool file and catalogue give the same new days.
+// Pictures: each new day takes the pictures furthest behind an even share
+// (lib.mts catchUp: the least used, such as pictures new to the catalogue,
+// come in steadily over the days being made), never one on a board within two
+// days either side. Each board's par line is stored ("par").
+// Deterministic: the same pool file, catalogue and flags give the same new days.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { random } from "../../src/game/rules.ts";
-import { generate, hashId } from "../../src/game/levels/generate.ts";
-import { alikeOf, pick, shapeOf } from "../../src/game/levels/pick.ts";
-import { byId, catalogue, root, writeBoards } from "./lib.mts";
+import { hashId } from "../../src/game/levels/generate.ts";
+import { pick } from "../../src/game/levels/pick.ts";
+import { catchUp, dealBoard, flaggedOn, onSchedule, root, swapSets, tallyText, usable, usesOf, writeBoards } from "./lib.mts";
 import { WEEK } from "./daily-plan.mts";
 
 const FILE = join(root, "src/content/levels/daily.json");
@@ -43,77 +48,86 @@ const parse = (d) => {
 const fmt = (t) => new Date(t).toISOString().slice(0, 10);
 
 const t0 = performance.now();
-const pool = existsSync(FILE) ? JSON.parse(readFileSync(FILE, "utf8")).levels : [];
+const shipped = existsSync(FILE) ? JSON.parse(readFileSync(FILE, "utf8")).levels : [];
+const redealFrom = arg("--redeal-from");
+if (redealFrom) {
+  // the latest date anywhere in the world right now: UTC+14
+  const reached = fmt(Date.now() + 14 * 3600_000);
+  if (parse(redealFrom) <= parse(reached)) throw new Error(`--redeal-from ${redealFrom}: some players are already on ${reached}; a played day never changes. Pick a later date.`);
+}
+const pool = redealFrom ? shipped.filter((l) => l.date < redealFrom) : shipped;
 const first = pool.length ? parse(pool[0].date) : parse(arg("--from") ?? "2026-08-01");
 const next = pool.length ? parse(pool[pool.length - 1].date) + DAY : first;
-// default end: 2027-01-31 for a new pool; else three months on
-const to = parse(arg("--to") ?? (pool.length ? fmt(next + 92 * DAY) : "2027-01-31"));
-if (to < next) {
-  console.log(`the pool already runs to ${pool.length ? pool[pool.length - 1].date : "-"}; nothing to add`);
-  process.exit(0);
-}
+// default end: the pool's own last day (2027-01-31 for a new pool)
+const to = parse(arg("--to") ?? (shipped.length ? shipped[shipped.length - 1].date : "2027-01-31"));
 
-const uses = new Map(catalogue.map((p) => [p.id, 0]));
-for (const l of pool) for (const p of l.pictures) uses.set(p.id, (uses.get(p.id) ?? 0) + 1);
 const levels = [...pool];
-for (let t = next; t <= to; t += DAY) {
-  const date = fmt(t);
+const uses = usesOf(levels.map((l) => l.pictures));
+/** Pictures within two days either side of day k, which day k never takes. */
+const around = (k) => new Set([k - 2, k - 1, k + 1, k + 2].flatMap((j) => levels[j]?.pictures.map((p) => p.id) ?? []));
+
+/**
+ * A proved board for day k (levels[k], kept or new) of `date`: from each of
+ * `sets` first, then picked, with `weigh` the uses the picker ranks by.
+ */
+function makeDay(k, date, sets, weigh) {
   const id = `d${date}`;
-  const row = WEEK[new Date(t).getUTCDay()];
-  // never a picture from the two days before
-  const recent = new Set(levels.slice(-2).flatMap((l) => l.pictures.map((p) => p.id)));
-  let made = null;
-  let pictures = null;
+  const row = WEEK[new Date(parse(date)).getUTCDay()];
+  const recent = around(k);
+  const opts = { id, date, ...BOARD, par: true, tries: 3000 };
+  for (const [n, set] of sets.entries()) {
+    const { board, tally } = dealBoard(row, set, opts);
+    if (board) return board;
+    console.log(`${id}: swapped set ${n} found no deal (${tallyText(tally)})`);
+  }
   // pictures of a set that found no deal count as used more, so the next pick differs
   const failed = new Map();
-  for (let attempt = 0; attempt < 12 && !made; attempt++) {
-    const avoid = new Map([...uses].map(([k, v]) => [k, v + (failed.get(k) ?? 0)]));
-    for (const id of recent) avoid.set(id, (avoid.get(id) ?? 0) + 1000);
-    pictures = pick(catalogue, { count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, meanFamilies: true }, avoid, recent, random((hashId(id) + attempt * 104729) >>> 0));
+  for (let attempt = 0; attempt < 12; attempt++) {
+    const avoid = new Map([...weigh()].map(([k, v]) => [k, v + (failed.get(k) ?? 0)]));
+    for (const p of recent) avoid.set(p, (avoid.get(p) ?? 0) + 1000);
+    const pictures = pick(usable, { count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, meanFamilies: true }, avoid, recent, random((hashId(id) + attempt * 104729) >>> 0));
     if (!pictures) throw new Error(`${id}: no pictures fit the day's type`);
-    pictures = [...pictures].sort((a, b) => (a.id < b.id ? -1 : 1));
-    const spec = { id, ...BOARD, pictures, targets: { chain: row.chain, careless: row.careless }, par: true };
-    const tally = new Map();
-    made = generate(spec, 1, 3000, tally);
-    if (!made) for (const p of pictures) failed.set(p.id, (failed.get(p.id) ?? 0) + 2);
-    if (!made) console.log(`${id}: pictures set ${attempt} found no deal (${[...tally].map(([k, v]) => `${k} ${v}`).join(", ")})`);
+    const { board, tally } = dealBoard(row, pictures, opts);
+    if (board) return board;
+    for (const p of pictures) failed.set(p.id, (failed.get(p.id) ?? 0) + 2);
+    console.log(`${id}: pictures set ${attempt} found no deal (${tallyText(tally)})`);
   }
-  if (!made) throw new Error(`${id}: no deal meets the day's type; loosen it`);
-  for (const p of pictures) uses.set(p.id, uses.get(p.id) + 1);
-  const m = made.measures;
-  levels.push({
-    id,
-    date,
-    peek: row.peek,
-    ...BOARD,
-    seed: made.seed,
-    pictures,
-    stacks: made.deal.stacks,
-    line: made.line.map((mv) => [mv.from, mv.to]),
-    par: made.line.length,
-    axes: {
-      role: row.role,
-      alike: alikeOf(catalogue, pictures),
-      families: pictures.map((p) => byId.get(p.id).family),
-      sizes: pictures.map((p) => p.cols * p.rows),
-      shapes: [...new Set(pictures.map(shapeOf))].sort(),
-      cards: pictures.reduce((n, p) => n + p.cols * p.rows, 0),
-      waiting: m.waiting,
-      stacks: m.stacks,
-      peek: row.peek,
-      chain: m.chain,
-      careless: Math.round(m.careless * 1000) / 1000,
-      traps: m.traps,
-      lineMoves: made.line.length,
-      lineSteps: made.steps.length,
-    },
-  });
-  console.log(`${id} ${row.role} ${pictures.length} pics ${String(levels.at(-1).axes.cards).padStart(2)} cards peek ${row.peek} chain ${m.chain} careless ${(m.careless * 100).toFixed(0).padStart(3)}% par ${made.line.length}, seed ${made.seed}`);
+  throw new Error(`${id}: no deal meets the day's type; loosen it`);
 }
-writeBoards(FILE, "daily pool: one board per date, the same for every player; made by tools/levels/make-daily.mts (it only ever appends days), checked by tools/levels/check.mts; par = moves in the stored line", levels);
+
+// 1. kept days that use a flagged picture: as few pictures changed as can be
+levels.forEach((l, k) => {
+  const bad = flaggedOn(l.pictures);
+  if (!bad.length) return;
+  console.log(`${l.id}: uses flagged ${bad.join(", ")}; re-dealing it`);
+  for (const p of l.pictures) uses.set(p.id, uses.get(p.id) - 1);
+  const row = WEEK[new Date(parse(l.date)).getUTCDay()];
+  const recent = around(k);
+  const sets = swapSets({ count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes }, l.pictures, uses, (id) => (recent.has(id) ? 1000 : 0));
+  levels[k] = makeDay(k, l.date, sets, () => uses);
+  for (const p of levels[k].pictures) uses.set(p.id, uses.get(p.id) + 1);
+});
+
+// 2. new days, the least-used pictures caught up over all of them
+const days = [];
+for (let t = next; t <= to; t += DAY) days.push(fmt(t));
+const slots = days.reduce((n, d) => n + WEEK[new Date(parse(d)).getUTCDay()].count, 0);
+const plan0 = catchUp(uses, slots);
+let done = 0;
+for (const date of days) {
+  const board = makeDay(levels.length, date, [], () => onSchedule(uses, plan0, done / slots));
+  levels.push(board);
+  for (const p of board.pictures) uses.set(p.id, uses.get(p.id) + 1);
+  done += board.pictures.length;
+}
+if (!days.length && levels.every((l, k) => l === shipped[k]) && levels.length === shipped.length) {
+  console.log(`the pool runs to ${shipped.at(-1)?.date ?? "-"} and uses no flagged picture; nothing to do (--to adds days)`);
+  process.exit(0);
+}
+writeBoards(FILE, "daily pool: one board per date, the same for every player; made by tools/levels/make-daily.mts (it keeps every day it has, re-dealing only a day with a flagged picture), checked by tools/levels/check.mts; par = moves in the stored line", levels);
 
 // ---------------------------------------------------------------- docs/daily.md
-const counts = catalogue.map((p) => levels.filter((l) => l.pictures.some((q) => q.id === p.id)).length);
+const counts = usable.map((p) => levels.filter((l) => l.pictures.some((q) => q.id === p.id)).length);
 const byRole = WEEK.map((w, d) => {
   const ls = levels.filter((l) => l.axes.role === w.role);
   const avg = (f) => (ls.reduce((n, l) => n + f(l), 0) / Math.max(1, ls.length)).toFixed(1);
@@ -123,8 +137,9 @@ const md = `# The daily puzzle
 
 One board per calendar date, the same deal for every player on that date
 (\`src/content/levels/daily.json\`, ${levels.length} days: ${levels[0].date} to ${levels.at(-1).date}).
-Made by \`node tools/levels/make-daily.mts\`, which only ever appends days:
-\`--to YYYY-MM-DD\` adds more. Every board is re-proved by
+Made by \`node tools/levels/make-daily.mts\`, which keeps every day it has
+(re-dealing only a day that uses a flagged picture): \`--to YYYY-MM-DD\` adds
+days. Every board is re-proved by
 \`node tools/levels/check.mts\`. Do not edit by hand.
 
 The pool starts on 1 August 2026 so that an archive of this month and the two
