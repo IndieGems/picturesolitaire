@@ -33,6 +33,7 @@ import { gem } from "../gem";
 import { isWon, replay, type Action, type Deal } from "../game/rules";
 import { onOnline, online, suspect } from "../ui/online";
 import { dealHash } from "./deal-hash";
+import { answered, hold } from "./progress";
 import { tableOf } from "./tables";
 
 export type Lane = "campaign" | "challenge" | "daily";
@@ -49,6 +50,8 @@ export interface WinClaim {
   ms: number;
   /** The daily's date, the platform's periodLocalDate (src/net/daily.ts, today()). Daily only. */
   date?: string;
+  /** Campaign only: the position played, the number passed to level(n) (from 1; past the last board it goes round). */
+  n?: number;
 }
 
 interface Answered {
@@ -75,6 +78,8 @@ export type Verdict =
   | { status: "unframed"; lane: Lane; board: string };
 
 interface Held {
+  /** The claim's own id: the checker applies a claim to the progress record once, however often it is sent. */
+  id: string;
   claim: WinClaim;
   body: Record<string, unknown>;
   resolve: (v: Verdict) => void;
@@ -100,6 +105,17 @@ export const pendingClaims = (): number => queue.length;
 
 /** Send a won board to the checker. Resolves once the server has answered (it may be a while offline). */
 export function claimWin(claim: WinClaim): Promise<Verdict> {
+  const id = crypto.randomUUID();
+  // shown at once: src/net/progress.ts applies the win until the checker answers
+  hold(id, {
+    lane: claim.lane,
+    board: claim.board,
+    ...(claim.n !== undefined ? { n: claim.n } : {}),
+    moves: claim.line.filter((a) => !("shuffle" in a)).length,
+    ms: Math.max(0, Math.round(claim.ms)),
+    ...(claim.date ? { date: claim.date } : {}),
+    pictures: claim.deal.pictures.map((p) => p.id),
+  });
   if (!framed) {
     let wins = false;
     try {
@@ -109,11 +125,13 @@ export function claimWin(claim: WinClaim): Promise<Verdict> {
     }
     if (!wins) console.warn(`[claims] ${claim.lane} ${claim.board}: this line would not verify`, claim.line);
     const v: Verdict = { status: "unframed", lane: claim.lane, board: claim.board };
+    answered(id, null, !wins);
     for (const fn of [...listeners]) fn(v);
     return Promise.resolve(v);
   }
   const body: Record<string, unknown> = {
     v: 1,
+    id,
     lane: claim.lane,
     board: claim.board,
     deal: dealHash(claim.deal),
@@ -121,8 +139,9 @@ export function claimWin(claim: WinClaim): Promise<Verdict> {
     ms: Math.max(0, Math.round(claim.ms)),
   };
   if (claim.date) body.date = claim.date;
+  if (claim.n !== undefined) body.n = claim.n;
   return new Promise((resolve) => {
-    queue.push({ claim, body, resolve, tries: 0, notBefore: 0 });
+    queue.push({ id, claim, body, resolve, tries: 0, notBefore: 0 });
     void pump();
   });
 }
@@ -142,8 +161,10 @@ export function cueCoins(v: Verdict, from?: Element | null): boolean {
   });
 }
 
-function settle(h: Held, v: Verdict): void {
+function settle(h: Held, v: Verdict, record: unknown = null): void {
   queue.splice(queue.indexOf(h), 1);
+  // the server's word replaces the held win (a refusal just drops it)
+  answered(h.id, record, v.status === "refused");
   h.resolve(v);
   for (const fn of [...listeners]) fn(v);
 }
@@ -183,6 +204,7 @@ async function send(h: Held): Promise<void> {
     return later(h);
   }
   const status = answer.status;
+  // "order": an earlier campaign win is still on its way; it goes first, this one follows soon
   if (status === "retry") return later(h, answer.reason === "unknown_deal" || answer.reason === "config");
   if (status === "paid" || status === "kept" || status === "late") {
     const items = Array.isArray(answer.items) ? answer.items.filter((i): i is string => typeof i === "string").map(tableOf) : [];
@@ -199,7 +221,7 @@ async function send(h: Held): Promise<void> {
       ...(typeof answer.ms === "number" ? { ms: answer.ms } : {}),
       ...(typeof answer.recorded === "boolean" ? { recorded: answer.recorded } : {}),
       ...(typeof answer.first === "boolean" ? { first: answer.first } : {}),
-    });
+    }, answer.progress);
   }
   console.warn(`[claims] ${lane} ${board} refused: ${String(answer.reason)}`);
   return settle(h, { status: "refused", lane, board, reason: String(answer.reason ?? "unknown") });
