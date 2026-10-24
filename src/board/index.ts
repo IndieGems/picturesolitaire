@@ -754,6 +754,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   }
 
   function onDown(e: PointerEvent): void {
+    // a hint's ghost never stands in the way: reaching for the board takes it away
+    if (!destroyed && guideMode !== "hold") stopHint();
     if (press || drag || busy || won || destroyed || guideMode === "hold") return;
     if (e.pointerType === "mouse" && e.button !== 0) return;
     const g = toGrid(e.clientX, e.clientY);
@@ -937,6 +939,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       return;
     }
     unlight();
+    stopHint();
     history.push(state);
     actions.push(m);
     state = out.state;
@@ -1101,9 +1104,19 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     targetEl.classList.add("again");
   }
 
-  async function showHint(m: Move): Promise<void> {
-    const v = viewWith(m.from);
-    if (!v) return;
+  /** The hint on screen, if any; calling it takes the ghost away at once. */
+  let hintStop: (() => void) | null = null;
+  const stopHint = () => hintStop?.();
+
+  /**
+   * Hint: a faint copy of the piece flies to where it should go, holds, and
+   * fades. It changes nothing in the game, so it never holds the board up:
+   * any press, move or helper takes it away at once (a player reaches for
+   * the card it shows).
+   */
+  function showHint(m: Move): void {
+    stopHint();
+    if (!viewWith(m.from)) return;
     const cells = pieceAt(state, m.from);
     const ghost = drawPiece(geo, art, cells, cells.map((c) => state.board[c]!), pics);
     ghost.el.classList.add("ghost");
@@ -1115,16 +1128,42 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     const ty = ghost.oy + dr * p;
     const x0 = ghost.x, y0 = ghost.y;
     const T = TUNING.hintMs;
-    await tween(T * 0.35, (t) => {
-      ghost.x = x0 + (tx - x0) * t;
-      ghost.y = y0 + (ty - y0) * t - Math.sin(Math.PI * t) * geo.s * 0.25;
-      ghost.k = 1 + 0.06 * Math.sin(Math.PI * t);
-      ghost.el.style.opacity = String(0.4 + 0.5 * Math.min(1, t * 2));
-      place(ghost);
-    }, { ease: ease.inOut });
-    await wait(T * 0.4);
-    await tween(T * 0.25, (t) => (ghost.el.style.opacity = String(0.9 * (1 - t))));
-    ghost.el.remove();
+    const fly = T * 0.35;
+    const hold = T * 0.75;
+    let t = 0;
+    let landed = false;
+    let stop: () => void = () => {};
+    const end = () => {
+      stop();
+      ghost.el.remove();
+      if (hintStop === end) hintStop = null;
+    };
+    stop = run((dt) => {
+      t += dt;
+      if (t < fly) {
+        const e = ease.inOut(t / fly);
+        ghost.x = x0 + (tx - x0) * e;
+        ghost.y = y0 + (ty - y0) * e - Math.sin(Math.PI * e) * geo.s * 0.25;
+        ghost.k = 1 + 0.06 * Math.sin(Math.PI * e);
+        ghost.el.style.opacity = String(0.4 + 0.5 * Math.min(1, e * 2));
+        place(ghost);
+      } else if (t < hold) {
+        if (!landed) {
+          landed = true;
+          ghost.x = tx;
+          ghost.y = ty;
+          ghost.k = 1;
+          ghost.el.style.opacity = "0.9";
+          place(ghost);
+        }
+      } else if (t < T) ghost.el.style.opacity = String(0.9 * (1 - (t - hold) / (T - hold)));
+      else {
+        end();
+        return false;
+      }
+      return true;
+    });
+    hintStop = end;
   }
 
   // ---------------------------------------------------------------- size
@@ -1138,6 +1177,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     const g = layout(w, h, deal.cols, deal.rows);
     if (g.s === geo.s && g.left === geo.left && g.top === geo.top) return;
     geo = g;
+    stopHint();
     applyLayout();
     redrawAll(shown);
     if (guideMode) relight();
@@ -1200,6 +1240,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
 
   return {
     undo() {
+      stopHint();
       if (busy || won || drag || !history.length || helpers.undo <= 0) return;
       if (selected) {
         settleBack(selected.v);
@@ -1237,9 +1278,11 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       // the tutorial's hints are free
       if (!guideMode) helpers = { ...helpers, hint: helpers.hint - 1 };
       emit("helper:hint", { left: helpers.hint });
-      void run2(() => showHint(m!));
+      changed();
+      showHint(m);
     },
     shuffle() {
+      stopHint();
       if (busy || won || drag || helpers.shuffle <= 0) return;
       const out = rescue(state);
       if (!out) {
@@ -1259,6 +1302,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       void run2(() => show(out.steps));
     },
     restart() {
+      stopHint();
       if (busy) {
         pendingRestart = true;
         return;
@@ -1282,6 +1326,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     },
     pictures: () => pics.map((p, i) => ({ id: p.id, src: art[i]!.url, cols: p.cols, rows: p.rows })),
     destroy() {
+      stopHint();
       destroyed = true;
       ro.disconnect();
       drag?.stop();
