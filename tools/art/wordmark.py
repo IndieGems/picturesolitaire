@@ -4,8 +4,10 @@
 
 The raw image is a transparent PNG from the generator (prompt in tools/art/prompts.txt).
 It is cropped to its letters with a little air, kept as a master in
-tools/art/masters/chrome/, and shipped as public/art/wordmark.webp at WIDTH px wide:
-the title shows about 300-340 CSS px wide on a phone, so this is sharp at 2.5x. An optional
+tools/art/masters/chrome/, and shipped as public/art/wordmark.webp at WIDTH px wide (the
+title shows about 300-340 CSS px wide on a phone, so this is sharp at 2.5x) and as
+wordmark-1400.webp for big tablets. The master is 1441 px wide: nothing larger without
+generating again. An optional
 second raw is kept as the alternative master only (not shipped).
 """
 import sys
@@ -17,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[2]
 MASTERS = ROOT / "tools/art/masters/chrome"
 OUT = ROOT / "public/art/wordmark.webp"
 WIDTH = 840
+LARGE = 1400  # public/art/wordmark-1400.webp, for big tablets (srcset); phones keep the 840
 PAD = 0.012  # air around the letters, as a fraction of the cropped width
 
 
@@ -38,6 +41,10 @@ def main(raw, alt=None):
     small = im.resize((WIDTH, round(im.height * WIDTH / im.width)), Image.LANCZOS)
     small.save(OUT, "WEBP", quality=80, alpha_quality=80, method=6)
     print(OUT.relative_to(ROOT), small.size, f"{OUT.stat().st_size // 1024} KB")
+    big = im.resize((LARGE, round(im.height * LARGE / im.width)), Image.LANCZOS)
+    big_out = OUT.with_name(f"wordmark-{LARGE}.webp")
+    big.save(big_out, "WEBP", quality=74, alpha_quality=70, method=6)
+    print(big_out.relative_to(ROOT), big.size, f"{big_out.stat().st_size // 1024} KB")
     if alt:
         crop(alt).save(MASTERS / "wordmark-alt.webp", "WEBP", quality=90, method=6)
         print("alternative master:", (MASTERS / "wordmark-alt.webp").relative_to(ROOT))
