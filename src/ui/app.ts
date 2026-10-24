@@ -21,6 +21,12 @@
 // level on the left, Back then the gear at the right end, all level with the
 // Gem. The board itself, its rules and animations are the gameplay member's,
 // opened through board-api.ts and heard through src/events.ts.
+//
+// PRACTICE (the creator's dev menu, dev-menu.ts; never in a release build): a
+// board opened from the menu, or one a dev hand was put on, plays and finishes
+// as ever, its win card included, but sends no claim (no Coins, no progress, no
+// daily result), saves no guide step and signals no break. It is gated here, at
+// the claim's call site, and says so on the board and on its card.
 
 import "./style.css";
 import { gem, onArcadePause, onPlayerPrefs } from "../gem";
@@ -49,6 +55,7 @@ import { WORDMARK } from "./wordmark";
 import { cardAspect, syncCardAspect } from "./cards";
 import { mountParticles } from "./particles";
 import { levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
+import type { DevMenu } from "./dev-menu";
 
 // ---------- a little DOM ----------
 
@@ -170,10 +177,20 @@ app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, routeUi
 // ---------- state ----------
 
 type Screen = "home" | "board" | "albums" | "album" | "challenges" | "daily";
-/** A board to play: one of the campaign's, one on the challenge route, or the day's. */
-type Play = { kind: "campaign"; level: number } | { kind: "challenge"; c: Challenge } | { kind: "daily"; d: Daily };
+/**
+ * A board to play: one of the campaign's, one on the challenge route, or the day's.
+ * `practice`: the dev menu's (nothing sent or saved); `guide`: board 1 with its guide replayed.
+ */
+export type Play = ({ kind: "campaign"; level: number } | { kind: "challenge"; c: Challenge } | { kind: "daily"; d: Daily }) & {
+  practice?: boolean;
+  guide?: boolean;
+};
+/** A practice board or win (the dev menu's). Always false in a release build, which then drops every branch on it. */
+function isPractice(x: { practice?: boolean } | null | undefined): boolean {
+  return import.meta.env.MODE !== "release" && x?.practice === true;
+}
 const samePlay = (a: Play | null, b: Play): boolean => {
-  if (!a || a.kind !== b.kind) return false;
+  if (!a || a.kind !== b.kind || isPractice(a) !== isPractice(b) || (isPractice(a) && !!a.guide !== !!b.guide)) return false;
   if (a.kind === "campaign") return a.level === (b as typeof a).level;
   if (a.kind === "challenge") return a.c.id === (b as typeof a).c.id;
   return a.d.id === (b as typeof a).d.id;
@@ -188,6 +205,8 @@ let boardWon = false;
 let waiting: Play | null = null;
 /** Moves so far on the board in hand, when the board says (board:changed). */
 let movesSoFar: number | null = null;
+/** The creator's dev menu, once it has loaded (dev channel only); null in every release build. */
+let dev: DevMenu | null = null;
 
 /** The board as the guide steers it (its guide mode is the gameplay member's). */
 type GuidedBoard = BoardHandle & { guide?: (mode: GuideMode) => void };
@@ -213,6 +232,7 @@ const boardNumber = (n: number) => ((n - 1) % levels()) + 1;
 
 function show(next: Screen): void {
   screen = next;
+  if (import.meta.env.MODE !== "release") dev?.screen(next);
   // every picture and card drawn from here on takes the board's card shape (cards.ts)
   syncCardAspect();
   home.hidden = next !== "home";
@@ -292,6 +312,8 @@ function openLevel(level: number): void {
 }
 
 function openPlay(next: Play): void {
+  // the dev menu's endless helpers are on: a win helped along never pays, so every board is practice
+  if (import.meta.env.MODE !== "release" && dev?.practiceOnly() && !next.practice) next = { ...next, practice: true };
   if (!online()) {
     waiting = next;
     drawOffline();
@@ -313,8 +335,13 @@ function openPlay(next: Play): void {
     drawHelpers({ undo: 3, hint: 3, shuffle: 3 }, false);
     guide.cancel();
     board = openBoard(host, next.kind === "campaign" ? next.level : next.kind === "challenge" ? next.c.level : next.d);
-    // the first board teaches the game, once the save says the player has not learnt it yet
-    if (next.kind === "campaign" && next.level === 1) void guide.offer();
+    if (import.meta.env.MODE !== "release") dev?.opened(board);
+    // the first board teaches the game, once the save says the player has not learnt it yet;
+    // in practice only when the dev menu asked for the guide again (and then it saves nothing)
+    if (next.kind === "campaign" && next.level === 1) {
+      if (!isPractice(next)) void guide.offer();
+      else if (next.guide) void guide.practise();
+    }
   }
   show("board");
 }
@@ -323,12 +350,15 @@ function openPlay(next: Play): void {
 function drawPill(): void {
   if (!play) return;
   levelPill.classList.toggle("two", play.kind !== "campaign");
+  // a practice board says so beside its name (the dev menu's tag: information, never a button)
+  const tag = isPractice(play) ? dev?.tag() : null;
   if (play.kind === "campaign") {
-    levelPill.replaceChildren(t("board.level", { level: boardNumber(play.level) }));
+    levelPill.replaceChildren(t("board.level", { level: boardNumber(play.level) }), ...(tag ? [tag] : []));
     return;
   }
   const par = play.kind === "challenge" ? play.c.par : play.d.par;
   pillName.textContent = play.kind === "challenge" ? t("board.challenge", { n: play.c.n }) : t("board.daily", { date: shortDate(play.d.date) });
+  if (tag) pillName.append(tag);
   pillPar.textContent = movesSoFar === null ? t("board.par", { par }) : t("board.parYou", { par, moves: movesSoFar });
   levelPill.replaceChildren(pillName, pillPar);
 }
@@ -374,7 +404,8 @@ function inGuidedStart(): boolean {
  * Resolves when the Arcade has answered (it never rejects).
  */
 function signalBreak(kind: "level_end" | "menu_return", placement: string): Promise<void> {
-  if (inGuidedStart()) return Promise.resolve();
+  // nothing of the Arcade's over the guided start, nor over the creator's practice
+  if (inGuidedStart() || isPractice(play)) return Promise.resolve();
   return gem.moments.signal({ kind, placement }).then(
     () => undefined,
     () => undefined,
@@ -521,6 +552,8 @@ type Win = (
   verdict?: Verdict;
   /** Its Coins have flown to the Arcade's wallet (once, ever, per win). */
   cued?: boolean;
+  /** A practice board's win (the dev menu): nothing was sent, and its card says so. */
+  practice?: boolean;
 };
 let lastWin: Win | null = null;
 
@@ -543,12 +576,18 @@ on("board:solved", ({ moves, ms, line }) => {
   } else if (play.kind === "challenge") {
     // any win clears a challenge board, over par too; the record keeps the fewer moves
     const before = challengeBest(play.c.id);
-    win = { kind: "challenge", c: play.c, moves, ms, first: before === undefined, better: before !== undefined && moves < before };
+    win = { kind: "challenge", c: play.c, moves, ms, first: before === undefined, better: !isPractice(play) && before !== undefined && moves < before };
   } else {
     // only the day's first finish counts on the day's board
     win = { kind: "daily", d: play.d, moves, ms, first: !dailyResult(play.d.date) };
   }
   lastWin = win;
+  // practice (the dev menu): the card shows as ever, and nothing goes out: no claim, no Coins,
+  // no progress, no daily result
+  if (isPractice(play)) {
+    win.practice = true;
+    return;
+  }
   // the win checker judges, records and pays (src/net/claims.ts); the card never waits for it
   const lvl = play.kind === "campaign" ? campaignLevel(play.level) : play.kind === "challenge" ? play.c.level : play.d;
   const verdict = claimWin({
@@ -594,6 +633,11 @@ function dailyLine(w: Extract<Win, { kind: "daily" }>): string {
 function drawCoins(win: Win): void {
   const v = win.verdict;
   const card = winVeil.querySelector<HTMLElement>(".card");
+  // practice: "nothing saved" where the Coins would be
+  if (isPractice(win)) {
+    if (card && dev && !card.querySelector(".coins-chip")) card.append(dev.chip());
+    return;
+  }
   if (!v || v.status !== "paid" || v.coins <= 0 || !card) return;
   // the guide's finish card already says its prize: the Coins fly from its coin, and nothing on it changes
   const promised = card.querySelector<HTMLElement>(".prize .coin");
@@ -616,11 +660,14 @@ function showWin(): void {
   if (lastWin.kind === "daily") return void showDailyWin(lastWin, gallery);
   if (lastWin.milestone) return void showMilestone(gallery);
   const { level, moves, ms } = lastWin;
+  const practice = isPractice(lastWin);
   // the campaign's last board (each time round)
   const last = boardNumber(level) === levels();
   const next = last
     ? withClick(button("amber next", "win.home", icon("home"), t("win.home")), () => leaveTo("win-home", goHome))
-    : withClick(button("amber next", "win.next", t("win.next"), icon("next")), () => leaveInto("win-next", () => openLevel(level + 1)));
+    : withClick(button("amber next", "win.next", t("win.next"), icon("next")), () =>
+        leaveInto("win-next", () => openPlay({ kind: "campaign", level: level + 1, ...(practice ? { practice } : {}) })),
+      );
   winVeil.replaceChildren(
     h(
       "div",
@@ -673,7 +720,9 @@ function showMilestone(gallery: HTMLElement): void {
     h("p", {}, t("guide.doneWhy")),
     gallery,
     prize,
-    withClick(button("amber next", "win.next", t("win.next"), icon("next")), () => openLevel(2)),
+    withClick(button("amber next", "win.next", t("win.next"), icon("next")), () =>
+      openPlay({ kind: "campaign", level: 2, ...(isPractice(lastWin) ? { practice: true } : {}) }),
+    ),
   );
   winVeil.replaceChildren(card);
   showCard(winVeil);
@@ -687,7 +736,23 @@ function showMilestone(gallery: HTMLElement): void {
  * by), and plainly whether this finish is the one that counts; then the day's results.
  */
 function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement): void {
-  const line = dailyLine(w);
+  const line = isPractice(w) && dev ? dev.dailyLine : dailyLine(w);
+  // practice: Next is the day after (the dev menu's), in place of the day's results
+  const p = play;
+  const after = isPractice(w)
+    ? p && dev?.hasNext(p)
+      ? withClick(button("amber next", "win.next", t("win.next"), icon("next")), () => leaveTo("daily-next", () => dev?.next(p)))
+      : null
+    : withClick(button("amber next", "win.results", t("win.results")), () =>
+        leaveTo("daily-results", () => {
+          hideCard(winVeil);
+          board?.destroy();
+          host.replaceChildren();
+          board = null;
+          boardWon = false;
+          void dailyUi.openResults();
+        }),
+      );
   winVeil.replaceChildren(
     h(
       "div",
@@ -705,16 +770,7 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement):
         "div",
         { class: "row" },
         withClick(button("", "win.home", t("win.home")), () => leaveTo("daily-home", goHome)),
-        withClick(button("amber next", "win.results", t("win.results")), () =>
-          leaveTo("daily-results", () => {
-            hideCard(winVeil);
-            board?.destroy();
-            host.replaceChildren();
-            board = null;
-            boardWon = false;
-            void dailyUi.openResults();
-          }),
-        ),
+        after,
       ),
     ),
   );
@@ -725,6 +781,7 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement):
 /** A challenge board's card: the pictures, then "Par N · You M". No fail: over par, it is still cleared. */
 function showChallengeWin(w: Extract<Win, { kind: "challenge" }>, gallery: HTMLElement): void {
   const { c, moves, better } = w;
+  const practice = isPractice(w);
   const after = routeUi.after(c);
   // a word only for a good result; going over par says nothing against the player
   const praise = better ? t("win.newBest") : moves < c.par ? t("win.underPar") : moves === c.par ? t("win.onPar") : "";
@@ -738,7 +795,7 @@ function showChallengeWin(w: Extract<Win, { kind: "challenge" }>, gallery: HTMLE
         { class: "row" },
         toRouteBtn,
         withClick(button("amber next", "win.next", t("win.next"), icon("next")), () =>
-          leaveInto("challenge-next", () => openPlay({ kind: "challenge", c: after })),
+          leaveInto("challenge-next", () => openPlay({ kind: "challenge", c: after, ...(practice ? { practice } : {}) })),
         ),
       )
     : toRouteBtn;
@@ -898,6 +955,46 @@ export async function startApp(): Promise<void> {
   // the top row's words and the stuck line wrap (or shrink, never under 12 px) rather than lose their ends
   for (const el of app.querySelectorAll<HTMLElement>(".top-pill")) keepFitted(el);
   keepFitted(stuckNote);
+
+  // The creator's dev menu: never in a release build (`npm run build:release` drops this branch
+  // and the chunk; tools/no-dev-menu.mjs checks), and at run time only on the dev channel, or
+  // unframed (the play-test tool: no player, nothing to protect).
+  if (import.meta.env.MODE !== "release") {
+    void (async () => {
+      // the Arcade and the Editor frame the game from another origin; the play-test tool frames
+      // it from its own page, same origin, with no platform behind it
+      let testFrame = false;
+      try {
+        testFrame = window.parent.location.origin === location.origin;
+      } catch {
+        /* another origin: a platform frame */
+      }
+      if (window.self !== window.top && !testFrame) {
+        const id = await gem.awaitIdentity(20_000).catch(() => null);
+        if (id?.channel !== "dev") return;
+      }
+      const { mountDevMenu } = await import("./dev-menu");
+      dev = mountDevMenu({
+        app,
+        open(p) {
+          // always a fresh board from the menu: the one in hand is dropped
+          board?.destroy();
+          host.replaceChildren();
+          board = null;
+          boardWon = false;
+          openPlay({ ...p, practice: true });
+        },
+        now: () => ({ screen, play, board, won: boardWon }),
+        practise() {
+          if (!play || play.practice) return;
+          play.practice = true;
+          drawPill();
+        },
+        cancelGuide: () => guide.cancel(),
+        showAll: (on) => albumsUi.showAll(on),
+      });
+    })().catch((err: unknown) => console.warn("[dev-menu] did not load", err));
+  }
 
   if (import.meta.env.DEV) {
     (window as unknown as { __ps: unknown }).__ps = {

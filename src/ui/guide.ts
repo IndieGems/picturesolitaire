@@ -89,6 +89,8 @@ export function createGuide(d: Deps) {
   let deafened: HTMLElement[] = [];
   /** Run once every step is done, until the board is won (the finish card). */
   let finishOwed = false;
+  /** A replay from the dev menu (practice): the steps and the finish as ever, the save left alone. */
+  let practice = false;
 
   // a tap on anything the step did not ask for: the note gives a little hop
   for (const s of shades)
@@ -185,7 +187,7 @@ export function createGuide(d: Deps) {
     off = on(s.done, () => {
       off?.();
       off = null;
-      guided(i + 1);
+      if (!practice) guided(i + 1);
       if (i + 1 < STEPS.length) show(i + 1);
       else {
         finishOwed = true;
@@ -213,6 +215,7 @@ export function createGuide(d: Deps) {
     async offer(): Promise<void> {
       end();
       finishOwed = false;
+      practice = false;
       await Promise.all([waitForGuideSave(3000), waitForProgress(3000)]);
       if (!d.stillHere()) return;
       // board 1 already won (the server's word): nothing to teach, and no finish owed
@@ -224,8 +227,24 @@ export function createGuide(d: Deps) {
       }
       show(0);
     },
+    /**
+     * The dev menu's replay (practice): from the first step at once, whatever the save
+     * says, and nothing saved, the finish card included.
+     */
+    async practise(): Promise<void> {
+      end();
+      finishOwed = false;
+      practice = true;
+      // the board lays itself out first
+      await new Promise((r) => requestAnimationFrame(r));
+      if (practice && d.stillHere()) show(0);
+    },
     /** The player left board 1 or it closed: the guide goes, and starts again with the board. */
-    cancel: end,
+    cancel(): void {
+      end();
+      finishOwed = false;
+      practice = false;
+    },
     /** Is a step up right now? */
     active: () => step >= 0,
     /** Lay the guide out again (the board lit something new). */
@@ -234,7 +253,7 @@ export function createGuide(d: Deps) {
     takeFinish(): boolean {
       if (!finishOwed) return false;
       finishOwed = false;
-      guided(GUIDE_FINISHED);
+      if (!practice) guided(GUIDE_FINISHED);
       return true;
     },
   };

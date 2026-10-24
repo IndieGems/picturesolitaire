@@ -1,0 +1,87 @@
+/* The creator's dev menu (src/ui/dev-menu.ts) and what practice shows on the board and
+   its win card. Loaded with the menu's own chunk, so a release build carries none of it.
+   The two materials hold here too: what is pressed is a .btn, what only informs is .glass. */
+
+#dev-menu {
+  width: min(440px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); padding: 0;
+  border: 2px solid var(--glass-line); border-radius: 26px; overflow: hidden;
+  background: rgba(236, 242, 249, 0.98); color: var(--ink); font-family: var(--round);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+#dev-menu[open] { display: flex; flex-direction: column; }
+#dev-menu::backdrop { background: var(--shade); }
+#dev-menu .dev-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 18px 16px 12px; }
+#dev-menu h2 { margin: 0 0 12px; text-align: center; font: 600 24px/1.15 var(--round); }
+#dev-menu h3 { margin: 20px 0 8px; font: 600 13px/1.2 var(--round); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+#dev-menu section[hidden] { display: none; }
+#dev-menu .dev-info { margin: 0; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.4; }
+#dev-menu .dev-info p { margin: 0; overflow-wrap: anywhere; }
+#dev-menu .dev-info .dev-strong { font-weight: 600; font-size: 15px; }
+#dev-menu .dev-info .dev-state { margin-top: 4px; font-weight: 600; color: #8a531a; }
+#dev-menu .dev-note { margin: 2px 0 6px; font-size: 13px; line-height: 1.35; color: var(--ink-soft); }
+#dev-menu .btn:disabled { opacity: 0.45; }
+
+#dev-menu .dev-row { display: flex; gap: 10px; margin-top: 12px; }
+#dev-menu .dev-row .btn, #dev-menu .dev-wide { flex: 1 1 0; min-width: 0; min-height: 48px; padding: 0 10px; font-size: 16px; }
+#dev-menu .dev-wide { display: flex; width: 100%; margin: 4px 0 8px; }
+
+/* a setting: its words left, its control right */
+#dev-menu .dev-set { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 54px; font-size: 16px; font-weight: 500; }
+#dev-menu .dev-set + .dev-set, #dev-menu .dev-note + .dev-set { border-top: 1.5px solid rgba(150, 168, 190, 0.35); }
+#dev-menu .dev-switch {
+  -webkit-appearance: none; appearance: none; flex: none; position: relative; width: 58px; height: 32px; margin: 6px 0; border-radius: 16px; cursor: pointer;
+  background: #b9c5d3; box-shadow: inset 0 2px 3px rgba(40, 60, 90, 0.3); transition: background 0.15s;
+}
+#dev-menu .dev-switch::after {
+  content: ""; position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--frost-hi); box-shadow: 0 2px 4px rgba(20, 30, 50, 0.4); transition: transform 0.15s;
+}
+#dev-menu .dev-switch:checked { background: linear-gradient(180deg, var(--amber-hi), var(--amber-lo)); }
+#dev-menu .dev-switch:checked::after { transform: translateX(26px); }
+/* the speeds on a row of their own under their words, each a full thumb wide */
+#dev-menu .dev-set-speed { flex-direction: column; align-items: stretch; gap: 8px; padding: 10px 0 14px; }
+#dev-menu .dev-speed { display: flex; gap: 8px; }
+#dev-menu .dev-speed .btn { flex: 1 1 0; min-width: 44px; min-height: 44px; padding: 0 6px; font-size: 15px; }
+
+/* play any board */
+#dev-menu .dev-tabs { display: flex; gap: 8px; }
+#dev-menu .dev-tabs .btn { flex: 1 1 0; min-width: 0; min-height: 44px; padding: 0 6px; font-size: 15px; }
+#dev-menu .dev-pick { margin-top: 14px; }
+#dev-menu .dev-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 14px 8px; }
+#dev-menu .dev-grid.wide { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
+#dev-menu .dev-grid .btn { flex-direction: column; gap: 3px; min-height: 58px; padding: 6px 2px 5px; border-radius: 16px; }
+#dev-menu .dev-grid b { font: 600 19px/1 var(--round); }
+#dev-menu .dev-grid small { font: 500 12px/1.1 var(--round); }
+#dev-menu .dev-day { display: flex; align-items: center; gap: 10px; }
+#dev-menu .dev-day .btn.round { --size: 46px; font-size: 16px; }
+#dev-menu .dev-date {
+  flex: 1 1 auto; min-width: 0; min-height: 46px; padding: 0 12px; border-radius: 999px;
+  border: 1.5px solid var(--lip); background: #fff; color: var(--ink); font: 600 16px var(--round); text-align: center;
+}
+#dev-menu .dev-day-info { margin: 12px 0; }
+#dev-menu .dev-pick > .btn.amber { display: flex; width: 100%; min-height: 50px; font-size: 17px; }
+
+#dev-menu .dev-foot { flex: none; padding: 10px 16px 16px; border-top: 1.5px solid rgba(150, 168, 190, 0.35); }
+#dev-menu .dev-close { display: flex; width: 100%; min-height: 50px; font-size: 17px; }
+
+/* the gear's screen: the way in, above Close */
+#settings-screen .dev-open { display: flex; width: 100%; margin-top: 14px; min-height: 50px; font-size: 17px; }
+
+/* the Next move bar over the board's foot (Show solution, Win now) */
+.dev-bar {
+  position: absolute; z-index: 6; left: 50%; transform: translateX(-50%);
+  bottom: calc(var(--foot) + 6px + 60px + 18px); width: max-content; max-width: calc(100% - 20px);
+  display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: 999px;
+}
+.dev-bar[hidden] { display: none; }
+.dev-bar .btn { min-height: 44px; padding: 0 14px; font-size: 15px; }
+.dev-bar .dev-bar-text { padding: 0 6px; font: 600 14px/1.2 var(--round); text-align: center; }
+
+/* practice: a tag in the level pill (information inside information: flat, no lip) */
+.practice-tag {
+  display: inline-flex; align-items: center; flex: none; margin-left: 8px; padding: 3px 8px 2px; border-radius: 999px;
+  border: 1.5px solid #c98a3c; color: #8a531a; font: 700 12px/1 var(--round); letter-spacing: 0.06em; text-transform: uppercase;
+}
+.top-pill.two .name { display: inline-flex; align-items: center; }
+/* the win card's chip where its Coins would be */
+.card .coins-chip.practice-chip { padding: 7px 14px; font-size: 15px; }

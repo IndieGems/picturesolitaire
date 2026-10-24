@@ -50,7 +50,9 @@ function cardBack(cols: number, rows: number, cls: string): HTMLElement {
 
 /** Pictures shown as restored for checking the albums by hand (dev server only, ?restored=); never recorded. */
 const pretended = new Set<string>();
-const isRestored = (id: string) => restoredInRecord(id) || pretended.has(id);
+/** The dev menu's "every picture in the albums" (dev-menu.ts): all shown as restored, never recorded. */
+let everyPicture = false;
+const isRestored = (id: string) => everyPicture || restoredInRecord(id) || pretended.has(id);
 
 export function createAlbums(nav: Nav) {
   // ---- the list ----
@@ -171,6 +173,12 @@ export function createAlbums(nav: Nav) {
       if (!albumScreen.hidden && open) drawAlbum(open);
     },
     closeViewer: viewer.close,
+    /** The dev menu: show every picture as restored, or go back to the record (never saved). */
+    showAll(on: boolean): void {
+      everyPicture = on;
+      if (!listScreen.hidden) drawList();
+      if (!albumScreen.hidden && open) drawAlbum(open);
+    },
     /** Checking the albums by hand: show these pictures as restored, for this page only. */
     pretend(ids: string[]): void {
       for (const id of ids) pretended.add(id);

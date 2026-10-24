@@ -1,3 +1,5 @@
+import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { defineConfig, type Plugin } from "vite";
 
 // `npm run dev` runs this server under the Gem host (`gemctl serve start .
@@ -37,10 +39,32 @@ function gemDevHost(): Plugin {
 
 const devPort = Number(process.env.GEM_VITE_PORT) || undefined;
 
+// What the creator's dev menu shows under Build (src/ui/dev-menu.ts): the
+// package's version, the commit, whether files had changed since it, and when
+// it was built. Only the dev menu reads it, so a release build carries none.
+function buildInfo() {
+  const git = (...args: string[]) => {
+    try {
+      return execFileSync("git", args, { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+    } catch {
+      return "";
+    }
+  };
+  const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8"));
+  return {
+    version: String(pkg.version ?? ""),
+    sdk: String(pkg.dependencies?.["@indiegems/gem-web-sdk"] ?? ""),
+    commit: git("rev-parse", "--short", "HEAD"),
+    changed: git("status", "--porcelain", "--untracked-files=no") !== "",
+    built: new Date().toISOString(),
+  };
+}
+
 export default defineConfig({
   // Relative base, so the built bundle serves from any path — which is how
   // the arcade serves versioned bundles.
   base: "./",
+  define: { __BUILD_INFO__: JSON.stringify(buildInfo()) },
   build: { outDir: "dist" },
   server: {
     host: "127.0.0.1", port: devPort, strictPort: devPort !== undefined,

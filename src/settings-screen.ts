@@ -20,6 +20,22 @@ import { t } from "./ui/i18n";
 import { ICONS } from "./ui/icons";
 import { chooseTable, chosenTable, onTableChange, ownedTableArts, tableTitle, thumbOf } from "./ui/tables";
 
+// Rows added from outside, above Close: the creator's Developer button (src/ui/dev-menu.ts,
+// on the dev channel only); and the screen itself, for closing it from there.
+const extra = document.createElement("div");
+extra.className = "set-extra";
+let screenEl: HTMLDialogElement | null = null;
+
+/** Put `el` in the settings screen, above Close. */
+export function addToSettings(el: HTMLElement): void {
+  extra.append(el);
+}
+
+/** Close the settings screen if it is open. */
+export function closeSettings(): void {
+  if (screenEl?.open) screenEl.close();
+}
+
 function row(text: string, input: HTMLInputElement): HTMLLabelElement {
   const label = document.createElement("label");
   label.className = "set-row";
@@ -41,6 +57,7 @@ export function mountSettings(parent: HTMLElement = document.body): void {
   button.setAttribute("aria-haspopup", "dialog");
 
   const screen = document.createElement("dialog");
+  screenEl = screen;
   screen.id = "settings-screen";
   screen.setAttribute("aria-labelledby", "settings-title");
   const title = document.createElement("h2");
@@ -120,7 +137,7 @@ export function mountSettings(parent: HTMLElement = document.body): void {
     if (e.target === screen) screen.close();
   });
 
-  screen.append(title, row(t("settings.sound"), sound), row(t("settings.volume"), volume), vibrationRow, tablesRow, close);
+  screen.append(title, row(t("settings.sound"), sound), row(t("settings.volume"), volume), vibrationRow, tablesRow, extra, close);
 
   const render = () => {
     sound.checked = !isMuted();
