@@ -28,7 +28,7 @@
       "title": "Harbour at Dusk",
       "medium": "painting",
       "file": "pictures/travel/dusk-harbour.webp",
-      "thumb": "pictures/thumbs/dusk-harbour.webp",
+      "thumb": "pictures/thumbs/dusk-harbour-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -57,7 +57,7 @@
       "title": "Dunes at Sundown",
       "medium": "photo",
       "file": "pictures/landscapes/dune-caravan.webp",
-      "thumb": "pictures/thumbs/dune-caravan.webp",
+      "thumb": "pictures/thumbs/dune-caravan-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -86,7 +86,7 @@
       "title": "Poppies at Sunset",
       "medium": "photo",
       "file": "pictures/flowers/poppy-sunset.webp",
-      "thumb": "pictures/thumbs/poppy-sunset.webp",
+      "thumb": "pictures/thumbs/poppy-sunset-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -114,7 +114,7 @@
       "title": "Oranges by Candlelight",
       "medium": "painting",
       "file": "pictures/food/candle-oranges.webp",
-      "thumb": "pictures/thumbs/candle-oranges.webp",
+      "thumb": "pictures/thumbs/candle-oranges-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -143,7 +143,7 @@
       "title": "Blossom Lane",
       "medium": "photo",
       "file": "pictures/travel/blossom-lane.webp",
-      "thumb": "pictures/thumbs/blossom-lane.webp",
+      "thumb": "pictures/thumbs/blossom-lane-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -172,7 +172,7 @@
       "title": "Peonies in a Jug",
       "medium": "painting",
       "file": "pictures/flowers/peony-jug.webp",
-      "thumb": "pictures/thumbs/peony-jug.webp",
+      "thumb": "pictures/thumbs/peony-jug-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -201,7 +201,7 @@
       "title": "Strawberry Layer Cake",
       "medium": "photo",
       "file": "pictures/food/berry-cake.webp",
-      "thumb": "pictures/thumbs/berry-cake.webp",
+      "thumb": "pictures/thumbs/berry-cake-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -230,7 +230,7 @@
       "title": "The Rose Hat",
       "medium": "painting",
       "file": "pictures/people/rose-hat.webp",
-      "thumb": "pictures/thumbs/rose-hat.webp",
+      "thumb": "pictures/thumbs/rose-hat-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -259,7 +259,7 @@
       "title": "Maple Path",
       "medium": "photo",
       "file": "pictures/landscapes/maple-path.webp",
-      "thumb": "pictures/thumbs/maple-path.webp",
+      "thumb": "pictures/thumbs/maple-path-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -288,7 +288,7 @@
       "title": "Harvest Table",
       "medium": "painting",
       "file": "pictures/food/harvest-table.webp",
-      "thumb": "pictures/thumbs/harvest-table.webp",
+      "thumb": "pictures/thumbs/harvest-table-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -317,7 +317,7 @@
       "title": "The Apple Picker",
       "medium": "painting",
       "file": "pictures/people/apple-orchard.webp",
-      "thumb": "pictures/thumbs/apple-orchard.webp",
+      "thumb": "pictures/thumbs/apple-orchard-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -346,7 +346,7 @@
       "title": "Ivy Lane",
       "medium": "photo",
       "file": "pictures/travel/ivy-lane.webp",
-      "thumb": "pictures/thumbs/ivy-lane.webp",
+      "thumb": "pictures/thumbs/ivy-lane-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -375,7 +375,7 @@
       "title": "Blue Domes",
       "medium": "photo",
       "file": "pictures/travel/blue-domes.webp",
-      "thumb": "pictures/thumbs/blue-domes.webp",
+      "thumb": "pictures/thumbs/blue-domes-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -404,7 +404,7 @@
       "title": "Lighthouse Surf",
       "medium": "painting",
       "file": "pictures/landscapes/wave-coast.webp",
-      "thumb": "pictures/thumbs/wave-coast.webp",
+      "thumb": "pictures/thumbs/wave-coast-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -433,7 +433,7 @@
       "title": "Blue Hydrangeas",
       "medium": "photo",
       "file": "pictures/flowers/hydrangeas.webp",
-      "thumb": "pictures/thumbs/hydrangeas.webp",
+      "thumb": "pictures/thumbs/hydrangeas-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -461,7 +461,7 @@
       "title": "The Net Mender",
       "medium": "painting",
       "file": "pictures/people/net-mender.webp",
-      "thumb": "pictures/thumbs/net-mender.webp",
+      "thumb": "pictures/thumbs/net-mender-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -490,7 +490,7 @@
       "title": "Wheat and Cypress",
       "medium": "painting",
       "file": "pictures/landscapes/wheat-farm.webp",
-      "thumb": "pictures/thumbs/wheat-farm.webp",
+      "thumb": "pictures/thumbs/wheat-farm-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -519,7 +519,7 @@
       "title": "Baker's Table",
       "medium": "photo",
       "file": "pictures/food/bread-table.webp",
-      "thumb": "pictures/thumbs/bread-table.webp",
+      "thumb": "pictures/thumbs/bread-table-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -548,7 +548,7 @@
       "title": "Sunflowers",
       "medium": "painting",
       "file": "pictures/flowers/sunflower-vase.webp",
-      "thumb": "pictures/thumbs/sunflower-vase.webp",
+      "thumb": "pictures/thumbs/sunflower-vase-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -576,7 +576,7 @@
       "title": "Summer Walk",
       "medium": "photo",
       "file": "pictures/people/wheat-walk.webp",
-      "thumb": "pictures/thumbs/wheat-walk.webp",
+      "thumb": "pictures/thumbs/wheat-walk-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -605,7 +605,7 @@
       "title": "Lavender Rows",
       "medium": "photo",
       "file": "pictures/landscapes/lavender-rows.webp",
-      "thumb": "pictures/thumbs/lavender-rows.webp",
+      "thumb": "pictures/thumbs/lavender-rows-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -634,7 +634,7 @@
       "title": "Wisteria Door",
       "medium": "painting",
       "file": "pictures/travel/wisteria-door.webp",
-      "thumb": "pictures/thumbs/wisteria-door.webp",
+      "thumb": "pictures/thumbs/wisteria-door-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -663,7 +663,7 @@
       "title": "Lilacs",
       "medium": "painting",
       "file": "pictures/flowers/lilac-bouquet.webp",
-      "thumb": "pictures/thumbs/lilac-bouquet.webp",
+      "thumb": "pictures/thumbs/lilac-bouquet-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -691,7 +691,7 @@
       "title": "Figs and Grapes",
       "medium": "photo",
       "file": "pictures/food/figs-grapes.webp",
-      "thumb": "pictures/thumbs/figs-grapes.webp",
+      "thumb": "pictures/thumbs/figs-grapes-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -720,7 +720,7 @@
       "title": "Tea Terraces",
       "medium": "photo",
       "file": "pictures/landscapes/tea-terraces.webp",
-      "thumb": "pictures/thumbs/tea-terraces.webp",
+      "thumb": "pictures/thumbs/tea-terraces-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -749,7 +749,7 @@
       "title": "Market Greens",
       "medium": "painting",
       "file": "pictures/food/market-greens.webp",
-      "thumb": "pictures/thumbs/market-greens.webp",
+      "thumb": "pictures/thumbs/market-greens-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -778,7 +778,7 @@
       "title": "The Greenhouse",
       "medium": "photo",
       "file": "pictures/people/greenhouse.webp",
-      "thumb": "pictures/thumbs/greenhouse.webp",
+      "thumb": "pictures/thumbs/greenhouse-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -807,7 +807,7 @@
       "title": "Green Shutters",
       "medium": "painting",
       "file": "pictures/travel/green-alley.webp",
-      "thumb": "pictures/thumbs/green-alley.webp",
+      "thumb": "pictures/thumbs/green-alley-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -836,7 +836,7 @@
       "title": "Canal Lights",
       "medium": "painting",
       "file": "pictures/travel/venice-canal.webp",
-      "thumb": "pictures/thumbs/venice-canal.webp",
+      "thumb": "pictures/thumbs/venice-canal-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -865,7 +865,7 @@
       "title": "Night Market",
       "medium": "photo",
       "file": "pictures/food/lantern-market.webp",
-      "thumb": "pictures/thumbs/lantern-market.webp",
+      "thumb": "pictures/thumbs/lantern-market-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -894,7 +894,7 @@
       "title": "The Lantern Walk",
       "medium": "painting",
       "file": "pictures/people/lantern-child.webp",
-      "thumb": "pictures/thumbs/lantern-child.webp",
+      "thumb": "pictures/thumbs/lantern-child-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -923,7 +923,7 @@
       "title": "Lakeside Evening",
       "medium": "photo",
       "file": "pictures/landscapes/lake-village.webp",
-      "thumb": "pictures/thumbs/lake-village.webp",
+      "thumb": "pictures/thumbs/lake-village-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -952,7 +952,7 @@
       "title": "Cherries",
       "medium": "photo",
       "file": "pictures/food/cherry-bowl.webp",
-      "thumb": "pictures/thumbs/cherry-bowl.webp",
+      "thumb": "pictures/thumbs/cherry-bowl-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -980,7 +980,7 @@
       "title": "Tulip Fields",
       "medium": "painting",
       "file": "pictures/flowers/tulip-rows.webp",
-      "thumb": "pictures/thumbs/tulip-rows.webp",
+      "thumb": "pictures/thumbs/tulip-rows-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -1009,7 +1009,7 @@
       "title": "The Red Tram",
       "medium": "photo",
       "file": "pictures/travel/red-tram.webp",
-      "thumb": "pictures/thumbs/red-tram.webp",
+      "thumb": "pictures/thumbs/red-tram-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -1038,7 +1038,7 @@
       "title": "The Red Umbrella",
       "medium": "painting",
       "file": "pictures/people/red-umbrella.webp",
-      "thumb": "pictures/thumbs/red-umbrella.webp",
+      "thumb": "pictures/thumbs/red-umbrella-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -1067,7 +1067,7 @@
       "title": "Lemon Coast",
       "medium": "painting",
       "file": "pictures/travel/lemon-coast.webp",
-      "thumb": "pictures/thumbs/lemon-coast.webp",
+      "thumb": "pictures/thumbs/lemon-coast-thumb.webp",
       "cols": 3,
       "rows": 3,
       "px": [
@@ -1096,7 +1096,7 @@
       "title": "Lemon Tart",
       "medium": "photo",
       "file": "pictures/food/lemon-tart.webp",
-      "thumb": "pictures/thumbs/lemon-tart.webp",
+      "thumb": "pictures/thumbs/lemon-tart-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -1124,7 +1124,7 @@
       "title": "Daffodil Meadow",
       "medium": "photo",
       "file": "pictures/flowers/daffodil-meadow.webp",
-      "thumb": "pictures/thumbs/daffodil-meadow.webp",
+      "thumb": "pictures/thumbs/daffodil-meadow-thumb.webp",
       "cols": 3,
       "rows": 3,
       "px": [
@@ -1153,7 +1153,7 @@
       "title": "Canal Colours",
       "medium": "photo",
       "file": "pictures/people/canal-bicycle.webp",
-      "thumb": "pictures/thumbs/canal-bicycle.webp",
+      "thumb": "pictures/thumbs/canal-bicycle-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [

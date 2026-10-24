@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "gemctl serve start . --dev",
-    "build": "tsc --noEmit && node tools/levels/check.mts && node tools/server/levels-check.mts && vite build && gem-sdk-stamp dist && node tools/legal-header.mjs",
+    "build": "tsc --noEmit && node tools/levels/check.mts && node tools/server/levels-check.mts && vite build && gem-sdk-stamp dist && node tools/legal-header.mjs && node tools/unique-names.mjs dist",
     "preview": "gemctl serve start .",
     "typecheck": "tsc --noEmit"
   },

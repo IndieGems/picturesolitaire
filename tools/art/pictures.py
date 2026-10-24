@@ -112,7 +112,9 @@ THUMB_LONG = 320  # the Albums screen's picture size, long side
 
 
 def thumb_rel(pid):
-    return f"pictures/thumbs/{pid}.webp"
+    # "-thumb" because the platform refuses a build with two files of the same name,
+    # in any folders: pictures/<album>/<id>.webp is the full picture.
+    return f"pictures/thumbs/{pid}-thumb.webp"
 
 
 def make_thumb(pid):

@@ -8,13 +8,15 @@ Every table follows game-l.png's layout (detail at the edges and top corners, a 
 darker middle where the cards sit) and keeps the same chrome: frosted frames and pale
 buttons are drawn by the game and do not change per table. What changes per table:
 
-  table.webp       the background, 1080x1920 (cover, centre top), like public/art/table.webp
-  stack-back.webp  the card back of the stacks, 256x256 with alpha
-  particles.png    a strip of square frames drifting at the edges (snow, leaves...)
-  thumb.webp       a 320x400 preview for the table picker (the top of the table)
+  <name>-table.webp       the background, 1080x1920 (cover, centre top), like public/art/table.webp
+  <name>-stack-back.webp  the card back of the stacks, 256x256 with alpha
+  <name>-particles.png    a strip of square frames drifting at the edges (snow, leaves...)
+  <name>-thumb.webp       a 320x400 preview for the table picker (the top of the table)
+Every file name carries the table's name: the platform refuses a build in which two
+files share a name, whatever their folders (tools/unique-names.mjs checks it).
 
 The winter dusk keeps its original files (public/art/table.webp, stack-back.webp,
-snow.png); only its thumb lives under public/art/tables/winter-dusk/. The manifest
+snow.png); only its thumb lives under public/art/tables/winter-dusk/ (winter-dusk-thumb.webp). The manifest
 public/art/tables/tables.json lists every SHIPPED table with its paths.
 
 A table's id is "table-" + its folder name ("table-autumn-study"): the same slug is the
@@ -124,13 +126,13 @@ def build():
             frames, frame = 4, t["frame"]
         else:
             table = Image.open(MASTERS / f"{tid}.webp").convert("RGB")
-            table.resize((1080, 1920), Image.LANCZOS).save(d / "table.webp", "WEBP", quality=72, method=6)
-            stack_back(MASTERS / f"{tid}-back.webp", d / "stack-back.webp")
-            frames, frame = particles(MASTERS / f"{tid}-particles.webp", d / "particles.png"), FRAME
-            files = {k: f"art/tables/{tid}/{v}" for k, v in
+            table.resize((1080, 1920), Image.LANCZOS).save(d / f"{tid}-table.webp", "WEBP", quality=72, method=6)
+            stack_back(MASTERS / f"{tid}-back.webp", d / f"{tid}-stack-back.webp")
+            frames, frame = particles(MASTERS / f"{tid}-particles.webp", d / f"{tid}-particles.png"), FRAME
+            files = {k: f"art/tables/{tid}/{tid}-{v}" for k, v in
                      (("table", "table.webp"), ("stackBack", "stack-back.webp"), ("particles", "particles.png"))}
-        thumb(table, d / "thumb.webp")
-        files["thumb"] = f"art/tables/{tid}/thumb.webp"
+        thumb(table, d / f"{tid}-thumb.webp")
+        files["thumb"] = f"art/tables/{tid}/{tid}-thumb.webp"
         manifest["tables"].append({
             "id": f"table-{tid}", "title": t["title"], **files,
             "particleKind": t["particles"], "particleFrame": frame, "particleFrames": frames,
@@ -148,10 +150,10 @@ def icon(name, pid):
     sys.dont_write_bytecode = True
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from mockup import card  # noqa: E402  (the frame drawn to chrome-spec.md)
-    table = Image.open(OUT / name / "table.webp").convert("RGB")
+    table = Image.open(OUT / name / f"{name}-table.webp").convert("RGB")
     w = table.width
     im = table.crop((0, 0, w, w)).resize((1024, 1024), Image.LANCZOS).convert("RGBA")
-    back = Image.open(OUT / name / "stack-back.webp").convert("RGBA").resize((420, 420), Image.LANCZOS)
+    back = Image.open(OUT / name / f"{name}-stack-back.webp").convert("RGBA").resize((420, 420), Image.LANCZOS)
     for k in range(3, -1, -1):
         b = back.copy()
         if k:
