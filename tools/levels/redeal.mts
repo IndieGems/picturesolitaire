@@ -13,7 +13,8 @@ import { execFileSync } from "node:child_process";
 import { join } from "node:path";
 import { root } from "./lib.mts";
 
-for (const maker of ["make-campaign.mts", "make-challenge.mts", "make-daily.mts", "check.mts"]) {
+// --repair-only: flagged boards only, never a plan row not made yet
+for (const [maker, ...args] of [["make-campaign.mts", "--repair-only"], ["make-challenge.mts", "--repair-only"], ["make-daily.mts"], ["check.mts"]]) {
   console.log(`\n== ${maker}`);
-  execFileSync(process.execPath, [join(root, "tools/levels", maker)], { stdio: "inherit" });
+  execFileSync(process.execPath, [join(root, "tools/levels", maker), ...args], { stdio: "inherit" });
 }

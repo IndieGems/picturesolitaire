@@ -4,53 +4,107 @@
 // Demand and relief alternate: a board that asks more (more cards waiting, a
 // longer chain of clears, more lookalikes, fewer upcoming cards shown) is
 // followed by an easier one. Early boards mix families and show 1-2 upcoming
-// cards; later ones hold more lookalikes and show fewer. The first big 3x3
-// picture comes at board 10, the first board with hidden stacks at 18.
+// cards; later ones hold more lookalikes and show fewer; hidden stacks first
+// come at board 18.
+//
+// THE SHAPE RAMP (creator, 2026-10-24, as in Jigsaw Drop): boards 1-10 use
+// only square 2x2 pictures; the long 1x2 and 2x1 ones join at board 11; the
+// big ones (2x3, 3x2, 3x3) at board 20, one a board at most, then two from
+// board 30 and three from board 40 (`bigMost`). The first 3x3 is board 23.
+// From board 37 some boards are 4x6 (24 cards on the board at once); relief
+// boards stay 4x5. Board 31 opens a second arc after the peak at 30.
+//
+// SPACING: a picture should not come back within this many boards, and one the
+// player has not met yet comes first (lib.mts spacedCost, balanceSpaced). The
+// maker reports how close the library lets it come.
 //
 // Columns:
+//   board     columns x rows (default 4x5)
 //   role      intro | build | demand | relief (for the reader; nothing reads it)
 //   count     pictures on the board
 //   alike     lookalike family groups ([3, 2]: a triple and a pair)
 //   sizes     cards a picture may have (2, 4, 6, 9): pieces per picture
-//   cards     total cards, all pictures: 20 fill the board, the rest wait in the stacks
+//   cards     total cards, all pictures: 20 fill a 4x5 board, the rest wait in the stacks
 //   must      shapes that must be on the board
 //   most      at most so many pictures of a size, by cards (default: one 3x3)
+//   bigMost   at most so many big pictures (6 or 9 cards) in all
 //   peek      upcoming cards each stack shows (0, 1 or 2)
 //   chain     the chain of dependent clears (src/game/solver/metrics.ts)
 //   careless  the careless player's chance of winning
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
+/**
+ * The plan's name, stored in campaign.json: the maker adds rows to a file only
+ * if it was made from this plan (a file from an earlier plan is remade with
+ * --fresh, or only repaired with --repair-only). Change it when the rows of
+ * boards already shipped change.
+ */
+export const PLAN_TAG = "shape-ramp-2026-10-24";
+
+/** The board unless a row says otherwise. */
 export const BOARD = { cols: 4, rows: 5 };
 
+/** Boards before a picture comes back, at the least (the aim; the library decides what is reached). */
+export const SPACING = 12;
+
+const SQ = [4];
+const SMALL = [2, 4];
+const ALL = [2, 4, 6, 9];
+
 export const PLAN = [
-  /*  1 */ { role: "intro",  count: 3, alike: [],        sizes: [4],          cards: [12, 12], peek: 2, chain: [1, 1], careless: [1, 1] },
-  /*  2 */ { role: "intro",  count: 4, alike: [],        sizes: [2, 4, 6],    cards: [18, 20], peek: 2, chain: [1, 1], careless: [1, 1], most: { 6: 2 } },
-  /*  3 */ { role: "build",  count: 5, alike: [],        sizes: [2, 4, 6],    cards: [22, 24], peek: 2, chain: [2, 2], careless: [0.95, 1] },
-  /*  4 */ { role: "build",  count: 5, alike: [],        sizes: [4, 6],       cards: [24, 26], peek: 2, chain: [2, 2], careless: [0.9, 1] },
-  /*  5 */ { role: "relief", count: 4, alike: [2],       sizes: [2, 4, 6],    cards: [20, 22], peek: 2, chain: [1, 2], careless: [1, 1] },
-  /*  6 */ { role: "build",  count: 6, alike: [2],       sizes: [2, 4, 6],    cards: [26, 28], peek: 2, chain: [2, 3], careless: [0.85, 1] },
-  /*  7 */ { role: "demand", count: 6, alike: [2],       sizes: [4, 6],       cards: [28, 30], peek: 1, chain: [3, 3], careless: [0.75, 0.95] },
-  /*  8 */ { role: "relief", count: 5, alike: [],        sizes: [2, 4, 6],    cards: [22, 24], peek: 2, chain: [2, 2], careless: [0.95, 1] },
-  /*  9 */ { role: "build",  count: 7, alike: [2, 2],    sizes: [2, 4],       cards: [24, 26], peek: 1, chain: [2, 3], careless: [0.85, 1] },
-  /* 10 */ { role: "demand", count: 5, alike: [2],       sizes: [4, 6, 9],    cards: [28, 30], peek: 1, chain: [3, 3], careless: [0.7, 0.95], must: ["3x3"] },
-  /* 11 */ { role: "relief", count: 5, alike: [2],       sizes: [2, 4, 6],    cards: [22, 24], peek: 2, chain: [2, 2], careless: [0.9, 1] },
-  /* 12 */ { role: "build",  count: 7, alike: [3],       sizes: [2, 4, 6, 9], cards: [28, 30], peek: 1, chain: [3, 3], careless: [0.7, 0.95] },
-  /* 13 */ { role: "demand", count: 7, alike: [2, 2],    sizes: [2, 4, 6, 9], cards: [30, 32], peek: 1, chain: [3, 4], careless: [0.6, 0.9] },
-  /* 14 */ { role: "relief", count: 6, alike: [2],       sizes: [2, 4],       cards: [22, 24], peek: 2, chain: [2, 2], careless: [0.9, 1] },
-  /* 15 */ { role: "demand", count: 6, alike: [3],       sizes: [4, 6, 9],    cards: [31, 33], peek: 1, chain: [4, 4], careless: [0.55, 0.85], must: ["3x3"] },
-  /* 16 */ { role: "relief", count: 6, alike: [2, 2],    sizes: [2, 4, 6],    cards: [24, 26], peek: 1, chain: [2, 3], careless: [0.85, 1] },
-  /* 17 */ { role: "build",  count: 7, alike: [3, 2],    sizes: [2, 4, 6, 9], cards: [30, 32], peek: 1, chain: [3, 4], careless: [0.6, 0.9] },
-  /* 18 */ { role: "demand", count: 7, alike: [3],       sizes: [2, 4, 6, 9], cards: [30, 32], peek: 0, chain: [3, 4], careless: [0.6, 0.9] },
-  /* 19 */ { role: "relief", count: 6, alike: [2],       sizes: [2, 4, 6],    cards: [24, 26], peek: 1, chain: [2, 3], careless: [0.85, 1] },
-  /* 20 */ { role: "demand", count: 8, alike: [3, 2],    sizes: [2, 4, 6, 9], cards: [32, 34], peek: 1, chain: [4, 4], careless: [0.5, 0.8] },
-  /* 21 */ { role: "build",  count: 6, alike: [4],       sizes: [4, 6, 9],    cards: [30, 32], peek: 1, chain: [3, 4], careless: [0.6, 0.9] },
-  /* 22 */ { role: "relief", count: 7, alike: [2, 2],    sizes: [2, 4],       cards: [24, 26], peek: 2, chain: [2, 2], careless: [0.9, 1] },
-  /* 23 */ { role: "demand", count: 7, alike: [4, 2],    sizes: [2, 4, 6, 9], cards: [32, 34], peek: 0, chain: [4, 5], careless: [0.45, 0.75], must: ["3x3"] },
-  /* 24 */ { role: "build",  count: 7, alike: [3],       sizes: [2, 4, 6, 9], cards: [28, 30], peek: 1, chain: [3, 3], careless: [0.7, 0.95] },
-  /* 25 */ { role: "demand", count: 8, alike: [4, 3],    sizes: [2, 4, 6, 9], cards: [32, 35], peek: 0, chain: [4, 5], careless: [0.4, 0.7] },
-  /* 26 */ { role: "relief", count: 6, alike: [3],       sizes: [2, 4, 6],    cards: [24, 26], peek: 1, chain: [2, 3], careless: [0.85, 1] },
-  /* 27 */ { role: "demand", count: 8, alike: [4, 2, 2], sizes: [2, 4, 6, 9], cards: [33, 35], peek: 0, chain: [4, 5], careless: [0.4, 0.7] },
-  /* 28 */ { role: "build",  count: 6, alike: [4, 2],    sizes: [4, 6, 9],    cards: [30, 32], peek: 1, chain: [4, 4], careless: [0.5, 0.85] },
-  /* 29 */ { role: "relief", count: 6, alike: [3, 3],    sizes: [2, 4, 6],    cards: [26, 28], peek: 1, chain: [2, 3], careless: [0.8, 1] },
-  /* 30 */ { role: "finale", count: 8, alike: [4, 3],    sizes: [2, 4, 6, 9], cards: [34, 37], peek: 0, chain: [5, 5], careless: [0.35, 0.65], must: ["3x3"] },
+  // ---- squares only
+  /*  1 */ { role: "intro",  count: 3, alike: [],        sizes: SQ,    cards: [12, 12], peek: 2, chain: [1, 1], careless: [1, 1] },
+  /*  2 */ { role: "intro",  count: 4, alike: [],        sizes: SQ,    cards: [16, 16], peek: 2, chain: [1, 1], careless: [1, 1] },
+  /*  3 */ { role: "build",  count: 6, alike: [],        sizes: SQ,    cards: [24, 24], peek: 2, chain: [2, 2], careless: [0.95, 1] },
+  /*  4 */ { role: "build",  count: 6, alike: [],        sizes: SQ,    cards: [24, 24], peek: 2, chain: [2, 2], careless: [0.9, 1] },
+  /*  5 */ { role: "relief", count: 5, alike: [2],       sizes: SQ,    cards: [20, 20], peek: 2, chain: [1, 2], careless: [1, 1] },
+  /*  6 */ { role: "build",  count: 7, alike: [2],       sizes: SQ,    cards: [28, 28], peek: 2, chain: [2, 3], careless: [0.85, 1] },
+  /*  7 */ { role: "demand", count: 7, alike: [2],       sizes: SQ,    cards: [28, 28], peek: 1, chain: [3, 3], careless: [0.75, 0.95] },
+  /*  8 */ { role: "relief", count: 6, alike: [],        sizes: SQ,    cards: [24, 24], peek: 2, chain: [2, 2], careless: [0.95, 1] },
+  /*  9 */ { role: "build",  count: 7, alike: [2, 2],    sizes: SQ,    cards: [28, 28], peek: 1, chain: [2, 3], careless: [0.85, 1] },
+  /* 10 */ { role: "demand", count: 7, alike: [2],       sizes: SQ,    cards: [28, 28], peek: 1, chain: [3, 3], careless: [0.7, 0.95] },
+  // ---- the long 1x2 and 2x1 pictures join
+  /* 11 */ { role: "relief", count: 6, alike: [2],       sizes: SMALL, cards: [22, 24], peek: 2, chain: [2, 2], careless: [0.9, 1] },
+  /* 12 */ { role: "build",  count: 8, alike: [3],       sizes: SMALL, cards: [28, 30], peek: 1, chain: [3, 3], careless: [0.7, 0.95] },
+  /* 13 */ { role: "demand", count: 8, alike: [2, 2],    sizes: SMALL, cards: [30, 32], peek: 1, chain: [3, 4], careless: [0.6, 0.9] },
+  /* 14 */ { role: "relief", count: 7, alike: [2],       sizes: SMALL, cards: [22, 24], peek: 2, chain: [2, 2], careless: [0.9, 1] },
+  /* 15 */ { role: "demand", count: 8, alike: [3],       sizes: SMALL, cards: [30, 32], peek: 1, chain: [4, 4], careless: [0.55, 0.85] },
+  /* 16 */ { role: "relief", count: 7, alike: [2, 2],    sizes: SMALL, cards: [24, 26], peek: 1, chain: [2, 3], careless: [0.85, 1] },
+  /* 17 */ { role: "build",  count: 8, alike: [3, 2],    sizes: SMALL, cards: [30, 32], peek: 1, chain: [3, 4], careless: [0.6, 0.9] },
+  /* 18 */ { role: "demand", count: 8, alike: [3],       sizes: SMALL, cards: [30, 32], peek: 0, chain: [3, 4], careless: [0.6, 0.9] },
+  /* 19 */ { role: "relief", count: 7, alike: [2],       sizes: SMALL, cards: [24, 26], peek: 1, chain: [2, 3], careless: [0.85, 1] },
+  // ---- big pictures join, one a board
+  /* 20 */ { role: "demand", count: 8, alike: [3, 2],    sizes: ALL,   cards: [32, 34], peek: 1, chain: [4, 4], careless: [0.5, 0.8], bigMost: 1 },
+  /* 21 */ { role: "build",  count: 7, alike: [4],       sizes: ALL,   cards: [30, 32], peek: 1, chain: [3, 4], careless: [0.6, 0.9], bigMost: 1 },
+  /* 22 */ { role: "relief", count: 7, alike: [2, 2],    sizes: SMALL, cards: [24, 26], peek: 2, chain: [2, 2], careless: [0.9, 1] },
+  /* 23 */ { role: "demand", count: 8, alike: [3, 2],    sizes: ALL,   cards: [32, 35], peek: 0, chain: [4, 5], careless: [0.45, 0.75], bigMost: 1, must: ["3x3"] },
+  /* 24 */ { role: "build",  count: 7, alike: [3],       sizes: ALL,   cards: [28, 30], peek: 1, chain: [3, 3], careless: [0.7, 0.95], bigMost: 1 },
+  /* 25 */ { role: "demand", count: 8, alike: [4, 3],    sizes: ALL,   cards: [32, 35], peek: 0, chain: [4, 5], careless: [0.4, 0.7], bigMost: 1 },
+  /* 26 */ { role: "relief", count: 6, alike: [3],       sizes: [2, 4, 6], cards: [24, 26], peek: 1, chain: [2, 3], careless: [0.85, 1], bigMost: 1 },
+  /* 27 */ { role: "demand", count: 8, alike: [4, 2, 2], sizes: ALL,   cards: [33, 35], peek: 0, chain: [4, 5], careless: [0.4, 0.7], bigMost: 1 },
+  /* 28 */ { role: "build",  count: 7, alike: [4, 2],    sizes: [4, 6, 9], cards: [30, 33], peek: 1, chain: [4, 4], careless: [0.5, 0.85], bigMost: 1 },
+  /* 29 */ { role: "relief", count: 6, alike: [3, 3],    sizes: [2, 4, 6], cards: [24, 26], peek: 1, chain: [2, 3], careless: [0.8, 1], bigMost: 1 },
+  // ---- up to two big pictures; the peak, then a second arc
+  /* 30 */ { role: "peak",   count: 8, alike: [4, 3],    sizes: ALL,   cards: [34, 37], peek: 0, chain: [5, 5], careless: [0.35, 0.65], bigMost: 2, must: ["3x3"] },
+  /* 31 */ { role: "relief", count: 6, alike: [2],       sizes: [2, 4, 6], cards: [22, 24], peek: 2, chain: [2, 2], careless: [0.9, 1], bigMost: 1 },
+  /* 32 */ { role: "build",  count: 6, alike: [2, 2],    sizes: [2, 4, 6], cards: [26, 28], peek: 1, chain: [2, 3], careless: [0.8, 1], bigMost: 2 },
+  /* 33 */ { role: "demand", count: 7, alike: [3, 2],    sizes: ALL,   cards: [30, 32], peek: 1, chain: [3, 4], careless: [0.6, 0.9], bigMost: 2 },
+  /* 34 */ { role: "relief", count: 6, alike: [2],       sizes: [2, 4, 6], cards: [24, 26], peek: 2, chain: [2, 3], careless: [0.85, 1], bigMost: 1 },
+  /* 35 */ { role: "demand", count: 7, alike: [4],       sizes: ALL,   cards: [31, 33], peek: 0, chain: [4, 4], careless: [0.5, 0.85], bigMost: 2, must: ["3x3"] },
+  /* 36 */ { role: "relief", count: 6, alike: [3],       sizes: [2, 4, 6], cards: [24, 26], peek: 1, chain: [2, 3], careless: [0.85, 1], bigMost: 1 },
+  /* 37 */ { role: "build",  board: [4, 6], count: 8, alike: [2, 2], sizes: [2, 4, 6], cards: [30, 32], peek: 1, chain: [2, 3], careless: [0.8, 1], bigMost: 2 },
+  /* 38 */ { role: "demand", count: 8, alike: [3, 2],    sizes: ALL,   cards: [32, 34], peek: 0, chain: [4, 5], careless: [0.45, 0.75], bigMost: 2 },
+  /* 39 */ { role: "relief", count: 6, alike: [2, 2],    sizes: SMALL, cards: [22, 24], peek: 2, chain: [2, 2], careless: [0.9, 1] },
+  // ---- up to three big pictures
+  /* 40 */ { role: "demand", board: [4, 6], count: 8, alike: [4, 2], sizes: ALL, cards: [36, 38], peek: 1, chain: [4, 5], careless: [0.45, 0.75], bigMost: 3, must: ["3x3"] },
+  /* 41 */ { role: "relief", count: 6, alike: [3],       sizes: [2, 4, 6], cards: [26, 28], peek: 1, chain: [2, 3], careless: [0.85, 1], bigMost: 2 },
+  /* 42 */ { role: "build",  board: [4, 6], count: 8, alike: [3, 3], sizes: [2, 4, 6], cards: [32, 34], peek: 1, chain: [3, 4], careless: [0.6, 0.9], bigMost: 3 },
+  /* 43 */ { role: "demand", count: 8, alike: [4, 3],    sizes: ALL,   cards: [33, 35], peek: 0, chain: [4, 5], careless: [0.4, 0.7], bigMost: 3 },
+  /* 44 */ { role: "relief", count: 6, alike: [2],       sizes: [2, 4, 6], cards: [24, 26], peek: 1, chain: [2, 3], careless: [0.85, 1], bigMost: 2 },
+  /* 45 */ { role: "demand", board: [4, 6], count: 8, alike: [4, 2, 2], sizes: ALL, cards: [38, 40], peek: 0, chain: [4, 5], careless: [0.4, 0.7], bigMost: 3 },
+  /* 46 */ { role: "relief", count: 7, alike: [2, 2],    sizes: SMALL, cards: [24, 26], peek: 2, chain: [2, 2], careless: [0.9, 1] },
+  /* 47 */ { role: "build",  board: [4, 6], count: 8, alike: [4, 3], sizes: ALL, cards: [34, 36], peek: 1, chain: [3, 4], careless: [0.55, 0.85], bigMost: 3 },
+  /* 48 */ { role: "relief", count: 6, alike: [3, 3],    sizes: [2, 4, 6], cards: [26, 28], peek: 1, chain: [2, 3], careless: [0.8, 1], bigMost: 2 },
+  /* 49 */ { role: "demand", count: 8, alike: [4, 3],    sizes: ALL,   cards: [34, 36], peek: 0, chain: [4, 5], careless: [0.4, 0.7], bigMost: 3, must: ["3x3"] },
+  /* 50 */ { role: "finale", board: [4, 6], count: 9, alike: [4, 3, 2], sizes: ALL, cards: [40, 42], peek: 0, chain: [5, 5], careless: [0.35, 0.65], bigMost: 3, must: ["3x3"] },
 ];

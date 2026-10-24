@@ -21,6 +21,7 @@ const PAR = { width: 600, perKey: 24, ways: 80 };
 
 const FILE = join(root, "src/content/levels/challenge.json");
 const levels = route(PLAN, readBoards(FILE), {
+  repairOnly: process.argv.includes("--repair-only"),
   seedOf: (i) => 0x5eed00 + i * 7919,
   optsOf: (i) => ({
     id: `ch${String(i + 1).padStart(2, "0")}`,

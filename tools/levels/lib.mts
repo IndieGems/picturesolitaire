@@ -18,7 +18,8 @@ import { generate } from "../../src/game/levels/generate.ts";
 import { alikeOf, fits, pick, shapeOf } from "../../src/game/levels/pick.ts";
 
 export const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
-export const catalogue = JSON.parse(readFileSync(join(root, "src/content/pictures.json"), "utf8")).pictures;
+/** PICTURES=<file> reads another catalogue (for trying a library out; never for shipping). */
+export const catalogue = JSON.parse(readFileSync(process.env.PICTURES ?? join(root, "src/content/pictures.json"), "utf8")).pictures;
 export const byId = new Map(catalogue.map((p) => [p.id, p]));
 
 // ---------------------------------------------------------------- flagged pictures
@@ -45,7 +46,7 @@ export const flaggedOn = (pictures) => pictures.map((p) => p.id).filter((id) => 
 /** The boards in a boards file, [] if there is none. */
 export const readBoards = (file) => (existsSync(file) ? JSON.parse(readFileSync(file, "utf8")).levels : []);
 
-export const specOf = (row) => ({ count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, must: row.must, most: row.most });
+export const specOf = (row) => ({ count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, must: row.must, most: row.most, bigMost: row.bigMost });
 
 export const usesOf = (chosen) => {
   const u = new Map(catalogue.map((q) => [q.id, 0]));
@@ -89,19 +90,95 @@ export function onSchedule(uses, plan, progress) {
   return w;
 }
 
+// ---------------------------------------------------------------- spacing
+// SPACING (creator, 2026-10-24): in a route played in order (the campaign), a
+// picture should not come back within `spacing` boards, and a picture the
+// player has not met yet comes first. The picker ranks by spacedCost, and
+// balanceSpaced then swaps pictures to lengthen the shortest gaps.
+
+/** Where each picture was last before board i, from boards 0..i-1. */
+const lastSeen = (chosen, i) => {
+  const last = new Map();
+  for (let k = 0; k < i; k++) for (const q of chosen[k] ?? []) last.set(q.id, k);
+  return last;
+};
+
+/** The picker's cost of each usable picture on board i: 0 never met, then the longer unseen the cheaper. */
+export function spacedCost(chosen, i, spacing) {
+  const last = lastSeen(chosen, i);
+  const uses = usesOf(chosen.slice(0, i));
+  return new Map(usable.map((p) => [p.id, last.has(p.id) ? 1 + Math.max(0, spacing - (i - last.get(p.id))) * 4 + uses.get(p.id) * 0.25 : 0]));
+}
+
+/** The boards each picture is on, in order. */
+const boardsOf = (chosen) => {
+  const at = new Map();
+  chosen.forEach((set, k) => set?.forEach((q) => at.set(q.id, [...(at.get(q.id) ?? []), k])));
+  return at;
+};
+
+/** How badly a picture's boards break the spacing: the square of each gap's shortfall, and a little for being used often. */
+const gapCost = (list, spacing) => {
+  let c = 0.1 * list.length ** 2;
+  for (let k = 1; k < list.length; k++) c += Math.max(0, spacing - (list[k] - list[k - 1])) ** 2;
+  return c;
+};
+
+/** The gaps between a picture's boards, every picture's, for the reader: shortest and how many fall short. */
+export function spacingOf(chosen, spacing) {
+  const gaps = [...boardsOf(chosen).values()].flatMap((l) => l.slice(1).map((k, j) => k - l[j]));
+  gaps.sort((a, b) => a - b);
+  return { shortest: gaps[0] ?? null, median: gaps[gaps.length >> 1] ?? null, short: gaps.filter((g) => g < spacing).length, gaps: gaps.length };
+}
+
+/**
+ * Lengthen the short gaps of boards `from`..: swap a picture of a board for
+ * another that still fits the board's plan, while that lowers the spacing
+ * cost of the two pictures (gapCost).
+ */
+export function balanceSpaced(plan, chosen, from, spacing) {
+  for (let sweep = 0; sweep < 40; sweep++) {
+    let better = false;
+    for (let i = from; i < chosen.length; i++) {
+      for (let j = 0; j < chosen[i].length; j++) {
+        const at = boardsOf(chosen);
+        const out = chosen[i][j];
+        const outNow = at.get(out.id);
+        const outCost = gapCost(outNow, spacing) - gapCost(outNow.filter((k) => k !== i), spacing);
+        for (const cand of usable) {
+          if (chosen[i].some((q) => q.id === cand.id)) continue;
+          const set = chosen[i].map((q, k) => (k === j ? { id: cand.id, cols: cand.cols, rows: cand.rows } : q));
+          if (!fits(catalogue, specOf(plan[i]), set)) continue;
+          const cNow = at.get(cand.id) ?? [];
+          const candCost = gapCost([...cNow, i].sort((a, b) => a - b), spacing) - gapCost(cNow, spacing);
+          if (candCost - outCost < -1e-9) {
+            chosen[i] = set;
+            better = true;
+            break;
+          }
+        }
+      }
+    }
+    if (!better) break;
+  }
+  return chosen;
+}
+
 /**
  * Pictures for boards `from`.. of the plan (chosen[0..from-1] are the boards
- * kept), least-used first and caught up on schedule; `seedOf(i)` seeds board
- * i's pick. Fills `chosen` in place.
+ * kept): with `spacing`, by spacedCost (unmet first, then the longest
+ * unseen); else least-used first and caught up on schedule. `seedOf(i)`
+ * seeds board i's pick. Fills `chosen` in place.
  */
-export function pickFrom(plan, chosen, from, seedOf) {
+export function pickFrom(plan, chosen, from, seedOf, spacing?) {
   const uses = usesOf(chosen.slice(0, from));
   const slots = plan.slice(from).reduce((n, r) => n + r.count, 0);
   const plan0 = catchUp(uses, slots);
   let done = 0;
   for (let i = from; i < plan.length; i++) {
     const recent = new Set((chosen[i - 1] ?? []).map((q) => q.id));
-    const pictures = pick(usable, specOf(plan[i]), onSchedule(uses, plan0, done / Math.max(1, slots)), recent, random(seedOf(i)));
+    const cost = spacing ? spacedCost(chosen, i, spacing) : onSchedule(uses, plan0, done / Math.max(1, slots));
+    const pictures = pick(usable, specOf(plan[i]), cost, recent, random(seedOf(i)));
     if (!pictures) throw new Error(`board ${i + 1}: no pictures fit the plan${flags.size ? " (flagged pictures are left out)" : ""}`);
     for (const q of pictures) uses.set(q.id, (uses.get(q.id) ?? 0) + 1);
     chosen[i] = pictures;
@@ -121,7 +198,11 @@ export const nearOf = (chosen) => (i, id) =>
  * to each other.
  */
 export function balance(plan, chosen, from = 0) {
-  const near = nearOf(chosen);
+  // with spacing, a swap's nearness is the gap it would make
+  const near = spacing
+    ? (i, id) => chosen.reduce((n, set, k) => n + (k !== i && set?.some((q) => q.id === id) ? Math.max(0, spacing - Math.abs(k - i)) : 0), 0)
+    : nearOf(chosen);
+  const seenOf = spacing ? (i) => spacedCost(chosen, i, spacing) : undefined;
   for (let sweep = 0; sweep < 60; sweep++) {
     let better = false;
     for (let i = from; i < chosen.length; i++) {
@@ -224,7 +305,7 @@ export const tallyText = (tally) => [...tally].map(([k, v]) => `${k} ${v}`).join
  * decides the rest). Updates `chosen` and `uses`. Returns the board's record.
  */
 export function makeBoard(plan, i, chosen, uses, opts) {
-  const { id, reseedOf, attempts = 12, vary = false, first } = opts;
+  const { id, reseedOf, attempts = 12, vary = false, first, seenOf } = opts;
   const row = plan[i];
   const take = (set) => {
     for (const q of chosen[i] ?? []) uses.set(q.id, uses.get(q.id) - 1);
@@ -240,7 +321,9 @@ export function makeBoard(plan, i, chosen, uses, opts) {
       // these pictures yield no deal on target: pick another set for the board
       const own = chosen[i] ?? [];
       for (const q of own) uses.set(q.id, uses.get(q.id) - 1);
-      const seen = vary ? new Map([...uses].map(([k, v]) => [k, v + (failed.get(k) ?? 0)])) : uses;
+      // `seenOf(i)`: the costs a re-pick ranks by (spacing), else the uses
+      const base = seenOf ? seenOf(i) : uses;
+      const seen = vary ? new Map([...base].map(([k, v]) => [k, v + (failed.get(k) ?? 0)])) : base;
       const pictures = pick(usable, specOf(row), seen, new Set([...(chosen[i - 1] ?? []), ...(chosen[i + 1] ?? [])].map((q) => q.id)), random(reseedOf(i, attempt - sets.length + 1)));
       for (const q of own) uses.set(q.id, uses.get(q.id) + 1);
       if (!pictures) throw new Error(`${id}: no pictures fit the plan${flags.size ? " (flagged pictures are left out)" : ""}`);
@@ -260,7 +343,7 @@ export function makeBoard(plan, i, chosen, uses, opts) {
  * changed as can be), and make the plan's rows past the end. `optsOf(i)` gives
  * makeBoard's options for board i; `seedOf(i)` seeds a new board's pick.
  */
-export function route(plan, old, { optsOf, seedOf }) {
+export function route(plan, old, { optsOf, seedOf, spacing, repairOnly = false }) {
   if (old.length > plan.length) throw new Error(`the file has ${old.length} boards, the plan ${plan.length}`);
   const chosen = old.map((b) => b.pictures);
   const levels = [...old];
@@ -273,13 +356,15 @@ export function route(plan, old, { optsOf, seedOf }) {
     for (const q of b.pictures) uses.set(q.id, uses.get(q.id) - 1);
     chosen[i] = null;
     // no swap that fits: makeBoard picks the board afresh
-    levels[i] = makeBoard(plan, i, chosen, uses, { ...optsOf(i), first: swapSets(specOf(plan[i]), b.pictures, uses, (id) => near(i, id)) });
+    levels[i] = makeBoard(plan, i, chosen, uses, { ...optsOf(i), seenOf, first: swapSets(specOf(plan[i]), b.pictures, uses, (id) => near(i, id)) });
   });
-  if (plan.length > old.length) {
-    pickFrom(plan, chosen, old.length, seedOf);
-    balance(plan, chosen, old.length);
+  if (plan.length > old.length && !repairOnly) {
+    pickFrom(plan, chosen, old.length, seedOf, spacing);
+    if (spacing) balanceSpaced(plan, chosen, old.length, spacing);
+    else balance(plan, chosen, old.length);
+    if (process.env.PICKS_ONLY) return { picks: chosen };
     const u = usesOf(chosen);
-    for (let i = old.length; i < plan.length; i++) levels[i] = makeBoard(plan, i, chosen, u, optsOf(i));
+    for (let i = old.length; i < plan.length; i++) levels[i] = makeBoard(plan, i, chosen, u, { ...optsOf(i), seenOf });
   }
   return levels;
 }
@@ -290,6 +375,8 @@ export function writeBoards(file, note, levels, extra = {}) {
   const json = JSON.stringify({ v: 2, board: note, ...extra, levels })
     .replace(/\{"id":"([^"]+)","(peek|date)":/g, '\n{"id":"$1","$2":')
     .replace(/\]\}$/, "\n]}");
+  // unchanged (git may have checked it out with CRLF): leave it, so the level files stay clean
+  if (existsSync(file) && readFileSync(file, "utf8").replace(/\r\n/g, "\n") === json + "\n") return;
   writeFileSync(file, json + "\n");
 }
 

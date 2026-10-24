@@ -37,6 +37,12 @@ export interface PickSpec {
   /** At most this many pictures of a size, by cards: { 9: 1 } is one 3x3 at most (the default). */
   most?: Record<number, number>;
   /**
+   * At most this many BIG pictures (6 cards or more: 2x3, 3x2, 3x3) in all, for
+   * the campaign's shape ramp (creator, 2026-10-24: one big picture a board
+   * when they first come in).
+   */
+  bigMost?: number;
+  /**
    * Rank lookalike families by the MEAN use of their eligible pictures, not
    * the sum. The sum favours a family with few eligible pictures (the yellow
    * family has only two that are not 3x3), so over a long pool it comes up far
@@ -46,6 +52,9 @@ export interface PickSpec {
 }
 
 export const shapeOf = (p: { cols: number; rows: number }) => `${p.cols}x${p.rows}`;
+
+/** A big picture, for `bigMost`: 6 cards or more (as generate.ts's BIG). */
+const isBig = (p: { cols: number; rows: number }) => p.cols * p.rows >= 6;
 
 /**
  * The pictures for one board, or null if none of `tries` attempts fits.
@@ -72,6 +81,7 @@ export function pick(
   const size = (p: CataloguePicture) => p.cols * p.rows;
   const minSize = Math.min(...spec.sizes);
   const maxSize = Math.max(...spec.sizes);
+  const maxSmall = Math.max(0, ...spec.sizes.filter((z) => z < 6));
 
   let best: { set: CataloguePicture[]; score: number } | null = null;
   for (let t = 0; t < tries; t++) {
@@ -104,28 +114,55 @@ export function pick(
       forced.set(p.family, [...(forced.get(p.family) ?? []), p]);
     }
     if (!ok) continue;
+    // the required pictures count from the start, wherever they go in
+    const withTaken = (set: readonly CataloguePicture[]) => [...new Set([...set, ...taken])];
+    /** How many more big pictures the set (and the required ones) may take. */
+    const bigLeft = (set: readonly CataloguePicture[]) => (spec.bigMost === undefined ? Infinity : spec.bigMost - withTaken(set).filter(isBig).length);
+    /** Can `n` more pictures (the required ones still to come among them) bring `set` into the board's card range? */
+    const reachable = (set: readonly CataloguePicture[], n: number) => {
+      const all = withTaken(set);
+      const free = n - (all.length - set.length);
+      const total = all.reduce((k, p) => k + size(p), 0);
+      const bigs = Math.min(free, Math.max(0, bigLeft(all)));
+      return free >= 0 && total + free * minSize <= spec.cards[1] && total + bigs * maxSize + (free - bigs) * maxSmall >= spec.cards[0];
+    };
     const forcedFams = [...forced.keys()];
     const fitsGroup = (f: string, g: number) => !usedFam.has(f) && eligible.filter((p) => p.family === f).length >= g && (forced.get(f)?.length ?? 0) <= g;
-    for (const g of groups) {
+    for (const [gi, g] of groups.entries()) {
       // a family holding two required pictures takes a group; sometimes a required picture's family is this group
       const coin = rnd() < 0.5;
-      const fam =
-        forcedFams.find((f) => forced.get(f)!.length > 1 && fitsGroup(f, g)) ??
-        (coin ? forcedFams.find((f) => fitsGroup(f, g)) : undefined) ??
-        famOrder.find((f) => !forced.has(f) && fitsGroup(f, g));
-      if (!fam) {
+      const order = [...forcedFams.filter((f) => forced.get(f)!.length > 1), ...(coin ? forcedFams : []), ...famOrder.filter((f) => !forced.has(f))];
+      // pictures still to come after this group, and the cards they can add
+      const after = groups.slice(gi + 1).reduce((n, k) => n + k, 0) + singles;
+      let placed = false;
+      for (const fam of order) {
+        if (!fitsGroup(fam, g)) continue;
+        const pinned = forced.get(fam) ?? [];
+        const rest = eligible
+          .filter((p) => p.family === fam && !pinned.includes(p))
+          .map((p) => ({ p, c: cost(p) }))
+          .sort((a, b) => a.c - b.c)
+          .map((x) => x.p);
+        // the cheapest members, skipping big ones past `bigMost`
+        const take: CataloguePicture[] = [];
+        let room = bigLeft([...chosen, ...pinned]);
+        for (const p of rest) {
+          if (take.length >= g - pinned.length) break;
+          if (isBig(p) && room-- <= 0) continue;
+          take.push(p);
+        }
+        if (take.length < g - pinned.length) continue;
+        // a family that leaves the board's card total out of reach is passed over
+        if (!reachable([...chosen, ...pinned, ...take], after)) continue;
+        usedFam.add(fam);
+        chosen.push(...pinned, ...take);
+        placed = true;
+        break;
+      }
+      if (!placed) {
         ok = false;
         break;
       }
-      usedFam.add(fam);
-      const members = eligible.filter((p) => p.family === fam);
-      const pinned = forced.get(fam) ?? [];
-      const rest = members
-        .filter((p) => !pinned.includes(p))
-        .map((p) => ({ p, c: cost(p) }))
-        .sort((a, b) => a.c - b.c)
-        .map((x) => x.p);
-      chosen.push(...pinned, ...rest.slice(0, g - pinned.length));
     }
     if (!ok) continue;
     // required pictures not in a group come in as singles
@@ -142,12 +179,11 @@ export function pick(
     if (!ok) continue;
     for (; left > 0; left--) {
       // only sizes that still let the board's total land in range
-      const total = chosen.reduce((n, p) => n + size(p), 0);
       const cands = eligible.filter(
         (p) =>
           !usedFam.has(p.family) &&
-          total + size(p) + (left - 1) * minSize <= spec.cards[1] &&
-          total + size(p) + (left - 1) * maxSize >= spec.cards[0],
+          (!isBig(p) || bigLeft(chosen) > 0) &&
+          reachable([...chosen, p], left - 1),
       );
       if (!cands.length) {
         ok = false;
@@ -184,6 +220,7 @@ export function fits(catalogue: readonly CataloguePicture[], spec: PickSpec, pic
   if (!pictures.every((p) => spec.sizes.includes(p.cols * p.rows))) return false;
   const most = { 9: 1, ...spec.most };
   for (const [size, max] of Object.entries(most)) if (pictures.filter((p) => p.cols * p.rows === +size).length > max) return false;
+  if (spec.bigMost !== undefined && pictures.filter(isBig).length > spec.bigMost) return false;
   const shapes = pictures.map(shapeOf);
   for (const m of spec.must ?? []) {
     const i = shapes.indexOf(m);
