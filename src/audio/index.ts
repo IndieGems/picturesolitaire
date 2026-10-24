@@ -7,7 +7,7 @@
 
 import { on } from "../events";
 import { loadSettings } from "../settings";
-import { devProbe, load, play, wireEngine, type Voice } from "./engine";
+import { devProbe, fileOf, load, play, wireEngine, type Voice } from "./engine";
 import { duckMusic, startMusic } from "./music";
 import { LOAD_ORDER } from "./sounds";
 
@@ -76,6 +76,37 @@ function landsIn(payload: object, fallback: number): number {
 
 /** The flourish still ringing, cut short if the win cue starts over it. */
 let flourish: Voice | null = null;
+/** The win cue, cut short if a milestone card replaces the win card. */
+let winCue: Voice | null = null;
+
+// --- Milestones ------------------------------------------------------------------
+//
+// A milestone card replaces the win card, and its cue replaces the win cue. The
+// UI raises the card from its own board:won handler, so milestone:show usually
+// arrives BEFORE this file hears board:won; either order ends with the
+// milestone's cue alone.
+//
+// The game standard: fetch the cue only when a board that can reach a milestone
+// opens. Today that is the guided start's board, campaign board 1; a new
+// milestone adds its board here. A cue still loading when the card goes up
+// plays if it arrives within LATE_CUE, else not at all.
+
+const MILESTONE_BOARDS = new Set(["1"]);
+const LATE_CUE = 2000;
+let milestoneAt = -Infinity;
+
+function milestone(): void {
+  const asked = performance.now();
+  milestoneAt = asked;
+  flourish?.fadeOut(0.4);
+  flourish = null;
+  winCue?.fadeOut(0.3);
+  winCue = null;
+  void load(fileOf("milestone")).then((buffer) => {
+    if (!buffer || performance.now() - asked > LATE_CUE) return;
+    if (play("milestone")) duckMusic(0.15, 8, 3);
+  });
+}
 
 function listen(): void {
   on("piece:lift", () => play("lift"));
@@ -102,11 +133,17 @@ function listen(): void {
   on("board:restart", () => play("restart"));
   on("board:stuck", () => play("stuck"));
   on("board:won", () => {
+    // A milestone card went up for this win: its cue plays instead.
+    if (performance.now() - milestoneAt < 1000) return;
     // The last flourish's tail would blur the win cue's first chord.
     flourish?.fadeOut(0.5);
     flourish = null;
-    play("won");
+    winCue = play("won");
     duckMusic(0.2, 7, 3);
   });
+  on("board:start", ({ level }) => {
+    if (MILESTONE_BOARDS.has(level)) void load(fileOf("milestone"));
+  });
+  on("milestone:show", milestone);
   on("ui:press", () => play("ui"));
 }

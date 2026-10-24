@@ -26,6 +26,7 @@ original holds.
 | restart.wav | restart | 2.0-2.62 s | weak (peak -31 dB) |
 | ui.wav | interface button | 0.10-0.30 s | |
 | won.mp3 | board won (music cue, 8 s) | 0-7.8 s | also the win sting |
+| milestone.mp3 | milestone card (music cue, 10 s) | 0.5-9.9 s | orchestral swell, bell sparkles; -15 LUFS |
 | bed.mp3 | background music, 90 s | 0-86.5 s | loop: crossfade last ~4 s into the start at run time |
 
 Shipped: Ogg Opus (effects mono 40 kbps, won/bed stereo 48 kbps), about

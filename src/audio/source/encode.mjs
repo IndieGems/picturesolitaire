@@ -3,7 +3,9 @@
 // for a browser that cannot decode Opus). Re-run after changing a trim or a
 // level below; it rewrites every file.
 //
-//   FFMPEG=<path to ffmpeg> node src/audio/source/encode.mjs
+//   FFMPEG=<path to ffmpeg> node src/audio/source/encode.mjs [name ...]
+//
+// With names, only those are re-encoded; with none, every file is.
 //
 // ffmpeg is not part of the project: `npm i ffmpeg-static` in a scratch folder
 // and point FFMPEG at its ffmpeg.exe.
@@ -42,11 +44,17 @@ const EFFECTS = [
 const MUSIC = [
   // The win cue, whole.
   { name: "won", src: "won.mp3", start: 0, end: 7.9, fade: 0.4, lufs: -16 },
+  // A milestone card (the guided start's finish): fuller and a touch louder
+  // than the win cue. The near-silent shimmer before its swell is mostly cut,
+  // so the swell lands just after the card.
+  { name: "milestone", src: "milestone.mp3", start: 0.5, end: 9.9, fade: 1.2, lufs: -15 },
   // The bed: its own ending fade is cut; the game crossfades the last few
   // seconds into the start (src/audio/music.ts), so no loop point is baked in.
   { name: "bed", src: "bed.mp3", start: 0, end: 86.5, fade: 0.05, lufs: -20 },
 ];
 const PEAK_DB = -1.5;
+const only = new Set(process.argv.slice(2));
+const wanted = (s) => only.size === 0 || only.has(s.name);
 
 function ff(args) {
   execFileSync(FF, ["-hide_banner", "-nostats", "-loglevel", "error", "-y", ...args], { stdio: ["ignore", "inherit", "inherit"] });
@@ -78,13 +86,13 @@ function encode(s, filters, stereo) {
   console.log(`${s.name.padEnd(9)} ${(s.end - s.start).toFixed(2)}s  ogg ${kb("ogg")} KB  mp3 ${kb("mp3")} KB`);
 }
 
-for (const s of EFFECTS) {
+for (const s of EFFECTS.filter(wanted)) {
   const base = chain(s, true);
   const log = analyse(["-i", join(here, s.src), "-af", `${base},volumedetect`, "-f", "null", "-"]);
   const peak = Number(/max_volume: (-?[\d.]+) dB/.exec(log)[1]);
   encode(s, `${base},volume=${(PEAK_DB - peak).toFixed(2)}dB`, false);
 }
-for (const s of MUSIC) {
+for (const s of MUSIC.filter(wanted)) {
   const base = chain(s, false);
   const log = analyse(["-i", join(here, s.src), "-af", `${base},ebur128=peak=true`, "-f", "null", "-"]);
   const lufs = Number(/I:\s+(-?[\d.]+) LUFS/.exec(log.slice(log.lastIndexOf("Summary")))[1]);

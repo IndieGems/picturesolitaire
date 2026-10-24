@@ -39,6 +39,7 @@ const SOUNDS = [
   { name: "ui", label: "Button", moment: "Any button in the menus and screens." },
   { name: "stuck", label: "Stuck", moment: "The player is stuck: a dead end, or Hint finds no way. The hint chime, lower and softer." },
   { name: "won", label: "Board won", moment: "Every picture restored: the board is won. It is the win sting too." },
+  { name: "milestone", label: "Milestone", moment: "A milestone card with fireworks: today, finishing the guided start. Bigger than a board win, and plays instead of it." },
 ];
 
 // The in-game mix, from the game's own table when Node can read it.

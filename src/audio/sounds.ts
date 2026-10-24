@@ -20,6 +20,7 @@ export type EffectName =
   | "restart"
   | "ui"
   | "won"
+  | "milestone"
   | "stuck";
 
 export type EffectDef = {
@@ -57,6 +58,11 @@ export const EFFECTS: Record<EffectName, EffectDef> = {
   // sting too, so it rides the effects bus: a player who switched music off
   // still hears that they won.
   won: { gain: 0.85, jitter: 0, minGap: 1 },
+  // A milestone card (the guided start's finish, more later): a 9 s orchestral
+  // swell with bell sparkles under the card's fireworks, bigger and warmer than
+  // the win cue, which it replaces. Not in LOAD_ORDER: the game standard has it
+  // fetched only when a board that can reach a milestone opens (src/audio/index.ts).
+  milestone: { gain: 0.9, jitter: 0, minGap: 2 },
   // The player is stuck (a dead end, or Hint finds no way): the hint chime,
   // a fourth lower and softer. A gentle "hm", never an alarm.
   stuck: { file: "hint", rate: 0.749, gain: 0.3, jitter: 0, minGap: 2 },
