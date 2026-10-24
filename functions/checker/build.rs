@@ -52,6 +52,9 @@ fn main() {
             deals.push(compact(lane, d));
         }
     }
+    // the archive holds the current versions too: keep each distinct deal once
+    let mut seen = std::collections::HashSet::new();
+    deals.retain(|d| seen.insert(d.to_string()));
     let out = Path::new(&env::var("OUT_DIR").unwrap()).join("deals.json");
     fs::write(out, json!({ "deals": deals }).to_string()).unwrap();
 }
