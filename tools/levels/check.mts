@@ -1,5 +1,5 @@
 // Re-proves every shipped board. Run: node tools/levels/check.mts [file ...]
-// (default src/content/levels/campaign.json). Exit code 0 = every board passes.
+// (default: every .json in src/content/levels). Exit code 0 = every board passes.
 //
 // For each board:
 //   - its pictures are in the catalogue at the same size, and the stacks hold
@@ -14,7 +14,7 @@
 //     axes stored with the board are what the deal measures.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { cardsOf, isDeadEnd, isWon, joinCount, replay, start } from "../../src/game/rules.ts";
@@ -25,7 +25,8 @@ import { dealFor } from "../../src/game/levels/generate.ts";
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const catalogue = new Map(JSON.parse(readFileSync(join(root, "src/content/pictures.json"), "utf8")).pictures.map((p) => [p.id, p]));
 const files = process.argv.slice(2);
-if (!files.length) files.push(join(root, "src/content/levels/campaign.json"));
+const dir = join(root, "src/content/levels");
+if (!files.length) for (const f of readdirSync(dir).sort()) if (f.endsWith(".json")) files.push(join(dir, f));
 
 let boards = 0;
 let failed = 0;
