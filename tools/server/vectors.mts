@@ -72,7 +72,7 @@ const boards = [];
 for (const f of files) {
   const lane = f.replace(/\.json$/, "");
   for (const l of JSON.parse(readFileSync(join(root, "src/content/levels", f), "utf8")).levels) {
-    const deal = { cols: l.cols, rows: l.rows, pictures: l.pictures, stacks: l.stacks, seed: l.seed };
+    const deal = { cols: l.cols, rows: l.rows, pictures: l.pictures, stacks: l.stacks, seed: l.seed, ...(l.board ? { board: l.board } : {}) };
     boards.push({ lane, id: l.id, deal, line: l.line.map(([from, to]) => ({ from, to })) });
   }
 }
@@ -265,6 +265,9 @@ try {
   console.warn(`vectors: no rescue shuffles (${err.message})`);
 }
 
-writeFileSync(out, JSON.stringify({ arrangeFrom, games, claims }));
+// the deal hash, on every game's deal (some random ones place cards on the board)
+const hashes = games.map((g) => ({ deal: g.deal, hash: dealHash(g.deal) }));
+
+writeFileSync(out, JSON.stringify({ arrangeFrom, games, claims, hashes }));
 const actions = games.reduce((n, g) => n + g.actions.length, 0);
 console.log(`vectors: ${games.length} games (${boards.length} shipped boards, ${GAMES} random, ${rescues} with a rescue shuffle), ${actions} actions, ${claims.length} claims; shuffles checked by ${arrangeFrom}`);

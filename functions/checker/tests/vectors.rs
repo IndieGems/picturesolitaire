@@ -94,10 +94,20 @@ fn rust_rules_agree_with_typescript() {
         }
     }
 
+    // ---------------------------------------------------------------- deal hashes
+    let hashes = data["hashes"].as_array().map(Vec::as_slice).unwrap_or_default();
+    for h in hashes {
+        let deal = claim::deal_of(&h["deal"]).expect("a deal");
+        if claim::deal_hash(&deal) != h["hash"].as_str().unwrap_or_default() {
+            failures.push(format!("deal hash differs: ts {} rust {} for {}", h["hash"], claim::deal_hash(&deal), h["deal"]));
+        }
+    }
+
     println!(
-        "rust: {} games, {actions} actions, {} claims checked; shuffles as {}",
+        "rust: {} games, {actions} actions, {} claims, {} deal hashes checked; shuffles as {}",
         games.len(),
         claims.len(),
+        hashes.len(),
         data["arrangeFrom"].as_str().unwrap_or("?")
     );
     if !failures.is_empty() {

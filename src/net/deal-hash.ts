@@ -5,13 +5,14 @@
 // "retry" rather than refused. tools/server/check.mts proves the two agree.
 //
 //   cols x rows ; picture:cols x rows,... ; stack cards joined by "," and stacks by "/" ; seed
+//   [; the cards already on the board, joined by ",", only when the deal places some]
 
 import type { Deal } from "../game/rules.ts";
 
-export function dealHash(d: Pick<Deal, "cols" | "rows" | "pictures" | "stacks" | "seed">): string {
+export function dealHash(d: Pick<Deal, "cols" | "rows" | "pictures" | "stacks" | "seed" | "board">): string {
   const pictures = d.pictures.map((p) => `${p.id}:${p.cols}x${p.rows}`).join(",");
   const stacks = d.stacks.map((s) => s.join(",")).join("/");
-  const text = `${d.cols}x${d.rows};${pictures};${stacks};${d.seed >>> 0}`;
+  const text = `${d.cols}x${d.rows};${pictures};${stacks};${d.seed >>> 0}` + (d.board ? `;${d.board.join(",")}` : "");
   let h = 0x811c9dc5;
   for (const b of new TextEncoder().encode(text)) h = Math.imul(h ^ b, 0x01000193) >>> 0;
   return h.toString(16).padStart(8, "0");

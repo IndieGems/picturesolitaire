@@ -3,7 +3,8 @@
 // the levels member's) and data/archive.json, every earlier version of each
 // board, kept so a player on an older build still verifies
 // (tools/server/archive.mts appends to it). Only what a replay needs is kept:
-// lane, id, cols, rows, seed, pictures, stacks.
+// lane, id, cols, rows, seed, pictures, stacks, and board (the cards already
+// placed, when a level has them).
 //
 // The lane is the file's name: campaign.json -> "campaign", challenge.json ->
 // "challenge", daily.json -> "daily". Other files are not lanes the checker pays.
@@ -23,6 +24,7 @@ fn compact(lane: &str, l: &Value) -> Value {
         "seed": l["seed"],
         "pictures": l["pictures"].as_array().map(|ps| ps.iter().map(|p| json!({ "id": p["id"], "cols": p["cols"], "rows": p["rows"] })).collect::<Vec<_>>()),
         "stacks": l["stacks"],
+        "board": l["board"],
     })
 }
 

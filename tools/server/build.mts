@@ -37,7 +37,7 @@ for (const lane of ["campaign", "challenge", "daily"]) {
   const f = join(root, "src/content/levels", `${lane}.json`);
   if (!existsSync(f)) continue;
   for (const l of JSON.parse(readFileSync(f, "utf8")).levels) {
-    const d = { lane, id: l.id, cols: l.cols, rows: l.rows, seed: l.seed, pictures: l.pictures.map(({ id, cols, rows }) => ({ id, cols, rows })), stacks: l.stacks };
+    const d = { lane, id: l.id, cols: l.cols, rows: l.rows, seed: l.seed, pictures: l.pictures.map(({ id, cols, rows }) => ({ id, cols, rows })), stacks: l.stacks, ...(l.board ? { board: l.board } : {}) };
     const key = `${lane}/${l.id}/${dealHash(d)}`;
     if (have.has(key)) continue;
     archive.deals.push(d);

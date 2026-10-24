@@ -84,10 +84,15 @@ fn cards(v: &Value) -> Option<Vec<i32>> {
 /// FNV-1a (32-bit) of a deal's canonical text, as 8 lowercase hex: which version of
 /// a board the client played. src/net/claims.ts computes the same (dealHash).
 /// cols x rows ; picture:cols x rows,... ; stack cards joined by "," and stacks by "/" ; seed
+/// [; the cards already on the board, joined by ",", only when the deal places some]
 pub fn deal_hash(d: &Deal) -> String {
     let pictures = d.pictures.iter().map(|p| format!("{}:{}x{}", p.id, p.cols, p.rows)).collect::<Vec<_>>().join(",");
     let stacks = d.stacks.iter().map(|s| s.iter().map(|c| c.to_string()).collect::<Vec<_>>().join(",")).collect::<Vec<_>>().join("/");
-    let text = format!("{}x{};{};{};{}", d.cols, d.rows, pictures, stacks, d.seed);
+    let mut text = format!("{}x{};{};{};{}", d.cols, d.rows, pictures, stacks, d.seed);
+    if let Some(b) = &d.board {
+        text.push(';');
+        text.push_str(&b.iter().map(|c| c.to_string()).collect::<Vec<_>>().join(","));
+    }
     let mut h: u32 = 0x811c_9dc5;
     for b in text.bytes() {
         h ^= b as u32;
