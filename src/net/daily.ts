@@ -75,8 +75,10 @@ export function onDailyChange(fn: (d: DailyToday) => void): () => void {
 
 /** The day as last known, without asking (a guess until the platform has answered). */
 export function currentDaily(): DailyToday {
-  return known ?? guess();
+  return known ? plain(known) : guess();
 }
+
+const plain = (d: DailyToday): DailyToday => ({ date: d.date, endsAt: d.endsAt, guessed: d.guessed });
 
 async function read(): Promise<DailyToday | null> {
   try {
@@ -91,9 +93,9 @@ async function read(): Promise<DailyToday | null> {
     // read again when the day ends here, never sooner than a minute
     timer = window.setTimeout(() => void refresh(), Math.max(60_000, next.endsAt - Date.now()));
     if (!was || was.date !== next.date || was.guessed !== next.guessed || was.key !== next.key) {
-      for (const fn of [...changes]) fn(next);
+      for (const fn of [...changes]) fn(plain(next));
     }
-    return next;
+    return plain(next);
   } catch (err) {
     suspect();
     console.warn("[daily] the day could not be read", err);
@@ -111,10 +113,10 @@ function refresh(): Promise<DailyToday | null> {
 /** Today's daily date for this player. Framed, waits up to `waitMs` for the platform, then answers with a guess. */
 export async function today(waitMs = 1000): Promise<DailyToday> {
   if (!framed) return guess();
-  if (known && (known.endsAt === null || Date.now() < known.endsAt)) return known;
+  if (known && (known.endsAt === null || Date.now() < known.endsAt)) return plain(known);
   const asked = refresh();
   const got = await Promise.race([asked, new Promise<null>((r) => setTimeout(() => r(null), waitMs))]);
-  return got ?? known ?? guess();
+  return got ?? (known ? plain(known) : guess());
 }
 
 /** The day's results among the player's friends (and themselves): `daysBack` 0 is today, 1 yesterday. */
