@@ -9,12 +9,12 @@
 //
 // There is no fail: any win clears a board, however many moves it took, and
 // opens the next. The route comes from challenge-data.ts, the bests from the
-// player's save (progress.ts). The top row is the standard's: the title on the
+// server's record of the player's progress (src/net/progress.ts). The top row is the standard's: the title on the
 // left, Back then the gear at the right end.
 
 import { ICONS } from "./icons";
 import { t } from "./i18n";
-import { bestOf } from "./progress";
+import { challengeBest as bestOf } from "../net/progress";
 import { challengesExist, loadChallenges, type Challenge } from "./challenge-data";
 
 type Nav = {

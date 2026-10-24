@@ -68,7 +68,7 @@ export const gem = createGem({
   },
 
   // The Arcade is about to close the game, and says how long it will wait:
-  // the moment to send what is not saved yet (src/ui/progress.ts).
+  // the moment to send what is not saved yet (src/ui/guide-save.ts).
   onWillTerminate: (notice) => {
     for (const handler of terminateHandlers) handler(notice.graceMs);
   },

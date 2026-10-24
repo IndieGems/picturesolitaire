@@ -17,13 +17,16 @@
 // colours the game uses nowhere else (style.css, --guide-*): it is the guide
 // speaking, not a label of the game.
 //
-// How far it got lives in the player's cloud save (progress.ts, guide), so it
-// decides only once the save has been read, and a player who finished never
+// Which step the player has seen lives in the screens' own cloud save
+// (guide-save.ts); whether the guided start is DONE is the server's word
+// (src/net/progress.ts, guideDone: campaign board 1 won). It decides only once
+// both have been read (a few seconds at most), and a player who finished never
 // sees it again on another device.
 
 import { on } from "../events";
 import { t } from "./i18n";
-import { campaign, guided, waitForCloud } from "./progress";
+import { guideDone, waitForProgress } from "../net/progress";
+import { guideStep, guided, waitForGuideSave } from "./guide-save";
 
 export type GuideMode = "line" | "hold" | null;
 
@@ -210,11 +213,13 @@ export function createGuide(d: Deps) {
     async offer(): Promise<void> {
       end();
       finishOwed = false;
-      await waitForCloud(3000);
+      await Promise.all([waitForGuideSave(3000), waitForProgress(3000)]);
       if (!d.stillHere()) return;
-      const c = campaign();
-      if (c.guide >= GUIDE_STEPS || c.won > 0) {
-        finishOwed = c.guide === GUIDE_STEPS;
+      // board 1 already won (the server's word): nothing to teach, and no finish owed
+      if (guideDone()) return;
+      // every step seen before, the board not yet won: its win still ends on the finish card
+      if (guideStep() >= GUIDE_STEPS) {
+        finishOwed = true;
         return;
       }
       show(0);

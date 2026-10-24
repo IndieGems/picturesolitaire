@@ -147,6 +147,8 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
 /* ---------- the top row (every screen): information left, Back and the gear at the right end ---------- */
 
 .top-pill {
+  /* never a long bar on a wide column: a title wraps (fit.ts) rather than stretch */
+  max-width: 380px;
   position: absolute; z-index: 2;
   top: calc(var(--gem-mid) - var(--row-h) / 2); height: var(--row-h);
   left: var(--row-left);
@@ -172,23 +174,25 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
 
 /* ---------- home ---------- */
 
-.home { align-items: center; justify-content: center; padding: calc(var(--row-bottom) + 12px) 20px calc(var(--foot) + 24px); gap: 26px; }
-.home .emblem { display: grid; grid-template-columns: repeat(3, 58px); gap: 10px; transform: rotate(-4deg); }
+/* --k: home grows with a big column (a tablet), 1 on a phone up to 1.7 (app.ts sets it), so a
+   tablet's home reads as a tablet screen, not a phone screen floating in the middle */
+.home { --k: 1; align-items: center; justify-content: center; padding: calc(var(--row-bottom) + 12px) 20px calc(var(--foot) + 24px); gap: calc(26px * var(--k)); }
+.home .emblem { display: grid; grid-template-columns: repeat(3, calc(58px * var(--k))); gap: calc(10px * var(--k)); transform: rotate(-4deg); }
 /* three chubby stacks, as on the board: the art member's card back, a few deep */
 .home .emblem i {
-  display: block; height: 58px; position: relative;
+  display: block; height: calc(58px * var(--k)); position: relative;
   background: var(--stack-back, url("/art/stack-back.webp")) center / contain no-repeat;
   filter: drop-shadow(0 3px 0 #1f2834) drop-shadow(0 6px 0 #1a222d) drop-shadow(0 8px 10px rgba(0, 0, 0, 0.45));
 }
-.home .emblem i:nth-child(2) { transform: translateY(-10px); }
-.home .brand { display: flex; flex-direction: column; align-items: center; gap: 22px; width: 100%; }
+.home .emblem i:nth-child(2) { transform: translateY(calc(-10px * var(--k))); }
+.home .brand { display: flex; flex-direction: column; align-items: center; gap: calc(22px * var(--k)); width: 100%; }
 /* Art's drawn title (2.07 : 1, its own lip and shadow): 300-340 px on a phone, never past
    ~420 or it goes soft; a short screen gives it less so Play stays in view */
-.home h1 { margin: 0; width: min(100%, 340px, calc((100dvh - 430px) * 2.07)); min-width: 200px; line-height: 0; }
+.home h1 { margin: 0; width: min(100%, calc(340px * var(--k)), 420px, calc((100dvh - 430px) * 2.07)); min-width: 200px; line-height: 0; }
 .home .wordmark { display: block; width: 100%; height: auto; }
-.home .where { padding: 8px 20px; font-size: 18px; font-weight: 600; }
-.home .play { min-width: 210px; min-height: 68px; padding: 0 34px; font-size: 26px; }
-.home .play :is(svg, .ico) { width: 28px; height: 28px; }
+.home .where { padding: calc(8px * var(--k)) calc(20px * var(--k)); font-size: calc(18px * var(--k)); font-weight: 600; }
+.home .play { min-width: calc(210px * var(--k)); min-height: calc(68px * var(--k)); padding: 0 calc(34px * var(--k)); font-size: calc(26px * var(--k)); }
+.home .play :is(svg, .ico) { width: calc(28px * var(--k)); height: calc(28px * var(--k)); }
 
 /* ---------- the board ---------- */
 
@@ -337,12 +341,12 @@ html.less-motion .card, html.less-motion .win .gallery figure, html.less-motion 
 
 /* ---------- home's other buttons: Albums and Challenges, side by side ---------- */
 
-.home .more { display: flex; justify-content: center; gap: 14px; width: 100%; }
+.home .more { display: flex; justify-content: center; gap: calc(14px * var(--k)); width: 100%; }
 .btn.tile-btn {
-  flex: 0 1 150px; min-width: 0; min-height: 78px; padding: 10px 12px; border-radius: 26px;
-  flex-direction: column; gap: 6px; font-size: 17px;
+  flex: 0 1 calc(150px * var(--k)); min-width: 0; min-height: calc(78px * var(--k)); padding: calc(10px * var(--k)) calc(12px * var(--k));
+  border-radius: calc(26px * var(--k)); flex-direction: column; gap: calc(6px * var(--k)); font-size: calc(17px * var(--k));
 }
-.btn.tile-btn :is(svg, .ico) { width: 28px; height: 28px; }
+.btn.tile-btn :is(svg, .ico) { width: calc(28px * var(--k)); height: calc(28px * var(--k)); }
 .btn.tile-btn span { white-space: nowrap; }
 
 /* ---------- menu screens: the top row over a scrolling column ---------- */
@@ -481,13 +485,13 @@ html.less-motion .marker.next::after { animation-duration: 3.4s; }
 .card .prize .prize-note { flex-basis: 100%; text-align: center; font: 500 14px/1.2 var(--round); color: var(--ink-soft); }
 
 .btn.daily-btn {
-  width: min(100%, 300px); min-height: 62px; padding: 0 20px; border-radius: 26px;
-  justify-content: flex-start; gap: 12px; text-align: left;
+  width: min(100%, calc(300px * var(--k))); min-height: calc(62px * var(--k)); padding: 0 calc(20px * var(--k)); border-radius: calc(26px * var(--k));
+  justify-content: flex-start; gap: calc(12px * var(--k)); text-align: left;
 }
-.btn.daily-btn .ico { width: 30px; height: 30px; }
-.daily-btn .words { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.daily-btn .words b { font: 600 18px/1.1 var(--round); }
-.daily-btn .words span { font: 500 13px/1.2 var(--round); color: var(--ink-soft); white-space: nowrap; }
+.btn.daily-btn .ico { width: calc(30px * var(--k)); height: calc(30px * var(--k)); }
+.daily-btn .words { display: flex; flex-direction: column; gap: calc(4px * var(--k)); min-width: 0; }
+.daily-btn .words b { font: 600 calc(18px * var(--k))/1.1 var(--round); }
+.daily-btn .words span { font: 500 calc(13px * var(--k))/1.2 var(--round); color: var(--ink-soft); white-space: nowrap; }
 /* a short phone: the three stacks over the title make way for the buttons */
 @media (max-height: 720px) { .home .emblem { display: none; } }
 

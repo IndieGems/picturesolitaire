@@ -31,10 +31,11 @@ import { t } from "./i18n";
 import { ICONS, keepIcons, type IconName } from "./icons";
 import { screenChanged } from "./browser";
 import { online, onOnline, pretend } from "./online";
-import { campaign, cleared, loadCampaign, onCampaign, playedDaily, pretendRestored, restore, waitForCloud, won } from "./progress";
+import { loadGuideSave } from "./guide-save";
+import { campaignNext, challengeBest, dailyResult, guideDone, hold, loadProgress, onProgress, progress, waitForProgress } from "../net/progress";
 import { createAlbums } from "./albums";
 import { createChallenges } from "./challenges";
-import { createGuide, GUIDE_FINISHED, type GuideMode } from "./guide";
+import { createGuide, type GuideMode } from "./guide";
 import { fireworks } from "./fireworks";
 import type { Challenge } from "./challenge-data";
 import { level as campaignLevel, type Daily } from "../game/levels";
@@ -198,7 +199,10 @@ const guide = createGuide({
 });
 
 const levels = () => levelCount();
-const allDone = () => campaign().level > levels();
+/** Every board of the campaign won once: its position has gone past the last (it then goes round). */
+const allDone = () => campaignNext() > levels();
+/** A campaign position as the board's own number (the campaign goes round past the last board). */
+const boardNumber = (n: number) => ((n - 1) % levels()) + 1;
 
 function show(next: Screen): void {
   screen = next;
@@ -215,22 +219,31 @@ function show(next: Screen): void {
 
 // ---------- home ----------
 
+/**
+ * The Arcade is there, and its record of the player's progress has not landed yet. Only then
+ * does Home hold back the level: with no Arcade at all (a plain tab, the play-test tool),
+ * what this page holds is all there is, Level 1 on a fresh device.
+ */
+const awaitingRecord = () => gem.frame.currentState === "connected" && !progress().known;
+
 function drawHome(): void {
-  const c = campaign();
-  homeWhere.textContent = allDone() ? t("home.allDone") : t("home.level", { level: c.level });
+  // where the player is is the server's word (src/net/progress.ts)
+  const p = progress();
+  homeWhere.textContent = awaitingRecord() ? t("home.level", { level: "–" }) : allDone() ? t("home.allDone") : t("home.level", { level: p.campaign.next });
   homePlayLabel.textContent = t("home.play");
   homeChallenges.hidden = !routeUi.exists();
 }
 
 homePlay.addEventListener("click", async () => {
-  // where the player is comes from their save: give it a moment more to land
-  // (the first screen did not wait for it), then go on what we have
-  homePlay.disabled = true;
-  await waitForCloud(3000);
-  homePlay.disabled = false;
-  // a finished campaign starts again from the first board (progress is kept)
-  const level = allDone() ? 1 : campaign().level;
-  openLevel(level);
+  // where the player is is the server's record: give it a moment more to land
+  // (the first screen waited only a second), then go on what we have
+  if (awaitingRecord()) {
+    homePlay.disabled = true;
+    await waitForProgress(3000);
+    homePlay.disabled = false;
+  }
+  // the next position; past the last board the campaign goes round (the server's rule)
+  openLevel(campaignNext());
 });
 
 homeAlbums.addEventListener("click", () => albumsUi.openList());
@@ -275,7 +288,7 @@ function drawPill(): void {
   if (!play) return;
   levelPill.classList.toggle("two", play.kind !== "campaign");
   if (play.kind === "campaign") {
-    levelPill.replaceChildren(t("board.level", { level: play.level }));
+    levelPill.replaceChildren(t("board.level", { level: boardNumber(play.level) }));
     return;
   }
   const par = play.kind === "challenge" ? play.c.par : play.d.par;
@@ -314,8 +327,7 @@ back.addEventListener("click", () => {
  */
 function inGuidedStart(): boolean {
   if (lastWin?.kind === "campaign" && lastWin.milestone && boardWon) return true;
-  const c = campaign();
-  return play?.kind === "campaign" && play.level === 1 && c.won === 0 && c.guide < GUIDE_FINISHED;
+  return play?.kind === "campaign" && play.level === 1 && !guideDone();
 }
 
 /**
@@ -476,28 +488,27 @@ type Win = (
 };
 let lastWin: Win | null = null;
 
-// every picture restored is the player's to keep: saved with the board's end (won), one write a board
-on("picture:clear", ({ pictureId }) => restore(pictureId));
-
 on("board:won", ({ moves, ms, line }) => {
   if (!play) return;
   boardWon = true;
   let win: Win;
+  // The player's progress is the server's record (src/net/progress.ts): the claim below
+  // shows the win in it at once, and the checker's verdict then replaces it with its own
+  // word. The card reads the record as it stood before this win.
   if (play.kind === "campaign") {
-    won(play.level);
     // the board the guide taught on ends on the guide's own milestone card
     const milestone = play.level === 1 && guide.takeFinish();
     win = { kind: "campaign", level: play.level, moves, ms, milestone };
   } else if (play.kind === "challenge") {
-    // any win clears a challenge board, over par too; the save keeps the fewer moves
-    const { first, better } = cleared(play.c.id, moves);
-    win = { kind: "challenge", c: play.c, moves, ms, first, better };
+    // any win clears a challenge board, over par too; the record keeps the fewer moves
+    const before = challengeBest(play.c.id);
+    win = { kind: "challenge", c: play.c, moves, ms, first: before === undefined, better: before !== undefined && moves < before };
   } else {
     // only the day's first finish counts on the day's board
-    win = { kind: "daily", d: play.d, moves, ms, first: playedDaily(play.d.date, moves, ms) };
+    win = { kind: "daily", d: play.d, moves, ms, first: !dailyResult(play.d.date) };
   }
   lastWin = win;
-  // the win checker judges and pays (src/net/claims.ts); the card never waits for it
+  // the win checker judges, records and pays (src/net/claims.ts); the card never waits for it
   const lvl = play.kind === "campaign" ? campaignLevel(play.level) : play.kind === "challenge" ? play.c.level : play.d;
   const verdict = claimWin({
     lane: play.kind,
@@ -505,6 +516,7 @@ on("board:won", ({ moves, ms, line }) => {
     deal: lvl.deal,
     line,
     ms,
+    ...(play.kind === "campaign" ? { n: play.level } : {}),
     ...(play.kind === "daily" ? { date: play.d.date } : {}),
   });
   if (win.kind === "daily" && win.first) dailyUi.claimed(verdict);
@@ -554,7 +566,8 @@ function showWin(): void {
   if (lastWin.kind === "daily") return void showDailyWin(lastWin, gallery);
   if (lastWin.milestone) return void showMilestone(gallery);
   const { level, moves, ms } = lastWin;
-  const last = level >= levels();
+  // the campaign's last board (each time round)
+  const last = boardNumber(level) === levels();
   const next = last
     ? withClick(button("amber next", "win.home", icon("home"), t("win.home")), () => leaveTo("win-home", goHome))
     : withClick(button("amber next", "win.next", t("win.next"), icon("next")), () => leaveInto("win-next", () => openLevel(level + 1)));
@@ -795,16 +808,27 @@ export async function startApp(): Promise<void> {
   // its title in, never longer
   const face = new FontFace("Fredoka", `url(${import.meta.env.BASE_URL}fonts/fredoka-latin.woff2)`, { weight: "300 700", display: "swap" });
   document.fonts.add(face);
-  await Promise.race([
-    Promise.all([face.load().catch(() => undefined), wordmark.decode().catch(() => undefined)]),
-    new Promise((r) => setTimeout(r, 400)),
+  // and the player's progress, the server's record: a second at most (the game standard), then
+  // the first screen draws, and redraws when the record lands
+  loadProgress();
+  loadGuideSave();
+  await Promise.all([
+    Promise.race([
+      Promise.all([face.load().catch(() => undefined), wordmark.decode().catch(() => undefined)]),
+      new Promise((r) => setTimeout(r, 400)),
+    ]),
+    waitForProgress(1000),
   ]);
 
-  loadCampaign();
-  onCampaign(drawHome);
-  onCampaign(albumsUi.redraw);
-  onCampaign(routeUi.redraw);
-  onCampaign(dailyUi.redraw);
+  onProgress(drawHome);
+  // a tablet's big column: home grows with it (style.css, --k), up to 1.7, never past what fits its height
+  new ResizeObserver(() => {
+    const k = Math.max(1, Math.min(1.7, app.clientWidth / 400, (app.clientHeight - 200) / 680));
+    home.style.setProperty("--k", k.toFixed(3));
+  }).observe(app);
+  onProgress(albumsUi.redraw);
+  onProgress(routeUi.redraw);
+  onProgress(dailyUi.redraw);
   drawHome();
   document.body.append(app);
   mountSettings(app);
@@ -826,9 +850,12 @@ export async function startApp(): Promise<void> {
     (window as unknown as { __ps: unknown }).__ps = {
       offline: pretend,
       openLevel,
-      campaign,
-      restored: pretendRestored,
-      cleared,
+      progress,
+      restored: albumsUi.pretend,
+      /** Show a challenge board as cleared in `moves`, for this page only (a win held, never sent). */
+      cleared(id: string, moves: number) {
+        hold(`dev-${id}`, { lane: "challenge", board: id, moves, ms: 0, pictures: [] });
+      },
       guide,
       /** The card up now shows what a paid verdict of `coins` looks like (no Coins move: the checker alone pays); `items` as granted. */
       paid(coins: number, items?: string[]) {
@@ -839,6 +866,6 @@ export async function startApp(): Promise<void> {
     };
     // ?restored=id,id shows those pictures as restored in the albums (never saved)
     const fake = new URLSearchParams(location.search).get("restored");
-    if (fake) pretendRestored(fake.split(",").filter(Boolean));
+    if (fake) albumsUi.pretend(fake.split(",").filter(Boolean));
   }
 }

@@ -6,14 +6,14 @@
 //            full screen to zoom (viewer.ts)
 //
 // The albums and their pictures come from the catalogue (catalogue.ts), never
-// from a list here; which are restored comes from the player's save
-// (progress.ts). Both screens have the standard's top row: the title on the
+// from a list here; which are restored comes from the server's record of the
+// player's progress (src/net/progress.ts: the pictures of boards won). Both screens have the standard's top row: the title on the
 // left, Back then the gear at the right end.
 
 import { ICONS } from "./icons";
 import { t } from "./i18n";
 import { albumTitle, albums, picturesIn, pictureTitle, thumbUrl, type Album } from "./catalogue";
-import { isRestored } from "./progress";
+import { isRestored as restoredInRecord } from "../net/progress";
 import { createViewer } from "./viewer";
 
 type Nav = {
@@ -47,6 +47,10 @@ function cardBack(cols: number, rows: number, cls: string): HTMLElement {
   back.setAttribute("aria-hidden", "true");
   return back;
 }
+
+/** Pictures shown as restored for checking the albums by hand (dev server only, ?restored=); never recorded. */
+const pretended = new Set<string>();
+const isRestored = (id: string) => restoredInRecord(id) || pretended.has(id);
 
 export function createAlbums(nav: Nav) {
   // ---- the list ----
@@ -167,5 +171,11 @@ export function createAlbums(nav: Nav) {
       if (!albumScreen.hidden && open) drawAlbum(open);
     },
     closeViewer: viewer.close,
+    /** Checking the albums by hand: show these pictures as restored, for this page only. */
+    pretend(ids: string[]): void {
+      for (const id of ids) pretended.add(id);
+      if (!listScreen.hidden) drawList();
+      if (!albumScreen.hidden && open) drawAlbum(open);
+    },
   };
 }

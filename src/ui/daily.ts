@@ -12,9 +12,9 @@
 // and it is redrawn when the real date lands or the day turns. Which board is
 // the day's is the level designer's rule (loadDaily, Gameplay's). Only the
 // player's FIRST finish of the day counts on the day's board (the win checker
-// keeps it); the screens say so plainly once the player has a result. The
-// device's note of that first finish is in the campaign save (progress.ts),
-// so Home can say "done" at once.
+// keeps it); the screens say so plainly once the player has a result. That
+// first finish is in the server's record of the player's progress
+// (src/net/progress.ts), shown at once when it is won.
 
 import { text, type PlayerText } from "@indiegems/gem-web-sdk/sdk";
 import { loadDaily, type Daily } from "../game/levels";
@@ -23,7 +23,7 @@ import type { Verdict } from "../net/claims";
 import { ICONS } from "./icons";
 import { t } from "./i18n";
 import { clock, shortDate } from "./format";
-import { dailyResult } from "./progress";
+import { dailyResult } from "../net/progress";
 
 type Nav = {
   /** Back: to home. */
