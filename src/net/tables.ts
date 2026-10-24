@@ -25,6 +25,11 @@ export interface Table {
   /** How it is earned: "onboarding" is granted when board `board` is verified for the first time. */
   award: "onboarding";
   board: string;
+  /**
+   * The Coins paid with it, in the same step: for the onboarding keepsake, the
+   * onboarding prize (the config pays this number; the finish card shows it up front).
+   */
+  coins?: number;
 }
 
 export const TABLES: readonly Table[] = DATA.tables as Table[];

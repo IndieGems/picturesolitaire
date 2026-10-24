@@ -1,5 +1,5 @@
 {
-  "note": "The table items: cosmetic platform items only the server grants. The one place a table's slug, id and title live; read by src/net/tables.ts (the game), tools/server/make-config.mts (the game config) and functions/checker/build.rs (which board grants which table). An id never changes once uploaded. The built-in snowy dusk table (table-winter-dusk) is every player's and is no item.",
+  "note": "The table items: cosmetic platform items only the server grants. The one place a table's slug, id and title live; read by src/net/tables.ts (the game), tools/server/make-config.mts (the game config) and functions/checker/build.rs (which board grants which table). An id never changes once uploaded. The onboarding table's \"coins\" is the onboarding prize paid with it (board \"board\", once): the game shows it up front, and the config pays it. The built-in snowy dusk table (table-winter-dusk) is every player's and is no item.",
   "tables": [
     {
       "slug": "table-autumn-study",
@@ -7,7 +7,8 @@
       "title": "Autumn Study table",
       "icon": "tools/art/items/table-autumn-study.png",
       "award": "onboarding",
-      "board": "c01"
+      "board": "c01",
+      "coins": 100
     }
   ]
 }
