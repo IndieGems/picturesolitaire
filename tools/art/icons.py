@@ -146,9 +146,23 @@ def check():
     return svg('<path d="M10.5 25 L19.5 34 L37.5 14.5" stroke-width="5.5"/>')
 
 
+def daily():
+    # The daily puzzle: a calendar page (filled header, two rings) with a star on it.
+    pts = []
+    for k in range(10):
+        r = 7.6 if k % 2 == 0 else 3.4
+        x, y = pt(24, 31.2, r, -90 + k * 36)
+        pts.append(f"{f(x)} {f(y)}")
+    star = "M" + " L".join(pts) + " Z"
+    return svg('<rect x="8.5" y="11.5" width="31" height="29" rx="6"/>'
+               '<path d="M8.5 18 A6 6 0 0 1 14.5 12 H33.5 A6 6 0 0 1 39.5 18 V19.5 H8.5 Z" fill="' + SLATE + '" stroke-width="3"/>'
+               '<path d="M17 7 V12"/><path d="M31 7 V12"/>'
+               f'<path d="{star}" fill="{SLATE}" stroke-width="2.4"/>')
+
+
 ICONS = {"gear": gear, "back": back, "undo": undo, "hint": hint, "shuffle": shuffle, "restart": restart, "play": play,
          "next": next_, "home": home, "chevron": chevron, "photos": photos,
-         "route": route, "lock": lock, "check": check}
+         "route": route, "lock": lock, "check": check, "daily": daily}
 
 
 def main():
