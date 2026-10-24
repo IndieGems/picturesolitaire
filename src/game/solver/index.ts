@@ -122,22 +122,29 @@ export function solveDeal(deal: Deal, budget?: number): Answer {
 }
 
 /**
- * The Hint helper's answer: the next move of a winning line from `s`, or
- * doomed (no way to win from here: Undo or Restart), or unknown (proves
- * nothing). On a 4 x 5 board it searches completely, visiting a few hundred
- * abstract positions, in under 10 ms (median under 1 ms, measured on 3,600
- * positions players reach); `budget` caps the positions visited.
+ * The Hint helper's answer from `s`:
+ *   { move, line }  the first move of `line`, a whole line that the real rules
+ *                   play from `s` to a won board (each step was played on them
+ *                   as it was found), so a hint never leads off a win. Follow
+ *                   `line` for later hints while the player stays on it.
+ *   { doomed }      CERTAIN: no line wins from here (the abstract game is a
+ *                   relaxation of the real one, abstract.ts), so "can't be won
+ *                   now: Undo or Restart" is true.
+ *   { unknown }     no line found within the budget: proves nothing either way,
+ *                   so say "no hint found", never "can't be won".
+ * `budget` caps the abstract positions visited. Measured by
+ * tools/levels/hint-cost.mts on 4,800 positions of play over every shipped
+ * board: 4x5 median 0.6 ms, max 6 ms; 5x6 median 6 ms, max 23 ms; every line
+ * won. tools/levels/exactness.mts checks "doomed" against the real rules at
+ * every position of small boards (25,000 positions, none wrong).
  */
-export function nextMove(s: State, budget = 200_000): { move: Move } | { doomed: true } | { unknown: true } {
+export function nextMove(s: State, budget = 200_000): { move: Move; line: Move[] } | { doomed: true } | { unknown: true } {
   if (isWon(s)) return { unknown: true };
   const game = new Game(s, budget);
   try {
     if (!game.wins(game.root)) return { doomed: true };
-    for (const pass of PASSES) {
-      const best = bestStep(game, s, pass)[0];
-      if (best) return { move: best.r.moves[0]! };
-    }
-    return { unknown: true };
+    const line = lineFrom(game, s);
+    return line && line.moves.length ? { move: line.moves[0]!, line: line.moves } : { unknown: true };
   } catch (err) {
     if (err instanceof OutOfBudget) return { unknown: true };
     throw err;
