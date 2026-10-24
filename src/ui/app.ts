@@ -445,7 +445,7 @@ on("helper:refused", ({ helper }) => {
     else stuckNote.hidden = true;
   }, 3500);
 });
-for (const type of ["piece:lift", "helper:undo", "helper:shuffle", "board:restart", "board:start", "board:won"] as const) on(type, unstick);
+for (const type of ["piece:lift", "helper:undo", "helper:shuffle", "board:restart", "board:start", "board:solved", "board:won"] as const) on(type, unstick);
 
 // Restart is free; the card only checks it was meant. Before the first move there is nothing to lose.
 restartBtn.addEventListener("click", () => {
@@ -490,8 +490,13 @@ type Win = (
 };
 let lastWin: Win | null = null;
 
-on("board:won", ({ moves, ms, line }) => {
-  if (!play) return;
+// The board is won the moment the rules say so (board:solved), before its last picture's finish
+// plays: the claim goes then, so a game closed during the finish still has its win sent (Server
+// keeps an unsent claim and sends it at the next start), and from then on the board counts as won
+// (a quick Back shows its card at once, Restart is closed). The card itself goes up after the
+// finish, on board:won.
+on("board:solved", ({ moves, ms, line }) => {
+  if (!play || boardWon) return;
   boardWon = true;
   let win: Win;
   // The player's progress is the server's record (src/net/progress.ts): the claim below
@@ -522,21 +527,29 @@ on("board:won", ({ moves, ms, line }) => {
     ...(play.kind === "daily" ? { date: play.d.date } : {}),
   });
   if (win.kind === "daily" && win.first) dailyUi.claimed(verdict);
+  // the verdict may land before the card is up: it is kept on the win, and the card uses it when it opens
   void verdict.then((v) => {
     win.verdict = v;
     if (lastWin === win && !winVeil.hidden) {
       drawCoins(win);
-      // the checker's word on the day wins over the device's: a day closed, or another finish was first
       const line = winVeil.querySelector(".daily-line");
-      if (win.kind === "daily" && line) {
-        if (v.status === "late") line.replaceChildren(t("daily.late"));
-        else if ("first" in v && v.first === false) line.replaceChildren(t("daily.notCounted"));
-      }
+      if (win.kind === "daily" && line) line.replaceChildren(dailyLine(win));
     }
   });
-  // the board fires this after its own flourish, so the card goes straight up
-  showWin();
 });
+
+// the board fires this after its own finish: the card goes straight up (unless a quick Back already showed it)
+on("board:won", () => {
+  if (screen === "board" && boardWon && lastWin && winVeil.hidden) showWin();
+});
+
+/** The daily card's plain line: the checker's word on the day wins over the device's (a day closed, or another finish first). */
+function dailyLine(w: Extract<Win, { kind: "daily" }>): string {
+  const v = w.verdict;
+  if (v?.status === "late") return t("daily.late");
+  if (v && "first" in v && v.first === false) return t("daily.notCounted");
+  return w.first ? t("daily.counted") : t("daily.notCounted");
+}
 
 /**
  * What the win paid, on its card, once the checker says so: a coin chip on the
@@ -639,7 +652,7 @@ function showMilestone(gallery: HTMLElement): void {
  * by), and plainly whether this finish is the one that counts; then the day's results.
  */
 function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement): void {
-  const line = w.verdict?.status === "late" ? t("daily.late") : w.first ? t("daily.counted") : t("daily.notCounted");
+  const line = dailyLine(w);
   winVeil.replaceChildren(
     h(
       "div",
