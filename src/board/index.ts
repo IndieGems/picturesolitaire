@@ -22,7 +22,7 @@ import { level as levelOf, levelCount, type Level } from "../game/levels.ts";
 import { nextMove } from "../game/solver/index.ts";
 import { rescue } from "../game/shuffle.ts";
 import {
-  EMPTY, allMoves, clampTarget, isDeadEnd, isWon, joinCount, move, pieceAt, pieces, picOf, start,
+  EMPTY, clampTarget, isDeadEnd, isWon, move, pieceAt, pieces, picOf, start,
   type Action, type Card, type Move, type State, type Step,
 } from "../game/rules.ts";
 import { ease, setBatterySaver, setPaused, stopAll, tween, wait, run } from "./pace.ts";
@@ -1101,21 +1101,6 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     targetEl.classList.add("again");
   }
 
-  function greedy(): Move | null {
-    let best: Move | null = null;
-    let score = joinCount(state);
-    for (const m of allMoves(state)) {
-      const out = move(state, m);
-      if (!out) continue;
-      const v = joinCount(out.state) + out.state.cleared.length * 100;
-      if (v > score) {
-        score = v;
-        best = m;
-      }
-    }
-    return best;
-  }
-
   async function showHint(m: Move): Promise<void> {
     const v = viewWith(m.from);
     if (!v) return;
@@ -1230,16 +1215,25 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     },
     hint() {
       if (busy || won || drag || helpers.hint <= 0) return;
+      // only moves of a line the real rules win from here (the solver's); never a guess
       let m = onLine();
       if (!m) {
         const next = nextMove(state, 20_000);
         if ("doomed" in next) {
+          // certain: the solver's "doomed" is checked against the real rules
           emit("board:stuck", { doomed: true });
           return;
         }
-        m = "move" in next ? next.move : greedy();
+        if (!("move" in next)) {
+          // no line within the budget proves nothing either way: no hint, nothing spent
+          emit("helper:refused", { helper: "hint" });
+          return;
+        }
+        m = next.move;
+        // later hints follow this line, without a search, while the player does
+        const first = next.line[0];
+        if (first && first.from === m.from && first.to === m.to) plans.push({ at: actions.length, line: next.line });
       }
-      if (!m) return;
       // the tutorial's hints are free
       if (!guideMode) helpers = { ...helpers, hint: helpers.hint - 1 };
       emit("helper:hint", { left: helpers.hint });

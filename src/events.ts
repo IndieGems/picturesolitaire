@@ -38,9 +38,11 @@ export interface GameEvents {
   "helper:shuffle": { left: number };
   /**
    * A helper was pressed and could do nothing, so none was spent. Shuffle: no
-   * loose card to mix, or no mix the solver could prove winnable.
+   * loose card to mix, or no mix the solver could prove winnable. Hint: the
+   * solver found no winning line within its budget, which proves nothing, so
+   * say "no hint found", never "can't be won".
    */
-  "helper:refused": { helper: "shuffle" };
+  "helper:refused": { helper: "shuffle" | "hint" };
   /** The board was started over. */
   "board:restart": Record<string, never>;
   /**
