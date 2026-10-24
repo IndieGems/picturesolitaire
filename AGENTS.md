@@ -77,6 +77,8 @@ The `gemctl:serve-local-game` skill has the rest, `gemctl serve log`
 
 ## Play-testing
 
+**Test in proportion to the change** (creator, 2026-10-24: be sensible with tokens). Check what the change touches, plus one smoke run of the main loop; never replay every board or every size for a small change. Full passes are for milestones and release, and only when the lead asks.
+
 Play-test with `tools/playtest.mts` (usage in its header): each run gets its
 own vite, hidden Chrome and temp folder. Never launch your own browser for a
 check it can make, and never stop processes by name, port or pattern.
