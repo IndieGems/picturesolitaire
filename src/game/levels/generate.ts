@@ -12,13 +12,17 @@
 //   - the solver proves it winnable with no helpers and the real rules replay
 //     its line to a win (a search that runs out proves nothing: rejected);
 //   - each measure (src/game/solver/metrics.ts) is inside its target range.
+// With `par` in the spec, the stored line is the par line (par.ts): the
+// fewest moves the solver finds, the board's optional par, and the traps are
+// counted along it.
 // The generator tries seeds in order from a starting seed and keeps the first
 // deal that passes, so a level is (spec, seed), and its data is checked against
 // a fresh deal from the same pair (tools/levels/check.mts).
 
 import { cardsOf, isDeadEnd, joinCount, random, start, type Deal, type Move, type Picture } from "../rules.ts";
 import { Game, solveDeal, type Step } from "../solver/index.ts";
-import { along, careless, chain, chainOf, traps } from "../solver/metrics.ts";
+import { along, careless, chain, chainOf, orderTraps, traps, unavoidable, wait } from "../solver/metrics.ts";
+import { parLine, type ParOptions } from "../solver/par.ts";
 
 export type Range = [min: number, max: number];
 
@@ -29,7 +33,14 @@ export interface Targets {
   careless?: Range;
   /** Steps of the winning line with a choice that dooms the board. */
   traps?: Range;
+  /** Positions where a ready clear dooms the board that every winning line passes ("clear order matters"). */
+  orderTraps?: Range;
+  /** Clears the longest-waiting big picture (6 cards or more) needs before it ("big pictures need room"). */
+  bigWait?: Range;
 }
+
+/** Pictures of this many cards or more are "big" for `bigWait`. */
+export const BIG = 6;
 
 export interface Spec {
   /** The level's id: it seeds the deal, with the seed. */
@@ -38,14 +49,23 @@ export interface Spec {
   rows: number;
   pictures: Picture[];
   targets: Targets;
+  /** Store the par line (fewest moves found) instead of the solver's first line. */
+  par?: ParOptions | true;
 }
 
 export interface Measures {
   chain: number;
   careless: number;
   traps: number;
-  /** The chain of the stored line itself (>= chain). */
-  lineChain: number;
+  /** The chain of the stored line itself (>= chain); null for a par line. */
+  lineChain: number | null;
+  /** Positions with a dooming clear that every winning line passes. */
+  orderTraps: number;
+  /** The same, counted along the stored line. */
+  lineOrderTraps: number;
+  /** Per picture, the fewest clears before it in any winning line. */
+  wait: number[];
+  bigWait: number;
   /** Cards waiting in the stacks when the board opens. */
   waiting: number;
   /** Cards in each stack, opening included. */
@@ -88,7 +108,7 @@ export function dealFor(spec: Spec, seed: number): Deal {
 const inside = (v: number, r?: Range) => !r || (v >= r[0] - 1e-9 && v <= r[1] + 1e-9);
 
 /** Why a deal was turned down, for the generator's tally. */
-export type Verdict = "joined" | "dead" | "lost" | "careless" | "chain" | "unproven" | "traps" | "kept";
+export type Verdict = "joined" | "dead" | "lost" | "careless" | "chain" | "wait" | "unproven" | "traps" | "order" | "kept";
 
 /** Measure one deal and keep it if it meets the spec; else say why not. */
 export function judge(spec: Spec, deal: Deal): Made | Verdict {
@@ -101,20 +121,36 @@ export function judge(spec: Spec, deal: Deal): Made | Verdict {
   if (!inside(cl, spec.targets.careless)) return "careless";
   const ch = chain(game);
   if (ch === null || !inside(ch, spec.targets.chain)) return "chain";
+  const w = wait(game);
+  const bw = Math.max(0, ...spec.pictures.map((p, i) => (p.cols * p.rows >= BIG ? w[i]! : 0)));
+  if (!inside(bw, spec.targets.bigWait)) return "wait";
+  const ot = unavoidable(game, "clear");
+  if (!inside(ot, spec.targets.orderTraps)) return "order";
   const a = solveDeal(deal);
   if (!("win" in a)) return "unproven";
-  const tr = traps(game, along(game, deal, a.win.moves));
+  let line = a.win;
+  if (spec.par) {
+    const p = parLine(deal, spec.par === true ? {} : spec.par);
+    if (!p) return "unproven";
+    line = p;
+  }
+  const nodes = along(game, deal, line.moves);
+  const tr = traps(game, nodes);
   if (!inside(tr, spec.targets.traps)) return "traps";
   return {
     seed: deal.seed,
     deal,
-    line: a.win.moves,
-    steps: a.win.steps,
+    line: line.moves,
+    steps: line.steps,
     measures: {
       chain: ch,
       careless: cl,
       traps: tr,
-      lineChain: chainOf(game, a.win.steps),
+      orderTraps: ot,
+      lineOrderTraps: orderTraps(game, nodes),
+      wait: w,
+      bigWait: bw,
+      lineChain: spec.par ? null : chainOf(game, a.win.steps),
       waiting: Math.max(0, deal.stacks.reduce((n, st) => n + st.length, 0) - deal.cols * deal.rows),
       stacks: deal.stacks.map((st) => st.length),
     },

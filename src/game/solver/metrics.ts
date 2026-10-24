@@ -20,9 +20,11 @@
 //   full, so a picture not wholly in the opening deal waits for at least one;
 //   a big picture whose cards sit deep in the stacks waits for several small
 //   ones to make room for it.
-// - ORDER TRAPS (the challenge route's "clear order matters"): along the
-//   stored line, the positions where finishing some ready picture (or
-//   finishing it at the wrong place) would doom the board.
+// - ORDER TRAPS (the challenge route's "clear order matters"): positions
+//   where finishing some ready picture (or finishing it at the wrong place)
+//   would doom the board. `orderTraps` counts them along one line;
+//   `unavoidable` gives the fewest that ANY winning line passes, a measure
+//   of the deal whichever way the player goes.
 
 import { move, start, type Deal, type Move } from "../rules.ts";
 import type { Game, Node, Step } from "./abstract.ts";
@@ -69,6 +71,28 @@ export function orderTraps(game: Game, nodes: readonly Node[]): number {
     if (game.options(n).some((o) => o.step.kind === "clear" && !game.wins(o.next, o.key))) count++;
   }
   return count;
+}
+
+/**
+ * The fewest positions with a dooming choice that any winning line passes:
+ * any choice ("any", as `traps` counts) or a clear ("clear", as
+ * `orderTraps` counts). Over the abstract steps, one position at a time.
+ */
+export function unavoidable(game: Game, kind: "any" | "clear"): number {
+  const memo = new Map<number, number>();
+  const f = (n: Node, k: number): number => {
+    if (game.isWon(n)) return 0;
+    const known = memo.get(k);
+    if (known !== undefined) return known;
+    const opts = game.options(n);
+    const trap = opts.some((o) => (kind === "any" || o.step.kind === "clear") && !game.wins(o.next, o.key)) ? 1 : 0;
+    let best = Infinity;
+    for (const o of opts) if (game.wins(o.next, o.key)) best = Math.min(best, f(o.next, o.key));
+    memo.set(k, trap + best);
+    return trap + best;
+  };
+  const r = game.root;
+  return f(r, game.key(r));
 }
 
 /**
