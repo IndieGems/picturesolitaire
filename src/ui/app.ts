@@ -43,6 +43,7 @@ import { clock, shortDate } from "./format";
 import { claimWin, cueCoins, type Verdict } from "../net/claims";
 import { KEEPSAKE } from "../net/keepsake";
 import { startTables, tableArt, tableTitle, thumbOf } from "./tables";
+import { mountParticles } from "./particles";
 import { levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
 
 // ---------- a little DOM ----------
@@ -352,10 +353,11 @@ const unstick = () => {
   clearTimeout(refusedTimer);
   stuckNote.hidden = true;
 };
-// Shuffle that could find no better mix spent nothing: say so for a moment, then back to what was there
+// A helper that could do nothing spent nothing (Shuffle found no better mix, Hint no line it could prove
+// within its budget, which proves nothing about the board): say so for a moment, then back to what was there
 let refusedTimer: number | undefined;
-on("helper:refused", () => {
-  stuckNote.textContent = t("board.noMix");
+on("helper:refused", ({ helper }) => {
+  stuckNote.textContent = t(helper === "hint" ? "board.noHint" : "board.noMix");
   stuckNote.hidden = false;
   clearTimeout(refusedTimer);
   refusedTimer = window.setTimeout(() => {
@@ -731,7 +733,8 @@ export async function startApp(): Promise<void> {
   void startSound();
   // which day it is (the platform's word) and its board: Home's Daily button appears once they are known
   void dailyUi.refresh();
-  // the player's chosen table, once their choice and what they own are read
+  // the player's chosen table, once their choice and what they own are read, and its weather
+  mountParticles(app);
   void startTables();
 
   if (import.meta.env.DEV) {

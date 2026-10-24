@@ -486,6 +486,32 @@ html.less-motion .marker.next::after { animation-duration: 3.4s; }
 /* the daily's win card: what counts, said plainly */
 .win .card p.daily-line { margin: -4px 0 16px; font-size: 16px; font-weight: 600; color: var(--ink); }
 
+/* ---------- the table's weather (src/ui/particles.ts) ---------- */
+
+/* under every screen: a flake or a leaf passes behind the cards and buttons, never over them */
+.particles { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.particles .pt {
+  position: absolute; top: -36px; left: 0; opacity: 0;
+  animation: pt-fall var(--dur) linear var(--delay) infinite; will-change: transform, opacity;
+}
+.particles .pt b {
+  display: block; margin-left: -50%; background-repeat: no-repeat;
+  animation: pt-sway var(--swing) ease-in-out var(--delay) infinite alternate; will-change: transform;
+}
+@keyframes pt-fall {
+  0% { transform: translate3d(0, 0, 0); opacity: 0; }
+  12% { opacity: var(--peak); }
+  78% { opacity: var(--peak); }
+  100% { transform: translate3d(0, calc(var(--fall) * 1dvh), 0); opacity: 0; }
+}
+@keyframes pt-sway {
+  from { transform: translate3d(calc(var(--sway) * -1), 0, 0) rotate(calc(var(--turn) * -1)); }
+  to { transform: translate3d(var(--sway), 0, 0) rotate(var(--turn)); }
+}
+/* none under less motion (the Arcade's or the device's) or the Arcade's Battery saver */
+html.less-motion .particles, html.battery-saver .particles { display: none; }
+@media (prefers-reduced-motion: reduce) { .particles { display: none; } }
+
 /* ---------- the guide (src/ui/guide.ts) ---------- */
 
 .guide-layer { position: absolute; inset: 0; z-index: 60; pointer-events: none; }

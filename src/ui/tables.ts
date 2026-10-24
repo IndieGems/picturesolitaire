@@ -27,6 +27,11 @@ export interface TableArt {
   stackBack: string;
   thumb: string;
   base: string;
+  /** Its weather (particles.ts): a strip of `particleFrames` sprites, `particleKind` "snow" or "leaves". */
+  particles?: string;
+  particleKind?: string;
+  particleFrame?: number;
+  particleFrames?: number;
 }
 
 const SETTING = "table";
