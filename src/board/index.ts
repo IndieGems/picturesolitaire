@@ -25,7 +25,8 @@ import {
   EMPTY, clampTarget, isDeadEnd, isWon, move, pieceAt, pieces, picOf, start,
   type Action, type Card, type Move, type State, type Step,
 } from "../game/rules.ts";
-import { ease, setBatterySaver, setPaused, stopAll, tween, wait, run } from "./pace.ts";
+import { ease, realMs, setBatterySaver, setPaused, stopAll, tween, wait, run } from "./pace.ts";
+import { makeDev, type BoardDev } from "./dev.ts";
 import { TUNING, applyTuning } from "./tuning.ts";
 import {
   addRing, backImage, cellAt, drawPiece, drawRing, drawStack, keyOf, layout, mountDefs, nearestCell, place,
@@ -34,6 +35,7 @@ import {
 
 export { levelCount };
 export type { Level };
+export type { BoardDev, BoardInfo, DevStep } from "./dev.ts";
 
 export interface HelperCounts {
   undo: number;
@@ -68,6 +70,12 @@ export interface BoardHandle {
   guide(mode: "line" | "hold" | null): void;
   pictures(): BoardPicture[];
   destroy(): void;
+  /**
+   * The dev menu's controls (src/board/dev.ts): win now, step through the
+   * proved line, endless helpers, animation speed, board info. Undefined in a
+   * release build, which leaves them out altogether.
+   */
+  dev?: BoardDev;
 }
 
 // ---------------------------------------------------------------- the player's preferences
@@ -81,6 +89,9 @@ onPlayerPrefs((prefs) => {
 });
 onArcadePause((p) => setPaused(p));
 document.addEventListener("visibilitychange", () => setPaused(document.visibilityState === "hidden"));
+
+/** The dev menu's endless helpers: Undo, Hint and Shuffle never run down while on (every board). */
+let endlessHelpers = false;
 
 // The game config's `kv.board` may retune the board without a build; read once.
 let tuned: Promise<void> | null = null;
@@ -183,6 +194,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   let plans: { at: number; line: Move[] }[] = [{ at: 0, line: lvl.line }];
   let helpers: HelperCounts = { ...TUNING.helpers };
   let busy = 0;
+  /** The dev menu is playing the board: the player's hand is held off it. */
+  let driven = false;
   let won = false;
   let destroyed = false;
   let pendingRestart = false;
@@ -445,13 +458,13 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
           const far = Math.hypot(dc, dr);
           return { ms: Math.round(TUNING.slideMs * Math.min(1.6, 0.7 + 0.3 * far)) };
         }, lifted);
-        emit("piece:move", { cards: step.moved.length, displaced: step.displaced.length, ms: slid.liftedMs || slid.firstMs });
+        emit("piece:move", { cards: step.moved.length, displaced: step.displaced.length, ms: realMs(slid.liftedMs || slid.firstMs) });
         await slid.done;
         lifted = null;
       } else if (step.kind === "fall") {
         const dest = new Map(step.slides.map((x) => [x.card, x.to] as [Card, number]));
         const slid = slideCards(shown, dest, (_dc, dr) => ({ ms: Math.round(TUNING.fallMs * Math.sqrt(Math.max(1, dr))), ease: ease.fall }));
-        emit("cards:fall", { cards: step.slides.length, ms: slid.firstMs });
+        emit("cards:fall", { cards: step.slides.length, ms: realMs(slid.firstMs) });
         await slid.done;
       } else if (step.kind === "shuffle") {
         await mixCards(step, next);
@@ -758,6 +771,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
 
   function onDown(e: PointerEvent): void {
     // a hint's ghost never stands in the way: reaching for the board takes it away
+    if (driven) return;
     if (!destroyed && guideMode !== "hold") stopHint();
     if (press || drag || busy || won || destroyed || guideMode === "hold") return;
     if (e.pointerType === "mouse" && e.button !== 0) return;
@@ -888,6 +902,11 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   addEventListener("blur", onBlur);
 
   // ---------------------------------------------------------------- playing
+
+  /** A helper used: one fewer, unless the dev menu's endless helpers are on. */
+  function spend(k: keyof HelperCounts): void {
+    if (!endlessHelpers) helpers = { ...helpers, [k]: helpers[k] - 1 };
+  }
 
   function changed(): void {
     emit("board:changed", { canUndo: history.length > 0 && !won, helpers: { ...helpers }, moves: state.moves });
@@ -1267,7 +1286,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
         settleBack(selected.v);
         selected = null;
       }
-      helpers = { ...helpers, undo: helpers.undo - 1 };
+      spend("undo");
       const prev = history.pop()!;
       actions.pop();
       while (plans.length > 1 && plans[plans.length - 1]!.at > actions.length) plans.pop();
@@ -1297,7 +1316,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
         if (first && first.from === m.from && first.to === m.to) plans.push({ at: actions.length, line: next.line });
       }
       // the tutorial's hints are free
-      if (!guideMode) helpers = { ...helpers, hint: helpers.hint - 1 };
+      if (!guideMode) spend("hint");
       emit("helper:hint", { left: helpers.hint });
       changed();
       showHint(m);
@@ -1314,7 +1333,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
         settleBack(selected.v);
         selected = null;
       }
-      helpers = { ...helpers, shuffle: helpers.shuffle - 1 };
+      spend("shuffle");
       history.push(state);
       actions.push(out.action);
       plans.push({ at: actions.length, line: out.line });
@@ -1360,5 +1379,53 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       removeEventListener("blur", onBlur);
       stage.remove();
     },
+    // the dev menu's controls; a release build drops them, dev.ts and all
+    dev: import.meta.env.MODE !== "release" ? makeDev({
+      level: lvl,
+      name,
+      moves: () => state.moves,
+      played: () => (actions.some((a) => "shuffle" in a) ? null : actions.map((a) => ({ ...(a as Move) }))),
+      busy: () => busy > 0 || !opened,
+      won: () => won,
+      finishing: () => !!solved && !won,
+      closed: () => destroyed,
+      async restart() {
+        if (solved && !won) return false;
+        while (busy && !destroyed) await new Promise((r) => setTimeout(r, 40));
+        if (destroyed || (solved && !won)) return false;
+        stopHint();
+        if (drag) {
+          drag.stop();
+          drag = null;
+          clearPreview();
+        }
+        await doRestart();
+        return !destroyed;
+      },
+      async play(m) {
+        const v = viewWith(m.from);
+        if (!v || busy || won || destroyed) return false;
+        if (selected) {
+          settleBack(selected.v);
+          selected = null;
+        }
+        lift(v);
+        emit("piece:lift", { cards: v.cells.length });
+        await play(m, v);
+        return true;
+      },
+      ghost: (m) => showHint(m),
+      hold(on) {
+        driven = on;
+        if (on) press = null;
+      },
+      setEndless(on) {
+        endlessHelpers = on;
+        if (on) helpers = { ...TUNING.helpers };
+        changed();
+      },
+      endless: () => endlessHelpers,
+      hintMs: () => TUNING.hintMs,
+    }) : undefined,
   };
 }

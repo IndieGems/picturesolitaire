@@ -29,6 +29,18 @@ let interval = 1000 / 60;
 let refreshes = 0;
 let drawn = 0;
 let batterySaver = false;
+/**
+ * Board time runs at this many times real time: the dev menu's animation
+ * speed (0.25 slow motion, 2 twice as fast). Every animation steps by board
+ * time, so one value slows or quickens them all. 1 outside the dev menu.
+ */
+let timeScale = 1;
+export function setTimeScale(x: number): void {
+  timeScale = Number.isFinite(x) ? Math.min(4, Math.max(0.1, x)) : 1;
+}
+/** Real ms for `ms` of board time (for events that tell others when something lands). */
+export const realMs = (ms: number): number => Math.round(ms / timeScale);
+export const timeScaleNow = (): number => timeScale;
 
 /** Battery saver on or off (the Arcade's, or the game's own switch). */
 export function setBatterySaver(on: boolean): void {
@@ -45,7 +57,7 @@ function frame(now: number): void {
   const n = Math.max(1, Math.floor(1000 / 60 / interval + 0.15));
   refreshes++;
   if (refreshes % n === 0 || lastDrawn === null) {
-    const dt = lastDrawn === null ? 0 : Math.min(MAX_STEP, Math.max(0, now - lastDrawn));
+    const dt = (lastDrawn === null ? 0 : Math.min(MAX_STEP, Math.max(0, now - lastDrawn))) * timeScale;
     lastDrawn = now;
     drawn++;
     const m = batterySaver ? Math.max(1, Math.floor(1000 / 30 / (n * interval) + 0.15)) : 1;
@@ -54,7 +66,7 @@ function frame(now: number): void {
       if (job.calm && m > 1) {
         job.owed += dt;
         if (drawn % m !== 0) continue;
-        step = Math.min(MAX_STEP * m, job.owed);
+        step = Math.min(MAX_STEP * m * timeScale, job.owed);
       }
       job.owed = 0;
       let keep = false;

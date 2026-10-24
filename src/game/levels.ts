@@ -4,7 +4,8 @@
 // (src/game/rules.ts), how many upcoming cards its stacks show, and a known
 // winning line with no helpers, which the Hint helper follows while the player
 // is on it. Other fields there (axes: how hard the board is, and why) are the
-// level designer's notes; the board ignores them.
+// level designer's notes: the board plays without them, and only the dev
+// menu's board info shows them.
 
 import CAMPAIGN from "../content/levels/campaign.json";
 import type { Deal, Move, Picture } from "./rules.ts";
@@ -20,6 +21,8 @@ export interface Level {
   deal: Deal;
   /** A winning line from the deal, with no helpers. */
   line: Move[];
+  /** The level designer's notes, as stored (the dev menu's board info), when there are any. */
+  axes?: Record<string, unknown>;
 }
 
 /** A board as the level files store it (any size: the board fits it to its box). */
@@ -32,6 +35,7 @@ export interface Stored {
   pictures: Picture[];
   stacks: number[][];
   line: number[][];
+  axes?: Record<string, unknown>;
 }
 
 /** A stored board as the board plays it; `number` is its place in its list, from 1. */
@@ -42,6 +46,7 @@ export function toLevel(l: Stored, number: number): Level {
     peek: Math.max(0, Math.min(2, l.peek)) as 0 | 1 | 2,
     deal: { cols: l.cols, rows: l.rows, pictures: l.pictures, stacks: l.stacks, seed: l.seed },
     line: l.line.map(([from, to]) => ({ from: from!, to: to! })),
+    ...(l.axes && typeof l.axes === "object" ? { axes: l.axes } : {}),
   };
 }
 
