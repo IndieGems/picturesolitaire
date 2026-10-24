@@ -1,0 +1,29 @@
+[package]
+name = "checker"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+# A function is built on its own, for wasm32-unknown-unknown. This makes the
+# crate its own workspace, so a workspace it sits inside -- whose members are
+# built for this machine -- never tries to build it.
+[workspace]
+
+[lib]
+# cdylib: the function's WebAssembly module. rlib: the same rules and claim
+# checks, built for this machine, for the vector check (tests/vectors.rs).
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wit-bindgen = "0.62"
+serde_json = "1"
+
+[build-dependencies]
+serde_json = "1"
+
+# The platform caps a component's size.
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true
+panic = "abort"

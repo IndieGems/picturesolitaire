@@ -1,0 +1,88 @@
+package gem:functions@0.1.0;
+
+interface host {
+    /// Who triggered the invocation.
+    variant caller {
+        /// A player, by player id (UUID string).
+        player(string),
+        /// A dedicated game server, by its server id when it has one.
+        game-server(option<string>),
+    }
+
+    /// Fixed for the life of the instance.
+    record context {
+        /// Game the function is published under (UUID string).
+        game-id: string,
+        /// Channel the caller's credential is bound to: "dev", "test" or "release".
+        channel: string,
+        /// Unique per invocation (UUID string). The invoke response's
+        /// X-Gem-Invocation-Id header and the function's logs carry the same id.
+        invocation-id: string,
+        caller: caller,
+    }
+
+    record api-request {
+        /// "GET" | "POST" | "PUT" | "PATCH" | "DELETE".
+        method: string,
+        /// Absolute path on the platform API, starting with "/v1/".
+        path: string,
+        /// Sent as application/json when non-empty.
+        body: list<u8>,
+    }
+
+    record api-response {
+        status: u16,
+        body: list<u8>,
+    }
+
+    enum log-level { debug, info, warn, error }
+
+    get-context: func() -> context;
+    /// One round-trip to the platform API, authenticated as this game's server.
+    /// Counts against the per-invocation host-call limit.
+    call-api: func(req: api-request) -> result<api-response, string>;
+    /// Adds a line to the function's logs under the invocation id. Truncated
+    /// at 1 KiB.
+    log: func(level: log-level, message: string);
+    /// Host-supplied randomness; the guest has no other source.
+    random-bytes: func(len: u32) -> list<u8>;
+    /// Unix time in milliseconds; the guest has no other clock.
+    now-ms: func() -> u64;
+
+    /// What save storage answered, whatever the status: a redirect, a 4xx or
+    /// a 5xx arrives here, not as an error. A download's body is the blob;
+    /// otherwise it is storage's own error body, if any.
+    record storage-response {
+        status: u16,
+        body: list<u8>,
+    }
+
+    record upload-request {
+        /// The signed upload link returned by
+        /// POST /v1/saves/{entity_type}/{entity_id}/{key}/upload-url.
+        url: string,
+        /// The content type declared to upload-url; sent as Content-Type.
+        content-type: string,
+        /// The headers the upload-url reply told you to send. Only
+        /// x-ms-blob-type is honoured; any other name is refused before
+        /// anything is sent. Content-Length is set by the host.
+        headers: list<tuple<string, string>>,
+        body: list<u8>,
+    }
+
+    /// GET a signed save download link. Only links to the platform's own save
+    /// storage are fetched; anything else is refused before anything is sent,
+    /// and a redirect is returned as its status, never followed. Counts
+    /// against the per-invocation host-call limit, and the time it takes
+    /// against the invocation's wall-clock budget.
+    download-link: func(url: string) -> result<storage-response, string>;
+    /// PUT bytes to a signed save upload link, then finish the save with
+    /// POST /v1/saves/{entity_type}/{entity_id}/{key}/finalize through
+    /// call-api. Same policy and limits as download-link.
+    upload-link: func(req: upload-request) -> result<storage-response, string>;
+}
+
+world function {
+    import host;
+    export handle: func(input: list<u8>) -> result<list<u8>, string>;
+}
