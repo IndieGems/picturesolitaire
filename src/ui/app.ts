@@ -29,7 +29,7 @@ import { mountSettings } from "../settings-screen";
 import { startSound } from "../sound";
 import { t } from "./i18n";
 import { ICONS, keepIcons, type IconName } from "./icons";
-import { screenChanged } from "./browser";
+import { firstScreen, screenChanged } from "./browser";
 import { online, onOnline, pretend } from "./online";
 import { loadGuideSave } from "./guide-save";
 import { campaignNext, challengeBest, dailyResult, guideDone, hold, loadProgress, onProgress, progress, waitForProgress } from "../net/progress";
@@ -242,13 +242,21 @@ function drawHome(): void {
   homeChallenges.hidden = !routeUi.exists();
 }
 
+let playing = false;
 homePlay.addEventListener("click", async () => {
-  // where the player is is the server's record: give it a moment more to land
-  // (the first screen waited only a second), then go on what we have
+  if (playing) return;
+  // where the player is is the server's record: if it is still on its way, the press answers at
+  // once ("Opening…") and the board opens as soon as the record lands (3 s at most, then on what
+  // we have), never a press that seems to do nothing
   if (awaitingRecord()) {
-    homePlay.disabled = true;
+    playing = true;
+    homePlay.setAttribute("aria-busy", "true");
+    homePlayLabel.textContent = t("home.opening");
     await waitForProgress(3000);
-    homePlay.disabled = false;
+    playing = false;
+    homePlay.removeAttribute("aria-busy");
+    drawHome();
+    if (screen !== "home") return; // the player went elsewhere meanwhile
   }
   // the next position; past the last board the campaign goes round (the server's rule)
   openLevel(campaignNext());
@@ -872,6 +880,8 @@ export async function startApp(): Promise<void> {
   mountSettings(app);
   document.getElementById("boot")?.remove();
   show("home");
+  // no tap brought this screen in: Play answers from the first moment it is drawn
+  firstScreen();
   void startSound();
   // which day it is (the platform's word) and its board: Home's Daily button appears once they are known
   void dailyUi.refresh();

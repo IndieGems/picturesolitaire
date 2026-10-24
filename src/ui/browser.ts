@@ -27,13 +27,18 @@ for (const type of ["gesturestart", "gesturechange", "gestureend"])
 
 // Ghost taps: a quick double tap on a button that swaps the screen lands its
 // second tap on whatever the NEW screen has in that spot (Next, then the next
-// board's Undo). Taps this soon after a screen change are dropped. Script
-// clicks (the check tools' `.click()`) are never trusted events, so they pass.
-const GHOST_MS = 350;
+// board's Undo). Taps this soon after a screen change are dropped, never longer
+// than 300 ms, and never on the first screen at start-up, which follows no tap.
+// Script clicks (the check tools' `.click()`) are never trusted events, so they pass.
+const GHOST_MS = 300;
 let swappedAt = -Infinity;
 /** Call whenever a new screen or card replaces the old one. */
 export function screenChanged(): void {
   swappedAt = performance.now();
+}
+/** The first screen at start-up: no tap swapped it in, so nothing is held back. */
+export function firstScreen(): void {
+  swappedAt = -Infinity;
 }
 document.addEventListener(
   "click",

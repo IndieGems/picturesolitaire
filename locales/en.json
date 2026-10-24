@@ -71,6 +71,7 @@
   "home.lastWin_one": "Your last win counted: +{{count}} Coin",
   "home.lastWin_other": "Your last win counted: +{{count}} Coins",
   "home.level": "Level {{level}}",
+  "home.opening": "Opening…",
   "home.play": "Play",
   "offline.reconnecting": "Reconnecting…",
   "offline.title": "No connection",
