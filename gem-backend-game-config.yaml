@@ -33,7 +33,8 @@ config:
   #   frame          the pale frame round every picture, as a share of a card (thin: 0.025),
   #                  never under frameMin px
   #   stackRow       the stacks' row above the grid; stackGap the gap under it
-  #   maxCard        the largest a card is drawn, in screen px (desktop)
+  #   maxCard        the largest a card is drawn, in screen px, with a mouse (desktop)
+  #   maxCardTouch   the same on a touch screen (phone, tablet): high, so the board fills its box
   #   tilt           the slight perspective (true) or straight-on (false)
   #   dragSlop       px a press travels before it is a drag, not a tap
   #   liftTouch      how far a dragged piece rises above the finger (liftMouse: the pointer)
@@ -53,6 +54,7 @@ config:
       "stackRow": 1.18,
       "stackGap": 0.2,
       "maxCard": 136,
+      "maxCardTouch": 320,
       "tilt": false,
       "tiltDegrees": 8,
       "dragSlop": 8,

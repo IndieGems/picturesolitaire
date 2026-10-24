@@ -24,6 +24,11 @@ export const TUNING = {
   stackGap: 0.2,
   /** The largest a card may be drawn, in CSS px (a desktop letterbox). */
   maxCard: 136,
+  /**
+   * The same where the main pointer is a finger (a phone, a tablet): high
+   * enough that a tall screen's board fills its box. maxCard is the desktop's.
+   */
+  maxCardTouch: 320,
   /** The slight perspective of the concept: one switch (also ?tilt=1 / ?tilt=0). */
   tilt: false,
   tiltDegrees: 8,

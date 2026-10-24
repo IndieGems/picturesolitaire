@@ -47,12 +47,21 @@ const COMPACT = { row: 0.8, gap: 0.1, face: 0.62, top: 0.1, fan: 0.09, layers: 3
 /** Cards smaller than this (CSS px) with the roomy stacks: use the compact ones. */
 const COMPACT_BELOW = 56;
 
+/**
+ * The largest a card is drawn: a desktop with a mouse keeps the board at a
+ * comfortable size in its letterbox (maxCard); on a touch screen the board
+ * grows to fill its box (maxCardTouch), so a big tablet is not left 70% full.
+ */
+const coarse = typeof matchMedia === "function" ? matchMedia("(pointer: coarse)") : null;
+const cardCap = () => (coarse?.matches ? TUNING.maxCardTouch : TUNING.maxCard);
+
 /** Fit the stacks and the grid, with square cards, inside a host of w x h. */
 export function layout(w: number, h: number, cols: number, rows: number): Geometry {
   const pad = Math.max(10, Math.min(18, w * 0.035));
   const G = TUNING.gutter;
   const unitsW = cols + (cols - 1) * G;
-  const size = (st: typeof ROOMY) => Math.floor(Math.min((w - 2 * pad) / unitsW, (h - 2 * 6) / (st.row + st.gap + rows + (rows - 1) * G), TUNING.maxCard));
+  const cap = cardCap();
+  const size = (st: typeof ROOMY) => Math.floor(Math.min((w - 2 * pad) / unitsW, (h - 2 * 6) / (st.row + st.gap + rows + (rows - 1) * G), cap));
   // the roomy stacks, unless the box is so short (a phone held sideways) that cards would come out small
   const st = size(ROOMY) < COMPACT_BELOW && size(COMPACT) > size(ROOMY) ? { ...COMPACT, row: TUNING.stackRow * (COMPACT.row / ROOMY.row) } : { ...ROOMY, row: TUNING.stackRow, gap: TUNING.stackGap };
   const s = Math.max(24, size(st));
