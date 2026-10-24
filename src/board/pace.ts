@@ -116,6 +116,8 @@ export type Ease = (t: number) => number;
 export const ease = {
   linear: (t: number) => t,
   out: (t: number) => 1 - (1 - t) ** 3,
+  /** Slow at first, then faster: something going to nothing. */
+  in: (t: number) => t * t,
   inOut: (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2),
   /** Falling: speeds up like a dropped card, then a soft landing in the last tenth. */
   fall: (t: number) => (t < 0.9 ? (t / 0.9) ** 2 * 0.98 : 0.98 + ((t - 0.9) / 0.1) * 0.02),

@@ -316,6 +316,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     if (lessMotion()) return;
     const top = TUNING.mergePop;
     void tween(TUNING.mergePopMs, (t) => {
+      if (v.el.classList.contains("whole")) return; // a finished picture: its exit has it
       v.k = t < 0.4 ? 1 + (top - 1) * ease.out(t / 0.4) : top - (top - 1) * ease.inOut((t - 0.4) / 0.6);
       place(v);
     }, { ease: ease.linear });
@@ -478,16 +479,26 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     }
   }
 
-  /** A finished picture: whole for a beat, a warm glow and sparks, then it leaves. */
+  /**
+   * A finished picture's exit, brief (the creator: the game is the finding):
+   * it swells a little in a warm glow while twinkles flash over and round it,
+   * holds a beat, then shrinks to nothing, and the cards fall. Every part is a
+   * tuning value (completeGrowMs, completeHoldMs, completeLeaveMs); the
+   * twinkles end with it, so nothing is left animating.
+   */
   async function celebrate(done: { pic: number; cells: number[] }[]): Promise<void> {
     const calm = lessMotion();
+    const growMs = calm ? 0 : TUNING.completeGrowMs;
+    const holdMs = TUNING.completeHoldMs;
+    const leaveMs = TUNING.completeLeaveMs;
+    const life = growMs + holdMs + leaveMs;
     await Promise.all(done.map(async ({ pic, cells }, i) => {
       const id = pics[pic]!.id;
       const v = live.find((x) => x.cells.length === cells.length && cells.every((c) => x.cells.includes(c)));
       emit("picture:complete", { pictureId: id, cells: cells.map((c) => ({ col: c % geo.cols, row: Math.floor(c / geo.cols) })) });
       if (!v) return;
       v.el.classList.add("whole");
-      // the glow behind it
+      // the glow behind it, swelling and shrinking with it
       const glow = document.createElement("div");
       glow.className = "bd-glow";
       const bx = v.ox + Math.ceil(geo.s * 0.16);
@@ -496,53 +507,63 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       const bh = (Math.max(...cells.map((c) => Math.floor(c / geo.cols))) - Math.min(...cells.map((c) => Math.floor(c / geo.cols))) + 1) * (geo.sh + geo.g) - geo.g;
       glow.style.cssText = `left:${bx}px;top:${by}px;width:${bw}px;height:${bh}px;border-radius:${Math.round(geo.s * 0.16)}px;opacity:0`;
       cardsEl.insertBefore(glow, cardsEl.firstChild);
-      const sparks: HTMLElement[] = [];
+      // twinkles: half over the picture, half just round its edge, each a short flash
+      const twinkles: Promise<void>[] = [];
+      const els: HTMLElement[] = [];
       if (!calm) {
-        for (let k = 0; k < 18; k++) {
-          const sp = document.createElement("i");
-          sp.className = k % 3 ? "bd-spark" : "bd-spark white";
-          fxEl.append(sp);
-          sparks.push(sp);
+        const n = Math.max(0, Math.round(TUNING.twinkles));
+        const rand = (k: number, salt: number) => (((k + 1) * 9301 + (pic + 1) * 49297 + salt * 233280) % 1000) / 1000;
+        for (let k = 0; k < n; k++) {
+          const tw = document.createElement("i");
+          tw.className = "bd-twinkle";
+          fxEl.append(tw);
+          els.push(tw);
+          let x: number, y: number;
+          if (k % 2 === 0) {
+            x = bx + bw * (0.1 + 0.8 * rand(k, 1));
+            y = by + bh * (0.1 + 0.8 * rand(k, 2));
+          } else {
+            // on the frame's edge, a little outside it
+            const side = (k >> 1) % 4;
+            const u = rand(k, 3);
+            const out = geo.s * 0.06 * rand(k, 4);
+            x = side === 0 || side === 2 ? bx + u * bw : side === 1 ? bx + bw + out : bx - out;
+            y = side === 1 || side === 3 ? by + u * bh : side === 2 ? by + bh + out : by - out;
+          }
+          const size = (geo.s * (0.22 + 0.2 * rand(k, 5))) / 20; // the element is 20 px
+          const spin = 45 + 90 * rand(k, 6);
+          const delay = (k / Math.max(1, n)) * (growMs + holdMs) * 0.9 + i * TUNING.completeStaggerMs;
+          const dur = Math.max(80, Math.min(i * TUNING.completeStaggerMs + life - delay, life * 0.5));
+          twinkles.push(tween(dur, (t) => {
+            const a = Math.sin(Math.PI * t);
+            tw.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) rotate(${(spin * t).toFixed(1)}deg) scale(${(size * a).toFixed(3)})`;
+            tw.style.opacity = String(a);
+          }, { delay, ease: ease.linear }));
         }
       }
-      await wait(i * 120);
-      const top = calm ? 1 : 1.05;
-      const hold = TUNING.completeHoldMs;
-      await Promise.all([
-        tween(hold * 0.35, (t) => {
-          v.k = 1 + (top - 1) * t;
-          place(v);
-          glow.style.opacity = String(t);
-        }, { ease: ease.back }),
-        ...sparks.map((sp, k) => {
-          // from the frame's edge, outward
-          const side = k % 4;
-          const u = ((k * 37) % 100) / 100;
-          const sx = side === 0 ? bx + u * bw : side === 1 ? bx + bw : side === 2 ? bx + u * bw : bx;
-          const sy = side === 0 ? by : side === 1 ? by + u * bh : side === 2 ? by + bh : by + u * bh;
-          const cx = bx + bw / 2, cy = by + bh / 2;
-          const d = Math.hypot(sx - cx, sy - cy) || 1;
-          const reach = geo.s * (0.45 + ((k * 53) % 40) / 100);
-          const ex = sx + ((sx - cx) / d) * reach;
-          const ey = sy + ((sy - cy) / d) * reach;
-          return tween(hold * 0.7, (t) => {
-            sp.style.transform = `translate(${sx + (ex - sx) * t}px, ${sy + (ey - sy) * t}px) scale(${1 - t * 0.6})`;
-            sp.style.opacity = String(t < 0.2 ? t / 0.2 : 1 - (t - 0.2) / 0.8);
-          }, { delay: (k % 6) * 30 });
-        }),
-      ]);
-      await wait(hold * 0.4);
-      emit("picture:clear", { pictureId: id });
-      const y0 = v.y;
-      await tween(TUNING.completeLeaveMs, (t) => {
-        v.k = top - (calm ? 0.1 : 0.25) * t;
-        v.y = y0 - (calm ? 0 : geo.s * 0.35 * t);
-        v.el.style.opacity = String(1 - t);
-        glow.style.opacity = String(1 - t);
+      await wait(i * TUNING.completeStaggerMs);
+      const top = calm ? 1 : TUNING.completeGrow;
+      const scaleGlow = (k: number) => (glow.style.transform = `scale(${k.toFixed(4)})`);
+      await tween(growMs, (t) => {
+        v.k = 1 + (top - 1) * t;
         place(v);
-      }, { ease: ease.inOut });
+        glow.style.opacity = String(t);
+        scaleGlow(v.k);
+      }, { ease: ease.out });
+      glow.style.opacity = "1";
+      await wait(holdMs);
+      emit("picture:clear", { pictureId: id });
+      await tween(leaveMs, (t) => {
+        // to nothing, faster as it goes (reduced motion: a soft fade where it stands)
+        v.k = calm ? 1 - 0.08 * t : top * (1 - t);
+        v.el.style.opacity = String(calm ? 1 - t : t < 0.6 ? 1 : 1 - (t - 0.6) / 0.4);
+        glow.style.opacity = String(1 - t);
+        scaleGlow(Math.max(0.001, v.k));
+        place(v);
+      }, { ease: calm ? ease.linear : ease.in });
+      await Promise.all(twinkles);
       glow.remove();
-      for (const sp of sparks) sp.remove();
+      for (const el of els) el.remove();
       dropView(v);
     }));
   }
@@ -668,6 +689,15 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     px: number;
     py: number;
     to: number;
+    /** Where the press went down on screen, and the farthest the pointer has been from it (px). */
+    sx: number;
+    sy: number;
+    moved: number;
+    /** The piece was picked up by a tap before this drag. */
+    wasSelected: boolean;
+    /** The piece element's size (its scale is about its centre). */
+    W: number;
+    H: number;
     stop: () => void;
   } | null = null;
   let selected: { v: PieceView; from: number } | null = null;
@@ -736,6 +766,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     const v = viewWith(p.cell);
     if (!v) return;
     if (guideMode && !(selected?.v === v) && !guideLets(p.cell)) return;
+    const wasSelected = selected?.v === v;
     if (selected && selected.v !== v) {
       settleBack(selected.v);
       selected = null;
@@ -748,25 +779,55 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     const liftTo = (p.touch ? TUNING.liftTouch : TUNING.liftMouse) * geo.sh;
     drag = {
       id: p.id, v, from: p.cell, gx: p.gx - c.x, gy: p.gy - c.y, lift: 0, liftTo, px: g.x, py: g.y, to: p.cell,
+      sx: p.x, sy: p.y, moved: Math.hypot(e.clientX - p.x, e.clientY - p.y), wasSelected,
+      W: parseFloat(v.el.style.width) || 0, H: parseFloat(v.el.style.height) || 0,
+      // only the swell (and a lift, if one is tuned in) is animated; the following
+      // is done as the pointer moves, so a finger held still draws nothing
       stop: run((dt) => {
         if (!drag) return false;
         drag.lift = Math.min(1, drag.lift + dt / 110);
-        const cx = drag.px - drag.gx;
-        const cy = drag.py - drag.gy - drag.liftTo * ease.out(drag.lift);
-        const rest = centre(drag.from);
-        drag.v.x = drag.v.ox + (cx - rest.x);
-        drag.v.y = drag.v.oy + (cy - rest.y);
-        drag.v.k = 1 + (TUNING.liftScale - 1) * ease.out(drag.lift);
-        place(drag.v);
-        const to = clampTarget(state, drag.from, nearestCell(geo, cx - geo.s / 2, cy - geo.sh / 2));
-        if (to !== drag.to) {
-          drag.to = to;
-          preview(drag.from, to, drag.v);
-        }
-        return true;
+        follow();
+        return drag.lift < 1;
       }, false),
     };
+    follow();
     if (guideMode) relight();
+  }
+
+  /** The dragged piece where the pointer is: its grab point under it, 1:1. */
+  function follow(): void {
+    if (!drag) return;
+    const d = drag;
+    const up = ease.out(d.lift);
+    const k = 1 + (TUNING.dragScale - 1) * up;
+    const cx = d.px - d.gx;
+    const cy = d.py - d.gy - d.liftTo * up;
+    const rest = centre(d.from);
+    const x0 = d.v.ox + (cx - rest.x);
+    const y0 = d.v.oy + (cy - rest.y);
+    // the swell is about the element's centre: shift it so the point under the finger stays there
+    d.v.x = x0 - (k - 1) * (d.px - (x0 + d.W / 2));
+    d.v.y = y0 - (k - 1) * (d.py - d.liftTo * up - (y0 + d.H / 2));
+    d.v.k = k;
+    place(d.v);
+    const to = clampTarget(state, d.from, nearestCell(geo, cx - geo.s / 2, cy - geo.sh / 2));
+    if (to !== d.to) {
+      d.to = to;
+      preview(d.from, to, d.v);
+    }
+  }
+
+  /** A drag that hardly moved and never left its cell was a tap: the piece is picked up, as a tap picks it. */
+  function pickUp(v: PieceView, from: number): void {
+    selected = { v, from };
+    if (guideMode) relight();
+    const x0 = v.x, y0 = v.y, k0 = v.k;
+    void tween(TUNING.dropMs, (t) => {
+      v.x = x0 + (v.ox - x0) * t;
+      v.y = y0 + (v.oy - geo.s * 0.06 - y0) * t;
+      v.k = k0 + (TUNING.liftScale - k0) * t;
+      place(v);
+    }, { calm: false });
   }
 
   function onDown(e: PointerEvent): void {
@@ -795,11 +856,15 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       const g = toGrid(e.clientX, e.clientY);
       drag.px = g.x;
       drag.py = g.y;
+      drag.moved = Math.max(drag.moved, Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy));
+      follow();
       return;
     }
     if (!press || e.pointerId !== press.id) return;
-    if (Math.hypot(e.clientX - press.x, e.clientY - press.y) < TUNING.dragSlop) return;
     if (press.cell < 0 || state.board[press.cell] === EMPTY) return;
+    // with a piece picked up by a tap, a press on another piece is most likely the second tap
+    const slop = selected && viewWith(press.cell) !== selected.v ? TUNING.tapSlop : TUNING.dragSlop;
+    if (Math.hypot(e.clientX - press.x, e.clientY - press.y) < slop) return;
     const p = press;
     press = null;
     startDrag(p, e);
@@ -813,6 +878,18 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       d.stop();
       clearPreview();
       const m = { from: d.from, to: d.to };
+      // it hardly moved and never left its cell: a tap after all (tap-then-tap)
+      if (d.to === d.from && d.moved < TUNING.tapSlop) {
+        if (!d.wasSelected) {
+          pickUp(d.v, d.from);
+          return;
+        }
+        // the picked-up piece tapped again: put back
+        emit("piece:cancel", {});
+        void settleBack(d.v);
+        if (guideMode) relight();
+        return;
+      }
       if (d.to !== d.from && guideTakes(m)) void play(m, d.v);
       else {
         emit("piece:cancel", {});

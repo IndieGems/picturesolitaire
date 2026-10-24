@@ -48,14 +48,18 @@ config:
   #   maxCard        the widest a card is drawn, in screen px, with a mouse (desktop)
   #   maxCardTouch   the same on a touch screen (phone, tablet): high, so the board fills its box
   #   tilt           the slight perspective (true) or straight-on (false)
-  #   dragSlop       px a press travels before it is a drag, not a tap
-  #   liftTouch      how far a dragged piece rises above the finger (liftMouse: the pointer)
+  #   dragSlop       px a press travels before the piece follows the finger, 1:1
+  #   tapSlop        px within which a press that stays on its own cell is still a tap
+  #   liftTouch      how far a dragged piece rises above the finger (liftMouse: the pointer); 0 = none
+  #   dragScale      a dragged piece's slight swell, about the finger; liftScale a tapped one's
   #   dropMs         a dropped piece settling; slideMs covered cards going back
   #   fallMs         a fall of one row
   #   dealStagger    THE refill stagger: from one dealt card to the next, left to right
   #   dealMs         one dealt card's drop from its stack
   #   mergePop       the pop when neighbours join (1.07 = 7% bigger), for mergePopMs
-  #   completeHoldMs a finished picture shown whole; completeLeaveMs it leaving
+  #   completeGrow   a finished picture swells this much over completeGrowMs, twinkling,
+  #                  holds completeHoldMs, then shrinks to nothing over completeLeaveMs;
+  #                  completeStaggerMs between two finished at once; twinkles how many
   #   shuffleMs      Shuffle's cards trading places; hintMs the Hint's ghost flight
   board: |
     {
@@ -70,9 +74,11 @@ config:
       "maxCardTouch": 320,
       "tilt": false,
       "tiltDegrees": 8,
-      "dragSlop": 8,
-      "liftTouch": 0.62,
-      "liftMouse": 0.08,
+      "dragSlop": 3,
+      "tapSlop": 10,
+      "liftTouch": 0,
+      "liftMouse": 0,
+      "dragScale": 1.03,
       "liftScale": 1.06,
       "dropMs": 150,
       "slideMs": 240,
@@ -81,8 +87,12 @@ config:
       "dealMs": 280,
       "mergePop": 1.07,
       "mergePopMs": 260,
-      "completeHoldMs": 1000,
-      "completeLeaveMs": 420,
+      "completeGrow": 1.06,
+      "completeGrowMs": 140,
+      "completeHoldMs": 90,
+      "completeLeaveMs": 220,
+      "completeStaggerMs": 60,
+      "twinkles": 16,
       "shuffleMs": 460,
       "hintMs": 1300
     }

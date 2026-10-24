@@ -41,11 +41,25 @@ export const TUNING = {
   tiltDegrees: 8,
 
   // --- the hand
-  /** How far a press travels, in CSS px, before it is a drag rather than a tap. */
-  dragSlop: 8,
-  /** How far a dragged piece rises above the fingertip (touch) or the pointer (mouse), in card heights. */
-  liftTouch: 0.62,
-  liftMouse: 0.08,
+  /**
+   * How far a press travels, in CSS px, before the piece follows it, 1:1 from
+   * there (the creator: "a nice easy slide"). Small: a press that ends within
+   * tapSlop of where it went down, still on its own cell, is a tap all the
+   * same, so tap-then-tap survives a shaky finger. While a piece is picked up
+   * by a tap, a press on another piece needs tapSlop to become a drag.
+   */
+  dragSlop: 3,
+  tapSlop: 10,
+  /**
+   * How far a dragged piece rises above the fingertip (touch) or the pointer
+   * (mouse), in card heights: 0, the piece stays exactly with the finger
+   * (the creator, after Jigsaw Drop).
+   */
+  liftTouch: 0,
+  liftMouse: 0,
+  /** A dragged piece's slight swell, about the finger (the grab point never leaves it). */
+  dragScale: 1.03,
+  /** A piece picked up by a tap: its swell (it also rises a little, 0.06 of a card). */
   liftScale: 1.06,
 
   // --- motion
@@ -62,9 +76,19 @@ export const TUNING = {
   /** The small scale pop when correct neighbours join. */
   mergePop: 1.07,
   mergePopMs: 260,
-  /** A finished picture: shown whole for this long, then it leaves. */
-  completeHoldMs: 1000,
-  completeLeaveMs: 420,
+  /**
+   * A finished picture's exit, brief (the creator: the game is the finding, not
+   * the looking): it swells to completeGrow over completeGrowMs and twinkles,
+   * holds completeHoldMs, then shrinks to nothing over completeLeaveMs, and the
+   * cards fall. Twinkles: how many sparkle over and round it. Two pictures
+   * finished by one move start completeStaggerMs apart.
+   */
+  completeGrow: 1.06,
+  completeGrowMs: 140,
+  completeHoldMs: 90,
+  completeLeaveMs: 220,
+  completeStaggerMs: 60,
+  twinkles: 16,
   /** Shuffle: the loose cards trading places. */
   shuffleMs: 460,
   /** Hint: the ghost of the piece going to where it should be played. */

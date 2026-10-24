@@ -67,15 +67,22 @@
   box-sizing: border-box;
 }
 
-/* a finished picture: a warm glow behind it, and sparks */
+/* a finished picture: a warm glow behind it (it swells and shrinks with the
+   picture), and twinkles over and round it: a soft point of light with a
+   four-pointed glint, scaled and turned from the board's code */
 .bd-glow {
   position: absolute; z-index: 3; pointer-events: none;
   box-shadow: 0 0 calc(var(--s) * 0.5) calc(var(--s) * 0.18) rgba(255, 186, 96, 0.55), 0 0 calc(var(--s) * 1.1) calc(var(--s) * 0.3) rgba(255, 160, 70, 0.28);
 }
-.bd-spark {
+.bd-twinkle {
   position: absolute; left: 0; top: 0; display: block;
-  width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; border-radius: 50%;
-  background: radial-gradient(circle, #fff3d6 0%, #f6c27a 45%, rgba(233, 150, 69, 0) 72%);
-  opacity: 0; will-change: transform, opacity;
+  width: 20px; height: 20px; margin: -10px 0 0 -10px;
+  background: radial-gradient(circle, #ffffff 0%, #fff4d6 16%, rgba(255, 214, 140, 0.5) 30%, rgba(255, 200, 120, 0) 52%);
+  z-index: 6; /* over the finished picture (.whole) */
+  opacity: 0; will-change: transform, opacity; pointer-events: none;
 }
-.bd-spark.white { width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; background: radial-gradient(circle, #ffffff 0%, rgba(255, 255, 255, 0) 70%); }
+.bd-twinkle::before, .bd-twinkle::after {
+  content: ""; position: absolute; left: 9px; top: 0; width: 2px; height: 20px; border-radius: 1px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #ffffff 50%, rgba(255, 255, 255, 0));
+}
+.bd-twinkle::after { transform: rotate(90deg); }
