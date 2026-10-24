@@ -1,5 +1,6 @@
-// The campaign: which board the player plays next, and every picture they have
-// restored (what the albums show). Kept in the CLOUD, in the
+// The campaign: which board the player plays next, every picture they have
+// restored (what the albums show), the fewest moves on each challenge board,
+// and how far the first board's guide got. Kept in the CLOUD, in the
 // player's "campaign" save slot (declared in the game config, save_schemas),
 // never in browser storage (AGENTS.md: every build runs on a new web address).
 //
@@ -31,9 +32,16 @@ export interface Campaign {
   won: number;
   /** Every picture restored, by catalogue id, each once (src/content/pictures.json). */
   restored: string[];
+  /**
+   * The challenge route: the fewest moves the player cleared each board in, by
+   * board id. A board with a number here is cleared, which opens the next one.
+   */
+  best: Record<string, number>;
+  /** Steps of the first board's guide done (guide.ts); it only moves forward. */
+  guide: number;
 }
 
-const fresh = (): Campaign => ({ v: 1, level: 1, won: 0, restored: [] });
+const fresh = (): Campaign => ({ v: 1, level: 1, won: 0, restored: [], best: {}, guide: 0 });
 
 let state: Campaign = fresh();
 let read = false;
@@ -69,9 +77,23 @@ function valid(x: unknown): x is Campaign {
   return !!c && typeof c === "object" && Number.isInteger(c.level) && c.level >= 1;
 }
 
+const count = (n: unknown): number => (typeof n === "number" && Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0);
+
+/** Two copies of the save as one: the furthest level, every picture, the fewer moves on each challenge. */
 function merge(a: Campaign, b: Campaign): Campaign {
   const restored = [...new Set([...(a.restored ?? []), ...(Array.isArray(b.restored) ? b.restored.filter((id) => typeof id === "string") : [])])];
-  return { v: 1, level: Math.max(a.level, b.level), won: Math.max(a.won ?? 0, b.won ?? 0), restored };
+  const best: Record<string, number> = { ...a.best };
+  if (b.best && typeof b.best === "object")
+    for (const [id, moves] of Object.entries(b.best))
+      if (count(moves) > 0) best[id] = id in best ? Math.min(best[id]!, count(moves)) : count(moves);
+  return {
+    v: 1,
+    level: Math.max(a.level, b.level),
+    won: Math.max(count(a.won), count(b.won)),
+    restored,
+    best,
+    guide: Math.max(count(a.guide), count(b.guide)),
+  };
 }
 
 /** A refusal is an answer: the platform is there, and asking again will not change it. */
@@ -157,6 +179,36 @@ export function restore(pictureId: string): void {
 
 /** Pictures shown as restored for checking the albums by hand (dev server only); never saved. */
 const pretended = new Set<string>();
+
+/**
+ * A challenge board was cleared in `moves` (any number: there is no fail, and
+ * going over par still clears it). Keeps the fewer moves; saved now. Says
+ * whether it was the first clear and whether it beat the best before.
+ */
+export function cleared(id: string, moves: number): { first: boolean; better: boolean } {
+  const before = state.best[id];
+  const first = before === undefined;
+  const better = !first && moves < before;
+  if (first || better) {
+    state = { ...state, best: { ...state.best, [id]: moves } };
+    changed();
+  }
+  schedulePush();
+  return { first, better };
+}
+
+/** The fewest moves the player cleared this challenge board in, if they have. */
+export function bestOf(id: string): number | undefined {
+  return state.best[id];
+}
+
+/** The guide's steps done: moves only forward, saved now. */
+export function guided(step: number): void {
+  if (step <= state.guide) return;
+  state = { ...state, guide: step };
+  changed();
+  schedulePush();
+}
 
 /** Has the player restored this picture? */
 export function isRestored(pictureId: string): boolean {

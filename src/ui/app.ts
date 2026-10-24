@@ -5,6 +5,9 @@
 //     +----------------+   (the board in hand is kept; Play returns to it)
 //   home  --Albums-->  albums  -->  an album  -->  a picture, full screen
 //                      (albums.ts; each Back goes one step up)
+//   home  --Challenges-->  the route  -->  a challenge board  --won-->  win card
+//                          (challenges.ts; a second lane beside the campaign,
+//                          neither blocking the other)
 //
 // Over them: the restart card (Restart is free, so the card only checks it was
 // meant), the win card, and the "No connection" card, which covers every
@@ -26,8 +29,12 @@ import { t } from "./i18n";
 import { ICONS, type IconName } from "./icons";
 import { screenChanged } from "./browser";
 import { online, onOnline, pretend } from "./online";
-import { campaign, loadCampaign, onCampaign, pretendRestored, restore, waitForCloud, won } from "./progress";
+import { campaign, cleared, loadCampaign, onCampaign, pretendRestored, restore, waitForCloud, won } from "./progress";
 import { createAlbums } from "./albums";
+import { createChallenges } from "./challenges";
+import { createGuide, type GuideMode } from "./guide";
+import { fireworks } from "./fireworks";
+import type { Challenge } from "./challenge-data";
 import { levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
 
 // ---------- a little DOM ----------
@@ -57,7 +64,10 @@ const app = h("div", { id: "app" });
 const homeWhere = h("div", { class: "where glass" });
 const homePlayLabel = h("span");
 const homePlay = button("amber play", "home.play", icon("play"), homePlayLabel);
-const homeAlbums = button("albums", "home.albums", icon("albums"), t("home.albums"));
+const homeAlbums = button("tile-btn albums", "home.albums", icon("albums"), h("span", {}, t("home.albums")));
+// shown once the challenge boards exist: nothing promises a screen with nothing on it
+const homeChallenges = button("tile-btn challenges", "home.challenges", icon("challenges"), h("span", {}, t("home.challenges")));
+homeChallenges.hidden = true;
 // the game's name is Art's drawn title (public/art/wordmark.webp, 840 x 405); its
 // words reach screen readers as the picture's alt
 const wordmark = h("img", {
@@ -80,11 +90,13 @@ const home = h(
   ),
   homeWhere,
   homePlay,
-  homeAlbums,
+  h("div", { class: "more" }, homeAlbums, homeChallenges),
 );
 
-// the board: the level, Back, the board, the helpers
+// the board: the level (on a challenge: its number, par and the moves so far), Back, the board, the helpers
 const levelPill = h("div", { class: "top-pill glass" });
+const pillName = h("span", { class: "name" });
+const pillPar = h("span", { class: "par" });
 const back = button("round top-back", "board.back", icon("back"));
 back.setAttribute("aria-label", t("board.back"));
 const host = h("div", { class: "board-host" });
@@ -129,19 +141,44 @@ const offlineVeil = h(
 
 // the albums (albums.ts): the list, one album, and the full-screen picture
 const albumsUi = createAlbums({ home: () => goHome(), show: (which) => show(which) });
+// the challenge route (challenges.ts)
+const routeUi = createChallenges({ home: () => goHome(), show: () => show("challenges"), play: (c) => openPlay({ kind: "challenge", c }) });
 
-app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, albumsUi.viewer, winVeil, restartVeil, offlineVeil);
+app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, routeUi.screen, albumsUi.viewer, winVeil, restartVeil, offlineVeil);
 
 // ---------- state ----------
 
-type Screen = "home" | "board" | "albums" | "album";
+type Screen = "home" | "board" | "albums" | "album" | "challenges";
+/** A board to play: one of the campaign's, or one on the challenge route. */
+type Play = { kind: "campaign"; level: number } | { kind: "challenge"; c: Challenge };
+const samePlay = (a: Play | null, b: Play): boolean =>
+  !!a && (a.kind === "campaign" ? b.kind === "campaign" && a.level === b.level : b.kind === "challenge" && a.c.id === b.c.id);
+
 let screen: Screen = "home";
 let board: BoardHandle | null = null;
-let boardLevel = 0;
+let play: Play | null = null;
 /** The board in hand was won; its card is up (or about to be). */
 let boardWon = false;
 /** A board asked for while there was no connection: opened once it is back. */
-let waiting: number | null = null;
+let waiting: Play | null = null;
+/** Moves so far on the board in hand, when the board says (board:changed). */
+let movesSoFar: number | null = null;
+
+/** The board as the guide steers it (its guide mode is the gameplay member's). */
+type GuidedBoard = BoardHandle & { guide?: (mode: GuideMode) => void };
+
+// the first board's guide (guide.ts): over everything, the gear too
+const guide = createGuide({
+  app,
+  host,
+  hint: helperBtns.hint.btn,
+  others: () =>
+    [back, restartBtn, helperBtns.undo.btn, helperBtns.hint.btn, helperBtns.shuffle.btn, document.getElementById("settings-button")].filter(
+      (el): el is HTMLElement => !!el,
+    ),
+  setBoard: (mode) => (board as GuidedBoard | null)?.guide?.(mode),
+  stillHere: () => screen === "board" && play?.kind === "campaign" && play.level === 1 && !boardWon,
+});
 
 const levels = () => levelCount();
 const allDone = () => campaign().level > levels();
@@ -152,6 +189,7 @@ function show(next: Screen): void {
   boardScreen.hidden = next !== "board";
   albumsUi.listScreen.hidden = next !== "albums";
   albumsUi.albumScreen.hidden = next !== "album";
+  routeUi.screen.hidden = next !== "challenges";
   if (next !== "album") albumsUi.closeViewer();
   screenChanged();
   drawOffline();
@@ -163,6 +201,7 @@ function drawHome(): void {
   const c = campaign();
   homeWhere.textContent = allDone() ? t("home.allDone") : t("home.level", { level: c.level });
   homePlayLabel.textContent = t("home.play");
+  homeChallenges.hidden = !routeUi.exists();
 }
 
 homePlay.addEventListener("click", async () => {
@@ -177,30 +216,54 @@ homePlay.addEventListener("click", async () => {
 });
 
 homeAlbums.addEventListener("click", () => albumsUi.openList());
+homeChallenges.addEventListener("click", () => void routeUi.openRoute());
 
 // ---------- the board ----------
 
 function openLevel(level: number): void {
+  openPlay({ kind: "campaign", level });
+}
+
+function openPlay(next: Play): void {
   if (!online()) {
-    waiting = level;
+    waiting = next;
     drawOffline();
     return;
   }
   waiting = null;
   hideCard(winVeil);
   hideCard(restartVeil);
-  if (!board || boardLevel !== level || boardWon) {
+  // the board in hand is kept (Back, then the same board again, carries on)
+  if (!board || !samePlay(play, next) || boardWon) {
     board?.destroy();
     host.replaceChildren();
     boardWon = false;
-    boardLevel = level;
+    play = next;
+    movesSoFar = null;
     stuckNote.hidden = true;
-    levelPill.textContent = t("board.level", { level });
+    drawPill();
     // the board reports its helpers and undo through board:changed, once at start too
     drawHelpers({ undo: 3, hint: 3, shuffle: 3 }, false);
-    board = openBoard(host, level);
+    guide.cancel();
+    board = openBoard(host, next.kind === "campaign" ? next.level : next.c.level);
+    // the first board teaches the game, once the save says the player has not learnt it yet
+    if (next.kind === "campaign" && next.level === 1) void guide.offer();
   }
   show("board");
+}
+
+/** The top row's information: the level, or a challenge's number, par and moves so far. */
+function drawPill(): void {
+  if (!play) return;
+  levelPill.classList.toggle("two", play.kind === "challenge");
+  if (play.kind === "campaign") {
+    levelPill.replaceChildren(t("board.level", { level: play.level }));
+    return;
+  }
+  pillName.textContent = t("board.challenge", { n: play.c.n });
+  pillPar.textContent =
+    movesSoFar === null ? t("board.par", { par: play.c.par }) : t("board.parYou", { par: play.c.par, moves: movesSoFar });
+  levelPill.replaceChildren(pillName, pillPar);
 }
 
 function goHome(): void {
@@ -219,8 +282,22 @@ function goHome(): void {
 back.addEventListener("click", () => {
   // a won board's card is never lost to a quick Back: it shows at once instead
   if (boardWon && winVeil.hidden) return void showWin();
+  if (play?.kind === "challenge") return void toRoute();
   goHome();
 });
+
+/** Back to the challenge route, the board in hand kept unless it was won. */
+function toRoute(): void {
+  hideCard(winVeil);
+  hideCard(restartVeil);
+  if (boardWon) {
+    board?.destroy();
+    host.replaceChildren();
+    board = null;
+    boardWon = false;
+  }
+  void routeUi.openRoute();
+}
 
 function drawHelpers(counts: HelperCounts, canUndo: boolean): void {
   for (const key of ["undo", "hint", "shuffle"] as const) {
@@ -237,14 +314,39 @@ helperBtns.undo.btn.addEventListener("click", () => board?.undo());
 helperBtns.hint.btn.addEventListener("click", () => board?.hint());
 helperBtns.shuffle.btn.addEventListener("click", () => board?.shuffle());
 
-on("board:changed", ({ canUndo, helpers: counts }) => drawHelpers(counts, canUndo));
+on("board:changed", (e) => {
+  drawHelpers(e.helpers, e.canUndo);
+  // the moves so far, where the board reports them: a challenge's top row counts against par
+  const moves = (e as { moves?: number }).moves;
+  if (typeof moves === "number" && play?.kind === "challenge") {
+    movesSoFar = moves;
+    drawPill();
+  }
+});
 
 // Stuck: only Undo or Restart helps, so the line says so, and stays until the player does something.
+let stuckLine: string | null = null;
 on("board:stuck", ({ doomed }) => {
-  stuckNote.textContent = t(doomed ? "board.doomed" : "board.stuck");
+  stuckLine = t(doomed ? "board.doomed" : "board.stuck");
+  stuckNote.textContent = stuckLine;
   stuckNote.hidden = false;
 });
-const unstick = () => (stuckNote.hidden = true);
+const unstick = () => {
+  stuckLine = null;
+  clearTimeout(refusedTimer);
+  stuckNote.hidden = true;
+};
+// Shuffle that could find no better mix spent nothing: say so for a moment, then back to what was there
+let refusedTimer: number | undefined;
+on("helper:refused", () => {
+  stuckNote.textContent = t("board.noMix");
+  stuckNote.hidden = false;
+  clearTimeout(refusedTimer);
+  refusedTimer = window.setTimeout(() => {
+    if (stuckLine) stuckNote.textContent = stuckLine;
+    else stuckNote.hidden = true;
+  }, 3500);
+});
 for (const type of ["piece:lift", "helper:undo", "helper:shuffle", "board:restart", "board:start", "board:won"] as const) on(type, unstick);
 
 // Restart is free; the card only checks it was meant. Before the first move there is nothing to lose.
@@ -273,25 +375,38 @@ restartBtn.addEventListener("click", () => {
 
 // ---------- the win card ----------
 
-let lastWin: { level: number; moves: number; ms: number } | null = null;
+type Win =
+  | { kind: "campaign"; level: number; moves: number; ms: number; milestone: boolean }
+  | { kind: "challenge"; c: Challenge; moves: number; ms: number; first: boolean; better: boolean };
+let lastWin: Win | null = null;
 
 // every picture restored is the player's to keep: saved with the board's end (won), one write a board
 on("picture:clear", ({ pictureId }) => restore(pictureId));
 
-on("board:won", ({ level, moves, ms }) => {
-  const n = Number(level) || boardLevel;
+on("board:won", ({ moves, ms }) => {
+  if (!play) return;
   boardWon = true;
-  won(n);
-  lastWin = { level: n, moves, ms };
+  if (play.kind === "campaign") {
+    won(play.level);
+    // the board the guide taught on ends on the guide's own milestone card
+    const milestone = play.level === 1 && guide.takeFinish();
+    lastWin = { kind: "campaign", level: play.level, moves, ms, milestone };
+  } else {
+    // any win clears a challenge board, over par too; the save keeps the fewer moves
+    const { first, better } = cleared(play.c.id, moves);
+    lastWin = { kind: "challenge", c: play.c, moves, ms, first, better };
+  }
   // the board fires this after its own flourish, so the card goes straight up
   showWin();
 });
 
 function showWin(): void {
   if (!lastWin || !board) return;
+  const gallery = layoutGallery(board.pictures());
+  if (lastWin.kind === "challenge") return void showChallengeWin(lastWin, gallery);
+  if (lastWin.milestone) return void showMilestone(gallery);
   const { level, moves, ms } = lastWin;
   const last = level >= levels();
-  const gallery = layoutGallery(board.pictures());
   const next = last
     ? withClick(button("amber next", "win.home", icon("home"), t("win.home")), goHome)
     : withClick(button("amber next", "win.next", t("win.next"), icon("next")), () => openLevel(level + 1));
@@ -309,6 +424,65 @@ function showWin(): void {
       ),
       last ? h("p", {}, t("win.allDone")) : null,
       next,
+    ),
+  );
+  showCard(winVeil);
+}
+
+/**
+ * The guide's finish: a milestone card of its own in place of the win card, with a
+ * burst over it (the game standard: a card, fireworks, a picture of the prize). The
+ * prize is the server's to pay (the c01 win's verdict); its place on the card waits
+ * for it.
+ */
+function showMilestone(gallery: HTMLElement): void {
+  const prize = h("div", { class: "prize", hidden: "" });
+  const card = h(
+    "div",
+    { class: "card milestone" },
+    h("h2", {}, t("guide.doneTitle")),
+    h("p", {}, t("guide.doneWhy")),
+    gallery,
+    prize,
+    withClick(button("amber next", "win.next", t("win.next"), icon("next")), () => openLevel(2)),
+  );
+  winVeil.replaceChildren(card);
+  showCard(winVeil);
+  fireworks(card, 6, 3000);
+}
+
+/** A challenge board's card: the pictures, then "Par N · You M". No fail: over par, it is still cleared. */
+function showChallengeWin(w: Extract<Win, { kind: "challenge" }>, gallery: HTMLElement): void {
+  const { c, moves, better } = w;
+  const after = routeUi.after(c);
+  // a word only for a good result; going over par says nothing against the player
+  const praise = better ? t("win.newBest") : moves < c.par ? t("win.underPar") : moves === c.par ? t("win.onPar") : "";
+  // beside Next it is the plain one, its word alone so both fit a small phone; on the last board, the main one
+  const toRouteBtn = after
+    ? withClick(button("", "win.route", t("win.route")), toRoute)
+    : withClick(button("amber next", "win.route", icon("challenges"), t("win.route")), toRoute);
+  const buttons = after
+    ? h(
+        "div",
+        { class: "row" },
+        toRouteBtn,
+        withClick(button("amber next", "win.next", t("win.next"), icon("next")), () => openPlay({ kind: "challenge", c: after })),
+      )
+    : toRouteBtn;
+  winVeil.replaceChildren(
+    h(
+      "div",
+      { class: "card" },
+      h("h2", {}, t("win.title")),
+      gallery,
+      h(
+        "div",
+        { class: "stats" },
+        h("div", { class: "stat glass" }, h("b", {}, String(c.par)), h("span", {}, t("win.par"))),
+        h("div", { class: "stat glass" }, h("b", {}, String(moves)), h("span", {}, t("win.you"))),
+      ),
+      praise ? h("p", { class: "praise" }, praise) : null,
+      buttons,
     ),
   );
   showCard(winVeil);
@@ -379,7 +553,7 @@ function drawOffline(): void {
 }
 
 onOnline((up) => {
-  if (up && waiting !== null) openLevel(waiting);
+  if (up && waiting !== null) openPlay(waiting);
   drawOffline();
 });
 
@@ -423,6 +597,7 @@ export async function startApp(): Promise<void> {
   loadCampaign();
   onCampaign(drawHome);
   onCampaign(albumsUi.redraw);
+  onCampaign(routeUi.redraw);
   drawHome();
   document.body.append(app);
   mountSettings(app);
@@ -431,7 +606,7 @@ export async function startApp(): Promise<void> {
   void startSound();
 
   if (import.meta.env.DEV) {
-    (window as unknown as { __ps: unknown }).__ps = { offline: pretend, openLevel, campaign, restored: pretendRestored };
+    (window as unknown as { __ps: unknown }).__ps = { offline: pretend, openLevel, campaign, restored: pretendRestored, cleared, guide };
     // ?restored=id,id shows those pictures as restored in the albums (never saved)
     const fake = new URLSearchParams(location.search).get("restored");
     if (fake) pretendRestored(fake.split(",").filter(Boolean));

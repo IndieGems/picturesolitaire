@@ -20,6 +20,9 @@ export const ICONS = {
   home: art("home"),
   chevron: art("chevron"),
   albums: art("photos"),
+  challenges: art("route"),
+  check: art("check"),
+  lock: art("lock"),
 } as const;
 
 export type IconName = keyof typeof ICONS;
