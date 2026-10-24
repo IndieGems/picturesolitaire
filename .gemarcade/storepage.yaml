@@ -35,7 +35,9 @@ feature_bullets:
   - "No timers and no move limits: every board can be won without help"
   - "Every picture you mend is kept in your albums"
 
-# Played and tested on phones (portrait) and on desktop browsers; never on a TV.
+# Played on phones (portrait) and desktop browsers throughout. Tablets: QA played every screen
+# at 768x1024, 820x1180 and 1024x1366 (portrait, touch) with no faults; on the largest the board
+# stops growing at its card cap and leaves empty table. Never tried on a TV.
 form_factors:
   phone: full
   tablet: full
