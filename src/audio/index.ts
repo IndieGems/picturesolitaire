@@ -7,7 +7,7 @@
 
 import { on } from "../events";
 import { loadSettings } from "../settings";
-import { devProbe, fileOf, load, play, wireEngine, type Voice } from "./engine";
+import { devProbe, fileOf, load, play, refreshMix, wireEngine, type Voice } from "./engine";
 import { duckMusic, startMusic } from "./music";
 import { LOAD_ORDER } from "./sounds";
 
@@ -20,11 +20,15 @@ export async function startAudio(): Promise<void> {
   listen();
   if (import.meta.env.DEV) (window as unknown as { __audio: unknown }).__audio = { ...devProbe(), play };
 
-  // Effects first, a few at a time: they are small, and the first move wants them.
+  // The Sound Tuning editor's mix first (a small file, capped), so a picked
+  // take loads in place of the original.
+  await Promise.race([refreshMix(), new Promise((r) => setTimeout(r, 1000))]);
+
+  // Effects next, a few at a time: they are small, and the first move wants them.
   const queue = [...LOAD_ORDER];
   await Promise.all(
     Array.from({ length: 4 }, async () => {
-      for (let name = queue.shift(); name; name = queue.shift()) await load(name);
+      for (let name = queue.shift(); name; name = queue.shift()) await load(fileOf(name));
     }),
   );
 

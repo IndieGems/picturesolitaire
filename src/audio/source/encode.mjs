@@ -23,6 +23,9 @@ import { fileURLToPath } from "node:url";
 const FF = process.env.FFMPEG || "ffmpeg";
 const here = dirname(fileURLToPath(import.meta.url));
 const out = resolve(here, "../../../public/audio");
+// Alternate takes go beside the project, not into public/: Sound Tuning
+// (tools/sound-tuning/) copies a take into the game only once it is picked.
+const takesOut = resolve(here, "../../../audio/takes");
 mkdirSync(out, { recursive: true });
 
 // start/end in seconds of the source; fade = fade-out length; stereo for music.
@@ -52,6 +55,10 @@ const MUSIC = [
   // seconds into the start (src/audio/music.ts), so no loop point is baked in.
   { name: "bed", src: "bed.mp3", start: 0, end: 86.5, fade: 0.05, lufs: -20 },
 ];
+// Alternate takes for Sound Tuning, made when the creator marks a sound Remake:
+// "<sound>-<letter>" (merge-a, merge-b...), their originals in takes/ here. An
+// entry with `lufs` is treated as music (stereo, loudness), else as an effect.
+const TAKES = [];
 const PEAK_DB = -1.5;
 const only = new Set(process.argv.slice(2));
 const wanted = (s) => only.size === 0 || only.has(s.name);
@@ -77,26 +84,32 @@ function chain(s, highpass) {
   ].filter(Boolean).join(",");
 }
 
-function encode(s, filters, stereo) {
+function encode(s, filters, stereo, dir = out) {
   const ch = stereo ? "2" : "1";
   const src = join(here, s.src);
-  ff(["-i", src, "-af", filters, "-ac", ch, "-ar", "48000", "-c:a", "libopus", "-b:a", stereo ? "48k" : "40k", "-application", "audio", "-vbr", "on", join(out, `${s.name}.ogg`)]);
-  ff(["-i", src, "-af", filters, "-ac", ch, "-ar", "44100", "-c:a", "libmp3lame", "-b:a", stereo ? "80k" : "64k", join(out, `${s.name}.mp3`)]);
-  const kb = (f) => (statSync(join(out, `${s.name}.${f}`)).size / 1024).toFixed(1);
+  ff(["-i", src, "-af", filters, "-ac", ch, "-ar", "48000", "-c:a", "libopus", "-b:a", stereo ? "48k" : "40k", "-application", "audio", "-vbr", "on", join(dir, `${s.name}.ogg`)]);
+  ff(["-i", src, "-af", filters, "-ac", ch, "-ar", "44100", "-c:a", "libmp3lame", "-b:a", stereo ? "80k" : "64k", join(dir, `${s.name}.mp3`)]);
+  const kb = (f) => (statSync(join(dir, `${s.name}.${f}`)).size / 1024).toFixed(1);
   console.log(`${s.name.padEnd(9)} ${(s.end - s.start).toFixed(2)}s  ogg ${kb("ogg")} KB  mp3 ${kb("mp3")} KB`);
 }
 
-for (const s of EFFECTS.filter(wanted)) {
+function effect(s, dir) {
   const base = chain(s, true);
   const log = analyse(["-i", join(here, s.src), "-af", `${base},volumedetect`, "-f", "null", "-"]);
   const peak = Number(/max_volume: (-?[\d.]+) dB/.exec(log)[1]);
-  encode(s, `${base},volume=${(PEAK_DB - peak).toFixed(2)}dB`, false);
+  encode(s, `${base},volume=${(PEAK_DB - peak).toFixed(2)}dB`, false, dir);
 }
-for (const s of MUSIC.filter(wanted)) {
+function music(s, dir) {
   const base = chain(s, false);
   const log = analyse(["-i", join(here, s.src), "-af", `${base},ebur128=peak=true`, "-f", "null", "-"]);
   const lufs = Number(/I:\s+(-?[\d.]+) LUFS/.exec(log.slice(log.lastIndexOf("Summary")))[1]);
   const gain = s.lufs - lufs;
   // A limiter catches any peak the gain pushes over -1 dBFS.
-  encode(s, `${base},volume=${gain.toFixed(2)}dB,alimiter=limit=0.89:level=false`, true);
+  encode(s, `${base},volume=${gain.toFixed(2)}dB,alimiter=limit=0.89:level=false`, true, dir);
 }
+
+for (const s of EFFECTS.filter(wanted)) effect(s, out);
+for (const s of MUSIC.filter(wanted)) music(s, out);
+const takes = TAKES.filter(wanted);
+if (takes.length) mkdirSync(takesOut, { recursive: true });
+for (const s of takes) (s.lufs ? music : effect)(s, takesOut);

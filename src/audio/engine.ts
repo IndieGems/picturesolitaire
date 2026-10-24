@@ -8,6 +8,8 @@
 // - master follows the game's mute and volume (masterGain() in src/sound.ts),
 //   so no sound can slip past them. A mute is a gain of 0, never
 //   ctx.suspend(): the clock keeps running, as the SDK's own mute does.
+// - the Sound Tuning editor's mix (src/audio/mix.ts) sets each effect's level,
+//   mute, pitch and take, and the levels of all effects and of the music.
 // - the music and effects buses follow the Arcade's Music and Sound switches
 //   (onAudioChannels in src/gem.ts), on top of the game's own mute.
 // - the context is suspended whenever the Arcade pauses the game or the page
@@ -23,7 +25,8 @@
 import { gem, onArcadePause, onAudioChannels } from "../gem";
 import { onSettingsChange } from "../settings";
 import { masterGain, onMutedChange } from "../sound";
-import { EFFECTS, type EffectName } from "./sounds";
+import { EMPTY_MIX, cleanMix, pickedTakes, type SoundMix } from "./mix";
+import { EFFECTS, MUSIC, type EffectName } from "./sounds";
 
 export const ctx = new AudioContext({ latencyHint: "interactive" });
 
@@ -49,6 +52,8 @@ musicBus.connect(master);
 
 let channels = { music: true, sounds: true };
 let musicLevel = 1;
+/** The Sound Tuning editor's mix (src/audio/mix.ts), in force from when it is read. */
+let mix: SoundMix = EMPTY_MIX;
 
 /** The slider is linear; loudness is not. Squaring makes half-way sound like half. */
 function volumeCurve(v: number): number {
@@ -62,8 +67,8 @@ function ramp(param: AudioParam, value: number): void {
 
 function applyLevels(): void {
   ramp(master.gain, volumeCurve(masterGain()));
-  ramp(effectsBus.gain, channels.sounds ? 1 : 0);
-  ramp(musicBus.gain, channels.music ? musicLevel : 0);
+  ramp(effectsBus.gain, channels.sounds ? mix.effects : 0);
+  ramp(musicBus.gain, channels.music && !mix.sounds.music?.muted ? musicLevel * mix.music : 0);
 }
 
 /** Set the music bus's own level (src/audio/sounds.ts, MUSIC.gain). */
@@ -178,9 +183,53 @@ const lastPlayed = new Map<EffectName, number>();
 /** A playing effect, to cut short when something more important starts. */
 export type Voice = { fadeOut(seconds: number): void };
 
-/** The file an effect plays: its own name unless its table row names another. */
+/** The file an effect plays: the take the mix picks, else its own name unless its table row names another. */
 export function fileOf(name: EffectName): string {
-  return EFFECTS[name].file ?? name;
+  const take = mix.sounds[name]?.take;
+  return take ? `takes/${take}` : (EFFECTS[name].file ?? name);
+}
+
+/** The file the music plays: the take the mix picks, else the built-in track. */
+export function musicFile(): string {
+  const take = mix.sounds.music?.take;
+  return take ? `takes/${take}` : MUSIC.file;
+}
+
+// --- The mix -------------------------------------------------------------------
+//
+// The Sound Tuning editor saves public/sound-mix.json (src/audio/mix.ts). It is
+// read when the audio starts and again whenever the player comes back to the
+// page (focus, or the tab shown again), at most once a second: in the
+// Editor, a change saved there is heard as soon as the creator clicks back into
+// the game. Nothing polls.
+
+let mixText: string | null = null;
+let mixReadAt = -Infinity;
+const mixHandlers = new Set<() => void>();
+
+/** Call `handler` whenever a new mix comes into force. */
+export function onMixChange(handler: () => void): void {
+  mixHandlers.add(handler);
+}
+
+/** Read the mix; put it in force when it changed. A failed read keeps the last good mix. Never throws. */
+export async function refreshMix(): Promise<void> {
+  if (performance.now() - mixReadAt < 1000) return;
+  mixReadAt = performance.now();
+  try {
+    // `rev`, never `t`: the Gem host reads `t` as its sign-in token.
+    const res = await fetch(`${import.meta.env.BASE_URL}sound-mix.json?rev=${Date.now()}`, { cache: "no-store" });
+    // A missing file can come back as the game's page (the dev server), so the type is the test.
+    const text = res.ok && /json/.test(res.headers.get("content-type") ?? "") ? await res.text() : "";
+    if (text === mixText) return;
+    mix = text ? cleanMix(JSON.parse(text)) : EMPTY_MIX;
+    mixText = text;
+  } catch {
+    return; // the last good mix stands
+  }
+  applyLevels();
+  for (const stem of pickedTakes(mix)) void load(`takes/${stem}`);
+  for (const handler of mixHandlers) handler();
 }
 
 /**
@@ -189,7 +238,8 @@ export function fileOf(name: EffectName): string {
  * bursts out on resume. An effect not loaded yet starts loading instead.
  */
 export function play(name: EffectName, opts: PlayOptions = {}): Voice | null {
-  if (!audible()) return null;
+  const tuned = mix.sounds[name];
+  if (!audible() || tuned?.muted) return null;
   const buffer = buffers.get(fileOf(name));
   if (!buffer) {
     void load(fileOf(name));
@@ -203,9 +253,10 @@ export function play(name: EffectName, opts: PlayOptions = {}): Voice | null {
 
   const source = ctx.createBufferSource();
   source.buffer = buffer;
-  source.playbackRate.value = (def.rate ?? 1) * (opts.rate ?? 1) * (1 + (Math.random() * 2 - 1) * def.jitter);
+  const nudge = 2 ** ((tuned?.pitch ?? 0) / 12);
+  source.playbackRate.value = (def.rate ?? 1) * nudge * (opts.rate ?? 1) * (1 + (Math.random() * 2 - 1) * def.jitter);
   const level = ctx.createGain();
-  level.gain.value = def.gain * (opts.gain ?? 1);
+  level.gain.value = def.gain * (tuned?.volume ?? 1) * (opts.gain ?? 1);
   source.connect(level);
   let out: AudioNode = level;
   if (opts.pan) {
@@ -257,6 +308,7 @@ export function devProbe() {
       master: master.gain.value,
       music: musicBus.gain.value,
       effects: effectsBus.gain.value,
+      mix,
     }),
     /** Peak of the last ~43 ms of output, in dBFS. */
     peakDb: () => {
@@ -283,6 +335,10 @@ export function wireEngine(): void {
     arcadePaused = paused;
     settle();
   });
-  document.addEventListener("visibilitychange", settle);
+  document.addEventListener("visibilitychange", () => {
+    settle();
+    if (document.visibilityState === "visible") void refreshMix();
+  });
+  addEventListener("focus", () => void refreshMix());
   settle();
 }

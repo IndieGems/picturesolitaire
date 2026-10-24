@@ -34,3 +34,14 @@ Shipped: Ogg Opus (effects mono 40 kbps, won/bed stereo 48 kbps), about
 The bed is real stereo (side only 4 dB under mid): keep it stereo.
 slide, merge and restart came out faint in the originals and are lifted by
 normalising; regenerate them if they sound thin in play.
+
+## Remakes (Sound Tuning)
+
+The creator marks sounds Keep or Remake in the Sound Tuning tool
+(tools/sound-tuning/); the choices and notes are in its choices.json. For a
+Remake, generate two or three takes (only for those sounds) into `takes/`
+here as `<sound>-a`, `-b`, `-c`, add each to TAKES in encode.mjs with its
+trim, and run `encode.mjs <sound>-a <sound>-b ...`. The encoded takes land
+in `audio/takes/` at the project root (not shipped) and show in the tool as
+Take A, B, C; the tool copies the picked one into the game on Save
+(public/audio/takes/, and the mix in public/sound-mix.json).
