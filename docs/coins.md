@@ -14,9 +14,9 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 
 ## The hourly maths (the standard: about 500 an hour of ordinary play)
 
-- Campaign: 30 boards, 850 Coins in all (750 without the onboarding prize).
+- Campaign: 30 boards, 845 Coins in all (745 without the onboarding prize).
   The design puts a relaxed board at 2 to 4 minutes. At 3 minutes a board, 26 a board
-  is about 517 Coins an hour; at 2 minutes 776, at 4 minutes 388.
+  is about 514 Coins an hour; at 2 minutes 771, at 4 minutes 385.
 - Challenge route: 20 boards, 540 Coins in all, 27 a board on average.
   At 4 minutes a board that is about 405 an hour; at 5 minutes 324.
 - Daily: 50 once a day, on top.
@@ -29,7 +29,7 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 | board | lane | stored winning line (moves) | Coins |
 |---|---|---|---|
 | c01 | campaign 1 | 7 | 100 (onboarding prize) |
-| c02 | campaign 2 | 13 | 15 |
+| c02 | campaign 2 | 11 | 10 |
 | c03 | campaign 3 | 14 | 15 |
 | c04 | campaign 4 | 23 | 25 |
 | c05 | campaign 5 | 20 | 20 |

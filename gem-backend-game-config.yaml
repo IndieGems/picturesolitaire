@@ -115,7 +115,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 15
+          amount: 10
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 7841de30-136b-5920-9344-6731bb37161e
     slug: board_c03
