@@ -26,6 +26,16 @@ import { fileURLToPath } from "node:url";
 
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
+{
+  const { levelsDirty } = await import("./levels-hash.mts");
+  const dirty = levelsDirty();
+  if (dirty && !process.argv.includes("--allow-dirty")) {
+    console.error(`make-config: the level files have uncommitted changes:
+${dirty}
+Write the config from what the levels member committed, or pass --allow-dirty.`);
+    process.exit(1);
+  }
+}
 function TABLES_FILE() {
   return JSON.parse(readFileSync(join(root, "src/net/tables.json"), "utf8")).tables;
 }

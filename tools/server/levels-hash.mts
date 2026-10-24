@@ -5,6 +5,7 @@
 // the two agree.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
+import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -24,4 +25,9 @@ export function levelsHash(): string {
   let h = 0x811c9dc5;
   for (const b of new TextEncoder().encode(lines.join("\n"))) h = Math.imul(h ^ b, 0x01000193) >>> 0;
   return h.toString(16).padStart(8, "0");
+}
+
+/** Uncommitted changes to the level files ("" when clean): the server tools build only what the levels member committed. */
+export function levelsDirty(): string {
+  return spawnSync("git", ["status", "--porcelain", "--", "src/content/levels"], { cwd: root, encoding: "utf8" }).stdout.trim();
 }

@@ -219,6 +219,26 @@ for (const b of boards) {
   claim(`${b.lane} ${b.id}: one move short`, { ...base, line: b.line.slice(0, -1) }, { reason: "not_won" });
   claim(`${b.lane} ${b.id}: another version`, { ...base, deal: "00000000" }, { reason: "unknown_deal" });
 }
+// every OLDER version of a board the checker still keeps (functions/checker/data/archive.json),
+// claimed with its own line: a player on an older build must still verify
+let older = 0;
+{
+  const current = new Set(boards.map((b) => `${b.lane}/${b.id}/${dealHash(b.deal)}`));
+  const archive = JSON.parse(readFileSync(join(root, "functions/checker/data/archive.json"), "utf8")).deals;
+  for (const d of archive) {
+    const deal = { cols: d.cols, rows: d.rows, pictures: d.pictures, stacks: d.stacks, seed: d.seed, ...(d.board ? { board: d.board } : {}) };
+    if (!d.line || current.has(`${d.lane}/${d.id}/${dealHash(deal)}`)) continue;
+    const line = d.line.map(([from, to]) => ({ from, to }));
+    const g = game(`${d.lane} ${d.id}: an older version's line`, deal, line);
+    if (!g.won) throw new Error(`${d.lane} ${d.id}: an archived version's line does not win on rules.ts`);
+    games.push(g);
+    const body = { v: 1, lane: d.lane, board: d.id, deal: dealHash(deal), line, ms: 90_000 };
+    if (d.lane === "daily") body.date = d.id.slice(1);
+    claim(`${d.lane} ${d.id}: an older version, its own line`, body, { ok: true, moves: line.length, shuffles: 0, ms: Math.max(90_000, line.length * MIN_MS_PER_MOVE) });
+    older++;
+  }
+}
+
 const b0 = boards[0];
 const base0 = { v: 1, lane: b0.lane, board: b0.id, deal: dealHash(b0.deal), line: b0.line, ms: 60_000 };
 if (b0.lane === "daily") base0.date = b0.id.slice(1);
@@ -271,4 +291,4 @@ const hashes = games.map((g) => ({ deal: g.deal, hash: dealHash(g.deal) }));
 
 writeFileSync(out, JSON.stringify({ arrangeFrom, games, claims, hashes, levels: levelsHash() }));
 const actions = games.reduce((n, g) => n + g.actions.length, 0);
-console.log(`vectors: ${games.length} games (${boards.length} shipped boards, ${GAMES} random, ${rescues} with a rescue shuffle), ${actions} actions, ${claims.length} claims; shuffles checked by ${arrangeFrom}`);
+console.log(`vectors: ${games.length} games (${boards.length} shipped boards, ${older} older versions, ${GAMES} random, ${rescues} with a rescue shuffle), ${actions} actions, ${claims.length} claims; shuffles checked by ${arrangeFrom}`);

@@ -19,6 +19,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dealHash } from "../../src/net/deal-hash.ts";
+import { levelsDirty } from "./levels-hash.mts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const crate = join(root, "functions/checker");
@@ -28,10 +29,20 @@ const run = (cmd, args, opts = {}) => {
   if (r.status !== 0) process.exit(r.status ?? 1);
 };
 
+// 0. only committed level files: the levels member may be mid-edit, and a deal
+//    that never ships should not be built into the checker
+const dirty = levelsDirty();
+if (dirty && !process.argv.includes("--allow-dirty")) {
+  console.error(`build: the level files have uncommitted changes:\n${dirty}\nBuild from what the levels member committed (ask them), or pass --allow-dirty to build these anyway.`);
+  process.exit(1);
+}
+
 // 1. the archive
 const file = join(crate, "data/archive.json");
 const archive = existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : { deals: [] };
-const have = new Set(archive.deals.map((d) => `${d.lane}/${d.id}/${dealHash(d)}`));
+// each version keeps its own winning line, so the agreement check can prove an
+// older version still verifies (tools/server/vectors.mts); the function ignores it
+const byKey = new Map(archive.deals.map((d) => [`${d.lane}/${d.id}/${dealHash(d)}`, d]));
 let added = 0;
 for (const lane of ["campaign", "challenge", "daily"]) {
   const f = join(root, "src/content/levels", `${lane}.json`);
@@ -39,9 +50,13 @@ for (const lane of ["campaign", "challenge", "daily"]) {
   for (const l of JSON.parse(readFileSync(f, "utf8")).levels) {
     const d = { lane, id: l.id, cols: l.cols, rows: l.rows, seed: l.seed, pictures: l.pictures.map(({ id, cols, rows }) => ({ id, cols, rows })), stacks: l.stacks, ...(l.board ? { board: l.board } : {}) };
     const key = `${lane}/${l.id}/${dealHash(d)}`;
-    if (have.has(key)) continue;
-    archive.deals.push(d);
-    have.add(key);
+    const old = byKey.get(key);
+    if (old) {
+      old.line ??= l.line;
+      continue;
+    }
+    archive.deals.push({ ...d, line: l.line });
+    byKey.set(key, d);
     added++;
   }
 }
