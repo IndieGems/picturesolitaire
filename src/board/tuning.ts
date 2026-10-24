@@ -12,6 +12,13 @@ export const TUNING = {
   // --- layout (tools/art/chrome-spec.md)
   /** The gap between cards. */
   gutter: 0.08,
+  /**
+   * The pale frosted frame round every picture, board and stacks alike: its
+   * width as a fraction of a card, never under frameMin CSS px. Thin by the
+   * creator's ruling (AGENTS.md): half the concept's 0.05.
+   */
+  frame: 0.025,
+  frameMin: 2,
   /** The stacks' row above the grid, and the gap under it. */
   stackRow: 1.18,
   stackGap: 0.2,

@@ -147,9 +147,12 @@ function svgCard(
   art: Art[], pictures: readonly Picture[], b: { x: number; y: number; w: number; h: number }, m: number,
 ): HTMLDivElement {
   const L = loops(xy, s, g);
-  const rim = Math.max(3, s * 0.05);
-  const outer = path(L, s * 0.14, s * 0.14);
-  const inner = path(inset(L, rim), s * 0.09, s * 0.14 + rim);
+  // the frame (tools/art/chrome-spec.md): the picture's window sits `rim` inside
+  // the outline, its corners concentric with the outline's
+  const rim = Math.max(TUNING.frameMin, s * TUNING.frame);
+  const R = s * 0.14;
+  const outer = path(L, R, R);
+  const inner = path(inset(L, rim), Math.max(1, R - rim), R + rim);
   const pic = card0 >> 5;
   const a = art[pic]!;
   const [x0, y0] = xyOf(pictures, card0);
