@@ -28,7 +28,7 @@ import { emit, on } from "../events";
 import { mountSettings } from "../settings-screen";
 import { startSound } from "../sound";
 import { t } from "./i18n";
-import { ICONS, type IconName } from "./icons";
+import { ICONS, keepIcons, type IconName } from "./icons";
 import { screenChanged } from "./browser";
 import { online, onOnline, pretend } from "./online";
 import { campaign, cleared, loadCampaign, onCampaign, playedDaily, pretendRestored, restore, waitForCloud, won } from "./progress";
@@ -42,7 +42,8 @@ import { createDaily } from "./daily";
 import { clock, shortDate } from "./format";
 import { claimWin, cueCoins, type Verdict } from "../net/claims";
 import { KEEPSAKE } from "../net/keepsake";
-import { startTables, tableArt, tableTitle, thumbOf } from "./tables";
+import { knownTable, startTables, tableTitle, thumbOf } from "./tables";
+import { keepFitted } from "./fit";
 import { mountParticles } from "./particles";
 import { levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
 
@@ -380,6 +381,7 @@ helperBtns.shuffle.btn.addEventListener("click", () => board?.shuffle());
 
 on("board:changed", (e) => {
   drawHelpers(e.helpers, e.canUndo);
+  shufflesLeft = e.helpers.shuffle;
   // the moves so far, where the board reports them: a challenge's top row counts against par
   const moves = (e as { moves?: number }).moves;
   if (typeof moves === "number" && play && play.kind !== "campaign") {
@@ -390,25 +392,42 @@ on("board:changed", (e) => {
 
 // Stuck: only Undo or Restart helps, so the line says so, and stays until the player does something.
 let stuckLine: string | null = null;
-on("board:stuck", ({ doomed }) => {
-  stuckLine = t(doomed ? "board.doomed" : "board.stuck");
+let stuckDoomed = false;
+/** Shuffles left on the board in hand (board:changed), and whether one just found no better mix. */
+let shufflesLeft = 0;
+let shuffleRefused = false;
+/** The stuck line names Shuffle while one is left that might help, and Shuffle then glows softly: the one thing lit. */
+function drawStuck(): void {
+  const shuffle = shufflesLeft > 0 && !shuffleRefused;
+  stuckLine = t(stuckDoomed ? (shuffle ? "board.doomedShuffle" : "board.doomed") : shuffle ? "board.stuckShuffle" : "board.stuck");
   stuckNote.textContent = stuckLine;
   stuckNote.hidden = false;
+  helperBtns.shuffle.btn.classList.toggle("beckon", shuffle);
+}
+on("board:stuck", ({ doomed }) => {
+  stuckDoomed = doomed;
+  drawStuck();
 });
 const unstick = () => {
   stuckLine = null;
+  shuffleRefused = false;
   clearTimeout(refusedTimer);
   stuckNote.hidden = true;
+  helperBtns.shuffle.btn.classList.remove("beckon");
 };
 // A helper that could do nothing spent nothing (Shuffle found no better mix, Hint no line it could prove
 // within its budget, which proves nothing about the board): say so for a moment, then back to what was there
 let refusedTimer: number | undefined;
 on("helper:refused", ({ helper }) => {
+  if (helper === "shuffle") {
+    shuffleRefused = true;
+    helperBtns.shuffle.btn.classList.remove("beckon");
+  }
   stuckNote.textContent = t(helper === "hint" ? "board.noHint" : "board.noMix");
   stuckNote.hidden = false;
   clearTimeout(refusedTimer);
   refusedTimer = window.setTimeout(() => {
-    if (stuckLine) stuckNote.textContent = stuckLine;
+    if (stuckLine) drawStuck();
     else stuckNote.hidden = true;
   }, 3500);
 });
@@ -514,19 +533,17 @@ on("board:won", ({ moves, ms, line }) => {
 function drawCoins(win: Win): void {
   const v = win.verdict;
   const card = winVeil.querySelector<HTMLElement>(".card");
-  const slot = card?.querySelector<HTMLElement>(".prize");
-  // the guide's keepsake: a table, granted by the checker with board 1's prize
-  if (slot && v && "items" in v && KEEPSAKE && v.items?.includes(KEEPSAKE.slug)) void drawKeepsake(slot, KEEPSAKE.slug);
   if (!v || v.status !== "paid" || v.coins <= 0 || !card) return;
-  const coin = h("span", { class: "coin", "aria-hidden": "true" });
-  if (slot) {
-    slot.querySelector(".won-coins")?.remove();
-    slot.prepend(h("span", { class: "won-coins" }, coin, h("span", {}, t("guide.prize", { count: v.coins }))));
-    slot.classList.add("landed");
-  } else {
-    card.querySelector(".coins-chip")?.remove();
-    card.append(h("div", { class: "coins-chip glass", role: "status" }, coin, h("span", {}, t("win.coins", { count: v.coins }))));
+  // the guide's finish card already says its prize: the Coins fly from its coin, and nothing on it changes
+  const promised = card.querySelector<HTMLElement>(".prize .coin");
+  if (promised) {
+    if (!win.cued) win.cued = cueCoins(v, promised) || true;
+    return;
   }
+  // any other win card: a chip on its top edge, so nothing on the card moves
+  const coin = h("span", { class: "coin", "aria-hidden": "true" });
+  card.querySelector(".coins-chip")?.remove();
+  card.append(h("div", { class: "coins-chip glass", role: "status" }, coin, h("span", {}, t("win.coins", { count: v.coins }))));
   if (!win.cued) win.cued = cueCoins(v, coin) || true;
 }
 
@@ -561,15 +578,21 @@ function showWin(): void {
   drawCoins(lastWin);
 }
 
-/** The table the guide's finish won, beside its Coins: its picture, its name, and where to choose it. */
-async function drawKeepsake(slot: HTMLElement, id: string): Promise<void> {
-  const a = await tableArt(id);
-  if (!a || slot.querySelector(".won-table")) return;
-  slot.append(
-    h("span", { class: "won-table" }, h("img", { src: thumbOf(a), alt: "", draggable: "false" }), h("span", {}, tableTitle(a))),
-    h("span", { class: "prize-note" }, t("guide.tableNote")),
-  );
-  slot.classList.add("landed");
+/**
+ * The guide's prize, said up front (the game standard: the card says what the prize is;
+ * what lands is the Arcade's to show): its Coins, and the table, with where to choose it.
+ * Both come from Server's list (src/net/tables.json), never written here.
+ */
+function guidePrize(): HTMLElement | null {
+  if (!KEEPSAKE) return null;
+  const a = knownTable(KEEPSAKE.slug);
+  const coins = KEEPSAKE.coins ?? 0;
+  const parts: Node[] = [];
+  if (coins > 0) parts.push(h("span", { class: "won-coins" }, h("span", { class: "coin", "aria-hidden": "true" }), h("span", {}, t("guide.prize", { count: coins }))));
+  if (a) parts.push(h("span", { class: "won-table" }, h("img", { src: thumbOf(a), alt: "", draggable: "false" }), h("span", {}, tableTitle(a))));
+  if (!parts.length) return null;
+  if (a) parts.push(h("span", { class: "prize-note" }, t("guide.tableNote")));
+  return h("div", { class: "prize" }, ...parts);
 }
 
 /**
@@ -579,8 +602,7 @@ async function drawKeepsake(slot: HTMLElement, id: string): Promise<void> {
  * for it.
  */
 function showMilestone(gallery: HTMLElement): void {
-  // the prize's place, kept from the start so nothing moves when the checker's word lands
-  const prize = h("div", { class: "prize", "aria-live": "polite" });
+  const prize = guidePrize();
   const card = h(
     "div",
     { class: "card milestone" },
@@ -730,7 +752,9 @@ function hideCard(veil: HTMLElement): void {
 
 /** The "No connection" card: over everything but the board in hand, until the connection is back. */
 function drawOffline(): void {
-  const inHand = screen === "board" && !boardWon && waiting === null;
+  // the board in hand plays on, and once it is won its card stays readable: the card covers
+  // only what the player asks for next (Next, Back, Home), and opens nothing new
+  const inHand = screen === "board" && waiting === null;
   offlineVeil.hidden = online() || inHand;
 }
 
@@ -792,6 +816,11 @@ export async function startApp(): Promise<void> {
   // the player's chosen table, once their choice and what they own are read, and its weather
   mountParticles(app);
   void startTables();
+  // every glyph kept in the page, so a connection dropped later never leaves a button bare
+  void keepIcons();
+  // the top row's words and the stuck line wrap (or shrink, never under 12 px) rather than lose their ends
+  for (const el of app.querySelectorAll<HTMLElement>(".top-pill")) keepFitted(el);
+  keepFitted(stuckNote);
 
   if (import.meta.env.DEV) {
     (window as unknown as { __ps: unknown }).__ps = {

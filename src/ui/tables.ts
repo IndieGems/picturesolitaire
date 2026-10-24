@@ -39,9 +39,23 @@ const framed = window.self !== window.top;
 const url = (path: string) => new URL(`${import.meta.env.BASE_URL}${path}`, location.href).href;
 
 let manifest: Promise<{ default: string; tables: TableArt[] }> | null = null;
+/** The list, once it has loaded (for what must draw without waiting). */
+let known: TableArt[] = [];
+/** Each table's thumbnail, kept in the page once fetched (thumbOf), so the picker and a prize draw offline. */
+const thumbs = new Map<string, string>();
 function loadManifest(): Promise<{ default: string; tables: TableArt[] }> {
   manifest ??= fetch(url("art/tables/tables.json"))
     .then((r) => r.json() as Promise<{ default: string; tables: TableArt[] }>)
+    .then((m) => {
+      known = m.tables;
+      // the thumbnails are small: fetch them now, with the first screen
+      for (const a of m.tables)
+        void fetch(url(a.thumb))
+          .then((r) => (r.ok ? r.blob() : null))
+          .then((b) => b && thumbs.set(a.id, URL.createObjectURL(b)))
+          .catch(() => undefined);
+      return m;
+    })
     .catch((err: unknown) => {
       console.warn("[tables] the list of tables did not load", err);
       manifest = null;
@@ -65,8 +79,11 @@ export function tableTitle(a: TableArt): string {
   const said = t(key);
   return said === key ? a.title : said;
 }
-/** A table's small picture, for the picker and a prize. */
-export const thumbOf = (a: TableArt): string => url(a.thumb);
+/** A table's small picture, for the picker and a prize: the copy kept in the page, else the file. */
+export const thumbOf = (a: TableArt): string => thumbs.get(a.id) ?? url(a.thumb);
+
+/** A table's art if the list has already loaded (it loads with the first screen). */
+export const knownTable = (id: string): TableArt | undefined => known.find((a) => a.id === id);
 
 /** The tables this player may choose: the default, then each they own, in the list's order. */
 export async function ownedTableArts(): Promise<TableArt[]> {
