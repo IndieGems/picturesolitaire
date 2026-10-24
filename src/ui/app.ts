@@ -53,6 +53,8 @@ import { knownTable, startTables, tableTitle, thumbOf } from "./tables";
 import { keepFitted } from "./fit";
 import { WORDMARK } from "./wordmark";
 import { cardAspect, syncCardAspect } from "./cards";
+import { createViewer } from "./viewer";
+import { picture as cataloguePicture, pictureTitle } from "./catalogue";
 import { mountParticles } from "./particles";
 import { levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
 import type { DevMenu } from "./dev-menu";
@@ -154,6 +156,8 @@ const boardScreen = h("section", { class: "screen board-screen", hidden: "" }, l
 
 // the cards
 const winVeil = h("div", { class: "veil win", hidden: "", role: "dialog", "aria-modal": "true" });
+// a picture of the win card, big (the albums' view; a tap or Back returns to the card as it was)
+const winViewer = createViewer({ tapToClose: true });
 const restartVeil = h("div", { class: "veil restart", hidden: "", role: "dialog", "aria-modal": "true" });
 const offlineVeil = h(
   "div",
@@ -172,7 +176,7 @@ const albumsUi = createAlbums({ home: () => goHome(), show: (which) => show(whic
 // the challenge route (challenges.ts)
 const routeUi = createChallenges({ home: () => goHome(), show: () => show("challenges"), play: (c) => openPlay({ kind: "challenge", c }) });
 
-app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, routeUi.screen, dailyUi.screen, albumsUi.viewer, winVeil, restartVeil, offlineVeil);
+app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, routeUi.screen, dailyUi.screen, albumsUi.viewer, winVeil, winViewer.element, restartVeil, offlineVeil);
 
 // ---------- state ----------
 
@@ -244,6 +248,7 @@ function show(next: Screen): void {
   if (next === "home") drawHomeNote();
   else homeNote.hidden = true;
   if (next !== "album") albumsUi.closeViewer();
+  winViewer.close();
   screenChanged();
   drawOffline();
 }
@@ -822,9 +827,16 @@ function showChallengeWin(w: Extract<Win, { kind: "challenge" }>, gallery: HTMLE
 /**
  * The board's pictures whole, in one to three rows, each card of a picture in the board's card
  * shape (cards.ts: --u its height, --u x aspect its width), as big as fits the win card's width
- * and a share of the screen's height (a card never taller than 54px, never under 22px).
+ * and a share of the screen's height (a card never taller than 54px).
+ *
+ * Each picture is a button to see it big (the creator, 2026-10-24: players see the pictures
+ * here). A picture is never under TAP px on its narrow side (its hit area adds 4px all round, so
+ * 44px to the touch): when the rows would make one smaller, the pictures go in one row that
+ * scrolls sideways instead, bigger rather than smaller.
  */
 const GAP = 10;
+const TAP = 36;
+const STRIP_U = 60;
 /** A phone held sideways: the same question as the stylesheet's sideways block. */
 const SIDEWAYS = matchMedia("(orientation: landscape) and (max-height: 560px)");
 function layoutGallery(pics: BoardPicture[]): HTMLElement {
@@ -844,15 +856,52 @@ function layoutGallery(pics: BoardPicture[]): HTMLElement {
     const u = Math.min(54, byWidth, (height - GAP * (n - 1)) / Math.max(1, tall));
     if (u > best.u + 0.5) best = { u, rows };
   }
-  const gallery = h("div", { class: "gallery", style: `--u:${Math.max(22, Math.floor(best.u))}px;--gap:${GAP}px` });
+  // the card height that keeps every picture's narrow side tappable
+  const uTap = Math.max(0, ...pics.map((p) => TAP / Math.min(p.cols * aspect, p.rows)));
+  const strip = best.u < uTap;
+  const tall = Math.max(1, ...pics.map((p) => p.rows));
+  const u = strip ? Math.max(uTap, Math.min(STRIP_U, height / tall)) : best.u;
+  const gallery = h("div", { class: `gallery${strip ? " strip" : ""}`, style: `--u:${Math.floor(u)}px;--gap:${GAP}px` });
   let i = 0;
-  for (const row of best.rows) {
+  for (const row of strip ? [pics] : best.rows) {
     if (!row.length) continue;
     const line = h("div", { class: "line" });
-    for (const p of row) line.append(h("figure", { style: `--c:${p.cols};--r:${p.rows};--i:${i++}` }, h("img", { src: p.src, alt: "", draggable: "false" })));
+    for (const p of row) line.append(galleryPicture(p, i++));
     gallery.append(line);
+    if (strip) keepEdges(line);
   }
   return gallery;
+}
+
+/** One picture of the win card: a button that looks like the picture, opening it big. */
+function galleryPicture(p: BoardPicture, i: number): HTMLElement {
+  const style = `--c:${p.cols};--r:${p.rows};--i:${i}`;
+  const img = h("img", { src: p.src, alt: "", draggable: "false" });
+  const known = cataloguePicture(p.id);
+  // a stand-in the catalogue does not know (a board in the making) is only shown
+  if (!known) return h("figure", { class: "pic", style }, img);
+  const b = h("button", { type: "button", class: "pic", style, "data-press": "win.picture", "aria-label": pictureTitle(known) }, img);
+  b.addEventListener("click", () => winViewer.open(known));
+  return b;
+}
+
+/** A sideways strip fades at an edge only while there is more to see that way; a mouse wheel scrolls it. */
+function keepEdges(line: HTMLElement): void {
+  const edges = () => {
+    line.classList.toggle("more-left", line.scrollLeft > 2);
+    line.classList.toggle("more-right", line.scrollLeft + line.clientWidth < line.scrollWidth - 2);
+  };
+  line.addEventListener("scroll", edges, { passive: true });
+  new ResizeObserver(edges).observe(line);
+  line.addEventListener(
+    "wheel",
+    (e) => {
+      if (line.scrollWidth <= line.clientWidth || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+      e.preventDefault();
+      line.scrollLeft += e.deltaY;
+    },
+    { passive: false },
+  );
 }
 
 
@@ -869,6 +918,7 @@ function showCard(veil: HTMLElement): void {
 }
 function hideCard(veil: HTMLElement): void {
   veil.hidden = true;
+  if (veil === winVeil) winViewer.close();
 }
 
 /** The "No connection" card: over everything but the board in hand, until the connection is back. */

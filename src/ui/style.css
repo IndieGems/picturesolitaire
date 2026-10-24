@@ -275,24 +275,48 @@ html.less-motion .home-note { animation: none; }
 /* rows of pictures laid out by app.ts (layoutGallery): one unit per card, as big as fits */
 .win .gallery { display: flex; flex-direction: column; align-items: center; gap: var(--gap, 10px); margin: 14px 0 18px; --u: 34px; }
 .win .gallery .line { display: flex; justify-content: center; align-items: center; gap: var(--gap, 10px); }
+/* too many pictures to show at a size worth tapping: one row that scrolls sideways (app.ts), centred
+   while it fits (the auto margins), faded at an edge while there is more that way */
+.win .gallery.strip { align-items: stretch; margin-left: -8px; margin-right: -8px; }
+.win .gallery.strip .line {
+  /* width 0, min-width 100%: the card's width, never the row's (which would widen the card) */
+  justify-content: flex-start; width: 0; min-width: 100%; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
+  padding: 6px 8px 14px; margin-bottom: -10px; scrollbar-width: none;
+}
+.win .gallery.strip .line::-webkit-scrollbar { display: none; }
+.win .gallery.strip .line > :first-child { margin-left: auto; }
+.win .gallery.strip .line > :last-child { margin-right: auto; }
+.win .gallery.strip .line > * { flex: none; }
+.win .gallery.strip .line.more-right { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 30px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 30px), transparent); }
+.win .gallery.strip .line.more-left { -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 30px), transparent); mask-image: linear-gradient(to left, #000 calc(100% - 30px), transparent); }
+.win .gallery.strip .line.more-left.more-right {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 30px, #000 calc(100% - 30px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 30px, #000 calc(100% - 30px), transparent);
+}
 /* THE PICTURE FRAME, as the board's (AGENTS.md, "Picture frames are thin"): a thin frosted rim,
    light at the top and greyer at the foot, a hairline where it meets the picture, a thin darker
    lip under it. --fw is its width (2px, never less), --fr its outer rounding. */
-.win .gallery figure, .tile.restored .frame, .album-row .cover {
+.win .gallery .pic, .tile.restored .frame, .album-row .cover {
   position: relative; padding: var(--fw, 2px); border: 0;
   background: linear-gradient(180deg, #e9eef5, #b0bac8);
 }
-.win .gallery figure > img, .tile.restored .frame > img, .album-row .cover > :is(img, .back) { border-radius: calc(var(--fr) - var(--fw, 2px)); }
-.win .gallery figure::after, .tile.restored .frame::after, .album-row .cover::after {
+.win .gallery .pic > img, .tile.restored .frame > img, .album-row .cover > :is(img, .back) { border-radius: calc(var(--fr) - var(--fw, 2px)); }
+.win .gallery .pic::after, .tile.restored .frame::after, .album-row .cover::after {
   content: ""; position: absolute; inset: var(--fw, 2px); border-radius: calc(var(--fr) - var(--fw, 2px));
   box-shadow: inset 0 0 0 1px #8b97a8; pointer-events: none;
 }
-.win .gallery figure {
-  --fr: 12px; margin: 0; width: calc(var(--u) * var(--c) * var(--card-aspect)); height: calc(var(--u) * var(--r));
-  border-radius: var(--fr); overflow: hidden;
+.win .gallery .pic {
+  --fr: 12px; display: block; margin: 0; width: calc(var(--u) * var(--c) * var(--card-aspect)); height: calc(var(--u) * var(--r));
+  border-radius: var(--fr);
   box-shadow: 0 2px 0 #7f8b9c, 0 6px 12px rgba(20, 30, 45, 0.3);
   animation: picture-in 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both; animation-delay: calc(0.15s + var(--i) * 0.09s);
 }
+/* a picture to see big: it looks like the picture, never like a button (no lip, no sinking); to the
+   touch it reaches 4px further all round, so the narrowest (36px, app.ts) is 44px under a thumb */
+button.pic { font: inherit; color: inherit; cursor: zoom-in; touch-action: manipulation; }
+button.pic::before { content: ""; position: absolute; inset: -4px; }
+button.pic:focus-visible { outline: 3px solid var(--amber-hi); outline-offset: 3px; }
+@media (hover: hover) { button.pic:hover { filter: brightness(1.06); } }
 .win .gallery img { display: block; width: 100%; height: 100%; object-fit: cover; }
 @keyframes picture-in { from { opacity: 0; transform: scale(0.6); } }
 .win .stats { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; }
@@ -310,9 +334,9 @@ html.less-motion .home-note { animation: none; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* Less motion (the Arcade's setting or the device's) stops the pops and slides; the cards still come. */
-html.less-motion .card, html.less-motion .win .gallery figure, html.less-motion .veil { animation: none; }
+html.less-motion .card, html.less-motion .win .gallery .pic, html.less-motion .veil { animation: none; }
 @media (prefers-reduced-motion: reduce) {
-  .card, .win .gallery figure, .veil { animation: none; }
+  .card, .win .gallery .pic, .veil { animation: none; }
 }
 
 /* ---------- the settings screen (src/settings-screen.ts) ---------- */

@@ -7,7 +7,9 @@
 // animation loop (the game standard, "Nothing runs at rest").
 //
 // Its top row is every screen's: the picture's title on the left, Back (which
-// closes it) and the gear at the right end.
+// closes it) and the gear at the right end. The win card's copy (app.ts) also
+// closes on a single tap while the picture is not zoomed in (`tapToClose`): a
+// look, then back to the card.
 
 import { ICONS } from "./icons";
 import { t } from "./i18n";
@@ -27,7 +29,7 @@ export interface Viewer {
   isOpen(): boolean;
 }
 
-export function createViewer(): Viewer {
+export function createViewer(options: { tapToClose?: boolean } = {}): Viewer {
   const element = document.createElement("div");
   element.className = "viewer";
   element.hidden = true;
@@ -107,6 +109,8 @@ export function createViewer(): Viewer {
   let downAt = { x: 0, y: 0, time: 0 };
   let moved = false;
   let lastTap = { x: 0, y: 0, time: -Infinity };
+  /** A single tap's close, held back a double tap's time in case it was the first of two. */
+  let closeTimer: number | undefined;
 
   const local = (e: PointerEvent) => {
     const r = stage.getBoundingClientRect();
@@ -124,6 +128,7 @@ export function createViewer(): Viewer {
   }
 
   stage.addEventListener("pointerdown", (e) => {
+    clearTimeout(closeTimer);
     stage.setPointerCapture(e.pointerId);
     const p = local(e);
     pointers.set(e.pointerId, p);
@@ -176,6 +181,7 @@ export function createViewer(): Viewer {
       lastTap = { x: 0, y: 0, time: -Infinity };
     } else {
       lastTap = { ...p, time: e.timeStamp };
+      if (options.tapToClose && s <= 1.05) closeTimer = window.setTimeout(close, DOUBLE_TAP_MS);
     }
   }
   stage.addEventListener("pointerup", lift);
@@ -195,6 +201,7 @@ export function createViewer(): Viewer {
   new ResizeObserver(layout).observe(stage);
 
   function close(): void {
+    clearTimeout(closeTimer);
     if (element.hidden) return;
     element.hidden = true;
     img.removeAttribute("src");
