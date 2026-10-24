@@ -85,7 +85,7 @@ function makeDay(k, date, sets, weigh) {
   for (let attempt = 0; attempt < 12; attempt++) {
     const avoid = new Map([...weigh()].map(([k, v]) => [k, v + (failed.get(k) ?? 0)]));
     for (const p of recent) avoid.set(p, (avoid.get(p) ?? 0) + 1000);
-    const pictures = pick(usable, { count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, meanFamilies: true }, avoid, recent, random((hashId(id) + attempt * 104729) >>> 0));
+    const pictures = pick(usable, { count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, vary: row.vary, busyMost: row.busyMost, meanFamilies: true }, avoid, recent, random((hashId(id) + attempt * 104729) >>> 0));
     if (!pictures) throw new Error(`${id}: no pictures fit the day's type`);
     const { board, tally } = dealBoard(row, pictures, opts);
     if (board) return board;
@@ -103,7 +103,7 @@ levels.forEach((l, k) => {
   for (const p of l.pictures) uses.set(p.id, uses.get(p.id) - 1);
   const row = WEEK[new Date(parse(l.date)).getUTCDay()];
   const recent = around(k);
-  const sets = swapSets({ count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes }, l.pictures, uses, (id) => (recent.has(id) ? 1000 : 0));
+  const sets = swapSets({ count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, vary: row.vary, busyMost: row.busyMost }, l.pictures, uses, (id) => (recent.has(id) ? 1000 : 0));
   levels[k] = makeDay(k, l.date, sets, () => uses);
   for (const p of levels[k].pictures) uses.set(p.id, uses.get(p.id) + 1);
 });

@@ -21,6 +21,12 @@ export interface CataloguePicture {
   cols: number;
   rows: number;
   family: string;
+  /** For `vary`: the album (a broad subject), the art style, and the subject words. */
+  album?: string;
+  medium?: string;
+  subjects?: readonly string[];
+  /** How busy the picture is, 0 calm to 2 busy (Art's rating; none counts as 0). */
+  busy?: number;
 }
 
 export interface PickSpec {
@@ -43,6 +49,17 @@ export interface PickSpec {
    */
   bigMost?: number;
   /**
+   * VARIETY (creator, 2026-10-24: "pictures are clear, close and varied"): no
+   * two pictures share a subject word, an album gives at most a third of the
+   * board (rounded up) and an art style at most half. Use with `alike: []`.
+   */
+  vary?: boolean;
+  /** At most this many busy pictures (busy 2). */
+  busyMost?: number;
+  /** At most `oldMost` pictures from `old` (boards made mostly from new pictures). */
+  old?: ReadonlySet<string>;
+  oldMost?: number;
+  /**
    * Rank lookalike families by the MEAN use of their eligible pictures, not
    * the sum. The sum favours a family with few eligible pictures (the yellow
    * family has only two that are not 3x3), so over a long pool it comes up far
@@ -52,6 +69,19 @@ export interface PickSpec {
 }
 
 export const shapeOf = (p: { cols: number; rows: number }) => `${p.cols}x${p.rows}`;
+
+/** Could `p` join `set` under the spec's variety, busy and old limits (the set itself within them)? */
+function welcome(spec: PickSpec, set: readonly CataloguePicture[], p: CataloguePicture): boolean {
+  if (spec.busyMost !== undefined && (p.busy ?? 0) >= 2 && set.filter((q) => (q.busy ?? 0) >= 2).length >= spec.busyMost) return false;
+  if (spec.old && spec.oldMost !== undefined && spec.old.has(p.id) && set.filter((q) => spec.old!.has(q.id)).length >= spec.oldMost) return false;
+  if (spec.vary) {
+    const words = new Set(p.subjects ?? []);
+    if (set.some((q) => (q.subjects ?? []).some((w) => words.has(w)))) return false;
+    if (p.album && set.filter((q) => q.album === p.album).length >= Math.ceil(spec.count / 3)) return false;
+    if (p.medium && set.filter((q) => q.medium === p.medium).length >= Math.ceil(spec.count / 2)) return false;
+  }
+  return true;
+}
 
 /** A big picture, for `bigMost`: 6 cards or more (as generate.ts's BIG). */
 const isBig = (p: { cols: number; rows: number }) => p.cols * p.rows >= 6;
@@ -197,6 +227,7 @@ export function pick(
         (p) =>
           !usedFam.has(p.family) &&
           (!isBig(p) || bigLeft(chosen) > 0) &&
+          welcome(spec, chosen, p) &&
           reachable([...chosen, p], left - 1),
       );
       if (!cands.length) {
@@ -235,6 +266,11 @@ export function fits(catalogue: readonly CataloguePicture[], spec: PickSpec, pic
   const most = { 9: 1, ...spec.most };
   for (const [size, max] of Object.entries(most)) if (pictures.filter((p) => p.cols * p.rows === +size).length > max) return false;
   if (spec.bigMost !== undefined && pictures.filter(isBig).length > spec.bigMost) return false;
+  if (spec.vary || spec.busyMost !== undefined || spec.oldMost !== undefined) {
+    // the same limits, judged on the catalogue's entries (the board's pictures carry only id and shape)
+    const full = pictures.map((p) => catalogue.find((c) => c.id === p.id) ?? { ...p, family: "" });
+    if (!full.every((p, i) => welcome(spec, full.slice(0, i), p))) return false;
+  }
   const shapes = pictures.map(shapeOf);
   for (const m of spec.must ?? []) {
     const i = shapes.indexOf(m);

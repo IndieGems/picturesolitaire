@@ -46,7 +46,7 @@ export const flaggedOn = (pictures) => pictures.map((p) => p.id).filter((id) => 
 /** The boards in a boards file, [] if there is none. */
 export const readBoards = (file) => (existsSync(file) ? JSON.parse(readFileSync(file, "utf8")).levels : []);
 
-export const specOf = (row) => ({ count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, must: row.must, most: row.most, bigMost: row.bigMost });
+export const specOf = (row) => ({ count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, must: row.must, most: row.most, bigMost: row.bigMost, vary: row.vary, busyMost: row.busyMost, old: row.old, oldMost: row.oldMost });
 
 export const usesOf = (chosen) => {
   const u = new Map(catalogue.map((q) => [q.id, 0]));
@@ -339,7 +339,7 @@ export function makeBoard(plan, i, chosen, uses, opts) {
  * changed as can be), and make the plan's rows past the end. `optsOf(i)` gives
  * makeBoard's options for board i; `seedOf(i)` seeds a new board's pick.
  */
-export function route(plan, old, { optsOf, seedOf, spacing, repairOnly = false }) {
+export function route(plan, old, { optsOf, seedOf, spacing, repairOnly = false, redeal = new Set() }) {
   if (old.length > plan.length) throw new Error(`the file has ${old.length} boards, the plan ${plan.length}`);
   const chosen = old.map((b) => b.pictures);
   const levels = [...old];
@@ -358,6 +358,20 @@ export function route(plan, old, { optsOf, seedOf, spacing, repairOnly = false }
     // no swap that fits: makeBoard picks the board afresh
     levels[i] = makeBoard(plan, i, chosen, uses, { ...optsOf(i), seenOf, first: swapSets(specOf(plan[i]), b.pictures, uses, (id) => near(i, id)) });
   });
+  // boards asked for by number (from 0): picked afresh from the plan's row, every other board kept
+  for (const i of [...redeal].sort((a, b) => a - b)) {
+    if (!old[i]) throw new Error(`board ${i + 1} is not in the file`);
+    console.log(`${old[i].id}: re-dealing it from the plan`);
+    for (const q of old[i].pictures) uses.set(q.id, uses.get(q.id) - 1);
+    chosen[i] = null;
+    // nearness to the boards either side (with spacing), so the board's pictures are ones not met near it
+    const cost = new Map(usable.map((p) => [p.id, near(i, p.id) * (spacing ? 4 : 1)]));
+    const recent = new Set([...(chosen[i - 1] ?? []), ...(chosen[i + 1] ?? [])].map((q) => q.id));
+    const set = pick(usable, specOf(plan[i]), cost, recent, random(seedOf(i)));
+    if (!set) throw new Error(`${old[i].id}: no pictures fit the plan${flags.size ? " (flagged pictures are left out)" : ""}`);
+    const seen = spacing ? (k) => new Map(usable.map((p) => [p.id, near(k, p.id) * 4])) : undefined;
+    levels[i] = makeBoard(plan, i, chosen, uses, { ...optsOf(i), seenOf: seen, first: [set] });
+  }
   if (plan.length > old.length && !repairOnly) {
     pickFrom(plan, chosen, old.length, seedOf, spacing);
     if (spacing) balanceSpaced(plan, chosen, old.length, spacing);

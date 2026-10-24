@@ -9,6 +9,8 @@
 //   --fresh        remake every board from the plan, ignoring the file (a
 //                  board a player has won keeps its id and pays no more)
 //   --repair-only  re-deal flagged boards only; add no plan rows (redeal.mts)
+//   --redeal 1,2,3 re-deal these boards afresh from the plan; keep every other
+//                  board (and add no plan rows)
 //   --out FILE     write the boards there instead, and no docs (for trials)
 //   PICKS_ONLY=1   pick the pictures and report their spacing; no deals
 // Pictures follow the plan's shape ramp and SPACING (campaign-plan.mts).
@@ -30,7 +32,9 @@ const OUT = outAt > 0 ? process.argv[outAt + 1] : FILE;
 const old = has("--fresh") ? [] : readBoards(FILE);
 const shipped = readBoards(FILE);
 const fileTag = existsSync(FILE) ? JSON.parse(readFileSync(FILE, "utf8")).plan : undefined;
-const adding = PLAN.length > old.length && !has("--repair-only");
+const redealAt = process.argv.indexOf("--redeal");
+const redeal = new Set(redealAt > 0 ? process.argv[redealAt + 1].split(",").map((n) => Number(n) - 1) : []);
+const adding = PLAN.length > old.length && !has("--repair-only") && !redeal.size;
 if (adding && old.length && fileTag !== PLAN_TAG) {
   console.error(`campaign.json was made from another plan (${fileTag ?? "before plans were named"}), not ${PLAN_TAG}: remake it with --fresh, or re-deal flagged boards only with --repair-only`);
   process.exit(1);
@@ -39,7 +43,8 @@ if (adding && old.length && fileTag !== PLAN_TAG) {
 const tag = adding || !old.length ? PLAN_TAG : fileTag;
 const made = route(PLAN, old, {
   spacing: SPACING,
-  repairOnly: has("--repair-only"),
+  repairOnly: has("--repair-only") || redeal.size > 0,
+  redeal,
   seedOf: (i) => 0xc0ffee + i * 7919,
   optsOf: (i) => ({
     id: `c${String(i + 1).padStart(2, "0")}`,
