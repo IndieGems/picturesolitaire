@@ -132,6 +132,9 @@ function listen(): void {
   on("helper:shuffle", () => play("shuffle"));
   on("board:restart", () => play("restart"));
   on("board:stuck", () => play("stuck"));
+  // A helper pressed that could do nothing (a Shuffle with no mix to make): the
+  // same gentle "hm", just after the button's click so the two don't blur.
+  on("helper:refused", () => play("stuck", { delay: 0.06 }));
   on("board:won", () => {
     // A milestone card went up for this win: its cue plays instead.
     if (performance.now() - milestoneAt < 1000) return;
