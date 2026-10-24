@@ -58,11 +58,26 @@ const homeWhere = h("div", { class: "where glass" });
 const homePlayLabel = h("span");
 const homePlay = button("amber play", "home.play", icon("play"), homePlayLabel);
 const homeAlbums = button("albums", "home.albums", icon("albums"), t("home.albums"));
+// the game's name is Art's drawn title (public/art/wordmark.webp, 840 x 405); its
+// words reach screen readers as the picture's alt
+const wordmark = h("img", {
+  class: "wordmark",
+  src: `${import.meta.env.BASE_URL}art/wordmark.webp`,
+  alt: t("game.title"),
+  width: "840",
+  height: "405",
+  draggable: "false",
+  decoding: "async",
+});
 const home = h(
   "section",
   { class: "screen home", "aria-label": t("game.title") },
-  h("div", { class: "emblem", "aria-hidden": "true" }, h("i"), h("i"), h("i")),
-  h("h1", {}, t("game.title")),
+  h(
+    "div",
+    { class: "brand" },
+    h("div", { class: "emblem", "aria-hidden": "true" }, h("i"), h("i"), h("i")),
+    h("h1", {}, wordmark),
+  ),
   homeWhere,
   homePlay,
   homeAlbums,
@@ -395,11 +410,15 @@ document.addEventListener("visibilitychange", drawPaused);
 
 /** Draw the first screen. Called once by the boot entry (src/main.ts). */
 export async function startApp(): Promise<void> {
-  // the round type, asked for beside this code by the boot; a moment's wait so
-  // the first screen does not redraw in another font, never longer
+  // the round type and the title, asked for beside this code by the boot; a
+  // moment's wait so the first screen does not redraw in another font or pop
+  // its title in, never longer
   const face = new FontFace("Fredoka", `url(${import.meta.env.BASE_URL}fonts/fredoka-latin.woff2)`, { weight: "300 700", display: "swap" });
   document.fonts.add(face);
-  await Promise.race([face.load().catch(() => undefined), new Promise((r) => setTimeout(r, 400))]);
+  await Promise.race([
+    Promise.all([face.load().catch(() => undefined), wordmark.decode().catch(() => undefined)]),
+    new Promise((r) => setTimeout(r, 400)),
+  ]);
 
   loadCampaign();
   onCampaign(drawHome);

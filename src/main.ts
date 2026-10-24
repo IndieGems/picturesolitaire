@@ -27,23 +27,27 @@ if (boot) boot.textContent = t("boot.loading");
 // listening after this, so a late handshake still connects.
 const BRIDGE_WAIT_MS = 3000;
 
-// The round type the first screen draws in, asked for beside the game's code
-// rather than after it has run. After the bridge, never in index.html: the
-// Arcade offers the handshake on the frame's `load`, which waits for
-// everything the page asked for first.
-function preloadFont(): void {
-  const link = document.createElement("link");
-  link.rel = "preload";
-  link.as = "font";
-  link.type = "font/woff2";
-  link.crossOrigin = "anonymous";
-  link.href = `${import.meta.env.BASE_URL}fonts/fredoka-latin.woff2`;
-  document.head.append(link);
+// The round type and the title the first screen draws, asked for beside the
+// game's code rather than after it has run. After the bridge, never in
+// index.html: the Arcade offers the handshake on the frame's `load`, which
+// waits for everything the page asked for first.
+function preloadFirstScreen(): void {
+  const font = document.createElement("link");
+  font.rel = "preload";
+  font.as = "font";
+  font.type = "font/woff2";
+  font.crossOrigin = "anonymous";
+  font.href = `${import.meta.env.BASE_URL}fonts/fredoka-latin.woff2`;
+  const title = document.createElement("link");
+  title.rel = "preload";
+  title.as = "image";
+  title.href = `${import.meta.env.BASE_URL}art/wordmark.webp`;
+  document.head.append(font, title);
 }
 
 async function start(): Promise<void> {
   if (window.self !== window.top) await gem.awaitBridge(BRIDGE_WAIT_MS);
-  preloadFont();
+  preloadFirstScreen();
   // a phone on a bad connection can drop the fetch: try once more, then say so
   for (let tries = 0; ; tries++) {
     try {

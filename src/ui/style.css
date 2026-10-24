@@ -150,10 +150,11 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
   filter: drop-shadow(0 3px 0 #1f2834) drop-shadow(0 6px 0 #1a222d) drop-shadow(0 8px 10px rgba(0, 0, 0, 0.45));
 }
 .home .emblem i:nth-child(2) { transform: translateY(-10px); }
-.home h1 {
-  margin: 0; text-align: center; font: 600 clamp(32px, 10vw, 46px)/1.05 var(--round); color: #f4f8fc;
-  text-shadow: 0 3px 0 rgba(30, 40, 56, 0.8), 0 0 26px rgba(255, 190, 110, 0.35);
-}
+.home .brand { display: flex; flex-direction: column; align-items: center; gap: 22px; width: 100%; }
+/* Art's drawn title (2.07 : 1, its own lip and shadow): 300-340 px on a phone, never past
+   ~420 or it goes soft; a short screen gives it less so Play stays in view */
+.home h1 { margin: 0; width: min(100%, 340px, calc((100dvh - 430px) * 2.07)); min-width: 200px; line-height: 0; }
+.home .wordmark { display: block; width: 100%; height: auto; }
 .home .where { padding: 8px 20px; font-size: 18px; font-weight: 600; }
 .home .play { min-width: 210px; min-height: 68px; padding: 0 34px; font-size: 26px; }
 .home .play :is(svg, .ico) { width: 28px; height: 28px; }
@@ -388,8 +389,8 @@ html.less-motion .viewer { animation: none; }
     column-gap: 28px; row-gap: 14px; justify-items: center;
     padding: calc(var(--row-bottom) + 4px) 24px calc(var(--foot) + 8px);
   }
-  .home .emblem { grid-column: 1; grid-row: 2 / 4; align-self: end; margin-bottom: 10px; }
-  .home h1 { grid-column: 1; grid-row: 4; align-self: start; }
+  .home .brand { grid-column: 1; grid-row: 2 / 5; align-self: center; gap: 14px; }
+  .home h1 { width: min(100%, 340px, calc((100dvh - 190px) * 2.07)); }
   .home .where { grid-column: 2; grid-row: 2; }
   .home .play { grid-column: 2; grid-row: 3; }
   .home .albums { grid-column: 2; grid-row: 4; }
