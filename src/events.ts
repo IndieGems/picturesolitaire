@@ -6,6 +6,8 @@
 //
 // Payloads stay small and plain (ids, counts, cell lists), never DOM nodes.
 
+import type { Action } from "./game/rules.ts";
+
 export type Cell = { col: number; row: number };
 
 export interface GameEvents {
@@ -34,21 +36,33 @@ export interface GameEvents {
   "helper:undo": { left: number };
   "helper:hint": { left: number };
   "helper:shuffle": { left: number };
+  /**
+   * A helper was pressed and could do nothing, so none was spent. Shuffle: no
+   * loose card to mix, or no mix the solver could prove winnable.
+   */
+  "helper:refused": { helper: "shuffle" };
   /** The board was started over. */
   "board:restart": Record<string, never>;
   /**
    * The board settled after a move, undo, shuffle or restart (and once at
-   * start): what the helper buttons should show now.
+   * start): what the helper buttons should show now, and `moves` made so far
+   * (Undo takes one back; a shuffle is not a move).
    */
-  "board:changed": { canUndo: boolean; helpers: { undo: number; hint: number; shuffle: number } };
+  "board:changed": { canUndo: boolean; helpers: { undo: number; hint: number; shuffle: number }; moves: number };
   /**
    * The player is stuck: `doomed` false means a dead end (the board is full
    * and no picture has all its cards on it), true means Hint found no way to
    * win from here. Either way only Undo or Restart helps.
    */
   "board:stuck": { doomed: boolean };
-  /** Every picture restored: the board is won. */
-  "board:won": { level: string; moves: number; ms: number };
+  /**
+   * Every picture restored: the board is won. `level`: the campaign number,
+   * or the board's id for any other board. `line`: the actions as played,
+   * undone ones left out, shuffles included with the mix they made; the rules
+   * replay it from the deal to this win (replay in src/game/rules.ts), and
+   * `moves` is the number of moves in it.
+   */
+  "board:won": { level: string; moves: number; ms: number; line: Action[] };
   /** A board opened and play can begin. */
   "board:start": { level: string };
   /** Any button pressed in the interface (for its click sound). */

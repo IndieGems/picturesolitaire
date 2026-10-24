@@ -81,14 +81,35 @@ export interface Move {
   from: number;
   to: number;
 }
+/**
+ * The Shuffle helper, as played: the board and stacks it arranged, straight
+ * after the mix and before the board settles. src/game/shuffle.ts (`rescue`)
+ * chooses it with the solver; `arrange` checks and plays it with no solver, so
+ * a replay (and the server's win checker) needs none.
+ */
+export interface Shuffle {
+  shuffle: true;
+  board: Card[];
+  stacks: Card[][];
+}
 /** What a replay is made of: moves, and the Shuffle helper. */
-export type Action = Move | { shuffle: true };
+export type Action = Move | Shuffle;
+/** The most stack places one shuffle may change (`arrange`). */
+export const MAX_SWAPS = 4;
 
 /** One card going from one cell to another. */
 export interface Slide {
   card: Card;
   from: number;
   to: number;
+}
+
+/** A card trading between the board's `cell` and place `at` (0: dealt next) of stack `col`. */
+export interface StackSwap {
+  card: Card;
+  col: number;
+  at: number;
+  cell: number;
 }
 
 /** What happened, in order, so the board can show it. */
@@ -101,8 +122,12 @@ export type Step =
   | { kind: "clear"; pictures: { pic: number; cells: number[] }[] }
   /** The stacks dealt, in this order (left to right): each card drops from above its column into `to`. */
   | { kind: "deal"; deals: { col: number; card: Card; to: number }[] }
-  /** The Shuffle helper rearranged the loose cards. */
-  | { kind: "shuffle"; slides: Slide[] };
+  /**
+   * The Shuffle helper (src/game/shuffle.ts): loose cards traded places
+   * (`slides`); when the board was stuck, some also traded with stack cards:
+   * `toStacks` left the board for a stack, `fromStacks` came out onto it.
+   */
+  | { kind: "shuffle"; slides: Slide[]; toStacks: StackSwap[]; fromStacks: StackSwap[] };
 
 export interface Outcome {
   state: State;
@@ -422,7 +447,7 @@ export function isDeadEnd(s: State): boolean {
   return !n.some((count, pic) => count > 0 && count === sizeOf(s.pictures, pic));
 }
 
-// ---------------------------------------------------------------- shuffle
+// ---------------------------------------------------------------- randomness
 
 /** A small seeded random source (mulberry32): the same seed gives the same numbers. */
 export function random(seed: number): () => number {
@@ -436,55 +461,77 @@ export function random(seed: number): () => number {
   };
 }
 
-/** How many tries Shuffle makes; it keeps the one that joins the most cards. */
-const SHUFFLE_TRIES = 12;
+// ---------------------------------------------------------------- replay
 
 /**
- * The Shuffle helper: the loose cards (those not joined to any other) trade
- * places among themselves, and joined pieces stay where they are. Of a few
- * seeded tries it keeps the one that joins the most cards, so it helps a
- * little. Null when fewer than two cards are loose, so nothing would change.
+ * Play a Shuffle: check its arrangement is one the helper may make, then
+ * settle it. Null when it is not:
+ *   a. the board and every stack keep their sizes;
+ *   b. only LOOSE cells (holding a card joined to no neighbour, judged before
+ *      the shuffle) change, and each still holds a card;
+ *   c. a stack place that changed now holds a card that was loose, so stack
+ *      cards never reorder among themselves; at most MAX_SWAPS places change;
+ *   d. the loose cards and the stack cards are the same cards as before;
+ *   e. something changed.
+ * Whether the board was stuck, and whether the mix can be won, are the
+ * solver's to judge (src/game/shuffle.ts); this checks only what any player's
+ * shuffle must keep.
  */
-export function shuffle(s: State): Outcome | null {
+export function arrange(s: State, a: Shuffle): Outcome | null {
+  const { board: nb, stacks: ns } = a;
+  if (!Array.isArray(nb) || !Array.isArray(ns)) return null;
+  if (nb.length !== s.board.length || ns.length !== s.stacks.length) return null;
+  if (ns.some((st, c) => !Array.isArray(st) || st.length !== s.stacks[c]!.length)) return null;
   const ps = pieces(s);
-  const loose = ps.list.filter((p) => p.length === 1).map((p) => p[0]!);
-  if (loose.length < 2) return null;
-  const rnd = random((s.seed ^ Math.imul(s.shuffles + 1, 0x9e3779b9)) >>> 0);
-  let best: Card[] | null = null;
-  let bestScore = -1;
-  for (let t = 0; t < SHUFFLE_TRIES; t++) {
-    const cards = loose.map((c) => s.board[c]!);
-    for (let i = cards.length - 1; i > 0; i--) {
-      const j = Math.floor(rnd() * (i + 1));
-      [cards[i], cards[j]] = [cards[j]!, cards[i]!];
-    }
-    if (cards.every((card, i) => card === s.board[loose[i]!])) continue;
-    const board = [...s.board];
-    loose.forEach((cell, i) => (board[cell] = cards[i]!));
-    const score = joinCount({ ...s, board });
-    if (score > bestScore) {
-      bestScore = score;
-      best = cards;
+  const isLoose = (cell: number) => s.board[cell] !== EMPTY && ps.list[ps.of[cell]!]!.length === 1;
+  const before = new Map<Card, { cell: number } | { col: number; at: number }>();
+  for (let c = 0; c < nb.length; c++) {
+    if (isLoose(c)) {
+      if (nb[c] === EMPTY || !Number.isInteger(nb[c])) return null;
+      before.set(s.board[c]!, { cell: c });
+    } else if (nb[c] !== s.board[c]) return null;
+  }
+  s.stacks.forEach((st, col) => st.forEach((card, at) => before.set(card, { col, at })));
+  const slides: Slide[] = [];
+  const toStacks: StackSwap[] = [];
+  const fromStacks: StackSwap[] = [];
+  const seen = new Set<Card>();
+  for (let c = 0; c < nb.length; c++) {
+    if (!isLoose(c)) continue;
+    const card = nb[c]!;
+    const was = before.get(card);
+    if (!was || seen.has(card)) return null;
+    seen.add(card);
+    if ("cell" in was) {
+      if (was.cell !== c) slides.push({ card, from: was.cell, to: c });
+    } else fromStacks.push({ card, col: was.col, at: was.at, cell: c });
+  }
+  let changed = 0;
+  for (let col = 0; col < ns.length; col++) {
+    for (let at = 0; at < ns[col]!.length; at++) {
+      const card = ns[col]![at]!;
+      if (card === s.stacks[col]![at]) {
+        if (seen.has(card)) return null;
+        seen.add(card);
+        continue;
+      }
+      const was = before.get(card);
+      if (!was || !("cell" in was) || seen.has(card)) return null;
+      seen.add(card);
+      toStacks.push({ card, col, at, cell: was.cell });
+      changed++;
     }
   }
-  if (!best) return null;
-  const board = [...s.board];
-  const slides: Slide[] = [];
-  loose.forEach((cell, i) => {
-    board[cell] = best![i]!;
-    const from = loose[loose.findIndex((c) => s.board[c] === best![i])]!;
-    if (from !== cell) slides.push({ card: best![i]!, from, to: cell });
-  });
-  const steps: Step[] = [{ kind: "shuffle", slides }];
-  const next = settle({ ...s, board, shuffles: s.shuffles + 1 }, steps);
+  if (changed > MAX_SWAPS || seen.size !== before.size) return null;
+  if (!slides.length && !toStacks.length) return null;
+  const steps: Step[] = [{ kind: "shuffle", slides, toStacks, fromStacks }];
+  const next = settle({ ...s, board: [...nb], stacks: ns.map((st) => [...st]), shuffles: s.shuffles + 1 }, steps);
   return { state: next, steps };
 }
 
-// ---------------------------------------------------------------- replay
-
-/** Apply one action; null if it does nothing (the replay is then wrong). */
+/** Apply one action; null if it does nothing or is not allowed (the replay is then wrong). */
 export function act(s: State, a: Action): Outcome | null {
-  return "shuffle" in a ? shuffle(s) : move(s, a);
+  return "shuffle" in a ? arrange(s, a) : move(s, a);
 }
 
 /** Play `actions` from the deal. Throws on an action that does nothing. */

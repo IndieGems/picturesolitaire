@@ -3,10 +3,13 @@
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
-  EMPTY, act, cardOf, isDeadEnd, isWon, move, pieces, picOf, random, replay, sameBoard, shuffle, start,
+  EMPTY, act, arrange, cardOf, isDeadEnd, isWon, move, onBoard, pieces, picOf, random, replay, sameBoard, start,
   type Deal, type Picture, type State,
 } from "../src/game/rules.ts";
+import { rescue } from "../src/game/shuffle.ts";
+import { solveFrom } from "../src/game/solver/index.ts";
 
 let passed = 0;
 function check(name: string, fn: () => void) {
@@ -186,15 +189,95 @@ check("a dead end: a full board where no picture has all its cards", () => {
   assert.equal(isDeadEnd(begin("A00 A11 / A01 A10 / D00 D10", [["D20"], []])), false);
 });
 
-check("shuffle moves only loose cards, keeps joined pieces, and replays the same", () => {
-  const s = begin("D00 D10 D20 A00 / C00 B00 A11 B20 / E00 C01 E11 A01");
-  const a = shuffle(s);
-  const b = shuffle(s);
-  assert.ok(a && b);
-  assert.deepEqual(a.state.board, b.state.board);
-  assert.equal(draw(a.state).split(" / ")[0]!.startsWith("D00 D10 D20"), true);
-  assert.equal(a.state.shuffles, 1);
-  assert.notDeepEqual(shuffle(a.state)!.state.board, a.state.board);
+// The Shuffle: `arrange` (rules, no solver) checks a mix; `rescue` (src/game/shuffle.ts) picks one the solver proves.
+const MIX = () => begin("D00 D10 D20 A00 / C00 B00 A11 B20 / E00 C01 E11 A01", [["A10", "B10"], ["E01"], [], []]);
+const swapCells = (b: number[], i: number, j: number) => { const c = [...b]; [c[i], c[j]] = [c[j]!, c[i]!]; return c; };
+
+check("arrange plays a mix of loose cards and settles it; refuses anything else", () => {
+  const s = MIX();
+  const ok = arrange(s, { shuffle: true, board: swapCells(s.board, 4, 11), stacks: s.stacks });
+  assert.ok(ok);
+  assert.equal(ok.state.shuffles, 1);
+  assert.equal(ok.steps[0].kind, "shuffle");
+  assert.equal(ok.steps[0].slides.length, 2);
+  // a joined card moved (D00 is joined to D10)
+  assert.equal(arrange(s, { shuffle: true, board: swapCells(s.board, 0, 4), stacks: s.stacks }), null);
+  // stack cards reordered among themselves
+  assert.equal(arrange(s, { shuffle: true, board: s.board, stacks: [[s.stacks[0][1], s.stacks[0][0]], s.stacks[1], [], []] }), null);
+  // a card twice, one missing
+  const twice = [...s.board]; twice[4] = twice[11];
+  assert.equal(arrange(s, { shuffle: true, board: twice, stacks: s.stacks }), null);
+  // a stack that changed size, and nothing changed at all
+  assert.equal(arrange(s, { shuffle: true, board: s.board, stacks: [[s.stacks[0][0]], s.stacks[1], [], []] }), null);
+  assert.equal(arrange(s, { shuffle: true, board: s.board, stacks: s.stacks }), null);
+});
+
+check("arrange lets loose cards trade with stack cards, each taking the other's place", () => {
+  const s = MIX();
+  const b = [...s.board];
+  const st = s.stacks.map((x) => [...x]);
+  [b[4], st[0][1]] = [st[0][1], b[4]]; // C00 into stack 0 place 1, B10 out onto the board
+  const o = arrange(s, { shuffle: true, board: b, stacks: st });
+  assert.ok(o);
+  const step = o.steps[0];
+  assert.deepEqual(step.toStacks.map((x) => [x.col, x.at, x.cell]), [[0, 1, 4]]);
+  assert.deepEqual(step.fromStacks.map((x) => [x.col, x.at, x.cell]), [[0, 1, 4]]);
+  // a stack card may only be swapped for a card that was loose (D00 is joined)
+  const b2 = [...s.board];
+  const st2 = s.stacks.map((x) => [...x]);
+  [b2[0], st2[0][1]] = [st2[0][1], b2[0]];
+  assert.equal(arrange(s, { shuffle: true, board: b2, stacks: st2 }), null);
+});
+
+// real deals for the rescue: the campaign's boards (src/content/levels/campaign.json)
+const CAMPAIGN = JSON.parse(readFileSync(new URL("../src/content/levels/campaign.json", import.meta.url), "utf8")).levels.map(
+  (l) => ({ cols: l.cols, rows: l.rows, pictures: l.pictures, stacks: l.stacks, seed: l.seed }),
+);
+const loosen = (s: State) => pieces(s).list.filter((p) => p.length === 1).map((p) => p[0]!);
+
+check("rescue on a board that can be won mixes the loose cards only, into a board the solver proves", () => {
+  const s = start(CAMPAIGN[4]).state;
+  const r = rescue(s);
+  const again = rescue(s);
+  assert.ok(r && again);
+  assert.deepEqual(r.action, again.action);
+  assert.equal(r.swapped, 0);
+  assert.deepEqual(r.action.stacks, s.stacks);
+  const loose = new Set(loosen(s));
+  s.board.forEach((c, i) => loose.has(i) || assert.equal(r.action.board[i], c));
+  assert.ok(isWon(r.state) || "win" in solveFrom(r.state, 20_000));
+  assert.ok(sameBoard(replay(CAMPAIGN[4], [r.action]), r.state));
+});
+
+check("rescue on a dead end swaps in stack cards, the solver proves it, and a replay plays it back", () => {
+  let found = 0;
+  for (let n = 0; n < CAMPAIGN.length && found < 4; n++) {
+    // a dead end from this board's opening: trade cards of every picture that is all on the board for stack cards
+    const opened = start(CAMPAIGN[n]).state;
+    const board = [...opened.board];
+    const stacks = opened.stacks.map((x) => [...x]);
+    for (let guard = 0; guard < 60 && !isDeadEnd({ ...opened, board, stacks }); guard++) {
+      const counts = onBoard({ ...opened, board, stacks });
+      const p = counts.findIndex((k, pic) => k > 0 && k === CAMPAIGN[n].pictures[pic].cols * CAMPAIGN[n].pictures[pic].rows);
+      const cell = board.findIndex((c) => c !== EMPTY && picOf(c) === p);
+      const col = stacks.findIndex((st) => st.some((c) => picOf(c) !== p));
+      if (cell < 0 || col < 0) break;
+      const at2 = stacks[col].findIndex((c) => picOf(c) !== p);
+      [board[cell], stacks[col][at2]] = [stacks[col][at2], board[cell]];
+    }
+    const deal = { ...CAMPAIGN[n], board, stacks };
+    const s = start(deal).state;
+    if (!isDeadEnd(s)) continue;
+    found++;
+    const r = rescue(s);
+    assert.ok(r, `board ${n + 1}: no rescue from a dead end`);
+    assert.ok(r.swapped >= 1);
+    assert.ok(isWon(r.state) || "win" in solveFrom(r.state, 20_000));
+    assert.ok(sameBoard(replay(deal, [r.action]), r.state));
+    // a recorded game survives JSON, shuffle and all
+    assert.ok(sameBoard(replay(deal, JSON.parse(JSON.stringify([r.action]))), r.state));
+  }
+  assert.ok(found >= 2, `only ${found} dead ends made`);
 });
 
 check("a move that leaves the board is refused; any move that fits is not", () => {
@@ -207,7 +290,7 @@ check("a move that leaves the board is refused; any move that fits is not", () =
 check("replay is deterministic and a state survives JSON", () => {
   const deal = board("D00 A00 B00 C00 / E00 A11 C01 B10 / D21 E11 A10 D10", [["A01", "E01"], ["C02"], ["B20", "E10"], ["D20", "E02", "D01", "E12", "D11"]]);
   let s = start(deal).state;
-  const tried = [{ from: 0, to: 5 }, { shuffle: true }, { from: 3, to: 8 }, { from: 11, to: 1 }, { from: 2, to: 9 }];
+  const tried = [{ from: 0, to: 5 }, { from: 3, to: 8 }, { from: 11, to: 1 }, { from: 2, to: 9 }];
   const played: any[] = [];
   for (const a of tried) {
     const o = act(s, a);
@@ -216,7 +299,7 @@ check("replay is deterministic and a state survives JSON", () => {
       s = o.state;
     }
   }
-  assert.ok(played.length >= 4);
+  assert.ok(played.length >= 3);
   const again = replay(JSON.parse(JSON.stringify(deal)), played);
   assert.ok(sameBoard(again, s));
   assert.equal(again.moves, s.moves);

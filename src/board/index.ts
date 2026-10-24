@@ -20,8 +20,9 @@ import { emit } from "../events";
 import { gem, onArcadePause, onPlayerPrefs } from "../gem";
 import { level as levelOf, levelCount, type Level } from "../game/levels.ts";
 import { nextMove } from "../game/solver/index.ts";
+import { rescue } from "../game/shuffle.ts";
 import {
-  EMPTY, allMoves, clampTarget, isDeadEnd, isWon, joinCount, move, pieceAt, pieces, picOf, shuffle as shuffleRule, start,
+  EMPTY, allMoves, clampTarget, isDeadEnd, isWon, joinCount, move, pieceAt, pieces, picOf, start,
   type Action, type Card, type Move, type State, type Step,
 } from "../game/rules.ts";
 import { ease, setBatterySaver, setPaused, stopAll, tween, wait, run } from "./pace.ts";
@@ -165,6 +166,12 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   let shown: State = state;
   let history: State[] = [];
   let actions: Action[] = [];
+  /**
+   * Known winning lines, newest last: the level's own from the start, and the
+   * one that proved each shuffle, from just after it. Hint follows the newest
+   * while the player's moves since it match it.
+   */
+  let plans: { at: number; line: Move[] }[] = [{ at: 0, line: lvl.line }];
   let helpers: HelperCounts = { ...TUNING.helpers };
   let busy = 0;
   let won = false;
@@ -301,7 +308,16 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       for (const x of ss) board[x.to] = x.card;
     };
     if (step.kind === "move") slide([...step.moved, ...step.displaced]);
-    else if (step.kind === "fall" || step.kind === "shuffle") slide(step.slides);
+    else if (step.kind === "fall") slide(step.slides);
+    else if (step.kind === "shuffle") {
+      for (const x of step.toStacks) board[x.cell] = EMPTY;
+      slide(step.slides);
+      for (const x of step.fromStacks) board[x.cell] = x.card;
+      if (step.toStacks.length) {
+        stacks2 = st.stacks.map((s) => [...s]);
+        for (const x of step.toStacks) stacks2[x.col]![x.at] = x.card;
+      }
+    }
     else if (step.kind === "clear") for (const p of step.pictures) for (const c of p.cells) board[c] = EMPTY;
     else if (step.kind === "deal") {
       stacks2 = st.stacks.map((s) => [...s]);
@@ -426,8 +442,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
         emit("cards:fall", { cards: step.slides.length, ms: slid.firstMs });
         await slid.done;
       } else if (step.kind === "shuffle") {
-        const dest = new Map(step.slides.map((x) => [x.card, x.to] as [Card, number]));
-        await slideCards(shown, dest, () => ({ ms: TUNING.shuffleMs, ease: ease.inOut, arc: true })).done;
+        await mixCards(step, next);
       } else if (step.kind === "clear") {
         await celebrate(step.pictures);
       } else if (step.kind === "deal") {
@@ -507,64 +522,101 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     }));
   }
 
+  /** Where a card sits on stack `col`'s face: its piece element's corner, and its scale. */
+  function onStackFace(col: number): { x: number; y: number; k: number } {
+    const W = geo.s + 2 * Math.ceil(geo.s * 0.16);
+    const cx = col * (geo.s + geo.g) + geo.s / 2;
+    const cy = -geo.gridY + geo.faceTop + geo.face / 2;
+    return { x: cx - W / 2, y: cy - W / 2, k: geo.face / geo.s };
+  }
+
+  /**
+   * A card leaves stack `col` for `cell`: from the stack's face, at its size,
+   * down to the cell, turning face up on the way when the level did not show
+   * it (`hidden`). `leave` runs as it sets off (the stack redraws there).
+   */
+  function dropFromStack(col: number, card: Card, cell: number, hidden: boolean, delay: number, leave: () => void): Promise<void> {
+    const v = addView(drawPiece(geo, art, [cell], [card], pics));
+    const m = Math.ceil(geo.s * 0.16);
+    const { x: sx, y: sy, k: sk } = onStackFace(col);
+    v.x = sx;
+    v.y = sy;
+    v.k = sk;
+    v.el.style.visibility = "hidden";
+    let cover: HTMLImageElement | null = null;
+    if (hidden) {
+      cover = document.createElement("img");
+      cover.className = "bd-cover";
+      cover.src = backUrl;
+      cover.alt = "";
+      cover.style.cssText = `left:${m}px;top:${m}px;width:${geo.s}px;height:${geo.s}px;border-radius:${Math.round(geo.s * 0.14)}px`;
+      v.el.append(cover);
+    }
+    place(v);
+    return wait(delay).then(() => {
+      v.el.style.visibility = "";
+      leave();
+      v.el.classList.add("moving");
+      return tween(TUNING.dealMs, (t) => {
+        v.x = sx + (v.ox - sx) * t;
+        v.y = sy + (v.oy - sy) * t;
+        v.k = sk + (1 - sk) * t;
+        if (cover) {
+          // a card the level did not show turns face up on the way
+          const flip = Math.abs(Math.cos(Math.PI * Math.min(1, t * 1.6)));
+          v.el.style.transform = `translate3d(${v.x}px, ${v.y}px, 0) scale(${v.k * Math.max(0.02, flip)}, ${v.k})`;
+          if (t > 1 / 3.2 && cover.isConnected) cover.remove();
+          return;
+        }
+        place(v);
+      }, { ease: ease.fall }).then(() => {
+        v.el.classList.remove("moving");
+        place(v);
+      });
+    });
+  }
+
   /** The stacks deal, column by column from the left, one card after another. */
   async function dealCards(step: Extract<Step, { kind: "deal" }>): Promise<void> {
     const dealt = shown.stacks.map(() => 0);
     /** Cards that have left each stack so far, as the deal plays. */
     const taken = shown.stacks.map(() => 0);
-    const p = geo.s + geo.g;
-    const jobs = step.deals.map((d, i) => {
-      const nth = dealt[d.col]!++;
-      const hidden = nth >= lvl.peek;
-      const v = addView(drawPiece(geo, art, [d.to], [d.card], pics));
-      const m = Math.ceil(geo.s * 0.16);
-      const W = geo.s + 2 * m;
-      // start: on the stack's face, at its size
-      const fcx = d.col * p + geo.s / 2;
-      const fcy = -geo.gridY + geo.faceTop + geo.face / 2;
-      const sx = fcx - W / 2;
-      const sy = fcy - W / 2;
-      const sk = geo.face / geo.s;
-      v.x = sx;
-      v.y = sy;
-      v.k = sk;
-      v.el.style.visibility = "hidden";
-      let cover: HTMLImageElement | null = null;
-      if (hidden) {
-        cover = document.createElement("img");
-        cover.className = "bd-cover";
-        cover.src = backUrl;
-        cover.alt = "";
-        cover.style.cssText = `left:${m}px;top:${m}px;width:${geo.s}px;height:${geo.s}px;border-radius:${Math.round(geo.s * 0.14)}px`;
-        v.el.append(cover);
-      }
-      place(v);
-      const delay = i * TUNING.dealStagger;
-      return wait(delay).then(() => {
-        v.el.style.visibility = "";
+    await Promise.all(step.deals.map((d, i) => {
+      const hidden = dealt[d.col]!++ >= lvl.peek;
+      return dropFromStack(d.col, d.card, d.to, hidden, i * TUNING.dealStagger, () => {
         const gone = ++taken[d.col]!;
         drawStack(stacks[d.col]!, geo, shown.stacks[d.col]!.slice(gone), lvl.peek, art, pics, backUrl);
         emit("stack:deal", { col: d.col, left: shown.stacks[d.col]!.length - gone });
-        v.el.classList.add("moving");
-        return tween(TUNING.dealMs, (t) => {
-          v.x = sx + (v.ox - sx) * t;
-          v.y = sy + (v.oy - sy) * t;
-          v.k = sk + (1 - sk) * t;
-          if (cover) {
-            // a card the level did not show turns face up on the way
-            const flip = Math.abs(Math.cos(Math.PI * Math.min(1, t * 1.6)));
-            v.el.style.transform = `translate3d(${v.x}px, ${v.y}px, 0) scale(${v.k * Math.max(0.02, flip)}, ${v.k})`;
-            if (t > 1 / 3.2 && cover.isConnected) cover.remove();
-            return;
-          }
-          place(v);
-        }, { ease: ease.fall }).then(() => {
-          v.el.classList.remove("moving");
-          place(v);
-        });
       });
-    });
-    await Promise.all(jobs);
+    }));
+  }
+
+  /**
+   * Shuffle: the loose cards arc to their new cells. When the board was stuck,
+   * the cards trading with the stacks rise onto their stack and sink into it,
+   * the stack shows its new top, and the cards it gave up drop into place.
+   */
+  async function mixCards(step: Extract<Step, { kind: "shuffle" }>, next: State): Promise<void> {
+    // the leaving cards' views, before the slides take over their cells
+    const leaving = step.toStacks.map((x) => ({ x, v: viewWith(x.cell) }));
+    const dest = new Map(step.slides.map((x) => [x.card, x.to] as [Card, number]));
+    const slid = slideCards(shown, dest, () => ({ ms: TUNING.shuffleMs, ease: ease.inOut, arc: true })).done;
+    if (!leaving.length) return slid;
+    const rise = Math.round(TUNING.shuffleMs * 0.55);
+    await Promise.all(leaving.map(({ x, v }) => {
+      if (!v) return Promise.resolve();
+      const x0 = v.x, y0 = v.y;
+      const to = onStackFace(x.col);
+      v.el.classList.add("moving");
+      return tween(rise, (t) => {
+        v.x = x0 + (to.x - x0) * t;
+        v.y = y0 + (to.y - y0) * t - Math.sin(Math.PI * t) * geo.s * 0.3;
+        v.k = 1 + (to.k - 1) * t;
+        place(v);
+      }, { ease: ease.inOut }).then(() => dropView(v));
+    }));
+    for (const col of new Set(step.toStacks.map((x) => x.col))) drawStack(stacks[col]!, geo, next.stacks[col]!, lvl.peek, art, pics, backUrl);
+    await Promise.all([slid, ...step.fromStacks.map((x, i) => dropFromStack(x.col, x.card, x.cell, x.at >= lvl.peek, i * TUNING.dealStagger, () => {}))]);
   }
 
   // ---------------------------------------------------------------- the hand
@@ -807,7 +859,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   // ---------------------------------------------------------------- playing
 
   function changed(): void {
-    emit("board:changed", { canUndo: history.length > 0 && !won, helpers: { ...helpers } });
+    emit("board:changed", { canUndo: history.length > 0 && !won, helpers: { ...helpers }, moves: state.moves });
   }
 
   async function settled(): Promise<void> {
@@ -820,7 +872,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     if (isWon(state) && !won) {
       won = true;
       clockOff();
-      emit("board:won", { level: name, moves: state.moves, ms: Math.round(activeMs) });
+      emit("board:won", { level: name, moves: state.moves, ms: Math.round(activeMs), line: actions.map((a) => ("shuffle" in a ? { shuffle: true as const, board: [...a.board], stacks: a.stacks.map((st) => [...st]) } : { ...a })) });
     } else if (isDeadEnd(state)) {
       emit("board:stuck", { doomed: false });
     }
@@ -900,6 +952,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     try {
       history = [];
       actions = [];
+      plans = [{ at: 0, line: lvl.line }];
       helpers = { ...TUNING.helpers };
       won = false;
       activeMs = 0;
@@ -930,12 +983,14 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   // ---------------------------------------------------------------- helpers
 
   function onLine(): Move | null {
-    if (actions.length >= lvl.line.length) return null;
-    for (let i = 0; i < actions.length; i++) {
-      const a = actions[i]!;
-      if ("shuffle" in a || a.from !== lvl.line[i]!.from || a.to !== lvl.line[i]!.to) return null;
+    const plan = plans[plans.length - 1]!;
+    const done = actions.length - plan.at;
+    if (done < 0 || done >= plan.line.length) return null;
+    for (let i = 0; i < done; i++) {
+      const a = actions[plan.at + i]!;
+      if ("shuffle" in a || a.from !== plan.line[i]!.from || a.to !== plan.line[i]!.to) return null;
     }
-    return lvl.line[actions.length]!;
+    return plan.line[done]!;
   }
 
   function greedy(): Move | null {
@@ -1059,6 +1114,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       helpers = { ...helpers, undo: helpers.undo - 1 };
       const prev = history.pop()!;
       actions.pop();
+      while (plans.length > 1 && plans[plans.length - 1]!.at > actions.length) plans.pop();
       state = prev;
       emit("helper:undo", { left: helpers.undo });
       void run2(() => morph(prev));
@@ -1081,15 +1137,19 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     },
     shuffle() {
       if (busy || won || drag || helpers.shuffle <= 0) return;
-      const out = shuffleRule(state);
-      if (!out) return;
+      const out = rescue(state);
+      if (!out) {
+        emit("helper:refused", { helper: "shuffle" });
+        return;
+      }
       if (selected) {
         settleBack(selected.v);
         selected = null;
       }
       helpers = { ...helpers, shuffle: helpers.shuffle - 1 };
       history.push(state);
-      actions.push({ shuffle: true });
+      actions.push(out.action);
+      plans.push({ at: actions.length, line: out.line });
       state = out.state;
       emit("helper:shuffle", { left: helpers.shuffle });
       void run2(() => show(out.steps));
