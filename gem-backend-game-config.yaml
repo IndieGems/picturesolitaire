@@ -18,6 +18,8 @@ config:
   # keeps its default. Sizes are fractions of a card; times are milliseconds.
   #   helpers        Undo, Hint and Shuffle at the start of every board
   #   gutter         the gap between cards
+  #   frame          the pale frame round every picture, as a share of a card (thin: 0.025),
+  #                  never under frameMin px
   #   stackRow       the stacks' row above the grid; stackGap the gap under it
   #   maxCard        the largest a card is drawn, in screen px (desktop)
   #   tilt           the slight perspective (true) or straight-on (false)
@@ -34,6 +36,8 @@ config:
     {
       "helpers": { "undo": 3, "hint": 3, "shuffle": 3 },
       "gutter": 0.08,
+      "frame": 0.025,
+      "frameMin": 2,
       "stackRow": 1.18,
       "stackGap": 0.2,
       "maxCard": 136,
@@ -71,6 +75,11 @@ progressions:
         - mode: on_complete   # the onboarding prize: onboarding is played on this board
           amount: 100
           target: { platform_currency_slug: ARCADE_TICKETS }
+      # granted with the prize, once (src/net/tables.json)
+      rewards_on_complete:
+        - type: item_grant
+          item_definition_id: dddb8ed0-cd23-52cb-ab6d-3585cbe523b7   # table-autumn-study (the backend wants the id here)
+          quantity: 1
   - id: 69eed63b-b3e1-5a20-9254-5c06718c0a9c
     slug: board_c02
     display_name: "Campaign board 2"
@@ -599,4 +608,18 @@ leaderboards:
     per_period: true
     max_size: 100
     update_frequency_seconds: 300
+
+# Tables the player can own (src/net/tables.json): cosmetic, never traded, never
+# written by the game (client_writable false); granted only through the config above.
+items:
+  - id: dddb8ed0-cd23-52cb-ab6d-3585cbe523b7
+    slug: table-autumn-study
+    display_name: "Autumn Study table"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 1
+    transfer_policy: none
+    client_writable: false
+    icon: tools/art/items/table-autumn-study.png
 # <<< server

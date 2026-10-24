@@ -82,4 +82,17 @@ fn main() {
     deals.retain(|d| seen.insert(d.to_string()));
     let out = Path::new(&env::var("OUT_DIR").unwrap()).join("deals.json");
     fs::write(out, json!({ "deals": deals }).to_string()).unwrap();
+
+    // which campaign board grants which table item (src/net/tables.json)
+    let tables_file = Path::new(&here).join("../../src/net/tables.json");
+    println!("cargo:rerun-if-changed={}", tables_file.display());
+    let tables: Vec<Value> = fs::read_to_string(&tables_file)
+        .ok()
+        .and_then(|t| serde_json::from_str::<Value>(&t).ok())
+        .and_then(|v| v["tables"].as_array().cloned())
+        .unwrap_or_default()
+        .iter()
+        .map(|t| json!({ "board": t["board"], "slug": t["slug"] }))
+        .collect();
+    fs::write(Path::new(&env::var("OUT_DIR").unwrap()).join("tables.json"), Value::Array(tables).to_string()).unwrap();
 }

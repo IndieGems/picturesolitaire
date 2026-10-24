@@ -100,8 +100,10 @@ mod function {
     /// What one completion granted, from the platform's receipt.
     struct Granted {
         coins: i64,
-        /// Item definition ids granted now (the onboarding keepsake, by board 1's rewards_on_complete).
+        /// Items granted now, by slug or id (the onboarding keepsake, by board 1's rewards_on_complete).
         items: Vec<String>,
+        /// This write completed the progression for the first time.
+        first: bool,
     }
 
     impl Granted {
@@ -133,7 +135,11 @@ mod function {
         }
         let mut coins = 0;
         let mut items = Vec::new();
+        let mut first = false;
         for ch in res.body["changes"].as_array().into_iter().flatten() {
+            if ch["type"] == "progression" && ch["value_before"].as_f64().unwrap_or(0.0) < 1.0 && ch["value_after"].as_f64().unwrap_or(0.0) >= 1.0 {
+                first = true;
+            }
             if ch["type"] == "item" && ch["quantity_after"].as_i64().unwrap_or(0) > ch["quantity_before"].as_i64().unwrap_or(0) {
                 let id = ch["item_definition_id"].as_str().unwrap_or_default().to_string();
                 host::log(LogLevel::Info, &format!("item {slug}: {id}"));
@@ -148,11 +154,49 @@ mod function {
                 );
             }
         }
-        Ok(Granted { coins, items })
+        Ok(Granted { coins, items, first })
+    }
+
+    /// The table items a board's first completion grants (src/net/tables.json, through build.rs).
+    fn tables_for(board: &str) -> Vec<String> {
+        let all: Value = serde_json::from_str(include_str!(concat!(env!("OUT_DIR"), "/tables.json"))).unwrap_or(Value::Null);
+        all.as_array()
+            .into_iter()
+            .flatten()
+            .filter(|t| t["board"] == board)
+            .filter_map(|t| t["slug"].as_str().map(str::to_string))
+            .collect()
+    }
+
+    /// Does the player hold this item now? The platform's answer.
+    fn holds(player: &str, slug: &str) -> bool {
+        match api("GET", format!("/v1/inventory/players/{player}/items/{slug}"), None) {
+            Ok(a) if (200..300).contains(&a.status) => {
+                let list = if a.body.is_array() { &a.body } else { &a.body["data"] };
+                list.as_array().into_iter().flatten().any(|i| i["quantity"].as_i64().unwrap_or(0) > 0)
+            }
+            Ok(a) => {
+                host::log(LogLevel::Warn, &format!("item {slug} answered {}", a.status));
+                false
+            }
+            Err(_) => false,
+        }
     }
 
     fn board_win(player: &str, win: &Win) -> Value {
-        match complete(player, &crate::board_slug(&win.board)) {
+        let done = complete(player, &crate::board_slug(&win.board)).map(|mut g| {
+            // a completion's item rewards land in a step of their own, which this receipt does
+            // not list: on the first completion, confirm each table the board grants is held
+            if g.first && win.lane == Lane::Campaign {
+                for slug in tables_for(&win.board) {
+                    if !g.items.contains(&slug) && holds(player, &slug) {
+                        g.items.push(slug);
+                    }
+                }
+            }
+            g
+        });
+        match done {
             Ok(g) => json!({
                 "v": 1, "status": g.status(), "lane": win.lane.name(),
                 "board": win.board, "moves": win.moves, "coins": g.coins, "items": g.items,
