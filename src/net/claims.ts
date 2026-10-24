@@ -33,7 +33,7 @@
 // at once, after a local replay that warns in the console if the line would
 // not verify.
 
-import { GemFunctionError } from "@indiegems/gem-web-sdk/sdk";
+import { GemApiError, type GemFunctionError } from "@indiegems/gem-web-sdk/sdk";
 import { gem, onWillTerminate } from "../gem";
 import { isWon, replay, type Action, type Deal } from "../game/rules";
 import { onOnline, online, suspect } from "../ui/online";
@@ -162,6 +162,8 @@ export function claimWin(claim: WinClaim): Promise<Verdict> {
   if (claim.n !== undefined) body.n = claim.n;
   return new Promise((resolve) => {
     queue.push({ id, lane: claim.lane, board: claim.board, effect, body, resolve, tries: 0, notBefore: 0 });
+    // kept first, sent at once: neither waits for the other, since waiting for the
+    // save (three round trips) would only widen the window in which a closing page loses the win
     void persist();
     void pump();
   });
@@ -206,20 +208,34 @@ function schedule(): void {
   timer = window.setTimeout(() => void pump(), Math.max(50, next - performance.now()));
 }
 
+/**
+ * Call the checker so the request outlives the page: "keepalive" lets the
+ * browser finish a request already started when the page is closed or
+ * reloaded (at most 64 KiB in flight; a claim is a few KB). The answer is lost
+ * with the page then, but the checker has acted, and the copy kept in the
+ * "claims" slot is sent again at the next start, where it changes nothing twice.
+ * The same call gem.functions.invoke makes, which offers no keepalive.
+ */
+async function invoke(body: Record<string, unknown>): Promise<Record<string, unknown>> {
+  const bytes = new TextEncoder().encode(JSON.stringify(body));
+  const res = await gem.client.postBytes("/v1/functions/invoke", bytes, undefined, { keepalive: bytes.length < 60_000 });
+  return JSON.parse(new TextDecoder().decode(res.bytes)) as Record<string, unknown>;
+}
+
 async function send(h: Held): Promise<void> {
   const { lane, board } = h;
   let answer: Record<string, unknown>;
   try {
-    answer = (await gem.functions.invoke(h.body)).json() as Record<string, unknown>;
+    answer = await invoke(h.body);
   } catch (err) {
-    if (err instanceof GemFunctionError) {
+    if (err instanceof GemApiError) {
       // the call reached the platform: decide from its code
       if (err.retryable || err.code === "function_not_published" || err.code === "function_failed") {
         if (err.code === "function_failed" && h.tries >= 3) return settle(h, { status: "refused", lane, board, reason: "function_failed" });
-        console.warn(`[claims] ${lane} ${board}: ${err.code}, trying again`);
+        if (!leaving) console.warn(`[claims] ${lane} ${board}: ${err.code}, trying again`);
         return later(h, err.code === "function_not_published");
       }
-      console.error(`[claims] ${lane} ${board}: ${err.code}`, err.functionMessage ?? "");
+      console.error(`[claims] ${lane} ${board}: ${err.code}`, (err as GemFunctionError).functionMessage ?? "");
       return settle(h, { status: "refused", lane, board, reason: err.code ?? "function_error" });
     }
     // no answer at all: the connection may have gone
@@ -286,6 +302,8 @@ let resumeTries = 0;
 let storedAny = false;
 let writing = false;
 let rewrite = false;
+/** The page is going: a request it cuts short is no fault worth a warning (keepalive sends carry on). */
+let leaving = false;
 
 /** Keep the unanswered claims in the player's "claims" slot (one writer; the latest list wins). */
 async function persist(): Promise<void> {
@@ -304,6 +322,7 @@ async function persist(): Promise<void> {
         await gem.me.saves.put(SLOT, { v: 1, claims }, { timeoutMs: 10_000 });
         storedAny = claims.length > 0;
       } catch (err) {
+        if (leaving) break; // the page cut its own upload short; the claim itself went with keepalive
         console.warn(`[claims] could not keep the unanswered claims: ${refusalOf(err)}`);
         if (!noAnswer(err)) break; // a refusal will not change by asking again
         suspect();
@@ -384,6 +403,10 @@ if (framed) {
   });
   addEventListener("pagehide", () => {
     if (queue.length) flushNow();
+    leaving = true;
+  });
+  addEventListener("pageshow", () => {
+    leaving = false;
   });
   onWillTerminate(() => {
     if (queue.length) flushNow();
