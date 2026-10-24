@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SS = 3  # supersampling for smooth rounded edges
 
 # Frame spec, as fractions of the cell size s (see chrome-spec.md).
-RIM, R_OUT, R_IN, LIP, SHADOW_Y, SHADOW_BLUR = 0.05, 0.14, 0.09, 0.035, 0.04, 0.06
+RIM, R_OUT, R_IN, LIP, SHADOW_Y, SHADOW_BLUR = 0.025, 0.14, 0.115, 0.035, 0.04, 0.06  # thin frames (creator, 2026-10-23)
 RIM_TOP, RIM_BOTTOM, RIM_LINE = (233, 238, 245), (176, 186, 200), (139, 151, 168)
 LIP_TOP, LIP_BOTTOM = (93, 105, 121), (52, 61, 74)
 

@@ -36,8 +36,8 @@ All sizes are fractions of the cell size `s` (one square card, without its gutte
 | --- | --- |
 | gutter between cells | `0.08 s` (thin and even) |
 | outer corner radius | `0.14 s` |
-| frosted rim width | `0.05 s` (never under 3 CSS px) |
-| picture window corner radius | `0.09 s` |
+| frosted rim width | `0.025 s` (never under 2 CSS px). Thin: the creator asked for frames half as thick (2026-10-23); in the game it is tunable as `board.frame` / `board.frameMin` |
+| picture window corner radius | concentric: `0.14 s` minus the rim (`0.115 s` above the 2 px floor); an inner (concave) corner of a merged piece `0.14 s` plus the rim |
 | rim fill | vertical gradient `#e9eef5` (top) to `#b0bac8` (bottom), plus a 1 px `#f4f7fb` highlight along the top edge |
 | hairline where rim meets picture | 1 px `#8b97a8` |
 | lip (the card's thickness, showing below its face) | same rounded shape shifted down `0.035 s`, gradient `#5d6979` to `#343d4a` |
