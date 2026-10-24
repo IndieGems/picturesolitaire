@@ -8,6 +8,8 @@
 // Run: node tools/levels/make-campaign.mts [--fresh] [--repair-only] [--out FILE]
 //   --fresh        remake every board from the plan, ignoring the file (a
 //                  board a player has won keeps its id and pays no more)
+//   --keep N       keep the file's first N boards, remake the rest from the plan
+//                  (e.g. --keep 3 once boards 1-3 are signed off)
 //   --repair-only  re-deal flagged boards only; add no plan rows (redeal.mts)
 //   --redeal 1,2,3 re-deal these boards afresh from the plan; keep every other
 //                  board (and add no plan rows)
@@ -29,13 +31,14 @@ const has = (f) => process.argv.includes(f);
 const outAt = process.argv.indexOf("--out");
 const FILE = join(root, "src/content/levels/campaign.json");
 const OUT = outAt > 0 ? process.argv[outAt + 1] : FILE;
-const old = has("--fresh") ? [] : readBoards(FILE);
+const keepAt = process.argv.indexOf("--keep");
+const old = has("--fresh") ? [] : keepAt > 0 ? readBoards(FILE).slice(0, Number(process.argv[keepAt + 1])) : readBoards(FILE);
 const shipped = readBoards(FILE);
 const fileTag = existsSync(FILE) ? JSON.parse(readFileSync(FILE, "utf8")).plan : undefined;
 const redealAt = process.argv.indexOf("--redeal");
 const redeal = new Set(redealAt > 0 ? process.argv[redealAt + 1].split(",").map((n) => Number(n) - 1) : []);
 const adding = PLAN.length > old.length && !has("--repair-only") && !redeal.size;
-if (adding && old.length && fileTag !== PLAN_TAG) {
+if (adding && old.length && fileTag !== PLAN_TAG && keepAt < 0) {
   console.error(`campaign.json was made from another plan (${fileTag ?? "before plans were named"}), not ${PLAN_TAG}: remake it with --fresh, or re-deal flagged boards only with --repair-only`);
   process.exit(1);
 }

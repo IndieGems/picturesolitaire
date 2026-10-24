@@ -178,7 +178,12 @@ export function pickFrom(plan, chosen, from, seedOf, spacing?) {
   for (let i = from; i < plan.length; i++) {
     const recent = new Set((chosen[i - 1] ?? []).map((q) => q.id));
     const cost = spacing ? spacedCost(chosen, i, spacing) : onSchedule(uses, plan0, done / Math.max(1, slots));
-    const pictures = pick(usable, specOf(plan[i]), cost, recent, random(seedOf(i)));
+    // strong costs leave the picker little room; when no set fits, soften them before giving up
+    let pictures = null;
+    for (const k of [1, 0.5, 0.25, 0]) {
+      pictures = pick(usable, specOf(plan[i]), k === 1 ? cost : new Map([...cost].map(([id, v]) => [id, v * k])), recent, random(seedOf(i)));
+      if (pictures) break;
+    }
     if (!pictures) throw new Error(`board ${i + 1}: no pictures fit the plan${flags.size ? " (flagged pictures are left out)" : ""}`);
     for (const q of pictures) uses.set(q.id, (uses.get(q.id) ?? 0) + 1);
     chosen[i] = pictures;
