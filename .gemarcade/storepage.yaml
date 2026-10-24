@@ -1,0 +1,94 @@
+# storepage.yaml — store-page schema v3 (scaffolded by `gemctl store init`).
+# Art: built by tools/art/store.py (hero/, borders/); the hover loop is video/preview.mp4.
+# Check with `gemctl store upload --dry-run`. Nothing here is uploaded until someone runs the upload.
+
+schema_version: 3
+
+title: "Picture Mend"
+
+tagline: "Mend pictures, card by card"
+
+short_description: "Swap scattered cards until each picture is whole again. Photographs and paintings share their colours on purpose, so every card deserves a close look. A relaxed campaign, a challenge route and a daily puzzle to share with friends, with no timers."
+
+description: |
+  ## Mend the picture
+
+  Cards from several pictures lie scattered across a candlelit winter table. Drag one card onto another to swap them, or tap one and then the other. When a card meets its true neighbour, the two join into one piece and move together. Finish a picture and it shows whole for a moment, then clears, and new cards drop in from the stacks above.
+
+  ## Look closely
+
+  The pictures on each board are chosen to look alike: two sunsets, two flower gardens, a harbour and a lakeside at dusk. Some are photographs and some are paintings, gathered in five albums: Flowers, Food & Still Life, Landscapes, People and Travel. The fun is in spotting which card belongs where.
+
+  ## Play at your own pace
+
+  - **A relaxed campaign** of 30 boards, from a gentle start to cleverer deals.
+  - **A challenge route** of 20 trickier boards for when you want to think harder.
+  - **A daily puzzle**: the same board for everyone each day, so you can compare how you did with friends.
+  - **No timers and no move limits.** Every board can be won without help, and undo, hint and shuffle are there when you want them.
+  - **Your albums**: every picture you mend is kept, to look at again full screen.
+
+feature_bullets:
+  - "Swap cards to mend scattered photographs and paintings, piece by piece"
+  - "Pictures that look alike on purpose, so every card deserves a close look"
+  - "A relaxed 30-board campaign and a 20-board challenge route"
+  - "A daily puzzle, the same for everyone, to compare with friends"
+  - "No timers and no move limits: every board can be won without help"
+  - "Every picture you mend is kept in your albums"
+
+# Played and tested on phones (portrait) and on desktop browsers; never on a TV.
+form_factors:
+  phone: full
+  tablet: full
+  desktop: full
+  tv: none
+
+input_methods:
+  touch: full
+  kb_mouse: full
+  gamepad: none
+
+# Portrait-only (AGENTS.md ruling): a PC or TV letterboxes the game between the portrait borders.
+orientations:
+  phone:
+    portrait: full
+    landscape: none
+  tablet:
+    portrait: full
+    landscape: none
+
+modes:
+  singleplayer: { min: 1, max: 1 }
+
+accessibility: []
+
+metadata:
+  languages:
+    - { code: en, interface: true }
+
+tags:
+  - play-puzzle-brain
+  - play-cards-board
+  - sub-hidden-object-jigsaw
+  - puzzle
+  - solitaire
+  - jigsaw
+  - relaxing
+  - art
+  - daily-puzzle
+
+media:
+  capsules:
+    square: hero/capsule_square.jpg
+    landscape: hero/capsule_landscape.jpg
+  hero:
+    key_art_clean: hero/key_art.jpg
+    logo: hero/logo.png
+  share_card:
+    src: hero/share_card.jpg
+    alt: "Picture Mend: a harbour painting being mended from its cards on a snowy, candlelit table"
+  portrait_borders:
+    - name: winter-table
+      src: borders/winter-table.jpg
+  # The desktop tile's hover loop: board 4 played from its own winning line, the harvest
+  # painting snapping whole (tools/art/preview/, re-record when the board's look changes).
+  preview: video/preview.mp4
