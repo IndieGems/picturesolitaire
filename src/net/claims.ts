@@ -33,6 +33,7 @@ import { gem } from "../gem";
 import { isWon, replay, type Action, type Deal } from "../game/rules";
 import { onOnline, online, suspect } from "../ui/online";
 import { dealHash } from "./deal-hash";
+import { tableOf } from "./tables";
 
 export type Lane = "campaign" | "challenge" | "daily";
 
@@ -57,6 +58,8 @@ interface Answered {
   moves: number;
   /** Coins this win paid now (0 on "kept" and "late"). */
   coins: number;
+  /** Items this win granted now, by slug: the onboarding keepsake table, on campaign board 1 (src/net/tables.ts). */
+  items?: string[];
   /** Daily only: the date, the time the board shows, whether the result is on the day's board, whether it is this player's first of the day. */
   date?: string;
   ms?: number;
@@ -182,12 +185,16 @@ async function send(h: Held): Promise<void> {
   const status = answer.status;
   if (status === "retry") return later(h, answer.reason === "unknown_deal" || answer.reason === "config");
   if (status === "paid" || status === "kept" || status === "late") {
+    const items = Array.isArray(answer.items) ? answer.items.filter((i): i is string => typeof i === "string").map(tableOf) : [];
+    // the server granted what this device's cached inventory cannot know: read it afresh next time
+    if (status === "paid" || items.length) gem.me.inventory.refresh();
     return settle(h, {
       status,
       lane,
       board,
       moves: Number(answer.moves) || 0,
       coins: Number(answer.coins) || 0,
+      ...(items.length ? { items } : {}),
       ...(typeof answer.date === "string" ? { date: answer.date } : {}),
       ...(typeof answer.ms === "number" ? { ms: answer.ms } : {}),
       ...(typeof answer.recorded === "boolean" ? { recorded: answer.recorded } : {}),

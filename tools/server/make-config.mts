@@ -23,6 +23,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { KEEPSAKE, TABLES } from "../../src/net/tables.ts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const CONFIG = join(root, "gem-backend-game-config.yaml");
@@ -79,6 +80,13 @@ for (const r of rows) {
   y.push(`        - mode: on_complete${r.onboarding ? "   # the onboarding prize: onboarding is played on this board" : ""}`);
   y.push(`          amount: ${r.coins}`);
   y.push("          target: { platform_currency_slug: ARCADE_TICKETS }");
+  if (r.onboarding && KEEPSAKE) {
+    y.push("      # the onboarding keepsake, granted with the prize, once (src/net/tables.ts)");
+    y.push("      rewards_on_complete:");
+    y.push("        - type: item_grant");
+    y.push(`          item_definition_slug: ${KEEPSAKE.slug}`);
+    y.push("          quantity: 1");
+  }
 }
 y.push("  # THE DAILY PUZZLE: one board a day, the same for everyone (src/content/levels/daily.json,");
 y.push("  # the board \"d\" + the date). The function checks the date is the player's own today,");
@@ -118,6 +126,24 @@ y.push("      - { column: int_value_2, direction: asc }");
 y.push("    per_period: true");
 y.push("    max_size: 100");
 y.push("    update_frequency_seconds: 300");
+if (TABLES.length) {
+  y.push("");
+  y.push("# Tables the player can own (src/net/tables.ts): cosmetic, never traded, never");
+  y.push("# written by the game (client_writable false); granted only through the config above.");
+  y.push("items:");
+  for (const t of TABLES) {
+    y.push(`  - id: ${t.id}`);
+    y.push(`    slug: ${t.slug}`);
+    y.push(`    display_name: "${t.title}"`);
+    y.push("    item_type: item");
+    y.push("    category: cosmetic");
+    y.push("    fungible: true");
+    y.push("    stack_size: 1");
+    y.push("    transfer_policy: none");
+    y.push("    client_writable: false");
+    if (t.icon) y.push(`    icon: ${t.icon}`);
+  }
+}
 y.push(END);
 const block = y.join("\n");
 

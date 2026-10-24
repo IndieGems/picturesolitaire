@@ -97,9 +97,26 @@ mod function {
         json!({ "v": 1, "status": "retry", "reason": why })
     }
 
+    /// What one completion granted, from the platform's receipt.
+    struct Granted {
+        coins: i64,
+        /// Item definition ids granted now (the onboarding keepsake, by board 1's rewards_on_complete).
+        items: Vec<String>,
+    }
+
+    impl Granted {
+        fn status(&self) -> &'static str {
+            if self.coins > 0 || !self.items.is_empty() {
+                "paid"
+            } else {
+                "kept"
+            }
+        }
+    }
+
     /// Move a paying progression to 1: completes it the first time, pays its
-    /// mapping then, and nothing after. Ok(coins granted now) or Err(verdict).
-    fn complete(player: &str, slug: &str) -> Result<i64, Value> {
+    /// mapping and its rewards then, and nothing after. Ok(what landed now) or Err(verdict).
+    fn complete(player: &str, slug: &str) -> Result<Granted, Value> {
         let res = api(
             "POST",
             format!("/v1/inventory/players/{player}/progressions/{slug}/max"),
@@ -115,7 +132,13 @@ mod function {
             return Err(retry(if passing(res.status) { "platform" } else { "config" }));
         }
         let mut coins = 0;
+        let mut items = Vec::new();
         for ch in res.body["changes"].as_array().into_iter().flatten() {
+            if ch["type"] == "item" && ch["quantity_after"].as_i64().unwrap_or(0) > ch["quantity_before"].as_i64().unwrap_or(0) {
+                let id = ch["item_definition_id"].as_str().unwrap_or_default().to_string();
+                host::log(LogLevel::Info, &format!("item {slug}: {id}"));
+                items.push(id);
+            }
             if ch["type"] == "platform_grant" {
                 let granted = ch["granted"].as_i64().unwrap_or(0);
                 coins += granted;
@@ -125,14 +148,14 @@ mod function {
                 );
             }
         }
-        Ok(coins)
+        Ok(Granted { coins, items })
     }
 
     fn board_win(player: &str, win: &Win) -> Value {
         match complete(player, &crate::board_slug(&win.board)) {
-            Ok(coins) => json!({
-                "v": 1, "status": if coins > 0 { "paid" } else { "kept" }, "lane": win.lane.name(),
-                "board": win.board, "moves": win.moves, "coins": coins,
+            Ok(g) => json!({
+                "v": 1, "status": g.status(), "lane": win.lane.name(),
+                "board": win.board, "moves": win.moves, "coins": g.coins, "items": g.items,
             }),
             Err(v) => v,
         }
@@ -205,9 +228,9 @@ mod function {
             });
         }
         match complete(player, crate::DAILY_SLUG) {
-            Ok(coins) => json!({
-                "v": 1, "status": if coins > 0 { "paid" } else { "kept" }, "lane": "daily", "board": win.board,
-                "date": date, "moves": win.moves, "ms": win.ms, "coins": coins, "recorded": recorded, "first": first,
+            Ok(g) => json!({
+                "v": 1, "status": g.status(), "lane": "daily", "board": win.board, "date": date,
+                "moves": win.moves, "ms": win.ms, "coins": g.coins, "items": g.items, "recorded": recorded, "first": first,
             }),
             Err(v) => v,
         }
