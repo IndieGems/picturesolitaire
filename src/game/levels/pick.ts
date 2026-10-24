@@ -32,7 +32,7 @@ export interface PickSpec {
   cards: Range;
   /** Cards a picture may have (2 for 2x1, 4 for 2x2, 6 for 3x2, 9 for 3x3). */
   sizes: number[];
-  /** Shapes ("3x3", "2x3"...) that must be on the board, one picture each. */
+  /** Shapes ("3x3", "2x3"...) that must be on the board, one picture each (["3x3", "3x3"]: both). */
   must?: string[];
   /** At most this many pictures of a size, by cards: { 9: 1 } is one 3x3 at most (the default). */
   most?: Record<number, number>;
@@ -78,49 +78,55 @@ export function pick(
       .map((x) => x.f);
     let ok = true;
     // a picture with a required shape decides its family, for a group or as a single
+    // (two required pictures of one family, such as both 3x3s, must be a group)
     const must = [...(spec.must ?? [])];
-    const forced = new Map<string, CataloguePicture>();
+    const forced = new Map<string, CataloguePicture[]>();
+    const taken = new Set<CataloguePicture>();
     for (const shape of must) {
-      const cands = eligible.filter((p) => shapeOf(p) === shape && !forced.has(p.family));
+      const cands = eligible.filter((p) => shapeOf(p) === shape && !taken.has(p) && (!forced.has(p.family) || !eligible.some((q) => shapeOf(q) === shape && !taken.has(q) && !forced.has(q.family))));
       if (!cands.length) {
         ok = false;
         break;
       }
       const p = cands.map((p) => ({ p, c: cost(p) })).sort((a, b) => a.c - b.c)[0]!.p;
-      forced.set(p.family, p);
+      taken.add(p);
+      forced.set(p.family, [...(forced.get(p.family) ?? []), p]);
     }
     if (!ok) continue;
     const forcedFams = [...forced.keys()];
+    const fitsGroup = (f: string, g: number) => !usedFam.has(f) && eligible.filter((p) => p.family === f).length >= g && (forced.get(f)?.length ?? 0) <= g;
     for (const g of groups) {
-      // sometimes a required picture's family is this group
+      // a family holding two required pictures takes a group; sometimes a required picture's family is this group
+      const coin = rnd() < 0.5;
       const fam =
-        (rnd() < 0.5 ? forcedFams.find((f) => !usedFam.has(f) && eligible.filter((p) => p.family === f).length >= g) : undefined) ??
-        famOrder.find((f) => !usedFam.has(f) && !forced.has(f) && eligible.filter((p) => p.family === f).length >= g);
+        forcedFams.find((f) => forced.get(f)!.length > 1 && fitsGroup(f, g)) ??
+        (coin ? forcedFams.find((f) => fitsGroup(f, g)) : undefined) ??
+        famOrder.find((f) => !forced.has(f) && fitsGroup(f, g));
       if (!fam) {
         ok = false;
         break;
       }
       usedFam.add(fam);
       const members = eligible.filter((p) => p.family === fam);
-      const pinned = forced.get(fam);
+      const pinned = forced.get(fam) ?? [];
       const rest = members
-        .filter((p) => p !== pinned)
+        .filter((p) => !pinned.includes(p))
         .map((p) => ({ p, c: cost(p) }))
         .sort((a, b) => a.c - b.c)
         .map((x) => x.p);
-      chosen.push(...(pinned ? [pinned, ...rest.slice(0, g - 1)] : rest.slice(0, g)));
+      chosen.push(...pinned, ...rest.slice(0, g - pinned.length));
     }
     if (!ok) continue;
     // required pictures not in a group come in as singles
     let left = singles;
-    for (const [fam, p] of forced) {
+    for (const [fam, ps] of forced) {
       if (usedFam.has(fam)) continue;
-      if (left-- <= 0) {
+      if (ps.length > 1 || left-- <= 0) {
         ok = false;
         break;
       }
       usedFam.add(fam);
-      chosen.push(p);
+      chosen.push(ps[0]!);
     }
     if (!ok) continue;
     for (; left > 0; left--) {

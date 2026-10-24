@@ -15,6 +15,14 @@
 //   has depth 2; and so on. A deal's chain is the smallest, over every winning
 //   line, of that line's deepest clear. 1 means every picture can be finished
 //   from the opening alone.
+// - WAIT (the challenge route's "big pictures need room"): for each picture,
+//   the fewest other clears any winning line makes before it. The board opens
+//   full, so a picture not wholly in the opening deal waits for at least one;
+//   a big picture whose cards sit deep in the stacks waits for several small
+//   ones to make room for it.
+// - ORDER TRAPS (the challenge route's "clear order matters"): along the
+//   stored line, the positions where finishing some ready picture (or
+//   finishing it at the wrong place) would doom the board.
 
 import { move, start, type Deal, type Move } from "../rules.ts";
 import type { Game, Node, Step } from "./abstract.ts";
@@ -53,6 +61,52 @@ export function traps(game: Game, nodes: readonly Node[]): number {
   return count;
 }
 
+/** How many positions along a line offered a CLEAR that dooms the board. */
+export function orderTraps(game: Game, nodes: readonly Node[]): number {
+  let count = 0;
+  for (const n of nodes) {
+    if (game.isWon(n)) continue;
+    if (game.options(n).some((o) => o.step.kind === "clear" && !game.wins(o.next, o.key))) count++;
+  }
+  return count;
+}
+
+/**
+ * Per picture, the fewest other clears any winning line makes before it
+ * clears (see the top of this file). Every step deals a card or clears a
+ * picture, so (cards dealt + pictures cleared) orders the positions; taking
+ * them in that order, each one's fewest clears so far is final when it is
+ * reached.
+ */
+export function wait(game: Game): number[] {
+  const out = new Array<number>(game.nP).fill(Infinity);
+  const level = (n: Node) => {
+    let v = 0;
+    for (const p of n.ptr) v += p;
+    for (let m = n.mask; m; m &= m - 1) v++;
+    return v;
+  };
+  const r = game.root;
+  const layers: Map<number, { n: Node; d: number }>[] = [];
+  const reach = (n: Node, k: number, d: number) => {
+    const L = (layers[level(n)] ??= new Map());
+    const known = L.get(k);
+    if (!known || d < known.d) L.set(k, { n, d });
+  };
+  reach(r, game.key(r), 0);
+  for (let i = 0; i < layers.length; i++) {
+    for (const { n, d } of layers[i]?.values() ?? []) {
+      for (const o of game.winning(n)) {
+        if (o.step.kind === "clear") {
+          out[o.step.pic] = Math.min(out[o.step.pic]!, d);
+          reach(o.next, o.key, d + 1);
+        } else reach(o.next, o.key, d);
+      }
+    }
+  }
+  return out;
+}
+
 /** The abstract positions a real line passes through from the deal, each once, in order. */
 export function along(game: Game, deal: Deal, line: readonly Move[]): Node[] {
   let s = start(deal).state;
@@ -84,26 +138,44 @@ interface Ext {
 /**
  * The deal's chain (see the top of this file), or null past `cap` positions
  * (then it proves nothing about the chain; the generator rejects the deal).
+ * Asked as "is there a winning line whose clears all have depth <= D?" for
+ * D = 1, 2, ...: the first yes is the chain. Each question prunes every
+ * position where some picture already needs a deeper clear, which keeps the
+ * search small even on a 5 x 6 board.
  */
 export function chain(game: Game, cap = 300_000): number | null {
+  try {
+    for (let D = 1; D <= game.nP; D++) if (chainAtMost(game, D, cap)) return D;
+    return null;
+  } catch (err) {
+    if (err instanceof CapReached) return null;
+    throw err;
+  }
+}
+
+/** Is there a winning line whose every clear has depth <= D? Throws CapReached past `cap` positions. */
+function chainAtMost(game: Game, D: number, cap: number): boolean {
   const P = game.nP;
-  const memo = new Map<string, number>();
+  const memo = new Map<string, boolean>();
   let visits = 0;
   const keyOf = (e: Ext, k: number) => `${k}|${e.depth.join(",")}|${e.room.join(",")}`;
 
-  function g(e: Ext, k: number): number {
-    if (game.isWon(e.n)) return 0;
+  function g(e: Ext, k: number): boolean {
+    if (game.isWon(e.n)) return true;
+    // a picture with a card that arrived at depth D can only clear deeper than D
+    for (let p = 0; p < P; p++) if (!(e.n.mask & (1 << p)) && e.depth[p]! >= D) return false;
     const mk = keyOf(e, k);
     const known = memo.get(mk);
     if (known !== undefined) return known;
     if (++visits > cap) throw new CapReached();
-    let best = Infinity;
+    let ok = false;
     for (const o of game.options(e.n)) {
+      if (ok) break;
       if (!game.wins(o.next, o.key)) continue;
       if (o.step.kind === "clear") {
         const p = o.step.pic;
         const d = 1 + e.depth[p]!;
-        if (d >= best) continue;
+        if (d > D) continue;
         const depth = [...e.depth];
         depth[p] = 0;
         const room = grow(e.room, d);
@@ -122,34 +194,28 @@ export function chain(game: Game, cap = 300_000): number | null {
           }
           if (to === game.len[c]) room[d]! += pr - (to - from);
         }
-        best = Math.min(best, Math.max(d, g({ n: o.next, depth, room: trim(room) }, o.key)));
+        ok = g({ n: o.next, depth, room: trim(room) }, o.key);
       } else {
         const c = o.step.col;
         const q = game.stackPic[c]![e.n.ptr[c]!]!;
         // the drawn card comes in through room opened at some depth: try each depth there is
-        for (let t = 0; t < e.room.length; t++) {
+        for (let t = 0; t < e.room.length && !ok; t++) {
           if (!e.room[t]) continue;
           const room = [...e.room];
           room[t]!--;
           const depth = [...e.depth];
           depth[q] = Math.max(depth[q]!, t);
-          best = Math.min(best, g({ n: o.next, depth, room: trim(room) }, o.key));
+          ok = g({ n: o.next, depth, room: trim(room) }, o.key);
         }
       }
     }
-    memo.set(mk, best);
-    return best;
+    memo.set(mk, ok);
+    return ok;
   }
 
   const r = game.root;
   const room0 = game.room(r);
-  try {
-    const v = g({ n: r, depth: new Array<number>(P).fill(0), room: room0 ? [room0] : [] }, game.key(r));
-    return Number.isFinite(v) ? v : null;
-  } catch (err) {
-    if (err instanceof CapReached) return null;
-    throw err;
-  }
+  return g({ n: r, depth: new Array<number>(P).fill(0), room: room0 ? [room0] : [] }, game.key(r));
 }
 
 class CapReached extends Error {}
