@@ -26,21 +26,21 @@
     },
     "processes": [
       {
-        "id": "soundboard",
+        "id": "soundtuning",
         "command": [
           "node",
-          "tools/sound-board/server.mjs"
+          "tools/sound-tuning/server.mjs"
         ],
         "ports": [
           {
             "name": "port",
-            "env": "SOUNDBOARD_PORT"
+            "env": "SOUNDTUNING_PORT"
           }
         ],
         "ready": [
           {
             "name": "port",
-            "prefix": "SOUNDBOARD_PORT "
+            "prefix": "SOUNDTUNING_PORT "
           }
         ]
       },
@@ -67,10 +67,10 @@
   },
   "editors": [
     {
-      "id": "sound-board",
-      "label": "Sound board",
+      "id": "sound-tuning",
+      "label": "Sound Tuning",
       "kind": "web",
-      "url": "http://127.0.0.1:{soundboard.port}/"
+      "url": "http://127.0.0.1:{soundtuning.port}/"
     },
     {
       "id": "picture-library",
