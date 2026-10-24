@@ -17,7 +17,7 @@ original holds.
 | slide.wav | displaced cards slide back | 0.62-0.85 s | weak (peak -30 dB) |
 | merge.wav | correct neighbours join | 0.71-0.80 s | weak (peak -33 dB) |
 | split.wav | merged piece comes apart | 1.71-1.85 s | |
-| complete.wav | a picture is whole (the flourish) | 0.2-4.6 s | rising harp, fade out |
+| complete.wav | a picture is whole (the flourish) | 0.3-4.4 s | rising harp, fade out; starts on its first clear note to fit the quick exit |
 | fall.wav | cards fall into gaps | 1.13-2.10 s | three taps |
 | deal.wav | a stack deals one card (tick) | 0.87-0.96 s | file ends mid-tail: fade 10 ms |
 | undo.wav | undo | 0.75-1.27 s | swish into a tap |

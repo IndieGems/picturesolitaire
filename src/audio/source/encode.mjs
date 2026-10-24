@@ -35,7 +35,10 @@ const EFFECTS = [
   { name: "slide", src: "slide.wav", start: 0.62, end: 0.95, fade: 0.12 },
   { name: "merge", src: "merge.wav", start: 0.712, end: 0.8, fade: 0.04 },
   { name: "split", src: "split.wav", start: 1.708, end: 1.86, fade: 0.08 },
-  { name: "complete", src: "complete.wav", start: 0.15, end: 4.4, fade: 0.9 },
+  // From the harp's first clear note (0.302), skipping two faint ones: the
+  // picture leaves in about 450 ms, so the rising run plays under its swell and
+  // twinkles, is near full as it shrinks (~250 ms) and peaks as it vanishes.
+  { name: "complete", src: "complete.wav", start: 0.3, end: 4.4, fade: 0.9 },
   { name: "fall", src: "fall.wav", start: 1.13, end: 2.12, fade: 0.15 },
   { name: "deal", src: "deal.wav", start: 0.865, end: 0.96, fade: 0.025 },
   { name: "undo", src: "undo.wav", start: 0.7, end: 1.28, fade: 0.05 },

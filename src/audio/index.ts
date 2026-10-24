@@ -125,9 +125,13 @@ function listen(): void {
   // The more of a picture is joined, the brighter the snap.
   on("piece:merge", ({ size }) => play("merge", { rate: 1 + Math.min(Math.max(size - 2, 0), 8) * 0.03 }));
   on("piece:split", () => play("split"));
+  // The picture leaves in about 450 ms (swell and twinkles, then picture:clear
+  // at ~230 and a shrink to nothing): the flourish's rising harp run IS the
+  // twinkle, and it peaks as the picture vanishes, ringing on under the falling
+  // cards. Two pictures finished by one move (60 ms apart) get one flourish.
   on("picture:complete", () => {
-    flourish = play("complete");
-    duckMusic(0.5, 2.6, 1.6);
+    flourish = play("complete") ?? flourish;
+    duckMusic(0.5, 2.4, 1.6);
   });
   on("cards:fall", (p) => play("fall", { delay: landsIn(p, FALL_LANDS), gain: Math.min(1.2, 0.7 + p.cards * 0.05) }));
   on("stack:deal", ({ col }) => dealTick(col));
