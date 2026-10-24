@@ -6,6 +6,7 @@
     python tools/art/pictures.py thumbs [<id>...]         Albums-screen thumbs from the masters (default: all)
     python tools/art/pictures.py catalogue                write src/content/pictures.json
     python tools/art/pictures.py sheet <out.png> <id>...  contact sheet with the card cuts drawn on
+    python tools/art/pictures.py grid <out.png> <id>...   compact sheet, one row per lookalike family
 
 The plan (tools/art/pictures-plan.json) is the source of truth. Masters keep the
 generated pixels (WebP q90, full size) so a picture can be re-exported at another
@@ -210,6 +211,45 @@ def cmd_sheet(out, ids):
     print(out, sheet.size)
 
 
+def cmd_grid(out, ids):
+    """A compact sheet for the creator: one row per lookalike family, each picture cut into
+    its cards, captioned with its title, medium and album."""
+    p = plan()
+    unit, gap, pad = 104, 4, 24
+    f1, f2, f3 = font(22), font(15), font(13)
+    rows = {}
+    for pid in ids:
+        e = entry(p, pid)
+        rows.setdefault(e["family"], []).append(e)
+
+    def cut(e):
+        cw, ch = e["cols"], e["rows"]
+        im = Image.open(PUBLIC / "pictures" / e["album"] / f"{e['id']}.webp").convert("RGB").resize((cw * unit, ch * unit), Image.LANCZOS)
+        c = Image.new("RGB", (cw * unit + (cw - 1) * gap, ch * unit + (ch - 1) * gap), (30, 37, 46))
+        for x in range(cw):
+            for y in range(ch):
+                c.paste(im.crop((x * unit, y * unit, (x + 1) * unit, (y + 1) * unit)), (x * (unit + gap), y * (unit + gap)))
+        return c
+
+    built = [(fam, [(e, cut(e)) for e in es]) for fam, es in rows.items()]
+    width = max(sum(c.width for _, c in r) + pad * (len(r) + 1) for _, r in built)
+    heights = [34 + max(c.height for _, c in r) + 44 for _, r in built]
+    sheet = Image.new("RGB", (width, sum(heights) + pad), (30, 37, 46))
+    d = ImageDraw.Draw(sheet)
+    y = pad
+    for (fam, r), h in zip(built, heights):
+        d.text((pad, y), p["families"][fam]["title"], font=f1, fill=(240, 236, 228))
+        x = pad
+        for e, c in r:
+            sheet.paste(c, (x, y + 34))
+            d.text((x, y + 38 + c.height), e["title"], font=f2, fill=(232, 228, 220))
+            d.text((x, y + 57 + c.height), f"{e['medium']} · {e['album']}", font=f3, fill=(160, 172, 188))
+            x += c.width + pad
+        y += h
+    sheet.save(out)
+    print(out, sheet.size)
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         sys.exit(__doc__)
@@ -224,6 +264,8 @@ if __name__ == "__main__":
         cmd_thumbs(rest)
     elif c == "catalogue":
         cmd_catalogue()
+    elif c == "grid":
+        cmd_grid(rest[0], rest[1:])
     elif c == "sheet":
         cmd_sheet(rest[0], rest[1:])
     else:

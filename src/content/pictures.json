@@ -19,6 +19,10 @@
     {
       "id": "travel",
       "title": "Travel"
+    },
+    {
+      "id": "architecture",
+      "title": "Architecture"
     }
   ],
   "pictures": [
@@ -1175,6 +1179,586 @@
         "canal"
       ],
       "family": "lemon-yellow"
+    },
+    {
+      "id": "snow-chalets",
+      "album": "architecture",
+      "title": "Alpine Chalets",
+      "medium": "photo",
+      "file": "pictures/architecture/snow-chalets.webp",
+      "thumb": "pictures/thumbs/snow-chalets-thumb.webp",
+      "cols": 3,
+      "rows": 2,
+      "px": [
+        1152,
+        768
+      ],
+      "palette": [
+        "white",
+        "ice blue",
+        "silver",
+        "slate",
+        "red"
+      ],
+      "subjects": [
+        "chalets",
+        "village",
+        "snow",
+        "church tower",
+        "fir trees"
+      ],
+      "family": "snow-ice"
+    },
+    {
+      "id": "skating-day",
+      "album": "people",
+      "title": "Skating Day",
+      "medium": "painting",
+      "file": "pictures/people/skating-day.webp",
+      "thumb": "pictures/thumbs/skating-day-thumb.webp",
+      "cols": 3,
+      "rows": 3,
+      "px": [
+        1152,
+        1152
+      ],
+      "palette": [
+        "white",
+        "ice blue",
+        "silver",
+        "slate",
+        "red"
+      ],
+      "subjects": [
+        "skaters",
+        "frozen river",
+        "town",
+        "windmill",
+        "winter"
+      ],
+      "family": "snow-ice"
+    },
+    {
+      "id": "frost-hellebores",
+      "album": "flowers",
+      "title": "Frosted Hellebores",
+      "medium": "photo",
+      "file": "pictures/flowers/frost-hellebores.webp",
+      "thumb": "pictures/thumbs/frost-hellebores-thumb.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "white",
+        "ice blue",
+        "silver",
+        "slate",
+        "red"
+      ],
+      "subjects": [
+        "hellebores",
+        "snowdrops",
+        "frost",
+        "rosehips",
+        "snow"
+      ],
+      "family": "snow-ice"
+    },
+    {
+      "id": "winter-stream",
+      "album": "landscapes",
+      "title": "Winter Stream",
+      "medium": "painting",
+      "file": "pictures/landscapes/winter-stream.webp",
+      "thumb": "pictures/thumbs/winter-stream-thumb.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        768
+      ],
+      "palette": [
+        "white",
+        "ice blue",
+        "silver",
+        "slate",
+        "red"
+      ],
+      "subjects": [
+        "stream",
+        "footbridge",
+        "fir trees",
+        "cabin",
+        "mountains"
+      ],
+      "family": "snow-ice"
+    },
+    {
+      "id": "riad-court",
+      "album": "architecture",
+      "title": "Riad Courtyard",
+      "medium": "photo",
+      "file": "pictures/architecture/riad-court.webp",
+      "thumb": "pictures/thumbs/riad-court-thumb.webp",
+      "cols": 2,
+      "rows": 3,
+      "px": [
+        768,
+        1152
+      ],
+      "palette": [
+        "emerald",
+        "sapphire",
+        "ruby",
+        "gold",
+        "teal"
+      ],
+      "subjects": [
+        "courtyard",
+        "mosaic tiles",
+        "arches",
+        "fountain",
+        "lanterns"
+      ],
+      "family": "jewel-tones"
+    },
+    {
+      "id": "carpet-bazaar",
+      "album": "travel",
+      "title": "Carpet Bazaar",
+      "medium": "photo",
+      "file": "pictures/travel/carpet-bazaar.webp",
+      "thumb": "pictures/thumbs/carpet-bazaar-thumb.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "emerald",
+        "sapphire",
+        "ruby",
+        "gold",
+        "teal"
+      ],
+      "subjects": [
+        "carpets",
+        "rugs",
+        "bazaar",
+        "lamps",
+        "tea glasses"
+      ],
+      "family": "jewel-tones"
+    },
+    {
+      "id": "anemones",
+      "album": "flowers",
+      "title": "Anemones",
+      "medium": "painting",
+      "file": "pictures/flowers/anemones.webp",
+      "thumb": "pictures/thumbs/anemones-thumb.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "emerald",
+        "sapphire",
+        "ruby",
+        "gold",
+        "teal"
+      ],
+      "subjects": [
+        "anemones",
+        "jug",
+        "lemons",
+        "teacup",
+        "still life"
+      ],
+      "family": "jewel-tones"
+    },
+    {
+      "id": "pomegranates",
+      "album": "food",
+      "title": "Pomegranates",
+      "medium": "painting",
+      "file": "pictures/food/pomegranates.webp",
+      "thumb": "pictures/thumbs/pomegranates-thumb.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "emerald",
+        "sapphire",
+        "ruby",
+        "gold",
+        "teal"
+      ],
+      "subjects": [
+        "pomegranates",
+        "grapes",
+        "plums",
+        "porcelain",
+        "still life"
+      ],
+      "family": "jewel-tones"
+    },
+    {
+      "id": "pastel-row",
+      "album": "architecture",
+      "title": "Pastel Row",
+      "medium": "photo",
+      "file": "pictures/architecture/pastel-row.webp",
+      "thumb": "pictures/thumbs/pastel-row-thumb.webp",
+      "cols": 3,
+      "rows": 2,
+      "px": [
+        1152,
+        768
+      ],
+      "palette": [
+        "mint",
+        "powder blue",
+        "baby pink",
+        "butter yellow",
+        "white"
+      ],
+      "subjects": [
+        "terraced houses",
+        "doors",
+        "railings",
+        "window boxes",
+        "bicycle"
+      ],
+      "family": "sugared-pastel"
+    },
+    {
+      "id": "patisserie",
+      "album": "food",
+      "title": "Patisserie Window",
+      "medium": "photo",
+      "file": "pictures/food/patisserie.webp",
+      "thumb": "pictures/thumbs/patisserie-thumb.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        384
+      ],
+      "palette": [
+        "mint",
+        "powder blue",
+        "baby pink",
+        "butter yellow",
+        "white"
+      ],
+      "subjects": [
+        "macarons",
+        "cupcakes",
+        "petits fours",
+        "meringues",
+        "cake"
+      ],
+      "family": "sugared-pastel"
+    },
+    {
+      "id": "beach-huts",
+      "album": "travel",
+      "title": "Beach Huts",
+      "medium": "painting",
+      "file": "pictures/travel/beach-huts.webp",
+      "thumb": "pictures/thumbs/beach-huts-thumb.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        384
+      ],
+      "palette": [
+        "mint",
+        "powder blue",
+        "baby pink",
+        "butter yellow",
+        "white"
+      ],
+      "subjects": [
+        "beach huts",
+        "deckchairs",
+        "promenade",
+        "shells",
+        "sea"
+      ],
+      "family": "sugared-pastel"
+    },
+    {
+      "id": "balloon-seller",
+      "album": "people",
+      "title": "The Balloon Seller",
+      "medium": "painting",
+      "file": "pictures/people/balloon-seller.webp",
+      "thumb": "pictures/thumbs/balloon-seller-thumb.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        768
+      ],
+      "palette": [
+        "mint",
+        "powder blue",
+        "baby pink",
+        "butter yellow",
+        "white"
+      ],
+      "subjects": [
+        "balloon seller",
+        "balloons",
+        "girl",
+        "park",
+        "tulips"
+      ],
+      "family": "sugared-pastel"
+    },
+    {
+      "id": "copper-spires",
+      "album": "architecture",
+      "title": "Green Spires",
+      "medium": "painting",
+      "file": "pictures/architecture/copper-spires.webp",
+      "thumb": "pictures/thumbs/copper-spires-thumb.webp",
+      "cols": 2,
+      "rows": 3,
+      "px": [
+        768,
+        1152
+      ],
+      "palette": [
+        "copper",
+        "teal",
+        "turquoise",
+        "bronze",
+        "cream"
+      ],
+      "subjects": [
+        "spires",
+        "domes",
+        "rooftops",
+        "canal",
+        "bridge"
+      ],
+      "family": "copper-teal"
+    },
+    {
+      "id": "copper-kitchen",
+      "album": "food",
+      "title": "Copper Kitchen",
+      "medium": "photo",
+      "file": "pictures/food/copper-kitchen.webp",
+      "thumb": "pictures/thumbs/copper-kitchen-thumb.webp",
+      "cols": 3,
+      "rows": 2,
+      "px": [
+        1152,
+        768
+      ],
+      "palette": [
+        "copper",
+        "teal",
+        "turquoise",
+        "bronze",
+        "cream"
+      ],
+      "subjects": [
+        "copper pans",
+        "kitchen",
+        "tiles",
+        "vegetables",
+        "bread"
+      ],
+      "family": "copper-teal"
+    },
+    {
+      "id": "potter-studio",
+      "album": "people",
+      "title": "The Potter",
+      "medium": "painting",
+      "file": "pictures/people/potter-studio.webp",
+      "thumb": "pictures/thumbs/potter-studio-thumb.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "copper",
+        "teal",
+        "turquoise",
+        "bronze",
+        "cream"
+      ],
+      "subjects": [
+        "potter",
+        "wheel",
+        "pots",
+        "studio",
+        "clay"
+      ],
+      "family": "copper-teal"
+    },
+    {
+      "id": "turquoise-falls",
+      "album": "landscapes",
+      "title": "Turquoise Falls",
+      "medium": "photo",
+      "file": "pictures/landscapes/turquoise-falls.webp",
+      "thumb": "pictures/thumbs/turquoise-falls-thumb.webp",
+      "cols": 2,
+      "rows": 3,
+      "px": [
+        768,
+        1152
+      ],
+      "palette": [
+        "copper",
+        "teal",
+        "turquoise",
+        "bronze",
+        "cream"
+      ],
+      "subjects": [
+        "waterfall",
+        "canyon",
+        "pools",
+        "cliffs",
+        "trees"
+      ],
+      "family": "copper-teal"
+    },
+    {
+      "id": "abbey-cloister",
+      "album": "architecture",
+      "title": "Abbey Cloister",
+      "medium": "photo",
+      "file": "pictures/architecture/abbey-cloister.webp",
+      "thumb": "pictures/thumbs/abbey-cloister-thumb.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "honey stone",
+        "sage",
+        "cream",
+        "dove grey",
+        "dusty rose"
+      ],
+      "subjects": [
+        "cloister",
+        "arches",
+        "columns",
+        "hedges",
+        "well"
+      ],
+      "family": "stone-sage"
+    },
+    {
+      "id": "stone-village",
+      "album": "travel",
+      "title": "Stone Village",
+      "medium": "painting",
+      "file": "pictures/travel/stone-village.webp",
+      "thumb": "pictures/thumbs/stone-village-thumb.webp",
+      "cols": 3,
+      "rows": 2,
+      "px": [
+        1152,
+        768
+      ],
+      "palette": [
+        "honey stone",
+        "sage",
+        "cream",
+        "dove grey",
+        "dusty rose"
+      ],
+      "subjects": [
+        "cottages",
+        "river",
+        "footbridge",
+        "roses",
+        "willows"
+      ],
+      "family": "stone-sage"
+    },
+    {
+      "id": "white-garden",
+      "album": "flowers",
+      "title": "The White Garden",
+      "medium": "photo",
+      "file": "pictures/flowers/white-garden.webp",
+      "thumb": "pictures/thumbs/white-garden-thumb.webp",
+      "cols": 2,
+      "rows": 3,
+      "px": [
+        768,
+        1152
+      ],
+      "palette": [
+        "honey stone",
+        "sage",
+        "cream",
+        "dove grey",
+        "dusty rose"
+      ],
+      "subjects": [
+        "white roses",
+        "foxgloves",
+        "stone steps",
+        "urn",
+        "gate"
+      ],
+      "family": "stone-sage"
+    },
+    {
+      "id": "olive-grove",
+      "album": "landscapes",
+      "title": "Olive Grove",
+      "medium": "painting",
+      "file": "pictures/landscapes/olive-grove.webp",
+      "thumb": "pictures/thumbs/olive-grove-thumb.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        768
+      ],
+      "palette": [
+        "honey stone",
+        "sage",
+        "cream",
+        "dove grey",
+        "dusty rose"
+      ],
+      "subjects": [
+        "olive trees",
+        "terraces",
+        "farmhouse",
+        "cypress",
+        "wild flowers"
+      ],
+      "family": "stone-sage"
     }
   ]
 }
