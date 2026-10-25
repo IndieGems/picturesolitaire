@@ -58,6 +58,33 @@ const MUSIC = [
   // seconds into the start (src/audio/music.ts), so no loop point is baked in.
   { name: "bed", src: "bed.mp3", start: 0, end: 86.5, fade: 0.05, lufs: -20 },
 ];
+// Effects arranged from slices of the originals, when no single generation
+// played what was asked: each part is a slice (start..end) of a source, faded
+// at its end, re-pitched by `rate` (below 1 is lower and slower, as on tape),
+// starting `at` seconds in, `db` louder or softer. The mix is cut to `len`,
+// faded over `fade`, high-passed and peak-normalised like any effect.
+const B3 = 2 ** (-3 / 12); // a minor third down
+const P4 = 2 ** (-5 / 12); // a fourth down
+const BUILT = [
+  // A hard board's banner: a playful "uh-oh", one marimba note (C4) then the
+  // same note a minor third lower, from the take's first note (to 0.29, before
+  // its second) and its last, cleanest one (0.695 on). The take played C, B, C.
+  {
+    name: "hardmark", len: 0.95, fade: 0.25, parts: [
+      { src: "mark-marimba.wav", start: 0, end: 0.29, at: 0 },
+      { src: "mark-marimba.wav", start: 0.695, end: 1.35, at: 0.26, rate: B3, db: -2 },
+    ],
+  },
+  // A super hard board's: the same "uh-oh" a fourth deeper (G3, E3), with a
+  // soft low thump (C2, ringing E3) landing under the "oh" for weight.
+  {
+    name: "supermark", len: 0.98, fade: 0.3, parts: [
+      { src: "mark-marimba.wav", start: 0, end: 0.29, at: 0, rate: P4 },
+      { src: "mark-marimba.wav", start: 0.695, end: 1.2, at: 0.32, rate: P4 * B3, db: -2 },
+      { src: "mark-thump.wav", start: 0, end: 0.66, at: 0.32, db: -3 },
+    ],
+  },
+];
 // Alternate takes for Sound Tuning, made when the creator marks a sound Remake:
 // "<sound>-<letter>" (merge-a, merge-b...), their originals in takes/ here. An
 // entry with `lufs` is treated as music (stereo, loudness), else as an effect.
@@ -87,13 +114,15 @@ function chain(s, highpass) {
   ].filter(Boolean).join(",");
 }
 
-function encode(s, filters, stereo, dir = out) {
+/** With several inputs, `filters` is a filter graph over [0:a], [1:a]... */
+function encode(s, filters, stereo, dir = out, inputs = [s.src]) {
   const ch = stereo ? "2" : "1";
-  const src = join(here, s.src);
-  ff(["-i", src, "-af", filters, "-ac", ch, "-ar", "48000", "-c:a", "libopus", "-b:a", stereo ? "48k" : "40k", "-application", "audio", "-vbr", "on", join(dir, `${s.name}.ogg`)]);
-  ff(["-i", src, "-af", filters, "-ac", ch, "-ar", "44100", "-c:a", "libmp3lame", "-b:a", stereo ? "80k" : "64k", join(dir, `${s.name}.mp3`)]);
+  const ins = inputs.flatMap((f) => ["-i", join(here, f)]);
+  const af = inputs.length > 1 ? ["-filter_complex", filters] : ["-af", filters];
+  ff([...ins, ...af, "-ac", ch, "-ar", "48000", "-c:a", "libopus", "-b:a", stereo ? "48k" : "40k", "-application", "audio", "-vbr", "on", join(dir, `${s.name}.ogg`)]);
+  ff([...ins, ...af, "-ac", ch, "-ar", "44100", "-c:a", "libmp3lame", "-b:a", stereo ? "80k" : "64k", join(dir, `${s.name}.mp3`)]);
   const kb = (f) => (statSync(join(dir, `${s.name}.${f}`)).size / 1024).toFixed(1);
-  console.log(`${s.name.padEnd(9)} ${(s.end - s.start).toFixed(2)}s  ogg ${kb("ogg")} KB  mp3 ${kb("mp3")} KB`);
+  console.log(`${s.name.padEnd(9)} ${(s.len ?? s.end - s.start).toFixed(2)}s  ogg ${kb("ogg")} KB  mp3 ${kb("mp3")} KB`);
 }
 
 function effect(s, dir) {
@@ -111,7 +140,28 @@ function music(s, dir) {
   encode(s, `${base},volume=${gain.toFixed(2)}dB,alimiter=limit=0.89:level=false`, true, dir);
 }
 
+function built(s, dir) {
+  const parts = s.parts.map((p, i) => {
+    const len = p.end - p.start;
+    return [
+      `[${i}:a]atrim=start=${p.start}:end=${p.end}`,
+      "asetpts=PTS-STARTPTS",
+      `afade=t=out:st=${(len - 0.05).toFixed(3)}:d=0.05`,
+      p.rate ? `asetrate=${(48000 * p.rate).toFixed(1)},aresample=48000` : null,
+      `adelay=${Math.round(p.at * 1000)}:all=1`,
+      p.db ? `volume=${p.db}dB` : null,
+    ].filter(Boolean).join(",") + `[p${i}]`;
+  });
+  const mixed = `${s.parts.map((_, i) => `[p${i}]`).join("")}amix=inputs=${s.parts.length}:normalize=0:duration=longest`;
+  const base = `${parts.join(";")};${mixed},${chain({ start: 0, end: s.len, fade: s.fade }, true)}`;
+  const inputs = s.parts.map((p) => p.src);
+  const log = analyse([...inputs.flatMap((f) => ["-i", join(here, f)]), "-filter_complex", `${base},volumedetect`, "-f", "null", "-"]);
+  const peak = Number(/max_volume: (-?[\d.]+) dB/.exec(log)[1]);
+  encode(s, `${base},volume=${(PEAK_DB - peak).toFixed(2)}dB`, false, dir, inputs);
+}
+
 for (const s of EFFECTS.filter(wanted)) effect(s, out);
+for (const s of BUILT.filter(wanted)) built(s, out);
 for (const s of MUSIC.filter(wanted)) music(s, out);
 const takes = TAKES.filter(wanted);
 if (takes.length) mkdirSync(takesOut, { recursive: true });

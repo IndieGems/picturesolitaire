@@ -27,6 +27,8 @@ original holds.
 | ui.wav | interface button | 0.10-0.30 s | |
 | won.mp3 | board won (music cue, 8 s) | 0-7.8 s | also the win sting |
 | milestone.mp3 | milestone card (music cue, 10 s) | 0.5-9.9 s | orchestral swell, bell sparkles; -15 LUFS |
+| mark-marimba.wav | hard board sting: notes for the "uh-oh" | 0-0.29 s and 0.695-1.35 s | the take played C, B, C; encode.mjs (BUILT) makes hardmark/supermark from its first and last notes |
+| mark-thump.wav | super hard board sting: the low thump | 0-0.66 s | one soft C2 thump, under supermark's second note |
 | bed.mp3 | background music, 90 s | 0-86.5 s | loop: crossfade last ~4 s into the start at run time |
 
 Shipped: Ogg Opus (effects mono 40 kbps, won/bed stereo 48 kbps), about

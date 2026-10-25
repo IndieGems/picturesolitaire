@@ -21,7 +21,9 @@ export type EffectName =
   | "ui"
   | "won"
   | "milestone"
-  | "stuck";
+  | "stuck"
+  | "hardmark"
+  | "supermark";
 
 export type EffectDef = {
   /** The file in public/audio/, when it is not the effect's own name. */
@@ -66,12 +68,17 @@ export const EFFECTS: Record<EffectName, EffectDef> = {
   // The player is stuck (a dead end, or Hint finds no way): the hint chime,
   // a fourth lower and softer. A gentle "hm", never an alarm.
   stuck: { file: "hint", rate: 0.749, gain: 0.3, jitter: 0, minGap: 2 },
+  // A hard board's banner as it opens: a playful marimba "uh-oh" (C, A), and
+  // for a super hard board the same a fourth deeper with a soft low thump.
+  // Under a second each, never an alarm: our table stays calm.
+  hardmark: { gain: 0.45, jitter: 0, minGap: 1 },
+  supermark: { gain: 0.5, jitter: 0, minGap: 1 },
 };
 
 /** The order effects load in: what a first move needs comes first. */
 export const LOAD_ORDER: EffectName[] = [
   "ui", "lift", "land", "slide", "merge", "split", "deal", "fall",
-  "complete", "undo", "hint", "shuffle", "restart", "won",
+  "complete", "undo", "hint", "shuffle", "restart", "won", "hardmark", "supermark",
 ];
 
 /** The background music: one calm loop under the whole game. */

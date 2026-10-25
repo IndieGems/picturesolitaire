@@ -156,5 +156,7 @@ function listen(): void {
     if (MILESTONE_BOARDS.has(level)) void load(fileOf("milestone"));
   });
   on("milestone:show", milestone);
+  // A hard or super hard board's banner just appeared (UI, once per opening).
+  on("board:mark", ({ mark }) => play(mark === "super" ? "supermark" : "hardmark"));
   on("ui:press", () => play("ui"));
 }

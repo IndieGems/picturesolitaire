@@ -44,6 +44,8 @@ const { cleanMix, pickedTakes, takeOwner } = await import(pathToFileURL(join(ROO
 // Every sound, in the order a board meets them, with the moment it belongs to.
 const SOUNDS = [
   { name: "music", label: "Music", moment: "The background music, looping under the whole game.", kind: "music" },
+  { name: "hardmark", label: "Hard board", moment: "A hard board opens, under its \"Hard board\" banner: a playful uh-oh." },
+  { name: "supermark", label: "Super hard board", moment: "A super hard board opens, under its \"Super hard board\" banner: the uh-oh, deeper and weightier." },
   { name: "lift", label: "Pick up", moment: "Picking up a card or a joined piece." },
   { name: "land", label: "Put down", moment: "A move lands. Also plays softer when a piece is put back where it was." },
   { name: "slide", label: "Slide back", moment: "Cards the move pushed aside slide back to where it came from." },
