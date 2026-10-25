@@ -58,6 +58,9 @@ export interface Place {
   won: boolean;
   /** Its postcard, or null while the board names none or Art has not made it. */
   dest: Destination | null;
+  /** The postcard's size in cards (the board's): 4 x 4, or 4 x 5 for a tall board. */
+  cols: number;
+  rows: number;
 }
 
 export function placesOf(tr: Trip): Place[] {
@@ -65,8 +68,9 @@ export function placesOf(tr: Trip): Place[] {
   const out: Place[] = [];
   for (let n = tr.from; n <= tr.to; n++) {
     const exists = n <= levelCount();
-    const id = exists ? campaignLevel(n).destination?.id : undefined;
-    out.push({ board: n, exists, won: exists && n <= won, dest: (id && destination(id)) || null });
+    const lvl = exists ? campaignLevel(n) : null;
+    const dest = (lvl?.destination && destination(lvl.destination.id)) || null;
+    out.push({ board: n, exists, won: exists && n <= won, dest, cols: dest?.cols ?? lvl?.deal.cols ?? 4, rows: dest?.rows ?? lvl?.deal.rows ?? 4 });
   }
   return out;
 }

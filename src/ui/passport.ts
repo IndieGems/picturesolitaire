@@ -19,8 +19,10 @@
 // the stamp fades in, with no thud and no sparkle.
 //
 // Its top row is every screen's: the title on the left, Back then the gear at the right
-// end. The stamp is a placeholder drawn in CSS (the trip's name in an inked ring) until
-// Art draws one per trip.
+// end. A trip's stamp is Art's drawing, public/art/stamps/stamp-<trip id>.webp (300 px
+// square, drawn upright; the page tilts it); a trip with none yet, or one that does not
+// load, gets an inked ring with the trip's name, drawn in CSS. A postcard keeps its own
+// shape: a 4x5 board's is taller than a 4x4's.
 
 import { ICONS } from "./icons";
 import { t } from "./i18n";
@@ -48,6 +50,8 @@ export interface AfterStamp {
 
 /** When the stamp starts down after the page is up, and when it lands (style.css, pp-stamp-land). */
 const STAMP_AT_MS = 550;
+/** The longest the stamp waits for its drawing to load (then the ring stands in, or it pops in late). */
+const STAMP_WAIT_MS = 1500;
 const LAND_MS = 300;
 /** When the button to carry on comes, after it lands. */
 const CARRY_ON_MS = 650;
@@ -86,12 +90,30 @@ const cardSizes = new ResizeObserver((entries) => {
   }
 });
 
-/** The placeholder stamp: the trip's name in an inked double ring, a star over and under it. */
+/** Art's stamp for a trip. */
+const stampUrl = (tr: Trip) => `${import.meta.env.BASE_URL}art/stamps/stamp-${tr.id}.webp`;
+
+/** Load and decode a trip's stamp ahead of the moment it lands (a failure resolves too: the ring stands in). */
+function stampReady(tr: Trip): Promise<void> {
+  const img = new Image();
+  img.src = stampUrl(tr);
+  return img.decode().catch(() => undefined);
+}
+
+/** A trip's stamp: Art's drawing, or (none yet, or it does not load) the trip's name in an inked double ring. */
 function stampOf(tr: Trip): HTMLElement {
-  const s = el("div", "pp-stamp");
+  const s = el("div", "pp-stamp art");
   s.setAttribute("role", "img");
   s.setAttribute("aria-label", t("passport.stamped", { trip: tripName(tr) }));
-  s.append(el("i", "star"), el("b", "", tripName(tr)), el("i", "star"));
+  const img = el("img");
+  img.alt = "";
+  img.draggable = false;
+  img.addEventListener("error", () => {
+    s.classList.remove("art");
+    s.replaceChildren(el("i", "star"), el("b", "", tripName(tr)), el("i", "star"));
+  }, { once: true });
+  img.src = stampUrl(tr);
+  s.append(img);
   return s;
 }
 
@@ -137,10 +159,17 @@ export function createPassport(nav: Nav) {
     timers.push(id);
   };
 
+  /** The postcard's shape: its board's, in cards (style.css draws it in the card's aspect). */
+  function shape(pc: HTMLElement, p: Place): void {
+    pc.style.setProperty("--c", String(p.cols));
+    pc.style.setProperty("--r", String(p.rows));
+  }
+
   function postcard(p: Place, tr: Trip): HTMLElement {
     // not visited yet (or not made yet): a blank card, its board number on it
     if (!p.won) {
       const pc = el("div", "pc locked");
+      shape(pc, p);
       pc.setAttribute("role", "img");
       pc.setAttribute("aria-label", t("passport.locked", { n: p.board }));
       const card = el("span", "pc-card");
@@ -151,6 +180,7 @@ export function createPassport(nav: Nav) {
     // visited, its postcard not drawn yet (the board names no destination yet): a postcard to come
     if (!p.dest) {
       const pc = el("div", "pc soon");
+      shape(pc, p);
       pc.append(el("span", "pc-card"), el("b", "pc-name", t("passport.board", { n: p.board })), el("span", "pc-place", tripName(tr)));
       return pc;
     }
@@ -158,6 +188,7 @@ export function createPassport(nav: Nav) {
     const name = destinationName(d.id, d.title);
     const place = destinationPlace(d.id, d.place);
     const pc = el("button", "pc visited");
+    shape(pc, p);
     pc.type = "button";
     pc.dataset.press = "passport.place";
     pc.setAttribute("aria-label", place ? `${name}, ${place}` : name);
@@ -302,7 +333,9 @@ export function createPassport(nav: Nav) {
       draw();
       scroll.scrollTop = 0;
       nav.show();
-      later(STAMP_AT_MS, () => land(tr, after));
+      // it lands once the page has been seen a moment and its drawing is ready (a slow one is not waited on long)
+      const ready = Promise.race([stampReady(tr), new Promise<void>((r) => setTimeout(r, STAMP_WAIT_MS))]);
+      later(STAMP_AT_MS, () => void ready.then(() => landing === tr.id && land(tr, after)));
     },
     /** The record changed (a board won, the account's copy landed): redraw the page up, unless a stamp is landing on it. */
     redraw(): void {

@@ -551,9 +551,9 @@ html.less-motion .twinkle { display: none; }
 /* ---------- the passport (src/ui/passport.ts): a navy book, open at a trip's page ----------
    Neither material: an object on the table, as the cards are. The cover is navy with the
    game's name in gold; the page is warm paper with a faint engraved pattern, slate ink; a
-   postcard is a picture in a white border, tapped to see it big; a place not visited yet
-   is a dashed blank with its board number. The stamp is a placeholder (an inked ring with
-   the trip's name) until Art draws one per trip. */
+   postcard is a picture in a white border, in its board's shape (--c x --r cards), tapped
+   to see it big; a place not visited yet is a dashed blank with its board number. A trip's
+   stamp is Art's drawing (.art); the inked ring with the trip's name stands in without one. */
 :root { --stamp-ink: 178 52 46; }
 .pp-book {
   max-width: 520px; margin: 0 auto; padding: 12px 9px 9px; border-radius: 24px;
@@ -595,6 +595,8 @@ html.less-motion .twinkle { display: none; }
   transform: rotate(-14deg); opacity: 0.9; mix-blend-mode: multiply;
 }
 .pp-stamp b { max-width: 100%; font: inherit; overflow-wrap: break-word; }
+.pp-stamp.art { padding: 0; border: 0; box-shadow: none; }
+.pp-stamp.art img { display: block; width: 100%; height: 100%; }
 .pp-stamp .star {
   width: 11px; height: 11px; background: currentColor;
   clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
@@ -611,10 +613,10 @@ html.less-motion .twinkle { display: none; }
 .pp-spot .twinkle::before, .pp-spot .twinkle::after { background: linear-gradient(to bottom, rgba(245, 160, 60, 0), #f39a2c 50%, rgba(245, 160, 60, 0)); }
 
 /* the places: three across, a postcard each */
-.pp-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 10px; }
+.pp-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: 14px 10px; }
 .pc { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; margin: 0; padding: 0; border: 0; background: none; font: inherit; color: inherit; text-align: center; }
 .pc-card {
-  position: relative; display: block; width: 100%; aspect-ratio: var(--card-aspect); padding: 4px; border-radius: 9px;
+  position: relative; display: block; width: 100%; aspect-ratio: calc(var(--c, 4) * var(--card-aspect)) / var(--r, 4); padding: 4px; border-radius: 9px;
   background: #fff; box-shadow: 0 1px 0 rgba(90, 70, 40, 0.25), 0 3px 7px rgba(60, 45, 25, 0.22);
 }
 .pc-card img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 5px; background: #dfe6ee; }
