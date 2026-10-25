@@ -33,9 +33,6 @@ const shapes = (spec) => Object.entries(spec).flatMap(([shape, n]) => Array(n).f
  * a 2x2, with `crop` its window where the catalogue entry has none
  * (lib.mts destinationOf).
  */
-/** x02's crop window, from Art, until the catalogue entry carries its own. */
-const CROP = [1, 1];
-
 export const EXPERIMENTS = [
   // x01 (lead, 2026-10-25): only long pictures, tall 1x2 and wide 2x1 mixed, on the early campaign's
   // 4x4 board, relaxed with a safe start. All-domino boards are easy at any count (a trial: chain 2,
@@ -45,8 +42,9 @@ export const EXPERIMENTS = [
   { id: "x01", name: "Long pictures only (tall and wide)", role: "experiment", board: [4, 4], count: 12, alike: [], sizes: [2], cards: [24, 24], must: shapes({ "1x2": 6, "2x1": 6 }), peek: 0, chain: [1, 3], careless: [0.9, 1], apart: true, vary: true, busyMost: 0, old: CURRENT, oldMost: 0 },
   // x02 (lead, 2026-10-25: the game becomes a travelogue): Art's test destination, the Grand Canyon,
   // for Gameplay's reveal: its 2x2 window and four clear squares, a relief board's five pictures, so
-  // it is easy (careless win 85-100%) and starts safe. Nothing from campaign boards 1-13.
-  { id: "x02", name: "A destination: the Grand Canyon", role: "experiment", board: [4, 4], destination: "dest-grand-canyon", crop: CROP, count: 4, alike: [], sizes: [4], cards: [16, 16], peek: 0, chain: [1, 3], careless: [0.85, 1], apart: true, vary: true, busyMost: 0, liveMost: 0, old: CURRENT, oldMost: 0 },
+  // it is easy (careless win 85-100%) and starts safe. Nothing from campaign boards 1-13. The crop is
+  // Art's, in the catalogue entry ([2,2], the bottom-right quarter: the lit cliff and the river's bend).
+  { id: "x02", name: "A destination: the Grand Canyon", role: "experiment", board: [4, 4], destination: "dest-grand-canyon", count: 4, alike: [], sizes: [4], cards: [16, 16], peek: 0, chain: [1, 3], careless: [0.85, 1], apart: true, vary: true, busyMost: 0, liveMost: 0, old: CURRENT, oldMost: 0 },
 ];
 
 const has = (f) => process.argv.includes(f);
