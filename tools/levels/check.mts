@@ -60,8 +60,7 @@ for (const file of files) {
     try {
       if (ids.has(l.id)) fail("id used twice");
       ids.add(l.id);
-      // PEEK0: every stack shows card backs (creator, 2026-10-25); enforced once the re-dealt level files are in (Levels, same commit)
-      if (process.env.PEEK0 ? l.peek !== 0 : ![0, 1, 2].includes(l.peek)) fail(`peek ${l.peek}: every stack shows card backs, peek 0 (AGENTS.md)`);
+      if (l.peek !== 0) fail(`peek ${l.peek}: every stack shows card backs, peek 0 (AGENTS.md)`);
       const markWant = file.endsWith("campaign.json") ? MARKS[l.axes?.role] : undefined;
       if (l.mark !== markWant) fail(`mark ${l.mark ?? "none"}, but a ${file.endsWith("campaign.json") ? `${l.axes?.role} board` : "board outside the campaign"} takes ${markWant ?? "none"}`);
       if (l.par !== undefined && l.par !== l.line.length) fail(`par ${l.par} but the line has ${l.line.length} moves`);

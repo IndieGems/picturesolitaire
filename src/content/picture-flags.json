@@ -1,4 +1,50 @@
 {
   "v": 1,
-  "pictures": {}
+  "pictures": {
+    "chef": {
+      "flagged": true,
+      "note": "looks AI-made (the same tilt and smile); remade as wok-chef",
+      "date": "2026-10-25"
+    },
+    "cowboy": {
+      "flagged": true,
+      "note": "looks AI-made (the same tilt and smile); remade as fence-cowboy",
+      "date": "2026-10-25"
+    },
+    "painter": {
+      "flagged": true,
+      "note": "looks AI-made (the same tilt and smile); remade as plein-air",
+      "date": "2026-10-25"
+    },
+    "apple-orchard": {
+      "flagged": true,
+      "note": "looks AI-made (the same tilt and smile); remade as apple-ladder",
+      "date": "2026-10-25"
+    },
+    "yellow-raincoat": {
+      "flagged": true,
+      "note": "looks AI-made (the same tilt and smile); remade as lobster-pot",
+      "date": "2026-10-25"
+    },
+    "bubbles": {
+      "flagged": true,
+      "note": "looks AI-made (the same tilt and smile); remade as dandelion-wish",
+      "date": "2026-10-25"
+    },
+    "greenhouse": {
+      "flagged": true,
+      "note": "looks AI-made (the same tilt and smile); remade as carrot-harvest",
+      "date": "2026-10-25"
+    },
+    "canal-bicycle": {
+      "flagged": true,
+      "note": "looks AI-made (the same tilt and smile); remade as towpath-cyclist",
+      "date": "2026-10-25"
+    },
+    "blue-headscarf": {
+      "flagged": true,
+      "note": "looks AI-made (the same tilt and smile); remade as book-reader",
+      "date": "2026-10-25"
+    }
+  }
 }
