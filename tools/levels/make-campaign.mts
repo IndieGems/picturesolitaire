@@ -13,10 +13,13 @@
 //   --repair-only  re-deal flagged boards only; add no plan rows (redeal.mts)
 //   --redeal 1,2,3 re-deal these boards afresh from the plan; keep every other
 //                  board (and add no plan rows)
+//   --rows N       make the plan's first N rows only (e.g. while the library
+//                  cannot fill the rest yet)
 //   --out FILE     write the boards there instead, and no docs (for trials)
 //   PICKS_ONLY=1   pick the pictures and report their spacing; no deals
-// Pictures follow the plan's shape ramp and its no-repeat rule (DISTINCT,
-// SPACING; campaign-plan.mts), which every board it makes keeps.
+// Pictures follow the plan's rows (shapes, keep lists) and its no-repeat rule
+// (DISTINCT, SPACING; campaign-plan.mts), which every board it makes keeps.
+// A kept board takes its row's peek (peek is no part of the deal).
 // Deterministic: the same file, plan, catalogue and flags give the same campaign. Then
 // node tools/levels/check.mts re-proves what was written.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
@@ -24,11 +27,13 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { catalogue, famName, flags, lookalikes, readBoards, root, route, spacingOf, usable, writeBoards } from "./lib.mts";
-import { BOARD, DISTINCT, PLAN, PLAN_TAG, SPACING } from "./campaign-plan.mts";
+import { BOARD, DISTINCT, PLAN as FULL, PLAN_TAG, SPACING } from "./campaign-plan.mts";
 
 const t0 = performance.now();
 
 const has = (f) => process.argv.includes(f);
+const rowsAt = process.argv.indexOf("--rows");
+const PLAN = rowsAt > 0 ? FULL.slice(0, Number(process.argv[rowsAt + 1])) : FULL;
 const outAt = process.argv.indexOf("--out");
 const FILE = join(root, "src/content/levels/campaign.json");
 const OUT = outAt > 0 ? process.argv[outAt + 1] : FILE;
@@ -90,12 +95,13 @@ What each of the ${levels.length} boards asks of the player, axis by axis. Made 
 and run the maker. The challenge route is in [challenge.md](challenge.md), the
 daily puzzle in [daily.md](daily.md).
 
+- **Role**: the board's place in the sawtooth ([difficulty-curve.md](difficulty-curve.md)): teach, bite (the first hard-for-a-beginner board), build, relief, hard, peak, super (super hard), pace (all long pictures, a change of pace). Every board but hard, peak and super starts safe: no first move or first clear dooms it.
 - **Lookalikes**: pictures from the same family (they share colours and subjects).
 - **Cards per picture**: the pieces each picture is cut into.
 - **Cards (waiting)**: all the board's cards; in brackets, those still in the stacks when it opens (a 4x5 board holds 20, a 4x6 board 24).
-- **Shown**: upcoming cards each stack shows.
+- **Shown**: upcoming cards each stack shows (0, card backs, on every board since 2026-10-25).
 - **Chain**: the longest run of clears that depend on one another that no winning line avoids (1: every picture can be finished from the opening deal).
-- **Careless win**: the chance a player who never plans ahead still wins (always finishing whatever picture is ready, wherever).
+- **Careless win**: the chance a player who never plans ahead still wins (always finishing whatever picture is ready, wherever, else drawing from any stack). It never sees a stack's next card: every draw and every place is a blind, even choice.
 - **Traps**: steps of the winning line where another choice would make the board unwinnable.
 - **Line**: moves in the stored winning line (no undo, hint or shuffle).
 

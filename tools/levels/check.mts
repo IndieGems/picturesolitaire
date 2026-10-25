@@ -19,10 +19,12 @@
 //     (src/content/picture-flags.json; node tools/levels/redeal.mts re-deals them);
 //   - the campaign: no picture on two of its first boards (campaign-plan.mts
 //     DISTINCT; AGENTS.md "Pictures rarely repeat");
-//   - the relaxed campaign (campaign.json) and the dev menu's experiment
-//     boards (experiments.json): a safe start (AGENTS.md): every
-//     picture finishable from the opening can be finished first without
-//     dooming the board, and no single move from the opening leaves it stuck.
+//   - every stack shows card backs: peek 0 (creator, 2026-10-25);
+//   - the campaign's boards but its hard ones (campaign-plan.mts MAY_TRAP) and
+//     the dev menu's experiment boards (experiments.json): a safe start
+//     (AGENTS.md): every picture finishable from the opening can be finished
+//     first without dooming the board, and no single move from the opening
+//     leaves it stuck.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
 import { readdirSync, readFileSync } from "node:fs";
@@ -33,7 +35,7 @@ import { Game } from "../../src/game/solver/index.ts";
 import { along, careless, chain, orderTraps, traps, unavoidable, wait } from "../../src/game/solver/metrics.ts";
 import { BIG, dealFor, deadFirstMoves, doomingFirstClears } from "../../src/game/levels/generate.ts";
 import { flags } from "./lib.mts";
-import { DISTINCT } from "./campaign-plan.mts";
+import { DISTINCT, MAY_TRAP } from "./campaign-plan.mts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const catalogue = new Map(JSON.parse(readFileSync(join(root, "src/content/pictures.json"), "utf8")).pictures.map((p) => [p.id, p]));
@@ -56,7 +58,8 @@ for (const file of files) {
     try {
       if (ids.has(l.id)) fail("id used twice");
       ids.add(l.id);
-      if (![0, 1, 2].includes(l.peek)) fail(`peek ${l.peek}`);
+      // PEEK0: every stack shows card backs (creator, 2026-10-25); enforced once the re-dealt level files are in (Levels, same commit)
+      if (process.env.PEEK0 ? l.peek !== 0 : ![0, 1, 2].includes(l.peek)) fail(`peek ${l.peek}: every stack shows card backs, peek 0 (AGENTS.md)`);
       if (l.par !== undefined && l.par !== l.line.length) fail(`par ${l.par} but the line has ${l.line.length} moves`);
       if (l.date !== undefined) {
         if (!/^\d{4}-\d{2}-\d{2}$/.test(l.date) || l.id !== `d${l.date}`) fail(`date ${l.date} and id ${l.id} do not match`);
@@ -90,7 +93,7 @@ for (const file of files) {
           if (k >= 0) fail(`${p.id} is on board ${data.levels[k].id} too (no picture is on two of boards 1-${DISTINCT})`);
         }
       }
-      if (file.endsWith("campaign.json") || file.endsWith("experiments.json")) {
+      if ((file.endsWith("campaign.json") && !MAY_TRAP.has(l.axes?.role)) || file.endsWith("experiments.json")) {
         const dead = deadFirstMoves(deal);
         if (dead.length) fail(`${dead.length} first move(s) leave the board stuck, e.g. ${dead[0].from} to ${dead[0].to}`);
         const g0 = new Game(s);

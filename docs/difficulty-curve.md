@@ -53,6 +53,31 @@ stacks: the player cannot see a stack's next card. A peak must still be
 something a player beats in a few tries with the helpers. No board ships that
 needs a helper to be won (AGENTS.md: "Levels are proved data").
 
+## Setting a board's difficulty (Levels)
+
+**The dial is the number of pictures for the board's size.** Hidden stacks do
+not move the careless-win measure: that player already draws and picks a place
+blind, so it never used the shown cards. A careful player, who could plan
+draws while the cards showed, now plays closer to it. A survey of random
+square-only deals that can be won, careless win by picture count (Levels,
+2026-10-25; median, with the middle half in brackets):
+
+| board | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
+|---|---|---|---|---|---|---|---|---|
+| 4×4 | 100% | 100% | 100% (67–100) | 44% (25–67) | 18% (10–41) | 5%, rare | — | — |
+| 4×5 | — | — | 100% | 100% (89–100) | 67% (42–96) | 39% (21–67) | 22% (11–44) | 11%, rare |
+
+- A 4×4 board of long pictures (tall and wide mixed) is won carelessly
+  every time, from 7 pictures to 12: a change of pace, never a bite.
+- Past about 9 pictures on 4×4 (11 on 4×5), most deals cannot be won at all,
+  and the chain of dependent clears grows by about one per added picture.
+- So: relief takes 5 squares on 4×4 (8 on 4×5). A build takes 7–8 (9–10), a
+  hard board 8–9 (10–11), and a super hard one 9 (11–12). The maker then
+  picks the deal inside the row's careless-win range
+  (`tools/levels/campaign-plan.mts`).
+- Every board but hard, peak and super starts safe: no first move or first
+  clear dooms it.
+
 **Open, for the creator:**
 
 - **Labels:** whether the game tells the player a board is "Hard" or "Super

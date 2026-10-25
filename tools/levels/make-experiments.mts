@@ -35,7 +35,7 @@ export const EXPERIMENTS = [
   // careless win 100% from 9 to 12 pictures), so it holds the most: 12, 8 waiting.
   // Art's long pictures (2026-10-25) are 7 tall and 8 wide not on campaign boards 1-13; three of the
   // tall ones are a little busy (busy 1), so a few may come in, but none busy 2, and none from before the clear pictures (CURRENT).
-  { id: "x01", name: "Long pictures only (tall and wide)", role: "experiment", board: [4, 4], count: 12, alike: [], sizes: [2], cards: [24, 24], must: shapes({ "1x2": 6, "2x1": 6 }), peek: 2, chain: [1, 3], careless: [0.9, 1], apart: true, vary: true, busyMost: 0, old: CURRENT, oldMost: 0 },
+  { id: "x01", name: "Long pictures only (tall and wide)", role: "experiment", board: [4, 4], count: 12, alike: [], sizes: [2], cards: [24, 24], must: shapes({ "1x2": 6, "2x1": 6 }), peek: 0, chain: [1, 3], careless: [0.9, 1], apart: true, vary: true, busyMost: 0, old: CURRENT, oldMost: 0 },
 ];
 
 const has = (f) => process.argv.includes(f);
@@ -47,7 +47,8 @@ const onCampaign = new Set(readBoards(CAMPAIGN).slice(0, DISTINCT).flatMap((l) =
 const levels = EXPERIMENTS.map((row, i) => {
   const kept = old.find((l) => l.id === row.id);
   const bad = kept ? flaggedOn(kept.pictures) : [];
-  if (kept && !bad.length && !remake.has(row.id)) return kept;
+  // peek is no part of the deal, so a kept board takes its row's peek (0 since 2026-10-25) with its deal unchanged
+  if (kept && !bad.length && !remake.has(row.id)) return kept.peek === row.peek ? kept : { ...kept, peek: row.peek, axes: { ...kept.axes, peek: row.peek } };
   if (bad.length) console.log(`${row.id}: uses flagged ${bad.join(", ")}; re-dealing it`);
   const pool = row.apart ? usable.filter((p) => !onCampaign.has(p.id)) : usable;
   // calm first, then fewest boards it is on in the campaign

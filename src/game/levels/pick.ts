@@ -68,6 +68,14 @@ export interface PickSpec {
    * too often. The campaign and challenge route were made with the sum and keep it.
    */
   meanFamilies?: boolean;
+  /**
+   * Pictures the board keeps, by id (lead, 2026-10-25: a re-dealt board keeps
+   * the pictures the creator is reviewing it by); the picker adds the rest
+   * around them, under every limit above. A kept id missing from the pictures
+   * given (flagged, or banned by the no-repeat rule) is left out, and another
+   * picture takes its place. With `alike: []` only.
+   */
+  keep?: readonly string[];
 }
 
 export const shapeOf = (p: { cols: number; rows: number }) => `${p.cols}x${p.rows}`;
@@ -103,7 +111,11 @@ export function pick(
   tries = 400,
 ): Picture[] | null {
   const groups = [...spec.alike].sort((a, b) => b - a);
-  const singles = spec.count - groups.reduce((n, g) => n + g, 0);
+  const kept = (spec.keep ?? []).map((id) => catalogue.find((p) => p.id === id)).filter((p): p is CataloguePicture => p !== undefined);
+  if (kept.length && groups.length) throw new Error("pick: keep works with alike [] only");
+  if (kept.length > spec.count) throw new Error("pick: more pictures kept than the board holds");
+  const keptFam = new Set(kept.map((p) => p.family));
+  const singles = spec.count - groups.reduce((n, g) => n + g, 0) - kept.length;
   if (singles < 0) throw new Error("pick: more lookalikes than pictures");
   const eligible = catalogue.filter((p) => spec.sizes.includes(p.cols * p.rows));
   const families = [...new Set(eligible.map((p) => p.family))];
@@ -119,8 +131,8 @@ export function pick(
   let best: { set: CataloguePicture[]; score: number } | null = null;
   for (let t = 0; t < tries; t++) {
     noise = 0.9 + t * 0.02;
-    const chosen: CataloguePicture[] = [];
-    const usedFam = new Set<string>();
+    const chosen: CataloguePicture[] = [...kept];
+    const usedFam = new Set<string>(keptFam);
     // a family per group, the cheapest-to-use first (with some randomness)
     const famOrder = families
       .map((f) => {
@@ -133,11 +145,16 @@ export function pick(
     let ok = true;
     // a picture with a required shape decides its family, for a group or as a single
     // (two required pictures of one family, such as both 3x3s, must be a group)
+    // a kept picture meets a required shape of its own
     const must = [...(spec.must ?? [])];
+    for (const p of kept) {
+      const k = must.indexOf(shapeOf(p));
+      if (k >= 0) must.splice(k, 1);
+    }
     const forced = new Map<string, CataloguePicture[]>();
     const taken = new Set<CataloguePicture>();
     for (const shape of must) {
-      const cands = eligible.filter((p) => shapeOf(p) === shape && !taken.has(p) && (!forced.has(p.family) || !eligible.some((q) => shapeOf(q) === shape && !taken.has(q) && !forced.has(q.family))));
+      const cands = eligible.filter((p) => shapeOf(p) === shape && !taken.has(p) && !kept.includes(p) && !keptFam.has(p.family) && (!forced.has(p.family) || !eligible.some((q) => shapeOf(q) === shape && !taken.has(q) && !forced.has(q.family))));
       if (!cands.length) {
         ok = false;
         break;

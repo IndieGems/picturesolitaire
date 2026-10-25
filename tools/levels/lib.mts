@@ -37,6 +37,23 @@ export function readFlags(file = FLAGS): Map<string, { note?: string; date?: str
   for (const [id, f] of Object.entries(JSON.parse(readFileSync(file, "utf8")).pictures ?? {})) if (f?.flagged === true) out.set(id, f);
   return out;
 }
+/**
+ * Remakes (Art, 2026-10-25: the people pictures whose faces all tilt and smile
+ * the same way, AGENTS.md "People never look AI-made"): when the old picture
+ * is flagged, a board that used it takes its remake first, where it fits
+ * (swapSets), so each board changes by that one picture.
+ */
+export const REMAKES = new Map([
+  ["chef", "wok-chef"],
+  ["cowboy", "fence-cowboy"],
+  ["painter", "plein-air"],
+  ["apple-orchard", "apple-ladder"],
+  ["yellow-raincoat", "lobster-pot"],
+  ["bubbles", "dandelion-wish"],
+  ["greenhouse", "carrot-harvest"],
+  ["canal-bicycle", "towpath-cyclist"],
+  ["blue-headscarf", "book-reader"],
+]);
 /** PICTURE_FLAGS=<file> reads another flags file (for trying the makers out). */
 export const flags = readFlags(process.env.PICTURE_FLAGS ?? FLAGS);
 /** The pictures a maker may put on a board: the catalogue less the flagged ones, in catalogue order. */
@@ -46,7 +63,7 @@ export const flaggedOn = (pictures) => pictures.map((p) => p.id).filter((id) => 
 /** The boards in a boards file, [] if there is none. */
 export const readBoards = (file) => (existsSync(file) ? JSON.parse(readFileSync(file, "utf8")).levels : []);
 
-export const specOf = (row) => ({ count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, must: row.must, most: row.most, bigMost: row.bigMost, vary: row.vary, busyMost: row.busyMost, liveMost: row.liveMost, old: row.old, oldMost: row.oldMost });
+export const specOf = (row) => ({ count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, must: row.must, most: row.most, bigMost: row.bigMost, vary: row.vary, busyMost: row.busyMost, liveMost: row.liveMost, old: row.old, oldMost: row.oldMost, keep: row.keep });
 
 export const usesOf = (chosen) => {
   const u = new Map(catalogue.map((q) => [q.id, 0]));
@@ -173,6 +190,7 @@ export function balanceSpaced(plan, chosen, from, spacing, rule?) {
       for (let j = 0; j < chosen[i].length; j++) {
         const at = boardsOf(chosen);
         const out = chosen[i][j];
+        if (plan[i].keep?.includes(out.id)) continue;
         const outNow = at.get(out.id);
         const outCost = gapCost(outNow, spacing) - gapCost(outNow.filter((k) => k !== i), spacing);
         for (const cand of poolOn(chosen, i, rule)) {
@@ -208,7 +226,9 @@ export function pickFrom(plan, chosen, from, seedOf, spacing?, rule?) {
   let done = 0;
   for (let i = from; i < plan.length; i++) {
     const recent = new Set((chosen[i - 1] ?? []).map((q) => q.id));
-    const cost = spacing ? spacedCost(chosen, i, spacing) : onSchedule(uses, plan0, done / Math.max(1, slots));
+    const base = spacing ? spacedCost(chosen, i, spacing) : onSchedule(uses, plan0, done / Math.max(1, slots));
+    // a picture the row limits (old) stands in only where the others run out; calm a little before busy
+    const cost = new Map([...base].map(([id, v]) => [id, v + (plan[i].old?.has(id) && plan[i].oldMost ? 3 : 0) + ((byId.get(id)?.busy ?? 0) >= 1 ? 0.5 : 0)]));
     // strong costs leave the picker little room; when no set fits, soften them before giving up
     let pictures = null;
     const pool = poolOn(chosen, i, rule);
@@ -271,6 +291,7 @@ export function balance(plan, chosen, from = 0) {
  * never taken). At most `max` sets; [] if no swap fits, and the maker then
  * picks the board afresh.
  */
+const remakeFirst = (old, a, b) => (REMAKES.get(old) === a ? -1 : 0) - (REMAKES.get(old) === b ? -1 : 0);
 export function swapSets(spec, pictures, uses, near, max = 6) {
   const out = [];
   const go = (set) => {
@@ -281,7 +302,7 @@ export function swapSets(spec, pictures, uses, near, max = 6) {
       .filter((c) => !set.some((q) => q.id === c.id) && near(c.id) < 1000)
       .map((c) => ({ c, set: set.map((q, k) => (k === j ? { id: c.id, cols: c.cols, rows: c.rows } : q)) }))
       .filter((x) => fits(catalogue, spec, x.set))
-      .sort((a, b) => (uses.get(a.c.id) ?? 0) + near(a.c.id) - ((uses.get(b.c.id) ?? 0) + near(b.c.id)) || (a.c.id < b.c.id ? -1 : 1))
+      .sort((a, b) => remakeFirst(set[j].id, a.c.id, b.c.id) || (uses.get(a.c.id) ?? 0) + near(a.c.id) - ((uses.get(b.c.id) ?? 0) + near(b.c.id)) || (a.c.id < b.c.id ? -1 : 1))
       .slice(0, 3);
     for (const x of cands) go(x.set);
   };
@@ -380,7 +401,9 @@ export function makeBoard(plan, i, chosen, uses, opts) {
 export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repairOnly = false, redeal = new Set() }) {
   if (old.length > plan.length) throw new Error(`the file has ${old.length} boards, the plan ${plan.length}`);
   const chosen = old.map((b) => b.pictures);
-  const levels = [...old];
+  // peek is no part of the deal (dealFor), so a kept board takes its row's peek with its deal and line
+  // unchanged (2026-10-25: every stack shows card backs, peek 0); check.mts re-proves it
+  const levels = old.map((b, i) => (plan[i] && b.peek !== plan[i].peek ? { ...b, peek: plan[i].peek, ...(b.axes ? { axes: { ...b.axes, peek: plan[i].peek } } : {}) } : b));
   const uses = usesOf(chosen);
   // with spacing, the no-repeat rule holds on every board this makes (bannedOn)
   const rule = spacing ? { spacing, distinct } : undefined;
@@ -422,6 +445,8 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
     levels[i] = makeBoard(plan, i, chosen, uses, { ...optsOf(i), seenOf: spacing ? () => cost : undefined, poolOf, first: [set] });
   }
   if (plan.length > old.length && !repairOnly) {
+    // a row's kept pictures (keep) are its own from the start, so no board before it takes them
+    for (let i = old.length; i < plan.length; i++) if (plan[i].keep) chosen[i] = plan[i].keep.filter((id) => byId.has(id) && !flags.has(id)).map((id) => ({ id, cols: byId.get(id).cols, rows: byId.get(id).rows }));
     pickFrom(plan, chosen, old.length, seedOf, spacing, rule);
     if (spacing) balanceSpaced(plan, chosen, old.length, spacing, rule);
     else balance(plan, chosen, old.length);

@@ -55,7 +55,12 @@ if (redealFrom) {
   const reached = fmt(Date.now() + 14 * 3600_000);
   if (parse(redealFrom) <= parse(reached)) throw new Error(`--redeal-from ${redealFrom}: some players are already on ${reached}; a played day never changes. Pick a later date.`);
 }
-const pool = redealFrom ? shipped.filter((l) => l.date < redealFrom) : shipped;
+// peek is no part of the deal (dealFor), so a kept day takes its weekday's peek with its deal and line unchanged
+const withPeek = (l) => {
+  const peek = WEEK[new Date(parse(l.date)).getUTCDay()].peek;
+  return l.peek === peek ? l : { ...l, peek, ...(l.axes ? { axes: { ...l.axes, peek } } : {}) };
+};
+const pool = (redealFrom ? shipped.filter((l) => l.date < redealFrom) : shipped).map(withPeek);
 const first = pool.length ? parse(pool[0].date) : parse(arg("--from") ?? "2026-08-01");
 const next = pool.length ? parse(pool[pool.length - 1].date) + DAY : first;
 // default end: the pool's own last day (2027-01-31 for a new pool)
