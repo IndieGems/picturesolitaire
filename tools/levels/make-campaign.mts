@@ -26,8 +26,8 @@
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { catalogue, famName, flags, lookalikes, readBoards, root, route, spacingOf, usable, writeBoards } from "./lib.mts";
-import { BOARD, DISTINCT, MARKS, PLAN as FULL, PLAN_TAG, SPACING } from "./campaign-plan.mts";
+import { catalogue, destById, famName, flags, lookalikes, readBoards, root, route, spacingOf, usable, writeBoards } from "./lib.mts";
+import { BOARD, DISTINCT, MARKS, PLAN as FULL, PLAN_TAG, SPACING, TRIPS } from "./campaign-plan.mts";
 
 const t0 = performance.now();
 
@@ -96,7 +96,8 @@ if (OUT !== FILE) process.exit(0);
 const counts = usable.map((p) => levels.filter((l) => l.pictures.some((q) => q.id === p.id)).length);
 const rows = levels.map((l, i) => {
   const a = l.axes;
-  return `| ${i + 1} | ${a.role}${l.mark ? ` (marked ${l.mark})` : ""} | ${l.pictures.length} | ${lookalikes(l)} | ${a.sizes.join(" ")} | ${a.shapes.join(" ")} | ${l.cols}x${l.rows} | ${a.cards} (${a.waiting}) | ${a.peek} | ${a.chain} | ${Math.round(a.careless * 100)}% | ${a.traps} | ${a.lineMoves} |`;
+  const place = l.destination ? (destById.get(l.destination.id)?.name ?? l.destination.id) : "-";
+  return `| ${i + 1} | ${place} | ${a.role}${l.mark ? ` (marked ${l.mark})` : ""} | ${l.pictures.length} | ${lookalikes(l)} | ${a.sizes.join(" ")} | ${a.shapes.join(" ")} | ${l.cols}x${l.rows} | ${a.cards} (${a.waiting}) | ${a.peek} | ${a.chain} | ${Math.round(a.careless * 100)}% | ${a.traps} | ${a.lineMoves} |`;
 });
 const md = `# The relaxed campaign
 
@@ -107,6 +108,7 @@ What each of the ${levels.length} boards asks of the player, axis by axis. Made 
 and run the maker. The challenge route is in [challenge.md](challenge.md), the
 daily puzzle in [daily.md](daily.md).
 
+- **Destination**: the board's real place (lead, 2026-10-25: the game is a travelogue), a postcard the size of the board of which one window plays as an ordinary picture and unfolds into the whole postcard when finished. It took the place of one of the board's pictures, at the same spot and shape, so the deal and every measure below are as they were. The trips: ${TRIPS.map((t) => `${t.name} (${t.from}-${t.to})`).join(", ")}.
 - **Role**: the board's place in the sawtooth ([difficulty-curve.md](difficulty-curve.md)): teach, bite (the first hard-for-a-beginner board), build, relief, hard, peak, super (super hard), pace (all long pictures, a change of pace). Every board but hard, peak and super starts safe: no first move or first clear dooms it. Players see a mark on hard and peak boards ("hard") and super ones ("super").
 - **Lookalikes**: pictures from the same family (they share colours and subjects).
 - **Cards per picture**: the pieces each picture is cut into.
@@ -117,8 +119,8 @@ daily puzzle in [daily.md](daily.md).
 - **Traps**: steps of the winning line where another choice would make the board unwinnable.
 - **Line**: moves in the stored winning line (no undo, hint or shuffle).
 
-| # | role | pictures | lookalikes | cards per picture | shapes | board | cards (waiting) | shown | chain | careless win | traps | line |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| # | destination | role | pictures | lookalikes | cards per picture | shapes | board | cards (waiting) | shown | chain | careless win | traps | line |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 ${rows.join("\n")}
 
 Every picture's appearances across the ${levels.length} boards: ${Math.min(...counts)} to ${Math.max(...counts)} (mean ${(counts.reduce((a, b) => a + b, 0) / counts.length).toFixed(1)}). A picture comes back ${sp.shortest} boards later at the soonest (median ${sp.median}). Every board made since 2026-10-25 keeps the rule: no picture on two of boards 1-${DISTINCT}, none back within ${SPACING} boards; ${sp.short} of ${sp.gaps} returns are sooner than ${SPACING}, on boards kept from before it.

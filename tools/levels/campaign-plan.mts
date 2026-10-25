@@ -27,6 +27,16 @@
 // flagged kept picture gives way to its remake (lib.mts REMAKES, keepOf). Board 11 took the
 // long pictures of boards 11-13, and its squares went to boards 12-13.
 // Board 21 takes the dev menu's long-pictures experiment (x01).
+// DESTINATIONS (lead, 2026-10-25: the game is a travelogue; the places are the
+// creator's, the postcards Art's): boards 1-15 each have one, a real place's
+// postcard of which a window plays as one picture. It went IN PLACE of the
+// board's `drop` picture, at the same spot and shape (lib.mts destinedInPlace),
+// so every deal, line and measure stayed as it was. The drop is the board's own
+// real landmark where it has one (so the trip's place is the only one), else
+// its busiest picture or one of a style the board has most of; on board 10 it
+// is Golden Gate, retired (its image is licensed). Board 11's window is wide,
+// in a wide picture's place. On board 1 it is the guided start's second clear
+// (pink-lotus), so the first postcard opens mid-board there, not at the win.
 //
 // CLEAR, CLOSE AND VARIED (creator, 2026-10-24; AGENTS.md): one picture a
 // family (alike []), no shared subject word, an album at most a third of the
@@ -50,6 +60,7 @@
 //   sizes     cards a picture may have: [4] squares, [2] long
 //   cards     total cards, all pictures: 16 fill a 4x4 board, the rest wait in the stacks
 //   keep      pictures the board keeps (pick.ts)
+//   destination  the board's postcard (lib.mts destinationOf), in place of `drop`
 //   peek      upcoming cards each stack shows (0 on every board since 2026-10-25)
 //   chain     the chain of dependent clears (src/game/solver/metrics.ts)
 //   careless  the careless player's chance of winning
@@ -84,22 +95,22 @@ const NEW_ONLY = { old: CURRENT, oldMost: 0 };
 
 export const PLAN = [
   // ---- the first cycle: teach, a first bite at board 3, a hard board at 7, the first peak at 10
-  /*  1 */ { role: "teach",  ...sq(3), careless: [1, 1], chain: [1, 1], ...STAND_IN },
-  /*  2 */ { role: "teach",  ...sq(4), careless: [1, 1], chain: [1, 1], ...STAND_IN },
-  /*  3 */ { role: "bite",   ...sq(7, { keep: ["blue-bicycle", "cactus-bloom", "ice-cream", "mount-fuji", "sailboat", "red-barn", "skier"] }), careless: [0.55, 0.65], chain: ANY, liveMost: 2, ...STAND_IN },
-  /*  4 */ { role: "relief", ...sq(5, { keep: ["bubbles", "golden-puppy", "pancakes", "saxophonist", "steam-train"] }), careless: [0.85, 1], chain: [2, 2], ...STAND_IN },
-  /*  5 */ { role: "build",  ...sq(7, { keep: ["chef", "magnolia", "orchid", "suitcase", "teddy-bear", "watermelon"] }), careless: [0.7, 0.8], chain: ANY, ...STAND_IN },
-  /*  6 */ { role: "build",  ...sq(7, { keep: ["camper-van", "cappuccino", "ginger-cat", "leaning-tower", "painter", "yellow-door", "pizza"] }), careless: [0.6, 0.75], chain: ANY, ...STAND_IN },
-  /*  7 */ { role: "hard",   ...sq(8, { keep: ["biplane", "bonsai", "cowboy", "fjord-evening", "gramophone", "owl", "redwoods", "tree-house"] }), careless: [0.3, 0.5], chain: ANY, ...STAND_IN },
-  /*  8 */ { role: "relief", ...sq(5, { keep: ["armchair", "ballerina", "bird-of-paradise", "sandstone-arch", "tiled-house"] }), careless: [0.85, 1], chain: [2, 2], ...STAND_IN },
-  /*  9 */ { role: "build",  ...sq(7, { keep: ["baobab", "delft-teapot", "doughnut", "monstera", "palm-island", "red-kite"] }), careless: [0.5, 0.7], chain: ANY, ...STAND_IN },
-  /* 10 */ { role: "peak",   ...sq(8, { keep: ["chestnut-horse", "dahlia", "golden-gate", "protea", "rainbow", "rickshaw", "sandcastle", "colosseum"] }), careless: [0.3, 0.5], chain: ANY, ...STAND_IN },
+  /*  1 */ { role: "teach",  destination: "dest-statue-of-liberty", drop: "pink-lotus", ...sq(3), careless: [1, 1], chain: [1, 1], ...STAND_IN },
+  /*  2 */ { role: "teach",  destination: "dest-niagara-falls", drop: "cliff-lighthouse", ...sq(4), careless: [1, 1], chain: [1, 1], ...STAND_IN },
+  /*  3 */ { role: "bite",   destination: "dest-letchworth", drop: "mount-fuji", ...sq(7, { keep: ["blue-bicycle", "cactus-bloom", "ice-cream", "mount-fuji", "sailboat", "red-barn", "skier"] }), careless: [0.55, 0.65], chain: ANY, liveMost: 2, ...STAND_IN },
+  /*  4 */ { role: "relief", destination: "dest-lucy-elephant", drop: "pancakes", ...sq(5, { keep: ["bubbles", "golden-puppy", "pancakes", "saxophonist", "steam-train"] }), careless: [0.85, 1], chain: [2, 2], ...STAND_IN },
+  /*  5 */ { role: "build",  destination: "dest-mabry-mill", drop: "pebble-cairn", ...sq(7, { keep: ["chef", "magnolia", "orchid", "suitcase", "teddy-bear", "watermelon"] }), careless: [0.7, 0.8], chain: ANY, ...STAND_IN },
+  /*  6 */ { role: "build",  destination: "dest-castillo", drop: "leaning-tower", ...sq(7, { keep: ["camper-van", "cappuccino", "ginger-cat", "leaning-tower", "painter", "yellow-door", "pizza"] }), careless: [0.6, 0.75], chain: ANY, ...STAND_IN },
+  /*  7 */ { role: "hard",   destination: "dest-french-quarter", drop: "fjord-evening", ...sq(8, { keep: ["biplane", "bonsai", "cowboy", "fjord-evening", "gramophone", "owl", "redwoods", "tree-house"] }), careless: [0.3, 0.5], chain: ANY, ...STAND_IN },
+  /*  8 */ { role: "relief", destination: "dest-twine-ball", drop: "tiled-house", ...sq(5, { keep: ["armchair", "ballerina", "bird-of-paradise", "sandstone-arch", "tiled-house"] }), careless: [0.85, 1], chain: [2, 2], ...STAND_IN },
+  /*  9 */ { role: "build",  destination: "dest-paul-bunyan", drop: "baobab", ...sq(7, { keep: ["baobab", "delft-teapot", "doughnut", "monstera", "palm-island", "red-kite"] }), careless: [0.5, 0.7], chain: ANY, ...STAND_IN },
+  /* 10 */ { role: "peak",   destination: "dest-pictured-rocks", drop: "golden-gate", ...sq(8, { keep: ["chestnut-horse", "dahlia", "golden-gate", "protea", "rainbow", "rickshaw", "sandcastle", "colosseum"] }), careless: [0.3, 0.5], chain: ANY, ...STAND_IN },
   // ---- the second cycle: more pictures; a hard board at 15, super hard at 20
-  /* 11 */ { role: "pace",   ...long(["guitar", "hammock", "houseboat", "ice-lolly", "canal-house", "flamenco", "tractor", "pagoda", "rocking-horse", "paddle-steamer"]), careless: [0.85, 1], chain: ANY, ...STAND_IN },
-  /* 12 */ { role: "build",  ...sq(7, { keep: ["cable-car", "eiffel-tower", "iceberg", "rubber-duck", "taj-mahal", "calla-lilies", "moai"] }), careless: [0.7, 0.8], chain: ANY, ...STAND_IN },
-  /* 13 */ { role: "build",  ...sq(8, { keep: ["classic-car", "irises", "paper-parasol", "pineapple", "ramen", "violin", "macaw", "toadstools"] }), careless: [0.6, 0.75], chain: ANY, ...STAND_IN },
-  /* 14 */ { role: "build",  ...sq(8), careless: [0.6, 0.7], chain: ANY, ...NEW_ONLY },
-  /* 15 */ { role: "hard",   ...sq(9), careless: [0.3, 0.5], chain: ANY, ...NEW_ONLY },
+  /* 11 */ { role: "pace",   destination: "dest-grand-prismatic", drop: "paddle-steamer", ...long(["guitar", "hammock", "houseboat", "ice-lolly", "canal-house", "flamenco", "tractor", "pagoda", "rocking-horse", "paddle-steamer"]), careless: [0.85, 1], chain: ANY, ...STAND_IN },
+  /* 12 */ { role: "build",  destination: "dest-delicate-arch", drop: "taj-mahal", ...sq(7, { keep: ["cable-car", "eiffel-tower", "iceberg", "rubber-duck", "taj-mahal", "calla-lilies", "moai"] }), careless: [0.7, 0.8], chain: ANY, ...STAND_IN },
+  /* 13 */ { role: "build",  destination: "dest-grand-canyon", drop: "irises", ...sq(8, { keep: ["classic-car", "irises", "paper-parasol", "pineapple", "ramen", "violin", "macaw", "toadstools"] }), careless: [0.6, 0.75], chain: ANY, ...STAND_IN },
+  /* 14 */ { role: "build",  destination: "dest-yosemite", drop: "standing-stones", ...sq(8), careless: [0.6, 0.7], chain: ANY, ...NEW_ONLY },
+  /* 15 */ { role: "hard",   destination: "dest-na-pali", drop: "corn-cob", ...sq(9), careless: [0.3, 0.5], chain: ANY, ...NEW_ONLY },
   /* 16 */ { role: "relief", ...sq(7), careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
   /* 17 */ { role: "build",  ...sq(8), careless: [0.6, 0.7], chain: ANY, ...NEW_ONLY },
   /* 18 */ { role: "build",  ...sq(8), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },

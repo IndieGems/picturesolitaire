@@ -37,8 +37,9 @@ export const byId = new Map(catalogue.map((p) => [p.id, p]));
  * A board's destination record: {"id", "crop": [col, row]}, the crop window's
  * top-left cell on the postcard, in the board's cells. The crop is Art's when
  * the catalogue entry has one (check.mts holds the board to it), else the
- * maker row's. The window plays as a 2x2 picture (destPicture): the rules,
- * solver and checker see nothing else.
+ * maker row's. The window plays as an ordinary picture of its shape
+ * (destPicture: Art's `window`, [w, h] in cards, 2x2 on a board of squares,
+ * 2x1 or 1x2 on an all-long one): the rules, solver and checker see nothing else.
  */
 export function destinationOf(id, crop) {
   const d = destById.get(id);
@@ -47,8 +48,33 @@ export function destinationOf(id, crop) {
   if (!c) throw new Error(`destination ${id}: no crop in the catalogue or the row`);
   return { id, crop: [...c] };
 }
-/** The destination's picture on the board: its crop window, a square. */
-export const destPicture = (id) => ({ id, cols: 2, rows: 2 });
+/** The destination's picture on the board: its crop window. */
+export function destPicture(id) {
+  const [cols, rows] = destById.get(id)?.window ?? [2, 2];
+  return { id, cols, rows };
+}
+/** A picture's lookalike family, a postcard's included (Art gives a postcard its lookalike's). */
+export const familyOf = (id) => (byId.get(id) ?? destById.get(id))?.family ?? id;
+
+/**
+ * A kept board given its row's destination IN PLACE (lead, 2026-10-25): the
+ * postcard's window takes the spot of the row's `drop` picture in the board's
+ * list, at the same shape, so the deal, line, par and every measure stay as
+ * they are (dealFor deals by list position and shape; check.mts re-proves
+ * it). A board that has its destination already takes only the crop. Throws
+ * when the shapes differ (pick another drop).
+ */
+export function destinedInPlace(b, row) {
+  if (!row?.destination) return b;
+  const dest = destinationOf(row.destination, row.crop);
+  if (b.destination?.id === dest.id) return withDestination(b, dest);
+  const k = b.pictures.findIndex((p) => p.id === row.drop);
+  if (k < 0) throw new Error(`${b.id}: the row drops ${row.drop}, which is not on the board`);
+  const w = destPicture(dest.id);
+  if (w.cols !== b.pictures[k].cols || w.rows !== b.pictures[k].rows) throw new Error(`${b.id}: ${dest.id}'s window is ${w.cols}x${w.rows}, ${row.drop} is ${b.pictures[k].cols}x${b.pictures[k].rows}; drop a picture of the window's shape`);
+  const pictures = b.pictures.map((p, i) => (i === k ? w : p));
+  return withDestination({ ...b, pictures, ...(b.axes?.families ? { axes: { ...b.axes, families: pictures.map((p) => familyOf(p.id)) } } : {}) }, dest);
+}
 /** The board with its destination record right after its size (one key order in every file). */
 export function withDestination(board, dest) {
   const out = {};
@@ -389,7 +415,7 @@ export function dealBoard(row, pictures, { id, date, cols, rows, par, tries = 30
   const axes = {
     role: row.role,
     alike: alikeOf(catalogue, pictures),
-    families: pictures.map((p) => (byId.get(p.id) ?? destById.get(p.id))?.family ?? p.id),
+    families: pictures.map((p) => familyOf(p.id)),
     sizes: pictures.map((p) => p.cols * p.rows),
     shapes: [...new Set(pictures.map(shapeOf))].sort(),
     cards: pictures.reduce((n, p) => n + p.cols * p.rows, 0),
@@ -465,6 +491,15 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
   // peek is no part of the deal (dealFor), so a kept board takes its row's peek with its deal and line
   // unchanged (2026-10-25: every stack shows card backs, peek 0); check.mts re-proves it
   const levels = old.map((b, i) => (plan[i] && b.peek !== plan[i].peek ? { ...b, peek: plan[i].peek, ...(b.axes ? { axes: { ...b.axes, peek: plan[i].peek } } : {}) } : b));
+  // a row's destination goes in at its dropped picture's spot, before the flagged pictures are seen to
+  // (a dropped picture may be one of them): the deal and line unchanged (destinedInPlace)
+  levels.forEach((b, i) => {
+    const d = destinedInPlace(b, plan[i]);
+    if (d === b) return;
+    if (b.destination?.id !== d.destination.id) console.log(`${b.id}: ${d.destination.id} in place of ${plan[i].drop}; the deal and line unchanged`);
+    levels[i] = d;
+    chosen[i] = d.pictures;
+  });
   const uses = usesOf(chosen);
   // with spacing, the no-repeat rule holds on every board this makes (bannedOn)
   const rule = spacing ? { spacing, distinct } : undefined;
@@ -474,7 +509,8 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
     ? (i, id) => (bannedOn(chosen, i, rule).has(id) ? 1000 : 0) + chosen.reduce((n, set, k) => n + (k !== i && set?.some((q) => q.id === id) ? Math.max(0, spacing - Math.abs(k - i)) : 0), 0)
     : nearOf(chosen);
   const seenOf = spacing ? (i) => spacedCost(chosen, i, spacing) : undefined;
-  old.forEach((b, i) => {
+  old.forEach((_, i) => {
+    const b = levels[i];
     const bad = flaggedOn(b.pictures);
     if (!bad.length) return;
     const same = remadeInPlace(levels[i]);
@@ -486,6 +522,7 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
       levels[i] = same;
       return;
     }
+    if (plan[i]?.destination) throw new Error(`${b.id}: uses flagged ${bad.join(", ")}, and the makers cannot re-deal a board with a destination yet; drop the flagged picture for it, or swap it by hand in the plan`);
     console.log(`${b.id}: uses flagged ${bad.join(", ")}; re-dealing it`);
     for (const q of b.pictures) uses.set(q.id, uses.get(q.id) - 1);
     chosen[i] = null;
@@ -497,6 +534,7 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
   const again = [...redeal].sort((a, b) => a - b);
   for (const i of again) {
     if (!old[i]) throw new Error(`board ${i + 1} is not in the file`);
+    if (plan[i].destination) throw new Error(`board ${i + 1} has a destination, and the makers cannot re-deal one yet`);
     for (const q of old[i].pictures) uses.set(q.id, uses.get(q.id) - 1);
     chosen[i] = null;
   }

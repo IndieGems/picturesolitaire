@@ -26,7 +26,9 @@
 //   - a destination (lead, 2026-10-25; lib.mts destinationOf): the board's
 //     "destination" names a postcard of the board's size, its crop window fits
 //     on it (and is the catalogue's crop when the entry has one), and the id is
-//     in the pictures exactly once, as a 2x2; no board deals a postcard as an
+//     in the pictures exactly once, at the window's shape (Art's `window`: 2x2
+//     among squares, 2x1 or 1x2 on an all-long board); no other picture on the
+//     board is of its lookalike family; no board deals a postcard as an
 //     ordinary picture;
 //   - the mark players see: a campaign board's `mark` is its role's
 //     (campaign-plan.mts MARKS), and no other board has one;
@@ -85,9 +87,17 @@ for (const file of files) {
         const on = l.pictures.filter((p) => p.id === id);
         if (!d) fail(`destination ${id} is no postcard in the catalogue`);
         else if (d.cols !== l.cols || d.rows !== l.rows) fail(`destination ${id} is a ${d.cols}x${d.rows} postcard on a ${l.cols}x${l.rows} board`);
+        const [ww, wh] = d?.window ?? [2, 2];
+        const others = l.pictures.filter((p) => p.id !== id);
         if (on.length !== 1) fail(`destination ${id} is in the pictures ${on.length} times, not once`);
-        else if (on[0].cols !== 2 || on[0].rows !== 2) fail(`destination ${id} plays as ${on[0].cols}x${on[0].rows}, not 2x2`);
+        else if (on[0].cols !== ww || on[0].rows !== wh) fail(`destination ${id} plays as ${on[0].cols}x${on[0].rows}, its window is ${ww}x${wh}`);
+        // a board is all squares or all long (AGENTS.md), its destination's window too
+        else if (others.some((p) => p.cols * p.rows !== ww * wh)) fail(`destination ${id}'s ${ww}x${wh} window is not the shape of the board's other pictures`);
         else if (d && !(Array.isArray(crop) && crop.length === 2 && crop.every(Number.isInteger) && crop[0] >= 0 && crop[1] >= 0 && crop[0] + on[0].cols <= d.cols && crop[1] + on[0].rows <= d.rows)) fail(`destination ${id}: crop ${JSON.stringify(crop)} does not fit the postcard`);
+        // lookalikes never share a board: Art gives a postcard its lookalike's family (Delicate Arch, Sandstone Arch's)
+        const fam = d?.family ?? id;
+        const twin = others.find((p) => (catalogue.get(p.id)?.family ?? p.id) === fam);
+        if (twin) fail(`destination ${id} looks like ${twin.id} (family ${fam}), on the same board`);
         if (d?.crop && JSON.stringify(d.crop) !== JSON.stringify(crop)) fail(`destination ${id}: crop ${JSON.stringify(crop)}, the catalogue's is ${JSON.stringify(d.crop)} (re-run the maker)`);
       }
       for (const p of l.pictures) {
