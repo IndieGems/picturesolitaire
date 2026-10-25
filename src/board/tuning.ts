@@ -29,6 +29,23 @@ export const TUNING = {
   /** The stacks' row above the grid, and the gap under it. */
   stackRow: 1.18,
   stackGap: 0.2,
+  /**
+   * A board that shows no upcoming card (peek 0, every board since the
+   * creator's "make the game harder"): each stack is a tidy pile of the
+   * table's card backs lying flat, one band per card, the next card at the
+   * front, so its depth says roughly how many are left (as Jigsaw Drop).
+   * pileRow / pileGap: the piles' row and the gap under it, in card heights.
+   * pileWidth: a pile's width, of a card's. pileSlab: one flat back's height,
+   * of the pile's width. pileStep: the most a band shows, of a flat back's
+   * height (a big pile packs its bands closer to fit the row). pileMax: the
+   * most bands a pile shows.
+   */
+  pileRow: 0.62,
+  pileGap: 0.14,
+  pileWidth: 0.96,
+  pileSlab: 0.28,
+  pileStep: 0.42,
+  pileMax: 12,
   /** The largest a card may be drawn, its width in CSS px (a desktop letterbox). */
   maxCard: 136,
   /**
@@ -39,6 +56,13 @@ export const TUNING = {
   /** The slight perspective of the concept: one switch (also ?tilt=1 / ?tilt=0). */
   tilt: false,
   tiltDegrees: 8,
+  /**
+   * Which copy of a picture the board draws (the creator: "a picture ships at
+   * the size it is drawn"): Art's light board copy while it has at least this
+   * share of the pixels a card needs (its drawn width x the screen's pixel
+   * density), else the full picture (a tablet's big board, a desktop, a TV).
+   */
+  boardCopyMin: 0.9,
 
   // --- the hand
   /**

@@ -41,6 +41,13 @@ export interface Geometry {
   /** How far the second upcoming card fans out above the first, and the most layers a pile shows. */
   fan: number;
   layers: number;
+  /**
+   * The stacks are flat piles (a board with no upcoming card, peek 0): `face`
+   * x `faceH` is then one flat back, the front one (the next card) at
+   * `faceTop`, and `step` the most each card behind it shows.
+   */
+  pile: boolean;
+  step: number;
 }
 
 /**
@@ -63,8 +70,12 @@ const cardCap = () => (coarse?.matches ? TUNING.maxCardTouch : TUNING.maxCard);
 /** A card's width ÷ height, from the tuning (kept sane against a bad config value). */
 export const cardAspect = () => (Number.isFinite(TUNING.cardAspect) ? Math.min(2, Math.max(0.4, TUNING.cardAspect)) : 0.75);
 
-/** Fit the stacks and the grid, with portrait cards (TUNING.cardAspect), inside a host of w x h. */
-export function layout(w: number, h: number, cols: number, rows: number): Geometry {
+/**
+ * Fit the stacks and the grid, with portrait cards (TUNING.cardAspect), inside
+ * a host of w x h. A board that shows `peek` upcoming cards keeps a tall row
+ * for them; with none, the stacks are flat piles in a short row (TUNING.pile*).
+ */
+export function layout(w: number, h: number, cols: number, rows: number, peek = 0): Geometry {
   const pad = Math.max(10, Math.min(18, w * 0.035));
   const G = TUNING.gutter;
   const A = cardAspect();
@@ -72,27 +83,35 @@ export function layout(w: number, h: number, cols: number, rows: number): Geomet
   const cap = cardCap();
   // in card widths: the stacks' row and the rows are card heights (1/A widths), the gutters widths
   const size = (st: typeof ROOMY) => Math.floor(Math.min((w - 2 * pad) / unitsW, (h - 2 * 6) / ((st.row + st.gap + rows) / A + (rows - 1) * G), cap));
+  const pile = peek <= 0;
   // the roomy stacks, unless the box is so short (a phone held sideways) that cards would come out small
-  const st = size(ROOMY) < COMPACT_BELOW && size(COMPACT) > size(ROOMY) ? { ...COMPACT, row: TUNING.stackRow * (COMPACT.row / ROOMY.row) } : { ...ROOMY, row: TUNING.stackRow, gap: TUNING.stackGap };
+  const st = pile
+    ? { ...ROOMY, row: TUNING.pileRow, gap: TUNING.pileGap, layers: Math.max(1, Math.round(TUNING.pileMax)) }
+    : size(ROOMY) < COMPACT_BELOW && size(COMPACT) > size(ROOMY) ? { ...COMPACT, row: TUNING.stackRow * (COMPACT.row / ROOMY.row) } : { ...ROOMY, row: TUNING.stackRow, gap: TUNING.stackGap };
   const s = Math.max(24, size(st));
   const sh = Math.round(s / A);
   const g = Math.max(3, Math.round(s * G));
   const width = cols * s + (cols - 1) * g;
   const gridY = Math.round(sh * (st.row + st.gap));
   const height = gridY + rows * sh + (rows - 1) * g;
-  const face = Math.round(s * st.face);
+  const stackH = Math.round(sh * st.row);
+  // a flat pile: a back as wide as the pile, squashed flat; the front one sits on the row's floor
+  const face = pile ? Math.round(s * TUNING.pileWidth) : Math.round(s * st.face);
+  const faceH = pile ? Math.max(6, Math.round(face * TUNING.pileSlab)) : Math.round(face / A);
   return {
     cols, rows, s, sh, g,
     gridX: 0, gridY,
     width, height,
     left: Math.round((w - width) / 2),
     top: Math.max(0, Math.round((h - height) / 2)),
-    stackH: Math.round(sh * st.row),
+    stackH,
     face,
-    faceH: Math.round(face / A),
-    faceTop: Math.round(sh * st.top),
+    faceH,
+    faceTop: pile ? Math.max(0, stackH - faceH) : Math.round(sh * st.top),
     fan: Math.round(sh * st.fan),
     layers: st.layers,
+    pile,
+    step: Math.max(1, faceH * TUNING.pileStep),
   };
 }
 
@@ -296,10 +315,12 @@ export function drawStack(
   if (!stack.length) {
     const slot = document.createElement("div");
     slot.className = "bd-slot";
-    slot.style.cssText = `left:${x0}px;top:${faceTop}px;width:${face}px;height:${faceH}px;border-radius:${Math.round(face * 0.16)}px`;
+    const r = geo.pile ? `${Math.round(face * 0.1)}px / ${Math.max(2, Math.round(faceH * 0.3))}px` : `${Math.round(face * 0.16)}px`;
+    slot.style.cssText = `left:${x0}px;top:${faceTop}px;width:${face}px;height:${faceH}px;border-radius:${r}`;
     sv.el.append(slot);
     return;
   }
+  if (geo.pile) return drawPile(sv, geo, stack.length, x0, backUrl);
   const step = Math.max(2, Math.round(faceH * 0.035));
   const layers = Math.min(geo.layers, stack.length);
   for (let i = layers - 1; i >= 0; i--) {
@@ -320,6 +341,28 @@ export function drawStack(
     if (i > 0) wrap.style.filter = "brightness(0.82)";
     wrap.append(f);
     sv.el.append(wrap);
+  }
+}
+
+/**
+ * A flat pile of `n` backs: the front one (the next card) on the row's floor,
+ * each one behind it a band higher, as far apart as the row lets them be (up
+ * to geo.step), so a deep pile stands taller and packs tighter. Nothing moves.
+ */
+function drawPile(sv: StackView, geo: Geometry, n: number, x0: number, backUrl: string): void {
+  const { face, faceH, faceTop } = geo;
+  const shown = Math.min(geo.layers, n);
+  const step = shown > 1 ? Math.min(geo.step, (faceTop - 1) / (shown - 1)) : 0;
+  const rx = Math.round(face * 0.1);
+  const ry = Math.max(2, Math.round(faceH * 0.3));
+  for (let i = shown - 1; i >= 0; i--) {
+    const back = document.createElement("div");
+    back.className = i ? "bd-back bd-flat under" : "bd-back bd-flat";
+    // the cards further back a shade darker, the pile's depth
+    const dim = Math.min(0.42, i * 0.045);
+    back.style.cssText = `left:${x0}px;top:${Math.round(faceTop - i * step)}px;width:${face}px;height:${faceH}px;border-radius:${rx}px / ${ry}px;--dim:${dim.toFixed(3)}`;
+    back.style.backgroundImage = backImage(backUrl);
+    sv.el.append(back);
   }
 }
 

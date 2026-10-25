@@ -59,6 +59,17 @@
 .bd-stack { position: absolute; top: 0; }
 .bd-back { position: absolute; display: block; overflow: hidden; background: center / cover no-repeat; filter: drop-shadow(0 calc(var(--s) * 0.04) calc(var(--s) * 0.03) rgba(8, 14, 22, 0.55)); }
 .bd-back.under { filter: none; }
+/* a flat back in a pile (peek 0): the table's own back squashed to lie flat
+   (the middle of it, its light dot an oval), a pale rim along its near edge and
+   a soft shadow onto the band behind; --dim shades the cards further back */
+.bd-back.bd-flat {
+  background-size: 100% 240%;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.34), inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+    inset 0 0 0 999px rgba(6, 10, 16, var(--dim, 0)), 0 -1px 2px rgba(6, 10, 16, 0.55);
+}
+/* a card behind shows only its far edge: the top of its back, clear of the dot */
+.bd-back.bd-flat.under { background-position: center top; }
+.bd-back.bd-flat:not(.under) { filter: drop-shadow(0 calc(var(--s) * 0.03) calc(var(--s) * 0.025) rgba(8, 14, 22, 0.5)); }
 .bd-peek-at { position: absolute; }
 .bd-peek-at .bd-piece { position: absolute; will-change: auto; }
 .bd-slot {

@@ -106,14 +106,30 @@ function loadTuning(): void {
   })();
 }
 
-const pictureFile = new Map(CATALOGUE.pictures.map((p) => [p.id, p.file]));
+/** A picture's files: the full one, and Art's light board copy with its size in pixels (none yet: the full). */
+type PictureFiles = { id: string; file: string; board?: string; boardPx?: number[] };
+const pictureFiles = new Map((CATALOGUE.pictures as PictureFiles[]).map((p) => [p.id, p]));
 const base = import.meta.env.BASE_URL;
 const backUrl = `${base}art/stack-back.webp`;
+/** Board copies that would not load: their full picture stands in from then on. */
+const brokenCopies = new Set<string>();
+/** The screen's pixel density (a phone's 2 or 3), read when a picture is chosen. */
+const density = () => (typeof devicePixelRatio === "number" && devicePixelRatio > 0 ? devicePixelRatio : 1);
+const isCopy = (url: string) => url.includes("-board.");
 
-/** The picture's address, or a drawn stand-in for a picture the catalogue lacks. */
-function urlOf(id: string, cols: number, rows: number): string {
-  const file = pictureFile.get(id);
-  if (file) return `${base}${file}`;
+/**
+ * The picture's address for cards `cardPx` CSS px wide: Art's board copy while
+ * it is sharp enough there (TUNING.boardCopyMin of the card's device pixels),
+ * else the full picture; a drawn stand-in for a picture the catalogue lacks.
+ */
+function urlOf(id: string, cols: number, rows: number, cardPx = Infinity): string {
+  const p = pictureFiles.get(id);
+  if (p) {
+    const per = p.board && p.boardPx?.length === 2 ? p.boardPx[0]! / cols : 0;
+    const copy = p.board ? `${base}${p.board}` : "";
+    if (copy && per > 0 && !brokenCopies.has(copy) && per >= cardPx * density() * TUNING.boardCopyMin) return copy;
+    return `${base}${p.file}`;
+  }
   let h = 0;
   for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
   const hue = h % 360;
@@ -121,16 +137,19 @@ function urlOf(id: string, cols: number, rows: number): string {
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
+/** Fetch and decode one picture; true once it is ready to paint, false when it would not load. */
+function fetchPicture(u: string, low = false): Promise<boolean> {
+  const img = new Image();
+  if (low) (img as HTMLImageElement & { fetchPriority?: string }).fetchPriority = "low";
+  img.decoding = "async";
+  img.src = u;
+  keep.push(img);
+  return img.decode().then(() => true, () => false);
+}
+
 /** Start fetching a level's pictures; resolves when they are decoded (or after `ms`). */
 function preload(urls: string[], ms: number, low = false): Promise<void> {
-  const all = urls.map((u) => {
-    const img = new Image();
-    if (low) (img as HTMLImageElement & { fetchPriority?: string }).fetchPriority = "low";
-    img.decoding = "async";
-    img.src = u;
-    keep.push(img);
-    return img.decode().catch(() => {});
-  });
+  const all = urls.map((u) => fetchPicture(u, low));
   // a plain timer, never the frame loop: waiting on a download draws nothing
   return Promise.race([Promise.all(all).then(() => {}), new Promise<void>((r) => setTimeout(r, ms))]);
 }
@@ -151,7 +170,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   const name = typeof which === "number" ? String(which) : which.id;
   const deal = lvl.deal;
   const pics = deal.pictures;
-  const art: Art[] = pics.map((p) => ({ url: urlOf(p.id, p.cols, p.rows), cols: p.cols, rows: p.rows }));
+  // the copies are picked for the card size the board opens at (sharpen() picks again on a resize)
+  const art: Art[] = pics.map((p) => ({ url: "", cols: p.cols, rows: p.rows }));
   if (keep.length > 120) keep.splice(0, keep.length - 60);
 
   // --- DOM
@@ -205,7 +225,10 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   let since: number | null = null;
   /** The win, as a claim needs it, from the moment the rules say the board is won (board:solved). */
   let solved: GameEvents["board:solved"] | null = null;
-  let geo: Geometry = layout(host.clientWidth || 360, host.clientHeight || 480, deal.cols, deal.rows);
+  let geo: Geometry = layout(host.clientWidth || 360, host.clientHeight || 480, deal.cols, deal.rows, lvl.peek);
+  // the light copies until the box has its size (a level that shows upcoming cards draws
+  // them at once); the copies are picked for the card size, and fetched, then
+  pics.forEach((p, i) => (art[i]!.url = urlOf(p.id, p.cols, p.rows, 0)));
   let live: PieceView[] = [];
   const stacks: StackView[] = [];
 
@@ -568,13 +591,20 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     }));
   }
 
-  /** Where a card sits on stack `col`'s face: its piece element's corner, and its scale. */
-  function onStackFace(col: number): { x: number; y: number; k: number } {
+  /**
+   * Where a card sits on stack `col`'s face: its piece element's corner, and
+   * its scale across and down (a flat pile's front back is squashed: ky < kx).
+   */
+  function onStackFace(col: number): { x: number; y: number; kx: number; ky: number } {
     const m = Math.ceil(geo.s * 0.16);
     const cx = col * (geo.s + geo.g) + geo.s / 2;
     const cy = -geo.gridY + geo.faceTop + geo.faceH / 2;
-    return { x: cx - geo.s / 2 - m, y: cy - geo.sh / 2 - m, k: geo.face / geo.s };
+    return { x: cx - geo.s / 2 - m, y: cy - geo.sh / 2 - m, kx: geo.face / geo.s, ky: geo.faceH / geo.sh };
   }
+  /** A piece placed with a scale of its own across and down (to and from a stack's face). */
+  const placeXY = (v: PieceView, kx: number, ky: number) => {
+    v.el.style.transform = `translate3d(${v.x.toFixed(2)}px, ${v.y.toFixed(2)}px, 0) scale(${kx.toFixed(4)}, ${ky.toFixed(4)})`;
+  };
 
   /**
    * A card leaves stack `col` for `cell`: from the stack's face, at its size,
@@ -584,10 +614,10 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   function dropFromStack(col: number, card: Card, cell: number, hidden: boolean, delay: number, leave: () => void): Promise<void> {
     const v = addView(drawPiece(geo, art, [cell], [card], pics));
     const m = Math.ceil(geo.s * 0.16);
-    const { x: sx, y: sy, k: sk } = onStackFace(col);
+    const { x: sx, y: sy, kx: skx, ky: sky } = onStackFace(col);
     v.x = sx;
     v.y = sy;
-    v.k = sk;
+    v.k = 1;
     v.el.style.visibility = "hidden";
     let cover: HTMLDivElement | null = null;
     if (hidden) {
@@ -597,7 +627,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       cover.style.cssText += `;left:${m}px;top:${m}px;width:${geo.s}px;height:${geo.sh}px;border-radius:${Math.round(geo.s * 0.14)}px`;
       v.el.append(cover);
     }
-    place(v);
+    placeXY(v, skx, sky);
     return wait(delay).then(() => {
       v.el.style.visibility = "";
       leave();
@@ -605,15 +635,13 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       return tween(TUNING.dealMs, (t) => {
         v.x = sx + (v.ox - sx) * t;
         v.y = sy + (v.oy - sy) * t;
-        v.k = sk + (1 - sk) * t;
-        if (cover) {
-          // a card the level did not show turns face up on the way
-          const flip = Math.abs(Math.cos(Math.PI * Math.min(1, t * 1.6)));
-          v.el.style.transform = `translate3d(${v.x}px, ${v.y}px, 0) scale(${v.k * Math.max(0.02, flip)}, ${v.k})`;
-          if (t > 1 / 3.2 && cover.isConnected) cover.remove();
-          return;
-        }
-        place(v);
+        // off a flat pile it stands up as it comes (ky catches kx up early)
+        const kx = skx + (1 - skx) * t;
+        const ky = sky + (1 - sky) * Math.min(1, t * 1.5);
+        // a card the level did not show turns face up on the way
+        const flip = cover ? Math.max(0.02, Math.abs(Math.cos(Math.PI * Math.min(1, t * 1.6)))) : 1;
+        if (cover && t > 1 / 3.2 && cover.isConnected) cover.remove();
+        placeXY(v, kx * flip, ky);
       }, { ease: ease.fall }).then(() => {
         v.el.classList.remove("moving");
         place(v);
@@ -656,8 +684,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       return tween(rise, (t) => {
         v.x = x0 + (to.x - x0) * t;
         v.y = y0 + (to.y - y0) * t - Math.sin(Math.PI * t) * geo.s * 0.3;
-        v.k = 1 + (to.k - 1) * t;
-        place(v);
+        // onto a flat pile it lies down as it lands (ky drops late)
+        placeXY(v, 1 + (to.kx - 1) * t, 1 + (to.ky - 1) * Math.max(0, t * 1.5 - 0.5));
       }, { ease: ease.inOut }).then(() => dropView(v));
     }));
     for (const col of new Set(step.toStacks.map((x) => x.col))) drawStack(stacks[col]!, geo, next.stacks[col]!, lvl.peek, art, pics, backUrl);
@@ -1004,6 +1032,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       emit("board:stuck", { doomed: false });
     }
     if (resizePending) relayout();
+    if (artPending) refreshArt();
     if (guideMode) relight();
   }
 
@@ -1285,15 +1314,46 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
 
   // ---------------------------------------------------------------- size
 
+  /**
+   * The board grew past what its copies are sharp for (a phone turned, a
+   * window widened): fetch the full pictures, and swap each in once it is
+   * ready, so a card never shows blank while it loads. Never back down: a
+   * picture already fetched costs nothing more.
+   */
+  function sharpen(): void {
+    pics.forEach((p, i) => {
+      const a = art[i]!;
+      const want = urlOf(p.id, p.cols, p.rows, geo.s);
+      if (want === a.url || !isCopy(a.url)) return;
+      void fetchPicture(want).then((ok) => {
+        if (ok && !destroyed && a.url !== want) swapArt(a, want);
+      });
+    });
+  }
+  /** A picture's file changes under the drawn cards: draw them again once the board is still. */
+  let artPending = false;
+  function swapArt(a: Art, url: string): void {
+    a.url = url;
+    if (!opened) return;
+    artPending = true;
+    if (!busy && !drag && !selected) refreshArt();
+  }
+  function refreshArt(): void {
+    artPending = false;
+    redrawAll(shown);
+    if (guideMode) relight();
+  }
+
   let resizePending = false;
   function relayout(): void {
     resizePending = false;
     const w = host.clientWidth;
     const h = host.clientHeight;
     if (!w || !h) return;
-    const g = layout(w, h, deal.cols, deal.rows);
+    const g = layout(w, h, deal.cols, deal.rows, lvl.peek);
     if (g.s === geo.s && g.sh === geo.sh && g.left === geo.left && g.top === geo.top) return;
     geo = g;
+    sharpen();
     stopHint();
     applyLayout();
     redrawAll(shown);
@@ -1324,10 +1384,25 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   void (async () => {
     // the pictures and the config's tuning, together, never longer than 2.5 s
     const tuning = Promise.race([tuned, new Promise<void>((r) => setTimeout(r, 2500))]);
-    await Promise.all([preload(art.map((a) => a.url), 2500), tuning]);
+    // a board opened in a box not on screen yet (the screens open it, then show it) picks
+    // its pictures, and deals, once the box has its size
+    if (!host.clientWidth || !host.clientHeight) await new Promise<void>((r) => (sized = r));
+    if (destroyed) return;
+    const cardW = layout(host.clientWidth, host.clientHeight, deal.cols, deal.rows, lvl.peek).s;
+    pics.forEach((p, i) => (art[i]!.url = urlOf(p.id, p.cols, p.rows, cardW)));
+    const ready = Promise.all(art.map(async (a, i) => {
+      if ((await fetchPicture(a.url)) || !isCopy(a.url)) return;
+      // Art's board copy would not load: the full picture instead, from now on
+      brokenCopies.add(a.url);
+      const p = pics[i]!;
+      const full = urlOf(p.id, p.cols, p.rows);
+      await fetchPicture(full);
+      if (!destroyed) swapArt(a, full);
+    })).then(() => {});
+    await Promise.all([Promise.race([ready, new Promise<void>((r) => setTimeout(r, 2500))]), tuning]);
     helpers = { ...TUNING.helpers };
     changed();
-    // a board opened in a box not on screen yet deals once the box has its size
+    // hidden again while its pictures came (the player went home): deal once it is back
     if (!host.clientWidth || !host.clientHeight) await new Promise<void>((r) => (sized = r));
     if (destroyed) return;
     busy--;
@@ -1336,7 +1411,12 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     opened = true;
     if (onScreenNow()) clockOn();
     // the next board's pictures, quietly, once this one is dealt
-    if (typeof which === "number" && which < levelCount()) void preload(levelOf(which + 1).deal.pictures.map((p) => urlOf(p.id, p.cols, p.rows)), 10_000, true);
+    if (typeof which === "number" && which < levelCount()) {
+      // at the card size the next board will have in this box
+      const next = levelOf(which + 1);
+      const s = layout(host.clientWidth || 360, host.clientHeight || 480, next.deal.cols, next.deal.rows, next.peek).s;
+      void preload(next.deal.pictures.map((p) => urlOf(p.id, p.cols, p.rows, s)), 10_000, true);
+    }
   })();
 
   // Test hooks for the play-test tool (dev builds only; the build drops this).
