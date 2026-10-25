@@ -245,7 +245,7 @@ const guide = createGuide({
 });
 
 const levels = () => levelCount();
-/** Every board of the campaign won once: its position has gone past the last (it then goes round). */
+/** Every board of the campaign won once: its position is past the last, where it stays (home's Play then goes round). */
 const allDone = () => campaignNext() > levels();
 /** A campaign position as the board's own number (the campaign goes round past the last board). */
 const boardNumber = (n: number) => ((n - 1) % levels()) + 1;
@@ -306,8 +306,10 @@ homePlay.addEventListener("click", async () => {
     drawHome();
     if (screen !== "home") return; // the player went elsewhere meanwhile
   }
-  // the next position; past the last board the campaign goes round (the server's rule)
-  openLevel(campaignNext());
+  // the next position; once every board is won the position stays at "all done" (the server's
+  // rule), and Play goes round the boards in order, keyed on the campaign wins the record keeps
+  // (the lead, 2026-10-25): no save of its own, and the checker takes each as a replay
+  openLevel(allDone() ? (progress().campaign.won % levels()) + 1 : campaignNext());
 });
 
 homeAlbums.addEventListener("click", () => albumsUi.openList());
