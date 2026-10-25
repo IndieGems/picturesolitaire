@@ -17,7 +17,8 @@
 //   - a daily board: its id is "d" + its date, and dates run one a day;
 //   - no board uses a picture the creator flagged "don't use"
 //     (src/content/picture-flags.json; node tools/levels/redeal.mts re-deals them);
-//   - the relaxed campaign (campaign.json): a safe start (AGENTS.md): every
+//   - the relaxed campaign (campaign.json) and the dev menu's experiment
+//     boards (experiments.json): a safe start (AGENTS.md): every
 //     picture finishable from the opening can be finished first without
 //     dooming the board, and no single move from the opening leaves it stuck.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
@@ -79,7 +80,7 @@ for (const file of files) {
       const s = start(deal).state;
       if (s.cleared.length || joinCount(s) > 0) fail("something is joined or finished at the opening");
       if (isDeadEnd(s)) fail("the opening is a dead end");
-      if (file.endsWith("campaign.json")) {
+      if (file.endsWith("campaign.json") || file.endsWith("experiments.json")) {
         const dead = deadFirstMoves(deal);
         if (dead.length) fail(`${dead.length} first move(s) leave the board stuck, e.g. ${dead[0].from} to ${dead[0].to}`);
         const g0 = new Game(s);

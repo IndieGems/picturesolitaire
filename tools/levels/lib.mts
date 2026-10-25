@@ -96,6 +96,36 @@ export function onSchedule(uses, plan, progress) {
 // player has not met yet comes first. The picker ranks by spacedCost, and
 // balanceSpaced then swaps pictures to lengthen the shortest gaps.
 
+// PICTURES RARELY REPEAT (creator, 2026-10-25; AGENTS.md), a hard rule over
+// the soft ranking above: no picture on two of the first `distinct` boards,
+// and none back within `spacing` boards anywhere. A maker never puts a banned
+// picture on a board it makes; when the library is too small for a board it
+// stops and says so (more pictures are the answer, not a softer rule).
+
+/** The pictures board i may not take: those on another board fewer than `spacing` boards away, and, for one of the first `distinct` boards, those on any other of them. */
+export function bannedOn(chosen, i, { spacing, distinct = 0 }) {
+  const out = new Set();
+  chosen.forEach((set, k) => {
+    if (k === i || !set) return;
+    if (Math.abs(k - i) < spacing || (i < distinct && k < distinct)) for (const q of set) out.add(q.id);
+  });
+  return out;
+}
+
+/** The usable pictures board i may take under the rule (all of them with no rule). */
+const poolOn = (chosen, i, rule) => {
+  if (!rule) return usable;
+  const banned = bannedOn(chosen, i, rule);
+  return usable.filter((p) => !banned.has(p.id));
+};
+
+/** Why a board under the rule found no pictures: how many of each size it may still take. */
+const shortText = (plan, chosen, i, rule) => {
+  const pool = poolOn(chosen, i, rule);
+  const by = (n) => pool.filter((p) => p.cols * p.rows === n).length;
+  return `board ${i + 1}: no pictures fit its plan row among those not on a board within ${rule.spacing}${i < rule.distinct ? ` or on boards 1-${rule.distinct}` : ""} (it may take ${plan[i].sizes.map((n) => `${by(n)} of ${n} cards`).join(", ")}); the library needs more pictures${flags.size ? " (flagged pictures are left out)" : ""}`;
+};
+
 /** Where each picture was last before board i, from boards 0..i-1. */
 const lastSeen = (chosen, i) => {
   const last = new Map();
@@ -136,7 +166,7 @@ export function spacingOf(chosen, spacing) {
  * another that still fits the board's plan, while that lowers the spacing
  * cost of the two pictures (gapCost).
  */
-export function balanceSpaced(plan, chosen, from, spacing) {
+export function balanceSpaced(plan, chosen, from, spacing, rule?) {
   for (let sweep = 0; sweep < 40; sweep++) {
     let better = false;
     for (let i = from; i < chosen.length; i++) {
@@ -145,7 +175,7 @@ export function balanceSpaced(plan, chosen, from, spacing) {
         const out = chosen[i][j];
         const outNow = at.get(out.id);
         const outCost = gapCost(outNow, spacing) - gapCost(outNow.filter((k) => k !== i), spacing);
-        for (const cand of usable) {
+        for (const cand of poolOn(chosen, i, rule)) {
           if (chosen[i].some((q) => q.id === cand.id)) continue;
           const set = chosen[i].map((q, k) => (k === j ? { id: cand.id, cols: cand.cols, rows: cand.rows } : q));
           if (!fits(catalogue, specOf(plan[i]), set)) continue;
@@ -167,10 +197,11 @@ export function balanceSpaced(plan, chosen, from, spacing) {
 /**
  * Pictures for boards `from`.. of the plan (chosen[0..from-1] are the boards
  * kept): with `spacing`, by spacedCost (unmet first, then the longest
- * unseen); else least-used first and caught up on schedule. `seedOf(i)`
- * seeds board i's pick. Fills `chosen` in place.
+ * unseen); else least-used first and caught up on schedule. With `rule`
+ * (bannedOn), only from the pictures the rule lets the board take.
+ * `seedOf(i)` seeds board i's pick. Fills `chosen` in place.
  */
-export function pickFrom(plan, chosen, from, seedOf, spacing?) {
+export function pickFrom(plan, chosen, from, seedOf, spacing?, rule?) {
   const uses = usesOf(chosen.slice(0, from));
   const slots = plan.slice(from).reduce((n, r) => n + r.count, 0);
   const plan0 = catchUp(uses, slots);
@@ -180,11 +211,12 @@ export function pickFrom(plan, chosen, from, seedOf, spacing?) {
     const cost = spacing ? spacedCost(chosen, i, spacing) : onSchedule(uses, plan0, done / Math.max(1, slots));
     // strong costs leave the picker little room; when no set fits, soften them before giving up
     let pictures = null;
+    const pool = poolOn(chosen, i, rule);
     for (const k of [1, 0.5, 0.25, 0]) {
-      pictures = pick(usable, specOf(plan[i]), k === 1 ? cost : new Map([...cost].map(([id, v]) => [id, v * k])), recent, random(seedOf(i)));
+      pictures = pick(pool, specOf(plan[i]), k === 1 ? cost : new Map([...cost].map(([id, v]) => [id, v * k])), recent, random(seedOf(i)));
       if (pictures) break;
     }
-    if (!pictures) throw new Error(`board ${i + 1}: no pictures fit the plan${flags.size ? " (flagged pictures are left out)" : ""}`);
+    if (!pictures) throw new Error(rule ? shortText(plan, chosen, i, rule) : `board ${i + 1}: no pictures fit the plan${flags.size ? " (flagged pictures are left out)" : ""}`);
     for (const q of pictures) uses.set(q.id, (uses.get(q.id) ?? 0) + 1);
     chosen[i] = pictures;
     done += plan[i].count;
@@ -306,7 +338,8 @@ export const tallyText = (tally) => [...tally].map(([k, v]) => `${k} ${v}`).join
  * decides the rest). Updates `chosen` and `uses`. Returns the board's record.
  */
 export function makeBoard(plan, i, chosen, uses, opts) {
-  const { id, reseedOf, attempts = 12, vary = false, first, seenOf } = opts;
+  // `poolOf(i)`: the pictures a re-pick may take (the no-repeat rule), else every usable one
+  const { id, reseedOf, attempts = 12, vary = false, first, seenOf, poolOf } = opts;
   const row = plan[i];
   const take = (set) => {
     for (const q of chosen[i] ?? []) uses.set(q.id, uses.get(q.id) - 1);
@@ -325,9 +358,9 @@ export function makeBoard(plan, i, chosen, uses, opts) {
       // `seenOf(i)`: the costs a re-pick ranks by (spacing), else the uses
       const base = seenOf ? seenOf(i) : uses;
       const seen = vary ? new Map([...base].map(([k, v]) => [k, v + (failed.get(k) ?? 0)])) : base;
-      const pictures = pick(usable, specOf(row), seen, new Set([...(chosen[i - 1] ?? []), ...(chosen[i + 1] ?? [])].map((q) => q.id)), random(reseedOf(i, attempt - sets.length + 1)));
+      const pictures = pick(poolOf ? poolOf(i) : usable, specOf(row), seen, new Set([...(chosen[i - 1] ?? []), ...(chosen[i + 1] ?? [])].map((q) => q.id)), random(reseedOf(i, attempt - sets.length + 1)));
       for (const q of own) uses.set(q.id, uses.get(q.id) + 1);
-      if (!pictures) throw new Error(`${id}: no pictures fit the plan${flags.size ? " (flagged pictures are left out)" : ""}`);
+      if (!pictures) throw new Error(`${id}: no other pictures fit the plan${poolOf ? " under the no-repeat rule (the library needs more pictures)" : ""}${flags.size ? " (flagged pictures are left out)" : ""}`);
       take(pictures);
     }
     const { board, tally } = dealBoard(row, chosen[i], opts);
@@ -344,14 +377,17 @@ export function makeBoard(plan, i, chosen, uses, opts) {
  * changed as can be), and make the plan's rows past the end. `optsOf(i)` gives
  * makeBoard's options for board i; `seedOf(i)` seeds a new board's pick.
  */
-export function route(plan, old, { optsOf, seedOf, spacing, repairOnly = false, redeal = new Set() }) {
+export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repairOnly = false, redeal = new Set() }) {
   if (old.length > plan.length) throw new Error(`the file has ${old.length} boards, the plan ${plan.length}`);
   const chosen = old.map((b) => b.pictures);
   const levels = [...old];
   const uses = usesOf(chosen);
-  // with spacing, a swap's nearness is the gap it would make
+  // with spacing, the no-repeat rule holds on every board this makes (bannedOn)
+  const rule = spacing ? { spacing, distinct } : undefined;
+  const poolOf = rule ? (i) => poolOn(chosen, i, rule) : undefined;
+  // with spacing, a swap's nearness is the gap it would make (1000: the rule bans it)
   const near = spacing
-    ? (i, id) => chosen.reduce((n, set, k) => n + (k !== i && set?.some((q) => q.id === id) ? Math.max(0, spacing - Math.abs(k - i)) : 0), 0)
+    ? (i, id) => (bannedOn(chosen, i, rule).has(id) ? 1000 : 0) + chosen.reduce((n, set, k) => n + (k !== i && set?.some((q) => q.id === id) ? Math.max(0, spacing - Math.abs(k - i)) : 0), 0)
     : nearOf(chosen);
   const seenOf = spacing ? (i) => spacedCost(chosen, i, spacing) : undefined;
   old.forEach((b, i) => {
@@ -361,30 +397,34 @@ export function route(plan, old, { optsOf, seedOf, spacing, repairOnly = false, 
     for (const q of b.pictures) uses.set(q.id, uses.get(q.id) - 1);
     chosen[i] = null;
     // no swap that fits: makeBoard picks the board afresh
-    levels[i] = makeBoard(plan, i, chosen, uses, { ...optsOf(i), seenOf, first: swapSets(specOf(plan[i]), b.pictures, uses, (id) => near(i, id)) });
+    levels[i] = makeBoard(plan, i, chosen, uses, { ...optsOf(i), seenOf, poolOf, first: swapSets(specOf(plan[i]), b.pictures, uses, (id) => near(i, id)) });
   });
-  // boards asked for by number (from 0): picked afresh from the plan's row, every other board kept
-  for (const i of [...redeal].sort((a, b) => a - b)) {
+  // boards asked for by number (from 0): picked afresh from the plan's row, every other board kept;
+  // their old pictures are let go first, so they bind none of the boards being re-dealt
+  const again = [...redeal].sort((a, b) => a - b);
+  for (const i of again) {
     if (!old[i]) throw new Error(`board ${i + 1} is not in the file`);
-    console.log(`${old[i].id}: re-dealing it from the plan`);
     for (const q of old[i].pictures) uses.set(q.id, uses.get(q.id) - 1);
     chosen[i] = null;
-    // nearness to the boards either side (with spacing), so the board's pictures are ones not met near it;
-    // then calm before busy, and new before a picture the row limits (old)
-    const cost = new Map(usable.map((p) => [p.id, near(i, p.id) * (spacing ? 4 : 1) + (p.busy ?? 0) * 2 + (plan[i].old?.has(p.id) ? 2 : 0)]));
+  }
+  for (const i of again) {
+    console.log(`${old[i].id}: re-dealing it from the plan`);
+    // with spacing: unseen first, then the longest unseen (spacedCost), and nothing the rule bans;
+    // without: not near it. Then calm before busy, and new before a picture the row limits (old)
+    const base = spacing ? spacedCost(chosen, i, spacing) : new Map(usable.map((p) => [p.id, near(i, p.id)]));
+    const cost = new Map(usable.map((p) => [p.id, base.get(p.id) + (p.busy ?? 0) * 2 + (plan[i].old?.has(p.id) ? 2 : 0)]));
     const recent = new Set([...(chosen[i - 1] ?? []), ...(chosen[i + 1] ?? [])].map((q) => q.id));
-    const set = pick(usable, specOf(plan[i]), cost, recent, random(seedOf(i)));
-    if (!set) throw new Error(`${old[i].id}: no pictures fit the plan${flags.size ? " (flagged pictures are left out)" : ""}`);
-    const seen = spacing ? (k) => new Map(usable.map((p) => [p.id, near(k, p.id) * 4])) : undefined;
-    levels[i] = makeBoard(plan, i, chosen, uses, { ...optsOf(i), seenOf: seen, first: [set] });
+    const set = pick(poolOf ? poolOf(i) : usable, specOf(plan[i]), cost, recent, random(seedOf(i)));
+    if (!set) throw new Error(rule ? shortText(plan, chosen, i, rule) : `${old[i].id}: no pictures fit the plan${flags.size ? " (flagged pictures are left out)" : ""}`);
+    levels[i] = makeBoard(plan, i, chosen, uses, { ...optsOf(i), seenOf: spacing ? () => cost : undefined, poolOf, first: [set] });
   }
   if (plan.length > old.length && !repairOnly) {
-    pickFrom(plan, chosen, old.length, seedOf, spacing);
-    if (spacing) balanceSpaced(plan, chosen, old.length, spacing);
+    pickFrom(plan, chosen, old.length, seedOf, spacing, rule);
+    if (spacing) balanceSpaced(plan, chosen, old.length, spacing, rule);
     else balance(plan, chosen, old.length);
     if (process.env.PICKS_ONLY) return { picks: chosen };
     const u = usesOf(chosen);
-    for (let i = old.length; i < plan.length; i++) levels[i] = makeBoard(plan, i, chosen, u, { ...optsOf(i), seenOf });
+    for (let i = old.length; i < plan.length; i++) levels[i] = makeBoard(plan, i, chosen, u, { ...optsOf(i), seenOf, poolOf });
   }
   return levels;
 }

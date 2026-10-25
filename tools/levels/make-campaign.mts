@@ -15,7 +15,8 @@
 //                  board (and add no plan rows)
 //   --out FILE     write the boards there instead, and no docs (for trials)
 //   PICKS_ONLY=1   pick the pictures and report their spacing; no deals
-// Pictures follow the plan's shape ramp and SPACING (campaign-plan.mts).
+// Pictures follow the plan's shape ramp and its no-repeat rule (DISTINCT,
+// SPACING; campaign-plan.mts), which every board it makes keeps.
 // Deterministic: the same file, plan, catalogue and flags give the same campaign. Then
 // node tools/levels/check.mts re-proves what was written.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
@@ -23,7 +24,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { catalogue, famName, flags, lookalikes, readBoards, root, route, spacingOf, usable, writeBoards } from "./lib.mts";
-import { BOARD, PLAN, PLAN_TAG, SPACING } from "./campaign-plan.mts";
+import { BOARD, DISTINCT, PLAN, PLAN_TAG, SPACING } from "./campaign-plan.mts";
 
 const t0 = performance.now();
 
@@ -46,6 +47,7 @@ if (adding && old.length && fileTag !== PLAN_TAG && keepAt < 0) {
 const tag = adding || !old.length ? PLAN_TAG : fileTag;
 const made = route(PLAN, old, {
   spacing: SPACING,
+  distinct: DISTINCT,
   repairOnly: has("--repair-only") || redeal.size > 0,
   redeal,
   seedOf: (i) => 0xc0ffee + i * 7919,
@@ -101,7 +103,7 @@ daily puzzle in [daily.md](daily.md).
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 ${rows.join("\n")}
 
-Every picture's appearances across the ${levels.length} boards: ${Math.min(...counts)} to ${Math.max(...counts)} (mean ${(counts.reduce((a, b) => a + b, 0) / counts.length).toFixed(1)}). A picture comes back ${sp.shortest} boards later at the soonest (median ${sp.median}; the aim is ${SPACING} or more, and ${sp.short} of ${sp.gaps} returns are sooner).
+Every picture's appearances across the ${levels.length} boards: ${Math.min(...counts)} to ${Math.max(...counts)} (mean ${(counts.reduce((a, b) => a + b, 0) / counts.length).toFixed(1)}). A picture comes back ${sp.shortest} boards later at the soonest (median ${sp.median}). Every board made since 2026-10-25 keeps the rule: no picture on two of boards 1-${DISTINCT}, none back within ${SPACING} boards; ${sp.short} of ${sp.gaps} returns are sooner than ${SPACING}, on boards kept from before it.
 
 | picture | boards |
 |---|---|

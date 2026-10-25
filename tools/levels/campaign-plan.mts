@@ -29,9 +29,13 @@
 // from the catalogue as it was before the clear pictures came (CURRENT), calm
 // ones first; with portrait 3:4 cards they are 4x4, as Jigsaw Drop opens.
 //
-// SPACING: a picture should not come back within this many boards, and one the
-// player has not met yet comes first (lib.mts spacedCost, balanceSpaced). The
-// maker reports how close the library lets it come.
+// PICTURES RARELY REPEAT (creator, 2026-10-25, after Jigsaw Drop, whose
+// players notice repeats only after 200+ levels): no picture on two of boards
+// 1-DISTINCT, and none back within SPACING boards after that; one the player
+// has not met yet comes first. A hard rule on every board the maker makes
+// (lib.mts bannedOn): a board the library cannot fill stops the maker, which
+// names what is short. Boards 4-13 take at most one picture from before the
+// clear ones (CURRENT), and none while the new ones cover them.
 //
 // Columns:
 //   board     columns x rows (default 4x5)
@@ -59,12 +63,17 @@ export const PLAN_TAG = "clear-varied-2026-10-24";
 /** The board unless a row says otherwise. */
 export const BOARD = { cols: 4, rows: 5 };
 
-/** Boards before a picture comes back, at the least (the aim; the library decides what is reached). */
-export const SPACING = 12;
+/** Boards before a picture may come back, at the least. */
+export const SPACING = 15;
+
+/** The first boards, on which no picture is on two. */
+export const DISTINCT = 13;
 
 /** The catalogue's pictures before the clear, varied ones (2026-10-24): boards 1-3 take at most one. */
 export const CURRENT = new Set(["dusk-harbour", "dune-caravan", "poppy-sunset", "candle-oranges", "blossom-lane", "peony-jug", "berry-cake", "rose-hat", "maple-path", "harvest-table", "apple-orchard", "ivy-lane", "blue-domes", "wave-coast", "hydrangeas", "net-mender", "wheat-farm", "bread-table", "sunflower-vase", "wheat-walk", "lavender-rows", "wisteria-door", "lilac-bouquet", "figs-grapes", "tea-terraces", "market-greens", "greenhouse", "green-alley", "venice-canal", "lantern-market", "lantern-child", "lake-village", "cherry-bowl", "tulip-rows", "red-tram", "red-umbrella", "lemon-coast", "lemon-tart", "daffodil-meadow", "canal-bicycle", "snow-chalets", "skating-day", "frost-hellebores", "winter-stream", "riad-court", "carpet-bazaar", "anemones", "pomegranates", "pastel-row", "patisserie", "beach-huts", "balloon-seller", "copper-spires", "copper-kitchen", "potter-studio", "turquoise-falls", "abbey-cloister", "stone-village", "white-garden", "olive-grove"]);
 const FRESH = { busyMost: 0, old: CURRENT, oldMost: 1 };
+/** Boards 4-13: at most one picture from before the clear ones (the re-deal ranks them after new ones). */
+const NEWER = { old: CURRENT, oldMost: 1 };
 
 const SQ = [4];
 
@@ -76,17 +85,17 @@ export const PLAN = [
   /*  1 */ { role: "intro",  board: [4, 4], count: 3, alike: [], sizes: SQ, cards: [12, 12], peek: 2, chain: [1, 1], careless: [1, 1], ...FRESH },
   /*  2 */ { role: "intro",  board: [4, 4], count: 4, alike: [], sizes: SQ, cards: [16, 16], peek: 2, chain: [1, 1], careless: [1, 1], ...FRESH },
   /*  3 */ { role: "build",  board: [4, 4], count: 5, alike: [], sizes: SQ, cards: [20, 20], peek: 2, chain: [2, 2], careless: [0.95, 1], ...FRESH },
-  /*  4 */ { role: "build",  board: [4, 4], count: 5, alike: [], sizes: SQ, cards: [20, 20], peek: 2, chain: [2, 2], careless: [0.9, 1] },
-  /*  5 */ { role: "relief", board: [4, 4], count: 5, alike: [], sizes: SQ, cards: [20, 20], peek: 2, chain: [1, 2], careless: [1, 1] },
-  /*  6 */ { role: "build",  board: [4, 4], count: 6, alike: [], sizes: SQ, cards: [24, 24], peek: 2, chain: [2, 3], careless: [0.85, 1] },
-  /*  7 */ { role: "demand", board: [4, 4], count: 7, alike: [], sizes: SQ, cards: [28, 28], peek: 1, chain: [3, 4], careless: [0.6, 0.95] },
-  /*  8 */ { role: "relief", board: [4, 4], count: 5, alike: [], sizes: SQ, cards: [20, 20], peek: 2, chain: [2, 2], careless: [0.95, 1] },
-  /*  9 */ { role: "build",  board: [4, 4], count: 6, alike: [], sizes: SQ, cards: [24, 24], peek: 1, chain: [2, 3], careless: [0.85, 1] },
-  /* 10 */ { role: "demand", board: [4, 4], count: 7, alike: [], sizes: SQ, cards: [28, 28], peek: 1, chain: [3, 4], careless: [0.55, 0.9] },
+  /*  4 */ { role: "build",  board: [4, 4], count: 5, alike: [], sizes: SQ, cards: [20, 20], peek: 2, chain: [2, 2], careless: [0.9, 1], ...NEWER },
+  /*  5 */ { role: "relief", board: [4, 4], count: 5, alike: [], sizes: SQ, cards: [20, 20], peek: 2, chain: [1, 2], careless: [1, 1], ...NEWER },
+  /*  6 */ { role: "build",  board: [4, 4], count: 6, alike: [], sizes: SQ, cards: [24, 24], peek: 2, chain: [2, 3], careless: [0.85, 1], ...NEWER },
+  /*  7 */ { role: "demand", board: [4, 4], count: 7, alike: [], sizes: SQ, cards: [28, 28], peek: 1, chain: [3, 4], careless: [0.6, 0.95], ...NEWER },
+  /*  8 */ { role: "relief", board: [4, 4], count: 5, alike: [], sizes: SQ, cards: [20, 20], peek: 2, chain: [2, 2], careless: [0.95, 1], ...NEWER },
+  /*  9 */ { role: "build",  board: [4, 4], count: 6, alike: [], sizes: SQ, cards: [24, 24], peek: 1, chain: [2, 3], careless: [0.85, 1], ...NEWER },
+  /* 10 */ { role: "demand", board: [4, 4], count: 7, alike: [], sizes: SQ, cards: [28, 28], peek: 1, chain: [3, 4], careless: [0.55, 0.9], ...NEWER },
   // ---- the long 1x2 and 2x1 pictures join
-  /* 11 */ { role: "relief", board: [4, 4], count: 6, alike: [], sizes: SMALL, cards: [20, 22], peek: 2, chain: [2, 2], careless: [0.9, 1] },
-  /* 12 */ { role: "build",  board: [4, 4], count: 7, alike: [], sizes: SMALL, cards: [24, 26], peek: 1, chain: [2, 3], careless: [0.7, 1] },
-  /* 13 */ { role: "demand", board: [4, 4], count: 8, alike: [], sizes: SMALL, cards: [26, 28], peek: 1, chain: [3, 4], careless: [0.55, 0.9] },
+  /* 11 */ { role: "relief", board: [4, 4], count: 6, alike: [], sizes: SMALL, cards: [20, 22], peek: 2, chain: [2, 2], careless: [0.9, 1], ...NEWER },
+  /* 12 */ { role: "build",  board: [4, 4], count: 7, alike: [], sizes: SMALL, cards: [24, 26], peek: 1, chain: [2, 3], careless: [0.7, 1], ...NEWER },
+  /* 13 */ { role: "demand", board: [4, 4], count: 8, alike: [], sizes: SMALL, cards: [26, 28], peek: 1, chain: [3, 4], careless: [0.55, 0.9], ...NEWER },
   /* 14 */ { role: "relief", board: [4, 4], count: 6, alike: [], sizes: SMALL, cards: [20, 22], peek: 2, chain: [2, 2], careless: [0.9, 1] },
   /* 15 */ { role: "demand", board: [4, 4], count: 8, alike: [], sizes: SMALL, cards: [28, 30], peek: 1, chain: [3, 4], careless: [0.45, 0.85] },
   /* 16 */ { role: "relief", count: 7, alike: [],        sizes: SMALL, cards: [24, 26], peek: 1, chain: [2, 3], careless: [0.85, 1] },

@@ -40,7 +40,7 @@ line); a sharp player may beat it.
 | 19 | relief | 5x6 | 9 | 3 lavender, 2 autumn rust | 4 6 2 6 4 4 6 6 6 | 1x2 2x2 2x3 3x2 | 44 (14) | 1 | 4 | 3 | 1 | 60% | 26 |
 | 20 | finale | 5x6 | 11 | 4 lemon yellow, 3 fresh green, 2 warm dusk | 6 4 9 2 4 2 9 4 4 4 2 | 1x2 2x1 2x2 2x3 3x3 | 50 (20) | 0 | 5 | 4 | 2 | 8% | 31 |
 
-Every picture's appearances across the route: 3 to 6 (mean 4.0).
+Every picture's appearances across the route: 0 to 6 (mean 2.1).
 
 | picture | boards |
 |---|---|
@@ -84,3 +84,40 @@ Every picture's appearances across the route: 3 to 6 (mean 4.0).
 | lemon-tart (2x2, lemon yellow) | 10, 12, 17, 20 |
 | daffodil-meadow (3x3, lemon yellow) | 1, 8, 12, 17, 20 |
 | canal-bicycle (2x3, lemon yellow) | 6, 14, 17, 20 |
+| snow-chalets (3x2, snow ice) |  |
+| skating-day (3x3, snow ice) |  |
+| frost-hellebores (2x2, snow ice) |  |
+| winter-stream (1x2, snow ice) |  |
+| riad-court (2x3, jewel tones) |  |
+| carpet-bazaar (2x2, jewel tones) |  |
+| anemones (2x2, jewel tones) |  |
+| pomegranates (2x2, jewel tones) |  |
+| pastel-row (3x2, sugared pastel) |  |
+| patisserie (2x1, sugared pastel) |  |
+| beach-huts (2x1, sugared pastel) |  |
+| balloon-seller (1x2, sugared pastel) |  |
+| copper-spires (2x3, copper teal) |  |
+| copper-kitchen (3x2, copper teal) |  |
+| potter-studio (2x2, copper teal) |  |
+| turquoise-falls (2x3, copper teal) |  |
+| abbey-cloister (2x2, stone sage) |  |
+| stone-village (3x2, stone sage) |  |
+| white-garden (2x3, stone sage) |  |
+| olive-grove (2x2, stone sage) |  |
+| tiled-house (2x2, sea blue) |  |
+| fjord-evening (2x2, blue hour) |  |
+| vintage-camera (2x2, vintage camera) |  |
+| red-scooter (2x2, red scooter) |  |
+| sailboat (2x2, sailboat) |  |
+| cactus-bloom (2x2, cactus bloom) |  |
+| cliff-lighthouse (2x2, cliff lighthouse) |  |
+| blue-headscarf (2x2, blue headscarf) |  |
+| pink-lotus (2x2, pink lotus) |  |
+| yellow-raincoat (2x2, yellow raincoat) |  |
+| blue-bicycle (2x2, blue bicycle) |  |
+| mount-fuji (2x2, mount fuji) |  |
+| ice-cream (2x2, ice cream) |  |
+| paper-balloon (2x2, paper balloon) |  |
+| ginger-cat (2x2, ginger cat) |  |
+| golden-puppy (2x2, golden puppy) |  |
+| chestnut-horse (2x2, chestnut horse) |  |

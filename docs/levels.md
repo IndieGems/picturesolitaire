@@ -49,7 +49,7 @@ daily puzzle in [daily.md](daily.md).
 | 29 | relief | 6 | 3 golden wheat, 3 warm dusk | 2 4 6 4 6 6 | 2x1 2x2 2x3 3x2 | 4x5 | 28 (8) | 1 | 3 | 100% | 0 | 25 |
 | 30 | finale | 8 | 4 fresh green, 3 lemon yellow | 6 9 2 4 2 4 4 6 | 1x2 2x2 2x3 3x2 3x3 | 4x5 | 37 (17) | 0 | 5 | 48% | 2 | 38 |
 
-Every picture's appearances across the 30 boards: 0 to 6 (mean 2.5). A picture comes back 2 boards later at the soonest (median 5; the aim is 12 or more, and 129 of 132 returns are sooner).
+Every picture's appearances across the 30 boards: 0 to 6 (mean 2.4). A picture comes back 2 boards later at the soonest (median 5). Every board made since 2026-10-25 keeps the rule: no picture on two of boards 1-13, none back within 15 boards; 132 of 132 returns are sooner than 15, on boards kept from before it.
 
 | picture | boards |
 |---|---|
@@ -127,3 +127,6 @@ Every picture's appearances across the 30 boards: 0 to 6 (mean 2.5). A picture c
 | mount-fuji (2x2, mount fuji) | 3 |
 | ice-cream (2x2, ice cream) | 3 |
 | paper-balloon (2x2, paper balloon) | 1 |
+| ginger-cat (2x2, ginger cat) |  |
+| golden-puppy (2x2, golden puppy) |  |
+| chestnut-horse (2x2, chestnut horse) |  |
