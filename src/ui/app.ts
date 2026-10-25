@@ -389,6 +389,7 @@ function showMarkBanner(m: Mark | null): void {
     const b = boardScreen.getBoundingClientRect();
     markBanner.style.top = `${Math.round(a.top - b.top + a.height / 2)}px`;
     markBanner.hidden = false; // shown again, the animation starts over
+    emit("board:mark", { mark: m }); // Audio's sting under it
     bannerTimer = window.setTimeout(() => (markBanner.hidden = true), BANNER_MS);
   });
 }
