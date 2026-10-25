@@ -38,6 +38,13 @@
 // in a wide picture's place. On board 1 it is the guided start's second clear
 // (pink-lotus), so the first postcard opens mid-board there, not at the win.
 // On board 5 it is magnolia, a busy one, so Mabry Mill (busy) keeps the row's cap.
+// Trip 2, Japan (boards 16-30): first every landmark was swapped out in place
+// (lib.mts swappedInPlace; Art's "landmark": true), then each drop was the
+// picture finished nearest mid-board on the proved line, of the postcard's
+// shape, keeping the row's picture rules (a busy one where the postcard is busy
+// and the board is at its cap: 28, 30), of the postcard's style where it could.
+// Boards 27-30 were made first and took theirs on the maker's second run.
+// Board 21's window is wide, in a wide picture's place.
 //
 // CLEAR, CLOSE AND VARIED (creator, 2026-10-24; AGENTS.md): one picture a
 // family (alike []), no shared subject word, an album at most a third of the
@@ -113,25 +120,25 @@ export const PLAN = [
   /* 13 */ { role: "build",  destination: "dest-grand-canyon", drop: "irises", ...sq(8, { keep: ["classic-car", "irises", "paper-parasol", "pineapple", "ramen", "violin", "macaw", "toadstools"] }), careless: [0.6, 0.75], chain: ANY, ...STAND_IN },
   /* 14 */ { role: "build",  destination: "dest-yosemite", drop: "standing-stones", ...sq(8), careless: [0.6, 0.7], chain: ANY, ...NEW_ONLY },
   /* 15 */ { role: "hard",   destination: "dest-na-pali", drop: "corn-cob", ...sq(9), careless: [0.3, 0.5], chain: ANY, ...NEW_ONLY },
-  /* 16 */ { role: "relief", ...sq(7), careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
-  /* 17 */ { role: "build",  ...sq(8), careless: [0.6, 0.7], chain: ANY, ...NEW_ONLY },
-  /* 18 */ { role: "build",  ...sq(8), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
-  /* 19 */ { role: "build",  ...sq(9), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
-  /* 20 */ { role: "super",  ...sq(9), careless: [0.1, 0.3], chain: ANY, ...NEW_ONLY },
+  /* 16 */ { role: "relief", destination: "dest-fuji-chureito", drop: "covered-bridge", ...sq(7), careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
+  /* 17 */ { role: "build",  destination: "dest-gotokuji-cats", drop: "rooster", ...sq(8), careless: [0.6, 0.7], chain: ANY, ...NEW_ONLY },
+  /* 18 */ { role: "build",  destination: "dest-kamakura-buddha", drop: "amaryllis", ...sq(8), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
+  /* 19 */ { role: "build",  destination: "dest-snow-monkeys", drop: "majolica-jug", ...sq(9), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 20 */ { role: "super",  destination: "dest-shirakawa-go", drop: "harvest-moon", ...sq(9), careless: [0.1, 0.3], chain: ANY, ...NEW_ONLY },
   // ---- the third cycle: 4x5 boards from 22 (Gameplay, 2026-10-25: about 60x80 a card on a 360x640 phone)
-  /* 21 */ { role: "pace",   ...long(["canoe", "dachshund", "giraffe", "grand-piano", "lily-window", "milkshake", "ribbon-falls", "sewing-machine", "sidecar", "skyscraper", "sunflower", "wheelbarrow"]), careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
-  /* 22 */ { role: "build",  board: [4, 5], ...sq(9), careless: [0.7, 0.8], chain: ANY, ...NEW_ONLY },
-  /* 23 */ { role: "build",  board: [4, 5], ...sq(10), careless: [0.65, 0.75], chain: ANY, ...NEW_ONLY },
-  /* 24 */ { role: "build",  board: [4, 5], ...sq(10), careless: [0.6, 0.7], chain: ANY, ...NEW_ONLY },
-  /* 25 */ { role: "hard",   board: [4, 5], ...sq(11), careless: [0.3, 0.5], chain: ANY, ...NEW_ONLY },
-  /* 26 */ { role: "relief", board: [4, 5], ...sq(8), careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
+  /* 21 */ { role: "pace",   destination: "dest-kinkakuji", drop: "dachshund", ...long(["canoe", "dachshund", "giraffe", "grand-piano", "lily-window", "milkshake", "ribbon-falls", "sewing-machine", "sidecar", "skyscraper", "sunflower", "wheelbarrow"]), careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
+  /* 22 */ { role: "build",  destination: "dest-fushimi-inari", drop: "observatory", board: [4, 5], ...sq(9), careless: [0.7, 0.8], chain: ANY, ...NEW_ONLY },
+  /* 23 */ { role: "build",  destination: "dest-kiyomizu-dera", drop: "thunderstorm", board: [4, 5], ...sq(10), careless: [0.65, 0.75], chain: ANY, ...NEW_ONLY },
+  /* 24 */ { role: "build",  destination: "dest-nachi-falls", drop: "baker", board: [4, 5], ...sq(10), careless: [0.6, 0.7], chain: ANY, ...NEW_ONLY },
+  /* 25 */ { role: "hard",   destination: "dest-himeji-castle", drop: "igloo", board: [4, 5], ...sq(11), careless: [0.3, 0.5], chain: ANY, ...NEW_ONLY },
+  /* 26 */ { role: "relief", destination: "dest-rabbit-island", drop: "bullet-train", board: [4, 5], ...sq(8), careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
   // ---- the end of trip 2, Japan (lead, 2026-10-25; docs/difficulty-curve.md "Trips of 15 boards"):
   // the trip's hardest builds, then its super hard finale right before the stamp
-  /* 27 */ { role: "build",  board: [4, 5], ...sq(10), careless: [0.6, 0.7], chain: ANY, ...NEW_ONLY },
-  /* 28 */ { role: "build",  board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
-  /* 29 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 27 */ { role: "build",  destination: "dest-itsukushima", drop: "corn-cob", board: [4, 5], ...sq(10), careless: [0.6, 0.7], chain: ANY, ...NEW_ONLY },
+  /* 28 */ { role: "build",  destination: "dest-kintai-bridge", drop: "castle", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
+  /* 29 */ { role: "build",  destination: "dest-takachiho", drop: "armchair", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
   // (traps capped: the first deal in range had 8, where board 20 has 1 and 25 has 2; a finale is beaten in a few tries)
-  /* 30 */ { role: "super",  board: [4, 5], ...sq(12), careless: [0.1, 0.3], traps: [0, 3], chain: ANY, ...NEW_ONLY },
+  /* 30 */ { role: "super",  destination: "dest-taketomi", drop: "stave-church", board: [4, 5], ...sq(12), careless: [0.1, 0.3], traps: [0, 3], chain: ANY, ...NEW_ONLY },
 ];
 
 /**

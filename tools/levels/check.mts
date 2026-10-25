@@ -30,6 +30,8 @@
 //     among squares, 2x1 or 1x2 on an all-long board); no other picture on the
 //     board is of its lookalike family; no board deals a postcard as an
 //     ordinary picture;
+//   - the campaign: no landmark picture (Art's "landmark": true; a future
+//     trip's destination);
 //   - the mark players see: a campaign board's `mark` is its role's
 //     (campaign-plan.mts MARKS), and no other board has one;
 //   - the campaign's boards but its hard ones (campaign-plan.mts MAY_TRAP) and
@@ -124,6 +126,8 @@ for (const file of files) {
       const s = start(deal).state;
       if (s.cleared.length || joinCount(s) > 0) fail("something is joined or finished at the opening");
       if (isDeadEnd(s)) fail("the opening is a dead end");
+      // a landmark (Art's "landmark": true) waits for its trip's destination: none on a campaign board (lead, 2026-10-25)
+      if (file.endsWith("campaign.json")) for (const p of l.pictures) if (catalogue.get(p.id)?.landmark) fail(`${p.id} is a landmark, saved for a future trip's destination (make-campaign.mts swaps it out in place)`);
       // pictures rarely repeat: none on two of campaign boards 1-DISTINCT
       if (file.endsWith("campaign.json") && data.levels.indexOf(l) < DISTINCT) {
         for (const p of l.pictures) {

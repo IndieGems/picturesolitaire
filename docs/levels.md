@@ -1,13 +1,13 @@
 # The relaxed campaign
 
-What each of the 26 boards asks of the player, axis by axis. Made by
+What each of the 30 boards asks of the player, axis by axis. Made by
 `node tools/levels/make-campaign.mts` from the plan in
 `tools/levels/campaign-plan.mts`; every board's winning line is re-proved by
 `node tools/levels/check.mts`. Do not edit this table by hand: change the plan
 and run the maker. The challenge route is in [challenge.md](challenge.md), the
 daily puzzle in [daily.md](daily.md).
 
-- **Destination**: the board's real place (lead, 2026-10-25: the game is a travelogue), a postcard the size of the board of which one window plays as an ordinary picture and unfolds into the whole postcard when finished. It took the place of one of the board's pictures, at the same spot and shape, so the deal and every measure below are as they were. The trips: Travel America (1-15), Trip 2 (16-30).
+- **Destination**: the board's real place (lead, 2026-10-25: the game is a travelogue), a postcard the size of the board of which one window plays as an ordinary picture and unfolds into the whole postcard when finished. It took the place of one of the board's pictures, at the same spot and shape, so the deal and every measure below are as they were. The trips: Travel America (1-15), Japan (16-30).
 - **Role**: the board's place in the sawtooth ([difficulty-curve.md](difficulty-curve.md)): teach, bite (the first hard-for-a-beginner board), build, relief, hard, peak, super (super hard), pace (all long pictures, a change of pace). Every board but hard, peak and super starts safe: no first move or first clear dooms it. Players see a mark on hard and peak boards ("hard") and super ones ("super").
 - **Lookalikes**: pictures from the same family (they share colours and subjects).
 - **Cards per picture**: the pieces each picture is cut into.
@@ -35,19 +35,23 @@ daily puzzle in [daily.md](daily.md).
 | 13 | Grand Canyon | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 3 | 70% | 0 | 25 |
 | 14 | Yosemite Valley | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 4 | 69% | 1 | 27 |
 | 15 | Nā Pali Coast | hard (marked hard) | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 36 (20) | 0 | 4 | 47% | 1 | 24 |
-| 16 | - | relief | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 2 | 100% | 0 | 20 |
-| 17 | - | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 3 | 61% | 2 | 27 |
-| 18 | - | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 3 | 56% | 1 | 21 |
-| 19 | - | build | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 36 (20) | 0 | 4 | 56% | 2 | 30 |
-| 20 | - | super (marked super) | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 36 (20) | 0 | 3 | 25% | 1 | 33 |
-| 21 | - | pace | 12 | none | 2 2 2 2 2 2 2 2 2 2 2 2 | 1x2 2x1 | 4x4 | 24 (8) | 0 | 2 | 100% | 0 | 13 |
-| 22 | - | build | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 36 (16) | 0 | 3 | 78% | 0 | 28 |
-| 23 | - | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 5 | 72% | 1 | 30 |
-| 24 | - | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 5 | 65% | 1 | 26 |
-| 25 | - | hard (marked hard) | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 6 | 41% | 2 | 32 |
-| 26 | - | relief | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 32 (12) | 0 | 3 | 100% | 0 | 32 |
+| 16 | Mount Fuji | relief | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 2 | 100% | 0 | 20 |
+| 17 | Lucky Cat Temple | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 3 | 61% | 2 | 27 |
+| 18 | Great Buddha of Kamakura | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 3 | 56% | 1 | 21 |
+| 19 | Snow Monkey Park | build | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 36 (20) | 0 | 4 | 56% | 2 | 30 |
+| 20 | Shirakawa-gō | super (marked super) | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 36 (20) | 0 | 3 | 25% | 1 | 33 |
+| 21 | Golden Pavilion | pace | 12 | none | 2 2 2 2 2 2 2 2 2 2 2 2 | 1x2 2x1 | 4x4 | 24 (8) | 0 | 2 | 100% | 0 | 13 |
+| 22 | Fushimi Inari Shrine | build | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 36 (16) | 0 | 3 | 78% | 0 | 28 |
+| 23 | Kiyomizu-dera | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 5 | 72% | 1 | 30 |
+| 24 | Nachi Falls | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 5 | 65% | 1 | 26 |
+| 25 | Himeji Castle | hard (marked hard) | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 6 | 41% | 2 | 32 |
+| 26 | Rabbit Island | relief | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 32 (12) | 0 | 3 | 100% | 0 | 32 |
+| 27 | Itsukushima Shrine | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 4 | 61% | 0 | 29 |
+| 28 | Kintai Bridge | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 5 | 58% | 1 | 29 |
+| 29 | Takachiho Gorge | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 49% | 2 | 39 |
+| 30 | Taketomi Island | super (marked super) | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 27% | 1 | 46 |
 
-Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture comes back null boards later at the soonest (median null). Every board made since 2026-10-25 keeps the rule: no picture on two of boards 1-13, none back within 15 boards; 0 of 0 returns are sooner than 15, on boards kept from before it.
+Every picture's appearances across the 30 boards: 0 to 2 (mean 0.8). A picture comes back 15 boards later at the soonest (median 21). Every board made since 2026-10-25 keeps the rule: no picture on two of boards 1-13, none back within 15 boards; 0 of 24 returns are sooner than 15, on boards kept from before it.
 
 | picture | boards |
 |---|---|
@@ -113,34 +117,34 @@ Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture c
 | olive-grove (2x2, stone sage) |  |
 | tiled-house (2x2, sea blue) |  |
 | fjord-evening (2x2, blue hour) |  |
-| vintage-camera (2x2, vintage camera) | 1 |
-| red-scooter (2x2, red scooter) | 2 |
+| vintage-camera (2x2, vintage camera) | 1, 30 |
+| red-scooter (2x2, red scooter) | 2, 28 |
 | sailboat (2x2, sailboat) | 3 |
-| cactus-bloom (2x2, cactus bloom) | 3 |
-| cliff-lighthouse (2x2, cliff lighthouse) |  |
+| cactus-bloom (2x2, cactus bloom) | 3, 29 |
+| cliff-lighthouse (2x2, cliff lighthouse) | 23 |
 | blue-headscarf (2x2, blue headscarf) FLAGGED: don't use |  |
-| pink-lotus (2x2, pink lotus) |  |
+| pink-lotus (2x2, pink lotus) | 27 |
 | yellow-raincoat (2x2, yellow raincoat) FLAGGED: don't use |  |
 | blue-bicycle (2x2, blue bicycle) | 3 |
 | mount-fuji (2x2, mount fuji) |  |
-| ice-cream (2x2, ice cream) | 3 |
+| ice-cream (2x2, ice cream) | 3, 30 |
 | paper-balloon (2x2, paper balloon) | 1 |
-| ginger-cat (2x2, ginger cat) | 6 |
+| ginger-cat (2x2, ginger cat) | 6, 29 |
 | golden-puppy (2x2, golden puppy) | 4 |
 | chestnut-horse (2x2, chestnut horse) | 10 |
 | orchid (2x2, orchid) | 5 |
-| calla-lilies (2x2, calla lilies) | 12 |
+| calla-lilies (2x2, calla lilies) | 12, 30 |
 | irises (2x2, irises) |  |
 | protea (2x2, protea) | 10 |
-| monstera (2x2, monstera) | 9 |
+| monstera (2x2, monstera) | 9, 30 |
 | dahlia (2x2, dahlia) | 10 |
-| bird-of-paradise (2x2, bird of paradise) | 8 |
-| magnolia (2x2, magnolia) |  |
+| bird-of-paradise (2x2, bird of paradise) | 8, 29 |
+| magnolia (2x2, magnolia) | 29 |
 | bonsai (2x2, bonsai) | 7 |
 | toadstools (2x2, toadstools) | 13 |
 | watermelon (2x2, watermelon) | 5 |
 | cappuccino (2x2, cappuccino) | 6 |
-| pancakes (2x2, pancakes) |  |
+| pancakes (2x2, pancakes) | 28 |
 | doughnut (2x2, doughnut) | 9 |
 | pineapple (2x2, pineapple) | 13 |
 | delft-teapot (2x2, delft teapot) | 9 |
@@ -149,29 +153,29 @@ Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture c
 | gramophone (2x2, gramophone) | 7 |
 | violin (2x2, violin) | 13 |
 | armchair (2x2, armchair) | 8 |
-| rubber-duck (2x2, rubber duck) | 12 |
+| rubber-duck (2x2, rubber duck) | 12, 28 |
 | teddy-bear (2x2, teddy bear) | 5 |
-| camper-van (2x2, camper van) | 6 |
-| steam-train (2x2, steam train) | 4 |
-| classic-car (2x2, classic car) | 13 |
+| camper-van (2x2, camper van) | 6, 29 |
+| steam-train (2x2, steam train) | 4, 30 |
+| classic-car (2x2, classic car) | 13, 29 |
 | biplane (2x2, biplane) | 7 |
 | cable-car (2x2, cable car) | 12 |
 | suitcase (2x2, suitcase) | 5 |
-| rickshaw (2x2, rickshaw) | 10 |
-| paper-parasol (2x2, paper parasol) | 13 |
-| eiffel-tower (2x2, eiffel tower) | 12 |
+| rickshaw (2x2, rickshaw) | 10, 28 |
+| paper-parasol (2x2, paper parasol) | 13, 30 |
+| eiffel-tower (2x2, eiffel tower) |  |
 | golden-gate (2x2, golden gate) FLAGGED: don't use |  |
-| colosseum (2x2, colosseum) | 10 |
+| colosseum (2x2, colosseum) |  |
 | leaning-tower (2x2, leaning tower) |  |
 | taj-mahal (2x2, taj mahal) |  |
 | tree-house (2x2, tree house) | 7 |
-| yellow-door (2x2, yellow door) | 6 |
-| red-barn (2x2, red barn) | 3 |
-| moai (2x2, moai) | 12 |
+| yellow-door (2x2, yellow door) | 6, 28 |
+| red-barn (2x2, red barn) | 3, 29 |
+| moai (2x2, moai) |  |
 | palm-island (2x2, palm island) | 9 |
-| sandstone-arch (2x2, sandstone arch) | 8 |
-| iceberg (2x2, iceberg) | 12 |
-| baobab (2x2, baobab) |  |
+| sandstone-arch (2x2, sandstone arch) | 8, 29 |
+| iceberg (2x2, iceberg) | 12, 30 |
+| baobab (2x2, baobab) | 29 |
 | redwoods (2x2, redwoods) | 7 |
 | rainbow (2x2, rainbow) | 10 |
 | sandcastle (2x2, sandcastle) | 10 |
@@ -181,7 +185,7 @@ Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture c
 | cowboy (2x2, cowboy) FLAGGED: don't use |  |
 | painter (2x2, painter) FLAGGED: don't use |  |
 | bubbles (2x2, bubbles) FLAGGED: don't use |  |
-| saxophonist (2x2, saxophonist) | 4 |
+| saxophonist (2x2, saxophonist) | 4, 28 |
 | skier (2x2, skier) | 3 |
 | owl (2x2, owl) | 7 |
 | macaw (2x2, macaw) | 13 |
@@ -204,7 +208,7 @@ Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture c
 | wheelbarrow (2x1, wheelbarrow) | 21 |
 | rocking-horse (2x1, rocking horse) | 11 |
 | paddle-steamer (2x1, paddle steamer) |  |
-| dachshund (2x1, dachshund) | 21 |
+| dachshund (2x1, dachshund) |  |
 | sidecar (2x1, sidecar) | 21 |
 | houseboat (2x1, houseboat) | 11 |
 | wok-chef (2x2, wok chef) | 5 |
@@ -224,7 +228,7 @@ Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture c
 | cornflowers (2x2, cornflowers) | 18 |
 | echeveria (2x2, echeveria) | 24 |
 | flytrap (2x2, flytrap) | 18 |
-| allium (2x2, allium) |  |
+| allium (2x2, allium) | 10 |
 | chrysanthemum (2x2, chrysanthemum) | 22 |
 | fuchsia (2x2, fuchsia) | 15 |
 | lupins (2x2, lupins) | 22 |
@@ -233,7 +237,7 @@ Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture c
 | fiddlehead (2x2, fiddlehead) | 20 |
 | ginkgo (2x2, ginkgo) | 19 |
 | terrarium (2x2, terrarium) |  |
-| amaryllis (2x2, amaryllis) | 18 |
+| amaryllis (2x2, amaryllis) | 12, 28 |
 | camellia-plate (2x2, camellia plate) | 14 |
 | sushi (2x2, sushi) | 24 |
 | croissant (2x2, croissant) | 25 |
@@ -243,16 +247,16 @@ Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture c
 | jelly (2x2, jelly) | 22 |
 | egg-cup (2x2, egg cup) | 19 |
 | hot-chocolate (2x2, hot chocolate) | 25 |
-| majolica-jug (2x2, majolica jug) | 19 |
+| majolica-jug (2x2, majolica jug) | 27 |
 | desk-globe (2x2, desk globe) | 25 |
 | roller-skate (2x2, roller skate) | 23 |
-| mussels (2x2, mussels) |  |
+| mussels (2x2, mussels) | 30 |
 | corn-cob (2x2, corn cob) |  |
-| chillies (2x2, chillies) | 15 |
+| chillies (2x2, chillies) | 15, 30 |
 | nesting-dolls (2x2, nesting dolls) | 18 |
 | tin-robot (2x2, tin robot) | 20 |
 | accordion (2x2, accordion) | 15 |
-| trumpet (2x2, trumpet) |  |
+| trumpet (2x2, trumpet) | 27 |
 | origami-crane (2x2, origami crane) | 16 |
 | bento (2x2, bento) |  |
 | volcano (2x2, volcano) | 17 |
@@ -261,22 +265,22 @@ Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture c
 | rock-pool (2x2, rock pool) |  |
 | basalt-columns (2x2, basalt columns) | 16 |
 | karst-peaks (2x2, karst peaks) |  |
-| matterhorn (2x2, matterhorn) | 17 |
+| matterhorn (2x2, matterhorn) |  |
 | pebble-cairn (2x2, pebble cairn) | 5 |
 | oak-acorns (2x2, oak acorns) | 26 |
-| thunderstorm (2x2, thunderstorm) | 23 |
-| harvest-moon (2x2, harvest moon) | 20 |
+| thunderstorm (2x2, thunderstorm) | 27 |
+| harvest-moon (2x2, harvest moon) | 27 |
 | birches (2x2, birches) | 16 |
 | amethyst (2x2, amethyst) | 26 |
 | bamboo (2x2, bamboo) | 24 |
 | sea-stack (2x2, sea stack) | 26 |
-| crystal-cave (2x2, crystal cave) |  |
+| crystal-cave (2x2, crystal cave) | 28 |
 | rope-bridge (2x2, rope bridge) | 16 |
-| standing-stones (2x2, standing stones) |  |
-| beekeeper (2x2, beekeeper) |  |
+| standing-stones (2x2, standing stones) | 28 |
+| beekeeper (2x2, beekeeper) | 17 |
 | cellist (2x2, cellist) | 24 |
 | glassblower (2x2, glassblower) | 23 |
-| baker (2x2, baker) | 24 |
+| baker (2x2, baker) | 12, 30 |
 | surfer (2x2, surfer) | 25 |
 | knitting (2x2, knitting) | 17 |
 | climber (2x2, climber) | 16 |
@@ -291,15 +295,15 @@ Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture c
 | skateboard (2x2, skateboard) | 17 |
 | double-decker (2x2, double decker) | 17 |
 | tugboat (2x2, tugboat) | 14 |
-| junk-boat (2x2, junk boat) |  |
+| junk-boat (2x2, junk boat) | 27 |
 | ocean-liner (2x2, ocean liner) | 20 |
 | galleon (2x2, galleon) |  |
 | campfire (2x2, campfire) | 19 |
-| fire-engine (2x2, fire engine) | 15 |
+| fire-engine (2x2, fire engine) | 15, 30 |
 | penny-farthing (2x2, penny farthing) | 24 |
 | longtail-boat (2x2, longtail boat) | 18 |
 | seaplane (2x2, seaplane) | 19 |
-| bullet-train (2x2, bullet train) | 26 |
+| bullet-train (2x2, bullet train) | 20 |
 | safari-truck (2x2, safari truck) | 20 |
 | bow-top-wagon (2x2, bow top wagon) | 18 |
 | binoculars (2x2, binoculars) | 24 |
@@ -308,23 +312,23 @@ Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture c
 | roller-coaster (2x2, roller coaster) | 19 |
 | tent (2x2, tent) | 23 |
 | castle (2x2, castle) |  |
-| igloo (2x2, igloo) | 25 |
-| pyramids (2x2, pyramids) | 23 |
+| igloo (2x2, igloo) | 27 |
+| pyramids (2x2, pyramids) |  |
 | greek-temple (2x2, greek temple) | 25 |
-| torii (2x2, torii) | 20 |
+| torii (2x2, torii) |  |
 | yurt (2x2, yurt) | 19 |
-| covered-bridge (2x2, covered bridge) | 16 |
+| covered-bridge (2x2, covered bridge) | 25 |
 | moon-gate (2x2, moon gate) | 23 |
 | lifeguard-tower (2x2, lifeguard tower) | 22 |
 | half-timbered (2x2, half timbered) | 15 |
 | stepwell (2x2, stepwell) |  |
 | circus-tent (2x2, circus tent) | 22 |
-| observatory (2x2, observatory) | 22 |
+| observatory (2x2, observatory) | 27 |
 | adobe (2x2, adobe) | 23 |
-| petra (2x2, petra) | 25 |
+| petra (2x2, petra) |  |
 | stave-church (2x2, stave church) |  |
 | watermill (2x2, watermill) | 23 |
-| bandstand (2x2, bandstand) | 14 |
+| bandstand (2x2, bandstand) | 14, 29 |
 | fox (2x2, fox) | 20 |
 | hedgehog (2x2, hedgehog) | 14 |
 | flamingo (2x2, flamingo) | 26 |
@@ -336,7 +340,7 @@ Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture c
 | koala (2x2, koala) | 16 |
 | penguin (2x2, penguin) | 14 |
 | chameleon (2x2, chameleon) | 14 |
-| rooster (2x2, rooster) | 17 |
+| rooster (2x2, rooster) | 27 |
 | heron (1x2, heron) |  |
 | hollyhocks (1x2, hollyhocks) |  |
 | whale (2x1, whale) |  |
