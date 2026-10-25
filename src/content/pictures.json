@@ -9186,8 +9186,13 @@
         2,
         2
       ],
+      "window": [
+        2,
+        2
+      ],
       "file": "pictures/destinations/dest-grand-canyon.webp",
       "board": "pictures/destinations/dest-grand-canyon-board.webp",
+      "thumb": "pictures/destinations/dest-grand-canyon-thumb.webp",
       "px": [
         1536,
         2048
@@ -9196,7 +9201,12 @@
         960,
         1280
       ],
+      "thumbPx": [
+        300,
+        400
+      ],
       "medium": "photo",
+      "family": "grand-canyon",
       "subjects": [
         "Grand Canyon",
         "butte",
@@ -9207,6 +9217,631 @@
         "red",
         "purple",
         "blue"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "dest-statue-of-liberty",
+      "name": "Statue of Liberty",
+      "place": "New York, USA",
+      "trip": "america",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        0
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-statue-of-liberty.webp",
+      "board": "pictures/destinations/dest-statue-of-liberty-board.webp",
+      "thumb": "pictures/destinations/dest-statue-of-liberty-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "photo",
+      "family": "statue-of-liberty",
+      "subjects": [
+        "Statue of Liberty",
+        "torch"
+      ],
+      "palette": [
+        "green",
+        "blue",
+        "grey",
+        "white"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-niagara-falls",
+      "name": "Niagara Falls",
+      "place": "New York, USA",
+      "trip": "america",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-niagara-falls.webp",
+      "board": "pictures/destinations/dest-niagara-falls-board.webp",
+      "thumb": "pictures/destinations/dest-niagara-falls-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "photo",
+      "family": "niagara-falls",
+      "subjects": [
+        "Niagara Falls",
+        "waterfall",
+        "rainbow"
+      ],
+      "palette": [
+        "white",
+        "teal",
+        "green",
+        "blue"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "dest-letchworth",
+      "name": "Letchworth State Park",
+      "place": "New York, USA",
+      "trip": "america",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-letchworth.webp",
+      "board": "pictures/destinations/dest-letchworth-board.webp",
+      "thumb": "pictures/destinations/dest-letchworth-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "photo",
+      "family": "letchworth",
+      "subjects": [
+        "Letchworth",
+        "waterfall",
+        "arch bridge",
+        "gorge"
+      ],
+      "palette": [
+        "green",
+        "white",
+        "grey",
+        "blue"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "dest-lucy-elephant",
+      "name": "Lucy the Elephant",
+      "place": "Margate, New Jersey",
+      "trip": "america",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-lucy-elephant.webp",
+      "board": "pictures/destinations/dest-lucy-elephant-board.webp",
+      "thumb": "pictures/destinations/dest-lucy-elephant-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "photo",
+      "family": "lucy-elephant",
+      "subjects": [
+        "Lucy the Elephant",
+        "elephant building"
+      ],
+      "palette": [
+        "grey",
+        "red",
+        "gold",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-mabry-mill",
+      "name": "Mabry Mill",
+      "place": "Virginia, USA",
+      "trip": "america",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-mabry-mill.webp",
+      "board": "pictures/destinations/dest-mabry-mill-board.webp",
+      "thumb": "pictures/destinations/dest-mabry-mill-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "watermill",
+      "subjects": [
+        "Mabry Mill",
+        "water wheel",
+        "millpond"
+      ],
+      "palette": [
+        "grey",
+        "orange",
+        "red",
+        "gold"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "dest-castillo",
+      "name": "Castillo de San Marcos",
+      "place": "St. Augustine, Florida",
+      "trip": "america",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-castillo.webp",
+      "board": "pictures/destinations/dest-castillo-board.webp",
+      "thumb": "pictures/destinations/dest-castillo-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "photo",
+      "family": "castillo",
+      "subjects": [
+        "Castillo de San Marcos",
+        "fort",
+        "sentry box"
+      ],
+      "palette": [
+        "grey",
+        "green",
+        "blue",
+        "cream"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-french-quarter",
+      "name": "French Quarter",
+      "place": "New Orleans, Louisiana",
+      "trip": "america",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        2,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-french-quarter.webp",
+      "board": "pictures/destinations/dest-french-quarter-board.webp",
+      "thumb": "pictures/destinations/dest-french-quarter-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "french-quarter",
+      "subjects": [
+        "French Quarter",
+        "iron balconies",
+        "ferns"
+      ],
+      "palette": [
+        "pink",
+        "green",
+        "black",
+        "red"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "dest-twine-ball",
+      "name": "World's Largest Ball of Twine",
+      "place": "Cawker City, Kansas",
+      "trip": "america",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-twine-ball.webp",
+      "board": "pictures/destinations/dest-twine-ball-board.webp",
+      "thumb": "pictures/destinations/dest-twine-ball-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "photo",
+      "family": "twine-ball",
+      "subjects": [
+        "ball of twine",
+        "pavilion"
+      ],
+      "palette": [
+        "tan",
+        "white",
+        "blue",
+        "green"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-paul-bunyan",
+      "name": "Paul Bunyan & Babe",
+      "place": "Bemidji, Minnesota",
+      "trip": "america",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        2,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-paul-bunyan.webp",
+      "board": "pictures/destinations/dest-paul-bunyan-board.webp",
+      "thumb": "pictures/destinations/dest-paul-bunyan-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "retro",
+      "family": "paul-bunyan",
+      "subjects": [
+        "Paul Bunyan",
+        "Babe the Blue Ox",
+        "statues"
+      ],
+      "palette": [
+        "red",
+        "blue",
+        "black",
+        "green"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-pictured-rocks",
+      "name": "Pictured Rocks",
+      "place": "Michigan, USA",
+      "trip": "america",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-pictured-rocks.webp",
+      "board": "pictures/destinations/dest-pictured-rocks-board.webp",
+      "thumb": "pictures/destinations/dest-pictured-rocks-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "photo",
+      "family": "sea-stack",
+      "subjects": [
+        "Pictured Rocks",
+        "Miners Castle",
+        "Lake Superior"
+      ],
+      "palette": [
+        "turquoise",
+        "cream",
+        "orange",
+        "green"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-grand-prismatic",
+      "name": "Grand Prismatic Spring",
+      "place": "Wyoming, USA",
+      "trip": "america",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        0,
+        2
+      ],
+      "window": [
+        2,
+        1
+      ],
+      "file": "pictures/destinations/dest-grand-prismatic.webp",
+      "board": "pictures/destinations/dest-grand-prismatic-board.webp",
+      "thumb": "pictures/destinations/dest-grand-prismatic-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "photo",
+      "family": "geyser",
+      "subjects": [
+        "Grand Prismatic Spring",
+        "hot spring"
+      ],
+      "palette": [
+        "blue",
+        "orange",
+        "yellow",
+        "green"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-delicate-arch",
+      "name": "Delicate Arch",
+      "place": "Utah, USA",
+      "trip": "america",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-delicate-arch.webp",
+      "board": "pictures/destinations/dest-delicate-arch-board.webp",
+      "thumb": "pictures/destinations/dest-delicate-arch-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "retro",
+      "family": "sandstone-arch",
+      "subjects": [
+        "Delicate Arch",
+        "sandstone arch"
+      ],
+      "palette": [
+        "orange",
+        "pink",
+        "blue",
+        "purple"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-yosemite",
+      "name": "Yosemite Valley",
+      "place": "California, USA",
+      "trip": "america",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        2,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-yosemite.webp",
+      "board": "pictures/destinations/dest-yosemite-board.webp",
+      "thumb": "pictures/destinations/dest-yosemite-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "photo",
+      "family": "yosemite",
+      "subjects": [
+        "Yosemite",
+        "El Capitan",
+        "Bridalveil Fall"
+      ],
+      "palette": [
+        "grey",
+        "green",
+        "blue",
+        "white"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "dest-na-pali",
+      "name": "Nā Pali Coast",
+      "place": "Kauaʻi, Hawaii",
+      "trip": "america",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-na-pali.webp",
+      "board": "pictures/destinations/dest-na-pali-board.webp",
+      "thumb": "pictures/destinations/dest-na-pali-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "photo",
+      "family": "na-pali",
+      "subjects": [
+        "Na Pali Coast",
+        "sea cliffs"
+      ],
+      "palette": [
+        "green",
+        "blue",
+        "white",
+        "gold"
       ],
       "busy": 1
     }

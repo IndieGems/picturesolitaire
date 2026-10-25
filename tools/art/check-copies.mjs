@@ -13,6 +13,8 @@ const BOARD_CELL = [240, 320];
 const BOARD_BUDGET = 28 * 1024; // a card
 const THUMB_LONG = 320;
 const THUMB_BUDGET = 24 * 1024;
+const DEST_THUMB_W = 300; // a destination's passport tile (DEST_THUMB_W, DEST_THUMB_BUDGET in pictures.py)
+const DEST_THUMB_BUDGET = 32 * 1024;
 
 /** A WebP's pixel size, from its header (lossy VP8, lossless VP8L or extended VP8X). */
 function webpSize(buf) {
@@ -70,14 +72,27 @@ for (const p of catalogue.pictures) {
     if (thumb.bytes > THUMB_BUDGET) bad.push(`${p.id}: thumb is ${Math.round(thumb.bytes / 1024)} KB, over ${THUMB_BUDGET / 1024} KB`);
   }
 }
-// A trip's postcards (the catalogue's `destinations`): a whole board's picture and its board
-// copy, no thumb; the 2x2 crop that plays must lie on it, and no id may also be a library picture.
+// A trip's postcards (the catalogue's `destinations`): a whole board's picture, its board copy and
+// a passport thumb; the window that plays (2x2, or 2x1 / 1x2 on an all-long board) must lie on it,
+// and no id may also be a library picture.
 const ids = new Set(catalogue.pictures.map((p) => p.id));
 for (const d of catalogue.destinations ?? []) {
   if (ids.has(d.id)) bad.push(`${d.id}: a destination with a library picture's id`);
   const [c, r] = d.crop ?? [];
-  if (!(c >= 0 && r >= 0 && c + 2 <= d.cols && r + 2 <= d.rows)) bad.push(`${d.id}: crop ${d.crop} is not a 2x2 on its ${d.cols}x${d.rows} cards`);
+  const [w, h] = d.window ?? [];
+  const shape = `${w}x${h}`;
+  if (!["2x2", "2x1", "1x2"].includes(shape)) bad.push(`${d.id}: window ${d.window} is not 2x2, 2x1 or 1x2`);
+  else if (!(c >= 0 && r >= 0 && c + w <= d.cols && r + h <= d.rows)) bad.push(`${d.id}: crop ${d.crop} puts its ${shape} window off its ${d.cols}x${d.rows} cards`);
   check(d, d.board, d.boardPx, "board copy");
+  // The passport's tile: DEST_THUMB_W px wide at the postcard's aspect.
+  const tw = [DEST_THUMB_W, Math.round((DEST_THUMB_W * d.rows * 4) / (d.cols * 3))];
+  try {
+    const buf = readFileSync(join(root, d.thumb));
+    if (String(webpSize(buf)) !== String(tw) || String(d.thumbPx) !== String(tw)) bad.push(`${d.id}: thumb is ${webpSize(buf)} (catalogue ${d.thumbPx}), not ${tw}`);
+    if (buf.length > DEST_THUMB_BUDGET) bad.push(`${d.id}: thumb is ${Math.round(buf.length / 1024)} KB, over ${DEST_THUMB_BUDGET / 1024} KB`);
+  } catch {
+    bad.push(`${d.id}: no thumb (${d.thumb})`);
+  }
   try {
     readFileSync(join(root, d.file));
   } catch {

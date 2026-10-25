@@ -24,8 +24,8 @@ fails the build when one is missing or over its budget). The first
 `export` cuts them to the new aspect (an entry's cropX, 0 left .. 1 right, frames the subject).
 
 A destination (the plan's and the catalogue's `destinations`, a trip's postcard of a real place)
-is a picture the size of a whole board, 4 x 4 or 4 x 5 cards, with a full picture and a board
-copy but no thumb; docs/destinations-america.md is the first trip's list.
+is a picture the size of a whole board, 4 x 4 or 4 x 5 cards, with a full picture, a board
+copy and a 300 px wide thumb for the passport; docs/destinations-america.md is the first trip's list.
 """
 import json
 import subprocess
@@ -130,7 +130,9 @@ def export(e):
     out = PUBLIC / "pictures" / e["album"] / f"{e['id']}.webp"
     out.parent.mkdir(parents=True, exist_ok=True)
     framed(e).resize(size_of(e), Image.LANCZOS).save(out, "WEBP", quality=80, method=6)
-    if not e.get("place"):  # a destination has no Albums thumb
+    if e.get("place"):
+        make_dest_thumb(e)
+    else:
         make_thumb(e)
     make_board(e)
     return out
@@ -153,7 +155,7 @@ def cmd_process(raw, ids):
 
 def cmd_export(ids):
     p = plan()
-    for e in p["pictures"]:
+    for e in p["pictures"] + p.get("destinations", []):
         if (not ids or e["id"] in ids) and master_path(e["id"]).exists():
             out = export(e)
             print(e["id"], size_of(e), f"{out.stat().st_size // 1024} KB")
@@ -214,7 +216,7 @@ def make_board(e):
 
 def cmd_boards(ids):
     p = plan()
-    for e in p["pictures"]:
+    for e in p["pictures"] + p.get("destinations", []):
         if (not ids or e["id"] in ids) and master_path(e["id"]).exists():
             size, b = make_board(e)
             print(e["id"], size, f"{b // 1024} KB")
@@ -226,6 +228,26 @@ def cmd_thumbs(ids):
         if (not ids or e["id"] in ids) and master_path(e["id"]).exists():
             size, b = make_thumb(e)
             print(e["id"], size, f"{b // 1024} KB")
+
+
+DEST_THUMB_W = 300  # the passport's postcard tile: ~78 CSS px wide on a phone at 3x, ~140 on desktop (UI)
+DEST_THUMB_BUDGET = 32 * 1024  # 300 x 400 is 1.6x a library thumb's pixels
+
+
+def dest_thumb_rel(e):
+    return f"pictures/{e['album']}/{e['id']}-thumb.webp"
+
+
+def make_dest_thumb(e):
+    """A destination's small copy for the passport's postcard grid, DEST_THUMB_W px wide."""
+    im = framed(e)
+    im = im.resize((DEST_THUMB_W, round(im.height * DEST_THUMB_W / im.width)), Image.LANCZOS)
+    out = PUBLIC / dest_thumb_rel(e)
+    for q in range(76, 39, -4):
+        im.save(out, "WEBP", quality=q, method=6)
+        if out.stat().st_size <= DEST_THUMB_BUDGET:
+            break
+    return im.size, out.stat().st_size
 
 
 def destinations(p):
@@ -243,11 +265,13 @@ def destinations(p):
             px = list(im.size)
         with Image.open(PUBLIC / board_rel(e)) as im:
             board_px = list(im.size)
+        with Image.open(PUBLIC / dest_thumb_rel(e)) as im:
+            thumb_px = list(im.size)
         out.append({
             "id": e["id"], "name": e["name"], "place": e["place"], "trip": e["trip"],
-            "cols": e["cols"], "rows": e["rows"], "crop": e["crop"],
-            "file": rel, "board": board_rel(e), "px": px, "boardPx": board_px,
-            "medium": e["medium"], "subjects": e["subjects"], "palette": e["palette"], "busy": e["busy"],
+            "cols": e["cols"], "rows": e["rows"], "crop": e["crop"], "window": e["window"],
+            "file": rel, "board": board_rel(e), "thumb": dest_thumb_rel(e), "px": px, "boardPx": board_px, "thumbPx": thumb_px,
+            "medium": e["medium"], "family": e["family"], "subjects": e["subjects"], "palette": e["palette"], "busy": e["busy"],
         })
     return out
 

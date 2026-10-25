@@ -160,9 +160,20 @@ def daily():
                f'<path d="{star}" fill="{SLATE}" stroke-width="2.4"/>')
 
 
+def passport():
+    # The passport the trips stamp (UI, 2026-10-25: it replaces the albums): a book with its
+    # spine, a globe on the cover and a title bar. Drawn as a mask at about 28 px on home.
+    return svg('<rect x="10.5" y="7" width="27" height="34" rx="5"/>'
+               '<path d="M16.5 9 V39" stroke-width="3"/>'
+               '<circle cx="27" cy="21" r="6.5" stroke-width="3"/>'
+               '<ellipse cx="27" cy="21" rx="2.6" ry="6.5" stroke-width="2.4"/>'
+               '<path d="M20.5 21 H33.5" stroke-width="2.4"/>'
+               '<path d="M22.5 33 H31.5" stroke-width="3.5"/>')
+
+
 ICONS = {"gear": gear, "back": back, "undo": undo, "hint": hint, "shuffle": shuffle, "restart": restart, "play": play,
          "next": next_, "home": home, "chevron": chevron, "photos": photos,
-         "route": route, "lock": lock, "check": check, "daily": daily}
+         "route": route, "lock": lock, "check": check, "daily": daily, "passport": passport}
 
 
 def main():
