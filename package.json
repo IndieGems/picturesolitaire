@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "gemctl serve start . --dev",
-    "build": "tsc --noEmit && node tools/menu-settings-check.mts && node tools/levels/check.mts && node tools/server/levels-check.mts && vite build && gem-sdk-stamp dist && node tools/legal-header.mjs && node tools/unique-names.mjs dist",
-    "build:release": "tsc --noEmit && node tools/menu-settings-check.mts && node tools/levels/check.mts && node tools/server/levels-check.mts && vite build --mode release && gem-sdk-stamp dist && node tools/legal-header.mjs && node tools/unique-names.mjs dist && node tools/no-dev-menu.mjs dist",
+    "build": "tsc --noEmit && node tools/menu-settings-check.mts && node tools/levels/check.mts && node tools/server/levels-check.mts && node tools/art/check-copies.mjs && vite build && gem-sdk-stamp dist && node tools/legal-header.mjs && node tools/unique-names.mjs dist",
+    "build:release": "tsc --noEmit && node tools/menu-settings-check.mts && node tools/levels/check.mts && node tools/server/levels-check.mts && node tools/art/check-copies.mjs && vite build --mode release && gem-sdk-stamp dist && node tools/legal-header.mjs && node tools/unique-names.mjs dist && node tools/no-dev-menu.mjs dist",
     "preview": "gemctl serve start .",
     "typecheck": "tsc --noEmit"
   },
