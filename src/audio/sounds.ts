@@ -23,7 +23,8 @@ export type EffectName =
   | "milestone"
   | "stuck"
   | "hardmark"
-  | "supermark";
+  | "supermark"
+  | "stamp";
 
 export type EffectDef = {
   /** The file in public/audio/, when it is not the effect's own name. */
@@ -73,12 +74,14 @@ export const EFFECTS: Record<EffectName, EffectDef> = {
   // Under a second each, never an alarm: our table stays calm.
   hardmark: { gain: 0.45, jitter: 0, minGap: 1 },
   supermark: { gain: 0.5, jitter: 0, minGap: 1 },
+  // A trip finished: the passport stamp lands on its page (a rubber thump).
+  stamp: { gain: 0.65, jitter: 0, minGap: 1 },
 };
 
 /** The order effects load in: what a first move needs comes first. */
 export const LOAD_ORDER: EffectName[] = [
   "ui", "lift", "land", "slide", "merge", "split", "deal", "fall",
-  "complete", "undo", "hint", "shuffle", "restart", "won", "hardmark", "supermark",
+  "complete", "undo", "hint", "shuffle", "restart", "won", "hardmark", "supermark", "stamp",
 ];
 
 /** The background music: one calm loop under the whole game. */

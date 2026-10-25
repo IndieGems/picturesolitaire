@@ -158,5 +158,7 @@ function listen(): void {
   on("milestone:show", milestone);
   // A hard or super hard board's banner just appeared (UI, once per opening).
   on("board:mark", ({ mark }) => play(mark === "super" ? "supermark" : "hardmark"));
+  // A trip's stamp lands on its passport page (UI, the instant it lands).
+  on("trip:stamp", () => play("stamp"));
   on("ui:press", () => play("ui"));
 }

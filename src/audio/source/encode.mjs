@@ -28,7 +28,8 @@ const out = resolve(here, "../../../public/audio");
 const takesOut = resolve(here, "../../../audio/takes");
 mkdirSync(out, { recursive: true });
 
-// start/end in seconds of the source; fade = fade-out length; stereo for music.
+// start/end in seconds of the source; fade = fade-out length; stereo for music;
+// lowpass (Hz), when an effect's top end is too bright for the calm table.
 const EFFECTS = [
   { name: "lift", src: "lift.wav", start: 1.22, end: 1.4, fade: 0.06 },
   { name: "land", src: "land.wav", start: 0.48, end: 0.66, fade: 0.08 },
@@ -46,6 +47,9 @@ const EFFECTS = [
   { name: "shuffle", src: "shuffle.wav", start: 2.55, end: 3.85, fade: 0.15 },
   { name: "restart", src: "restart.wav", start: 1.3, end: 2.62, fade: 0.1 },
   { name: "ui", src: "ui.wav", start: 0.1, end: 0.3, fade: 0.1 },
+  // The passport stamp: the rubber hit and its body 70 ms later, its clack
+  // rolled off above 5 kHz so it thumps rather than snaps.
+  { name: "stamp", src: "stamp.wav", start: 0.525, end: 0.82, fade: 0.1, lowpass: 5000 },
 ];
 const MUSIC = [
   // The win cue, whole.
@@ -109,6 +113,7 @@ function chain(s, highpass) {
     `atrim=start=${s.start}:end=${s.end}`,
     "asetpts=PTS-STARTPTS",
     highpass ? "highpass=f=60" : null,
+    s.lowpass ? `lowpass=f=${s.lowpass}` : null,
     "afade=t=in:d=0.003",
     `afade=t=out:st=${(len - s.fade).toFixed(3)}:d=${s.fade}`,
   ].filter(Boolean).join(",");
