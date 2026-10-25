@@ -28,3 +28,8 @@ Still owed:
   campaign boards 14–26 and the creator's review): today they mix long and
   square pictures and use the older, busier pictures. Levels counts the
   pictures needed; the batch is the creator's call.
+- **The upload's 2,000-file cap, before the library passes ~450 pictures.**
+  Every picture ships three files (full, board copy, thumb): 290 pictures are
+  870 files on 2026-10-25. Ship only pictures a shipped board or album uses,
+  and/or drop the thumb or pack thumbs into sheets, before a batch would
+  push the build past the cap (`gemctl build upload --dry-run` counts it).
