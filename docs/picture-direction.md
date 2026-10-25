@@ -34,10 +34,31 @@ the plan's `suffix.close` is the prompt ending for these rules.
 - **A new subject for every picture.** Pictures rarely repeat across boards (AGENTS.md),
   so the library needs many pictures, each a thing of its own: never two teapots or two
   lone trees, even in different styles.
+- **People never look AI-made** (creator, 2026-10-25: "they often have the same tilted
+  head and smile (the chef, the cowboy, the painter)"). See "People" below.
 - **Family** only for real look-alikes. A board takes at most one picture per family.
   A picture with no family is its own family.
 - **Nothing written** in the picture (no text, numbers, logos or signatures) and no
   border. Everything is suitable for all ages.
+
+## People
+
+Jigsaw Drop's people read as real because nobody poses: level 16's painted Madonna looks
+down, level 17's farmer is bent over his pumpkins
+(`design/references/jigsaw-drop-level-16-all-square.png`, `-17-all-long.png`).
+
+- **Candid, at work, absorbed:** in profile, from behind, from the side, looking down at
+  their hands or away, or small in a scene. Hands doing something are a good subject.
+- **Never** the posed camera smile, eyes to the viewer, a tilted head, or a face dead
+  centre and symmetric. Nothing glossy, airbrushed, plastic or doll-like: ordinary
+  features and real skin. A cartoon person is held to the same rules.
+- **Same tests for a painting:** a Renaissance-style figure looks down at a book or a
+  child; an impressionist crowd is busy with its day.
+- The plan's `suffix.candid` (the `close` ending plus these rules) is the prompt ending for
+  a picture with a person in it.
+- Flagged for the look and replaced (2026-10-25): chef, cowboy, painter, apple-orchard,
+  yellow-raincoat, bubbles, greenhouse, canal-bicycle, and blue-headscarf (too close to
+  Vermeer's *Girl with a Pearl Earring*: never copy a real artwork).
 
 ## Style menu (`medium`)
 
@@ -56,8 +77,16 @@ the plan's `suffix.close` is the prompt ending for these rules.
 | pastel | soft pastel and chalk on toned paper |
 | deco | art deco poster: geometric shapes, gold lines, symmetry (no text) |
 | stained-glass | glowing glass in lead lines; keep the pieces big, and use it rarely |
+| toy | toy photography: a toy or figurine photographed close, with a shallow focus |
+| ceramic | hand-painted tin-glazed majolica, the painted thing on a jug, plate or tile |
+| embroidery | thread stitched on linen, close enough to see the stitches |
+| mosaic | big glass or stone tesserae with grout lines; keep the pieces big |
+| pixel | clean pixel art with big pixels and a small palette, no dithering noise |
+| isometric | a small isometric diorama, rendered like a toy model, on a plain ground |
 
-Others to try: isometric diorama render, pixel art, embroidery, mosaic.
+Keep the styles wide: also a Renaissance-style painting, an impressionist street, a
+Dutch still life, an extreme close-up photo (Jigsaw Drop's cow nose). A board takes at
+most half its pictures in one `medium`, so more words spread the boards better.
 
 ## Subject menu
 
@@ -71,12 +100,13 @@ Mix the subjects on a board; never theme a whole board.
   a cup of coffee, a bowl of cherries, a pretzel.
 - **Flowers and plants:** one bloom or one bunch, close: lotus, sunflower, lilies on a
   dark ground, a cactus in flower, a tulip, a rose.
-- **People:** shoulders-up portraits and simple figures, such as a fisherman, a dancer,
-  a chef, a child with a kite, a cowboy, or a woman in a hat or headscarf.
+- **People, candid:** a beekeeper lifting a frame, a glassblower turning a gather, a cook
+  over a flaming wok, a hiker from behind, a cellist with eyes closed, hands knitting.
 - **Places, made close:** one landmark, a door, a facade, a mountain peak, a cottage,
   a bridge.
-- **Animals:** at most an occasional single cat or puppy in the base library. Whole
-  sets of animals belong to paid packs.
+- **Animals:** single animals in varied styles, about a tenth of the library (a fox, a
+  hedgehog, an extreme close-up of a cow's nose). Themed sets of animals belong to paid
+  packs.
 
 **Kept for paid packs, never as a set here:** animals, fantasy, sci-fi and space,
 underwater, seasonal holidays, dinosaurs, steampunk.
