@@ -64,5 +64,6 @@ const levels = EXPERIMENTS.map((row, i) => {
   }
   throw new Error(`${row.id}: no deal meets its row; loosen it`);
 });
+// keep the phrase "creator's dev menu only" in the note: tools/no-dev-menu.mjs fails a release build that holds it (UI, 068d37d)
 writeBoards(FILE, "experiment boards, for the creator's dev menu only (practice; never in a release build, not paid by the win checker); made by tools/levels/make-experiments.mts, checked by tools/levels/check.mts", levels);
 console.log(`wrote ${FILE} (${levels.length} boards)`);
