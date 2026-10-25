@@ -78,10 +78,11 @@ square-only deals that can be won, careless win by picture count (Levels,
 - Every board but hard, peak and super starts safe: no first move or first
   clear dooms it.
 
+**Decided:** hard and super hard boards are marked for the player, as in
+Royal Match (creator, 2026-10-25; AGENTS.md).
+
 **Open, for the creator:**
 
-- **Labels:** whether the game tells the player a board is "Hard" or "Super
-  hard", as Royal Match does.
 - **Coins:** whether peaks pay more than the usual Coins per move.
 
 ## Sources
