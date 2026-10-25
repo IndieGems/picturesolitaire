@@ -560,7 +560,7 @@
       "prompt": "Embroidery, stitched in coloured thread on natural cream linen, close enough to see every stitch: a bunch of bright blue cornflowers with thin green stems, the flowers filling the picture." },
     { "id": "echeveria", "album": "flowers", "title": "Succulent", "medium": "photo", "cols": 2, "rows": 2, "busy": 0,
       "subjects": ["succulent rosette"], "palette": ["sage", "pink", "lilac", "cream"], "suffix": "close",
-      "prompt": "A top-down macro photograph of a single echeveria succulent rosette, its fleshy pale sage leaves tipped with pink in a perfect spiral, filling the picture, on a plain cream background." },
+      "prompt": "A professional still-life photograph: a plump echeveria succulent rosette with fleshy pale sage leaves tipped with pink, in a small glossy cobalt-blue pot, seen from the side at a low angle, the rosette above and the pot below large and filling the picture, on a plain cream background." },
     { "id": "flytrap", "album": "flowers", "title": "Flytrap", "medium": "render", "cols": 2, "rows": 2, "busy": 0,
       "subjects": ["venus flytrap", "terracotta pot"], "palette": ["green", "red", "terracotta", "lilac"], "suffix": "close",
       "prompt": "A glossy 3D render, like a still from a polished animated film: a cheerful venus flytrap plant with open red traps edged with soft green spines, in a small terracotta pot, close and filling the picture, on a plain soft lilac background, soft studio lighting." },
