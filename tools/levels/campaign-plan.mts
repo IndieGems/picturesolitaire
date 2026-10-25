@@ -136,8 +136,8 @@ export const PLAN = [
  */
 export const TRIPS = [
   { id: "t1", name: "Travel America", from: 1, to: 15 },
-  // the creator is choosing the trip order: the name is a placeholder (lead, 2026-10-25)
-  { id: "t2", name: "Trip 2", from: 16, to: 30 },
+  // the creator's choice (lead, 2026-10-25)
+  { id: "t2", name: "Japan", from: 16, to: 30 },
 ];
 
 /** Roles that may trap from the first move; every other board starts safe (check.mts). */
