@@ -52,7 +52,8 @@ config:
   #                  pileSlab one flat back's height (of the pile's width), pileStep the most each
   #                  card behind it shows (of a flat back's height), pileMax the most a pile shows
   #   boardCopyMin   the board draws the light board copy of a picture while it has this share
-  #                  of the pixels a card needs on the screen, else the full picture
+  #                  of the pixels a card needs on the screen, else the full picture; 0.85 lets a
+  #                  big phone (3x) use the light copy, as sharp as it needs to look
   #   maxCard        the widest a card is drawn, in screen px, with a mouse (desktop)
   #   maxCardTouch   the same on a touch screen (phone, tablet): high, so the board fills its box
   #   tilt           the slight perspective (true) or straight-on (false)
@@ -84,7 +85,7 @@ config:
       "pileSlab": 0.28,
       "pileStep": 0.42,
       "pileMax": 12,
-      "boardCopyMin": 0.9,
+      "boardCopyMin": 0.85,
       "maxCard": 136,
       "maxCardTouch": 320,
       "tilt": false,

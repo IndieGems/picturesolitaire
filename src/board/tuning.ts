@@ -61,8 +61,13 @@ export const TUNING = {
    * the size it is drawn"): Art's light board copy while it has at least this
    * share of the pixels a card needs (its drawn width x the screen's pixel
    * density), else the full picture (a tablet's big board, a desktop, a TV).
+   * 0.85 (the lead, 2026-10-25): a big phone (430 wide, 3x) needs 282 px a
+   * card and the copy's 240 is 85%, which does not show at that density; it
+   * spares every phone a 40% heavier copy. Tablets on 4x4 still get the full
+   * picture. If the creator reports soft pictures on a big phone, the fix is
+   * Art's copies at 288x384 a card, not a lower number here.
    */
-  boardCopyMin: 0.9,
+  boardCopyMin: 0.85,
 
   // --- the hand
   /**
