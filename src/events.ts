@@ -76,6 +76,11 @@ export interface GameEvents {
   "board:solved": { level: string; moves: number; ms: number; line: Action[] };
   /** A board opened and play can begin. */
   "board:start": { level: string };
+  /**
+   * A hard or super hard board's banner just appeared over it (UI, once per
+   * opening of a marked board; never on restart). Sound plays its sting.
+   */
+  "board:mark": { mark: "hard" | "super" };
   /** Any button pressed in the interface (for its click sound). */
   "ui:press": { id: string };
   /**
