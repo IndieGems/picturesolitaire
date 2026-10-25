@@ -270,7 +270,10 @@ def cmd_grid(out, ids):
     groups = [(p["families"][f]["title"], r) for f, r in rows.items()]
     groups += [("", singles[i:i + 6]) for i in range(0, len(singles), 6)]
     built = [(t, [(e, cut_into_cards(e, 120, gap, (30, 37, 46))[1]) for e in r]) for t, r in groups]
-    width = max(sum(c.width for _, c in r) + pad * (len(r) + 1) for _, r in built)
+    m = ImageDraw.Draw(Image.new("RGB", (1, 1)))
+    # a slot is as wide as its picture or its caption, so a tall picture's caption has room
+    slot = lambda e, c: max(c.width, round(m.textlength(e["title"], font=f2)), round(m.textlength(f"{e['medium']} · {e['album']}", font=f3)))
+    width = max(sum(slot(e, c) for e, c in r) + pad * (len(r) + 1) for _, r in built)
     heights = [(34 if t else 0) + max(c.height for _, c in r) + 52 for t, r in built]
     sheet = Image.new("RGB", (width, sum(heights) + pad), (30, 37, 46))
     d = ImageDraw.Draw(sheet)
@@ -285,7 +288,7 @@ def cmd_grid(out, ids):
             sheet.paste(c, (x, top))
             d.text((x, top + 4 + c.height), e["title"], font=f2, fill=(232, 228, 220))
             d.text((x, top + 23 + c.height), f"{e['medium']} · {e['album']}", font=f3, fill=(160, 172, 188))
-            x += c.width + pad
+            x += slot(e, c) + pad
         y += h
     sheet.save(out)
     print(out, sheet.size)

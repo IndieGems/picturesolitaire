@@ -13,6 +13,11 @@ the plan's `suffix.close` is the prompt ending for these rules.
 
 - **Portrait cards.** A card is a 3:4 cell, 384x512 px. A picture of c x r cards is
   (3c):(4r): a 2x2 is 3:4 (768x1024). Compose for that frame.
+- **Tall and wide pictures** (1x2 is 3:8, 2x1 is 3:2) are composed for their shape: a tall
+  subject for a tall picture (a giraffe, a skyscraper, a dancer), a long one seen from the
+  side for a wide one (a tractor, a piano, a canoe), so each half shows a different,
+  recognisable end of it. Mirror-symmetric subjects (a butterfly, a bridge with two towers)
+  make two halves alike, so avoid them. The plan's `suffix.close2` is their prompt ending.
 - **One subject, framed close.** It fills most of the frame and reaches every quarter,
   so each card shows a recognisable part of it: a face, a wheel, a petal or a sail.
   No wide views with the subject small in the middle.
@@ -26,6 +31,9 @@ the plan's `suffix.close` is the prompt ending for these rules.
   half of a board.
 - **Specific subjects** in `subjects` ("teacup", not "food"). Two pictures that share a
   subject word never share a board, so subjects on a board vary.
+- **A new subject for every picture.** Pictures rarely repeat across boards (AGENTS.md),
+  so the library needs many pictures, each a thing of its own: never two teapots or two
+  lone trees, even in different styles.
 - **Family** only for real look-alikes. A board takes at most one picture per family.
   A picture with no family is its own family.
 - **Nothing written** in the picture (no text, numbers, logos or signatures) and no
@@ -45,9 +53,11 @@ the plan's `suffix.close` is the prompt ending for these rules.
 | watercolour | loose washes with crisp edges and white paper showing |
 | print | woodblock print (ukiyo-e) or linocut: flat colour and key lines |
 | papercut | layered paper craft with soft shadows between the layers |
+| pastel | soft pastel and chalk on toned paper |
+| deco | art deco poster: geometric shapes, gold lines, symmetry (no text) |
+| stained-glass | glowing glass in lead lines; keep the pieces big, and use it rarely |
 
-Others to try: pastel or chalk drawing, stained glass (busy, so rare), isometric
-diorama render, art deco poster, pixel art.
+Others to try: isometric diorama render, pixel art, embroidery, mosaic.
 
 ## Subject menu
 
