@@ -920,7 +920,7 @@
   "//destinations": "A trip's postcards (lead, 2026-10-25): one real place a board, a picture the size of the whole board (4x4 or 4x5 cards). crop is the col,row of the top-left card of the 2x2 that plays on the board as an ordinary square picture; Levels' maker copies it into the board. name and place are what players read when it unfolds. docs/destinations-america.md lists the candidates.",
   "destinations": [
     { "id": "dest-grand-canyon", "album": "destinations", "name": "Grand Canyon", "place": "Arizona, USA", "trip": "america", "medium": "photo", "cols": 4, "rows": 4, "busy": 1,
-      "crop": [2, 2], "subjects": ["Grand Canyon", "butte", "Colorado River"], "palette": ["orange", "red", "purple", "blue"], "suffix": "postcard", "placeholder": "generated, until the creator chooses how destinations are made",
+      "crop": [2, 2], "subjects": ["Grand Canyon", "butte", "Colorado River"], "palette": ["orange", "red", "purple", "blue"], "suffix": "postcard", "checked": "against Commons photos of the South Rim near Lipan Point: layered red buttes over the Colorado River's bend, its sandy, green-edged banks, warm low sun",
       "prompt": "The Grand Canyon in Arizona, seen from the South Rim in warm late-afternoon light. In the lower half of the picture, close to the viewer, a great red-orange butte of layered rock bands, its stepped cliffs lit gold with deep blue-purple shadows, and beside it a bend of the green Colorado River far below. Behind it, ridge after ridge of layered canyon walls fading into soft blue haze, under a clear pale blue sky with a few small clouds." }
   ]
 }

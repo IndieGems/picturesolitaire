@@ -60,6 +60,17 @@ down, level 17's farmer is bent over his pumpkins
   yellow-raincoat, bubbles, greenhouse, canal-bicycle, and blue-headscarf (too close to
   Vermeer's *Girl with a Pearl Earring*: never copy a real artwork).
 
+## Destinations
+
+A trip's postcards (2026-10-25) are real places, a whole board in size, in the plan's and
+the catalogue's `destinations` (crop and fields in `tools/art/pictures.py`). They are
+generated, and the facts are checked against real photos of the place (creator): the land,
+the landmark, the colours and the season. Describe the place in words and never feed
+someone's photo to the generator. Record what was checked in the entry's `checked`.
+Mostly photographic, with some painted or travel-poster postcards, and never the AI look.
+The plan's `suffix.postcard` is the prompt ending. `docs/destinations-america.md` has the
+first trip's candidates and the rights rules.
+
 ## Style menu (`medium`)
 
 | word | what it looks like |
