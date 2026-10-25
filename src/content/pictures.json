@@ -9173,5 +9173,42 @@
       "family": "otter",
       "busy": 0
     }
+  ],
+  "destinations": [
+    {
+      "id": "dest-grand-canyon",
+      "name": "Grand Canyon",
+      "place": "Arizona, USA",
+      "trip": "america",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-grand-canyon.webp",
+      "board": "pictures/destinations/dest-grand-canyon-board.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "medium": "photo",
+      "subjects": [
+        "Grand Canyon",
+        "butte",
+        "Colorado River"
+      ],
+      "palette": [
+        "orange",
+        "red",
+        "purple",
+        "blue"
+      ],
+      "busy": 1
+    }
   ]
 }

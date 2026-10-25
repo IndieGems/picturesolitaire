@@ -30,6 +30,24 @@ function webpSize(buf) {
 const catalogue = JSON.parse(readFileSync("src/content/pictures.json", "utf8"));
 const bad = [];
 let boardBytes = 0;
+
+/** A board copy: there, cols x rows cards of BOARD_CELL, as the catalogue says, and within budget. */
+function check(p, rel, boardPx, what) {
+  let buf;
+  try {
+    buf = readFileSync(join(root, rel));
+  } catch {
+    bad.push(`${p.id}: no ${what} (${rel})`);
+    return;
+  }
+  const size = webpSize(buf);
+  const cells = p.cols * p.rows;
+  const want = [p.cols * BOARD_CELL[0], p.rows * BOARD_CELL[1]];
+  boardBytes += buf.length;
+  if (String(size) !== String(want)) bad.push(`${p.id}: ${what} is ${size}, not ${want}`);
+  if (String(boardPx) !== String(want)) bad.push(`${p.id}: catalogue boardPx is ${boardPx}, not ${want}`);
+  if (buf.length > BOARD_BUDGET * cells) bad.push(`${p.id}: ${what} is ${Math.round(buf.length / 1024)} KB, over ${(BOARD_BUDGET * cells) / 1024} KB`);
+}
 for (const p of catalogue.pictures) {
   const read = (rel, what) => {
     try {
@@ -45,20 +63,25 @@ for (const p of catalogue.pictures) {
     continue;
   }
   read(p.file, "full picture");
-  const cells = p.cols * p.rows;
-  const want = [p.cols * BOARD_CELL[0], p.rows * BOARD_CELL[1]];
-  const board = read(p.board, "board copy");
-  if (board) {
-    boardBytes += board.bytes;
-    if (String(board.size) !== String(want)) bad.push(`${p.id}: board copy is ${board.size}, not ${want}`);
-    if (String(p.boardPx) !== String(want)) bad.push(`${p.id}: catalogue boardPx is ${p.boardPx}, not ${want}`);
-    if (board.bytes > BOARD_BUDGET * cells)
-      bad.push(`${p.id}: board copy is ${Math.round(board.bytes / 1024)} KB, over ${(BOARD_BUDGET * cells) / 1024} KB`);
-  }
+  check(p, p.board, p.boardPx, "board copy");
   const thumb = read(p.thumb, "thumb");
   if (thumb) {
     if (!thumb.size || Math.max(...thumb.size) !== THUMB_LONG) bad.push(`${p.id}: thumb is ${thumb.size}, not ${THUMB_LONG} px long`);
     if (thumb.bytes > THUMB_BUDGET) bad.push(`${p.id}: thumb is ${Math.round(thumb.bytes / 1024)} KB, over ${THUMB_BUDGET / 1024} KB`);
+  }
+}
+// A trip's postcards (the catalogue's `destinations`): a whole board's picture and its board
+// copy, no thumb; the 2x2 crop that plays must lie on it, and no id may also be a library picture.
+const ids = new Set(catalogue.pictures.map((p) => p.id));
+for (const d of catalogue.destinations ?? []) {
+  if (ids.has(d.id)) bad.push(`${d.id}: a destination with a library picture's id`);
+  const [c, r] = d.crop ?? [];
+  if (!(c >= 0 && r >= 0 && c + 2 <= d.cols && r + 2 <= d.rows)) bad.push(`${d.id}: crop ${d.crop} is not a 2x2 on its ${d.cols}x${d.rows} cards`);
+  check(d, d.board, d.boardPx, "board copy");
+  try {
+    readFileSync(join(root, d.file));
+  } catch {
+    bad.push(`${d.id}: no full picture (${d.file})`);
   }
 }
 if (bad.length) {
@@ -66,4 +89,4 @@ if (bad.length) {
   for (const b of bad) console.error("  " + b);
   process.exit(1);
 }
-console.log(`check-copies: ${catalogue.pictures.length} pictures, board copies ${Math.round(boardBytes / 1024)} KB in all`);
+console.log(`check-copies: ${catalogue.pictures.length} pictures, ${(catalogue.destinations ?? []).length} destinations, board copies ${Math.round(boardBytes / 1024)} KB in all`);

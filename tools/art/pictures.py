@@ -22,6 +22,10 @@ draws a card about 90 CSS px wide), and the Albums screen <id>-thumb.webp
 fails the build when one is missing or over its budget). The first
 60 pictures were made for square cells; their masters keep the square-cell generation and
 `export` cuts them to the new aspect (an entry's cropX, 0 left .. 1 right, frames the subject).
+
+A destination (the plan's and the catalogue's `destinations`, a trip's postcard of a real place)
+is a picture the size of a whole board, 4 x 4 or 4 x 5 cards, with a full picture and a board
+copy but no thumb; docs/destinations-america.md is the first trip's list.
 """
 import json
 import subprocess
@@ -43,6 +47,7 @@ GEN_SIZE = {
     (2, 2): (1152, 1536), (3, 3): (1152, 1536),
     (2, 3): (768, 1536), (3, 2): (1728, 1536),
     (1, 2): (576, 1536), (2, 1): (1536, 1024),
+    (4, 4): (1536, 2048), (4, 5): (1536, 2560),  # destination postcards, a whole board
 }
 SHAPE_WORDS = {
     (2, 2): "Composition: a portrait picture, 3:4.",
@@ -51,6 +56,8 @@ SHAPE_WORDS = {
     (3, 2): "Composition: an almost square picture, 9:8.",
     (1, 2): "Composition: a very tall narrow vertical picture, 3:8.",
     (2, 1): "Composition: a landscape picture, 3:2.",
+    (4, 4): "Composition: a portrait picture, 3:4.",
+    (4, 5): "Composition: a tall portrait picture, 3:5.",
 }
 
 
@@ -59,7 +66,7 @@ def plan():
 
 
 def entry(p, pid):
-    for e in p["pictures"]:
+    for e in p["pictures"] + p.get("destinations", []):
         if e["id"] == pid:
             return e
     sys.exit(f"no picture {pid!r} in the plan")
@@ -123,7 +130,8 @@ def export(e):
     out = PUBLIC / "pictures" / e["album"] / f"{e['id']}.webp"
     out.parent.mkdir(parents=True, exist_ok=True)
     framed(e).resize(size_of(e), Image.LANCZOS).save(out, "WEBP", quality=80, method=6)
-    make_thumb(e)
+    if not e.get("place"):  # a destination has no Albums thumb
+        make_thumb(e)
     make_board(e)
     return out
 
@@ -220,6 +228,30 @@ def cmd_thumbs(ids):
             print(e["id"], size, f"{b // 1024} KB")
 
 
+def destinations(p):
+    """A trip's postcards (lead, 2026-10-25): a real place, a picture the size of a whole board
+    (4 x 4 or 4 x 5 cards). One shows when its board's crop is matched: `crop` is the col,row
+    of the top-left card of the 2x2 that plays on the board as an ordinary square picture, and
+    Levels' maker copies it into the board's level data (check.mts holds them equal). Kept
+    out of `pictures`, so nothing deals one as a library picture or lists it in an album."""
+    out = []
+    for e in p.get("destinations", []):
+        rel = f"pictures/{e['album']}/{e['id']}.webp"
+        if not (PUBLIC / rel).exists():
+            continue
+        with Image.open(PUBLIC / rel) as im:
+            px = list(im.size)
+        with Image.open(PUBLIC / board_rel(e)) as im:
+            board_px = list(im.size)
+        out.append({
+            "id": e["id"], "name": e["name"], "place": e["place"], "trip": e["trip"],
+            "cols": e["cols"], "rows": e["rows"], "crop": e["crop"],
+            "file": rel, "board": board_rel(e), "px": px, "boardPx": board_px,
+            "medium": e["medium"], "subjects": e["subjects"], "palette": e["palette"], "busy": e["busy"],
+        })
+    return out
+
+
 def cmd_catalogue():
     """Every planned picture that has a shipped file. `family` groups look-alikes (a board
     takes at most one per family); a picture with none is its own family. `busy` is 0 calm,
@@ -243,7 +275,8 @@ def cmd_catalogue():
             "family": fam, "busy": e["busy"],
         })
     used = {x["album"] for x in pictures}
-    out = {"albums": [a for a in p["albums"] if a["id"] in used], "pictures": pictures}
+    out = {"albums": [a for a in p["albums"] if a["id"] in used], "pictures": pictures,
+           "destinations": destinations(p)}
     CATALOGUE.parent.mkdir(parents=True, exist_ok=True)
     CATALOGUE.write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     total = sum((PUBLIC / x["file"]).stat().st_size for x in pictures)
