@@ -6,9 +6,9 @@
 const base = import.meta.env.BASE_URL;
 
 export const WORDMARK = {
-  /** 840 x 405: sharp to about 420 CSS px on a 2x screen. */
+  /** 840 x 420: sharp to about 420 CSS px on a 2x screen. */
   small: `${base}art/wordmark.webp`,
-  /** 1400 x 675: sharp to about 700 CSS px on a 2x screen. */
+  /** 1400 x 700: sharp to about 700 CSS px on a 2x screen. */
   big: `${base}art/wordmark-1400.webp`,
   /** Where the title draws wider than the small file stays sharp (home's --k past about 1.25). */
   bigWhere: "(min-width: 500px) and (min-height: 1040px)",

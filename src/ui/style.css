@@ -197,12 +197,16 @@ html.less-motion .home-note { animation: none; }
 }
 .home .emblem i:nth-child(2) { transform: translateY(calc(-10px * var(--k))); }
 .home .brand { display: flex; flex-direction: column; align-items: center; gap: calc(22px * var(--k)); width: 100%; }
-/* Art's drawn title (2.07 : 1, its own lip and shadow): 300-340 px on a phone, growing with a
+/* Art's drawn title (2 : 1, its own lip and shadow): 300-340 px on a phone, growing with a
    tablet's home (the 1400 px file there, sharp to ~700 px; wordmark.ts); a short screen gives it
    less so Play stays in view */
-.home h1 { margin: 0; width: min(100%, calc(340px * var(--k)), 600px, calc((100dvh - 430px) * 2.07)); min-width: 200px; line-height: 0; }
+.home h1 { margin: 0; width: min(100%, calc(340px * var(--k)), 600px, calc((100dvh - 430px) * 2)); min-width: 200px; line-height: 0; }
 .home h1 picture, .home .wordmark { display: block; width: 100%; height: auto; }
-.home .where { display: flex; align-items: center; padding: calc(8px * var(--k)) calc(20px * var(--k)); font-size: calc(18px * var(--k)); font-weight: 600; }
+/* where the player is: the trip and how far through it, over the board's number (and its hard tag) */
+.home .where { display: flex; flex-direction: column; align-items: center; gap: calc(3px * var(--k)); padding: calc(8px * var(--k)) calc(20px * var(--k)); font-size: calc(18px * var(--k)); font-weight: 600; text-align: center; }
+.home .where .trip { font-size: calc(14px * var(--k)); color: var(--ink-soft); }
+.home .where .trip[hidden] { display: none; }
+.home .where .level { display: flex; align-items: center; justify-content: center; }
 .home .where .mark-tag { margin-left: calc(10px * var(--k)); padding: calc(5px * var(--k)) calc(10px * var(--k)) calc(4px * var(--k)); font-size: calc(13px * var(--k)); }
 .home .play { min-width: calc(210px * var(--k)); min-height: calc(68px * var(--k)); padding: 0 calc(34px * var(--k)); font-size: calc(26px * var(--k)); }
 .home .play :is(svg, .ico) { width: calc(28px * var(--k)); height: calc(28px * var(--k)); }
@@ -402,7 +406,7 @@ html.less-motion .mark-banner { animation-name: mark-fade; }
 .dest-place[hidden] { display: none; }
 .dest-banner.again .dest-glass { animation: dest-fade-in 0.2s ease both; }
 .dest-banner.leaving .dest-glass { animation: dest-out 0.26s ease-in both; }
-.dest-banner:is(.again, .leaving) .dest-twinkle { display: none; }
+.dest-banner:is(.again, .leaving) .twinkle { display: none; }
 @keyframes dest-in {
   0% { opacity: 0; transform: translateY(-14px) scale(0.9); }
   60% { opacity: 1; transform: translateY(0) scale(1.03); }
@@ -411,32 +415,35 @@ html.less-motion .mark-banner { animation-name: mark-fade; }
 @keyframes dest-out { to { opacity: 0; transform: translateY(-8px) scale(0.97); } }
 @keyframes dest-fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes dest-fade-out { to { opacity: 0; } }
-/* the board's twinkle (board.css, .bd-twinkle): a soft amber point with a white four-pointed glint,
-   here once each as the name arrives, then still */
-.dest-twinkle {
-  position: absolute; display: block; width: var(--s); height: var(--s); margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
-  background: radial-gradient(circle, #ffffff 0%, #fff4d6 16%, rgba(255, 214, 140, 0.5) 30%, rgba(255, 200, 120, 0) 52%);
-  animation: dest-twinkle 0.8s ease-out both;
+/* less motion: it fades in and out where it stands, and nothing sparkles */
+html.less-motion .dest-glass { animation: dest-fade-in 0.3s ease both; }
+html.less-motion .dest-banner.leaving .dest-glass { animation: dest-fade-out 0.26s ease both; }
+@media (prefers-reduced-motion: reduce) {
+  .dest-glass { animation: dest-fade-in 0.3s ease both; }
+  .dest-banner.leaving .dest-glass { animation: dest-fade-out 0.26s ease both; }
 }
-.dest-twinkle::before, .dest-twinkle::after {
+
+/* ---------- sparkles: the board's twinkle (board.css, .bd-twinkle) over the screens ----------
+   A soft amber point with a white four-pointed glint, --s across, placed by left/top, each
+   playing once (its delay set where it is made), then still: the destination's name, the
+   passport's stamp. Less motion: none. */
+.twinkle {
+  position: absolute; display: block; pointer-events: none; width: var(--s); height: var(--s); margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+  background: radial-gradient(circle, #ffffff 0%, #fff4d6 16%, rgba(255, 214, 140, 0.5) 30%, rgba(255, 200, 120, 0) 52%);
+  animation: twinkle 0.8s ease-out both;
+}
+.twinkle::before, .twinkle::after {
   content: ""; position: absolute; left: calc(50% - var(--s) / 20); top: 0; width: calc(var(--s) / 10); height: 100%; border-radius: 1px;
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #ffffff 50%, rgba(255, 255, 255, 0));
 }
-.dest-twinkle::after { transform: rotate(90deg); }
-@keyframes dest-twinkle {
+.twinkle::after { transform: rotate(90deg); }
+@keyframes twinkle {
   0% { opacity: 0; transform: scale(0) rotate(0deg); }
   35% { opacity: 1; transform: scale(1.15) rotate(30deg); }
   100% { opacity: 0; transform: scale(0.2) rotate(90deg); }
 }
-/* less motion: it fades in and out where it stands, and nothing sparkles */
-html.less-motion .dest-glass { animation: dest-fade-in 0.3s ease both; }
-html.less-motion .dest-banner.leaving .dest-glass { animation: dest-fade-out 0.26s ease both; }
-html.less-motion .dest-twinkle { display: none; }
-@media (prefers-reduced-motion: reduce) {
-  .dest-glass { animation: dest-fade-in 0.3s ease both; }
-  .dest-banner.leaving .dest-glass { animation: dest-fade-out 0.26s ease both; }
-  .dest-twinkle { display: none; }
-}
+html.less-motion .twinkle { display: none; }
+@media (prefers-reduced-motion: reduce) { .twinkle { display: none; } }
 
 /* ---------- the settings screen (src/settings-screen.ts) ---------- */
 
@@ -540,6 +547,107 @@ html.less-motion .dest-twinkle { display: none; }
 .tile.restored:focus-visible .frame { outline: 3px solid var(--amber-hi); outline-offset: 3px; }
 .tile.restored img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .tile .caption { display: block; margin-top: 8px; padding: 0 4px; font-size: 14px; font-weight: 500; line-height: 1.25; color: #e8eef6; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6); }
+
+/* ---------- the passport (src/ui/passport.ts): a navy book, open at a trip's page ----------
+   Neither material: an object on the table, as the cards are. The cover is navy with the
+   game's name in gold; the page is warm paper with a faint engraved pattern, slate ink; a
+   postcard is a picture in a white border, tapped to see it big; a place not visited yet
+   is a dashed blank with its board number. The stamp is a placeholder (an inked ring with
+   the trip's name) until Art draws one per trip. */
+:root { --stamp-ink: 178 52 46; }
+.pp-book {
+  max-width: 520px; margin: 0 auto; padding: 12px 9px 9px; border-radius: 24px;
+  background: linear-gradient(170deg, #34486a, #1f2c42);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 0 0 2px rgba(8, 14, 26, 0.35), 0 10px 24px rgba(4, 8, 16, 0.45);
+}
+.pp-brand {
+  display: flex; align-items: center; justify-content: center; gap: 10px; margin: 2px 8px 11px; text-align: center;
+  font: 700 15px/1.15 var(--round); letter-spacing: 0.16em; text-transform: uppercase; color: #f1c27e;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+}
+.pp-brand::before, .pp-brand::after { content: ""; flex: none; width: 7px; height: 7px; background: currentColor; transform: rotate(45deg); }
+.pp-page {
+  position: relative; padding: 14px 12px 18px; border-radius: 16px; color: var(--ink); touch-action: pan-y;
+  background:
+    repeating-radial-gradient(circle at 50% -30%, rgba(70, 110, 160, 0.07) 0 1px, transparent 1px 9px),
+    linear-gradient(180deg, #fbf8f1, #eee6d6);
+  box-shadow: inset 0 0 0 1px rgba(120, 100, 70, 0.2);
+}
+.pp-page.from-right { animation: pp-from-right 0.28s ease-out both; }
+.pp-page.from-left { animation: pp-from-left 0.28s ease-out both; }
+@keyframes pp-from-right { from { opacity: 0; transform: translateX(28px); } }
+@keyframes pp-from-left { from { opacity: 0; transform: translateX(-28px); } }
+/* the stamp lands: the page gives a little under it */
+.pp-page.thud { animation: pp-thud 0.34s ease-out; }
+@keyframes pp-thud { 0% { transform: none; } 22% { transform: translateY(3px) scale(0.994); } 100% { transform: none; } }
+.pp-head { display: flex; align-items: flex-start; gap: 8px; min-height: 96px; margin-bottom: 12px; }
+.pp-titles { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; padding: 10px 0 0 4px; }
+.pp-trip { margin: 0; font: 600 25px/1.1 var(--round); overflow-wrap: break-word; text-wrap: balance; }
+.pp-count { font: 600 14px/1.2 var(--round); color: var(--ink-soft); }
+/* where the trip's stamp goes: an empty dashed ring until the trip is done */
+.pp-spot { position: relative; flex: none; width: 92px; height: 92px; margin: 2px 2px 0 0; border-radius: 50%; border: 2px dashed rgba(85, 101, 124, 0.3); }
+.pp-spot:has(.pp-stamp) { border-color: transparent; }
+.pp-stamp {
+  position: absolute; inset: -4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  padding: 12px; border-radius: 50%; color: rgb(var(--stamp-ink)); text-align: center;
+  border: 3px solid currentColor; box-shadow: inset 0 0 0 3px #f4eee2, inset 0 0 0 5px currentColor;
+  font: 700 12px/1.05 var(--round); letter-spacing: 0.05em; text-transform: uppercase;
+  transform: rotate(-14deg); opacity: 0.9; mix-blend-mode: multiply;
+}
+.pp-stamp b { max-width: 100%; font: inherit; overflow-wrap: break-word; }
+.pp-stamp .star {
+  width: 11px; height: 11px; background: currentColor;
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+.pp-stamp.landing { animation: pp-stamp-land 0.3s cubic-bezier(0.55, 0, 0.8, 0.3) both; }
+@keyframes pp-stamp-land {
+  0% { opacity: 0; transform: scale(2.4) rotate(-2deg); }
+  100% { opacity: 0.9; transform: scale(1) rotate(-14deg); }
+}
+.pp-stamp.fading { animation: pp-stamp-fade 0.35s ease both; }
+@keyframes pp-stamp-fade { from { opacity: 0; } to { opacity: 0.9; } }
+/* on the pale page the sparkle is warm: an amber core and amber glints (the board's are white on the table) */
+.pp-spot .twinkle { z-index: 1; background: radial-gradient(circle, #ffffff 0%, #ffd58c 18%, rgba(240, 150, 50, 0.55) 34%, rgba(240, 150, 50, 0) 56%); }
+.pp-spot .twinkle::before, .pp-spot .twinkle::after { background: linear-gradient(to bottom, rgba(245, 160, 60, 0), #f39a2c 50%, rgba(245, 160, 60, 0)); }
+
+/* the places: three across, a postcard each */
+.pp-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 10px; }
+.pc { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; margin: 0; padding: 0; border: 0; background: none; font: inherit; color: inherit; text-align: center; }
+.pc-card {
+  position: relative; display: block; width: 100%; aspect-ratio: var(--card-aspect); padding: 4px; border-radius: 9px;
+  background: #fff; box-shadow: 0 1px 0 rgba(90, 70, 40, 0.25), 0 3px 7px rgba(60, 45, 25, 0.22);
+}
+.pc-card img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 5px; background: #dfe6ee; }
+.pc-name { max-width: 100%; margin-top: 2px; font: 600 13px/1.15 var(--round); overflow-wrap: break-word; }
+.pc-place { max-width: 100%; font: 500 12px/1.2 var(--round); color: var(--ink-soft); overflow-wrap: break-word; }
+.pc.visited { cursor: pointer; touch-action: manipulation; }
+.pc.visited:active .pc-card { transform: translateY(1px); box-shadow: 0 0 0 rgba(90, 70, 40, 0.25), 0 1px 3px rgba(60, 45, 25, 0.22); }
+.pc.visited:focus-visible { outline: none; }
+.pc.visited:focus-visible .pc-card { outline: 3px solid var(--amber-lo); outline-offset: 3px; }
+/* visited, its postcard still to come: a plain sky over hills */
+.pc.soon .pc-card::before {
+  content: ""; position: absolute; inset: 4px; border-radius: 5px;
+  background:
+    radial-gradient(ellipse 90% 34% at 25% 100%, #8db487 97%, transparent 100%),
+    radial-gradient(ellipse 80% 42% at 85% 100%, #a9c79e 97%, transparent 100%),
+    linear-gradient(180deg, #cfe1f3, #eef4f9);
+}
+/* not visited yet: a blank, its board number on it */
+.pc.locked .pc-card { display: grid; place-items: center; background: rgba(255, 255, 255, 0.35); border: 2px dashed rgba(85, 101, 124, 0.32); box-shadow: none; }
+.pc-n { font: 600 22px/1 var(--round); color: rgba(85, 101, 124, 0.5); }
+
+/* turning the pages: ‹ the page › under the book */
+.pp-turn { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 16px auto 0; }
+.pp-turn[hidden] { display: none; }
+.pp-turn .btn.round { --size: 48px; }
+.pp-prev .ico { transform: rotate(180deg); }
+.pp-where { padding: 8px 16px; font: 600 15px/1 var(--round); }
+/* the stamp moment's way on, under the book */
+.pp-foot { flex: none; display: flex; justify-content: center; padding: 12px 16px calc(var(--foot) + 8px); }
+.pp-foot[hidden] { display: none; }
+.pp-on { min-width: 200px; min-height: 60px; font-size: 22px; animation: veil-in 0.25s ease both; }
+html.less-motion :is(.pp-page, .pp-on) { animation: none; }
+@media (prefers-reduced-motion: reduce) { :is(.pp-page, .pp-on) { animation: none; } }
 
 /* ---------- the challenge route (src/ui/challenges.ts) ---------- */
 
@@ -780,7 +888,7 @@ html.less-motion .viewer { animation: none; }
     padding: calc(var(--row-bottom) + 4px) 24px calc(var(--foot) + 8px);
   }
   .home .brand { grid-column: 1; grid-row: 2 / 5; align-self: center; gap: 14px; }
-  .home h1 { width: min(100%, 340px, calc((100dvh - 190px) * 2.07)); }
+  .home h1 { width: min(100%, 340px, calc((100dvh - 190px) * 2)); }
   .home .where { grid-column: 2; grid-row: 2; }
   .home .play { grid-column: 2; grid-row: 3; }
   .home .more { grid-column: 2; grid-row: 4; }
@@ -796,4 +904,9 @@ html.less-motion .viewer { animation: none; }
   .win .card .next { grid-column: 2; justify-self: center; min-width: 180px; }
   .win .card .row { grid-column: 2; }
   .veil { place-items: safe center; }
+
+  /* the passport: the whole width, five postcards across */
+  .pp-book { max-width: 760px; }
+  .pp-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .pp-head { min-height: 0; }
 }

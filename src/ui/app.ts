@@ -60,6 +60,8 @@ import { createViewer } from "./viewer";
 import { closed, opened } from "./dialogs";
 import { markOf, markTag, markWords, pretendMarks, type Mark } from "./marks";
 import { createDestinationBanner, type Destination } from "./destination";
+import { createPassport, type AfterStamp } from "./passport";
+import { currentTrip, tripById, tripCount, tripEndingAt, tripName } from "./trips";
 import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy } from "./catalogue";
 import { mountParticles } from "./particles";
 import { levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
@@ -88,11 +90,15 @@ function button(cls: string, press: string, ...kids: Kids): HTMLButtonElement {
 
 const app = h("div", { id: "app" });
 
-// home: the game's name, where the player is, and Play
+// home: the game's name, where the player is (the trip, then the board), and Play
 const homeWhere = h("div", { class: "where glass" });
+const homeTrip = h("span", { class: "trip" });
+const homeLevel = h("span", { class: "level" });
+homeWhere.append(homeTrip, homeLevel);
 const homePlayLabel = h("span");
 const homePlay = button("amber play", "home.play", icon("play"), homePlayLabel);
-const homeAlbums = button("tile-btn albums", "home.albums", icon("albums"), h("span", {}, t("home.albums")));
+// the passport (passport.ts) in the albums' place (the creator, 2026-10-25)
+const homePassport = button("tile-btn passport", "home.passport", icon("passport"), h("span", {}, t("home.passport")));
 // the daily puzzle (daily.ts): its Home button shows today's state, and is hidden until the day's board is known
 const dailyUi = createDaily({ home: () => goHome(), show: () => show("daily"), play: (d) => openPlay({ kind: "daily", d }) });
 // shown once the challenge boards exist: nothing promises a screen with nothing on it
@@ -105,11 +111,11 @@ const wordmark = h("img", {
   src: WORDMARK.small,
   alt: t("game.title"),
   width: "840",
-  height: "405",
+  height: "420",
   draggable: "false",
   decoding: "async",
 });
-const wordmarkPicture = h("picture", {}, h("source", { media: WORDMARK.bigWhere, srcset: WORDMARK.big, width: "1400", height: "675" }), wordmark);
+const wordmarkPicture = h("picture", {}, h("source", { media: WORDMARK.bigWhere, srcset: WORDMARK.big, width: "1400", height: "700" }), wordmark);
 // a win from an earlier session that the checker accepted at this start, and paid: one line in home's
 // top row (information, never a button), its Coins flown to the Arcade's total once
 const homeNote = h("div", { class: "top-pill glass home-note", role: "status", hidden: "" });
@@ -126,7 +132,7 @@ const home = h(
   homeWhere,
   homePlay,
   dailyUi.homeButton,
-  h("div", { class: "more" }, homeAlbums, homeChallenges),
+  h("div", { class: "more" }, homePassport, homeChallenges),
 );
 
 // the board: the level (on a challenge: its number, par and the moves so far), Back, the board, the helpers
@@ -181,16 +187,18 @@ const offlineVeil = h(
   ),
 );
 
-// the albums (albums.ts): the list, one album, and the full-screen picture
+// the albums (albums.ts): no longer on home (the passport took their place); kept, unreached, until they are tidied away
 const albumsUi = createAlbums({ home: () => goHome(), show: (which) => show(which) });
+// the passport (passport.ts): a page per trip, and the stamp moment
+const passportUi = createPassport({ home: () => goHome(), show: () => show("passport") });
 // the challenge route (challenges.ts)
 const routeUi = createChallenges({ home: () => goHome(), show: () => show("challenges"), play: (c) => openPlay({ kind: "challenge", c }) });
 
-app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, routeUi.screen, dailyUi.screen, albumsUi.viewer, winVeil, winViewer.element, restartVeil, offlineVeil);
+app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, offlineVeil);
 
 // ---------- state ----------
 
-type Screen = "home" | "board" | "albums" | "album" | "challenges" | "daily";
+type Screen = "home" | "board" | "albums" | "album" | "passport" | "challenges" | "daily";
 /**
  * A board to play: one of the campaign's, one on the challenge route, the day's, or one of the
  * dev menu's experiment boards (practice always).
@@ -263,6 +271,8 @@ function show(next: Screen): void {
   if (next !== "board") destBanner.clear();
   albumsUi.listScreen.hidden = next !== "albums";
   albumsUi.albumScreen.hidden = next !== "album";
+  passportUi.screen.hidden = next !== "passport";
+  if (next !== "passport") passportUi.leave();
   routeUi.screen.hidden = next !== "challenges";
   dailyUi.screen.hidden = next !== "daily";
   if (next === "home") drawHomeNote();
@@ -289,7 +299,11 @@ function drawHome(): void {
   const where = awaitingRecord() ? t("home.level", { level: "–" }) : allDone() ? t("home.allDone") : t("home.level", { level: p.campaign.next });
   // the next board's mark, if it is a hard one (marks.ts)
   const mark = known ? markOf(campaignLevel(p.campaign.next)) : null;
-  homeWhere.replaceChildren(where, ...(mark ? [markTag(mark)] : []));
+  homeLevel.replaceChildren(where, ...(mark ? [markTag(mark)] : []));
+  // the trip the player is on, and how far through it ("Travel America · 4 of 15")
+  const trip = known ? currentTrip() : undefined;
+  homeTrip.hidden = !trip;
+  if (trip) homeTrip.textContent = t("home.trip", { trip: tripName(trip), ...tripCount(trip) });
   homePlayLabel.textContent = t("home.play");
   homeChallenges.hidden = !routeUi.exists();
 }
@@ -316,7 +330,7 @@ homePlay.addEventListener("click", async () => {
   openLevel(allDone() ? (progress().campaign.won % levels()) + 1 : campaignNext());
 });
 
-homeAlbums.addEventListener("click", () => albumsUi.openList());
+homePassport.addEventListener("click", () => passportUi.open());
 
 /** Paid verdicts of claims from an earlier session (Server's claims.ts marks them resumed), waiting for home. */
 const lastWins: Verdict[] = [];
@@ -614,7 +628,7 @@ restartBtn.addEventListener("click", () => {
 // ---------- the win card ----------
 
 type Win = (
-  | { kind: "campaign"; level: number; moves: number; ms: number; milestone: boolean }
+  | { kind: "campaign"; level: number; moves: number; ms: number; milestone: boolean; stamp?: string }
   | { kind: "challenge"; c: Challenge; moves: number; ms: number; first: boolean; better: boolean }
   | { kind: "daily"; d: Daily; moves: number; ms: number; first: boolean }
   | { kind: "experiment"; x: Experiment; moves: number; ms: number }
@@ -648,7 +662,11 @@ on("board:solved", ({ moves, ms, line }) => {
   if (play.kind === "campaign") {
     // the board the guide taught on ends on the guide's own milestone card
     const milestone = play.level === 1 && guide.takeFinish();
-    win = { kind: "campaign", level: play.level, moves, ms, milestone };
+    // the first win of a trip's last board stamps the passport after its card (passport.ts):
+    // the record (read before this win's claim) has not passed it yet; a replay never stamps
+    const ending = tripEndingAt(play.level);
+    const stamp = ending && !isPractice(play) && play.level >= campaignNext() ? ending.id : undefined;
+    win = { kind: "campaign", level: play.level, moves, ms, milestone, ...(stamp ? { stamp } : {}) };
   } else if (play.kind === "challenge") {
     // any win clears a challenge board, over par too; the record keeps the fewer moves
     const before = challengeBest(play.c.id);
@@ -742,7 +760,19 @@ function showWin(): void {
   const last = boardNumber(level) === levels();
   // a hard board beaten says so (marks.ts)
   const mark = markOf(campaignLevel(level));
-  const next = last
+  // a trip's last board, won the first time: the card says so, and goes on to the passport's stamp
+  const ended = lastWin.stamp ? tripById(lastWin.stamp) : undefined;
+  const after: AfterStamp = last
+    ? { label: t("passport.home"), icon: icon("home"), press: "passport.home", go: goHome }
+    : { label: t("passport.nextTrip"), icon: icon("next"), trailing: true, press: "passport.nextTrip", go: () => openPlay({ kind: "campaign", level: level + 1 }) };
+  const next = ended
+    ? withClick(button("amber next", "win.stamp", icon("passport"), t("win.stamp")), () =>
+        leaveTo("win-stamp", () => {
+          hideCard(winVeil);
+          passportUi.stamp(ended.id, after);
+        }),
+      )
+    : last
     ? withClick(button("amber next", "win.home", icon("home"), t("win.home")), () => leaveTo("win-home", goHome))
     : withClick(button("amber next", "win.next", t("win.next"), icon("next")), () =>
         leaveInto("win-next", () => openPlay({ kind: "campaign", level: level + 1, ...(practice ? { practice } : {}) })),
@@ -760,6 +790,7 @@ function showWin(): void {
         h("div", { class: "stat glass" }, h("b", {}, String(moves)), h("span", {}, t("win.moves"))),
         h("div", { class: "stat glass" }, h("b", {}, clock(ms)), h("span", {}, t("win.time"))),
       ),
+      ended ? h("p", { class: "trip-done" }, t("win.tripDone", { trip: tripName(ended) })) : null,
       last ? h("p", {}, t("win.allDone")) : null,
       next,
     ),
@@ -1108,6 +1139,7 @@ export async function startApp(): Promise<void> {
     home.style.setProperty("--k", k.toFixed(3));
   }).observe(app);
   onProgress(albumsUi.redraw);
+  onProgress(passportUi.redraw);
   onProgress(routeUi.redraw);
   onProgress(dailyUi.redraw);
   drawHome();
@@ -1185,6 +1217,12 @@ export async function startApp(): Promise<void> {
       destination(d: Destination | null) {
         if (d) destBanner.show(d, host);
         else destBanner.hide();
+      },
+      /** The passport, open at trip `id` ("t1"), or at the trip the player is on. */
+      passport: (id?: string) => passportUi.open(id ? tripById(id) : undefined),
+      /** The stamp moment for trip `id`, as after its last board's win card (nothing is won or sent). */
+      stamp(id: string) {
+        passportUi.stamp(id, { label: t("passport.nextTrip"), icon: icon("next"), trailing: true, press: "passport.nextTrip", go: goHome });
       },
       /** Show a challenge board as cleared in `moves`, for this page only (a win held, never sent). */
       cleared(id: string, moves: number) {

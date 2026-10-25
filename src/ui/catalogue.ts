@@ -14,6 +14,13 @@
 // on the long side) for grids and covers, the board copy (240 x 320 a card) for the
 // board and the win card, the full file (384 x 512 a card) only seen big. A copy
 // the catalogue does not list (a picture Art has not reached) falls back to the full.
+//
+// The DESTINATIONS (the travelogue, 2026-10-25) are Art's list of their own beside the
+// pictures: one real place per campaign board, a postcard the size of the board whose
+// crop plays as an ordinary picture. Never in an album (the passport shows them,
+// passport.ts). Their two lines, "Grand Canyon" / "Arizona, USA", are "name" and "place";
+// a locale may carry "destination.<id>.name" and ".place". A destination's thumb is sized
+// for the passport's postcards, so it lists its own size (thumbPx).
 
 import CATALOGUE from "../content/pictures.json";
 import { t } from "./i18n";
@@ -50,12 +57,14 @@ export interface Copy {
 /** Art's thumbs: the full picture's aspect, 320 px on the long side (measured on all 156, 2026-10-25). */
 const THUMB_LONG = 320;
 
-type Entry = (typeof CATALOGUE.pictures)[number] & { thumb?: string; px?: number[]; board?: string; boardPx?: number[] };
-function copiesOf(p: Entry): Copy[] {
+type Sizes = { file: string; thumb?: string; thumbPx?: number[]; px?: number[]; board?: string; boardPx?: number[] };
+type Entry = (typeof CATALOGUE.pictures)[number] & Sizes;
+function copiesOf(p: Sizes): Copy[] {
   const [w, h] = p.px?.length === 2 ? (p.px as [number, number]) : [Infinity, Infinity];
   const list: Copy[] = [{ file: p.file, w, h }];
   if (p.board && p.boardPx?.length === 2) list.push({ file: p.board, w: p.boardPx[0]!, h: p.boardPx[1]! });
-  if (p.thumb && p.thumb !== p.file && Number.isFinite(w)) {
+  if (p.thumb && p.thumb !== p.file && p.thumbPx?.length === 2) list.push({ file: p.thumb, w: p.thumbPx[0]!, h: p.thumbPx[1]! });
+  else if (p.thumb && p.thumb !== p.file && Number.isFinite(w)) {
     const k = THUMB_LONG / Math.max(w, h);
     list.push({ file: p.thumb, w: Math.round(w * k), h: Math.round(h * k) });
   }
@@ -75,6 +84,31 @@ const pictureList: Picture[] = (CATALOGUE.pictures as Entry[]).map((p) => ({
   rows: p.rows,
 }));
 const byId = new Map(pictureList.map((p) => [p.id, p]));
+
+/** A destination: a picture (the whole postcard, cols x rows of the board) with the place's two lines. */
+export interface Destination extends Picture {
+  /** Where it is: "Arizona, USA". The picture's `title` is its name. */
+  place: string;
+}
+type DestEntry = Sizes & { id: string; name: string; place?: string; cols: number; rows: number };
+const destinationList: Destination[] = ((CATALOGUE as { destinations?: DestEntry[] }).destinations ?? []).map((d) => ({
+  id: d.id,
+  album: "",
+  title: d.name,
+  place: d.place ?? "",
+  file: d.file,
+  thumb: d.thumb ?? (d.board && d.boardPx?.length === 2 ? d.board : d.file),
+  board: d.board && d.boardPx?.length === 2 ? d.board : null,
+  copies: copiesOf(d),
+  cols: d.cols,
+  rows: d.rows,
+}));
+const destById = new Map(destinationList.map((d) => [d.id, d]));
+
+/** The destination `id` (a board's level data names it), or undefined while Art has not made it. */
+export function destination(id: string): Destination | undefined {
+  return destById.get(id);
+}
 
 /** Every album, in the catalogue's order, that has at least one picture. */
 export function albums(): Album[] {
@@ -127,4 +161,8 @@ function localized(key: string, english: string): string {
   return said === key ? english : said;
 }
 export const albumTitle = (a: Album): string => localized(`album.${a.id}`, a.title);
-export const pictureTitle = (p: Picture): string => localized(`picture.${p.id}`, p.title);
+export const pictureTitle = (p: Picture): string =>
+  destById.has(p.id) ? destinationName(p.id, p.title) : localized(`picture.${p.id}`, p.title);
+/** A destination's two lines in the player's language: its name, and where it is. */
+export const destinationName = (id: string, english: string): string => localized(`destination.${id}.name`, english);
+export const destinationPlace = (id: string, english: string): string => localized(`destination.${id}.place`, english);

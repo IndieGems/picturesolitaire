@@ -24,7 +24,7 @@
 // the event carries. A long name ("World's Largest Ball of Twine") wraps to two balanced
 // lines, then steps down in size, never under 12 px and never cut off.
 
-import { t } from "./i18n";
+import { destinationName, destinationPlace } from "./catalogue";
 
 export interface Destination {
   id: string;
@@ -66,11 +66,6 @@ const SAME_MOMENT_MS = 120;
 /** The biggest the name is drawn, and the smallest it may step down to. */
 const MIN_PX = 12;
 
-function localized(key: string, english: string): string {
-  const said = t(key);
-  return said === key ? english : said;
-}
-
 export function createDestinationBanner(): DestinationBanner {
   const element = document.createElement("div");
   element.className = "dest-banner";
@@ -88,7 +83,7 @@ export function createDestinationBanner(): DestinationBanner {
   element.append(glass);
   for (const w of TWINKLES) {
     const tw = document.createElement("i");
-    tw.className = "dest-twinkle";
+    tw.className = "twinkle";
     tw.setAttribute("aria-hidden", "true");
     tw.style.cssText = `left:${w.x}%;top:${w.y}%;--s:${w.s}px;animation-delay:${w.at}s`;
     element.append(tw);
@@ -139,8 +134,8 @@ export function createDestinationBanner(): DestinationBanner {
     show(d, over) {
       clear();
       host = over;
-      name.textContent = localized(`destination.${d.id}.name`, d.name);
-      place.textContent = localized(`destination.${d.id}.place`, d.place);
+      name.textContent = destinationName(d.id, d.name);
+      place.textContent = destinationPlace(d.id, d.place);
       place.hidden = !place.textContent;
       element.classList.toggle("again", d.again === true);
       shownAt = performance.now();

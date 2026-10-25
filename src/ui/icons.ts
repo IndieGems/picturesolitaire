@@ -30,6 +30,7 @@ export const ICONS = {
   home: art("home"),
   chevron: art("chevron"),
   albums: art("photos"),
+  passport: art("passport"),
   challenges: art("route"),
   check: art("check"),
   lock: art("lock"),
