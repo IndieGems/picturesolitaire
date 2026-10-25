@@ -4,36 +4,38 @@
 
 schema_version: 3
 
-title: "Picture Mend"
+title: "Picture Passport"
 
-tagline: "Mend pictures, card by card"
+tagline: "Piece the world together"
 
-short_description: "Swap scattered cards until each picture is whole again. Photographs and paintings share their colours on purpose, so every card deserves a close look. A relaxed campaign, a challenge route and a daily puzzle to share with friends, with no timers."
+short_description: "Swap scattered cards until each picture is whole. Every board hides a real place, from the Grand Canyon to the world's largest ball of twine: finish it and it unfolds into a postcard. Fill your passport trip by trip, with no timers."
 
 description: |
-  ## Mend the picture
+  ## Piece the pictures together
 
-  Cards from several pictures lie scattered across a candlelit winter table. Drag one card onto another to swap them, or tap one and then the other. When a card meets its true neighbour, the two join into one piece and move together. Finish a picture and it shows whole for a moment, then clears, and new cards drop in from the stacks above.
+  Cards from several pictures lie scattered across the table. Drag one card onto another to swap them, or tap one and then the other. When a card meets its true neighbour, the two join into one piece and move together. Finish a picture and it clears, and new cards drop in from the stacks above.
 
-  ## Look closely
+  ## A real place on every board
 
-  The pictures on each board are chosen to look alike: two sunsets, two flower gardens, a harbour and a lakeside at dusk. Some are photographs and some are paintings, gathered in five albums: Flowers, Food & Still Life, Landscapes, People and Travel. The fun is in spotting which card belongs where.
+  Each board hides one destination. Finish it and it unfolds into a postcard of the whole place, with its name: famous sights like Niagara Falls and Yosemite, hidden gems like Letchworth State Park, and roadside wonders like Lucy the Elephant.
+
+  ## Fill your passport
+
+  Boards come in trips of 15, starting with Travel America, with Japan next. Every place you visit goes in your passport, and finishing a trip stamps it. How many have you been to for real?
 
   ## Play at your own pace
 
-  - **A relaxed campaign** of 30 boards, from a gentle start to cleverer deals.
-  - **A challenge route** of 20 trickier boards for when you want to think harder.
-  - **A daily puzzle**: the same board for everyone each day, so you can compare how you did with friends.
   - **No timers and no move limits.** Every board can be won without help, and undo, hint and shuffle are there when you want them.
-  - **Your albums**: every picture you mend is kept, to look at again full screen.
+  - **Hard and super hard boards are marked**, with easier boards in between.
+  - **A daily puzzle**: the same board for everyone each day, to compare with friends.
 
 feature_bullets:
-  - "Swap cards to mend scattered photographs and paintings, piece by piece"
-  - "Pictures that look alike on purpose, so every card deserves a close look"
-  - "A relaxed 30-board campaign and a 20-board challenge route"
-  - "A daily puzzle, the same for everyone, to compare with friends"
+  - "Swap cards to piece together photographs and paintings"
+  - "A real place on every board, unfolding into a postcard when you finish it"
+  - "Famous sights, hidden gems and roadside oddities"
+  - "Fill your passport trip by trip, from Travel America to Japan"
   - "No timers and no move limits: every board can be won without help"
-  - "Every picture you mend is kept in your albums"
+  - "A daily puzzle, the same for everyone, to compare with friends"
 
 # Played on phones (portrait) and desktop browsers throughout. Tablets: QA played every screen
 # at 768x1024, 820x1180 and 1024x1366 (portrait, touch) with no faults; on the largest the board
@@ -87,7 +89,7 @@ media:
     logo: hero/logo.png
   share_card:
     src: hero/share_card.jpg
-    alt: "Picture Mend: a harbour painting being mended from its cards on a snowy, candlelit table"
+    alt: "Picture Passport: a harbour painting being pieced together from its cards on a snowy, candlelit table"
   portrait_borders:
     - name: winter-table
       src: borders/winter-table.jpg
