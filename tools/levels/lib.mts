@@ -62,6 +62,27 @@ export const flags = readFlags(process.env.PICTURE_FLAGS ?? FLAGS);
 export const usable = catalogue.filter((p) => !flags.has(p.id));
 export const flaggedOn = (pictures) => pictures.map((p) => p.id).filter((id) => flags.has(id));
 
+/**
+ * A kept board whose flagged pictures all have a remake of the same shape
+ * (REMAKES), each remake in its old picture's place in the list: the deal, the
+ * line, the par and every measure are unchanged (a card names its picture by
+ * its place in the list, and the shapes in each place are the same), so only
+ * the picture changes. null if a flagged picture has no such remake (the
+ * maker then swaps it for another picture and deals the board again).
+ */
+export function remadeInPlace(b) {
+  const ids = new Set(b.pictures.map((p) => p.id));
+  const fams = new Set(b.pictures.map((p) => byId.get(p.id)?.family));
+  const pictures = b.pictures.map((p) => {
+    if (!flags.has(p.id)) return p;
+    const r = byId.get(REMAKES.get(p.id));
+    if (!r || flags.has(r.id) || ids.has(r.id) || fams.has(r.family) || r.cols !== p.cols || r.rows !== p.rows) return null;
+    return { id: r.id, cols: r.cols, rows: r.rows };
+  });
+  if (pictures.includes(null)) return null;
+  return { ...b, pictures, ...(b.axes?.families ? { axes: { ...b.axes, families: pictures.map((p) => byId.get(p.id).family) } } : {}) };
+}
+
 /** The boards in a boards file, [] if there is none. */
 export const readBoards = (file) => (existsSync(file) ? JSON.parse(readFileSync(file, "utf8")).levels : []);
 
@@ -418,6 +439,15 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
   old.forEach((b, i) => {
     const bad = flaggedOn(b.pictures);
     if (!bad.length) return;
+    const same = remadeInPlace(levels[i]);
+    if (same) {
+      console.log(`${b.id}: ${bad.map((id) => `${id} -> ${REMAKES.get(id)}`).join(", ")} in place; the deal and line unchanged`);
+      for (const q of b.pictures) uses.set(q.id, uses.get(q.id) - 1);
+      for (const q of same.pictures) uses.set(q.id, (uses.get(q.id) ?? 0) + 1);
+      chosen[i] = same.pictures;
+      levels[i] = same;
+      return;
+    }
     console.log(`${b.id}: uses flagged ${bad.join(", ")}; re-dealing it`);
     for (const q of b.pictures) uses.set(q.id, uses.get(q.id) - 1);
     chosen[i] = null;

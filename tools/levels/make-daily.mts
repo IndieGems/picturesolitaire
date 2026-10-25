@@ -31,7 +31,7 @@ import { join } from "node:path";
 import { random } from "../../src/game/rules.ts";
 import { hashId } from "../../src/game/levels/generate.ts";
 import { pick } from "../../src/game/levels/pick.ts";
-import { catchUp, dealBoard, flaggedOn, onSchedule, root, swapSets, tallyText, usable, usesOf, writeBoards } from "./lib.mts";
+import { catchUp, dealBoard, flaggedOn, onSchedule, REMAKES, remadeInPlace, root, swapSets, tallyText, usable, usesOf, writeBoards } from "./lib.mts";
 import { WEEK } from "./daily-plan.mts";
 
 const FILE = join(root, "src/content/levels/daily.json");
@@ -101,10 +101,19 @@ function makeDay(k, date, sets, weigh) {
   throw new Error(`${id}: no deal meets the day's type; loosen it`);
 }
 
-// 1. kept days that use a flagged picture: as few pictures changed as can be
+// 1. kept days that use a flagged picture: its remake in its place, else as few pictures changed as can be
 levels.forEach((l, k) => {
   const bad = flaggedOn(l.pictures);
   if (!bad.length) return;
+  // a remake of the same shape takes its old picture's place: the day's deal, line and par unchanged
+  const same = remadeInPlace(l);
+  if (same) {
+    console.log(`${l.id}: ${bad.map((id) => `${id} -> ${REMAKES.get(id)}`).join(", ")} in place; the deal and line unchanged`);
+    for (const p of l.pictures) uses.set(p.id, uses.get(p.id) - 1);
+    for (const p of same.pictures) uses.set(p.id, (uses.get(p.id) ?? 0) + 1);
+    levels[k] = same;
+    return;
+  }
   console.log(`${l.id}: uses flagged ${bad.join(", ")}; re-dealing it`);
   for (const p of l.pictures) uses.set(p.id, uses.get(p.id) - 1);
   const row = WEEK[new Date(parse(l.date)).getUTCDay()];
