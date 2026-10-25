@@ -1,5 +1,8 @@
 // Re-proves every shipped board. Run: node tools/levels/check.mts [file ...]
 // (default: every .json in src/content/levels). Exit code 0 = every board passes.
+// trips.json is no boards file: it must be campaign-plan.mts TRIPS, one trip
+// after another from board 1, covering every campaign board (only the last may
+// run past the boards made so far).
 //
 // For each board:
 //   - its pictures are in the catalogue at the same size, and the stacks hold
@@ -34,7 +37,7 @@
 //     leaves it stuck.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { cardsOf, isDeadEnd, isWon, joinCount, replay, start } from "../../src/game/rules.ts";
@@ -42,14 +45,14 @@ import { Game } from "../../src/game/solver/index.ts";
 import { along, careless, chain, orderTraps, traps, unavoidable, wait } from "../../src/game/solver/metrics.ts";
 import { BIG, dealFor, deadFirstMoves, doomingFirstClears } from "../../src/game/levels/generate.ts";
 import { byId, destById, flags } from "./lib.mts";
-import { DISTINCT, MARKS, MAY_TRAP } from "./campaign-plan.mts";
+import { DISTINCT, MARKS, MAY_TRAP, TRIPS } from "./campaign-plan.mts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 // the library pictures and the destination postcards (lib.mts; PICTURES=<file> checks a trial catalogue)
 const catalogue = byId;
 const files = process.argv.slice(2);
 const dir = join(root, "src/content/levels");
-if (!files.length) for (const f of readdirSync(dir).sort()) if (f.endsWith(".json")) files.push(join(dir, f));
+if (!files.length) for (const f of readdirSync(dir).sort()) if (f.endsWith(".json") && f !== "trips.json") files.push(join(dir, f));
 
 let boards = 0;
 let failed = 0;
@@ -167,5 +170,23 @@ if (flaggedUses.length)
     `\nPictures flagged "don't use" are on ${new Set(flaggedUses.map((u) => u.board)).size} board(s):\n  ${flaggedUses.map((u) => u.line).join("\n  ")}\n` +
       `Re-deal them, keeping every other board as it is: node tools/levels/redeal.mts\n`,
   );
+// the trips: the plan's list, back to back from board 1, every campaign board in one
+const tripsFile = join(dir, "trips.json");
+if (!process.argv.slice(2).length && existsSync(tripsFile)) {
+  const trips = JSON.parse(readFileSync(tripsFile, "utf8")).trips;
+  const made = JSON.parse(readFileSync(join(dir, "campaign.json"), "utf8")).levels.length;
+  const bad = [];
+  if (JSON.stringify(trips) !== JSON.stringify(TRIPS)) bad.push("it is not campaign-plan.mts TRIPS (node tools/levels/make-trips.mts)");
+  trips.forEach((t, k) => {
+    if (t.from !== (k ? trips[k - 1].to + 1 : 1) || !(t.to >= t.from)) bad.push(`trip ${t.id} runs ${t.from}-${t.to}, not on from the trip before`);
+  });
+  if (new Set(trips.map((t) => t.id)).size !== trips.length) bad.push("two trips share an id");
+  if (trips.length && trips.at(-1).to < made) bad.push(`the trips end at board ${trips.at(-1).to}, the campaign has ${made}`);
+  if (trips.length > 1 && trips.at(-2).to > made) bad.push("a trip past the campaign's end is not the last");
+  if (bad.length) {
+    failed++;
+    console.error(`FAIL trips.json: ${bad.join("; ")}`);
+  } else console.log(`trips: ${trips.map((t) => `${t.name} ${t.from}-${t.to}`).join(", ")}`);
+}
 console.log(failed ? `${failed} of ${boards} boards FAILED` : `all ${boards} boards proved: each line wins on the real rules with no helpers`);
 process.exitCode = failed ? 1 : 0;

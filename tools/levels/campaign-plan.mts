@@ -114,6 +114,20 @@ export const PLAN = [
   /* 26 */ { role: "relief", board: [4, 5], ...sq(8), careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
 ];
 
+/**
+ * The trips (lead, 2026-10-25: the game is a travelogue; docs/difficulty-curve.md
+ * "Trips of 15 boards"): boards `from`-`to` (1-based, as players count them)
+ * make one trip, and finishing its last board stamps the passport. The ids
+ * stay put when a name changes. Written to src/content/levels/trips.json by
+ * tools/levels/make-trips.mts for the passport and home (UI); check.mts holds
+ * the file to this list. The last trip may run past the boards made so far.
+ */
+export const TRIPS = [
+  { id: "t1", name: "Travel America", from: 1, to: 15 },
+  // the creator is choosing the trip order: the name is a placeholder (lead, 2026-10-25)
+  { id: "t2", name: "Trip 2", from: 16, to: 30 },
+];
+
 /** Roles that may trap from the first move; every other board starts safe (check.mts). */
 export const MAY_TRAP = new Set(["hard", "peak", "super"]);
 

@@ -1,0 +1,4 @@
+{"v":1,"note":"the campaign's trips, boards from-to (1-based); made by tools/levels/make-trips.mts from campaign-plan.mts TRIPS, checked by tools/levels/check.mts","trips":[
+{"id":"t1","name":"Travel America","from":1,"to":15},
+{"id":"t2","name":"Trip 2","from":16,"to":30}
+]}
