@@ -9,7 +9,13 @@
 // Its top row is every screen's: the picture's title on the left, Back (which
 // closes it) and the gear at the right end. To a keyboard it is a dialog
 // (dialogs.ts): the focus moves to its Back, Escape closes it, and the focus
-// goes back to the picture it was opened from. The win card's copy (app.ts) also
+// goes back to the picture it was opened from.
+//
+// It shows the copy already on screen at once (the win card's, the album's thumb),
+// stretched, and swaps in the full picture once it has loaded and decoded: only
+// this view ever fetches a full picture (the creator, 2026-10-25).
+//
+// The win card's copy (app.ts) also
 // closes on a single tap while the picture is not zoomed in (`tapToClose`): a
 // look, then back to the card.
 
@@ -27,7 +33,8 @@ const TAP_SLOP = 12;
 
 export interface Viewer {
   element: HTMLElement;
-  open(p: Picture): void;
+  /** Show `p` big: `shown` is the address of the copy already on screen, drawn until the full one lands. */
+  open(p: Picture, shown?: string): void;
   close(): void;
   isOpen(): boolean;
 }
@@ -203,8 +210,12 @@ export function createViewer(options: { tapToClose?: boolean } = {}): Viewer {
 
   new ResizeObserver(layout).observe(stage);
 
+  /** Counts each open, so a full picture landing after its viewer moved on is dropped. */
+  let opening = 0;
+
   function close(): void {
     clearTimeout(closeTimer);
+    opening++;
     if (element.hidden) return;
     element.hidden = true;
     img.removeAttribute("src");
@@ -216,10 +227,21 @@ export function createViewer(options: { tapToClose?: boolean } = {}): Viewer {
 
   return {
     element,
-    open(p) {
+    open(p, shown) {
       aspect = pictureAspect(p.cols, p.rows);
       title.textContent = pictureTitle(p);
-      img.src = pictureUrl(p);
+      const full = pictureUrl(p);
+      const at = ++opening;
+      img.src = shown || full;
+      if (shown && shown !== full) {
+        const big = new Image();
+        big.src = full;
+        // decoded first, so the swap is the same frame; a failure keeps the copy on screen
+        big.decode().then(
+          () => at === opening && (img.src = full),
+          () => {},
+        );
+      }
       s = 1;
       tx = 0;
       ty = 0;

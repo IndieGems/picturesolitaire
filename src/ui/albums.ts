@@ -9,10 +9,14 @@
 // from a list here; which are restored comes from the server's record of the
 // player's progress (src/net/progress.ts: the pictures of boards won). Both screens have the standard's top row: the title on the
 // left, Back then the gear at the right end.
+//
+// A cover is the picture's thumb; a picture in an album is drawn from the smallest copy
+// sharp at its tile's size (catalogue.ts), picked once the tile is laid out: the thumb on
+// a desktop, the board copy on a phone, where a tile is about 150 px wide at 3x.
 
 import { ICONS } from "./icons";
 import { t } from "./i18n";
-import { albumTitle, albums, picturesIn, pictureTitle, thumbUrl, type Album } from "./catalogue";
+import { albumTitle, albums, picturesIn, pictureTitle, sharpCopy, thumbUrl, type Album, type Copy, type Picture } from "./catalogue";
 import { isRestored as restoredInRecord } from "../net/progress";
 import { createViewer } from "./viewer";
 
@@ -46,6 +50,26 @@ function cardBack(cols: number, rows: number, cls: string): HTMLElement {
   back.style.setProperty("--r", String(rows));
   back.setAttribute("aria-hidden", "true");
   return back;
+}
+
+/** Each album picture waiting for its tile's size, and the copy it draws now. */
+const sizing = new WeakMap<Element, { img: HTMLImageElement; p: Picture; copy?: Copy }>();
+const tileSizes = new ResizeObserver((entries) => {
+  for (const e of entries) {
+    const it = sizing.get(e.target);
+    const { width, height } = e.contentRect;
+    if (!it || !width || !height) continue;
+    const { copy, url } = sharpCopy(it.p, width, height);
+    // only ever up to a bigger copy: a smaller one would be a second download for nothing
+    if (it.copy && copy.w * copy.h <= it.copy.w * it.copy.h) continue;
+    it.copy = copy;
+    it.img.src = url;
+  }
+});
+/** Draw `img`, in `box`, from the smallest copy of `p` sharp at the box's size once it has one. */
+function drawSharp(img: HTMLImageElement, box: HTMLElement, p: Picture): void {
+  sizing.set(box, { img, p });
+  tileSizes.observe(box);
 }
 
 /** Pictures shown as restored for checking the albums by hand (dev server only, ?restored=); never recorded. */
@@ -123,6 +147,7 @@ export function createAlbums(nav: Nav) {
     const { done, all } = tally(a);
     albumPill.textContent = albumTitle(a);
     count.textContent = t("albums.count", { done, all });
+    for (const f of shelf.querySelectorAll(".frame")) tileSizes.unobserve(f);
     shelf.replaceChildren();
     for (const p of picturesIn(a.id)) {
       if (isRestored(p.id)) {
@@ -134,14 +159,15 @@ export function createAlbums(nav: Nav) {
         frame.style.setProperty("--c", String(p.cols));
         frame.style.setProperty("--r", String(p.rows));
         const img = el("img");
-        img.src = thumbUrl(p);
         img.alt = "";
         img.draggable = false;
         img.loading = "lazy";
         img.decoding = "async";
         frame.append(img);
+        drawSharp(img, frame, p);
         tile.append(frame, el("span", "caption", pictureTitle(p)));
-        tile.addEventListener("click", () => viewer.open(p));
+        // seen big from the thumb on screen, the full picture swapped in once it lands (viewer.ts)
+        tile.addEventListener("click", () => viewer.open(p, img.currentSrc || img.src));
         shelf.append(tile);
       } else {
         const tile = el("div", "tile hidden-picture");

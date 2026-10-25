@@ -58,7 +58,7 @@ import { WORDMARK } from "./wordmark";
 import { cardAspect, syncCardAspect } from "./cards";
 import { createViewer } from "./viewer";
 import { closed, opened } from "./dialogs";
-import { picture as cataloguePicture, pictureTitle } from "./catalogue";
+import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy } from "./catalogue";
 import { mountParticles } from "./particles";
 import { levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
 import type { DevMenu } from "./dev-menu";
@@ -887,6 +887,10 @@ function showChallengeWin(w: Extract<Win, { kind: "challenge" }>, gallery: HTMLE
  * here). A picture is never under TAP px on its narrow side (its hit area adds 4px all round, so
  * 44px to the touch): when the rows would make one smaller, the pictures go in one row that
  * scrolls sideways instead, bigger rather than smaller.
+ *
+ * Each is drawn from the smallest copy sharp at that size (catalogue.ts, sharpCopy), and the
+ * board's own copy, already loaded, wins whenever it is sharp here: no download, so the pictures
+ * show at once, even with the connection gone. A copy that fails to load falls back to the board's.
  */
 const GAP = 10;
 const TAP = 36;
@@ -916,11 +920,12 @@ function layoutGallery(pics: BoardPicture[]): HTMLElement {
   const tall = Math.max(1, ...pics.map((p) => p.rows));
   const u = strip ? Math.max(uTap, Math.min(STRIP_U, height / tall)) : best.u;
   const gallery = h("div", { class: `gallery${strip ? " strip" : ""}`, style: `--u:${Math.floor(u)}px;--gap:${GAP}px` });
+  const drawn = { u: Math.floor(u), aspect };
   let i = 0;
   for (const row of strip ? [pics] : best.rows) {
     if (!row.length) continue;
     const line = h("div", { class: "line" });
-    for (const p of row) line.append(galleryPicture(p, i++));
+    for (const p of row) line.append(galleryPicture(p, i++, drawn));
     gallery.append(line);
     if (strip) keepEdges(line);
   }
@@ -928,14 +933,19 @@ function layoutGallery(pics: BoardPicture[]): HTMLElement {
 }
 
 /** One picture of the win card: a button that looks like the picture, opening it big. */
-function galleryPicture(p: BoardPicture, i: number): HTMLElement {
+function galleryPicture(p: BoardPicture, i: number, drawn: { u: number; aspect: number }): HTMLElement {
   const style = `--c:${p.cols};--r:${p.rows};--i:${i}`;
-  const img = h("img", { src: p.src, alt: "", draggable: "false" });
   const known = cataloguePicture(p.id);
   // a stand-in the catalogue does not know (a board in the making) is only shown
-  if (!known) return h("figure", { class: "pic", style }, img);
+  if (!known) return h("figure", { class: "pic", style }, h("img", { src: p.src, alt: "", draggable: "false" }));
+  const sharp = sharpCopy(known, drawn.u * p.cols * drawn.aspect, drawn.u * p.rows);
+  const held = known.copies.find((c) => c.file !== known.file && copyUrl(c) === p.src);
+  const src = held && held.w >= sharp.copy.w ? p.src : sharp.url;
+  const img = h("img", { src, alt: "", draggable: "false" });
+  if (src !== p.src) img.addEventListener("error", () => (img.src = p.src), { once: true });
   const b = h("button", { type: "button", class: "pic", style, "data-press": "win.picture", "aria-label": pictureTitle(known) }, img);
-  b.addEventListener("click", () => winViewer.open(known));
+  // seen big from the copy already on screen, the full picture swapped in once it lands (viewer.ts)
+  b.addEventListener("click", () => winViewer.open(known, img.currentSrc || img.src));
   return b;
 }
 
