@@ -11,7 +11,7 @@ from exactly these numbers: `python tools/art/mockup.py <out.png>`.
 | `table.webp` | the empty winter-dusk table, portrait 1080x1920 (9:16): lanterns in the top corners, snowy pine and holly on the edges, a calm dark middle. Nothing else painted in. | ~92 KB |
 | `stack-back.webp` | one stack card back, straight on, portrait 384x512 (3:4 cards) with alpha: frosted deep blue-grey, one amber dot. | ~27 KB |
 | `snow.png` | four 32x32 white flakes in a 128x32 strip: soft small, soft large/faint, crisp, six-armed crystal. | ~2 KB |
-| `wordmark.webp`, `wordmark-1400.webp` | the title "Picture Mend" in two lines, plump frosted letters on a blue-grey lip, amber dot on the i; alpha, cropped to the letters, 2.07:1. 840x405 (~48 KB) for phones, 1400x675 (~74 KB) for big tablets: use both as a srcset; the big one stays sharp up to ~700 CSS px wide on a 2x screen. | ~48 / 74 KB |
+| `wordmark.webp`, `wordmark-1400.webp` | the title "Picture Passport" in two lines, plump frosted letters on a blue-grey lip, amber dot on the i and an amber globe for the o of Passport; alpha, cropped to the letters, 2:1. 840x420 (~54 KB) for phones, 1400x700 (~77 KB) for big tablets: use both as a srcset; the big one stays sharp up to ~700 CSS px wide on a 2x screen. | ~54 / 77 KB |
 | `ui/icon-*.svg` | slate glyphs, 48x48 viewBox: `gear`, `back`, `undo`, `hint`, `shuffle`, `restart`, `play`, `next`, `home`, `chevron`, `photos`, `route`, `lock`, `check`, `daily`. | <1 KB each |
 
 **Table:** draw it `background-size: cover; background-position: center top` with

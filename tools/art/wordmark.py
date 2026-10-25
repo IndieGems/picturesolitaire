@@ -1,12 +1,14 @@
-"""The home screen's title, "Picture Mend": a generated wordmark, cropped and sized for phones.
+"""The home screen's title, "Picture Passport" (creator, 2026-10-25; it was "Picture Mend"): a
+generated wordmark, cropped and sized for phones.
 
     python tools/art/wordmark.py <raw.png> [<alt-raw.png>]
 
-The raw image is a transparent PNG from the generator (prompt in tools/art/prompts.txt).
+The raw image is a transparent PNG from the generator (prompt in tools/art/prompts.txt); "Picture Passport" was an edit of the
+"Picture Mend" master, so the letters, frost and lip stay the same.
 It is cropped to its letters with a little air, kept as a master in
 tools/art/masters/chrome/, and shipped as public/art/wordmark.webp at WIDTH px wide (the
 title shows about 300-340 CSS px wide on a phone, so this is sharp at 2.5x) and as
-wordmark-1400.webp for big tablets. The master is 1441 px wide: nothing larger without
+wordmark-1400.webp for big tablets. The master is 1529 px wide: nothing larger without
 generating again. An optional
 second raw is kept as the alternative master only (not shipped).
 """
