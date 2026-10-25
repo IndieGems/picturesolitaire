@@ -59,6 +59,7 @@ import { cardAspect, syncCardAspect } from "./cards";
 import { createViewer } from "./viewer";
 import { closed, opened } from "./dialogs";
 import { markOf, markTag, markWords, pretendMarks, type Mark } from "./marks";
+import { createDestinationBanner, type Destination } from "./destination";
 import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy } from "./catalogue";
 import { mountParticles } from "./particles";
 import { levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
@@ -159,7 +160,9 @@ const helpers = h(
 const stuckNote = h("div", { class: "stuck-note glass", role: "status", hidden: "" });
 // a hard board's banner as it opens (marks.ts): over the board, taking no touch
 const markBanner = h("div", { class: "mark-banner", "aria-hidden": "true", hidden: "" });
-const boardScreen = h("section", { class: "screen board-screen", hidden: "" }, levelPill, back, host, stuckNote, helpers, markBanner);
+// a finished destination's name over the top of its postcard (destination.ts), taking no touch
+const destBanner = createDestinationBanner();
+const boardScreen = h("section", { class: "screen board-screen", hidden: "" }, levelPill, back, host, stuckNote, helpers, markBanner, destBanner.element);
 
 // the cards
 const winVeil = h("div", { class: "veil win", hidden: "", role: "dialog", "aria-modal": "true" });
@@ -257,6 +260,7 @@ function show(next: Screen): void {
   syncCardAspect();
   home.hidden = next !== "home";
   boardScreen.hidden = next !== "board";
+  if (next !== "board") destBanner.clear();
   albumsUi.listScreen.hidden = next !== "albums";
   albumsUi.albumScreen.hidden = next !== "album";
   routeUi.screen.hidden = next !== "challenges";
@@ -353,6 +357,7 @@ function openPlay(next: Play): void {
   if (!board || !samePlay(play, next) || boardWon) {
     board?.destroy();
     host.replaceChildren();
+    destBanner.clear();
     boardWon = false;
     play = next;
     movesSoFar = null;
@@ -543,6 +548,11 @@ function drawStuck(): void {
   stuckNote.hidden = false;
   helperBtns.shuffle.btn.classList.toggle("beckon", shuffle);
 }
+// a finished destination: its name over the postcard while it is open, gone with it (destination.ts)
+on("destination:reveal", (d) => {
+  if (screen === "board") destBanner.show(d, host);
+});
+on("destination:done", () => destBanner.hide());
 on("board:stuck", ({ doomed }) => {
   stuckDoomed = doomed;
   drawStuck();
@@ -1170,6 +1180,11 @@ export async function startApp(): Promise<void> {
         pretendMarks(m);
         if (screen === "home") drawHome();
         if (screen === "board") drawPill();
+      },
+      /** The destination banner as if a postcard had opened (null: as if it had gone), for checking it by hand. */
+      destination(d: Destination | null) {
+        if (d) destBanner.show(d, host);
+        else destBanner.hide();
       },
       /** Show a challenge board as cleared in `moves`, for this page only (a win held, never sent). */
       cleared(id: string, moves: number) {

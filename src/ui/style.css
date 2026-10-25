@@ -383,6 +383,61 @@ html.less-motion .mark-banner { animation-name: mark-fade; }
   .mark-banner { animation-name: mark-fade; }
 }
 
+/* ---------- a destination's name over its postcard (destination.ts) ----------
+   Information, so frosted glass, flat, no lip and no shadow; it takes no touch. Its middle and
+   top are the board box's (set from the script, which also gives it --room, the box's width
+   less a margin); a long name wraps to two balanced lines, then the script steps it down. */
+.dest-banner {
+  position: absolute; z-index: 4; pointer-events: none; transform: translateX(-50%);
+  width: max-content; max-width: min(var(--room, calc(100% - 24px)), 440px);
+}
+.dest-banner[hidden] { display: none; }
+.dest-glass {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 12px 24px 11px; border-radius: 26px; text-align: center;
+  animation: dest-in 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+.dest-name { max-width: 100%; font: 600 30px/1.08 var(--round); letter-spacing: 0.01em; text-wrap: balance; overflow-wrap: break-word; }
+.dest-place { max-width: 100%; font: 600 16px/1.2 var(--round); color: var(--ink-soft); text-wrap: balance; }
+.dest-place[hidden] { display: none; }
+.dest-banner.again .dest-glass { animation: dest-fade-in 0.2s ease both; }
+.dest-banner.leaving .dest-glass { animation: dest-out 0.26s ease-in both; }
+.dest-banner:is(.again, .leaving) .dest-twinkle { display: none; }
+@keyframes dest-in {
+  0% { opacity: 0; transform: translateY(-14px) scale(0.9); }
+  60% { opacity: 1; transform: translateY(0) scale(1.03); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes dest-out { to { opacity: 0; transform: translateY(-8px) scale(0.97); } }
+@keyframes dest-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes dest-fade-out { to { opacity: 0; } }
+/* the board's twinkle (board.css, .bd-twinkle): a soft amber point with a white four-pointed glint,
+   here once each as the name arrives, then still */
+.dest-twinkle {
+  position: absolute; display: block; width: var(--s); height: var(--s); margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+  background: radial-gradient(circle, #ffffff 0%, #fff4d6 16%, rgba(255, 214, 140, 0.5) 30%, rgba(255, 200, 120, 0) 52%);
+  animation: dest-twinkle 0.8s ease-out both;
+}
+.dest-twinkle::before, .dest-twinkle::after {
+  content: ""; position: absolute; left: calc(50% - var(--s) / 20); top: 0; width: calc(var(--s) / 10); height: 100%; border-radius: 1px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #ffffff 50%, rgba(255, 255, 255, 0));
+}
+.dest-twinkle::after { transform: rotate(90deg); }
+@keyframes dest-twinkle {
+  0% { opacity: 0; transform: scale(0) rotate(0deg); }
+  35% { opacity: 1; transform: scale(1.15) rotate(30deg); }
+  100% { opacity: 0; transform: scale(0.2) rotate(90deg); }
+}
+/* less motion: it fades in and out where it stands, and nothing sparkles */
+html.less-motion .dest-glass { animation: dest-fade-in 0.3s ease both; }
+html.less-motion .dest-banner.leaving .dest-glass { animation: dest-fade-out 0.26s ease both; }
+html.less-motion .dest-twinkle { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .dest-glass { animation: dest-fade-in 0.3s ease both; }
+  .dest-banner.leaving .dest-glass { animation: dest-fade-out 0.26s ease both; }
+  .dest-twinkle { display: none; }
+}
+
 /* ---------- the settings screen (src/settings-screen.ts) ---------- */
 
 #settings-screen {
