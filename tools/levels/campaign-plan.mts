@@ -65,6 +65,7 @@
 //   peek      upcoming cards each stack shows (0 on every board since 2026-10-25)
 //   chain     the chain of dependent clears (src/game/solver/metrics.ts)
 //   careless  the careless player's chance of winning
+//   traps     (optional) the winning line's steps where another choice loses the board
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
 /**
@@ -124,6 +125,13 @@ export const PLAN = [
   /* 24 */ { role: "build",  board: [4, 5], ...sq(10), careless: [0.6, 0.7], chain: ANY, ...NEW_ONLY },
   /* 25 */ { role: "hard",   board: [4, 5], ...sq(11), careless: [0.3, 0.5], chain: ANY, ...NEW_ONLY },
   /* 26 */ { role: "relief", board: [4, 5], ...sq(8), careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
+  // ---- the end of trip 2, Japan (lead, 2026-10-25; docs/difficulty-curve.md "Trips of 15 boards"):
+  // the trip's hardest builds, then its super hard finale right before the stamp
+  /* 27 */ { role: "build",  board: [4, 5], ...sq(10), careless: [0.6, 0.7], chain: ANY, ...NEW_ONLY },
+  /* 28 */ { role: "build",  board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
+  /* 29 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  // (traps capped: the first deal in range had 8, where board 20 has 1 and 25 has 2; a finale is beaten in a few tries)
+  /* 30 */ { role: "super",  board: [4, 5], ...sq(12), careless: [0.1, 0.3], traps: [0, 3], chain: ANY, ...NEW_ONLY },
 ];
 
 /**

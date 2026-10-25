@@ -26,10 +26,12 @@
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { catalogue, destById, famName, flags, lookalikes, readBoards, root, route, spacingOf, usable, writeBoards } from "./lib.mts";
+import { catalogue, destById, famName, flags, lookalikes, readBoards, reserveLandmarks, root, route, spacingOf, usable, writeBoards } from "./lib.mts";
 import { BOARD, DISTINCT, MARKS, PLAN as FULL, PLAN_TAG, SPACING, TRIPS } from "./campaign-plan.mts";
 
 const t0 = performance.now();
+// landmarks are saved for future trips' destinations: none on a campaign board (lib.mts)
+reserveLandmarks();
 
 const has = (f) => process.argv.includes(f);
 const rowsAt = process.argv.indexOf("--rows");
@@ -55,6 +57,7 @@ const made = route(PLAN, old, {
   distinct: DISTINCT,
   repairOnly: has("--repair-only") || redeal.size > 0,
   redeal,
+  landmarks: true,
   seedOf: (i) => 0xc0ffee + i * 7919,
   optsOf: (i) => ({
     id: `c${String(i + 1).padStart(2, "0")}`,

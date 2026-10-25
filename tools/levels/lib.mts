@@ -64,6 +64,32 @@ export const familyOf = (id) => (byId.get(id) ?? destById.get(id))?.family ?? id
  * it). A board that has its destination already takes only the crop. Throws
  * when the shapes differ (pick another drop).
  */
+/**
+ * A kept board with each landmark on it swapped IN PLACE for a usable picture
+ * of the same shape (so the deal, line and measures stay as they are): unseen
+ * first (spacedCost), calm before busy, never one the no-repeat rule bans on
+ * board i, and only where the board still meets its row's picture rules (fits).
+ */
+export function swappedInPlace(b, i, chosen, row, rule) {
+  if (!b.pictures.some((p) => isLandmark(p.id))) return b;
+  const all = [...catalogue, ...destinations];
+  const spec = { ...specOf(row), keep: undefined };
+  const banned = rule ? bannedOn(chosen, i, rule) : new Set();
+  const seen = rule ? spacedCost(chosen, i, rule.spacing) : new Map();
+  const costOf = (r) => (seen.get(r.id) ?? 0) + (r.busy ?? 0);
+  const pictures = [...b.pictures];
+  for (const [k, p] of b.pictures.entries()) {
+    if (!isLandmark(p.id)) continue;
+    const cands = usable
+      .filter((r) => r.cols === p.cols && r.rows === p.rows && !banned.has(r.id) && !pictures.some((q) => q.id === r.id))
+      .sort((a, c) => costOf(a) - costOf(c) || (a.id < c.id ? -1 : 1));
+    const r = cands.find((r) => fits(all, spec, pictures.map((q, j) => (j === k ? { id: r.id, cols: r.cols, rows: r.rows } : q))));
+    if (!r) throw new Error(`${b.id}: no picture can take landmark ${p.id}'s place within the board's rules`);
+    pictures[k] = { id: r.id, cols: r.cols, rows: r.rows };
+  }
+  return { ...b, pictures, ...(b.axes?.families ? { axes: { ...b.axes, families: pictures.map((q) => familyOf(q.id)) } } : {}) };
+}
+
 export function destinedInPlace(b, row) {
   if (!row?.destination) return b;
   const dest = destinationOf(row.destination, row.crop);
@@ -123,7 +149,19 @@ export const keepOf = (row) => row.keep?.map((id) => (flags.has(id) && REMAKES.h
 /** PICTURE_FLAGS=<file> reads another flags file (for trying the makers out). */
 export const flags = readFlags(process.env.PICTURE_FLAGS ?? FLAGS);
 /** The pictures a maker may put on a board: the catalogue less the flagged ones, in catalogue order. */
-export const usable = catalogue.filter((p) => !flags.has(p.id));
+export let usable = catalogue.filter((p) => !flags.has(p.id));
+
+/**
+ * LANDMARKS (lead, 2026-10-25): an everyday picture of a real named landmark
+ * (Art's "landmark": true) is saved for a future trip's destinations, so the
+ * campaign keeps them all off its boards (check.mts). reserveLandmarks() takes
+ * them out of `usable` for this run, which every picker here reads, and
+ * route's `landmarks` swaps any on a kept board in place (swappedInPlace).
+ */
+export const isLandmark = (id) => !!byId.get(id)?.landmark;
+export function reserveLandmarks() {
+  usable = usable.filter((p) => !p.landmark);
+}
 export const flaggedOn = (pictures) => pictures.map((p) => p.id).filter((id) => flags.has(id));
 
 /**
@@ -406,7 +444,7 @@ export function swapSets(spec, pictures, uses, near, max = 6) {
 export function dealBoard(row, pictures, { id, date, cols, rows, par, tries = 3000, extra, safeFirstMove = false }) {
   // the deal is shuffled from the pictures in a fixed order, so it does not hang on how they were picked
   pictures = [...pictures].sort((a, b) => (a.id < b.id ? -1 : 1));
-  const targets = { chain: row.chain, careless: row.careless, bigWait: row.bigWait, orderTraps: row.orderTraps };
+  const targets = { chain: row.chain, careless: row.careless, traps: row.traps, bigWait: row.bigWait, orderTraps: row.orderTraps };
   const spec = { id, cols, rows, pictures, targets, par, safeFirstMove };
   const tally = new Map();
   const made = generate(spec, 1, tries, tally);
@@ -485,7 +523,7 @@ export function makeBoard(plan, i, chosen, uses, opts) {
  * changed as can be), and make the plan's rows past the end. `optsOf(i)` gives
  * makeBoard's options for board i; `seedOf(i)` seeds a new board's pick.
  */
-export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repairOnly = false, redeal = new Set() }) {
+export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repairOnly = false, redeal = new Set(), landmarks = false }) {
   if (old.length > plan.length) throw new Error(`the file has ${old.length} boards, the plan ${plan.length}`);
   const chosen = old.map((b) => b.pictures);
   // peek is no part of the deal (dealFor), so a kept board takes its row's peek with its deal and line
@@ -500,9 +538,18 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
     levels[i] = d;
     chosen[i] = d.pictures;
   });
-  const uses = usesOf(chosen);
   // with spacing, the no-repeat rule holds on every board this makes (bannedOn)
   const rule = spacing ? { spacing, distinct } : undefined;
+  // then the landmarks left on kept boards (the campaign's; reserveLandmarks), each in place
+  if (landmarks)
+    levels.forEach((b, i) => {
+      const d = swappedInPlace(b, i, chosen, plan[i] ?? {}, rule);
+      if (d === b) return;
+      console.log(`${b.id}: ${b.pictures.map((p, k) => (p.id !== d.pictures[k].id ? `${p.id} -> ${d.pictures[k].id}` : "")).filter(Boolean).join(", ")} in place (landmarks wait for their trips); the deal and line unchanged`);
+      levels[i] = d;
+      chosen[i] = d.pictures;
+    });
+  const uses = usesOf(chosen);
   const poolOf = rule ? (i) => poolOn(chosen, i, rule) : undefined;
   // with spacing, a swap's nearness is the gap it would make (1000: the rule bans it)
   const near = spacing
