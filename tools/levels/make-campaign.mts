@@ -27,7 +27,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { catalogue, famName, flags, lookalikes, readBoards, root, route, spacingOf, usable, writeBoards } from "./lib.mts";
-import { BOARD, DISTINCT, PLAN as FULL, PLAN_TAG, SPACING } from "./campaign-plan.mts";
+import { BOARD, DISTINCT, MARKS, PLAN as FULL, PLAN_TAG, SPACING } from "./campaign-plan.mts";
 
 const t0 = performance.now();
 
@@ -72,7 +72,19 @@ if (made.picks) {
   console.log(sizes.map((z, i) => `${i + 1}:${z}`).join(" "));
   process.exit(0);
 }
-const levels = made;
+// the mark players see (MARKS, by the row's role), right after peek so the file's line breaks hold
+const withMark = (l, row) => {
+  const { mark: _, ...rest } = l;
+  const mark = MARKS[row.role];
+  if (!mark) return rest;
+  const out = {};
+  for (const [k, v] of Object.entries(rest)) {
+    out[k] = v;
+    if (k === "peek") out.mark = mark;
+  }
+  return out;
+};
+const levels = made.map((l, i) => withMark(l, PLAN[i]));
 // the first board hosts the guided start (UI's onboarding plays its line)
 if (shipped[0] && JSON.stringify(levels[0]) !== JSON.stringify(shipped[0])) console.warn("!! c01 changed: tell UI to re-check the guided start's steps");
 const sp = spacingOf(levels.map((l) => l.pictures), SPACING);
@@ -84,7 +96,7 @@ if (OUT !== FILE) process.exit(0);
 const counts = usable.map((p) => levels.filter((l) => l.pictures.some((q) => q.id === p.id)).length);
 const rows = levels.map((l, i) => {
   const a = l.axes;
-  return `| ${i + 1} | ${a.role} | ${l.pictures.length} | ${lookalikes(l)} | ${a.sizes.join(" ")} | ${a.shapes.join(" ")} | ${l.cols}x${l.rows} | ${a.cards} (${a.waiting}) | ${a.peek} | ${a.chain} | ${Math.round(a.careless * 100)}% | ${a.traps} | ${a.lineMoves} |`;
+  return `| ${i + 1} | ${a.role}${l.mark ? ` (marked ${l.mark})` : ""} | ${l.pictures.length} | ${lookalikes(l)} | ${a.sizes.join(" ")} | ${a.shapes.join(" ")} | ${l.cols}x${l.rows} | ${a.cards} (${a.waiting}) | ${a.peek} | ${a.chain} | ${Math.round(a.careless * 100)}% | ${a.traps} | ${a.lineMoves} |`;
 });
 const md = `# The relaxed campaign
 
@@ -95,7 +107,7 @@ What each of the ${levels.length} boards asks of the player, axis by axis. Made 
 and run the maker. The challenge route is in [challenge.md](challenge.md), the
 daily puzzle in [daily.md](daily.md).
 
-- **Role**: the board's place in the sawtooth ([difficulty-curve.md](difficulty-curve.md)): teach, bite (the first hard-for-a-beginner board), build, relief, hard, peak, super (super hard), pace (all long pictures, a change of pace). Every board but hard, peak and super starts safe: no first move or first clear dooms it.
+- **Role**: the board's place in the sawtooth ([difficulty-curve.md](difficulty-curve.md)): teach, bite (the first hard-for-a-beginner board), build, relief, hard, peak, super (super hard), pace (all long pictures, a change of pace). Every board but hard, peak and super starts safe: no first move or first clear dooms it. Players see a mark on hard and peak boards ("hard") and super ones ("super").
 - **Lookalikes**: pictures from the same family (they share colours and subjects).
 - **Cards per picture**: the pieces each picture is cut into.
 - **Cards (waiting)**: all the board's cards; in brackets, those still in the stacks when it opens (a 4x5 board holds 20, a 4x6 board 24).

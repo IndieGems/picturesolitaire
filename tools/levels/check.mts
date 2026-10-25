@@ -20,6 +20,8 @@
 //   - the campaign: no picture on two of its first boards (campaign-plan.mts
 //     DISTINCT; AGENTS.md "Pictures rarely repeat");
 //   - every stack shows card backs: peek 0 (creator, 2026-10-25);
+//   - the mark players see: a campaign board's `mark` is its role's
+//     (campaign-plan.mts MARKS), and no other board has one;
 //   - the campaign's boards but its hard ones (campaign-plan.mts MAY_TRAP) and
 //     the dev menu's experiment boards (experiments.json): a safe start
 //     (AGENTS.md): every picture finishable from the opening can be finished
@@ -35,7 +37,7 @@ import { Game } from "../../src/game/solver/index.ts";
 import { along, careless, chain, orderTraps, traps, unavoidable, wait } from "../../src/game/solver/metrics.ts";
 import { BIG, dealFor, deadFirstMoves, doomingFirstClears } from "../../src/game/levels/generate.ts";
 import { flags } from "./lib.mts";
-import { DISTINCT, MAY_TRAP } from "./campaign-plan.mts";
+import { DISTINCT, MARKS, MAY_TRAP } from "./campaign-plan.mts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const catalogue = new Map(JSON.parse(readFileSync(join(root, "src/content/pictures.json"), "utf8")).pictures.map((p) => [p.id, p]));
@@ -60,6 +62,8 @@ for (const file of files) {
       ids.add(l.id);
       // PEEK0: every stack shows card backs (creator, 2026-10-25); enforced once the re-dealt level files are in (Levels, same commit)
       if (process.env.PEEK0 ? l.peek !== 0 : ![0, 1, 2].includes(l.peek)) fail(`peek ${l.peek}: every stack shows card backs, peek 0 (AGENTS.md)`);
+      const markWant = file.endsWith("campaign.json") ? MARKS[l.axes?.role] : undefined;
+      if (l.mark !== markWant) fail(`mark ${l.mark ?? "none"}, but a ${file.endsWith("campaign.json") ? `${l.axes?.role} board` : "board outside the campaign"} takes ${markWant ?? "none"}`);
       if (l.par !== undefined && l.par !== l.line.length) fail(`par ${l.par} but the line has ${l.line.length} moves`);
       if (l.date !== undefined) {
         if (!/^\d{4}-\d{2}-\d{2}$/.test(l.date) || l.id !== `d${l.date}`) fail(`date ${l.date} and id ${l.id} do not match`);

@@ -117,6 +117,15 @@ export const PLAN = [
 /** Roles that may trap from the first move; every other board starts safe (check.mts). */
 export const MAY_TRAP = new Set(["hard", "peak", "super"]);
 
+/**
+ * The mark players see on a board (creator, 2026-10-25: hard and super hard
+ * boards are marked), by role: a board's top-level `mark` field, which the
+ * game reads; none on any other board, the first bite included, nor on the
+ * challenge route or the daily (check.mts). The first peak is at the hard
+ * target, so it is marked hard. The win checker ignores the field.
+ */
+export const MARKS = { hard: "hard", peak: "hard", super: "super" };
+
 // every board: card backs on the stacks, varied, nothing busy 2, and few rated busy at all
 // (an all-long board keeps all its pictures, so it has no busy cap of its own)
 for (const row of PLAN) Object.assign(row, { peek: 0, vary: true, busyMost: row.busyMost ?? 0, liveMost: row.liveMost ?? (row.role === "pace" ? undefined : row.count >= 8 ? 2 : 1) });
