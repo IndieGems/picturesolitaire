@@ -20,6 +20,11 @@
 //   - the campaign: no picture on two of its first boards (campaign-plan.mts
 //     DISTINCT; AGENTS.md "Pictures rarely repeat");
 //   - every stack shows card backs: peek 0 (creator, 2026-10-25);
+//   - a destination (lead, 2026-10-25; lib.mts destinationOf): the board's
+//     "destination" names a postcard of the board's size, its crop window fits
+//     on it (and is the catalogue's crop when the entry has one), and the id is
+//     in the pictures exactly once, as a 2x2; no board deals a postcard as an
+//     ordinary picture;
 //   - the mark players see: a campaign board's `mark` is its role's
 //     (campaign-plan.mts MARKS), and no other board has one;
 //   - the campaign's boards but its hard ones (campaign-plan.mts MAY_TRAP) and
@@ -36,11 +41,12 @@ import { cardsOf, isDeadEnd, isWon, joinCount, replay, start } from "../../src/g
 import { Game } from "../../src/game/solver/index.ts";
 import { along, careless, chain, orderTraps, traps, unavoidable, wait } from "../../src/game/solver/metrics.ts";
 import { BIG, dealFor, deadFirstMoves, doomingFirstClears } from "../../src/game/levels/generate.ts";
-import { flags } from "./lib.mts";
+import { byId, destById, flags } from "./lib.mts";
 import { DISTINCT, MARKS, MAY_TRAP } from "./campaign-plan.mts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
-const catalogue = new Map(JSON.parse(readFileSync(join(root, "src/content/pictures.json"), "utf8")).pictures.map((p) => [p.id, p]));
+// the library pictures and the destination postcards (lib.mts; PICTURES=<file> checks a trial catalogue)
+const catalogue = byId;
 const files = process.argv.slice(2);
 const dir = join(root, "src/content/levels");
 if (!files.length) for (const f of readdirSync(dir).sort()) if (f.endsWith(".json")) files.push(join(dir, f));
@@ -70,11 +76,27 @@ for (const file of files) {
         if (lastDate && l.date !== next) fail(`date ${l.date} does not follow ${lastDate}`);
         lastDate = l.date;
       }
+      if (l.destination !== undefined) {
+        const { id, crop } = l.destination;
+        const d = destById.get(id);
+        const on = l.pictures.filter((p) => p.id === id);
+        if (!d) fail(`destination ${id} is no postcard in the catalogue`);
+        else if (d.cols !== l.cols || d.rows !== l.rows) fail(`destination ${id} is a ${d.cols}x${d.rows} postcard on a ${l.cols}x${l.rows} board`);
+        if (on.length !== 1) fail(`destination ${id} is in the pictures ${on.length} times, not once`);
+        else if (on[0].cols !== 2 || on[0].rows !== 2) fail(`destination ${id} plays as ${on[0].cols}x${on[0].rows}, not 2x2`);
+        else if (d && !(Array.isArray(crop) && crop.length === 2 && crop.every(Number.isInteger) && crop[0] >= 0 && crop[1] >= 0 && crop[0] + on[0].cols <= d.cols && crop[1] + on[0].rows <= d.rows)) fail(`destination ${id}: crop ${JSON.stringify(crop)} does not fit the postcard`);
+        if (d?.crop && JSON.stringify(d.crop) !== JSON.stringify(crop)) fail(`destination ${id}: crop ${JSON.stringify(crop)}, the catalogue's is ${JSON.stringify(d.crop)} (re-run the maker)`);
+      }
       for (const p of l.pictures) {
         if (flags.has(p.id)) {
           const note = flags.get(p.id).note;
           fail(`uses flagged picture ${p.id}`);
           flaggedUses.push({ board: l.id, line: `board ${l.id} uses flagged picture ${p.id}${note ? ` ("${note}")` : ""}` });
+        }
+        // a postcard plays only as its board's destination (its size is checked above)
+        if (destById.has(p.id)) {
+          if (l.destination?.id !== p.id) fail(`postcard ${p.id} is dealt as an ordinary picture, not as the board's destination`);
+          continue;
         }
         const c = catalogue.get(p.id);
         if (!c) fail(`no picture ${p.id} in the catalogue`);

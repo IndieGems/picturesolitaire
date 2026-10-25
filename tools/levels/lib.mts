@@ -19,8 +19,46 @@ import { alikeOf, fits, pick, shapeOf } from "../../src/game/levels/pick.ts";
 
 export const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 /** PICTURES=<file> reads another catalogue (for trying a library out; never for shipping). */
-export const catalogue = JSON.parse(readFileSync(process.env.PICTURES ?? join(root, "src/content/pictures.json"), "utf8")).pictures;
+const CATALOGUE = JSON.parse(readFileSync(process.env.PICTURES ?? join(root, "src/content/pictures.json"), "utf8"));
+/**
+ * DESTINATIONS (lead, 2026-10-25: the game is a travelogue): a board may have
+ * one, a real place's postcard the size of the board, of which a crop window
+ * plays as an ordinary picture. Art's catalogue holds them either in a list of
+ * their own (`destinations`) or as `pictures` entries marked
+ * "destination": true; both are read here, and NEITHER IS EVER DEALT AS A
+ * LIBRARY PICTURE: `catalogue` (and so `usable`) leaves them out.
+ */
+export const destinations = [...(CATALOGUE.destinations ?? []), ...CATALOGUE.pictures.filter((p) => p.destination)];
+export const destById = new Map(destinations.map((d) => [d.id, d]));
+export const catalogue = CATALOGUE.pictures.filter((p) => !p.destination);
 export const byId = new Map(catalogue.map((p) => [p.id, p]));
+
+/**
+ * A board's destination record: {"id", "crop": [col, row]}, the crop window's
+ * top-left cell on the postcard, in the board's cells. The crop is Art's when
+ * the catalogue entry has one (check.mts holds the board to it), else the
+ * maker row's. The window plays as a 2x2 picture (destPicture): the rules,
+ * solver and checker see nothing else.
+ */
+export function destinationOf(id, crop) {
+  const d = destById.get(id);
+  if (!d) throw new Error(`no destination ${id} in the catalogue`);
+  const c = d.crop ?? crop;
+  if (!c) throw new Error(`destination ${id}: no crop in the catalogue or the row`);
+  return { id, crop: [...c] };
+}
+/** The destination's picture on the board: its crop window, a square. */
+export const destPicture = (id) => ({ id, cols: 2, rows: 2 });
+/** The board with its destination record right after its size (one key order in every file). */
+export function withDestination(board, dest) {
+  const out = {};
+  for (const [k, v] of Object.entries(board)) {
+    if (k === "destination") continue;
+    out[k] = v;
+    if (k === "rows" && dest) out.destination = dest;
+  }
+  return out;
+}
 
 // ---------------------------------------------------------------- flagged pictures
 /**
@@ -351,7 +389,7 @@ export function dealBoard(row, pictures, { id, date, cols, rows, par, tries = 30
   const axes = {
     role: row.role,
     alike: alikeOf(catalogue, pictures),
-    families: pictures.map((p) => byId.get(p.id).family),
+    families: pictures.map((p) => (byId.get(p.id) ?? destById.get(p.id))?.family ?? p.id),
     sizes: pictures.map((p) => p.cols * p.rows),
     shapes: [...new Set(pictures.map(shapeOf))].sort(),
     cards: pictures.reduce((n, p) => n + p.cols * p.rows, 0),
