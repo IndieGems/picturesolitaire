@@ -46,7 +46,7 @@ export const flaggedOn = (pictures) => pictures.map((p) => p.id).filter((id) => 
 /** The boards in a boards file, [] if there is none. */
 export const readBoards = (file) => (existsSync(file) ? JSON.parse(readFileSync(file, "utf8")).levels : []);
 
-export const specOf = (row) => ({ count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, must: row.must, most: row.most, bigMost: row.bigMost, vary: row.vary, busyMost: row.busyMost, old: row.old, oldMost: row.oldMost });
+export const specOf = (row) => ({ count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, must: row.must, most: row.most, bigMost: row.bigMost, vary: row.vary, busyMost: row.busyMost, liveMost: row.liveMost, old: row.old, oldMost: row.oldMost });
 
 export const usesOf = (chosen) => {
   const u = new Map(catalogue.map((q) => [q.id, 0]));
@@ -412,7 +412,10 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
     // with spacing: unseen first, then the longest unseen (spacedCost), and nothing the rule bans;
     // without: not near it. Then calm before busy, and new before a picture the row limits (old)
     const base = spacing ? spacedCost(chosen, i, spacing) : new Map(usable.map((p) => [p.id, near(i, p.id)]));
-    const cost = new Map(usable.map((p) => [p.id, base.get(p.id) + (p.busy ?? 0) * 2 + (plan[i].old?.has(p.id) ? 2 : 0)]));
+    // (with liveMost, a row's cap spreads the lively pictures: a strong lean against busy 1 would only
+    // save them all for the last board, which then cannot be filled; busy 1 does not lean at all)
+    const lean = (b) => (plan[i].liveMost !== undefined ? [0, 0, 4][b] : b * 2);
+    const cost = new Map(usable.map((p) => [p.id, base.get(p.id) + lean(p.busy ?? 0) + (plan[i].old?.has(p.id) ? 2 : 0)]));
     const recent = new Set([...(chosen[i - 1] ?? []), ...(chosen[i + 1] ?? [])].map((q) => q.id));
     const set = pick(poolOf ? poolOf(i) : usable, specOf(plan[i]), cost, recent, random(seedOf(i)));
     if (!set) throw new Error(rule ? shortText(plan, chosen, i, rule) : `${old[i].id}: no pictures fit the plan${flags.size ? " (flagged pictures are left out)" : ""}`);

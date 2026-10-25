@@ -17,6 +17,8 @@
 //   - a daily board: its id is "d" + its date, and dates run one a day;
 //   - no board uses a picture the creator flagged "don't use"
 //     (src/content/picture-flags.json; node tools/levels/redeal.mts re-deals them);
+//   - the campaign: no picture on two of its first boards (campaign-plan.mts
+//     DISTINCT; AGENTS.md "Pictures rarely repeat");
 //   - the relaxed campaign (campaign.json) and the dev menu's experiment
 //     boards (experiments.json): a safe start (AGENTS.md): every
 //     picture finishable from the opening can be finished first without
@@ -31,6 +33,7 @@ import { Game } from "../../src/game/solver/index.ts";
 import { along, careless, chain, orderTraps, traps, unavoidable, wait } from "../../src/game/solver/metrics.ts";
 import { BIG, dealFor, deadFirstMoves, doomingFirstClears } from "../../src/game/levels/generate.ts";
 import { flags } from "./lib.mts";
+import { DISTINCT } from "./campaign-plan.mts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const catalogue = new Map(JSON.parse(readFileSync(join(root, "src/content/pictures.json"), "utf8")).pictures.map((p) => [p.id, p]));
@@ -80,6 +83,13 @@ for (const file of files) {
       const s = start(deal).state;
       if (s.cleared.length || joinCount(s) > 0) fail("something is joined or finished at the opening");
       if (isDeadEnd(s)) fail("the opening is a dead end");
+      // pictures rarely repeat: none on two of campaign boards 1-DISTINCT
+      if (file.endsWith("campaign.json") && data.levels.indexOf(l) < DISTINCT) {
+        for (const p of l.pictures) {
+          const k = data.levels.slice(0, data.levels.indexOf(l)).findIndex((e) => e.pictures.some((q) => q.id === p.id));
+          if (k >= 0) fail(`${p.id} is on board ${data.levels[k].id} too (no picture is on two of boards 1-${DISTINCT})`);
+        }
+      }
       if (file.endsWith("campaign.json") || file.endsWith("experiments.json")) {
         const dead = deadFirstMoves(deal);
         if (dead.length) fail(`${dead.length} first move(s) leave the board stuck, e.g. ${dead[0].from} to ${dead[0].to}`);

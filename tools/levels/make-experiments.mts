@@ -17,7 +17,7 @@ import { random } from "../../src/game/rules.ts";
 import { hashId } from "../../src/game/levels/generate.ts";
 import { pick } from "../../src/game/levels/pick.ts";
 import { dealBoard, flaggedOn, readBoards, root, specOf, tallyText, usable, writeBoards } from "./lib.mts";
-import { DISTINCT } from "./campaign-plan.mts";
+import { CURRENT, DISTINCT } from "./campaign-plan.mts";
 
 const FILE = join(root, "src/content/levels/experiments.json");
 const CAMPAIGN = join(root, "src/content/levels/campaign.json");
@@ -33,11 +33,9 @@ export const EXPERIMENTS = [
   // x01 (lead, 2026-10-25): only long pictures, tall 1x2 and wide 2x1 mixed, on the early campaign's
   // 4x4 board, relaxed with a safe start. All-domino boards are easy at any count (a trial: chain 2,
   // careless win 100% from 9 to 12 pictures), so it holds the most: 12, 8 waiting.
-  // PROVISIONAL until Art's long pictures land: the library has 6 tall and 5 wide from 8 families, most
-  // of them busy, so for now 10 (5 + 5) with two look-alike pairs, not kept apart, any busy and no
-  // variety; then: name without "stand-in", count 12, alike [], must 6 + 6, apart: true, vary: true,
-  // busyMost: 1, and --remake x01.
-  { id: "x01", name: "Long pictures only (stand-in pictures)", role: "experiment", board: [4, 4], count: 10, alike: [2, 2], sizes: [2], cards: [20, 20], must: shapes({ "1x2": 5, "2x1": 5 }), peek: 2, chain: [1, 3], careless: [0.9, 1], apart: false },
+  // Art's long pictures (2026-10-25) are 7 tall and 8 wide not on campaign boards 1-13; three of the
+  // tall ones are a little busy (busy 1), so a few may come in, but none busy 2, and none from before the clear pictures (CURRENT).
+  { id: "x01", name: "Long pictures only (tall and wide)", role: "experiment", board: [4, 4], count: 12, alike: [], sizes: [2], cards: [24, 24], must: shapes({ "1x2": 6, "2x1": 6 }), peek: 2, chain: [1, 3], careless: [0.9, 1], apart: true, vary: true, busyMost: 0, old: CURRENT, oldMost: 0 },
 ];
 
 const has = (f) => process.argv.includes(f);

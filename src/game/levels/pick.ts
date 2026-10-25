@@ -56,6 +56,8 @@ export interface PickSpec {
   vary?: boolean;
   /** At most this many busy pictures (busy 2). */
   busyMost?: number;
+  /** At most this many pictures rated busy at all (busy 1 or 2), so the livelier ones spread over the boards. */
+  liveMost?: number;
   /** At most `oldMost` pictures from `old` (boards made mostly from new pictures). */
   old?: ReadonlySet<string>;
   oldMost?: number;
@@ -73,6 +75,7 @@ export const shapeOf = (p: { cols: number; rows: number }) => `${p.cols}x${p.row
 /** Could `p` join `set` under the spec's variety, busy and old limits (the set itself within them)? */
 function welcome(spec: PickSpec, set: readonly CataloguePicture[], p: CataloguePicture): boolean {
   if (spec.busyMost !== undefined && (p.busy ?? 0) >= 2 && set.filter((q) => (q.busy ?? 0) >= 2).length >= spec.busyMost) return false;
+  if (spec.liveMost !== undefined && (p.busy ?? 0) >= 1 && set.filter((q) => (q.busy ?? 0) >= 1).length >= spec.liveMost) return false;
   if (spec.old && spec.oldMost !== undefined && spec.old.has(p.id) && set.filter((q) => spec.old!.has(q.id)).length >= spec.oldMost) return false;
   if (spec.vary) {
     const words = new Set(p.subjects ?? []);
@@ -266,7 +269,7 @@ export function fits(catalogue: readonly CataloguePicture[], spec: PickSpec, pic
   const most = { 9: 1, ...spec.most };
   for (const [size, max] of Object.entries(most)) if (pictures.filter((p) => p.cols * p.rows === +size).length > max) return false;
   if (spec.bigMost !== undefined && pictures.filter(isBig).length > spec.bigMost) return false;
-  if (spec.vary || spec.busyMost !== undefined || spec.oldMost !== undefined) {
+  if (spec.vary || spec.busyMost !== undefined || spec.liveMost !== undefined || spec.oldMost !== undefined) {
     // the same limits, judged on the catalogue's entries (the board's pictures carry only id and shape)
     const full = pictures.map((p) => catalogue.find((c) => c.id === p.id) ?? { ...p, family: "" });
     if (!full.every((p, i) => welcome(spec, full.slice(0, i), p))) return false;

@@ -72,8 +72,12 @@ export const DISTINCT = 13;
 /** The catalogue's pictures before the clear, varied ones (2026-10-24): boards 1-3 take at most one. */
 export const CURRENT = new Set(["dusk-harbour", "dune-caravan", "poppy-sunset", "candle-oranges", "blossom-lane", "peony-jug", "berry-cake", "rose-hat", "maple-path", "harvest-table", "apple-orchard", "ivy-lane", "blue-domes", "wave-coast", "hydrangeas", "net-mender", "wheat-farm", "bread-table", "sunflower-vase", "wheat-walk", "lavender-rows", "wisteria-door", "lilac-bouquet", "figs-grapes", "tea-terraces", "market-greens", "greenhouse", "green-alley", "venice-canal", "lantern-market", "lantern-child", "lake-village", "cherry-bowl", "tulip-rows", "red-tram", "red-umbrella", "lemon-coast", "lemon-tart", "daffodil-meadow", "canal-bicycle", "snow-chalets", "skating-day", "frost-hellebores", "winter-stream", "riad-court", "carpet-bazaar", "anemones", "pomegranates", "pastel-row", "patisserie", "beach-huts", "balloon-seller", "copper-spires", "copper-kitchen", "potter-studio", "turquoise-falls", "abbey-cloister", "stone-village", "white-garden", "olive-grove"]);
 const FRESH = { busyMost: 0, old: CURRENT, oldMost: 1 };
-/** Boards 4-13: at most one picture from before the clear ones (the re-deal ranks them after new ones). */
-const NEWER = { old: CURRENT, oldMost: 1 };
+/**
+ * Boards 4-13: at most one picture from before the clear ones (the re-deal
+ * ranks them after new ones), and at most one rated busy at all (liveMost),
+ * so the few lively ones spread out instead of gathering on the last board.
+ */
+const NEWER = { old: CURRENT, oldMost: 1, liveMost: 1 };
 
 const SQ = [4];
 
