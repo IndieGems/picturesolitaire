@@ -92,6 +92,13 @@ export interface GameEvents {
    * opening of a marked board; never on restart). Sound plays its sting.
    */
   "board:mark": { mark: "hard" | "super" };
+  /**
+   * A trip was finished and its stamp just landed in the passport (UI, once
+   * per trip, when progress first passes its last board; never on a replay).
+   * `trip`: its id in src/content/levels/trips.json ("t1"). Sound plays the
+   * stamp's thud.
+   */
+  "trip:stamp": { trip: string };
   /** Any button pressed in the interface (for its click sound). */
   "ui:press": { id: string };
   /**
