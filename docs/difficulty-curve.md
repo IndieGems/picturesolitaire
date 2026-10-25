@@ -85,6 +85,88 @@ Royal Match (creator, 2026-10-25; AGENTS.md).
 
 - **Coins:** whether peaks pay more than the usual Coins per move.
 
+## Trips of 15 boards (proposal, Levels, 2026-10-25)
+
+The game becomes a travelogue (creator, 2026-10-25): trips of about 15 boards,
+each ending in a passport stamp. Each board has one destination, a real
+place's postcard the size of the board, of which a 2×2 window plays as an
+ordinary picture and unfolds into the whole postcard when it is finished.
+
+**A trip's shape.** Three spikes, one every fifth board, each followed by a
+board that eases off. The stamp rewards the finale.
+
+| Board in the trip | Role | Careless play wins (target) |
+|---|---|---|
+| x1 | Relief, right after the stamp (teach, on trip 1) | 85–100% |
+| x2–x4 | Build | 60–80% |
+| x5 | **Hard** | 30–50% |
+| x6 | Change of pace: all long pictures (relief) | 100% |
+| x7–x9 | Build, rising | 55–70% |
+| x10 | **Hard** | 30–50% |
+| x11 | Relief | 85–100% |
+| x12–x14 | Build, the trip's hardest builds | 50–65% |
+| x15 | **Super hard**, the finale before the stamp | 10–30% |
+
+- **Trip 1 keeps its onboarding curve** (bite 3, hard 7, peak 10, finale 15):
+  it ends on a hard board, not a super hard one.
+- **All-long boards:** one a trip, in a relief slot after a spike (11 on
+  trip 1, 21 on trip 2, then x6). That is one board in 15, not the ruled one
+  in ten; one in ten needs two a trip (x6 and x11). *The creator's call*; I
+  would keep one a trip, since x11 already relieves.
+
+**What a destination does to difficulty: nothing, if it takes a picture's
+place.** The rules see a 2×2 like any other. Added as an extra picture, it
+would turn the dial: a relief board's 5 pictures to 6 stays easy, but a hard
+board's 8 to 9 drops careless win from about 44% to 18%.
+
+**On an all-long board**, squares and long pictures never mix, so the
+destination plays as a tall (1×2) or wide (2×1) window of the same postcard.
+Art picks the way it runs: tall for a tower or a waterfall, wide for a
+skyline or a bridge. Two cards show less of the place than four, but the
+reveal unfolds the whole postcard anyway. The board already draws any window
+shape (Gameplay). The check would allow a long window on an all-long board
+only, and Art's entry would say which way it runs.
+
+**Re-dealing boards 1–15 with a destination each costs no difficulty.**
+
+- Each board's destination takes one picture's place, at the same spot in the
+  board's list. The deal, the winning line, par, careless win, traps and chain
+  stay exactly as they are; the people remakes went in this way. So the
+  creator's reviews of boards 1–15 stand.
+- **Which picture leaves:** the board's own real landmark, where it has one,
+  so the trip's place is the only real place on its board: Mount Fuji (3),
+  the Leaning Tower (6), the Colosseum (10), the Eiffel Tower or the Taj Mahal
+  (12). Golden Gate (10) is American, and could become board 10's destination
+  itself, as a postcard. Elsewhere, the busiest picture leaves. The 15 that
+  leave go back to the spares, since no player has met them yet.
+- **The cost:**
+  - Art: 15 postcards at the 4×4 board's size, board 11's with a long window.
+  - Levels: a destination for each board, then a re-run (minutes).
+  - Server: one checker and Coins rebuild; the pictures change, the Coins do not.
+- **Only if wanted:** the place can be held back to come late on the board,
+  as its last clear. That needs a new deal for the board, aimed at the same
+  targets, which changes the deal the creator reviewed. I would start with the
+  swap, and re-deal only the boards where the place comes out too soon.
+
+**The campaign in trips:**
+
+- **Trip 1, "Travel America", boards 1–15:** as it is now.
+- **Trip 2, boards 16–30:**
+  - Board 16 is already relief, right after the stamp.
+  - Board 20 is super hard, board 21 all long, board 25 hard and board 26 relief.
+  - New: boards 27–29 are 4×5 builds (10–11 pictures, 50–65%), and board 30
+    is the super hard finale (12 pictures, 10–30%).
+- **The cost of trip 2:**
+  - Levels: 4 new boards.
+  - Art: 15 postcards, 6 at the 4×4 size (16–21, board 21's long) and 9 at
+    the 4×5 size (22–30), since 4×5 boards start mid-trip, at 22.
+  - The same in-place swap for 16–26.
+- *For the creator:* keep board 20 super hard, so trip 2 has two (20 and 30)
+  and ends on its hardest board; or ease 20 to hard, to match the shape above
+  (one board re-dealt). I would keep it.
+- The challenge route and the daily stay library-only, with no destinations,
+  unless the creator wants them.
+
 ## Sources
 
 - [Bugnet: difficulty curves, how to get them right](https://bugnet.io/blog/difficulty-curves-how-to-get-them-right)
