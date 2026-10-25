@@ -5,6 +5,7 @@
     python tools/art/pictures.py process <raw-dir> <id>... raw PNG -> tools/art/masters + public/pictures (+ thumb)
     python tools/art/pictures.py export [<id>...]         masters -> public/pictures + thumbs, at the card aspect
     python tools/art/pictures.py thumbs [<id>...]         Albums-screen thumbs from the masters (default: all)
+    python tools/art/pictures.py boards [<id>...]         the board's light copies from the masters (default: all)
     python tools/art/pictures.py catalogue                write src/content/pictures.json
     python tools/art/pictures.py sheet <out.png> <id>...  contact sheet with the card cuts drawn on
     python tools/art/pictures.py grid <out.png> <id>...   compact sheet: look-alike families in rows, the rest six a row
@@ -14,7 +15,11 @@ says how a picture is made. Masters keep the generated pixels (WebP q90, at the
 picture's aspect) so a picture can be re-exported without paying to generate it again.
 
 Cards are PORTRAIT cells, 3:4 (creator, 2026-10-24), so a picture of cols x rows cards
-is (cols*3):(rows*4) and ships at exactly cols*384 x rows*512 px, WebP q80. The first
+is (cols*3):(rows*4) and ships at exactly cols*384 x rows*512 px, WebP q80: that full picture
+is only for the enlarged view. The board draws <id>-board.webp, 240 x 320 px a card (a phone
+draws a card about 90 CSS px wide), and the Albums screen <id>-thumb.webp
+(creator, 2026-10-25: "a picture ships at the size it is drawn"; tools/art/check-copies.mjs
+fails the build when one is missing or over its budget). The first
 60 pictures were made for square cells; their masters keep the square-cell generation and
 `export` cuts them to the new aspect (an entry's cropX, 0 left .. 1 right, frames the subject).
 """
@@ -119,6 +124,7 @@ def export(e):
     out.parent.mkdir(parents=True, exist_ok=True)
     framed(e).resize(size_of(e), Image.LANCZOS).save(out, "WEBP", quality=80, method=6)
     make_thumb(e)
+    make_board(e)
     return out
 
 
@@ -171,6 +177,41 @@ def make_thumb(e):
     return im.size, out.stat().st_size
 
 
+BOARD_CELL = (240, 320)  # the board's copy, per card: ~2.7x a phone's ~90 CSS px card
+# Smooth flat colour rings at low quality, and is small anyway: it keeps q84. Photos and
+# painted texture look the same at q74 and are a third lighter (Untangled's docs/mobile.md).
+SMOOTH_MEDIA = {"flat", "low-poly", "deco", "stained-glass", "papercut", "render"}
+BOARD_BUDGET = 28 * 1024  # per card; tools/art/check-copies.mjs holds the build to it
+
+
+def board_rel(e):
+    # beside the full picture, "-board" so every name in the build stays unique
+    return f"pictures/{e['album']}/{e['id']}-board.webp"
+
+
+def make_board(e):
+    """The copy the board draws: the picture at BOARD_CELL a card, stepped down in quality
+    (never below q56) until it fits BOARD_BUDGET a card."""
+    w, h = e["cols"] * BOARD_CELL[0], e["rows"] * BOARD_CELL[1]
+    im = framed(e).resize((w, h), Image.LANCZOS)
+    out = PUBLIC / board_rel(e)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    budget = BOARD_BUDGET * e["cols"] * e["rows"]
+    for q in range(84 if e["medium"] in SMOOTH_MEDIA else 74, 55, -4):
+        im.save(out, "WEBP", quality=q, method=6)
+        if out.stat().st_size <= budget:
+            break
+    return im.size, out.stat().st_size
+
+
+def cmd_boards(ids):
+    p = plan()
+    for e in p["pictures"]:
+        if (not ids or e["id"] in ids) and master_path(e["id"]).exists():
+            size, b = make_board(e)
+            print(e["id"], size, f"{b // 1024} KB")
+
+
 def cmd_thumbs(ids):
     p = plan()
     for e in p["pictures"]:
@@ -191,11 +232,13 @@ def cmd_catalogue():
             continue
         with Image.open(PUBLIC / rel) as im:
             px = list(im.size)
+        with Image.open(PUBLIC / board_rel(e)) as im:
+            board_px = list(im.size)
         fam = e.get("family") or e["id"]
         pictures.append({
             "id": e["id"], "album": e["album"], "title": e["title"], "medium": e["medium"],
-            "file": rel, "thumb": thumb_rel(e["id"]),
-            "cols": e["cols"], "rows": e["rows"], "px": px,
+            "file": rel, "board": board_rel(e), "thumb": thumb_rel(e["id"]),
+            "cols": e["cols"], "rows": e["rows"], "px": px, "boardPx": board_px,
             "palette": e.get("palette") or p["families"][fam]["palette"], "subjects": e["subjects"],
             "family": fam, "busy": e["busy"],
         })
@@ -308,6 +351,8 @@ if __name__ == "__main__":
         cmd_export(rest)
     elif c == "thumbs":
         cmd_thumbs(rest)
+    elif c == "boards":
+        cmd_boards(rest)
     elif c == "catalogue":
         cmd_catalogue()
     elif c == "grid":

@@ -36,12 +36,17 @@
       "title": "Harbour at Dusk",
       "medium": "painting",
       "file": "pictures/travel/dusk-harbour.webp",
+      "board": "pictures/travel/dusk-harbour-board.webp",
       "thumb": "pictures/thumbs/dusk-harbour-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
         1152,
         1024
+      ],
+      "boardPx": [
+        720,
+        640
       ],
       "palette": [
         "orange",
@@ -66,12 +71,17 @@
       "title": "Dunes at Sundown",
       "medium": "photo",
       "file": "pictures/landscapes/dune-caravan.webp",
+      "board": "pictures/landscapes/dune-caravan-board.webp",
       "thumb": "pictures/thumbs/dune-caravan-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
         768,
         512
+      ],
+      "boardPx": [
+        480,
+        320
       ],
       "palette": [
         "orange",
@@ -96,12 +106,17 @@
       "title": "Poppies at Sunset",
       "medium": "photo",
       "file": "pictures/flowers/poppy-sunset.webp",
+      "board": "pictures/flowers/poppy-sunset-board.webp",
       "thumb": "pictures/thumbs/poppy-sunset-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "orange",
@@ -125,12 +140,17 @@
       "title": "Oranges by Candlelight",
       "medium": "painting",
       "file": "pictures/food/candle-oranges.webp",
+      "board": "pictures/food/candle-oranges-board.webp",
       "thumb": "pictures/thumbs/candle-oranges-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "orange",
@@ -155,12 +175,17 @@
       "title": "Blossom Lane",
       "medium": "photo",
       "file": "pictures/travel/blossom-lane.webp",
+      "board": "pictures/travel/blossom-lane-board.webp",
       "thumb": "pictures/thumbs/blossom-lane-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
         768,
         1536
+      ],
+      "boardPx": [
+        480,
+        960
       ],
       "palette": [
         "pink",
@@ -185,12 +210,17 @@
       "title": "Peonies in a Jug",
       "medium": "painting",
       "file": "pictures/flowers/peony-jug.webp",
+      "board": "pictures/flowers/peony-jug-board.webp",
       "thumb": "pictures/thumbs/peony-jug-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "pink",
@@ -215,12 +245,17 @@
       "title": "Strawberry Layer Cake",
       "medium": "photo",
       "file": "pictures/food/berry-cake.webp",
+      "board": "pictures/food/berry-cake-board.webp",
       "thumb": "pictures/thumbs/berry-cake-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "pink",
@@ -245,12 +280,17 @@
       "title": "The Rose Hat",
       "medium": "painting",
       "file": "pictures/people/rose-hat.webp",
+      "board": "pictures/people/rose-hat-board.webp",
       "thumb": "pictures/thumbs/rose-hat-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
         768,
         1536
+      ],
+      "boardPx": [
+        480,
+        960
       ],
       "palette": [
         "pink",
@@ -275,12 +315,17 @@
       "title": "Maple Path",
       "medium": "photo",
       "file": "pictures/landscapes/maple-path.webp",
+      "board": "pictures/landscapes/maple-path-board.webp",
       "thumb": "pictures/thumbs/maple-path-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
         768,
         1536
+      ],
+      "boardPx": [
+        480,
+        960
       ],
       "palette": [
         "rust",
@@ -305,12 +350,17 @@
       "title": "Harvest Table",
       "medium": "painting",
       "file": "pictures/food/harvest-table.webp",
+      "board": "pictures/food/harvest-table-board.webp",
       "thumb": "pictures/thumbs/harvest-table-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
         1152,
         1024
+      ],
+      "boardPx": [
+        720,
+        640
       ],
       "palette": [
         "rust",
@@ -335,12 +385,17 @@
       "title": "The Apple Picker",
       "medium": "painting",
       "file": "pictures/people/apple-orchard.webp",
+      "board": "pictures/people/apple-orchard-board.webp",
       "thumb": "pictures/thumbs/apple-orchard-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "rust",
@@ -365,12 +420,17 @@
       "title": "Ivy Lane",
       "medium": "photo",
       "file": "pictures/travel/ivy-lane.webp",
+      "board": "pictures/travel/ivy-lane-board.webp",
       "thumb": "pictures/thumbs/ivy-lane-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
         384,
         1024
+      ],
+      "boardPx": [
+        240,
+        640
       ],
       "palette": [
         "rust",
@@ -395,12 +455,17 @@
       "title": "Blue Domes",
       "medium": "photo",
       "file": "pictures/travel/blue-domes.webp",
+      "board": "pictures/travel/blue-domes-board.webp",
       "thumb": "pictures/thumbs/blue-domes-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
         768,
         1536
+      ],
+      "boardPx": [
+        480,
+        960
       ],
       "palette": [
         "azure",
@@ -425,12 +490,17 @@
       "title": "Lighthouse Surf",
       "medium": "painting",
       "file": "pictures/landscapes/wave-coast.webp",
+      "board": "pictures/landscapes/wave-coast-board.webp",
       "thumb": "pictures/thumbs/wave-coast-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
         1152,
         1024
+      ],
+      "boardPx": [
+        720,
+        640
       ],
       "palette": [
         "azure",
@@ -455,12 +525,17 @@
       "title": "Blue Hydrangeas",
       "medium": "photo",
       "file": "pictures/flowers/hydrangeas.webp",
+      "board": "pictures/flowers/hydrangeas-board.webp",
       "thumb": "pictures/thumbs/hydrangeas-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "azure",
@@ -484,12 +559,17 @@
       "title": "The Net Mender",
       "medium": "painting",
       "file": "pictures/people/net-mender.webp",
+      "board": "pictures/people/net-mender-board.webp",
       "thumb": "pictures/thumbs/net-mender-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "azure",
@@ -514,12 +594,17 @@
       "title": "Wheat and Cypress",
       "medium": "painting",
       "file": "pictures/landscapes/wheat-farm.webp",
+      "board": "pictures/landscapes/wheat-farm-board.webp",
       "thumb": "pictures/thumbs/wheat-farm-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
         1152,
         1024
+      ],
+      "boardPx": [
+        720,
+        640
       ],
       "palette": [
         "gold",
@@ -544,12 +629,17 @@
       "title": "Baker's Table",
       "medium": "photo",
       "file": "pictures/food/bread-table.webp",
+      "board": "pictures/food/bread-table-board.webp",
       "thumb": "pictures/thumbs/bread-table-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
         768,
         512
+      ],
+      "boardPx": [
+        480,
+        320
       ],
       "palette": [
         "gold",
@@ -574,12 +664,17 @@
       "title": "Sunflowers",
       "medium": "painting",
       "file": "pictures/flowers/sunflower-vase.webp",
+      "board": "pictures/flowers/sunflower-vase-board.webp",
       "thumb": "pictures/thumbs/sunflower-vase-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
         384,
         1024
+      ],
+      "boardPx": [
+        240,
+        640
       ],
       "palette": [
         "gold",
@@ -603,12 +698,17 @@
       "title": "Summer Walk",
       "medium": "photo",
       "file": "pictures/people/wheat-walk.webp",
+      "board": "pictures/people/wheat-walk-board.webp",
       "thumb": "pictures/thumbs/wheat-walk-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
         768,
         1536
+      ],
+      "boardPx": [
+        480,
+        960
       ],
       "palette": [
         "gold",
@@ -633,12 +733,17 @@
       "title": "Lavender Rows",
       "medium": "photo",
       "file": "pictures/landscapes/lavender-rows.webp",
+      "board": "pictures/landscapes/lavender-rows-board.webp",
       "thumb": "pictures/thumbs/lavender-rows-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
         1152,
         1024
+      ],
+      "boardPx": [
+        720,
+        640
       ],
       "palette": [
         "lavender",
@@ -663,12 +768,17 @@
       "title": "Wisteria Door",
       "medium": "painting",
       "file": "pictures/travel/wisteria-door.webp",
+      "board": "pictures/travel/wisteria-door-board.webp",
       "thumb": "pictures/thumbs/wisteria-door-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
         768,
         1536
+      ],
+      "boardPx": [
+        480,
+        960
       ],
       "palette": [
         "lavender",
@@ -693,12 +803,17 @@
       "title": "Lilacs",
       "medium": "painting",
       "file": "pictures/flowers/lilac-bouquet.webp",
+      "board": "pictures/flowers/lilac-bouquet-board.webp",
       "thumb": "pictures/thumbs/lilac-bouquet-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "lavender",
@@ -722,12 +837,17 @@
       "title": "Figs and Grapes",
       "medium": "photo",
       "file": "pictures/food/figs-grapes.webp",
+      "board": "pictures/food/figs-grapes-board.webp",
       "thumb": "pictures/thumbs/figs-grapes-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "lavender",
@@ -752,12 +872,17 @@
       "title": "Tea Terraces",
       "medium": "photo",
       "file": "pictures/landscapes/tea-terraces.webp",
+      "board": "pictures/landscapes/tea-terraces-board.webp",
       "thumb": "pictures/thumbs/tea-terraces-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
         1152,
         1024
+      ],
+      "boardPx": [
+        720,
+        640
       ],
       "palette": [
         "green",
@@ -782,12 +907,17 @@
       "title": "Market Greens",
       "medium": "painting",
       "file": "pictures/food/market-greens.webp",
+      "board": "pictures/food/market-greens-board.webp",
       "thumb": "pictures/thumbs/market-greens-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "green",
@@ -812,12 +942,17 @@
       "title": "The Greenhouse",
       "medium": "photo",
       "file": "pictures/people/greenhouse.webp",
+      "board": "pictures/people/greenhouse-board.webp",
       "thumb": "pictures/thumbs/greenhouse-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "green",
@@ -842,12 +977,17 @@
       "title": "Green Shutters",
       "medium": "painting",
       "file": "pictures/travel/green-alley.webp",
+      "board": "pictures/travel/green-alley-board.webp",
       "thumb": "pictures/thumbs/green-alley-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
         384,
         1024
+      ],
+      "boardPx": [
+        240,
+        640
       ],
       "palette": [
         "green",
@@ -872,12 +1012,17 @@
       "title": "Canal Lights",
       "medium": "painting",
       "file": "pictures/travel/venice-canal.webp",
+      "board": "pictures/travel/venice-canal-board.webp",
       "thumb": "pictures/thumbs/venice-canal-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
         768,
         1536
+      ],
+      "boardPx": [
+        480,
+        960
       ],
       "palette": [
         "deep blue",
@@ -902,12 +1047,17 @@
       "title": "Night Market",
       "medium": "photo",
       "file": "pictures/food/lantern-market.webp",
+      "board": "pictures/food/lantern-market-board.webp",
       "thumb": "pictures/thumbs/lantern-market-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
         1152,
         1024
+      ],
+      "boardPx": [
+        720,
+        640
       ],
       "palette": [
         "deep blue",
@@ -932,12 +1082,17 @@
       "title": "The Lantern Walk",
       "medium": "painting",
       "file": "pictures/people/lantern-child.webp",
+      "board": "pictures/people/lantern-child-board.webp",
       "thumb": "pictures/thumbs/lantern-child-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "deep blue",
@@ -962,12 +1117,17 @@
       "title": "Lakeside Evening",
       "medium": "photo",
       "file": "pictures/landscapes/lake-village.webp",
+      "board": "pictures/landscapes/lake-village-board.webp",
       "thumb": "pictures/thumbs/lake-village-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
         768,
         512
+      ],
+      "boardPx": [
+        480,
+        320
       ],
       "palette": [
         "deep blue",
@@ -992,12 +1152,17 @@
       "title": "Cherries",
       "medium": "photo",
       "file": "pictures/food/cherry-bowl.webp",
+      "board": "pictures/food/cherry-bowl-board.webp",
       "thumb": "pictures/thumbs/cherry-bowl-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "red",
@@ -1021,12 +1186,17 @@
       "title": "Tulip Fields",
       "medium": "painting",
       "file": "pictures/flowers/tulip-rows.webp",
+      "board": "pictures/flowers/tulip-rows-board.webp",
       "thumb": "pictures/thumbs/tulip-rows-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
         1152,
         1024
+      ],
+      "boardPx": [
+        720,
+        640
       ],
       "palette": [
         "red",
@@ -1051,12 +1221,17 @@
       "title": "The Red Tram",
       "medium": "photo",
       "file": "pictures/travel/red-tram.webp",
+      "board": "pictures/travel/red-tram-board.webp",
       "thumb": "pictures/thumbs/red-tram-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
         384,
         1024
+      ],
+      "boardPx": [
+        240,
+        640
       ],
       "palette": [
         "red",
@@ -1081,12 +1256,17 @@
       "title": "The Red Umbrella",
       "medium": "painting",
       "file": "pictures/people/red-umbrella.webp",
+      "board": "pictures/people/red-umbrella-board.webp",
       "thumb": "pictures/thumbs/red-umbrella-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
         768,
         1536
+      ],
+      "boardPx": [
+        480,
+        960
       ],
       "palette": [
         "red",
@@ -1111,12 +1291,17 @@
       "title": "Lemon Coast",
       "medium": "painting",
       "file": "pictures/travel/lemon-coast.webp",
+      "board": "pictures/travel/lemon-coast-board.webp",
       "thumb": "pictures/thumbs/lemon-coast-thumb.webp",
       "cols": 3,
       "rows": 3,
       "px": [
         1152,
         1536
+      ],
+      "boardPx": [
+        720,
+        960
       ],
       "palette": [
         "lemon",
@@ -1141,12 +1326,17 @@
       "title": "Lemon Tart",
       "medium": "photo",
       "file": "pictures/food/lemon-tart.webp",
+      "board": "pictures/food/lemon-tart-board.webp",
       "thumb": "pictures/thumbs/lemon-tart-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "lemon",
@@ -1170,12 +1360,17 @@
       "title": "Daffodil Meadow",
       "medium": "photo",
       "file": "pictures/flowers/daffodil-meadow.webp",
+      "board": "pictures/flowers/daffodil-meadow-board.webp",
       "thumb": "pictures/thumbs/daffodil-meadow-thumb.webp",
       "cols": 3,
       "rows": 3,
       "px": [
         1152,
         1536
+      ],
+      "boardPx": [
+        720,
+        960
       ],
       "palette": [
         "lemon",
@@ -1200,12 +1395,17 @@
       "title": "Canal Colours",
       "medium": "photo",
       "file": "pictures/people/canal-bicycle.webp",
+      "board": "pictures/people/canal-bicycle-board.webp",
       "thumb": "pictures/thumbs/canal-bicycle-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
         768,
         1536
+      ],
+      "boardPx": [
+        480,
+        960
       ],
       "palette": [
         "lemon",
@@ -1230,12 +1430,17 @@
       "title": "Alpine Chalets",
       "medium": "photo",
       "file": "pictures/architecture/snow-chalets.webp",
+      "board": "pictures/architecture/snow-chalets-board.webp",
       "thumb": "pictures/thumbs/snow-chalets-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
         1152,
         1024
+      ],
+      "boardPx": [
+        720,
+        640
       ],
       "palette": [
         "white",
@@ -1260,12 +1465,17 @@
       "title": "Skating Day",
       "medium": "painting",
       "file": "pictures/people/skating-day.webp",
+      "board": "pictures/people/skating-day-board.webp",
       "thumb": "pictures/thumbs/skating-day-thumb.webp",
       "cols": 3,
       "rows": 3,
       "px": [
         1152,
         1536
+      ],
+      "boardPx": [
+        720,
+        960
       ],
       "palette": [
         "white",
@@ -1290,12 +1500,17 @@
       "title": "Frosted Hellebores",
       "medium": "photo",
       "file": "pictures/flowers/frost-hellebores.webp",
+      "board": "pictures/flowers/frost-hellebores-board.webp",
       "thumb": "pictures/thumbs/frost-hellebores-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "white",
@@ -1320,12 +1535,17 @@
       "title": "Winter Stream",
       "medium": "painting",
       "file": "pictures/landscapes/winter-stream.webp",
+      "board": "pictures/landscapes/winter-stream-board.webp",
       "thumb": "pictures/thumbs/winter-stream-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
         384,
         1024
+      ],
+      "boardPx": [
+        240,
+        640
       ],
       "palette": [
         "white",
@@ -1350,12 +1570,17 @@
       "title": "Riad Courtyard",
       "medium": "photo",
       "file": "pictures/architecture/riad-court.webp",
+      "board": "pictures/architecture/riad-court-board.webp",
       "thumb": "pictures/thumbs/riad-court-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
         768,
         1536
+      ],
+      "boardPx": [
+        480,
+        960
       ],
       "palette": [
         "emerald",
@@ -1380,12 +1605,17 @@
       "title": "Carpet Bazaar",
       "medium": "photo",
       "file": "pictures/travel/carpet-bazaar.webp",
+      "board": "pictures/travel/carpet-bazaar-board.webp",
       "thumb": "pictures/thumbs/carpet-bazaar-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "emerald",
@@ -1410,12 +1640,17 @@
       "title": "Anemones",
       "medium": "painting",
       "file": "pictures/flowers/anemones.webp",
+      "board": "pictures/flowers/anemones-board.webp",
       "thumb": "pictures/thumbs/anemones-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "emerald",
@@ -1440,12 +1675,17 @@
       "title": "Pomegranates",
       "medium": "painting",
       "file": "pictures/food/pomegranates.webp",
+      "board": "pictures/food/pomegranates-board.webp",
       "thumb": "pictures/thumbs/pomegranates-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "emerald",
@@ -1470,12 +1710,17 @@
       "title": "Pastel Row",
       "medium": "photo",
       "file": "pictures/architecture/pastel-row.webp",
+      "board": "pictures/architecture/pastel-row-board.webp",
       "thumb": "pictures/thumbs/pastel-row-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
         1152,
         1024
+      ],
+      "boardPx": [
+        720,
+        640
       ],
       "palette": [
         "mint",
@@ -1500,12 +1745,17 @@
       "title": "Patisserie Window",
       "medium": "photo",
       "file": "pictures/food/patisserie.webp",
+      "board": "pictures/food/patisserie-board.webp",
       "thumb": "pictures/thumbs/patisserie-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
         768,
         512
+      ],
+      "boardPx": [
+        480,
+        320
       ],
       "palette": [
         "mint",
@@ -1530,12 +1780,17 @@
       "title": "Beach Huts",
       "medium": "painting",
       "file": "pictures/travel/beach-huts.webp",
+      "board": "pictures/travel/beach-huts-board.webp",
       "thumb": "pictures/thumbs/beach-huts-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
         768,
         512
+      ],
+      "boardPx": [
+        480,
+        320
       ],
       "palette": [
         "mint",
@@ -1560,12 +1815,17 @@
       "title": "The Balloon Seller",
       "medium": "painting",
       "file": "pictures/people/balloon-seller.webp",
+      "board": "pictures/people/balloon-seller-board.webp",
       "thumb": "pictures/thumbs/balloon-seller-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
         384,
         1024
+      ],
+      "boardPx": [
+        240,
+        640
       ],
       "palette": [
         "mint",
@@ -1590,12 +1850,17 @@
       "title": "Green Spires",
       "medium": "painting",
       "file": "pictures/architecture/copper-spires.webp",
+      "board": "pictures/architecture/copper-spires-board.webp",
       "thumb": "pictures/thumbs/copper-spires-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
         768,
         1536
+      ],
+      "boardPx": [
+        480,
+        960
       ],
       "palette": [
         "copper",
@@ -1620,12 +1885,17 @@
       "title": "Copper Kitchen",
       "medium": "photo",
       "file": "pictures/food/copper-kitchen.webp",
+      "board": "pictures/food/copper-kitchen-board.webp",
       "thumb": "pictures/thumbs/copper-kitchen-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
         1152,
         1024
+      ],
+      "boardPx": [
+        720,
+        640
       ],
       "palette": [
         "copper",
@@ -1650,12 +1920,17 @@
       "title": "The Potter",
       "medium": "painting",
       "file": "pictures/people/potter-studio.webp",
+      "board": "pictures/people/potter-studio-board.webp",
       "thumb": "pictures/thumbs/potter-studio-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "copper",
@@ -1680,12 +1955,17 @@
       "title": "Turquoise Falls",
       "medium": "photo",
       "file": "pictures/landscapes/turquoise-falls.webp",
+      "board": "pictures/landscapes/turquoise-falls-board.webp",
       "thumb": "pictures/thumbs/turquoise-falls-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
         768,
         1536
+      ],
+      "boardPx": [
+        480,
+        960
       ],
       "palette": [
         "copper",
@@ -1710,12 +1990,17 @@
       "title": "Abbey Cloister",
       "medium": "photo",
       "file": "pictures/architecture/abbey-cloister.webp",
+      "board": "pictures/architecture/abbey-cloister-board.webp",
       "thumb": "pictures/thumbs/abbey-cloister-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "honey stone",
@@ -1740,12 +2025,17 @@
       "title": "Stone Village",
       "medium": "painting",
       "file": "pictures/travel/stone-village.webp",
+      "board": "pictures/travel/stone-village-board.webp",
       "thumb": "pictures/thumbs/stone-village-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
         1152,
         1024
+      ],
+      "boardPx": [
+        720,
+        640
       ],
       "palette": [
         "honey stone",
@@ -1770,12 +2060,17 @@
       "title": "The White Garden",
       "medium": "photo",
       "file": "pictures/flowers/white-garden.webp",
+      "board": "pictures/flowers/white-garden-board.webp",
       "thumb": "pictures/thumbs/white-garden-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
         768,
         1536
+      ],
+      "boardPx": [
+        480,
+        960
       ],
       "palette": [
         "honey stone",
@@ -1800,12 +2095,17 @@
       "title": "Olive Grove",
       "medium": "painting",
       "file": "pictures/landscapes/olive-grove.webp",
+      "board": "pictures/landscapes/olive-grove-board.webp",
       "thumb": "pictures/thumbs/olive-grove-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "honey stone",
@@ -1830,12 +2130,17 @@
       "title": "The Tiled House",
       "medium": "photo",
       "file": "pictures/architecture/tiled-house.webp",
+      "board": "pictures/architecture/tiled-house-board.webp",
       "thumb": "pictures/thumbs/tiled-house-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "azure",
@@ -1860,12 +2165,17 @@
       "title": "Fjord Evening",
       "medium": "photo",
       "file": "pictures/landscapes/fjord-evening.webp",
+      "board": "pictures/landscapes/fjord-evening-board.webp",
       "thumb": "pictures/thumbs/fjord-evening-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "deep blue",
@@ -1890,12 +2200,17 @@
       "title": "Vintage Camera",
       "medium": "photo",
       "file": "pictures/food/vintage-camera.webp",
+      "board": "pictures/food/vintage-camera-board.webp",
       "thumb": "pictures/thumbs/vintage-camera-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "silver",
@@ -1916,12 +2231,17 @@
       "title": "Red Scooter",
       "medium": "render",
       "file": "pictures/travel/red-scooter.webp",
+      "board": "pictures/travel/red-scooter-board.webp",
       "thumb": "pictures/thumbs/red-scooter-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "cherry red",
@@ -1943,12 +2263,17 @@
       "title": "Sunset Sail",
       "medium": "low-poly",
       "file": "pictures/travel/sailboat.webp",
+      "board": "pictures/travel/sailboat-board.webp",
       "thumb": "pictures/thumbs/sailboat-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "white",
@@ -1972,12 +2297,17 @@
       "title": "Cactus in Bloom",
       "medium": "flat",
       "file": "pictures/flowers/cactus-bloom.webp",
+      "board": "pictures/flowers/cactus-bloom-board.webp",
       "thumb": "pictures/thumbs/cactus-bloom-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "green",
@@ -1999,12 +2329,17 @@
       "title": "Cliff Lighthouse",
       "medium": "retro",
       "file": "pictures/landscapes/cliff-lighthouse.webp",
+      "board": "pictures/landscapes/cliff-lighthouse-board.webp",
       "thumb": "pictures/thumbs/cliff-lighthouse-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "white",
@@ -2026,12 +2361,17 @@
       "title": "The Blue Headscarf",
       "medium": "painting",
       "file": "pictures/people/blue-headscarf.webp",
+      "board": "pictures/people/blue-headscarf-board.webp",
       "thumb": "pictures/thumbs/blue-headscarf-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "ultramarine",
@@ -2053,12 +2393,17 @@
       "title": "Pink Lotus",
       "medium": "photo",
       "file": "pictures/flowers/pink-lotus.webp",
+      "board": "pictures/flowers/pink-lotus-board.webp",
       "thumb": "pictures/thumbs/pink-lotus-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "pink",
@@ -2080,12 +2425,17 @@
       "title": "The Old Sailor",
       "medium": "photo",
       "file": "pictures/people/yellow-raincoat.webp",
+      "board": "pictures/people/yellow-raincoat-board.webp",
       "thumb": "pictures/thumbs/yellow-raincoat-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "yellow",
@@ -2108,12 +2458,17 @@
       "title": "Blue Bicycle",
       "medium": "watercolour",
       "file": "pictures/travel/blue-bicycle.webp",
+      "board": "pictures/travel/blue-bicycle-board.webp",
       "thumb": "pictures/thumbs/blue-bicycle-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "sky blue",
@@ -2137,12 +2492,17 @@
       "title": "Mount Fuji",
       "medium": "print",
       "file": "pictures/landscapes/mount-fuji.webp",
+      "board": "pictures/landscapes/mount-fuji-board.webp",
       "thumb": "pictures/thumbs/mount-fuji-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "indigo",
@@ -2165,12 +2525,17 @@
       "title": "Ice Cream",
       "medium": "pop",
       "file": "pictures/food/ice-cream.webp",
+      "board": "pictures/food/ice-cream-board.webp",
       "thumb": "pictures/thumbs/ice-cream-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "hot pink",
@@ -2192,12 +2557,17 @@
       "title": "Paper Balloon",
       "medium": "papercut",
       "file": "pictures/travel/paper-balloon.webp",
+      "board": "pictures/travel/paper-balloon-board.webp",
       "thumb": "pictures/thumbs/paper-balloon-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "red",
@@ -2220,12 +2590,17 @@
       "title": "Ginger Cat",
       "medium": "photo",
       "file": "pictures/animals/ginger-cat.webp",
+      "board": "pictures/animals/ginger-cat-board.webp",
       "thumb": "pictures/thumbs/ginger-cat-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "ginger",
@@ -2247,12 +2622,17 @@
       "title": "Golden Puppy",
       "medium": "render",
       "file": "pictures/animals/golden-puppy.webp",
+      "board": "pictures/animals/golden-puppy-board.webp",
       "thumb": "pictures/thumbs/golden-puppy-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "golden",
@@ -2274,12 +2654,17 @@
       "title": "Chestnut Horse",
       "medium": "pastel",
       "file": "pictures/animals/chestnut-horse.webp",
+      "board": "pictures/animals/chestnut-horse-board.webp",
       "thumb": "pictures/thumbs/chestnut-horse-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "chestnut",
@@ -2301,12 +2686,17 @@
       "title": "Moth Orchid",
       "medium": "watercolour",
       "file": "pictures/flowers/orchid.webp",
+      "board": "pictures/flowers/orchid-board.webp",
       "thumb": "pictures/thumbs/orchid-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "magenta",
@@ -2326,12 +2716,17 @@
       "title": "Calla Lilies",
       "medium": "painting",
       "file": "pictures/flowers/calla-lilies.webp",
+      "board": "pictures/flowers/calla-lilies-board.webp",
       "thumb": "pictures/thumbs/calla-lilies-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "white",
@@ -2352,12 +2747,17 @@
       "title": "Blue Irises",
       "medium": "print",
       "file": "pictures/flowers/irises.webp",
+      "board": "pictures/flowers/irises-board.webp",
       "thumb": "pictures/thumbs/irises-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "violet",
@@ -2377,12 +2777,17 @@
       "title": "King Protea",
       "medium": "flat",
       "file": "pictures/flowers/protea.webp",
+      "board": "pictures/flowers/protea-board.webp",
       "thumb": "pictures/thumbs/protea-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "pink",
@@ -2402,12 +2807,17 @@
       "title": "Monstera",
       "medium": "papercut",
       "file": "pictures/flowers/monstera.webp",
+      "board": "pictures/flowers/monstera-board.webp",
       "thumb": "pictures/thumbs/monstera-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "green",
@@ -2428,12 +2838,17 @@
       "title": "Pink Dahlia",
       "medium": "photo",
       "file": "pictures/flowers/dahlia.webp",
+      "board": "pictures/flowers/dahlia-board.webp",
       "thumb": "pictures/thumbs/dahlia-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "pink",
@@ -2452,12 +2867,17 @@
       "title": "Bird of Paradise",
       "medium": "retro",
       "file": "pictures/flowers/bird-of-paradise.webp",
+      "board": "pictures/flowers/bird-of-paradise-board.webp",
       "thumb": "pictures/thumbs/bird-of-paradise-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "orange",
@@ -2478,12 +2898,17 @@
       "title": "Magnolia",
       "medium": "pastel",
       "file": "pictures/flowers/magnolia.webp",
+      "board": "pictures/flowers/magnolia-board.webp",
       "thumb": "pictures/thumbs/magnolia-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "pink",
@@ -2503,12 +2928,17 @@
       "title": "Bonsai",
       "medium": "low-poly",
       "file": "pictures/flowers/bonsai.webp",
+      "board": "pictures/flowers/bonsai-board.webp",
       "thumb": "pictures/thumbs/bonsai-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "green",
@@ -2529,12 +2959,17 @@
       "title": "Toadstools",
       "medium": "watercolour",
       "file": "pictures/flowers/toadstools.webp",
+      "board": "pictures/flowers/toadstools-board.webp",
       "thumb": "pictures/thumbs/toadstools-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "red",
@@ -2555,12 +2990,17 @@
       "title": "Watermelon",
       "medium": "flat",
       "file": "pictures/food/watermelon.webp",
+      "board": "pictures/food/watermelon-board.webp",
       "thumb": "pictures/thumbs/watermelon-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "red",
@@ -2580,12 +3020,17 @@
       "title": "Cappuccino",
       "medium": "photo",
       "file": "pictures/food/cappuccino.webp",
+      "board": "pictures/food/cappuccino-board.webp",
       "thumb": "pictures/thumbs/cappuccino-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "white",
@@ -2605,12 +3050,17 @@
       "title": "Pancakes",
       "medium": "photo",
       "file": "pictures/food/pancakes.webp",
+      "board": "pictures/food/pancakes-board.webp",
       "thumb": "pictures/thumbs/pancakes-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "golden",
@@ -2632,12 +3082,17 @@
       "title": "Pink Doughnut",
       "medium": "render",
       "file": "pictures/food/doughnut.webp",
+      "board": "pictures/food/doughnut-board.webp",
       "thumb": "pictures/thumbs/doughnut-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "pink",
@@ -2657,12 +3112,17 @@
       "title": "Pop Pineapple",
       "medium": "pop",
       "file": "pictures/food/pineapple.webp",
+      "board": "pictures/food/pineapple-board.webp",
       "thumb": "pictures/thumbs/pineapple-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "yellow",
@@ -2682,12 +3142,17 @@
       "title": "Delft Teapot",
       "medium": "painting",
       "file": "pictures/food/delft-teapot.webp",
+      "board": "pictures/food/delft-teapot-board.webp",
       "thumb": "pictures/thumbs/delft-teapot-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "cobalt blue",
@@ -2708,12 +3173,17 @@
       "title": "Ramen",
       "medium": "render",
       "file": "pictures/food/ramen.webp",
+      "board": "pictures/food/ramen-board.webp",
       "thumb": "pictures/thumbs/ramen-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "blue",
@@ -2734,12 +3204,17 @@
       "title": "Pizza",
       "medium": "retro",
       "file": "pictures/food/pizza.webp",
+      "board": "pictures/food/pizza-board.webp",
       "thumb": "pictures/thumbs/pizza-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "red",
@@ -2760,12 +3235,17 @@
       "title": "Gramophone",
       "medium": "deco",
       "file": "pictures/food/gramophone.webp",
+      "board": "pictures/food/gramophone-board.webp",
       "thumb": "pictures/thumbs/gramophone-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "brass",
@@ -2786,12 +3266,17 @@
       "title": "Violin",
       "medium": "painting",
       "file": "pictures/food/violin.webp",
+      "board": "pictures/food/violin-board.webp",
       "thumb": "pictures/thumbs/violin-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "amber",
@@ -2811,12 +3296,17 @@
       "title": "Velvet Armchair",
       "medium": "photo",
       "file": "pictures/food/armchair.webp",
+      "board": "pictures/food/armchair-board.webp",
       "thumb": "pictures/thumbs/armchair-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "mustard",
@@ -2837,12 +3327,17 @@
       "title": "Rubber Duck",
       "medium": "render",
       "file": "pictures/food/rubber-duck.webp",
+      "board": "pictures/food/rubber-duck-board.webp",
       "thumb": "pictures/thumbs/rubber-duck-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "yellow",
@@ -2862,12 +3357,17 @@
       "title": "Teddy Bear",
       "medium": "photo",
       "file": "pictures/food/teddy-bear.webp",
+      "board": "pictures/food/teddy-bear-board.webp",
       "thumb": "pictures/thumbs/teddy-bear-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "honey brown",
@@ -2887,12 +3387,17 @@
       "title": "Camper Van",
       "medium": "render",
       "file": "pictures/travel/camper-van.webp",
+      "board": "pictures/travel/camper-van-board.webp",
       "thumb": "pictures/thumbs/camper-van-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "mint",
@@ -2913,12 +3418,17 @@
       "title": "Steam Train",
       "medium": "low-poly",
       "file": "pictures/travel/steam-train.webp",
+      "board": "pictures/travel/steam-train-board.webp",
       "thumb": "pictures/thumbs/steam-train-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "red",
@@ -2939,12 +3449,17 @@
       "title": "Classic Car",
       "medium": "retro",
       "file": "pictures/travel/classic-car.webp",
+      "board": "pictures/travel/classic-car-board.webp",
       "thumb": "pictures/thumbs/classic-car-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "turquoise",
@@ -2965,12 +3480,17 @@
       "title": "Red Biplane",
       "medium": "flat",
       "file": "pictures/travel/biplane.webp",
+      "board": "pictures/travel/biplane-board.webp",
       "thumb": "pictures/thumbs/biplane-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "red",
@@ -2991,12 +3511,17 @@
       "title": "Cable Car",
       "medium": "papercut",
       "file": "pictures/travel/cable-car.webp",
+      "board": "pictures/travel/cable-car-board.webp",
       "thumb": "pictures/thumbs/cable-car-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "red",
@@ -3017,12 +3542,17 @@
       "title": "Old Suitcase",
       "medium": "photo",
       "file": "pictures/travel/suitcase.webp",
+      "board": "pictures/travel/suitcase-board.webp",
       "thumb": "pictures/thumbs/suitcase-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "tan",
@@ -3042,12 +3572,17 @@
       "title": "Rickshaw",
       "medium": "watercolour",
       "file": "pictures/travel/rickshaw.webp",
+      "board": "pictures/travel/rickshaw-board.webp",
       "thumb": "pictures/thumbs/rickshaw-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "yellow",
@@ -3068,12 +3603,17 @@
       "title": "Paper Parasol",
       "medium": "print",
       "file": "pictures/travel/paper-parasol.webp",
+      "board": "pictures/travel/paper-parasol-board.webp",
       "thumb": "pictures/thumbs/paper-parasol-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "red",
@@ -3093,12 +3633,17 @@
       "title": "Eiffel Tower",
       "medium": "deco",
       "file": "pictures/architecture/eiffel-tower.webp",
+      "board": "pictures/architecture/eiffel-tower-board.webp",
       "thumb": "pictures/thumbs/eiffel-tower-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "navy",
@@ -3118,12 +3663,17 @@
       "title": "Golden Gate",
       "medium": "photo",
       "file": "pictures/architecture/golden-gate.webp",
+      "board": "pictures/architecture/golden-gate-board.webp",
       "thumb": "pictures/thumbs/golden-gate-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "international orange",
@@ -3143,12 +3693,17 @@
       "title": "Colosseum",
       "medium": "watercolour",
       "file": "pictures/architecture/colosseum.webp",
+      "board": "pictures/architecture/colosseum-board.webp",
       "thumb": "pictures/thumbs/colosseum-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "honey",
@@ -3169,12 +3724,17 @@
       "title": "Leaning Tower",
       "medium": "flat",
       "file": "pictures/architecture/leaning-tower.webp",
+      "board": "pictures/architecture/leaning-tower-board.webp",
       "thumb": "pictures/thumbs/leaning-tower-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "white",
@@ -3194,12 +3754,17 @@
       "title": "Taj Mahal",
       "medium": "papercut",
       "file": "pictures/architecture/taj-mahal.webp",
+      "board": "pictures/architecture/taj-mahal-board.webp",
       "thumb": "pictures/thumbs/taj-mahal-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "white",
@@ -3220,12 +3785,17 @@
       "title": "Tree House",
       "medium": "render",
       "file": "pictures/architecture/tree-house.webp",
+      "board": "pictures/architecture/tree-house-board.webp",
       "thumb": "pictures/thumbs/tree-house-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "wood brown",
@@ -3246,12 +3816,17 @@
       "title": "The Yellow Door",
       "medium": "photo",
       "file": "pictures/architecture/yellow-door.webp",
+      "board": "pictures/architecture/yellow-door-board.webp",
       "thumb": "pictures/thumbs/yellow-door-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "yellow",
@@ -3272,12 +3847,17 @@
       "title": "Red Barn",
       "medium": "print",
       "file": "pictures/architecture/red-barn.webp",
+      "board": "pictures/architecture/red-barn-board.webp",
       "thumb": "pictures/thumbs/red-barn-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "red",
@@ -3298,12 +3878,17 @@
       "title": "Moai",
       "medium": "photo",
       "file": "pictures/landscapes/moai.webp",
+      "board": "pictures/landscapes/moai-board.webp",
       "thumb": "pictures/thumbs/moai-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "grey",
@@ -3324,12 +3909,17 @@
       "title": "Palm Island",
       "medium": "low-poly",
       "file": "pictures/landscapes/palm-island.webp",
+      "board": "pictures/landscapes/palm-island-board.webp",
       "thumb": "pictures/thumbs/palm-island-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "turquoise",
@@ -3350,12 +3940,17 @@
       "title": "Sandstone Arch",
       "medium": "photo",
       "file": "pictures/landscapes/sandstone-arch.webp",
+      "board": "pictures/landscapes/sandstone-arch-board.webp",
       "thumb": "pictures/thumbs/sandstone-arch-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "orange",
@@ -3375,12 +3970,17 @@
       "title": "Iceberg",
       "medium": "painting",
       "file": "pictures/landscapes/iceberg.webp",
+      "board": "pictures/landscapes/iceberg-board.webp",
       "thumb": "pictures/thumbs/iceberg-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "white",
@@ -3400,12 +4000,17 @@
       "title": "Baobab",
       "medium": "watercolour",
       "file": "pictures/landscapes/baobab.webp",
+      "board": "pictures/landscapes/baobab-board.webp",
       "thumb": "pictures/thumbs/baobab-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "orange",
@@ -3425,12 +4030,17 @@
       "title": "Redwoods",
       "medium": "retro",
       "file": "pictures/landscapes/redwoods.webp",
+      "board": "pictures/landscapes/redwoods-board.webp",
       "thumb": "pictures/thumbs/redwoods-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "rust red",
@@ -3451,12 +4061,17 @@
       "title": "Rainbow",
       "medium": "flat",
       "file": "pictures/landscapes/rainbow.webp",
+      "board": "pictures/landscapes/rainbow-board.webp",
       "thumb": "pictures/thumbs/rainbow-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "rainbow",
@@ -3477,12 +4092,17 @@
       "title": "Sandcastle",
       "medium": "low-poly",
       "file": "pictures/landscapes/sandcastle.webp",
+      "board": "pictures/landscapes/sandcastle-board.webp",
       "thumb": "pictures/thumbs/sandcastle-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "sand",
@@ -3503,12 +4123,17 @@
       "title": "The Chef",
       "medium": "render",
       "file": "pictures/people/chef.webp",
+      "board": "pictures/people/chef-board.webp",
       "thumb": "pictures/thumbs/chef-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "white",
@@ -3528,12 +4153,17 @@
       "title": "Ballerina",
       "medium": "watercolour",
       "file": "pictures/people/ballerina.webp",
+      "board": "pictures/people/ballerina-board.webp",
       "thumb": "pictures/thumbs/ballerina-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "pink",
@@ -3553,12 +4183,17 @@
       "title": "The Red Kite",
       "medium": "papercut",
       "file": "pictures/people/red-kite.webp",
+      "board": "pictures/people/red-kite-board.webp",
       "thumb": "pictures/thumbs/red-kite-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "red",
@@ -3579,12 +4214,17 @@
       "title": "The Cowboy",
       "medium": "retro",
       "file": "pictures/people/cowboy.webp",
+      "board": "pictures/people/cowboy-board.webp",
       "thumb": "pictures/thumbs/cowboy-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "tan",
@@ -3606,12 +4246,17 @@
       "title": "The Painter",
       "medium": "painting",
       "file": "pictures/people/painter.webp",
+      "board": "pictures/people/painter-board.webp",
       "thumb": "pictures/thumbs/painter-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "navy",
@@ -3633,12 +4278,17 @@
       "title": "Bubbles",
       "medium": "photo",
       "file": "pictures/people/bubbles.webp",
+      "board": "pictures/people/bubbles-board.webp",
       "thumb": "pictures/thumbs/bubbles-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "yellow",
@@ -3658,12 +4308,17 @@
       "title": "The Saxophonist",
       "medium": "pop",
       "file": "pictures/people/saxophonist.webp",
+      "board": "pictures/people/saxophonist-board.webp",
       "thumb": "pictures/thumbs/saxophonist-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "gold",
@@ -3684,12 +4339,17 @@
       "title": "The Skier",
       "medium": "flat",
       "file": "pictures/people/skier.webp",
+      "board": "pictures/people/skier-board.webp",
       "thumb": "pictures/thumbs/skier-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "red",
@@ -3710,12 +4370,17 @@
       "title": "Paper Owl",
       "medium": "papercut",
       "file": "pictures/animals/owl.webp",
+      "board": "pictures/animals/owl-board.webp",
       "thumb": "pictures/thumbs/owl-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "brown",
@@ -3736,12 +4401,17 @@
       "title": "Scarlet Macaw",
       "medium": "print",
       "file": "pictures/animals/macaw.webp",
+      "board": "pictures/animals/macaw-board.webp",
       "thumb": "pictures/thumbs/macaw-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
         768,
         1024
+      ],
+      "boardPx": [
+        480,
+        640
       ],
       "palette": [
         "scarlet",
@@ -3761,12 +4431,17 @@
       "title": "Giraffe",
       "medium": "papercut",
       "file": "pictures/animals/giraffe.webp",
+      "board": "pictures/animals/giraffe-board.webp",
       "thumb": "pictures/thumbs/giraffe-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
         384,
         1024
+      ],
+      "boardPx": [
+        240,
+        640
       ],
       "palette": [
         "golden",
@@ -3786,12 +4461,17 @@
       "title": "Milkshake",
       "medium": "retro",
       "file": "pictures/food/milkshake.webp",
+      "board": "pictures/food/milkshake-board.webp",
       "thumb": "pictures/thumbs/milkshake-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
         384,
         1024
+      ],
+      "boardPx": [
+        240,
+        640
       ],
       "palette": [
         "pink",
@@ -3812,12 +4492,17 @@
       "title": "Sunflower",
       "medium": "photo",
       "file": "pictures/flowers/sunflower.webp",
+      "board": "pictures/flowers/sunflower-board.webp",
       "thumb": "pictures/thumbs/sunflower-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
         384,
         1024
+      ],
+      "boardPx": [
+        240,
+        640
       ],
       "palette": [
         "golden yellow",
@@ -3836,12 +4521,17 @@
       "title": "Skyscraper",
       "medium": "deco",
       "file": "pictures/architecture/skyscraper.webp",
+      "board": "pictures/architecture/skyscraper-board.webp",
       "thumb": "pictures/thumbs/skyscraper-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
         384,
         1024
+      ],
+      "boardPx": [
+        240,
+        640
       ],
       "palette": [
         "cream",
@@ -3861,12 +4551,17 @@
       "title": "Flamenco",
       "medium": "watercolour",
       "file": "pictures/people/flamenco.webp",
+      "board": "pictures/people/flamenco-board.webp",
       "thumb": "pictures/thumbs/flamenco-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
         384,
         1024
+      ],
+      "boardPx": [
+        240,
+        640
       ],
       "palette": [
         "red",
@@ -3887,12 +4582,17 @@
       "title": "Pagoda",
       "medium": "print",
       "file": "pictures/architecture/pagoda.webp",
+      "board": "pictures/architecture/pagoda-board.webp",
       "thumb": "pictures/thumbs/pagoda-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
         384,
         1024
+      ],
+      "boardPx": [
+        240,
+        640
       ],
       "palette": [
         "vermilion",
@@ -3913,12 +4613,17 @@
       "title": "Ribbon Falls",
       "medium": "photo",
       "file": "pictures/landscapes/ribbon-falls.webp",
+      "board": "pictures/landscapes/ribbon-falls-board.webp",
       "thumb": "pictures/thumbs/ribbon-falls-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
         384,
         1024
+      ],
+      "boardPx": [
+        240,
+        640
       ],
       "palette": [
         "white",
@@ -3939,12 +4644,17 @@
       "title": "Canal House",
       "medium": "flat",
       "file": "pictures/architecture/canal-house.webp",
+      "board": "pictures/architecture/canal-house-board.webp",
       "thumb": "pictures/thumbs/canal-house-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
         384,
         1024
+      ],
+      "boardPx": [
+        240,
+        640
       ],
       "palette": [
         "cobalt",
@@ -3965,12 +4675,17 @@
       "title": "Ice Lolly",
       "medium": "pop",
       "file": "pictures/food/ice-lolly.webp",
+      "board": "pictures/food/ice-lolly-board.webp",
       "thumb": "pictures/thumbs/ice-lolly-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
         384,
         1024
+      ],
+      "boardPx": [
+        240,
+        640
       ],
       "palette": [
         "red",
@@ -3990,12 +4705,17 @@
       "title": "Lily Window",
       "medium": "stained-glass",
       "file": "pictures/flowers/lily-window.webp",
+      "board": "pictures/flowers/lily-window-board.webp",
       "thumb": "pictures/thumbs/lily-window-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
         384,
         1024
+      ],
+      "boardPx": [
+        240,
+        640
       ],
       "palette": [
         "white",
@@ -4016,12 +4736,17 @@
       "title": "Guitar",
       "medium": "render",
       "file": "pictures/food/guitar.webp",
+      "board": "pictures/food/guitar-board.webp",
       "thumb": "pictures/thumbs/guitar-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
         384,
         1024
+      ],
+      "boardPx": [
+        240,
+        640
       ],
       "palette": [
         "honey",
@@ -4041,12 +4766,17 @@
       "title": "Grand Piano",
       "medium": "photo",
       "file": "pictures/food/grand-piano.webp",
+      "board": "pictures/food/grand-piano-board.webp",
       "thumb": "pictures/thumbs/grand-piano-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
         768,
         512
+      ],
+      "boardPx": [
+        480,
+        320
       ],
       "palette": [
         "black",
@@ -4065,12 +4795,17 @@
       "title": "Sewing Machine",
       "medium": "painting",
       "file": "pictures/food/sewing-machine.webp",
+      "board": "pictures/food/sewing-machine-board.webp",
       "thumb": "pictures/thumbs/sewing-machine-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
         768,
         512
+      ],
+      "boardPx": [
+        480,
+        320
       ],
       "palette": [
         "black",
@@ -4091,12 +4826,17 @@
       "title": "Little Tractor",
       "medium": "flat",
       "file": "pictures/travel/tractor.webp",
+      "board": "pictures/travel/tractor-board.webp",
       "thumb": "pictures/thumbs/tractor-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
         768,
         512
+      ],
+      "boardPx": [
+        480,
+        320
       ],
       "palette": [
         "red",
@@ -4116,12 +4856,17 @@
       "title": "Red Canoe",
       "medium": "watercolour",
       "file": "pictures/landscapes/canoe.webp",
+      "board": "pictures/landscapes/canoe-board.webp",
       "thumb": "pictures/thumbs/canoe-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
         768,
         512
+      ],
+      "boardPx": [
+        480,
+        320
       ],
       "palette": [
         "red",
@@ -4142,12 +4887,17 @@
       "title": "Hammock",
       "medium": "retro",
       "file": "pictures/people/hammock.webp",
+      "board": "pictures/people/hammock-board.webp",
       "thumb": "pictures/thumbs/hammock-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
         768,
         512
+      ],
+      "boardPx": [
+        480,
+        320
       ],
       "palette": [
         "coral",
@@ -4168,12 +4918,17 @@
       "title": "Wheelbarrow",
       "medium": "papercut",
       "file": "pictures/flowers/wheelbarrow.webp",
+      "board": "pictures/flowers/wheelbarrow-board.webp",
       "thumb": "pictures/thumbs/wheelbarrow-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
         768,
         512
+      ],
+      "boardPx": [
+        480,
+        320
       ],
       "palette": [
         "wood brown",
@@ -4194,12 +4949,17 @@
       "title": "Rocking Horse",
       "medium": "render",
       "file": "pictures/food/rocking-horse.webp",
+      "board": "pictures/food/rocking-horse-board.webp",
       "thumb": "pictures/thumbs/rocking-horse-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
         768,
         512
+      ],
+      "boardPx": [
+        480,
+        320
       ],
       "palette": [
         "grey",
@@ -4219,12 +4979,17 @@
       "title": "Paddle Steamer",
       "medium": "print",
       "file": "pictures/travel/paddle-steamer.webp",
+      "board": "pictures/travel/paddle-steamer-board.webp",
       "thumb": "pictures/thumbs/paddle-steamer-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
         768,
         512
+      ],
+      "boardPx": [
+        480,
+        320
       ],
       "palette": [
         "white",
@@ -4245,12 +5010,17 @@
       "title": "Dachshund",
       "medium": "pop",
       "file": "pictures/animals/dachshund.webp",
+      "board": "pictures/animals/dachshund-board.webp",
       "thumb": "pictures/thumbs/dachshund-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
         768,
         512
+      ],
+      "boardPx": [
+        480,
+        320
       ],
       "palette": [
         "chestnut",
@@ -4270,12 +5040,17 @@
       "title": "Sidecar",
       "medium": "deco",
       "file": "pictures/travel/sidecar.webp",
+      "board": "pictures/travel/sidecar-board.webp",
       "thumb": "pictures/thumbs/sidecar-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
         768,
         512
+      ],
+      "boardPx": [
+        480,
+        320
       ],
       "palette": [
         "cream",
@@ -4296,12 +5071,17 @@
       "title": "Houseboat",
       "medium": "low-poly",
       "file": "pictures/architecture/houseboat.webp",
+      "board": "pictures/architecture/houseboat-board.webp",
       "thumb": "pictures/thumbs/houseboat-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
         768,
         512
+      ],
+      "boardPx": [
+        480,
+        320
       ],
       "palette": [
         "sky blue",
