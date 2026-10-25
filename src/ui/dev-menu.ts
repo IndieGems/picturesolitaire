@@ -34,6 +34,7 @@ import { currentDaily } from "../net/daily";
 import { addToSettings, closeSettings } from "../settings-screen";
 import { loadChallenges, type Challenge } from "./challenge-data";
 import { shortDate } from "./format";
+import { markOf, markTag } from "./marks";
 import type { BoardHandle, DevStep } from "./board-api";
 import type { Experiment, Play } from "./app";
 
@@ -287,7 +288,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     const lines: string[] = [`${playName(p)}${info ? ` (${info.id})` : ""}`];
     if (info) {
       lines.push(
-        `${info.cols}×${info.rows} grid · ${info.peek} face-up in the stacks${info.par !== null ? ` · par ${info.par}` : ""}`,
+        `${info.cols}×${info.rows} grid · ${info.peek} face-up in the stacks${info.par !== null ? ` · par ${info.par}` : ""}${p.kind === "campaign" && markOf(info) ? ` · marked ${markOf(info)}` : ""}`,
         `${info.pictures.length} pictures: ${info.pictures.map((x) => x.shape.replace("x", "×")).join(", ")}`,
         `${info.stacks.length} stacks: ${info.stacks.join(" · ")} cards`,
         `Solution ${info.lineMoves} moves · ${info.moves} made so far`,
@@ -358,9 +359,9 @@ export function mountDevMenu(host: DevHost): DevMenu {
   const pickSec = el("section");
   pickSec.append(el("h3", "", "Play any board (practice)"), tabs, pick);
 
-  function tile(big: string, small: string[], current: boolean, pickIt: () => void): HTMLButtonElement {
+  function tile(big: string, small: string[], current: boolean, pickIt: () => void, extra: HTMLElement[] = []): HTMLButtonElement {
     const b = btn(current ? "amber" : "", "", pickIt);
-    b.append(el("b", "", big), ...small.map((s) => el("small", "", s)));
+    b.append(el("b", "", big), ...small.map((s) => el("small", "", s)), ...extra);
     return b;
   }
 
@@ -371,8 +372,13 @@ export function mountDevMenu(host: DevHost): DevMenu {
     if (tab === "campaign") {
       const grid = el("div", "dev-grid");
       for (let n = 1; n <= levelCount(); n++) {
-        const d = level(n).deal;
-        grid.append(tile(String(n), [`${d.cols}×${d.rows}`], p?.kind === "campaign" && campaignNumber(p.level) === n, () => play({ kind: "campaign", level: n })));
+        const l = level(n);
+        const d = l.deal;
+        // a hard board wears its tag here as on the board (marks.ts)
+        const mark = markOf(l);
+        grid.append(
+          tile(String(n), [`${d.cols}×${d.rows}`], p?.kind === "campaign" && campaignNumber(p.level) === n, () => play({ kind: "campaign", level: n }), mark ? [markTag(mark, true)] : []),
+        );
       }
       pick.replaceChildren(grid);
     } else if (tab === "challenge") {

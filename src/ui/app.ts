@@ -58,6 +58,7 @@ import { WORDMARK } from "./wordmark";
 import { cardAspect, syncCardAspect } from "./cards";
 import { createViewer } from "./viewer";
 import { closed, opened } from "./dialogs";
+import { markOf, markTag, markWords, pretendMarks, type Mark } from "./marks";
 import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy } from "./catalogue";
 import { mountParticles } from "./particles";
 import { levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
@@ -156,7 +157,9 @@ const helpers = h(
 );
 // one short line at the board's foot when it is stuck: a dead end, or no way to win from here
 const stuckNote = h("div", { class: "stuck-note glass", role: "status", hidden: "" });
-const boardScreen = h("section", { class: "screen board-screen", hidden: "" }, levelPill, back, host, stuckNote, helpers);
+// a hard board's banner as it opens (marks.ts): over the board, taking no touch
+const markBanner = h("div", { class: "mark-banner", "aria-hidden": "true", hidden: "" });
+const boardScreen = h("section", { class: "screen board-screen", hidden: "" }, levelPill, back, host, stuckNote, helpers, markBanner);
 
 // the cards
 const winVeil = h("div", { class: "veil win", hidden: "", role: "dialog", "aria-modal": "true" });
@@ -278,7 +281,11 @@ const awaitingRecord = () => gem.frame.currentState === "connected" && !progress
 function drawHome(): void {
   // where the player is is the server's word (src/net/progress.ts)
   const p = progress();
-  homeWhere.textContent = awaitingRecord() ? t("home.level", { level: "–" }) : allDone() ? t("home.allDone") : t("home.level", { level: p.campaign.next });
+  const known = !awaitingRecord() && !allDone();
+  const where = awaitingRecord() ? t("home.level", { level: "–" }) : allDone() ? t("home.allDone") : t("home.level", { level: p.campaign.next });
+  // the next board's mark, if it is a hard one (marks.ts)
+  const mark = known ? markOf(campaignLevel(p.campaign.next)) : null;
+  homeWhere.replaceChildren(where, ...(mark ? [markTag(mark)] : []));
   homePlayLabel.textContent = t("home.play");
   homeChallenges.hidden = !routeUi.exists();
 }
@@ -353,6 +360,7 @@ function openPlay(next: Play): void {
     drawHelpers({ undo: 3, hint: 3, shuffle: 3 }, false);
     guide.cancel();
     board = openBoard(host, next.kind === "campaign" ? next.level : next.kind === "challenge" ? next.c.level : next.kind === "daily" ? next.d : next.x);
+    showMarkBanner(next.kind === "campaign" ? markOf(campaignLevel(next.level)) : null);
     if (import.meta.env.MODE !== "release") dev?.opened(board);
     // the first board teaches the game, once the save says the player has not learnt it yet;
     // in practice only when the dev menu asked for the guide again (and then it saves nothing)
@@ -364,14 +372,41 @@ function openPlay(next: Play): void {
   show("board");
 }
 
+/** How long a hard board's banner stays (style.css's mark-banner animation lasts as long). */
+const BANNER_MS = 1200;
+let bannerTimer = 0;
+/** A hard board's banner over the board as it opens, about a second, then gone by itself. */
+function showMarkBanner(m: Mark | null): void {
+  clearTimeout(bannerTimer);
+  markBanner.hidden = true;
+  if (!m) return;
+  markBanner.className = `mark-banner ${m}`;
+  markBanner.textContent = markWords(m);
+  // over the middle of the board, once the board screen is laid out
+  requestAnimationFrame(() => {
+    if (screen !== "board") return;
+    const a = host.getBoundingClientRect();
+    const b = boardScreen.getBoundingClientRect();
+    markBanner.style.top = `${Math.round(a.top - b.top + a.height / 2)}px`;
+    markBanner.hidden = false; // shown again, the animation starts over
+    bannerTimer = window.setTimeout(() => (markBanner.hidden = true), BANNER_MS);
+  });
+}
+
 /** The top row's information: the level; on a challenge or the daily, its name over the par and the moves so far. */
 function drawPill(): void {
   if (!play) return;
   levelPill.classList.toggle("two", play.kind === "challenge" || play.kind === "daily");
+  levelPill.classList.remove("stacked");
   // a practice board says so beside its name (the dev menu's tag: information, never a button)
   const tag = isPractice(play) ? dev?.tag() : null;
   if (play.kind === "campaign") {
-    levelPill.replaceChildren(t("board.level", { level: boardNumber(play.level) }), ...(tag ? [tag] : []));
+    const mark = markOf(campaignLevel(play.level));
+    const name = h("span", { class: "level-name" }, t("board.level", { level: boardNumber(play.level) }));
+    // a hard board's tag by the number (marks.ts); with the practice tag too, both under the number
+    const tags = [...(mark ? [markTag(mark, true)] : []), ...(tag ? [tag] : [])];
+    levelPill.classList.toggle("stacked", tags.length > 1);
+    levelPill.replaceChildren(name, ...(tags.length > 1 ? [h("span", { class: "tags" }, ...tags)] : tags));
     return;
   }
   if (play.kind === "experiment") {
@@ -692,6 +727,8 @@ function showWin(): void {
   const practice = isPractice(lastWin);
   // the campaign's last board (each time round)
   const last = boardNumber(level) === levels();
+  // a hard board beaten says so (marks.ts)
+  const mark = markOf(campaignLevel(level));
   const next = last
     ? withClick(button("amber next", "win.home", icon("home"), t("win.home")), () => leaveTo("win-home", goHome))
     : withClick(button("amber next", "win.next", t("win.next"), icon("next")), () =>
@@ -702,6 +739,7 @@ function showWin(): void {
       "div",
       { class: "card" },
       h("h2", {}, t("win.title")),
+      mark ? h("p", { class: `mark-beaten ${mark}` }, t(mark === "hard" ? "win.beatHard" : "win.beatSuper")) : null,
       gallery,
       h(
         "div",
@@ -1124,6 +1162,12 @@ export async function startApp(): Promise<void> {
       openLevel,
       progress,
       restored: albumsUi.pretend,
+      /** Show campaign boards as marked hard ("c07": "hard", "c20": "super"), for this page only. */
+      marks(m: Record<string, Mark | null>) {
+        pretendMarks(m);
+        if (screen === "home") drawHome();
+        if (screen === "board") drawPill();
+      },
       /** Show a challenge board as cleared in `moves`, for this page only (a win held, never sent). */
       cleared(id: string, moves: number) {
         hold(`dev-${id}`, { lane: "challenge", board: id, moves, ms: 0, pictures: [] });

@@ -52,6 +52,7 @@
 #dev-menu .dev-grid .btn { flex-direction: column; gap: 3px; min-height: 58px; padding: 6px 2px 5px; border-radius: 16px; }
 #dev-menu .dev-grid b { font: 600 19px/1 var(--round); }
 #dev-menu .dev-grid small { font: 500 12px/1.1 var(--round); }
+#dev-menu .dev-grid .mark-tag { margin: 1px 0 0; padding: 2px 6px 1px; font-size: 12px; white-space: normal; text-align: center; line-height: 1.05; }
 #dev-menu .dev-day { display: flex; align-items: center; gap: 10px; }
 #dev-menu .dev-day .btn.round { --size: 46px; font-size: 16px; }
 #dev-menu .dev-date {

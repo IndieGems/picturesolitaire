@@ -45,6 +45,9 @@
   --glass-line: rgba(255, 255, 255, 0.75);
   --shade: rgba(12, 18, 30, 0.62);
   --table: #2c3746;
+  /* a hard board's tag (marks.ts): warm red-coral and deep purple, as r g b, both 4.7:1 or more under white */
+  --mark-hard: 204 68 52;
+  --mark-super: 91 42 134;
   /* a card's width ÷ height: the board's TUNING.cardAspect, set again on every screen (cards.ts) */
   --card-aspect: 0.75;
   --round: "Fredoka", ui-rounded, "Nunito", "Segoe UI", system-ui, sans-serif;
@@ -199,7 +202,8 @@ html.less-motion .home-note { animation: none; }
    less so Play stays in view */
 .home h1 { margin: 0; width: min(100%, calc(340px * var(--k)), 600px, calc((100dvh - 430px) * 2.07)); min-width: 200px; line-height: 0; }
 .home h1 picture, .home .wordmark { display: block; width: 100%; height: auto; }
-.home .where { padding: calc(8px * var(--k)) calc(20px * var(--k)); font-size: calc(18px * var(--k)); font-weight: 600; }
+.home .where { display: flex; align-items: center; padding: calc(8px * var(--k)) calc(20px * var(--k)); font-size: calc(18px * var(--k)); font-weight: 600; }
+.home .where .mark-tag { margin-left: calc(10px * var(--k)); padding: calc(5px * var(--k)) calc(10px * var(--k)) calc(4px * var(--k)); font-size: calc(13px * var(--k)); }
 .home .play { min-width: calc(210px * var(--k)); min-height: calc(68px * var(--k)); padding: 0 calc(34px * var(--k)); font-size: calc(26px * var(--k)); }
 .home .play :is(svg, .ico) { width: calc(28px * var(--k)); height: calc(28px * var(--k)); }
 
@@ -335,8 +339,48 @@ button.pic:focus-visible { outline: 3px solid var(--amber-hi); outline-offset: 3
 
 /* Less motion (the Arcade's setting or the device's) stops the pops and slides; the cards still come. */
 html.less-motion .card, html.less-motion .win .gallery .pic, html.less-motion .veil { animation: none; }
+
+/* ---------- hard boards (marks.ts): information, so flat tinted glass, no lip and no shadow ---------- */
+
+.mark-tag, .mark-banner, .win .card p.mark-beaten {
+  color: #fff; border: 1.5px solid rgba(255, 255, 255, 0.55); border-radius: 999px;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+.mark-tag.hard, .mark-banner.hard, .mark-beaten.hard { background: rgb(var(--mark-hard) / 0.94); }
+.mark-tag.super, .mark-banner.super, .mark-beaten.super { background: rgb(var(--mark-super) / 0.94); }
+/* by the board number (as the practice tag), on home's line, in the dev menu's board list */
+.mark-tag {
+  display: inline-flex; align-items: center; flex: none; margin-left: 8px; padding: 4px 9px 3px;
+  font: 700 13px/1 var(--round); letter-spacing: 0.01em; white-space: nowrap;
+}
+/* the top row's board number keeps one line; with two tags (a hard board in practice) they go under it */
+.top-pill .level-name { white-space: nowrap; }
+.top-pill.stacked { flex-direction: column; gap: 4px; }
+.top-pill.stacked .level-name { font-size: 17px; }
+.top-pill.stacked .tags { display: flex; gap: 6px; }
+.top-pill.stacked .tags > * { margin-left: 0; }
+/* over the board as it opens, about a second (app.ts, BANNER_MS), taking no touch */
+.mark-banner {
+  position: absolute; left: 50%; z-index: 3; pointer-events: none; transform: translate(-50%, -50%);
+  padding: 13px 30px 11px; border-width: 2px; font: 700 28px/1.1 var(--round); white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  animation: mark-banner 1.2s ease-out both;
+}
+.mark-banner[hidden] { display: none; }
+@keyframes mark-banner {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+  18% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); }
+  30%, 78% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+}
+/* less motion: it only fades in and out, where it stands */
+@keyframes mark-fade { 0%, 100% { opacity: 0; } 20%, 78% { opacity: 1; } }
+html.less-motion .mark-banner { animation-name: mark-fade; }
+/* the win card: a hard board beaten says so, under the title */
+.win .card p.mark-beaten { display: table; margin: -2px auto 2px; padding: 6px 14px 5px; font: 700 16px/1.15 var(--round); }
 @media (prefers-reduced-motion: reduce) {
   .card, .win .gallery .pic, .veil { animation: none; }
+  .mark-banner { animation-name: mark-fade; }
 }
 
 /* ---------- the settings screen (src/settings-screen.ts) ---------- */
