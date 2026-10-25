@@ -192,6 +192,10 @@ BOARD_CELL = (240, 320)  # the board's copy, per card: ~2.7x a phone's ~90 CSS p
 # painted texture look the same at q74 and are a third lighter (Untangled's docs/mobile.md).
 SMOOTH_MEDIA = {"flat", "low-poly", "deco", "stained-glass", "papercut", "render"}
 BOARD_BUDGET = 28 * 1024  # per card; tools/art/check-copies.mjs holds the build to it
+# A destination postcard's copy is a whole board of cards in one file: lighter per card, down to
+# q50 (lead, 2026-10-25: lighten it if the difference cannot be seen; at a big phone's 1.25x,
+# q74 and q50 look the same). About 133 KB for a 4x4 postcard instead of 168.
+DEST_BOARD_BUDGET = 8 * 1024
 
 
 def board_rel(e):
@@ -206,8 +210,9 @@ def make_board(e):
     im = framed(e).resize((w, h), Image.LANCZOS)
     out = PUBLIC / board_rel(e)
     out.parent.mkdir(parents=True, exist_ok=True)
-    budget = BOARD_BUDGET * e["cols"] * e["rows"]
-    for q in range(84 if e["medium"] in SMOOTH_MEDIA else 74, 55, -4):
+    dest = bool(e.get("place"))
+    budget = (DEST_BOARD_BUDGET if dest else BOARD_BUDGET) * e["cols"] * e["rows"]
+    for q in range(84 if e["medium"] in SMOOTH_MEDIA else 74, 49 if dest else 55, -4):
         im.save(out, "WEBP", quality=q, method=6)
         if out.stat().st_size <= budget:
             break
@@ -231,7 +236,7 @@ def cmd_thumbs(ids):
 
 
 DEST_THUMB_W = 300  # the passport's postcard tile: ~78 CSS px wide on a phone at 3x, ~140 on desktop (UI)
-DEST_THUMB_BUDGET = 32 * 1024  # 300 x 400 is 1.6x a library thumb's pixels
+DEST_THUMB_BUDGET = 32 * 1024  # for 300 x 400 (1.6x a library thumb's pixels), pro rata for a taller postcard
 
 
 def dest_thumb_rel(e):
@@ -245,7 +250,7 @@ def make_dest_thumb(e):
     out = PUBLIC / dest_thumb_rel(e)
     for q in range(76, 39, -4):
         im.save(out, "WEBP", quality=q, method=6)
-        if out.stat().st_size <= DEST_THUMB_BUDGET:
+        if out.stat().st_size <= DEST_THUMB_BUDGET * im.height // 400:
             break
     return im.size, out.stat().st_size
 

@@ -9859,6 +9859,675 @@
         "gold"
       ],
       "busy": 1
+    },
+    {
+      "id": "dest-fuji-chureito",
+      "name": "Mount Fuji",
+      "place": "Yamanashi, Japan",
+      "trip": "japan",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-fuji-chureito.webp",
+      "board": "pictures/destinations/dest-fuji-chureito-board.webp",
+      "thumb": "pictures/destinations/dest-fuji-chureito-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "photo",
+      "family": "pagoda",
+      "subjects": [
+        "Mount Fuji",
+        "Chureito Pagoda",
+        "cherry blossom"
+      ],
+      "palette": [
+        "white",
+        "blue",
+        "red",
+        "pink"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "dest-gotokuji-cats",
+      "name": "Lucky Cat Temple",
+      "place": "Gōtoku-ji, Tokyo",
+      "trip": "japan",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-gotokuji-cats.webp",
+      "board": "pictures/destinations/dest-gotokuji-cats-board.webp",
+      "thumb": "pictures/destinations/dest-gotokuji-cats-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "photo",
+      "family": "gotokuji-cats",
+      "subjects": [
+        "beckoning cats",
+        "maneki-neko",
+        "temple"
+      ],
+      "palette": [
+        "white",
+        "red",
+        "gold",
+        "brown"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "dest-kamakura-buddha",
+      "name": "Great Buddha of Kamakura",
+      "place": "Kanagawa, Japan",
+      "trip": "japan",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        0
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-kamakura-buddha.webp",
+      "board": "pictures/destinations/dest-kamakura-buddha-board.webp",
+      "thumb": "pictures/destinations/dest-kamakura-buddha-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "photo",
+      "family": "kamakura-buddha",
+      "subjects": [
+        "Great Buddha",
+        "bronze statue"
+      ],
+      "palette": [
+        "teal",
+        "green",
+        "blue",
+        "bronze"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-snow-monkeys",
+      "name": "Snow Monkey Park",
+      "place": "Jigokudani, Nagano",
+      "trip": "japan",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-snow-monkeys.webp",
+      "board": "pictures/destinations/dest-snow-monkeys-board.webp",
+      "thumb": "pictures/destinations/dest-snow-monkeys-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "photo",
+      "family": "snow-monkeys",
+      "subjects": [
+        "snow monkeys",
+        "hot spring"
+      ],
+      "palette": [
+        "grey",
+        "red",
+        "white",
+        "brown"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-shirakawa-go",
+      "name": "Shirakawa-gō",
+      "place": "Gifu, Japan",
+      "trip": "japan",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-shirakawa-go.webp",
+      "board": "pictures/destinations/dest-shirakawa-go-board.webp",
+      "thumb": "pictures/destinations/dest-shirakawa-go-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "print",
+      "family": "shirakawa-go",
+      "subjects": [
+        "Shirakawa-go",
+        "thatched farmhouses",
+        "snow"
+      ],
+      "palette": [
+        "white",
+        "blue",
+        "brown",
+        "yellow"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "dest-kinkakuji",
+      "name": "Golden Pavilion",
+      "place": "Kinkaku-ji, Kyoto",
+      "trip": "japan",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        1
+      ],
+      "file": "pictures/destinations/dest-kinkakuji.webp",
+      "board": "pictures/destinations/dest-kinkakuji-board.webp",
+      "thumb": "pictures/destinations/dest-kinkakuji-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "photo",
+      "family": "kinkakuji",
+      "subjects": [
+        "Golden Pavilion",
+        "pond",
+        "reflection"
+      ],
+      "palette": [
+        "gold",
+        "green",
+        "blue",
+        "black"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-fushimi-inari",
+      "name": "Fushimi Inari Shrine",
+      "place": "Kyoto, Japan",
+      "trip": "japan",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-fushimi-inari.webp",
+      "board": "pictures/destinations/dest-fushimi-inari-board.webp",
+      "thumb": "pictures/destinations/dest-fushimi-inari-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "fushimi-inari",
+      "subjects": [
+        "torii tunnel",
+        "Fushimi Inari"
+      ],
+      "palette": [
+        "orange",
+        "black",
+        "green",
+        "grey"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "dest-kiyomizu-dera",
+      "name": "Kiyomizu-dera",
+      "place": "Kyoto, Japan",
+      "trip": "japan",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-kiyomizu-dera.webp",
+      "board": "pictures/destinations/dest-kiyomizu-dera-board.webp",
+      "thumb": "pictures/destinations/dest-kiyomizu-dera-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "kiyomizu-dera",
+      "subjects": [
+        "Kiyomizu-dera",
+        "wooden stage",
+        "maples"
+      ],
+      "palette": [
+        "brown",
+        "red",
+        "orange",
+        "blue"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "dest-nachi-falls",
+      "name": "Nachi Falls",
+      "place": "Wakayama, Japan",
+      "trip": "japan",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-nachi-falls.webp",
+      "board": "pictures/destinations/dest-nachi-falls-board.webp",
+      "thumb": "pictures/destinations/dest-nachi-falls-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "ribbon-falls",
+      "subjects": [
+        "Nachi Falls",
+        "pagoda",
+        "waterfall"
+      ],
+      "palette": [
+        "white",
+        "green",
+        "red",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-himeji-castle",
+      "name": "Himeji Castle",
+      "place": "Hyōgo, Japan",
+      "trip": "japan",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-himeji-castle.webp",
+      "board": "pictures/destinations/dest-himeji-castle-board.webp",
+      "thumb": "pictures/destinations/dest-himeji-castle-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "himeji-castle",
+      "subjects": [
+        "Himeji Castle",
+        "cherry blossom"
+      ],
+      "palette": [
+        "white",
+        "grey",
+        "pink",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-rabbit-island",
+      "name": "Rabbit Island",
+      "place": "Ōkunoshima, Hiroshima",
+      "trip": "japan",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-rabbit-island.webp",
+      "board": "pictures/destinations/dest-rabbit-island-board.webp",
+      "thumb": "pictures/destinations/dest-rabbit-island-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "rabbit",
+      "subjects": [
+        "rabbits",
+        "island"
+      ],
+      "palette": [
+        "brown",
+        "green",
+        "blue",
+        "white"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-itsukushima",
+      "name": "Itsukushima Shrine",
+      "place": "Miyajima, Hiroshima",
+      "trip": "japan",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-itsukushima.webp",
+      "board": "pictures/destinations/dest-itsukushima-board.webp",
+      "thumb": "pictures/destinations/dest-itsukushima-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "torii",
+      "subjects": [
+        "floating torii",
+        "Itsukushima"
+      ],
+      "palette": [
+        "red",
+        "blue",
+        "green",
+        "orange"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-kintai-bridge",
+      "name": "Kintai Bridge",
+      "place": "Iwakuni, Yamaguchi",
+      "trip": "japan",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-kintai-bridge.webp",
+      "board": "pictures/destinations/dest-kintai-bridge-board.webp",
+      "thumb": "pictures/destinations/dest-kintai-bridge-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "kintai-bridge",
+      "subjects": [
+        "Kintai Bridge",
+        "wooden arches",
+        "river"
+      ],
+      "palette": [
+        "brown",
+        "blue",
+        "pink",
+        "green"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "dest-takachiho",
+      "name": "Takachiho Gorge",
+      "place": "Miyazaki, Japan",
+      "trip": "japan",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-takachiho.webp",
+      "board": "pictures/destinations/dest-takachiho-board.webp",
+      "thumb": "pictures/destinations/dest-takachiho-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "ribbon-falls",
+      "subjects": [
+        "Takachiho Gorge",
+        "Manai Falls",
+        "rowboats"
+      ],
+      "palette": [
+        "green",
+        "white",
+        "grey",
+        "teal"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-taketomi",
+      "name": "Taketomi Island",
+      "place": "Okinawa, Japan",
+      "trip": "japan",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-taketomi.webp",
+      "board": "pictures/destinations/dest-taketomi-board.webp",
+      "thumb": "pictures/destinations/dest-taketomi-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "taketomi",
+      "subjects": [
+        "Taketomi",
+        "water buffalo cart",
+        "coral walls"
+      ],
+      "palette": [
+        "red",
+        "white",
+        "grey",
+        "pink"
+      ],
+      "busy": 1
     }
   ]
 }

@@ -89,7 +89,8 @@ for (const d of catalogue.destinations ?? []) {
   try {
     const buf = readFileSync(join(root, d.thumb));
     if (String(webpSize(buf)) !== String(tw) || String(d.thumbPx) !== String(tw)) bad.push(`${d.id}: thumb is ${webpSize(buf)} (catalogue ${d.thumbPx}), not ${tw}`);
-    if (buf.length > DEST_THUMB_BUDGET) bad.push(`${d.id}: thumb is ${Math.round(buf.length / 1024)} KB, over ${DEST_THUMB_BUDGET / 1024} KB`);
+    const tb = Math.floor((DEST_THUMB_BUDGET * tw[1]) / 400); // pro rata for a taller postcard
+    if (buf.length > tb) bad.push(`${d.id}: thumb is ${Math.round(buf.length / 1024)} KB, over ${Math.round(tb / 1024)} KB`);
   } catch {
     bad.push(`${d.id}: no thumb (${d.thumb})`);
   }
