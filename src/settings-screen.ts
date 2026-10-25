@@ -12,6 +12,9 @@
 //
 // The Table row (src/ui/tables.ts) lists the tables the player owns, and shows
 // only once they own more than the snowy dusk: a choice of one is no choice.
+//
+// The Arcade's Gem menu lists Volume and Table too, as a mirror of this screen
+// (src/menu-settings.ts); this screen stays, for every embedder that draws none.
 
 import { gem } from "./gem";
 import { isMuted, onMutedChange, setMuted } from "./sound";
@@ -19,6 +22,7 @@ import { choose, loadSettings, onSettingsChange, setting } from "./settings";
 import { t } from "./ui/i18n";
 import { ICONS } from "./ui/icons";
 import { chooseTable, chosenTable, onTableChange, ownedTableArts, tableTitle, thumbOf } from "./ui/tables";
+import { startMenuSettings } from "./menu-settings";
 
 // Rows added from outside, above Close: the creator's Developer button (src/ui/dev-menu.ts,
 // on the dev channel only); and the screen itself, for closing it from there.
@@ -157,4 +161,5 @@ export function mountSettings(parent: HTMLElement = document.body): void {
   parent.append(button, screen);
   render();
   void loadSettings();
+  startMenuSettings();
 }

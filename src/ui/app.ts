@@ -15,7 +15,8 @@
 // meant), the win card, and the "No connection" card, which covers every
 // screen but the board in hand, and covers a board asked for (Play, Next)
 // without opening it, until the connection is back (the game standard, "Every
-// game is played online").
+// game is played online"). Each card is a dialog to a keyboard too (dialogs.ts):
+// the focus moves into it, and Escape does the card's own way out.
 //
 // The top row is the standard's: the Gem's corner (top-left) left alone, the
 // level on the left, Back then the gear at the right end, all level with the
@@ -56,6 +57,7 @@ import { keepFitted } from "./fit";
 import { WORDMARK } from "./wordmark";
 import { cardAspect, syncCardAspect } from "./cards";
 import { createViewer } from "./viewer";
+import { closed, opened } from "./dialogs";
 import { picture as cataloguePicture, pictureTitle } from "./catalogue";
 import { mountParticles } from "./particles";
 import { levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
@@ -965,12 +967,15 @@ function withClick(b: HTMLButtonElement, fn: () => void): HTMLButtonElement {
 }
 function showCard(veil: HTMLElement): void {
   veil.hidden = false;
+  // to a keyboard (dialogs.ts): Escape on the restart card keeps playing; the win card's ways out are its buttons
+  opened(veil, veil === restartVeil ? () => hideCard(restartVeil) : undefined);
   screenChanged();
   drawOffline();
 }
 function hideCard(veil: HTMLElement): void {
-  veil.hidden = true;
   if (veil === winVeil) winViewer.close();
+  veil.hidden = true;
+  closed(veil);
 }
 
 /** The "No connection" card: over everything but the board in hand, until the connection is back. */
@@ -978,7 +983,12 @@ function drawOffline(): void {
   // the board in hand plays on, and once it is won its card stays readable: the card covers
   // only what the player asks for next (Next, Back, Home), and opens nothing new
   const inHand = screen === "board" && waiting === null;
-  offlineVeil.hidden = online() || inHand;
+  const hide = online() || inHand;
+  if (hide === offlineVeil.hidden) return;
+  offlineVeil.hidden = hide;
+  // no way out but the connection: Escape does nothing under it
+  if (hide) closed(offlineVeil);
+  else opened(offlineVeil);
 }
 
 onOnline((up) => {

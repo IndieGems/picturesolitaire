@@ -7,7 +7,9 @@
 // animation loop (the game standard, "Nothing runs at rest").
 //
 // Its top row is every screen's: the picture's title on the left, Back (which
-// closes it) and the gear at the right end. The win card's copy (app.ts) also
+// closes it) and the gear at the right end. To a keyboard it is a dialog
+// (dialogs.ts): the focus moves to its Back, Escape closes it, and the focus
+// goes back to the picture it was opened from. The win card's copy (app.ts) also
 // closes on a single tap while the picture is not zoomed in (`tapToClose`): a
 // look, then back to the card.
 
@@ -16,6 +18,7 @@ import { t } from "./i18n";
 import { pictureTitle, pictureUrl, type Picture } from "./catalogue";
 import { screenChanged } from "./browser";
 import { pictureAspect } from "./cards";
+import { closed, opened } from "./dialogs";
 
 const MAX_ZOOM = 4;
 const DOUBLE_TAP_ZOOM = 2.5;
@@ -206,12 +209,10 @@ export function createViewer(options: { tapToClose?: boolean } = {}): Viewer {
     element.hidden = true;
     img.removeAttribute("src");
     pointers.clear();
+    closed(element);
     screenChanged();
   }
   back.addEventListener("click", close);
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !element.hidden && !document.querySelector("dialog[open]")) close();
-  });
 
   return {
     element,
@@ -224,6 +225,7 @@ export function createViewer(options: { tapToClose?: boolean } = {}): Viewer {
       ty = 0;
       lastTap = { x: 0, y: 0, time: -Infinity };
       element.hidden = false;
+      opened(element, close);
       screenChanged();
       layout();
     },
