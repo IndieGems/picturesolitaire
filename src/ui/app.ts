@@ -26,7 +26,9 @@
 // board opened from the menu, or one a dev hand was put on, plays and finishes
 // as ever, its win card included, but sends no claim (no Coins, no progress, no
 // daily result), saves no guide step and signals no break. It is gated here, at
-// the claim's call site, and says so on the board and on its card.
+// the claim's call site, and says so on the board and on its card. The menu's
+// experiment boards (Levels' experiments.json, which the win checker does not
+// know) are a fourth kind of board, practice always.
 
 import "./style.css";
 import { gem, onArcadePause, onPlayerPrefs } from "../gem";
@@ -44,7 +46,7 @@ import { createChallenges } from "./challenges";
 import { createGuide, type GuideMode } from "./guide";
 import { fireworks } from "./fireworks";
 import type { Challenge } from "./challenge-data";
-import { level as campaignLevel, type Daily } from "../game/levels";
+import { level as campaignLevel, type Daily, type Level } from "../game/levels";
 import { createDaily } from "./daily";
 import { clock, shortDate } from "./format";
 import { claimWin, cueCoins, onVerdict, type Verdict } from "../net/claims";
@@ -182,13 +184,21 @@ app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, routeUi
 
 type Screen = "home" | "board" | "albums" | "album" | "challenges" | "daily";
 /**
- * A board to play: one of the campaign's, one on the challenge route, or the day's.
+ * A board to play: one of the campaign's, one on the challenge route, the day's, or one of the
+ * dev menu's experiment boards (practice always).
  * `practice`: the dev menu's (nothing sent or saved); `guide`: board 1 with its guide replayed.
  */
-export type Play = ({ kind: "campaign"; level: number } | { kind: "challenge"; c: Challenge } | { kind: "daily"; d: Daily }) & {
+export type Play = (
+  | { kind: "campaign"; level: number }
+  | { kind: "challenge"; c: Challenge }
+  | { kind: "daily"; d: Daily }
+  | { kind: "experiment"; x: Experiment }
+) & {
   practice?: boolean;
   guide?: boolean;
 };
+/** An experiment board (src/content/levels/experiments.json, loaded by the dev menu alone); `name` is its label there. */
+export type Experiment = Level & { name: string };
 /** A practice board or win (the dev menu's). Always false in a release build, which then drops every branch on it. */
 function isPractice(x: { practice?: boolean } | null | undefined): boolean {
   return import.meta.env.MODE !== "release" && x?.practice === true;
@@ -197,6 +207,7 @@ const samePlay = (a: Play | null, b: Play): boolean => {
   if (!a || a.kind !== b.kind || isPractice(a) !== isPractice(b) || (isPractice(a) && !!a.guide !== !!b.guide)) return false;
   if (a.kind === "campaign") return a.level === (b as typeof a).level;
   if (a.kind === "challenge") return a.c.id === (b as typeof a).c.id;
+  if (a.kind === "experiment") return a.x.id === (b as typeof a).x.id;
   return a.d.id === (b as typeof a).d.id;
 };
 
@@ -339,7 +350,7 @@ function openPlay(next: Play): void {
     // the board reports its helpers and undo through board:changed, once at start too
     drawHelpers({ undo: 3, hint: 3, shuffle: 3 }, false);
     guide.cancel();
-    board = openBoard(host, next.kind === "campaign" ? next.level : next.kind === "challenge" ? next.c.level : next.d);
+    board = openBoard(host, next.kind === "campaign" ? next.level : next.kind === "challenge" ? next.c.level : next.kind === "daily" ? next.d : next.x);
     if (import.meta.env.MODE !== "release") dev?.opened(board);
     // the first board teaches the game, once the save says the player has not learnt it yet;
     // in practice only when the dev menu asked for the guide again (and then it saves nothing)
@@ -354,11 +365,15 @@ function openPlay(next: Play): void {
 /** The top row's information: the level; on a challenge or the daily, its name over the par and the moves so far. */
 function drawPill(): void {
   if (!play) return;
-  levelPill.classList.toggle("two", play.kind !== "campaign");
+  levelPill.classList.toggle("two", play.kind === "challenge" || play.kind === "daily");
   // a practice board says so beside its name (the dev menu's tag: information, never a button)
   const tag = isPractice(play) ? dev?.tag() : null;
   if (play.kind === "campaign") {
     levelPill.replaceChildren(t("board.level", { level: boardNumber(play.level) }), ...(tag ? [tag] : []));
+    return;
+  }
+  if (play.kind === "experiment") {
+    levelPill.replaceChildren(dev?.label(play) ?? play.x.id, ...(tag ? [tag] : []));
     return;
   }
   const par = play.kind === "challenge" ? play.c.par : play.d.par;
@@ -468,7 +483,7 @@ on("board:changed", (e) => {
   shufflesLeft = e.helpers.shuffle;
   // the moves so far, where the board reports them: a challenge's top row counts against par
   const moves = (e as { moves?: number }).moves;
-  if (typeof moves === "number" && play && play.kind !== "campaign") {
+  if (typeof moves === "number" && (play?.kind === "challenge" || play?.kind === "daily")) {
     movesSoFar = moves;
     drawPill();
   }
@@ -552,6 +567,7 @@ type Win = (
   | { kind: "campaign"; level: number; moves: number; ms: number; milestone: boolean }
   | { kind: "challenge"; c: Challenge; moves: number; ms: number; first: boolean; better: boolean }
   | { kind: "daily"; d: Daily; moves: number; ms: number; first: boolean }
+  | { kind: "experiment"; x: Experiment; moves: number; ms: number }
 ) & {
   /** The win checker's word, once it lands (it may take a while offline). */
   verdict?: Verdict;
@@ -570,6 +586,11 @@ let lastWin: Win | null = null;
 on("board:solved", ({ moves, ms, line }) => {
   if (!play || boardWon) return;
   boardWon = true;
+  // the dev menu's experiment boards: practice always (no checker lane knows them)
+  if (play.kind === "experiment") {
+    lastWin = { kind: "experiment", x: play.x, moves, ms, practice: true };
+    return;
+  }
   let win: Win;
   // The player's progress is the server's record (src/net/progress.ts): the claim below
   // shows the win in it at once, and the checker's verdict then replaces it with its own
@@ -663,6 +684,7 @@ function showWin(): void {
   const gallery = layoutGallery(board.pictures());
   if (lastWin.kind === "challenge") return void showChallengeWin(lastWin, gallery);
   if (lastWin.kind === "daily") return void showDailyWin(lastWin, gallery);
+  if (lastWin.kind === "experiment") return void (import.meta.env.MODE !== "release" && showExperimentWin(lastWin, gallery));
   if (lastWin.milestone) return void showMilestone(gallery);
   const { level, moves, ms } = lastWin;
   const practice = isPractice(lastWin);
@@ -777,6 +799,36 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement):
         withClick(button("", "win.home", t("win.home")), () => leaveTo("daily-home", goHome)),
         after,
       ),
+    ),
+  );
+  showCard(winVeil);
+  drawCoins(w);
+}
+
+/** An experiment board's card (the dev menu's, practice): the campaign's card, with the next experiment for Next. */
+function showExperimentWin(w: Extract<Win, { kind: "experiment" }>, gallery: HTMLElement): void {
+  const p = play;
+  const after = p && dev?.hasNext(p);
+  winVeil.replaceChildren(
+    h(
+      "div",
+      { class: "card" },
+      h("h2", {}, t("win.title")),
+      gallery,
+      h(
+        "div",
+        { class: "stats" },
+        h("div", { class: "stat glass" }, h("b", {}, String(w.moves)), h("span", {}, t("win.moves"))),
+        h("div", { class: "stat glass" }, h("b", {}, clock(w.ms)), h("span", {}, t("win.time"))),
+      ),
+      after
+        ? h(
+            "div",
+            { class: "row" },
+            withClick(button("", "win.home", t("win.home")), () => leaveTo("experiment-home", goHome)),
+            withClick(button("amber next", "win.next", t("win.next"), icon("next")), () => leaveTo("experiment-next", () => p && dev?.next(p))),
+          )
+        : withClick(button("amber next", "win.home", icon("home"), t("win.home")), () => leaveTo("experiment-home", goHome)),
     ),
   );
   showCard(winVeil);

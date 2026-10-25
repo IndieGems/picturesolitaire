@@ -11,6 +11,8 @@
 //                      (a Next move bar over the board), the board before and after
 //   Switches           endless helpers, animation speed, every picture in the albums
 //   Play any board     the campaign, the challenge route, any date of the daily pool
+//   Experiments        Levels' experiment boards (src/content/levels/experiments.json,
+//                      imported here only, so a release build drops it with the menu)
 //   Guided start       board 1's guide again, from its first step
 //
 // NEVER IN A RELEASE BUILD. app.ts imports this file only behind
@@ -27,13 +29,13 @@
 import "./dev-menu.css";
 import { gem } from "../gem";
 import { on } from "../events";
-import { level, levelCount, loadDaily } from "../game/levels";
+import { level, levelCount, loadDaily, toLevel, type Stored } from "../game/levels";
 import { currentDaily } from "../net/daily";
 import { addToSettings, closeSettings } from "../settings-screen";
 import { loadChallenges, type Challenge } from "./challenge-data";
 import { shortDate } from "./format";
 import type { BoardHandle, DevStep } from "./board-api";
-import type { Play } from "./app";
+import type { Experiment, Play } from "./app";
 
 /** What vite.config.ts stamps in at build time (its `define`). */
 declare const __BUILD_INFO__: { version: string; sdk: string; commit: string; changed: boolean; built: string };
@@ -72,6 +74,8 @@ export interface DevMenu {
   hasNext(p: Play): boolean;
   /** Open the board after `p`, in practice. */
   next(p: Play): void;
+  /** An experiment board's name for the top row ("Board x01"). */
+  label(p: Extract<Play, { kind: "experiment" }>): string;
 }
 
 const SPEEDS = [0.25, 0.5, 1, 2];
@@ -82,7 +86,9 @@ const WHY_NOT: Record<Extract<DevStep, { ok: false }>["reason"], string> = {
   closed: "The board has closed",
 };
 
-type Kind = Play["kind"];
+/** The lists of Play any board (the experiments have their own section). */
+type Kind = Exclude<Play["kind"], "experiment">;
+const KINDS: Kind[] = ["campaign", "challenge", "daily"];
 const KIND_NAMES: Record<Kind, string> = { campaign: "Campaign", challenge: "Challenge", daily: "Daily" };
 
 // ---------- a little DOM ----------
@@ -150,6 +156,18 @@ export function mountDevMenu(host: DevHost): DevMenu {
     if (tab === "daily") drawPick();
   });
   const clampDay = (d: string) => (!pool ? d : d < pool.first ? pool.first : d > pool.last ? pool.last : d);
+  // Levels' experiment boards, read once (null until they land)
+  let experiments: Experiment[] | null = null;
+  void import("../content/levels/experiments.json")
+    .then((m) => {
+      const stored = (m.default as unknown as { levels: (Stored & { name?: string })[] }).levels;
+      experiments = stored.map((l, i) => ({ ...toLevel(l, i + 1), name: l.name ?? l.id }));
+    })
+    .catch((err: unknown) => {
+      console.warn("[dev-menu] the experiment boards did not load", err);
+      experiments = [];
+    })
+    .finally(() => drawExperiments());
 
   async function neighbour(p: Play, step: 1 | -1): Promise<Play | null> {
     if (p.kind === "campaign") {
@@ -159,6 +177,10 @@ export function mountDevMenu(host: DevHost): DevMenu {
     if (p.kind === "challenge") {
       const c = route[p.c.n - 1 + step];
       return c ? { kind: "challenge", c } : null;
+    }
+    if (p.kind === "experiment") {
+      const x = experiments?.[p.x.number - 1 + step];
+      return x ? { kind: "experiment", x } : null;
     }
     const date = addDays(p.d.date, step);
     if (pool && (date < pool.first || date > pool.last)) return null;
@@ -171,6 +193,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
       return n >= 1 && n <= levelCount();
     }
     if (p.kind === "challenge") return !!route[p.c.n - 1 + step];
+    if (p.kind === "experiment") return !!experiments?.[p.x.number - 1 + step];
     if (!pool) return false;
     const date = addDays(p.d.date, step);
     return date >= pool.first && date <= pool.last;
@@ -252,6 +275,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
   function playName(p: Play): string {
     if (p.kind === "campaign") return `Campaign board ${campaignNumber(p.level)}`;
     if (p.kind === "challenge") return `Challenge ${p.c.n}`;
+    if (p.kind === "experiment") return `Experiment ${p.x.number}: ${p.x.name}`;
     return `Daily, ${shortDate(p.d.date)}`;
   }
 
@@ -323,7 +347,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
   let tab: Kind = "campaign";
   let day = currentDaily().date;
   const tabs = el("div", "dev-tabs");
-  const tabBtns = (["campaign", "challenge", "daily"] as Kind[]).map((k) =>
+  const tabBtns = KINDS.map((k) =>
     btn("", KIND_NAMES[k], () => {
       tab = k;
       drawPick();
@@ -341,7 +365,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
   }
 
   function drawPick(): void {
-    tabBtns.forEach((b, i) => b.classList.toggle("amber", (["campaign", "challenge", "daily"] as Kind[])[i] === tab));
+    tabBtns.forEach((b, i) => b.classList.toggle("amber", KINDS[i] === tab));
     const now = host.now();
     const p = now.screen === "board" ? now.play : null;
     if (tab === "campaign") {
@@ -415,6 +439,29 @@ export function mountDevMenu(host: DevHost): DevMenu {
     });
   }
 
+  // the experiment boards: one row each, its name (they are long) over its id and size
+  const xList = el("div", "dev-xlist");
+  const xSec = el("section");
+  xSec.append(
+    el("h3", "", "Experiments (practice)"),
+    el("p", "dev-note", "Boards Levels made to try an idea out. They are never in the game, and the win checker does not know them."),
+    xList,
+  );
+  function drawExperiments(): void {
+    if (!experiments) return void xList.replaceChildren(el("p", "dev-note", "Loading the experiment boards…"));
+    if (!experiments.length) return void xList.replaceChildren(el("p", "dev-note", "No experiment boards yet."));
+    const now = host.now();
+    const p = now.screen === "board" ? now.play : null;
+    xList.replaceChildren(
+      ...experiments.map((x) => {
+        const b = btn(p?.kind === "experiment" && p.x.id === x.id ? "amber dev-x" : "dev-x", "", () => play({ kind: "experiment", x }));
+        const d = x.deal;
+        b.append(el("b", "", x.name), el("small", "", `${x.id} · ${d.cols}×${d.rows} grid · ${d.pictures.length} pictures`));
+        return b;
+      }),
+    );
+  }
+
   // the guided start
   const guideSec = el("section");
   guideSec.append(
@@ -423,7 +470,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     el("p", "dev-note", "Board 1 with its four steps from the first, then its finish card. Nothing is saved, and no table is given."),
   );
 
-  scroll.append(title, buildBox, boardSec, switches, pickSec, guideSec);
+  scroll.append(title, buildBox, boardSec, switches, pickSec, xSec, guideSec);
   document.body.append(dialog);
 
   // ---------- the Next move bar, over the board's foot ----------
@@ -483,11 +530,12 @@ export function mountDevMenu(host: DevHost): DevMenu {
     void drawBuild();
     drawBoard();
     const p = host.now().play;
-    if (host.now().screen === "board" && p) tab = p.kind;
+    if (host.now().screen === "board" && p && p.kind !== "experiment") tab = p.kind;
     endlessSwitch.checked = endless;
     picturesSwitch.checked = everyPicture;
     drawSpeed();
     drawPick();
+    drawExperiments();
     scroll.scrollTop = 0;
     dialog.showModal();
   });
@@ -512,5 +560,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     },
     hasNext: (p) => hasNeighbour(p, 1),
     next: (p) => go(p, 1),
+    // its id, as its row in the menu shows it ("Experiment 1" wraps beside the tag on a small phone)
+    label: (p) => `Board ${p.x.id}`,
   };
 }

@@ -61,6 +61,12 @@
 #dev-menu .dev-day-info { margin: 12px 0; }
 #dev-menu .dev-pick > .btn.amber { display: flex; width: 100%; min-height: 50px; font-size: 17px; }
 
+/* the experiment boards: a full-width row each, the name over its id and size */
+#dev-menu .dev-xlist { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
+#dev-menu .dev-x { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; width: 100%; min-height: 58px; padding: 8px 16px; border-radius: 18px; text-align: left; }
+#dev-menu .dev-x b { font: 600 16px/1.2 var(--round); }
+#dev-menu .dev-x small { font: 500 12px/1.2 var(--round); }
+
 #dev-menu .dev-foot { flex: none; padding: 10px 16px 16px; border-top: 1.5px solid rgba(150, 168, 190, 0.35); }
 #dev-menu .dev-close { display: flex; width: 100%; min-height: 50px; font-size: 17px; }
 
