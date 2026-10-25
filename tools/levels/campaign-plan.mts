@@ -21,8 +21,10 @@
 // A SAFE START on every board but hard, peak and super (MAY_TRAP; AGENTS.md;
 // check.mts).
 // KEEP: boards 3-13 were re-dealt to the curve keeping the pictures the
-// creator reviews them by (keep; the picker adds the rest; the spare new
-// squares were placed by hand). Board 11 took the
+// creator reviews them by (keep). They needed 13 more squares: the 7 spare
+// new ones, placed by hand where the busy caps let them fit, board 11's 4,
+// and 2 the picker adds (boards 5 and 9) from Art's batch of 2026-10-25. A
+// flagged kept picture gives way to its remake (lib.mts REMAKES, keepOf). Board 11 took the
 // long pictures of boards 11-13, and its squares went to boards 12-13.
 // Board 21 takes the dev menu's long-pictures experiment (x01).
 //
@@ -78,14 +80,6 @@ const long = (keep) => ({ count: keep.length, alike: [], sizes: [2], cards: [kee
 const ANY = [1, 99];
 /** Boards 1-13: an old picture stands in only where the new ones run out (lib.mts pickFrom). */
 const STAND_IN = { old: CURRENT, oldMost: 1 };
-/**
- * UNTIL ART'S NEXT BATCH (2026-10-25): boards 3-13 need 13 more squares and the library has 11 new
- * ones (the 7 spares, placed by hand in the keep lists where the busy caps let them fit, and board
- * 11's 4), so boards 5 and 9 take an old one, and as every old one is rated busy, each may hold two
- * pictures rated busy 1. When the batch lands, this goes and boards 5 and 9 are re-dealt
- * (--redeal 5,9; a square swapped for a square keeps the same deal).
- */
-const INTERIM = { liveMost: 2 };
 const NEW_ONLY = { old: CURRENT, oldMost: 0 };
 
 export const PLAN = [
@@ -94,11 +88,11 @@ export const PLAN = [
   /*  2 */ { role: "teach",  ...sq(4), careless: [1, 1], chain: [1, 1], ...STAND_IN },
   /*  3 */ { role: "bite",   ...sq(7, { keep: ["blue-bicycle", "cactus-bloom", "ice-cream", "mount-fuji", "sailboat", "red-barn", "skier"] }), careless: [0.55, 0.65], chain: ANY, liveMost: 2, ...STAND_IN },
   /*  4 */ { role: "relief", ...sq(5, { keep: ["bubbles", "golden-puppy", "pancakes", "saxophonist", "steam-train"] }), careless: [0.85, 1], chain: [2, 2], ...STAND_IN },
-  /*  5 */ { role: "build",  ...sq(7, { keep: ["chef", "magnolia", "orchid", "suitcase", "teddy-bear", "watermelon"] }), careless: [0.7, 0.8], chain: ANY, ...STAND_IN, ...INTERIM },
+  /*  5 */ { role: "build",  ...sq(7, { keep: ["chef", "magnolia", "orchid", "suitcase", "teddy-bear", "watermelon"] }), careless: [0.7, 0.8], chain: ANY, ...STAND_IN },
   /*  6 */ { role: "build",  ...sq(7, { keep: ["camper-van", "cappuccino", "ginger-cat", "leaning-tower", "painter", "yellow-door", "pizza"] }), careless: [0.6, 0.75], chain: ANY, ...STAND_IN },
   /*  7 */ { role: "hard",   ...sq(8, { keep: ["biplane", "bonsai", "cowboy", "fjord-evening", "gramophone", "owl", "redwoods", "tree-house"] }), careless: [0.3, 0.5], chain: ANY, ...STAND_IN },
   /*  8 */ { role: "relief", ...sq(5, { keep: ["armchair", "ballerina", "bird-of-paradise", "sandstone-arch", "tiled-house"] }), careless: [0.85, 1], chain: [2, 2], ...STAND_IN },
-  /*  9 */ { role: "build",  ...sq(7, { keep: ["baobab", "delft-teapot", "doughnut", "monstera", "palm-island", "red-kite"] }), careless: [0.5, 0.7], chain: ANY, ...STAND_IN, ...INTERIM },
+  /*  9 */ { role: "build",  ...sq(7, { keep: ["baobab", "delft-teapot", "doughnut", "monstera", "palm-island", "red-kite"] }), careless: [0.5, 0.7], chain: ANY, ...STAND_IN },
   /* 10 */ { role: "peak",   ...sq(8, { keep: ["chestnut-horse", "dahlia", "golden-gate", "protea", "rainbow", "rickshaw", "sandcastle", "colosseum"] }), careless: [0.3, 0.5], chain: ANY, ...STAND_IN },
   // ---- the second cycle: more pictures; a hard board at 15, super hard at 20
   /* 11 */ { role: "pace",   ...long(["guitar", "hammock", "houseboat", "ice-lolly", "canal-house", "flamenco", "tractor", "pagoda", "rocking-horse", "paddle-steamer"]), careless: [0.85, 1], chain: ANY, ...STAND_IN },

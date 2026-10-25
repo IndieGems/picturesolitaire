@@ -5,7 +5,10 @@
 // that meets every axis, proves it, finds its par line, and writes
 //   src/content/levels/challenge.json   the boards, each with its par line and "par"
 //   docs/challenge.md                   the table of axes, for the reader
-// Run: node tools/levels/make-challenge.mts
+// Run: node tools/levels/make-challenge.mts [--out FILE]
+//   --out FILE  write the boards there instead, and no docs (for trials: the
+//               working tree is shared, and a changed level file stops every
+//               build until the win checker is rebuilt)
 // Deterministic: the same plan and catalogue give the same route. Then
 // node tools/levels/check.mts re-proves what was written.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
@@ -34,8 +37,10 @@ const levels = route(PLAN, readBoards(FILE), {
     vary: true,
   }),
 });
-writeBoards(FILE, "challenge route; made by tools/levels/make-challenge.mts, checked by tools/levels/check.mts; par = moves in the stored line", levels);
+const outAt = process.argv.indexOf("--out");
+writeBoards(outAt > 0 ? process.argv[outAt + 1] : FILE, "challenge route; made by tools/levels/make-challenge.mts, checked by tools/levels/check.mts; par = moves in the stored line", levels);
 
+if (outAt > 0) process.exit(0);
 // ---------------------------------------------------------------- docs/challenge.md
 const counts = usable.map((p) => levels.filter((l) => l.pictures.some((q) => q.id === p.id)).length);
 const rows = levels.map((l, i) => {

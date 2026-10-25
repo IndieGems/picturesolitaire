@@ -1,6 +1,6 @@
 // Builds the daily pool: one proved board per calendar date, the same deal for
 // every player on that date, written to src/content/levels/daily.json.
-// Run: node tools/levels/make-daily.mts [--to YYYY-MM-DD] [--redeal-from YYYY-MM-DD] [--from YYYY-MM-DD]
+// Run: node tools/levels/make-daily.mts [--to YYYY-MM-DD] [--redeal-from YYYY-MM-DD] [--from YYYY-MM-DD] [--out FILE]
 //   It KEEPS every day already in the pool, re-deals any day that uses a
 //   flagged picture (picture-flags.json; lib.mts), and appends days after the
 //   last one up to --to (default: none for a pool that exists).
@@ -8,6 +8,7 @@
 //   last day, or --to), e.g. to bring pictures new to the catalogue in. It
 //   refuses a DATE that some player may already have reached (any date up to
 //   today in the furthest-ahead time zone, UTC+14): a played day never changes.
+//   --out FILE writes the pool there instead, and no docs (for trials).
 //   --from only starts a new pool (default 2026-08-01, so an archive of "this
 //   month and the two before" has boards from the first day it is shown).
 // Then node tools/levels/check.mts re-proves what was written.
@@ -129,8 +130,9 @@ if (!days.length && levels.every((l, k) => l === shipped[k]) && levels.length ==
   console.log(`the pool runs to ${shipped.at(-1)?.date ?? "-"} and uses no flagged picture; nothing to do (--to adds days)`);
   process.exit(0);
 }
-writeBoards(FILE, "daily pool: one board per date, the same for every player; made by tools/levels/make-daily.mts (it keeps every day it has, re-dealing only a day with a flagged picture), checked by tools/levels/check.mts; par = moves in the stored line", levels);
+writeBoards(arg("--out") ?? FILE, "daily pool: one board per date, the same for every player; made by tools/levels/make-daily.mts (it keeps every day it has, re-dealing only a day with a flagged picture), checked by tools/levels/check.mts; par = moves in the stored line", levels);
 
+if (arg("--out")) process.exit(0);
 // ---------------------------------------------------------------- docs/daily.md
 const counts = usable.map((p) => levels.filter((l) => l.pictures.some((q) => q.id === p.id)).length);
 const byRole = WEEK.map((w, d) => {

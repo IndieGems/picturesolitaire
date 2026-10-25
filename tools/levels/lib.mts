@@ -54,6 +54,8 @@ export const REMAKES = new Map([
   ["canal-bicycle", "towpath-cyclist"],
   ["blue-headscarf", "book-reader"],
 ]);
+/** A row's kept pictures, a flagged one's remake in its place (none flagged: the row's own list). */
+export const keepOf = (row) => row.keep?.map((id) => (flags.has(id) && REMAKES.has(id) ? REMAKES.get(id) : id));
 /** PICTURE_FLAGS=<file> reads another flags file (for trying the makers out). */
 export const flags = readFlags(process.env.PICTURE_FLAGS ?? FLAGS);
 /** The pictures a maker may put on a board: the catalogue less the flagged ones, in catalogue order. */
@@ -63,7 +65,7 @@ export const flaggedOn = (pictures) => pictures.map((p) => p.id).filter((id) => 
 /** The boards in a boards file, [] if there is none. */
 export const readBoards = (file) => (existsSync(file) ? JSON.parse(readFileSync(file, "utf8")).levels : []);
 
-export const specOf = (row) => ({ count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, must: row.must, most: row.most, bigMost: row.bigMost, vary: row.vary, busyMost: row.busyMost, liveMost: row.liveMost, old: row.old, oldMost: row.oldMost, keep: row.keep });
+export const specOf = (row) => ({ count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, must: row.must, most: row.most, bigMost: row.bigMost, vary: row.vary, busyMost: row.busyMost, liveMost: row.liveMost, old: row.old, oldMost: row.oldMost, keep: keepOf(row) });
 
 export const usesOf = (chosen) => {
   const u = new Map(catalogue.map((q) => [q.id, 0]));
@@ -190,7 +192,7 @@ export function balanceSpaced(plan, chosen, from, spacing, rule?) {
       for (let j = 0; j < chosen[i].length; j++) {
         const at = boardsOf(chosen);
         const out = chosen[i][j];
-        if (plan[i].keep?.includes(out.id)) continue;
+        if (keepOf(plan[i])?.includes(out.id)) continue;
         const outNow = at.get(out.id);
         const outCost = gapCost(outNow, spacing) - gapCost(outNow.filter((k) => k !== i), spacing);
         for (const cand of poolOn(chosen, i, rule)) {
@@ -446,7 +448,7 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
   }
   if (plan.length > old.length && !repairOnly) {
     // a row's kept pictures (keep) are its own from the start, so no board before it takes them
-    for (let i = old.length; i < plan.length; i++) if (plan[i].keep) chosen[i] = plan[i].keep.filter((id) => byId.has(id) && !flags.has(id)).map((id) => ({ id, cols: byId.get(id).cols, rows: byId.get(id).rows }));
+    for (let i = old.length; i < plan.length; i++) if (plan[i].keep) chosen[i] = keepOf(plan[i]).filter((id) => byId.has(id) && !flags.has(id)).map((id) => ({ id, cols: byId.get(id).cols, rows: byId.get(id).rows }));
     pickFrom(plan, chosen, old.length, seedOf, spacing, rule);
     if (spacing) balanceSpaced(plan, chosen, old.length, spacing, rule);
     else balance(plan, chosen, old.length);
