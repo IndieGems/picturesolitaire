@@ -37,6 +37,7 @@
 // is Golden Gate, retired (its image is licensed). Board 11's window is wide,
 // in a wide picture's place. On board 1 it is the guided start's second clear
 // (pink-lotus), so the first postcard opens mid-board there, not at the win.
+// On board 5 it is magnolia, a busy one, so Mabry Mill (busy) keeps the row's cap.
 //
 // CLEAR, CLOSE AND VARIED (creator, 2026-10-24; AGENTS.md): one picture a
 // family (alike []), no shared subject word, an album at most a third of the
@@ -99,7 +100,7 @@ export const PLAN = [
   /*  2 */ { role: "teach",  destination: "dest-niagara-falls", drop: "cliff-lighthouse", ...sq(4), careless: [1, 1], chain: [1, 1], ...STAND_IN },
   /*  3 */ { role: "bite",   destination: "dest-letchworth", drop: "mount-fuji", ...sq(7, { keep: ["blue-bicycle", "cactus-bloom", "ice-cream", "mount-fuji", "sailboat", "red-barn", "skier"] }), careless: [0.55, 0.65], chain: ANY, liveMost: 2, ...STAND_IN },
   /*  4 */ { role: "relief", destination: "dest-lucy-elephant", drop: "pancakes", ...sq(5, { keep: ["bubbles", "golden-puppy", "pancakes", "saxophonist", "steam-train"] }), careless: [0.85, 1], chain: [2, 2], ...STAND_IN },
-  /*  5 */ { role: "build",  destination: "dest-mabry-mill", drop: "pebble-cairn", ...sq(7, { keep: ["chef", "magnolia", "orchid", "suitcase", "teddy-bear", "watermelon"] }), careless: [0.7, 0.8], chain: ANY, ...STAND_IN },
+  /*  5 */ { role: "build",  destination: "dest-mabry-mill", drop: "magnolia", ...sq(7, { keep: ["chef", "magnolia", "orchid", "suitcase", "teddy-bear", "watermelon"] }), careless: [0.7, 0.8], chain: ANY, ...STAND_IN },
   /*  6 */ { role: "build",  destination: "dest-castillo", drop: "leaning-tower", ...sq(7, { keep: ["camper-van", "cappuccino", "ginger-cat", "leaning-tower", "painter", "yellow-door", "pizza"] }), careless: [0.6, 0.75], chain: ANY, ...STAND_IN },
   /*  7 */ { role: "hard",   destination: "dest-french-quarter", drop: "fjord-evening", ...sq(8, { keep: ["biplane", "bonsai", "cowboy", "fjord-evening", "gramophone", "owl", "redwoods", "tree-house"] }), careless: [0.3, 0.5], chain: ANY, ...STAND_IN },
   /*  8 */ { role: "relief", destination: "dest-twine-ball", drop: "tiled-house", ...sq(5, { keep: ["armchair", "ballerina", "bird-of-paradise", "sandstone-arch", "tiled-house"] }), careless: [0.85, 1], chain: [2, 2], ...STAND_IN },

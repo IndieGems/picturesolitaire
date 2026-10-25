@@ -45,6 +45,11 @@
       "flagged": true,
       "note": "looks AI-made (the same tilt and smile); remade as book-reader",
       "date": "2026-10-25"
+    },
+    "golden-gate": {
+      "flagged": true,
+      "note": "retired: the bridge district licenses its image for commercial use (lead, 2026-10-25); board 10 has Pictured Rocks in its place",
+      "date": "2026-10-25"
     }
   }
 }

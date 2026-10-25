@@ -7,6 +7,7 @@ What each of the 26 boards asks of the player, axis by axis. Made by
 and run the maker. The challenge route is in [challenge.md](challenge.md), the
 daily puzzle in [daily.md](daily.md).
 
+- **Destination**: the board's real place (lead, 2026-10-25: the game is a travelogue), a postcard the size of the board of which one window plays as an ordinary picture and unfolds into the whole postcard when finished. It took the place of one of the board's pictures, at the same spot and shape, so the deal and every measure below are as they were. The trips: Travel America (1-15), Trip 2 (16-30).
 - **Role**: the board's place in the sawtooth ([difficulty-curve.md](difficulty-curve.md)): teach, bite (the first hard-for-a-beginner board), build, relief, hard, peak, super (super hard), pace (all long pictures, a change of pace). Every board but hard, peak and super starts safe: no first move or first clear dooms it. Players see a mark on hard and peak boards ("hard") and super ones ("super").
 - **Lookalikes**: pictures from the same family (they share colours and subjects).
 - **Cards per picture**: the pieces each picture is cut into.
@@ -17,34 +18,34 @@ daily puzzle in [daily.md](daily.md).
 - **Traps**: steps of the winning line where another choice would make the board unwinnable.
 - **Line**: moves in the stored winning line (no undo, hint or shuffle).
 
-| # | role | pictures | lookalikes | cards per picture | shapes | board | cards (waiting) | shown | chain | careless win | traps | line |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | intro | 3 | none | 4 4 4 | 2x2 | 4x4 | 12 (0) | 0 | 1 | 100% | 0 | 7 |
-| 2 | intro | 4 | none | 4 4 4 4 | 2x2 | 4x4 | 16 (0) | 0 | 1 | 100% | 0 | 11 |
-| 3 | bite | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 3 | 59% | 0 | 26 |
-| 4 | relief | 5 | none | 4 4 4 4 4 | 2x2 | 4x4 | 20 (4) | 0 | 2 | 100% | 0 | 18 |
-| 5 | build | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 3 | 72% | 1 | 25 |
-| 6 | build | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 4 | 70% | 0 | 23 |
-| 7 | hard (marked hard) | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 4 | 44% | 1 | 26 |
-| 8 | relief | 5 | none | 4 4 4 4 4 | 2x2 | 4x4 | 20 (4) | 0 | 2 | 100% | 0 | 15 |
-| 9 | build | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 4 | 67% | 1 | 23 |
-| 10 | peak (marked hard) | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 5 | 48% | 1 | 26 |
-| 11 | pace | 10 | none | 2 2 2 2 2 2 2 2 2 2 | 1x2 2x1 | 4x4 | 20 (4) | 0 | 2 | 100% | 0 | 13 |
-| 12 | build | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 4 | 78% | 0 | 22 |
-| 13 | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 3 | 70% | 0 | 25 |
-| 14 | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 4 | 69% | 1 | 27 |
-| 15 | hard (marked hard) | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 36 (20) | 0 | 4 | 47% | 1 | 24 |
-| 16 | relief | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 2 | 100% | 0 | 20 |
-| 17 | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 3 | 61% | 2 | 27 |
-| 18 | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 3 | 56% | 1 | 21 |
-| 19 | build | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 36 (20) | 0 | 4 | 56% | 2 | 30 |
-| 20 | super (marked super) | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 36 (20) | 0 | 3 | 25% | 1 | 33 |
-| 21 | pace | 12 | none | 2 2 2 2 2 2 2 2 2 2 2 2 | 1x2 2x1 | 4x4 | 24 (8) | 0 | 2 | 100% | 0 | 13 |
-| 22 | build | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 36 (16) | 0 | 3 | 78% | 0 | 28 |
-| 23 | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 5 | 72% | 1 | 30 |
-| 24 | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 5 | 65% | 1 | 26 |
-| 25 | hard (marked hard) | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 6 | 41% | 2 | 32 |
-| 26 | relief | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 32 (12) | 0 | 3 | 100% | 0 | 32 |
+| # | destination | role | pictures | lookalikes | cards per picture | shapes | board | cards (waiting) | shown | chain | careless win | traps | line |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | Statue of Liberty | intro | 3 | none | 4 4 4 | 2x2 | 4x4 | 12 (0) | 0 | 1 | 100% | 0 | 7 |
+| 2 | Niagara Falls | intro | 4 | none | 4 4 4 4 | 2x2 | 4x4 | 16 (0) | 0 | 1 | 100% | 0 | 11 |
+| 3 | Letchworth State Park | bite | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 3 | 59% | 0 | 26 |
+| 4 | Lucy the Elephant | relief | 5 | none | 4 4 4 4 4 | 2x2 | 4x4 | 20 (4) | 0 | 2 | 100% | 0 | 18 |
+| 5 | Mabry Mill | build | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 3 | 72% | 1 | 25 |
+| 6 | Castillo de San Marcos | build | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 4 | 70% | 0 | 23 |
+| 7 | French Quarter | hard (marked hard) | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 4 | 44% | 1 | 26 |
+| 8 | World's Largest Ball of Twine | relief | 5 | none | 4 4 4 4 4 | 2x2 | 4x4 | 20 (4) | 0 | 2 | 100% | 0 | 15 |
+| 9 | Paul Bunyan & Babe | build | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 4 | 67% | 1 | 23 |
+| 10 | Pictured Rocks | peak (marked hard) | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 5 | 48% | 1 | 26 |
+| 11 | Grand Prismatic Spring | pace | 10 | none | 2 2 2 2 2 2 2 2 2 2 | 1x2 2x1 | 4x4 | 20 (4) | 0 | 2 | 100% | 0 | 13 |
+| 12 | Delicate Arch | build | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 4 | 78% | 0 | 22 |
+| 13 | Grand Canyon | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 3 | 70% | 0 | 25 |
+| 14 | Yosemite Valley | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 4 | 69% | 1 | 27 |
+| 15 | Nā Pali Coast | hard (marked hard) | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 36 (20) | 0 | 4 | 47% | 1 | 24 |
+| 16 | - | relief | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 2 | 100% | 0 | 20 |
+| 17 | - | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 3 | 61% | 2 | 27 |
+| 18 | - | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 3 | 56% | 1 | 21 |
+| 19 | - | build | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 36 (20) | 0 | 4 | 56% | 2 | 30 |
+| 20 | - | super (marked super) | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 36 (20) | 0 | 3 | 25% | 1 | 33 |
+| 21 | - | pace | 12 | none | 2 2 2 2 2 2 2 2 2 2 2 2 | 1x2 2x1 | 4x4 | 24 (8) | 0 | 2 | 100% | 0 | 13 |
+| 22 | - | build | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 36 (16) | 0 | 3 | 78% | 0 | 28 |
+| 23 | - | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 5 | 72% | 1 | 30 |
+| 24 | - | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 5 | 65% | 1 | 26 |
+| 25 | - | hard (marked hard) | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 6 | 41% | 2 | 32 |
+| 26 | - | relief | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 32 (12) | 0 | 3 | 100% | 0 | 32 |
 
 Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture comes back null boards later at the soonest (median null). Every board made since 2026-10-25 keeps the rule: no picture on two of boards 1-13, none back within 15 boards; 0 of 0 returns are sooner than 15, on boards kept from before it.
 
@@ -110,18 +111,18 @@ Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture c
 | stone-village (3x2, stone sage) |  |
 | white-garden (2x3, stone sage) |  |
 | olive-grove (2x2, stone sage) |  |
-| tiled-house (2x2, sea blue) | 8 |
-| fjord-evening (2x2, blue hour) | 7 |
+| tiled-house (2x2, sea blue) |  |
+| fjord-evening (2x2, blue hour) |  |
 | vintage-camera (2x2, vintage camera) | 1 |
 | red-scooter (2x2, red scooter) | 2 |
 | sailboat (2x2, sailboat) | 3 |
 | cactus-bloom (2x2, cactus bloom) | 3 |
-| cliff-lighthouse (2x2, cliff lighthouse) | 2 |
+| cliff-lighthouse (2x2, cliff lighthouse) |  |
 | blue-headscarf (2x2, blue headscarf) FLAGGED: don't use |  |
-| pink-lotus (2x2, pink lotus) | 1 |
+| pink-lotus (2x2, pink lotus) |  |
 | yellow-raincoat (2x2, yellow raincoat) FLAGGED: don't use |  |
 | blue-bicycle (2x2, blue bicycle) | 3 |
-| mount-fuji (2x2, mount fuji) | 3 |
+| mount-fuji (2x2, mount fuji) |  |
 | ice-cream (2x2, ice cream) | 3 |
 | paper-balloon (2x2, paper balloon) | 1 |
 | ginger-cat (2x2, ginger cat) | 6 |
@@ -129,17 +130,17 @@ Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture c
 | chestnut-horse (2x2, chestnut horse) | 10 |
 | orchid (2x2, orchid) | 5 |
 | calla-lilies (2x2, calla lilies) | 12 |
-| irises (2x2, irises) | 13 |
+| irises (2x2, irises) |  |
 | protea (2x2, protea) | 10 |
 | monstera (2x2, monstera) | 9 |
 | dahlia (2x2, dahlia) | 10 |
 | bird-of-paradise (2x2, bird of paradise) | 8 |
-| magnolia (2x2, magnolia) | 5 |
+| magnolia (2x2, magnolia) |  |
 | bonsai (2x2, bonsai) | 7 |
 | toadstools (2x2, toadstools) | 13 |
 | watermelon (2x2, watermelon) | 5 |
 | cappuccino (2x2, cappuccino) | 6 |
-| pancakes (2x2, pancakes) | 4 |
+| pancakes (2x2, pancakes) |  |
 | doughnut (2x2, doughnut) | 9 |
 | pineapple (2x2, pineapple) | 13 |
 | delft-teapot (2x2, delft teapot) | 9 |
@@ -159,10 +160,10 @@ Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture c
 | rickshaw (2x2, rickshaw) | 10 |
 | paper-parasol (2x2, paper parasol) | 13 |
 | eiffel-tower (2x2, eiffel tower) | 12 |
-| golden-gate (2x2, golden gate) | 10 |
+| golden-gate (2x2, golden gate) FLAGGED: don't use |  |
 | colosseum (2x2, colosseum) | 10 |
-| leaning-tower (2x2, leaning tower) | 6 |
-| taj-mahal (2x2, taj mahal) | 12 |
+| leaning-tower (2x2, leaning tower) |  |
+| taj-mahal (2x2, taj mahal) |  |
 | tree-house (2x2, tree house) | 7 |
 | yellow-door (2x2, yellow door) | 6 |
 | red-barn (2x2, red barn) | 3 |
@@ -170,7 +171,7 @@ Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture c
 | palm-island (2x2, palm island) | 9 |
 | sandstone-arch (2x2, sandstone arch) | 8 |
 | iceberg (2x2, iceberg) | 12 |
-| baobab (2x2, baobab) | 9 |
+| baobab (2x2, baobab) |  |
 | redwoods (2x2, redwoods) | 7 |
 | rainbow (2x2, rainbow) | 10 |
 | sandcastle (2x2, sandcastle) | 10 |
@@ -202,7 +203,7 @@ Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture c
 | hammock (2x1, hammock) | 11 |
 | wheelbarrow (2x1, wheelbarrow) | 21 |
 | rocking-horse (2x1, rocking horse) | 11 |
-| paddle-steamer (2x1, paddle steamer) | 11 |
+| paddle-steamer (2x1, paddle steamer) |  |
 | dachshund (2x1, dachshund) | 21 |
 | sidecar (2x1, sidecar) | 21 |
 | houseboat (2x1, houseboat) | 11 |
@@ -246,7 +247,7 @@ Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture c
 | desk-globe (2x2, desk globe) | 25 |
 | roller-skate (2x2, roller skate) | 23 |
 | mussels (2x2, mussels) |  |
-| corn-cob (2x2, corn cob) | 15 |
+| corn-cob (2x2, corn cob) |  |
 | chillies (2x2, chillies) | 15 |
 | nesting-dolls (2x2, nesting dolls) | 18 |
 | tin-robot (2x2, tin robot) | 20 |
@@ -271,7 +272,7 @@ Every picture's appearances across the 26 boards: 0 to 1 (mean 0.7). A picture c
 | sea-stack (2x2, sea stack) | 26 |
 | crystal-cave (2x2, crystal cave) |  |
 | rope-bridge (2x2, rope bridge) | 16 |
-| standing-stones (2x2, standing stones) | 14 |
+| standing-stones (2x2, standing stones) |  |
 | beekeeper (2x2, beekeeper) |  |
 | cellist (2x2, cellist) | 24 |
 | glassblower (2x2, glassblower) | 23 |
