@@ -145,7 +145,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 25
+          amount: 20
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: b15bdb8e-52e9-5d9b-a970-c9ec5690632f
     slug: board_c05
@@ -175,7 +175,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 25
+          amount: 20
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 50ccdd3c-7ae3-5008-836a-0b8d231da908
     slug: board_c08
@@ -185,7 +185,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 20
+          amount: 15
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 871ff068-bc7a-5b5c-8c3f-4abc8b30d002
     slug: board_c09
@@ -205,7 +205,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 35
+          amount: 30
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 3f9144aa-71eb-5d63-928d-7a4ee7911fd8
     slug: board_c11
@@ -215,7 +215,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 20
+          amount: 15
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: dbd77c21-1aaf-5439-8beb-0a1725a7b441
     slug: board_c12
@@ -235,7 +235,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 30
+          amount: 20
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 18a6e883-bcf2-503f-a496-6e4bcaf00000
     slug: board_c14

@@ -7,7 +7,7 @@
 //   node tools/server/vectors.mts <out.json> [--games N] [--seed S]
 //
 // Normally run by tools/server/check.mts, which then runs the Rust side.
-//   - every shipped board's stored line (src/content/levels/*.json), as a game and as a claim;
+//   - every shipped board's stored line (src/content/levels/{campaign,challenge,daily}.json), as a game and as a claim;
 //   - N random games (default 2000) on random deals: random board sizes and
 //     picture shapes, some boards dealt part-full, mostly legal moves, some
 //     moves the rules refuse, and shuffles both legal and not;
@@ -23,7 +23,7 @@ import { fileURLToPath } from "node:url";
 import * as R from "../../src/game/rules.ts";
 import { dealHash } from "../../src/net/deal-hash.ts";
 import { arrangeRef } from "./arrange-ref.mts";
-import { levelsHash } from "./levels-hash.mts";
+import { LANES, levelsHash } from "./levels-hash.mts";
 
 const { EMPTY, allMoves, isWon, move, pieces, random, start } = R;
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
@@ -68,7 +68,8 @@ function game(name, deal, actions) {
 
 // ---------------------------------------------------------------- shipped boards
 
-const files = readdirSync(join(root, "src/content/levels")).filter((f) => f.endsWith(".json")).sort();
+// Only the lanes the checker pays: other files there (experiments.json, the dev menu's practice boards) are no claim.
+const files = readdirSync(join(root, "src/content/levels")).filter((f) => LANES.includes(f.replace(/\.json$/, ""))).sort();
 const boards = [];
 for (const f of files) {
   const lane = f.replace(/\.json$/, "");
