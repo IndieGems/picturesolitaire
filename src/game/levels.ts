@@ -23,6 +23,19 @@ export interface Level {
   line: Move[];
   /** The level designer's notes, as stored (the dev menu's board info), when there are any. */
   axes?: Record<string, unknown>;
+  /**
+   * The board's destination, when it has one (the travelogue): picture `id`
+   * of the deal is a window cut from a postcard the size of the whole board
+   * (the catalogue's entry for `id`), its top-left card at cell `crop` of
+   * the board (col, row). The rules see an ordinary picture; finishing it
+   * opens the postcard over the board (src/board/reveal.ts).
+   */
+  destination?: Destination;
+}
+
+export interface Destination {
+  id: string;
+  crop: [number, number];
 }
 
 /** A board as the level files store it (any size: the board fits it to its box). */
@@ -36,6 +49,7 @@ export interface Stored {
   stacks: number[][];
   line: number[][];
   axes?: Record<string, unknown>;
+  destination?: { id: string; crop: number[] };
 }
 
 /** A stored board as the board plays it; `number` is its place in its list, from 1. */
@@ -47,6 +61,9 @@ export function toLevel(l: Stored, number: number): Level {
     deal: { cols: l.cols, rows: l.rows, pictures: l.pictures, stacks: l.stacks, seed: l.seed },
     line: l.line.map(([from, to]) => ({ from: from!, to: to! })),
     ...(l.axes && typeof l.axes === "object" ? { axes: l.axes } : {}),
+    ...(l.destination && typeof l.destination.id === "string" && l.destination.crop?.length === 2
+      ? { destination: { id: l.destination.id, crop: [l.destination.crop[0]!, l.destination.crop[1]!] as [number, number] } }
+      : {}),
   };
 }
 

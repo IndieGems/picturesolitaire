@@ -28,6 +28,17 @@ export interface GameEvents {
   "picture:complete": { pictureId: string; cells: Cell[] };
   /** The completed picture left the board. */
   "picture:clear": { pictureId: string };
+  /**
+   * A board's destination picture was finished and its postcard (the whole
+   * picture, the size of the board) is fully open over the board: UI shows
+   * the place's name on it, Sound its fanfare. English `name` and `place`,
+   * from the picture catalogue. `again`: a repeat on this opening of the
+   * board (after Undo or a restart), the short version. Always followed by
+   * one destination:done, at once when the board closes or restarts.
+   */
+  "destination:reveal": { id: string; name: string; place: string; again: boolean };
+  /** The postcard has gone (or was skipped); the board's cards fall and refill next. */
+  "destination:done": { id: string };
   /** Cards fell into gaps. `ms`: from now until the first of them lands. */
   "cards:fall": { cards: number; ms?: number };
   /** A stack dealt a card into its column. `left` is what the stack still holds. */
