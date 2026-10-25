@@ -28,6 +28,10 @@
 //     loadProgress starts). The slot is the device's word and needs no more:
 //     the checker replays every claim and applies each claim id once. A claim
 //     made offline reaches the slot when the connection is back.
+//   - held wins go oldest first, and a campaign win waits while an earlier one
+//     is held: the checker answers "order" to a win ahead of the next position.
+//     This session sends every win it holds; the slot keeps as many as fit,
+//     and past that drops only wins that strand nothing (src/net/held-wins.ts).
 //
 // Unframed (a plain tab) there is no platform: the claim resolves "unframed"
 // at once, after a local replay that warns in the console if the line would
@@ -38,6 +42,7 @@ import { gem, onWillTerminate } from "../gem";
 import { isWon, replay, type Action, type Deal } from "../game/rules";
 import { onOnline, online, suspect } from "../ui/online";
 import { dealHash } from "./deal-hash";
+import { nextToSend, trimHeld } from "./held-wins";
 import { noAnswer, refusalOf } from "./no-answer";
 import { answered, hold, type HeldWin } from "./progress";
 import { tableOf } from "./tables";
@@ -104,11 +109,10 @@ interface Held {
 }
 
 const framed = window.self !== window.top;
+/** Every unanswered win, oldest first; none is dropped while the page lives. */
 const queue: Held[] = [];
 /** The save slot unanswered claims are kept in (game config, save_schemas). */
 const SLOT = "claims";
-/** The most claims kept for a restart (the newest). */
-const MAX_STORED = 20;
 const listeners = new Set<(v: Verdict) => void>();
 let pumping = false;
 let timer: number | undefined;
@@ -282,7 +286,8 @@ async function pump(): Promise<void> {
     }
     for (;;) {
       const now = performance.now();
-      const due = queue.find((h) => h.notBefore <= now);
+      // oldest first; a campaign win behind an earlier held one would only be answered "order"
+      const due = nextToSend(queue, now);
       if (!due || !online()) break;
       await send(due);
     }
@@ -302,6 +307,8 @@ let resumeTries = 0;
 let storedAny = false;
 let writing = false;
 let rewrite = false;
+/** The held count last warned about as more than the slot keeps. */
+let trimmedWarned = 0;
 /** The page is going: a request it cuts short is no fault worth a warning (keepalive sends carry on). */
 let leaving = false;
 
@@ -316,7 +323,12 @@ async function persist(): Promise<void> {
   try {
     do {
       rewrite = false;
-      const claims = queue.slice(-MAX_STORED).map((h) => ({ id: h.id, body: h.body, effect: h.effect }));
+      const all = queue.map((h) => ({ id: h.id, body: h.body, effect: h.effect }));
+      const claims = trimHeld(all);
+      if (claims.length < all.length && trimmedWarned !== all.length) {
+        trimmedWarned = all.length;
+        console.warn(`[claims] ${all.length} wins waiting: the ${claims.length} that fit are kept for a restart (all are sent while the game is open)`);
+      }
       if (!claims.length && !storedAny) break;
       try {
         await gem.me.saves.put(SLOT, { v: 1, claims }, { timeoutMs: 10_000 });
@@ -359,11 +371,14 @@ export async function resumeClaims(): Promise<void> {
       if (noAnswer(err) || (err as { reason?: string }).reason !== "not_found") throw err;
     }
     const list = Array.isArray(stored?.claims) ? stored.claims.filter(storedClaim) : [];
+    // older than anything won since this start: ahead of it in the queue, in the order kept
+    const older: Held[] = [];
     for (const c of list) {
       if (queue.some((h) => h.id === c.id)) continue;
       hold(c.id, c.effect);
-      queue.push({ id: c.id, lane: c.body.lane as Lane, board: String(c.body.board), effect: c.effect, resumed: true, body: c.body, resolve: () => {}, tries: 0, notBefore: 0 });
+      older.push({ id: c.id, lane: c.body.lane as Lane, board: String(c.body.board), effect: c.effect, resumed: true, body: c.body, resolve: () => {}, tries: 0, notBefore: 0 });
     }
+    queue.unshift(...older);
     if (list.length) console.info(`[claims] sending again ${list.length} win(s) from last time`);
     storedAny = list.length > 0;
     resumed = true;

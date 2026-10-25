@@ -26,7 +26,8 @@ save_schemas:
   # Wins the checker has not answered yet (src/net/claims.ts), kept so a win made
   # just before the game closed is sent at the next start. The device's own word
   # and nothing more: the checker replays each claim and applies each claim id once.
-  # At most 20 claims of a few KB each.
+  # As many as fit in 120 KiB (about 150 wins); past that, wins that strand
+  # nothing are dropped (src/net/held-wins.ts, which must say this slot's size).
   - key: claims
     access_self_read: true
     access_self_write: true

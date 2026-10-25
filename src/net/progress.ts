@@ -109,7 +109,12 @@ function applyWin(p: Progress, w: HeldWin): void {
 /** The server's record, with the wins still on their way applied over it. */
 export function progress(): Readonly<Progress & { known: boolean }> {
   const p = normal(server);
-  for (const w of held.values()) applyWin(p, w);
+  // campaign wins in play order, whatever order they were held in (a restart's resumed wins
+  // are held after the ones won since): one ahead of the next position would not count
+  const wins = [...held.values()];
+  const campaign = wins.filter((w) => w.lane === "campaign").sort((a, b) => (a.n ?? 0) - (b.n ?? 0));
+  let c = 0;
+  for (const w of wins) applyWin(p, w.lane === "campaign" ? campaign[c++]! : w);
   return { ...p, known };
 }
 
