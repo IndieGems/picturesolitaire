@@ -3,7 +3,9 @@
 // has replayed a win; the game reads it and never writes it. The screens draw
 // from progress() and redraw on onProgress.
 //
-//   progress().campaign.next   the campaign position to play (from 1; level(n) goes round past the last)
+//   progress().campaign.next   the first campaign board not won yet (from 1); levelCount() + 1 is
+//                              "all done", and it never goes past that (progress.rs: replays after
+//                              the last board, level(n) going round, never move it)
 //   progress().campaign.won    verified wins in all, replays included
 //   progress().challenge[id]   best (fewest) moves on a cleared challenge board
 //   progress().daily[date]     the first verified result of that date { moves, ms }
@@ -25,6 +27,7 @@
 // Unframed (a plain tab) there is no platform: wins apply for this page only.
 
 import { gem } from "../gem";
+import { levelCount } from "../game/levels";
 import { onOnline, suspect } from "../ui/online";
 import { noAnswer, refusalOf } from "./no-answer";
 
@@ -83,7 +86,8 @@ function normal(x: unknown): Progress {
   const d = (x && typeof x === "object" ? x : {}) as Partial<Progress>;
   const next = Number(d.campaign?.next);
   return {
-    campaign: { next: Number.isInteger(next) && next >= 1 ? next : 1, won: Math.max(0, Number(d.campaign?.won) || 0) },
+    // a record from before the stop (went round) reads as "all done", as the checker pulls it back
+    campaign: { next: Number.isInteger(next) && next >= 1 ? Math.min(next, levelCount() + 1) : 1, won: Math.max(0, Number(d.campaign?.won) || 0) },
     challenge: d.challenge && typeof d.challenge === "object" ? { ...d.challenge } : {},
     daily: d.daily && typeof d.daily === "object" ? { ...d.daily } : {},
     restored: Array.isArray(d.restored) ? d.restored.filter((p): p is string => typeof p === "string") : [],
@@ -94,9 +98,10 @@ function normal(x: unknown): Progress {
 /** One win applied to a record, as the checker applies it (progress.rs, apply). */
 function applyWin(p: Progress, w: HeldWin): void {
   if (w.lane === "campaign") {
-    const n = w.n ?? p.campaign.next;
+    const end = levelCount() + 1;
+    const n = Math.min(w.n ?? p.campaign.next, end); // past the last board: a replay
     if (n > p.campaign.next) return; // an earlier win is still on its way
-    p.campaign = { next: Math.max(p.campaign.next, n + 1), won: p.campaign.won + 1 };
+    p.campaign = { next: Math.min(Math.max(p.campaign.next, n + 1), end), won: p.campaign.won + 1 };
   } else if (w.lane === "challenge") {
     const best = p.challenge[w.board];
     if (best === undefined || w.moves < best) p.challenge[w.board] = w.moves;

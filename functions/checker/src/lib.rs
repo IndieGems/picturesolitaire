@@ -196,6 +196,12 @@ mod function {
     }
 
     fn board_win(player: &str, win: &Win) -> Value {
+        // a campaign board that has left the campaign (an older build still plays it; claim.rs
+        // gives it no position): a real win, but its pay left with it, and asking for it would
+        // only answer "retry" for ever
+        if win.lane == Lane::Campaign && win.n.is_none() {
+            return json!({ "v": 1, "status": "kept", "lane": "campaign", "board": win.board, "moves": win.moves, "coins": 0, "items": [] });
+        }
         let done = complete(player, &crate::board_slug(&win.board)).map(|mut g| {
             // a completion's item rewards land in a step of their own, which this receipt does
             // not list: on the first completion, confirm each table the board grants is held
@@ -380,7 +386,7 @@ mod function {
 
     /// A verified win: the record first, then the payment, so a payment never
     /// lands without its progress, and a resent claim changes the record once.
-    fn verified(game: &str, player: &str, win: &Win) -> Value {
+    fn verified(game: &str, player: &str, win: &Win, boards: u64) -> Value {
         let late = match win.lane {
             Lane::Daily => match daily_day(player, win) {
                 Ok(late) => late,
@@ -392,7 +398,7 @@ mod function {
             Ok(r) => r,
             Err(v) => return v,
         };
-        match progress::apply(&mut doc, win, win.claim_id.as_deref(), win.n) {
+        match progress::apply(&mut doc, win, win.claim_id.as_deref(), win.n, boards) {
             Err(Wait::Order) => return retry("order"),
             Ok(changed) => {
                 if changed || !stored {
@@ -444,7 +450,7 @@ mod function {
                 }
                 Ok(win) => {
                     host::log(LogLevel::Info, &format!("won {} {} in {} moves, {} shuffles", win.lane.name(), win.board, win.moves, win.shuffles));
-                    verified(&ctx.game_id, &player, &win)
+                    verified(&ctx.game_id, &player, &win, data.campaign.len() as u64)
                 }
             };
             Ok(verdict.to_string().into_bytes())

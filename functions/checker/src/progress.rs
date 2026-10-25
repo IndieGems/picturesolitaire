@@ -6,8 +6,8 @@
 //!
 //! The record (src/net/progress.ts reads it):
 //!   { "v": 1,
-//!     "campaign": { "next": 6, "won": 7 },   next: the campaign position to play (from 1; past
-//!                                             the last board it goes round); won: verified wins, replays too
+//!     "campaign": { "next": 6, "won": 7 },   next: the first campaign board not won yet (from 1),
+//!                                             at most boards + 1, "all done"; won: verified wins, replays too
 //!     "challenge": { "ch01": 19 },          best (fewest) moves per cleared challenge board
 //!     "daily": { "2026-10-24": { "moves": 17, "ms": 150000 } },  the first verified result per date
 //!     "restored": ["apple-orchard", ...],   pictures of boards won, in the order first restored
@@ -110,21 +110,34 @@ pub enum Wait {
 
 /// What one verified win changes. Ok(true) when the record changed, Ok(false)
 /// when this claim was applied before (a resend). `n` is the campaign position
-/// the claim was played at (checked by claim.rs against the campaign's order).
-pub fn apply(doc: &mut Value, win: &Win, claim_id: Option<&str>, n: Option<u64>) -> Result<bool, Wait> {
+/// the claim was played at (checked by claim.rs against the campaign's order);
+/// `boards` is how many boards the campaign has now.
+///
+/// The position stops at boards + 1 ("all done"): a game that goes round after
+/// the last board sends positions past it, and those are replays, which never
+/// move it. So when boards are added at the end, a player who had finished
+/// plays the first new one, never one past it. A record from before the stop
+/// (went round) is pulled back to it by any win.
+pub fn apply(doc: &mut Value, win: &Win, claim_id: Option<&str>, n: Option<u64>, boards: u64) -> Result<bool, Wait> {
     if let Some(id) = claim_id {
         if doc["seen"].as_array().is_some_and(|s| s.iter().any(|x| x == id)) {
             return Ok(false);
         }
     }
+    let end = if boards > 0 { boards + 1 } else { u64::MAX };
+    if doc["campaign"]["next"].as_u64().is_some_and(|next| next > end) {
+        doc["campaign"]["next"] = json!(end);
+    }
     match win.lane {
         Lane::Campaign => {
             let next = doc["campaign"]["next"].as_u64().unwrap_or(1);
-            let n = n.unwrap_or(next);
+            // a position past the last board is a replay: it counts as "all done"; a board that
+            // has left the campaign (an older build's, claim.rs gives it no position) moves nothing
+            let n = n.map_or(0, |n| n.min(end));
             if n > next {
                 return Err(Wait::Order);
             }
-            doc["campaign"]["next"] = json!(next.max(n + 1));
+            doc["campaign"]["next"] = json!(next.max(n.saturating_add(1)).min(end));
             doc["campaign"]["won"] = json!(doc["campaign"]["won"].as_u64().unwrap_or(0) + 1);
         }
         Lane::Challenge => {

@@ -6,6 +6,11 @@ use checker::claim::{Lane, Win};
 use checker::progress::{self, Wait};
 use serde_json::json;
 
+/// A campaign far longer than any test here goes: no stop in the way.
+fn apply(d: &mut serde_json::Value, w: &Win, id: Option<&str>, n: Option<u64>) -> Result<bool, Wait> {
+    progress::apply(d, w, id, n, 1000)
+}
+
 fn win(lane: Lane, board: &str, moves: u32, pictures: &[&str]) -> Win {
     Win {
         lane,
@@ -23,11 +28,11 @@ fn win(lane: Lane, board: &str, moves: u32, pictures: &[&str]) -> Win {
 #[test]
 fn a_campaign_win_moves_the_next_board_and_restores_its_pictures() {
     let mut d = progress::empty();
-    assert_eq!(progress::apply(&mut d, &win(Lane::Campaign, "c01", 7, &["a", "b"]), Some("k1"), Some(1)), Ok(true));
+    assert_eq!(apply(&mut d, &win(Lane::Campaign, "c01", 7, &["a", "b"]), Some("k1"), Some(1)), Ok(true));
     assert_eq!(d["campaign"], json!({ "next": 2, "won": 1 }));
     assert_eq!(d["restored"], json!(["a", "b"]));
     // the same picture again is restored once
-    progress::apply(&mut d, &win(Lane::Campaign, "c02", 9, &["b", "c"]), Some("k2"), Some(2)).unwrap();
+    apply(&mut d, &win(Lane::Campaign, "c02", 9, &["b", "c"]), Some("k2"), Some(2)).unwrap();
     assert_eq!(d["restored"], json!(["a", "b", "c"]));
     assert_eq!(d["campaign"]["next"], 3);
 }
@@ -35,7 +40,7 @@ fn a_campaign_win_moves_the_next_board_and_restores_its_pictures() {
 #[test]
 fn a_win_past_the_next_board_waits_for_the_one_before() {
     let mut d = progress::empty();
-    assert_eq!(progress::apply(&mut d, &win(Lane::Campaign, "c03", 7, &["a"]), Some("k3"), Some(3)), Err(Wait::Order));
+    assert_eq!(apply(&mut d, &win(Lane::Campaign, "c03", 7, &["a"]), Some("k3"), Some(3)), Err(Wait::Order));
     assert_eq!(d["campaign"]["next"], 1, "nothing changed");
     assert_eq!(d["restored"], json!([]));
 }
@@ -44,7 +49,7 @@ fn a_win_past_the_next_board_waits_for_the_one_before() {
 fn replaying_an_earlier_board_counts_a_win_and_keeps_the_place() {
     let mut d = progress::empty();
     d["campaign"]["next"] = json!(5);
-    progress::apply(&mut d, &win(Lane::Campaign, "c02", 7, &[]), Some("k"), Some(2)).unwrap();
+    apply(&mut d, &win(Lane::Campaign, "c02", 7, &[]), Some("k"), Some(2)).unwrap();
     assert_eq!(d["campaign"], json!({ "next": 5, "won": 1 }));
 }
 
@@ -52,9 +57,9 @@ fn replaying_an_earlier_board_counts_a_win_and_keeps_the_place() {
 fn a_resent_claim_changes_nothing() {
     let mut d = progress::empty();
     let w = win(Lane::Campaign, "c01", 7, &["a"]);
-    assert_eq!(progress::apply(&mut d, &w, Some("same"), Some(1)), Ok(true));
+    assert_eq!(apply(&mut d, &w, Some("same"), Some(1)), Ok(true));
     let before = d.clone();
-    assert_eq!(progress::apply(&mut d, &w, Some("same"), Some(1)), Ok(false));
+    assert_eq!(apply(&mut d, &w, Some("same"), Some(1)), Ok(false));
     assert_eq!(d, before);
 }
 
@@ -62,7 +67,7 @@ fn a_resent_claim_changes_nothing() {
 fn the_record_remembers_only_the_last_claims() {
     let mut d = progress::empty();
     for i in 0..40 {
-        progress::apply(&mut d, &win(Lane::Challenge, "ch01", 30, &[]), Some(&format!("k{i}")), None).unwrap();
+        apply(&mut d, &win(Lane::Challenge, "ch01", 30, &[]), Some(&format!("k{i}")), None).unwrap();
     }
     assert_eq!(d["seen"].as_array().unwrap().len(), 32);
     assert_eq!(d["seen"][31], "k39");
@@ -71,10 +76,10 @@ fn the_record_remembers_only_the_last_claims() {
 #[test]
 fn a_challenge_keeps_its_best() {
     let mut d = progress::empty();
-    progress::apply(&mut d, &win(Lane::Challenge, "ch01", 20, &[]), Some("a"), None).unwrap();
-    progress::apply(&mut d, &win(Lane::Challenge, "ch01", 25, &[]), Some("b"), None).unwrap();
+    apply(&mut d, &win(Lane::Challenge, "ch01", 20, &[]), Some("a"), None).unwrap();
+    apply(&mut d, &win(Lane::Challenge, "ch01", 25, &[]), Some("b"), None).unwrap();
     assert_eq!(d["challenge"]["ch01"], 20);
-    progress::apply(&mut d, &win(Lane::Challenge, "ch01", 18, &[]), Some("c"), None).unwrap();
+    apply(&mut d, &win(Lane::Challenge, "ch01", 18, &[]), Some("c"), None).unwrap();
     assert_eq!(d["challenge"]["ch01"], 18);
     assert_eq!(d["campaign"], json!({ "next": 1, "won": 0 }), "the campaign is untouched");
 }
@@ -84,14 +89,14 @@ fn a_daily_keeps_its_first_result_and_only_recent_dates() {
     let mut d = progress::empty();
     let mut w = win(Lane::Daily, "d2026-10-24", 17, &["x"]);
     w.date = Some("2026-10-24".into());
-    progress::apply(&mut d, &w, Some("a"), None).unwrap();
+    apply(&mut d, &w, Some("a"), None).unwrap();
     w.moves = 12;
-    progress::apply(&mut d, &w, Some("b"), None).unwrap();
+    apply(&mut d, &w, Some("b"), None).unwrap();
     assert_eq!(d["daily"]["2026-10-24"], json!({ "moves": 17, "ms": 90000 }), "the first result stands");
     for day in 1..=120 {
         let mut w = win(Lane::Daily, "d", 10, &[]);
         w.date = Some(format!("2027-{:02}-{:02}", 1 + (day - 1) / 28, 1 + (day - 1) % 28));
-        progress::apply(&mut d, &w, Some(&format!("d{day}")), None).unwrap();
+        apply(&mut d, &w, Some(&format!("d{day}")), None).unwrap();
     }
     let days = d["daily"].as_object().unwrap();
     assert_eq!(days.len(), 100);
@@ -129,4 +134,57 @@ fn a_damaged_record_reads_as_a_well_formed_one() {
     assert_eq!(d["campaign"]["next"], 1);
     assert_eq!(d["restored"], json!([]));
     assert_eq!(d["extra"], 1, "unknown fields are kept");
+}
+
+#[test]
+fn the_position_stops_after_the_last_board_and_going_round_never_moves_it() {
+    // a 26-board campaign: winning board 26 is "all done" (27)
+    let mut d = progress::empty();
+    d["campaign"]["next"] = json!(26);
+    progress::apply(&mut d, &win(Lane::Campaign, "c26", 20, &[]), Some("a"), Some(26), 26).unwrap();
+    assert_eq!(d["campaign"]["next"], 27);
+    // the game goes round: position 27 plays board 1, 28 board 2; replays, the position stays
+    progress::apply(&mut d, &win(Lane::Campaign, "c01", 7, &[]), Some("b"), Some(27), 26).unwrap();
+    progress::apply(&mut d, &win(Lane::Campaign, "c02", 9, &[]), Some("c"), Some(28), 26).unwrap();
+    assert_eq!(d["campaign"]["next"], 27);
+    assert_eq!(d["campaign"]["won"], 3);
+    // a replay of an earlier board by its own position does not move it either
+    progress::apply(&mut d, &win(Lane::Campaign, "c05", 9, &[]), Some("d"), Some(5), 26).unwrap();
+    assert_eq!(d["campaign"]["next"], 27);
+    // boards 27-30 come back: the player who finished plays the first new one
+    progress::apply(&mut d, &win(Lane::Campaign, "c27", 20, &[]), Some("e"), Some(27), 30).unwrap();
+    assert_eq!(d["campaign"]["next"], 28);
+}
+
+#[test]
+fn a_record_that_went_round_is_pulled_back_to_all_done() {
+    // stored before the stop: went round to position 33 of a 30-board campaign
+    let mut d = progress::empty();
+    d["campaign"]["next"] = json!(33);
+    // any verified win pulls it back to "all done" for the campaign as it is now
+    progress::apply(&mut d, &win(Lane::Challenge, "ch01", 20, &[]), Some("a"), None, 26).unwrap();
+    assert_eq!(d["campaign"]["next"], 27);
+    let mut d = progress::empty();
+    d["campaign"]["next"] = json!(33);
+    progress::apply(&mut d, &win(Lane::Campaign, "c07", 20, &[]), Some("b"), Some(33), 26).unwrap();
+    assert_eq!(d["campaign"]["next"], 27);
+}
+
+#[test]
+fn a_win_past_the_end_still_waits_for_earlier_ones() {
+    // board 25 not yet in: a going-round win waits like any later one
+    let mut d = progress::empty();
+    d["campaign"]["next"] = json!(25);
+    assert_eq!(progress::apply(&mut d, &win(Lane::Campaign, "c01", 7, &[]), Some("a"), Some(27), 26), Err(Wait::Order));
+    assert_eq!(d["campaign"]["next"], 25);
+}
+
+#[test]
+fn a_board_that_left_the_campaign_counts_a_win_and_moves_nothing() {
+    let mut d = progress::empty();
+    d["campaign"]["next"] = json!(12);
+    progress::apply(&mut d, &win(Lane::Campaign, "c29", 20, &["x"]), Some("a"), None, 26).unwrap();
+    assert_eq!(d["campaign"]["next"], 12);
+    assert_eq!(d["campaign"]["won"], 1);
+    assert_eq!(d["restored"], json!(["x"]));
 }
