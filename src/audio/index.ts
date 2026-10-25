@@ -112,6 +112,35 @@ function milestone(): void {
   });
 }
 
+// --- Destinations ----------------------------------------------------------------
+//
+// A board's destination picture gets the harp at picture:complete like any
+// picture; about 1.1 s later its postcard is open (destination:reveal) and the
+// fanfare plays under the place's name, the harp fading out beneath it. A
+// repeat (after Undo or a restart) has had its harp: nothing more. The postcard
+// holds 1.5 s, then leaves and destination:done comes; sooner than that is a
+// tap that skipped, which stops the fanfare (at once if the postcard never
+// opened), while the natural end lets it ring out.
+
+const REVEAL_HOLD = 1500;
+let fanfare: Voice | null = null;
+let fanfareAt = 0;
+
+function reveal({ again }: { again: boolean }): void {
+  if (again) return;
+  flourish?.fadeOut(0.5);
+  flourish = null;
+  fanfare = play("fanfare", { delay: 0.03 });
+  fanfareAt = performance.now();
+  if (fanfare) duckMusic(0.3, 2, 1.5);
+}
+
+function revealDone(): void {
+  const held = performance.now() - fanfareAt;
+  fanfare?.fadeOut(held < 150 ? 0.03 : held < REVEAL_HOLD ? 0.25 : 0.8);
+  fanfare = null;
+}
+
 function listen(): void {
   on("piece:lift", () => play("lift"));
   // Put back where it was: the landing tap, lighter.
@@ -133,6 +162,8 @@ function listen(): void {
     flourish = play("complete") ?? flourish;
     duckMusic(0.5, 2.4, 1.6);
   });
+  on("destination:reveal", reveal);
+  on("destination:done", revealDone);
   on("cards:fall", (p) => play("fall", { delay: landsIn(p, FALL_LANDS), gain: Math.min(1.2, 0.7 + p.cards * 0.05) }));
   on("stack:deal", ({ col }) => dealTick(col));
   on("helper:undo", () => play("undo"));

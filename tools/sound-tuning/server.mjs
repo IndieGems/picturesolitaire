@@ -52,6 +52,7 @@ const SOUNDS = [
   { name: "merge", label: "Join", moment: "Two correct neighbours touch and join. A little brighter the bigger the joined piece." },
   { name: "split", label: "Come apart", moment: "A joined piece is split by a move or by cards falling." },
   { name: "complete", label: "Picture whole", moment: "A picture is complete: the flourish, the best sound in the game." },
+  { name: "fanfare", label: "Destination fanfare", moment: "A board's destination picture is finished and unfolds into its postcard: plays under the place's name. Nothing on a repeat after Undo or a restart." },
   { name: "fall", label: "Cards fall", moment: "Cards drop into a gap after a picture clears." },
   { name: "deal", label: "Stack deals", moment: "A stack deals a card into its column. Plays here as a refill rippling across five stacks, left to right." },
   { name: "undo", label: "Undo", moment: "The Undo helper." },

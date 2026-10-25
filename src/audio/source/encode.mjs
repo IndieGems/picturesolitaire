@@ -58,6 +58,10 @@ const MUSIC = [
   // than the win cue. The near-silent shimmer before its swell is mostly cut,
   // so the swell lands just after the card.
   { name: "milestone", src: "milestone.mp3", start: 0.5, end: 9.9, fade: 1.2, lufs: -15 },
+  // A destination's postcard opens: a D major horn-and-strings flourish with a
+  // glockenspiel sparkle, its body ~1.8 s, the ring cut short. A touch quieter
+  // than the win cue: it plays on every board.
+  { name: "fanfare", src: "fanfare.mp3", start: 0, end: 2.6, fade: 0.8, lufs: -16 },
   // The bed: its own ending fade is cut; the game crossfades the last few
   // seconds into the start (src/audio/music.ts), so no loop point is baked in.
   { name: "bed", src: "bed.mp3", start: 0, end: 86.5, fade: 0.05, lufs: -20 },
