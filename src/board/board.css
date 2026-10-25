@@ -97,3 +97,16 @@
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #ffffff 50%, rgba(255, 255, 255, 0));
 }
 .bd-twinkle::after { transform: rotate(90deg); }
+
+/* a destination's postcard (src/board/reveal.ts): over every card, its flaps
+   swinging out from behind their hinges, darker while they are edge on */
+.bd-postcard { position: absolute; left: 0; top: 0; z-index: 8; pointer-events: none; will-change: opacity, transform; }
+.bd-postcard .bd-flap {
+  position: absolute; background-repeat: no-repeat; background-color: #2a3240;
+  backface-visibility: hidden; will-change: transform;
+}
+.bd-postcard .bd-flap::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  background: rgba(6, 10, 16, var(--shade, 0));
+}
+.bd-postcard-rim { position: absolute; inset: 0; pointer-events: none; }

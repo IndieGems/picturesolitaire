@@ -23,10 +23,11 @@ import { nextMove } from "../game/solver/index.ts";
 import { rescue } from "../game/shuffle.ts";
 import {
   EMPTY, clampTarget, isDeadEnd, isWon, move, pieceAt, pieces, picOf, start,
-  type Action, type Card, type Move, type State, type Step,
+  type Action, type Card, type Move, type Picture, type State, type Step,
 } from "../game/rules.ts";
 import { ease, realMs, setBatterySaver, setPaused, stopAll, tween, wait, run } from "./pace.ts";
 import { makeDev, type BoardDev } from "./dev.ts";
+import { revealPostcard, type Reveal } from "./reveal.ts";
 import { TUNING, applyTuning } from "./tuning.ts";
 import {
   addRing, backImage, cellAt, drawPiece, drawRing, drawStack, keyOf, layout, mountDefs, nearestCell, place,
@@ -106,9 +107,26 @@ function loadTuning(): void {
   })();
 }
 
-/** A picture's files: the full one, and Art's light board copy with its size in pixels (none yet: the full). */
-type PictureFiles = { id: string; file: string; board?: string; boardPx?: number[] };
-const pictureFiles = new Map((CATALOGUE.pictures as PictureFiles[]).map((p) => [p.id, p]));
+/**
+ * A picture's files: the full one, and Art's light board copy with its size in pixels (none yet:
+ * the full). A destination's postcard is in the catalogue's own `destinations` list, with the
+ * place's name.
+ */
+type PictureFiles = {
+  id: string; file: string; board?: string; boardPx?: number[]; px?: number[];
+  name?: string; title?: string; place?: string;
+};
+const catalogue = CATALOGUE as unknown as { pictures: PictureFiles[]; destinations?: PictureFiles[] };
+const pictureFiles = new Map([...catalogue.pictures, ...(catalogue.destinations ?? [])].map((p) => [p.id, p]));
+/** A picture's file is drawn over this many cells: a destination's postcard over the whole board. */
+function drawnSize(l: Level, p: Picture): { cols: number; rows: number } {
+  return l.destination?.id === p.id ? { cols: l.deal.cols, rows: l.deal.rows } : { cols: p.cols, rows: p.rows };
+}
+/** A picture file's width ÷ height, from the catalogue (a stand-in: its cells'). */
+function aspectOf(id: string, cols: number, rows: number): number {
+  const px = pictureFiles.get(id)?.px ?? pictureFiles.get(id)?.boardPx;
+  return px?.length === 2 && px[0]! > 0 && px[1]! > 0 ? px[0]! / px[1]! : cols / rows;
+}
 const base = import.meta.env.BASE_URL;
 const backUrl = `${base}art/stack-back.webp`;
 /** Board copies that would not load: their full picture stands in from then on. */
@@ -170,8 +188,13 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   const name = typeof which === "number" ? String(which) : which.id;
   const deal = lvl.deal;
   const pics = deal.pictures;
+  /** The board's destination (a window cut from a postcard the size of the board), if it has one. */
+  const dest = lvl.destination && pics.some((p) => p.id === lvl.destination!.id) ? lvl.destination : undefined;
+  const destPic = dest ? pics.findIndex((p) => p.id === dest.id) : -1;
   // the copies are picked for the card size the board opens at (sharpen() picks again on a resize)
-  const art: Art[] = pics.map((p) => ({ url: "", cols: p.cols, rows: p.rows }));
+  const art: Art[] = pics.map((p, i) => ({
+    url: "", ...drawnSize(lvl, p), ...(i === destPic ? { dx: dest!.crop[0], dy: dest!.crop[1] } : {}),
+  }));
   if (keep.length > 120) keep.splice(0, keep.length - 60);
 
   // --- DOM
@@ -219,6 +242,10 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   let won = false;
   let destroyed = false;
   let pendingRestart = false;
+  /** A destination's postcard on show (src/board/reveal.ts): a tap skips it. */
+  let reveal: Reveal | null = null;
+  /** The destination has been revealed on this opening of the board: a repeat is the short one. */
+  let revealedOnce = false;
   /** The opening deal has played: the clock may run. */
   let opened = false;
   let activeMs = 0;
@@ -228,13 +255,13 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   let geo: Geometry = layout(host.clientWidth || 360, host.clientHeight || 480, deal.cols, deal.rows, lvl.peek);
   // the light copies until the box has its size (a level that shows upcoming cards draws
   // them at once); the copies are picked for the card size, and fetched, then
-  pics.forEach((p, i) => (art[i]!.url = urlOf(p.id, p.cols, p.rows, 0)));
+  pics.forEach((p, i) => (art[i]!.url = urlOf(p.id, art[i]!.cols, art[i]!.rows, 0)));
   let live: PieceView[] = [];
   const stacks: StackView[] = [];
 
   // --- the clock for "time" on the win card: only while the board is in view
   const clockOn = () => {
-    if (since === null && !won && !solved) since = performance.now();
+    if (since === null && !won && !solved && !reveal) since = performance.now();
   };
   const clockOff = () => {
     if (since !== null) activeMs += performance.now() - since;
@@ -521,6 +548,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       emit("picture:complete", { pictureId: id, cells: cells.map((c) => ({ col: c % geo.cols, row: Math.floor(c / geo.cols) })) });
       if (!v) return;
       v.el.classList.add("whole");
+      if (pic === destPic) return showPostcard(v, id);
       // the glow behind it, swelling and shrinking with it
       const glow = document.createElement("div");
       glow.className = "bd-glow";
@@ -589,6 +617,35 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       for (const el of els) el.remove();
       dropView(v);
     }));
+  }
+
+  /**
+   * The destination is finished: its postcard opens over the board, holds
+   * while the screens show the place's name (destination:reveal), and goes
+   * (destination:done); the cards fall after it. The board's clock stands
+   * still meanwhile, and a tap skips to the end (onDown). The first time on
+   * this opening of the board is the full reveal, a repeat (after Undo or a
+   * restart) the short one; reduced motion crossfades.
+   */
+  async function showPostcard(v: PieceView, id: string): Promise<void> {
+    const entry = pictureFiles.get(id);
+    const again = revealedOnce;
+    revealedOnce = true;
+    const a = art[destPic]!;
+    const r = revealPostcard({
+      geo, layer: fxEl, piece: v, url: a.url, aspect: aspectOf(id, a.cols, a.rows), crop: dest!.crop,
+      mode: lessMotion() ? "calm" : again ? "short" : "full",
+      onOpen: () => emit("destination:reveal", { id, name: entry?.name ?? entry?.title ?? id, place: entry?.place ?? "", again }),
+      onLeave: () => emit("picture:clear", { pictureId: id }),
+    });
+    reveal = r;
+    clockOff();
+    await r.done;
+    reveal = null;
+    if (destroyed) return; // destroy() said destination:done
+    emit("destination:done", { id });
+    dropView(v);
+    if (opened && onScreenNow()) clockOn();
   }
 
   /**
@@ -860,6 +917,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
 
   function onDown(e: PointerEvent): void {
     // a hint's ghost never stands in the way: reaching for the board takes it away
+    // a destination's postcard on show: a tap anywhere on the board skips to its end
+    if (reveal) return void reveal.skip();
     if (driven) return;
     if (!destroyed && guideMode !== "hold") stopHint();
     if (press || drag || busy || won || destroyed || guideMode === "hold") return;
@@ -1323,7 +1382,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   function sharpen(): void {
     pics.forEach((p, i) => {
       const a = art[i]!;
-      const want = urlOf(p.id, p.cols, p.rows, geo.s);
+      const want = urlOf(p.id, a.cols, a.rows, geo.s);
       if (want === a.url || !isCopy(a.url)) return;
       void fetchPicture(want).then((ok) => {
         if (ok && !destroyed && a.url !== want) swapArt(a, want);
@@ -1389,13 +1448,13 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     if (!host.clientWidth || !host.clientHeight) await new Promise<void>((r) => (sized = r));
     if (destroyed) return;
     const cardW = layout(host.clientWidth, host.clientHeight, deal.cols, deal.rows, lvl.peek).s;
-    pics.forEach((p, i) => (art[i]!.url = urlOf(p.id, p.cols, p.rows, cardW)));
+    pics.forEach((p, i) => (art[i]!.url = urlOf(p.id, art[i]!.cols, art[i]!.rows, cardW)));
     const ready = Promise.all(art.map(async (a, i) => {
       if ((await fetchPicture(a.url)) || !isCopy(a.url)) return;
       // Art's board copy would not load: the full picture instead, from now on
       brokenCopies.add(a.url);
       const p = pics[i]!;
-      const full = urlOf(p.id, p.cols, p.rows);
+      const full = urlOf(p.id, a.cols, a.rows);
       await fetchPicture(full);
       if (!destroyed) swapArt(a, full);
     })).then(() => {});
@@ -1415,7 +1474,10 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       // at the card size the next board will have in this box
       const next = levelOf(which + 1);
       const s = layout(host.clientWidth || 360, host.clientHeight || 480, next.deal.cols, next.deal.rows, next.peek).s;
-      void preload(next.deal.pictures.map((p) => urlOf(p.id, p.cols, p.rows, s)), 10_000, true);
+      void preload(next.deal.pictures.map((p) => {
+        const { cols, rows } = drawnSize(next, p);
+        return urlOf(p.id, cols, rows, s);
+      }), 10_000, true);
     }
   })();
 
@@ -1505,6 +1567,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       if (solved && !won) return;
       if (busy) {
         pendingRestart = true;
+        reveal?.skip(); // a postcard on show goes at once
         return;
       }
       if (drag) {
@@ -1524,10 +1587,17 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       }
       relight();
     },
-    pictures: () => pics.map((p, i) => ({ id: p.id, src: art[i]!.url, cols: p.cols, rows: p.rows })),
+    // a destination is its whole postcard here (the win card shows the place, not the window)
+    pictures: () => pics.map((p, i) => ({ id: p.id, src: art[i]!.url, cols: art[i]!.cols, rows: art[i]!.rows })),
     destroy() {
       stopHint();
       destroyed = true;
+      // a postcard on show goes with the board; the screens' name banner with it, when it was up
+      if (reveal) {
+        const wasOpen = reveal.isOpen();
+        reveal.close();
+        if (wasOpen) emit("destination:done", { id: pics[destPic]!.id });
+      }
       ro.disconnect();
       drag?.stop();
       stopAll();

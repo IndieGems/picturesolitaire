@@ -118,6 +118,23 @@ export const TUNING = {
   completeLeaveMs: 220,
   completeStaggerMs: 60,
   twinkles: 16,
+  /**
+   * A destination's reveal, in place of the quick exit (about 3 s in all):
+   * the finished piece slides to where its window sits in the postcard
+   * (revealSlideMs), the postcard unfolds round it, sideways and then up and
+   * down (revealUnfoldMs, the two halves overlapping a little), holds open
+   * while the place's name shows (revealHoldMs), and fades away
+   * (revealLeaveMs); then the cards fall. Reduced motion, and a repeat on the
+   * same opening of the board (after Undo or a restart): a crossfade of
+   * revealFadeMs each way, held revealHoldMs (reduced motion) or
+   * revealShortHoldMs (a repeat). A tap skips to the end.
+   */
+  revealSlideMs: 380,
+  revealUnfoldMs: 760,
+  revealHoldMs: 1500,
+  revealLeaveMs: 380,
+  revealFadeMs: 260,
+  revealShortHoldMs: 700,
   /** Shuffle: the loose cards trading places. */
   shuffleMs: 460,
   /** Hint: the ghost of the piece going to where it should be played. */

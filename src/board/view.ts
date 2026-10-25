@@ -16,6 +16,12 @@ export interface Art {
   url: string;
   cols: number;
   rows: number;
+  /**
+   * A window into a bigger picture (a destination's postcard, `cols` x `rows`
+   * the whole board): the cell of it the picture's top-left card shows.
+   */
+  dx?: number;
+  dy?: number;
 }
 
 export interface Geometry {
@@ -203,8 +209,8 @@ function svgCard(
   // this piece's cells show their part of it; the picture is centre-cropped to
   // the window from its own pixel size (slice: object-fit cover), so one drawn
   // for square cells still looks right on portrait ones
-  const imgX = (c0 - x0) * (s + g) - g / 2;
-  const imgY = (r0 - y0) * (sh + g) - g / 2;
+  const imgX = (c0 - x0 - (a.dx ?? 0)) * (s + g) - g / 2;
+  const imgY = (r0 - y0 - (a.dy ?? 0)) * (sh + g) - g / 2;
   const id = `bd-clip-${++clipId}`;
   const W = b.w + 2 * m;
   const H = b.h + 2 * m;

@@ -2,7 +2,8 @@
 // with plain helper buttons and every event logged. Dev only; never built.
 import { openBoard } from "./index.ts";
 import { on, type GameEvents } from "../events";
-import { loadChallenges } from "../game/levels.ts";
+import { level as levelOf, loadChallenges, toLevel, type Level, type Stored } from "../game/levels.ts";
+import EXPERIMENTS from "../content/levels/experiments.json";
 
 const q = new URLSearchParams(location.search);
 const host = document.getElementById("host")!;
@@ -14,10 +15,31 @@ if (q.has("hidden")) {
 }
 // ?challenge=ch16: a challenge board (any size) instead of a campaign one
 const ch = q.get("challenge");
-const level = ch ? (await loadChallenges()).find((c) => c.id === ch) : undefined;
+let level: Level | undefined = ch ? (await loadChallenges()).find((c) => c.id === ch) : undefined;
+// ?x=x02: an experiment board (the dev menu's)
+const x = q.get("x");
+if (x) {
+  const all = (EXPERIMENTS as unknown as { levels: Stored[] }).levels;
+  const i = all.findIndex((l) => l.id === x);
+  if (i >= 0) level = toLevel(all[i]!, i + 1);
+}
+// ?dest=dest-grand-canyon&crop=2,2: the board's first 2x2 picture made that destination's window
+const dest = q.get("dest");
+if (dest) {
+  const base = level ?? levelOf(Number(q.get("level") ?? 1));
+  const k = base.deal.pictures.findIndex((p) => p.cols === 2 && p.rows === 2);
+  const [c, r] = (q.get("crop") ?? "0,0").split(",").map(Number);
+  if (k >= 0) {
+    level = {
+      ...base,
+      deal: { ...base.deal, pictures: base.deal.pictures.map((p, j) => (j === k ? { ...p, id: dest } : p)) },
+      destination: { id: dest, crop: [c ?? 0, r ?? 0] },
+    };
+  }
+}
 const board = openBoard(host, level ?? Number(q.get("level") ?? 1));
 const log: string[] = [];
-const names: (keyof GameEvents)[] = ["piece:lift", "piece:cancel", "piece:move", "piece:merge", "piece:split", "picture:complete", "picture:clear", "cards:fall", "stack:deal", "helper:undo", "helper:hint", "helper:shuffle", "board:restart", "board:won", "board:solved", "board:start", "board:changed", "board:stuck"];
+const names: (keyof GameEvents)[] = ["piece:lift", "piece:cancel", "piece:move", "piece:merge", "piece:split", "picture:complete", "picture:clear", "cards:fall", "stack:deal", "helper:undo", "helper:hint", "helper:shuffle", "board:restart", "board:won", "board:solved", "board:start", "board:changed", "board:stuck", "destination:reveal", "destination:done"];
 for (const n of names) on(n, (p) => log.push(`${n} ${JSON.stringify(p)}`));
 for (const k of ["undo", "hint", "shuffle", "restart"] as const) {
   const b = document.createElement("button");
