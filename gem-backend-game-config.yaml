@@ -383,6 +383,46 @@ progressions:
         - mode: on_complete
           amount: 35
           target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: cb51d3ff-14f7-5ef4-971a-d1907fcea606
+    slug: board_c27
+    display_name: "Campaign board 27"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: e1a06a81-0b44-537a-a727-a4c6456af4a5
+    slug: board_c28
+    display_name: "Campaign board 28"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 60050e67-b93f-5e08-a1b7-352ae9fec175
+    slug: board_c29
+    display_name: "Campaign board 29"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 33f66e6d-4aae-5c10-ab7a-8dbc53a4ae6b
+    slug: board_c30
+    display_name: "Campaign board 30"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 414b94aa-f943-5cf1-a063-a6d0062b83a7
     slug: board_ch01
     display_name: "Challenge board 1"
