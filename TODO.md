@@ -12,14 +12,9 @@
 Untangled (`IndieGems/yarn`, cloned beside this game) is the standard's
 reference game. In hand now: the settings mirror (`gem.settings.declare`,
 UI), cards as keyboard dialogs (UI), held wins trimmed in order
-(`src/net/claims.ts`, Server). Still owed:
+(`src/net/claims.ts`, Server), pictures at the size drawn (Art, Gameplay, UI).
+Still owed:
 
-- **Lighter pictures, before the next big picture batch** (creator: after
-  the review of boards 4–13). Each picture ships at full size (768×1024 for
-  2×2, ~170 KB mean, up to 500 KB), so a board fetches 1 MB or more while the
-  board draws it far smaller. Ship a board-sized copy (about 2× its drawn
-  size on a 390 px phone, photo WebP ~0.74, as Untangled's `docs/mobile.md`
-  §1) and fetch the full picture only for the enlarge view.
 - **At release:** analytics events and funnels (Untangled's
   `docs/analytics.md` shape); twelve locales, with a fallback font behind
   Fredoka for ą ę ż İ ğ ş and Cyrillic (Untangled's `FACES`) and a text-fit
@@ -28,3 +23,8 @@ UI), cards as keyboard dialogs (UI), held wins trimmed in order
 - **Creator's taste, to ask one at a time:** home waiting (capped) to appear
   whole, as Untangled's does; a phone held sideways covered by "turn upright"
   instead of our sideways layout.
+
+- **The challenge route and the daily under the new picture rules** (after
+  campaign boards 14–26 and the creator's review): today they mix long and
+  square pictures and use the older, busier pictures. Levels counts the
+  pictures needed; the batch is the creator's call.
