@@ -298,6 +298,10 @@ def cmd_catalogue():
             "palette": e.get("palette") or p["families"][fam]["palette"], "subjects": e["subjects"],
             "family": fam, "busy": e["busy"],
         })
+        if e.get("landmark"):
+            # A real, named place (lead, 2026-10-25): it belongs to a future trip as a destination,
+            # so Levels keeps it off campaign boards (a build check holds it).
+            pictures[-1]["landmark"] = True
     used = {x["album"] for x in pictures}
     out = {"albums": [a for a in p["albums"] if a["id"] in used], "pictures": pictures,
            "destinations": destinations(p)}

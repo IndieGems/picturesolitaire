@@ -482,7 +482,8 @@
         "bell tower"
       ],
       "family": "sea-blue",
-      "busy": 1
+      "busy": 1,
+      "landmark": true
     },
     {
       "id": "wave-coast",
@@ -1039,7 +1040,8 @@
         "lamps"
       ],
       "family": "blue-hour",
-      "busy": 1
+      "busy": 1,
+      "landmark": true
     },
     {
       "id": "lantern-market",
@@ -1248,7 +1250,8 @@
         "geraniums"
       ],
       "family": "berry-red",
-      "busy": 2
+      "busy": 2,
+      "landmark": true
     },
     {
       "id": "red-umbrella",
@@ -1318,7 +1321,8 @@
         "sea"
       ],
       "family": "lemon-yellow",
-      "busy": 2
+      "busy": 2,
+      "landmark": true
     },
     {
       "id": "lemon-tart",
@@ -2517,7 +2521,8 @@
         "pine tree"
       ],
       "family": "mount-fuji",
-      "busy": 1
+      "busy": 1,
+      "landmark": true
     },
     {
       "id": "ice-cream",
@@ -3655,7 +3660,8 @@
         "eiffel tower"
       ],
       "family": "eiffel-tower",
-      "busy": 0
+      "busy": 0,
+      "landmark": true
     },
     {
       "id": "golden-gate",
@@ -3685,7 +3691,8 @@
         "suspension cables"
       ],
       "family": "golden-gate",
-      "busy": 0
+      "busy": 0,
+      "landmark": true
     },
     {
       "id": "colosseum",
@@ -3716,7 +3723,8 @@
         "umbrella pines"
       ],
       "family": "colosseum",
-      "busy": 1
+      "busy": 1,
+      "landmark": true
     },
     {
       "id": "leaning-tower",
@@ -3746,7 +3754,8 @@
         "leaning tower"
       ],
       "family": "leaning-tower",
-      "busy": 0
+      "busy": 0,
+      "landmark": true
     },
     {
       "id": "taj-mahal",
@@ -3777,7 +3786,8 @@
         "minarets"
       ],
       "family": "taj-mahal",
-      "busy": 1
+      "busy": 1,
+      "landmark": true
     },
     {
       "id": "tree-house",
@@ -3901,7 +3911,8 @@
         "stone head"
       ],
       "family": "moai",
-      "busy": 0
+      "busy": 0,
+      "landmark": true
     },
     {
       "id": "palm-island",
@@ -6773,7 +6784,8 @@
         "alpine meadow"
       ],
       "family": "matterhorn",
-      "busy": 0
+      "busy": 0,
+      "landmark": true
     },
     {
       "id": "pebble-cairn",
@@ -8240,7 +8252,8 @@
         "sphinx"
       ],
       "family": "pyramids",
-      "busy": 0
+      "busy": 0,
+      "landmark": true
     },
     {
       "id": "greek-temple",
@@ -8300,7 +8313,8 @@
         "torii gate"
       ],
       "family": "torii",
-      "busy": 0
+      "busy": 0,
+      "landmark": true
     },
     {
       "id": "yurt",
@@ -8601,7 +8615,8 @@
         "rock-cut temple"
       ],
       "family": "petra",
-      "busy": 0
+      "busy": 0,
+      "landmark": true
     },
     {
       "id": "stave-church",
