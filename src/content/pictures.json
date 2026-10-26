@@ -10528,6 +10528,662 @@
         "pink"
       ],
       "busy": 1
+    },
+    {
+      "id": "mel-01",
+      "name": "The waltz",
+      "case": "melusine",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/cases/mel-01.webp",
+      "board": "pictures/cases/mel-01-board.webp",
+      "thumb": "pictures/cases/mel-01-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "mel-01",
+      "subjects": [
+        "Brandt",
+        "manuscript",
+        "candlelit dinner"
+      ],
+      "palette": [
+        "blue",
+        "gold",
+        "cream",
+        "green"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "mel-02",
+      "name": "Clara",
+      "case": "melusine",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/cases/mel-02.webp",
+      "board": "pictures/cases/mel-02-board.webp",
+      "thumb": "pictures/cases/mel-02-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "mel-02",
+      "subjects": [
+        "Clara",
+        "violin",
+        "red shawl",
+        "Melk Abbey"
+      ],
+      "palette": [
+        "red",
+        "gold",
+        "blue",
+        "brown"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "mel-03",
+      "name": "Dr Fehr",
+      "case": "melusine",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/cases/mel-03.webp",
+      "board": "pictures/cases/mel-03-board.webp",
+      "thumb": "pictures/cases/mel-03-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "mel-03",
+      "subjects": [
+        "doctor",
+        "bow tie",
+        "green pen"
+      ],
+      "palette": [
+        "burgundy",
+        "green",
+        "brown",
+        "cream"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "mel-04",
+      "name": "Margit",
+      "case": "melusine",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/cases/mel-04.webp",
+      "board": "pictures/cases/mel-04-board.webp",
+      "thumb": "pictures/cases/mel-04-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "mel-04",
+      "subjects": [
+        "Margit",
+        "pearl brooch",
+        "Dürnstein"
+      ],
+      "palette": [
+        "green",
+        "blue",
+        "cream",
+        "white"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "mel-05",
+      "name": "Professor Duval",
+      "case": "melusine",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/cases/mel-05.webp",
+      "board": "pictures/cases/mel-05-board.webp",
+      "thumb": "pictures/cases/mel-05-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "mel-05",
+      "subjects": [
+        "professor",
+        "mustard scarf",
+        "green pen"
+      ],
+      "palette": [
+        "mustard",
+        "brown",
+        "green",
+        "cream"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "mel-06",
+      "name": "The cabin at dawn",
+      "case": "melusine",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        0,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/cases/mel-06.webp",
+      "board": "pictures/cases/mel-06-board.webp",
+      "thumb": "pictures/cases/mel-06-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "mel-06",
+      "subjects": [
+        "cabin",
+        "teapot",
+        "empty folder"
+      ],
+      "palette": [
+        "blue",
+        "pink",
+        "brown",
+        "white"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "mel-07",
+      "name": "The pocket watch",
+      "case": "melusine",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/cases/mel-07.webp",
+      "board": "pictures/cases/mel-07-board.webp",
+      "thumb": "pictures/cases/mel-07-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "mel-07",
+      "subjects": [
+        "pocket watch"
+      ],
+      "palette": [
+        "gold",
+        "red",
+        "white",
+        "black"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "mel-08",
+      "name": "The bottle",
+      "case": "melusine",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/cases/mel-08.webp",
+      "board": "pictures/cases/mel-08-board.webp",
+      "thumb": "pictures/cases/mel-08-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "mel-08",
+      "subjects": [
+        "medicine bottle",
+        "teapot"
+      ],
+      "palette": [
+        "brown",
+        "white",
+        "blue",
+        "red"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "mel-09",
+      "name": "The tray for two",
+      "case": "melusine",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/cases/mel-09.webp",
+      "board": "pictures/cases/mel-09-board.webp",
+      "thumb": "pictures/cases/mel-09-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "mel-09",
+      "subjects": [
+        "Brandt",
+        "steward",
+        "corridor clock"
+      ],
+      "palette": [
+        "blue",
+        "white",
+        "brown",
+        "gold"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "mel-10",
+      "name": "The will",
+      "case": "melusine",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/cases/mel-10.webp",
+      "board": "pictures/cases/mel-10-board.webp",
+      "thumb": "pictures/cases/mel-10-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "mel-10",
+      "subjects": [
+        "will",
+        "wax seal"
+      ],
+      "palette": [
+        "cream",
+        "red",
+        "brown",
+        "gold"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "mel-11",
+      "name": "The doctor's evening",
+      "case": "melusine",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        0
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/cases/mel-11.webp",
+      "board": "pictures/cases/mel-11-board.webp",
+      "thumb": "pictures/cases/mel-11-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "mel-11",
+      "subjects": [
+        "doctor",
+        "bunk",
+        "cabin clock"
+      ],
+      "palette": [
+        "burgundy",
+        "white",
+        "blue",
+        "brown"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "mel-12",
+      "name": "Margit's evening",
+      "case": "melusine",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        0,
+        0
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/cases/mel-12.webp",
+      "board": "pictures/cases/mel-12-board.webp",
+      "thumb": "pictures/cases/mel-12-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "mel-12",
+      "subjects": [
+        "Margit",
+        "wine tavern",
+        "tavern clock"
+      ],
+      "palette": [
+        "green",
+        "gold",
+        "blue",
+        "brown"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "mel-13",
+      "name": "The scrap",
+      "case": "melusine",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/cases/mel-13.webp",
+      "board": "pictures/cases/mel-13-board.webp",
+      "thumb": "pictures/cases/mel-13-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "mel-13",
+      "subjects": [
+        "anchor chain",
+        "manuscript scrap",
+        "green ink"
+      ],
+      "palette": [
+        "green",
+        "grey",
+        "cream",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "mel-14",
+      "name": "The passenger's photo",
+      "case": "melusine",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/cases/mel-14.webp",
+      "board": "pictures/cases/mel-14-board.webp",
+      "thumb": "pictures/cases/mel-14-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "mel-14",
+      "subjects": [
+        "concert",
+        "empty chair",
+        "mustard scarf"
+      ],
+      "palette": [
+        "red",
+        "mustard",
+        "white",
+        "black"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "mel-15",
+      "name": "Budapest",
+      "case": "melusine",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/cases/mel-15.webp",
+      "board": "pictures/cases/mel-15-board.webp",
+      "thumb": "pictures/cases/mel-15-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "mel-15",
+      "subjects": [
+        "Budapest Parliament",
+        "police launch"
+      ],
+      "palette": [
+        "gold",
+        "blue",
+        "black",
+        "white"
+      ],
+      "busy": 0
     }
   ]
 }

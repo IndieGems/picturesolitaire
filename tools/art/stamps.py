@@ -1,10 +1,12 @@
-"""Passport stamps, one per trip: a generated rubber-stamp impression, squared and sized.
+"""Passport stamps, one per trip or case: a generated rubber-stamp impression, squared and sized.
 
-    python tools/art/stamps.py <raw.png> <trip-number>     e.g. stamps.py raw/stamp-t1.png 1
+    python tools/art/stamps.py <raw.png> <trip-or-case id>     e.g. stamps.py raw/stamp-t1.png t1
+                                                               or  stamps.py raw/stamp-melusine.png melusine
 
 The raw image is a transparent PNG from the generator (prompts in tools/art/prompts.txt).
 It is cropped to the stamp, centred on a square with a little air, kept as a master in
-tools/art/masters/chrome/stamp-t<n>.webp, and shipped as public/art/stamps/stamp-t<n>.webp
+tools/art/masters/chrome/stamp-<id>.webp, and shipped as public/art/stamps/stamp-<id>.webp (the passport
+finds a trip's stamp by its id, UI)
 at SIZE px: UI draws it about 92 CSS px across, tilted, so 300 px is sharp at 3x. Each
 trip's stamp has its own ink colour and a pictogram of the trip, and no text (it is never
 translated).
@@ -22,6 +24,7 @@ PAD = 0.02
 
 
 def main(raw, n):
+    n = f"t{n}" if n.isdigit() else n
     im = Image.open(raw).convert("RGBA")
     box = im.getchannel("A").point(lambda v: 255 if v > 8 else 0).getbbox()
     im = im.crop(box)
@@ -31,9 +34,9 @@ def main(raw, n):
     # Clear the colour under fully transparent pixels so it cannot bleed when scaled.
     sq = Image.composite(sq, Image.new("RGBA", sq.size, (0, 0, 0, 0)), sq.getchannel("A").point(lambda v: 255 if v else 0))
     MASTERS.mkdir(parents=True, exist_ok=True)
-    sq.save(MASTERS / f"stamp-t{n}.webp", "WEBP", quality=92, method=6)
+    sq.save(MASTERS / f"stamp-{n}.webp", "WEBP", quality=92, method=6)
     OUT.mkdir(parents=True, exist_ok=True)
-    out = OUT / f"stamp-t{n}.webp"
+    out = OUT / f"stamp-{n}.webp"
     sq.resize((SIZE, SIZE), Image.LANCZOS).save(out, "WEBP", quality=70, alpha_quality=70, method=6)  # flat ink: q70 halves it, unseen at 92 px
     print(out.relative_to(ROOT), f"{SIZE}x{SIZE}", f"{out.stat().st_size // 1024} KB")
 

@@ -122,15 +122,61 @@ def crop_to(im, w, h, x=0.5, y=0.5):
 
 
 def framed(e):
-    """The master cut to the picture's card aspect, framed on its subject."""
-    return crop_to(Image.open(master_path(e["id"])).convert("RGB"), *size_of(e), e.get("cropX", 0.5), e.get("cropY", 0.5))
+    """The master cut to the picture's card aspect, framed on its subject, with any clock hands."""
+    im = crop_to(Image.open(master_path(e["id"])).convert("RGB"), *size_of(e), e.get("cropX", 0.5), e.get("cropY", 0.5))
+    for spec in e.get("hands", []):
+        im = paint_hands(im, spec)
+    return im
+
+
+def paint_hands(im, spec):
+    """Clock hands painted on exactly (creator, 2026-10-25: the times are the puzzle, and generated
+    hands are unreliable). The face is generated with no hands; spec gives its centre (cx, cy)
+    and radius r as fractions of the picture's width, the time "h:mm", and optionally squash (the
+    face's height/width when seen at an angle; ex the same for its width), rot (the dial's turn, clockwise degrees), colour and
+    the hands' lengths (fractions of r). Measure cx, cy, r and rot from the hour markers: r is the
+    markers' radius, and opposite markers' midpoints give the centre."""
+    import math
+    from PIL import ImageFilter
+    W, H = im.size
+    SS = 4
+    cx, cy, r = spec["cx"] * W * SS, spec["cy"] * W * SS, spec["r"] * W * SS
+    sq = spec.get("squash", 1.0)
+    ex = spec.get("ex", 1.0)  # the face's width/height, when it is seen from the side
+    h, m = (int(x) for x in spec["time"].split(":"))
+    col = spec.get("colour", "#1d1a17")
+    layer = Image.new("RGBA", (W * SS, H * SS), (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+
+    def hand(angle_deg, length, width, tail):
+        a = math.radians(angle_deg - 90)
+        ux, uy = math.cos(a) * ex, math.sin(a) * sq
+        px, py = -math.sin(a) * ex, math.cos(a) * sq
+        tip = (cx + ux * length, cy + uy * length)
+        back = (cx - ux * tail, cy - uy * tail)
+        w0, w1 = width, width * 0.35
+        pts = [(back[0] + px * w0, back[1] + py * w0), (tip[0] + px * w1, tip[1] + py * w1),
+               (tip[0] - px * w1, tip[1] - py * w1), (back[0] - px * w0, back[1] - py * w0)]
+        d.polygon(pts, fill=col)
+
+    rot = spec.get("rot", 0)  # the dial's own turn, clockwise degrees (12 is not always straight up)
+    hand((h % 12 + m / 60) * 30 + rot, r * spec.get("hour", 0.52), r * 0.055, r * 0.12)
+    hand(m * 6 + rot, r * spec.get("minute", 0.80), r * 0.04, r * 0.15)
+    cap = r * 0.06
+    d.ellipse([cx - cap * ex, cy - cap * sq, cx + cap * ex, cy + cap * sq], fill=col)
+    layer = layer.resize((W, H), Image.LANCZOS).filter(ImageFilter.GaussianBlur(spec.get("soften", 0.4)))
+    shadow = layer.split()[3].point(lambda v: v * 0.35).filter(ImageFilter.GaussianBlur(2))
+    out = im.convert("RGBA")
+    out.paste((0, 0, 0, 255), (round(W * 0.002), round(W * 0.003)), shadow)
+    out.alpha_composite(layer)
+    return out.convert("RGB")
 
 
 def export(e):
     out = PUBLIC / "pictures" / e["album"] / f"{e['id']}.webp"
     out.parent.mkdir(parents=True, exist_ok=True)
     framed(e).resize(size_of(e), Image.LANCZOS).save(out, "WEBP", quality=80, method=6)
-    if e.get("place"):
+    if "window" in e:  # a destination or a case's clue picture
         make_dest_thumb(e)
     else:
         make_thumb(e)
@@ -210,7 +256,7 @@ def make_board(e):
     im = framed(e).resize((w, h), Image.LANCZOS)
     out = PUBLIC / board_rel(e)
     out.parent.mkdir(parents=True, exist_ok=True)
-    dest = bool(e.get("place"))
+    dest = "window" in e
     budget = (DEST_BOARD_BUDGET if dest else BOARD_BUDGET) * e["cols"] * e["rows"]
     for q in range(84 if e["medium"] in SMOOTH_MEDIA else 74, 49 if dest else 55, -4):
         im.save(out, "WEBP", quality=q, method=6)
@@ -272,8 +318,7 @@ def destinations(p):
             board_px = list(im.size)
         with Image.open(PUBLIC / dest_thumb_rel(e)) as im:
             thumb_px = list(im.size)
-        out.append({
-            "id": e["id"], "name": e["name"], "place": e["place"], "trip": e["trip"],
+        out.append({k: e[k] for k in ("id", "name", "place", "trip", "case") if k in e} | {
             "cols": e["cols"], "rows": e["rows"], "crop": e["crop"], "window": e["window"],
             "file": rel, "board": board_rel(e), "thumb": dest_thumb_rel(e), "px": px, "boardPx": board_px, "thumbPx": thumb_px,
             "medium": e["medium"], "family": e["family"], "subjects": e["subjects"], "palette": e["palette"], "busy": e["busy"],
