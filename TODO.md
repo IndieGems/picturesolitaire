@@ -27,6 +27,11 @@ Still owed:
   Fredoka for ą ę ż İ ğ ş and Cyrillic (Untangled's `FACES`) and a text-fit
   check per language; the store page rewritten (it still says 30 boards and
   look-alike pictures), new screenshots and hover loop.
+- **Effects on WebGL, the next time they are worked on** (the standard,
+  2026-10-25; QA's second pass, 2026-10-26): the milestone fireworks (a 2D
+  canvas on the page's thread, UI) and the finished picture's twinkles (page
+  elements, Gameplay) move to one WebGL layer drawn from its own worker. Jade
+  Hands' fx layer is the model. The weather's CSS sprites can stay.
 
 - **The challenge route and the daily under the new picture rules** (after
   campaign boards 14–26 and the creator's review): today they mix long and
