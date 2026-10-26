@@ -375,7 +375,7 @@ function openPlay(next: Play): void {
     boardWon = false;
     play = next;
     movesSoFar = null;
-    stuckNote.hidden = true;
+    unstick();
     drawPill();
     // the board reports its helpers and undo through board:changed, once at start too
     drawHelpers({ undo: 3, hint: 3, shuffle: 3 }, false);
@@ -540,6 +540,10 @@ helperBtns.shuffle.btn.addEventListener("click", () => board?.shuffle());
 on("board:changed", (e) => {
   drawHelpers(e.helpers, e.canUndo);
   shufflesLeft = e.helpers.shuffle;
+  undosLeft = e.helpers.undo;
+  canUndoNow = e.canUndo;
+  // stuck still: the way out may have changed (an Undo spent, the last Shuffle gone)
+  drawStuck();
   // the moves so far, where the board reports them: a challenge's top row counts against par
   const moves = (e as { moves?: number }).moves;
   if (typeof moves === "number" && (play?.kind === "challenge" || play?.kind === "daily")) {
@@ -548,19 +552,44 @@ on("board:changed", (e) => {
   }
 });
 
-// Stuck: only Undo or Restart helps, so the line says so, and stays until the player does something.
-let stuckLine: string | null = null;
-let stuckDoomed = false;
-/** Shuffles left on the board in hand (board:changed), and whether one just found no better mix. */
+// STUCK (the creator, 2026-10-25: "On 9 and 10 I became stuck and didn't realise it for a good while,
+// still trying to move pieces around"). The board says so the moment its solver proves there is no way
+// to finish from here (board:stuck), and no move can change that, so the notice stays through moves
+// until the board is winnable again (board:unstuck: after an Undo past the slip, a Shuffle's rescue
+// mix, a Restart). It is calm information (glass) over the board's foot, the board dimmed a little
+// behind it, and it names ONE way out, lit and pointed at: Shuffle while one is left (the rescue mix
+// built for this), else Undo while one is left and there is a move to take back, else Restart
+// (always free). Only ever said when proved: a solver out of budget proves nothing.
+let stuck = false;
+/** What the board has left (board:changed), and whether a Shuffle just found no better mix. */
 let shufflesLeft = 0;
+let undosLeft = 0;
+let canUndoNow = false;
 let shuffleRefused = false;
-/** The stuck line names Shuffle while one is left that might help, and Shuffle then glows softly: the one thing lit. */
+type WayOut = "shuffle" | "undo" | "restart";
+function wayOut(): WayOut {
+  if (shufflesLeft > 0 && !shuffleRefused) return "shuffle";
+  if (undosLeft > 0 && canUndoNow) return "undo";
+  return "restart";
+}
+const wayButton = (w: WayOut): HTMLElement => (w === "restart" ? restartBtn : helperBtns[w].btn);
 function drawStuck(): void {
-  const shuffle = shufflesLeft > 0 && !shuffleRefused;
-  stuckLine = t(stuckDoomed ? (shuffle ? "board.doomedShuffle" : "board.doomed") : shuffle ? "board.stuckShuffle" : "board.stuck");
-  stuckNote.textContent = stuckLine;
+  if (!stuck || refusing) return;
+  const way = wayOut();
+  stuckNote.replaceChildren(h("b", { class: "why" }, t("board.stuckWhy")), h("span", { class: "way" }, t(`board.way.${way}`)));
   stuckNote.hidden = false;
-  helperBtns.shuffle.btn.classList.toggle("beckon", shuffle);
+  host.classList.add("stuck");
+  for (const w of ["shuffle", "undo", "restart"] as const) wayButton(w).classList.toggle("beckon", w === way);
+  requestAnimationFrame(() => pointAt(wayButton(way)));
+}
+/** The note's arrow over the lit button, when the button is under it (a phone held upright); none beside it. */
+function pointAt(target: HTMLElement): void {
+  if (stuckNote.hidden || refusing) return;
+  const n = stuckNote.getBoundingClientRect();
+  const b = target.getBoundingClientRect();
+  const under = b.top >= n.bottom - 2;
+  stuckNote.classList.toggle("pointing", under);
+  if (under) stuckNote.style.setProperty("--arrow-x", `${Math.round(Math.min(n.width - 26, Math.max(26, b.left + b.width / 2 - n.left)))}px`);
 }
 // a finished destination: its name over the postcard while it is open, gone with it (destination.ts);
 // a mystery clue (the dev menu's pilot): its one sentence in place of a name, or nothing for a wordless one
@@ -571,34 +600,42 @@ on("destination:reveal", (d) => {
   else if (words) destBanner.showClue(words, host, d.again);
 });
 on("destination:done", () => destBanner.hide());
-on("board:stuck", ({ doomed }) => {
-  stuckDoomed = doomed;
+on("board:stuck", () => {
+  stuck = true;
   drawStuck();
 });
-const unstick = () => {
-  stuckLine = null;
+/** The board can be won again (or it closed): the notice, the dim and the lit button go. */
+function unstick(): void {
+  stuck = false;
   shuffleRefused = false;
+  refusing = false;
   clearTimeout(refusedTimer);
   stuckNote.hidden = true;
-  helperBtns.shuffle.btn.classList.remove("beckon");
-};
+  stuckNote.classList.remove("pointing");
+  host.classList.remove("stuck");
+  for (const w of ["shuffle", "undo", "restart"] as const) wayButton(w).classList.remove("beckon");
+}
 // A helper that could do nothing spent nothing (Shuffle found no better mix, Hint no line it could prove
 // within its budget, which proves nothing about the board): say so for a moment, then back to what was there
 let refusedTimer: number | undefined;
+let refusing = false;
 on("helper:refused", ({ helper }) => {
-  if (helper === "shuffle") {
-    shuffleRefused = true;
-    helperBtns.shuffle.btn.classList.remove("beckon");
-  }
+  if (helper === "shuffle") shuffleRefused = true;
+  refusing = true;
+  // for the moment it says so, nothing is lit; then the notice comes back with the next way out
+  stuckNote.classList.remove("pointing");
+  for (const w of ["shuffle", "undo", "restart"] as const) wayButton(w).classList.remove("beckon");
   stuckNote.textContent = t(helper === "hint" ? "board.noHint" : "board.noMix");
   stuckNote.hidden = false;
   clearTimeout(refusedTimer);
   refusedTimer = window.setTimeout(() => {
-    if (stuckLine) drawStuck();
+    refusing = false;
+    if (stuck) drawStuck();
     else stuckNote.hidden = true;
   }, 3500);
 });
-for (const type of ["piece:lift", "helper:undo", "helper:shuffle", "board:restart", "board:start", "board:solved", "board:won"] as const) on(type, unstick);
+// a lost board stays lost through moves: only the board's word (unstuck), or a new start, clears it
+for (const type of ["board:unstuck", "board:restart", "board:start", "board:solved", "board:won"] as const) on(type, unstick);
 
 // Restart is free; the card only checks it was meant. Before the first move there is nothing to lose.
 restartBtn.addEventListener("click", () => {

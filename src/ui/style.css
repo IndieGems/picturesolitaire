@@ -222,22 +222,39 @@ html.less-motion .home-note { animation: none; }
   padding: 10px max(14px, var(--safe-right)) calc(var(--foot) + 6px) max(14px, var(--safe-left));
 }
 .helpers .spacer { flex: 1; }
-/* the stuck line: information, at the board's foot just above the helpers, never across its middle */
+/* the stuck notice (app.ts, drawStuck): information, at the board's foot just above the helpers, never
+   across its middle; "Stuck! No way to finish from here." over the one way out, its arrow on the lit
+   button. A helper's refusal ("No better mix right now") borrows it for a moment. */
 .stuck-note {
   position: absolute; z-index: 3; left: 50%; transform: translateX(-50%);
-  bottom: calc(var(--foot) + 6px + 60px + 16px); width: max-content; max-width: calc(100% - 24px);
-  padding: 8px 16px; border-radius: 18px; text-align: center; white-space: nowrap;
+  bottom: calc(var(--foot) + 6px + 60px + 18px); width: max-content; max-width: calc(100% - 24px);
+  padding: 10px 18px; border-radius: 20px; text-align: center; white-space: nowrap;
   font: 600 15px/1.25 var(--round); pointer-events: none;
+  background: rgba(240, 245, 251, 0.94);
   animation: veil-in 0.25s ease both;
 }
 .stuck-note[hidden] { display: none; }
 .stuck-note.wrapped { white-space: normal; }
-/* the one thing lit while the stuck line names it: Shuffle, glowing softly */
-.helper.beckon::after {
-  content: ""; position: absolute; inset: -8px; border-radius: 50%; pointer-events: none;
+.stuck-note .why { display: block; font: 600 17px/1.25 var(--round); }
+.stuck-note .way { display: block; margin-top: 3px; font: 600 15px/1.25 var(--round); color: var(--ink-soft); }
+/* its arrow, down onto the lit button (--arrow-x from app.ts) */
+.stuck-note.pointing::after {
+  content: ""; position: absolute; left: var(--arrow-x, 50%); bottom: -8px; width: 16px; height: 16px; margin-left: -8px;
+  transform: rotate(45deg); background: inherit; border-right: 1.5px solid var(--glass-line); border-bottom: 1.5px solid var(--glass-line);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%); /* only its point, below the note's edge */
+}
+/* the board behind it, dimmed a little: nothing there can be won */
+.board-host.stuck::after {
+  content: ""; position: absolute; inset: 0; z-index: 40; pointer-events: none;
+  background: rgba(12, 18, 30, 0.3); animation: veil-in 0.4s ease both;
+}
+/* the one way out, lit while the stuck notice names it: Shuffle, Undo or Restart, glowing softly */
+.btn.beckon::after {
+  content: ""; position: absolute; inset: -8px; border-radius: 999px; pointer-events: none;
   border: 3px solid rgba(246, 194, 122, 0.9); box-shadow: 0 0 14px rgba(246, 194, 122, 0.55);
   animation: route-breathe 2.2s ease-in-out infinite;
 }
+html.less-motion .board-host.stuck::after { animation: none; }
 .helpers .restart { min-height: 48px; padding: 0 16px 0 13px; font-size: 16px; }
 .helpers .restart :is(svg, .ico) { width: 20px; height: 20px; }
 .helper { --size: 60px; }
