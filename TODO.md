@@ -27,9 +27,6 @@ Still owed:
   Fredoka for ą ę ż İ ğ ş and Cyrillic (Untangled's `FACES`) and a text-fit
   check per language; the store page rewritten (it still says 30 boards and
   look-alike pictures), new screenshots and hover loop.
-- **Creator's taste, to ask one at a time:** home waiting (capped) to appear
-  whole, as Untangled's does; a phone held sideways covered by "turn upright"
-  instead of our sideways layout.
 
 - **The challenge route and the daily under the new picture rules** (after
   campaign boards 14–26 and the creator's review): today they mix long and
