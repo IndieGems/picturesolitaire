@@ -139,6 +139,41 @@ export const PLAN = [
   /* 29 */ { role: "build",  destination: "dest-takachiho", drop: "armchair", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
   // (traps capped: the first deal in range had 8, where board 20 has 1 and 25 has 2; a finale is beaten in a few tries)
   /* 30 */ { role: "super",  destination: "dest-taketomi", drop: "stave-church", board: [4, 5], ...sq(12), careless: [0.1, 0.3], traps: [0, 3], chain: ANY, ...NEW_ONLY },
+  // ---- trip 3, Italy (lead, 2026-10-26; docs/difficulty-curve.md "Trips of 15 boards"): relief after the
+  // stamp, hard at x5 and x10, super hard at x15, one all-long 4x4 board (x6, the relief after a spike);
+  // every square board 4x5 (the campaign's largest: cards stay about 60x80 on a 360x640 phone), one
+  // picture more than trip 2 at each role. Hard boards' traps capped, as on board 30.
+  /* 31 */ { role: "relief", board: [4, 5], ...sq(8), careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
+  /* 32 */ { role: "build",  board: [4, 5], ...sq(10), careless: [0.6, 0.7], chain: ANY, ...NEW_ONLY },
+  /* 33 */ { role: "build",  board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
+  /* 34 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 35 */ { role: "hard",   board: [4, 5], ...sq(11), careless: [0.3, 0.45], traps: [0, 3], chain: ANY, ...NEW_ONLY },
+  /* 36 */ { role: "pace",   count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
+  /* 37 */ { role: "build",  board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
+  /* 38 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 39 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 40 */ { role: "hard",   board: [4, 5], ...sq(12), careless: [0.25, 0.4], traps: [0, 3], chain: ANY, ...NEW_ONLY },
+  /* 41 */ { role: "relief", board: [4, 5], ...sq(9), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
+  /* 42 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 43 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 44 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.4, 0.5], chain: ANY, ...NEW_ONLY },
+  /* 45 */ { role: "super",  board: [4, 5], ...sq(12), careless: [0.1, 0.25], traps: [0, 3], chain: ANY, ...NEW_ONLY },
+  // ---- trip 4, the American West: the same shape, its floor a little higher again
+  /* 46 */ { role: "relief", board: [4, 5], ...sq(9), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
+  /* 47 */ { role: "build",  board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
+  /* 48 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 49 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 50 */ { role: "hard",   board: [4, 5], ...sq(12), careless: [0.25, 0.4], traps: [0, 3], chain: ANY, ...NEW_ONLY },
+  /* 51 */ { role: "pace",   count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
+  /* 52 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 53 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 54 */ { role: "build",  board: [4, 5], ...sq(12), careless: [0.35, 0.45], chain: ANY, ...NEW_ONLY },
+  /* 55 */ { role: "hard",   board: [4, 5], ...sq(12), careless: [0.2, 0.35], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  /* 56 */ { role: "relief", board: [4, 5], ...sq(9), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
+  /* 57 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 58 */ { role: "build",  board: [4, 5], ...sq(12), careless: [0.4, 0.5], chain: ANY, ...NEW_ONLY },
+  /* 59 */ { role: "build",  board: [4, 5], ...sq(12), careless: [0.35, 0.45], chain: ANY, ...NEW_ONLY },
+  /* 60 */ { role: "super",  board: [4, 5], ...sq(12), careless: [0.08, 0.2], traps: [0, 4], chain: ANY, ...NEW_ONLY },
 ];
 
 /**
@@ -153,6 +188,9 @@ export const TRIPS = [
   { id: "t1", name: "Travel America", from: 1, to: 15 },
   // the creator's choice (lead, 2026-10-25)
   { id: "t2", name: "Japan", from: 16, to: 30 },
+  // the creator's choice (lead, 2026-10-26)
+  { id: "t3", name: "Italy", from: 31, to: 45 },
+  { id: "t4", name: "American West", from: 46, to: 60 },
 ];
 
 /** Roles that may trap from the first move; every other board starts safe (check.mts). */
