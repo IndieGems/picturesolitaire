@@ -263,23 +263,26 @@ export function bannedOn(chosen, i, { spacing, distinct = 0 }) {
 }
 
 /** The usable pictures board i may take under the rule (all of them with no rule). */
+const catalogueAt = new Map(catalogue.map((p, k) => [p.id, k]));
 /**
  * The pictures board i may take: the no-repeat rule's (bannedOn), and with the
- * row's `newAfter` N none that is on boards 1-N (lead, 2026-10-26: every
- * picture on boards 31-60 is new to the player).
+ * row's `newFrom` (a catalogue id) only that picture and those after it in the
+ * catalogue: a batch Art appended (lead, 2026-10-26: every picture on boards
+ * 31-60 is from the creator's new batch, new to the player).
  */
 const poolOn = (chosen, i, rule, row?) => {
-  const old = row?.newAfter ? new Set(chosen.slice(0, row.newAfter).flatMap((set) => (set ?? []).map((q) => q.id))) : null;
-  if (!rule && !old) return usable;
+  const from = row?.newFrom ? catalogueAt.get(row.newFrom) : undefined;
+  if (row?.newFrom && from === undefined) throw new Error(`board ${i + 1}: newFrom ${row.newFrom} is not in the catalogue`);
+  if (!rule && from === undefined) return usable;
   const banned = rule ? bannedOn(chosen, i, rule) : new Set();
-  return usable.filter((p) => !banned.has(p.id) && !old?.has(p.id));
+  return usable.filter((p) => !banned.has(p.id) && (from === undefined || catalogueAt.get(p.id) >= from));
 };
 
 /** Why a board under the rule found no pictures: how many of each size it may still take. */
 const shortText = (plan, chosen, i, rule) => {
   const pool = poolOn(chosen, i, rule, plan[i]);
   const by = (n) => pool.filter((p) => p.cols * p.rows === n).length;
-  return `board ${i + 1}: no pictures fit its plan row among those not on a board within ${rule.spacing}${i < rule.distinct ? ` or on boards 1-${rule.distinct}` : ""}${plan[i].newAfter ? ` nor on boards 1-${plan[i].newAfter}` : ""} (it may take ${plan[i].sizes.map((n) => `${by(n)} of ${n} cards`).join(", ")}); the library needs more pictures${flags.size ? " (flagged pictures are left out)" : ""}`;
+  return `board ${i + 1}: no pictures fit its plan row among those not on a board within ${rule.spacing}${i < rule.distinct ? ` or on boards 1-${rule.distinct}` : ""}${plan[i].newFrom ? ` and in the batch from ${plan[i].newFrom} on` : ""} (it may take ${plan[i].sizes.map((n) => `${by(n)} of ${n} cards`).join(", ")}); the library needs more pictures${flags.size ? " (flagged pictures are left out)" : ""}`;
 };
 
 /** Where each picture was last before board i, from boards 0..i-1. */
