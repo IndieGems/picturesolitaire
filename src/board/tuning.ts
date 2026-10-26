@@ -139,8 +139,9 @@ export const TUNING = {
    * A mystery's clue (a destination whose catalogue entry has a `case`) is
    * held long enough to read its sentence: revealClueHoldMs (a wordless one
    * too, to look at its clock), plus revealClueCharMs for each character of
-   * its words, at most revealClueMaxMs. A tap still skips it (the evidence
-   * binder keeps it). A repeat is the short one all the same.
+   * its words (the screens give them: setClueWords), at most revealClueMaxMs.
+   * A tap still skips it (the evidence binder keeps it). A repeat is the
+   * short one all the same.
    */
   revealClueHoldMs: 2500,
   revealClueCharMs: 50,

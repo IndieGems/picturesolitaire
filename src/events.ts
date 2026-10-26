@@ -35,8 +35,9 @@ export interface GameEvents {
    * from the picture catalogue. `again`: a repeat on this opening of the
    * board (after Undo or a restart), the short version. Always followed by
    * one destination:done, at once when the board closes or restarts.
-   * `clue`: a mystery's clue (its catalogue entry has a `case`), held long
-   * enough to read; Sound plays "Clue found", UI shows its sentence.
+   * `clue`: a mystery's clue (its catalogue entry has a `case`, or the
+   * screens gave its words: setClueWords), held long enough to read; Sound
+   * plays "Clue found", UI shows its sentence.
    */
   "destination:reveal": { id: string; name: string; place: string; again: boolean; clue?: true };
   /** The postcard has gone (or was skipped); the board's cards fall and refill next. */

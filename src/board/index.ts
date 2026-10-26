@@ -115,8 +115,8 @@ function loadTuning(): void {
 type PictureFiles = {
   id: string; file: string; board?: string; boardPx?: number[]; px?: number[];
   name?: string; title?: string; place?: string;
-  /** A mystery's clue: its case, and its one sentence (none where the picture tells it). */
-  case?: unknown; words?: string;
+  /** A mystery's clue names its case. */
+  case?: unknown;
 };
 const catalogue = CATALOGUE as unknown as { pictures: PictureFiles[]; destinations?: PictureFiles[] };
 const pictureFiles = new Map([...catalogue.pictures, ...(catalogue.destinations ?? [])].map((p) => [p.id, p]));
@@ -133,6 +133,16 @@ function drawnSize(l: Level, p: Picture): { cols: number; rows: number } {
 let postcardArt: ((box: HTMLElement, id: string) => void) | null = null;
 export function setPostcardArt(fn: ((box: HTMLElement, id: string) => void) | null): void {
   postcardArt = fn;
+}
+/**
+ * A mystery clue's sentence, by picture id, set once by the screens from
+ * dev-only code (the case file holds the answer, so it never enters a
+ * release build). The board only counts its characters, for how long the
+ * clue's postcard stays open; undefined: a wordless clue, or none.
+ */
+let clueWords: ((id: string) => string | undefined) | null = null;
+export function setClueWords(fn: ((id: string) => string | undefined) | null): void {
+  clueWords = fn;
 }
 
 /** A picture file's width ÷ height, from the catalogue (a stand-in: its cells'). */
@@ -646,8 +656,9 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     revealedOnce = true;
     const a = art[destPic]!;
     // a mystery's clue stays open long enough to read (a repeat is the short one all the same)
-    const clue = entry?.case != null;
-    const words = typeof entry?.words === "string" ? entry.words.trim().length : 0;
+    const said = clueWords?.(id);
+    const clue = entry?.case != null || typeof said === "string";
+    const words = typeof said === "string" ? said.trim().length : 0;
     const clueHold = Math.min(TUNING.revealClueMaxMs, TUNING.revealClueHoldMs + TUNING.revealClueCharMs * words);
     const art0 = postcardArt;
     const r = revealPostcard({
