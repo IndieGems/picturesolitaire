@@ -18,6 +18,7 @@ import "./board.css";
 import CATALOGUE from "../content/pictures.json";
 import { emit, type GameEvents } from "../events";
 import { gem, onArcadePause, onPlayerPrefs } from "../gem";
+import { ensure, fileUrl, resident } from "../packs";
 import { level as levelOf, levelCount, type Level } from "../game/levels.ts";
 import { Game, OutOfBudget, nextMove } from "../game/solver/index.ts";
 import { rescue } from "../game/shuffle.ts";
@@ -155,25 +156,55 @@ function aspectOf(id: string, cols: number, rows: number): number {
 }
 const base = import.meta.env.BASE_URL;
 const backUrl = `${base}art/stack-back.webp`;
-/** Board copies that would not load: their full picture stands in from then on. */
+/** Board copies (catalogue paths) that would not load: their full picture stands in from then on. */
 const brokenCopies = new Set<string>();
 /** The screen's pixel density (a phone's 2 or 3), read when a picture is chosen. */
 const density = () => (typeof devicePixelRatio === "number" && devicePixelRatio > 0 ? devicePixelRatio : 1);
-const isCopy = (url: string) => url.includes("-board.");
 
 /**
- * The picture's address for cards `cardPx` CSS px wide: Art's board copy while
- * it is sharp enough there (TUNING.boardCopyMin of the card's device pixels),
- * else the full picture; a drawn stand-in for a picture the catalogue lacks.
+ * A picture's files, as catalogue paths, for cards `cardPx` CSS px wide:
+ * `want`, Art's board copy while it is sharp enough there
+ * (TUNING.boardCopyMin of the card's device pixels), else the full picture;
+ * `other`, the one to fall back on ("" when there is none). null: a picture
+ * the catalogue lacks (a drawn stand-in).
  */
-function urlOf(id: string, cols: number, rows: number, cardPx = Infinity): string {
+function choose(id: string, cols: number, rows: number, cardPx = Infinity): { want: string; other: string } | null {
   const p = pictureFiles.get(id);
-  if (p) {
-    const per = p.board && p.boardPx?.length === 2 ? p.boardPx[0]! / cols : 0;
-    const copy = p.board ? `${base}${p.board}` : "";
-    if (copy && per > 0 && !brokenCopies.has(copy) && per >= cardPx * density() * TUNING.boardCopyMin) return copy;
-    return `${base}${p.file}`;
+  if (!p) return null;
+  const per = p.board && p.boardPx?.length === 2 ? p.boardPx[0]! / cols : 0;
+  const copy = p.board && per > 0 && !brokenCopies.has(p.board) ? p.board : "";
+  return copy && per >= cardPx * density() * TUNING.boardCopyMin ? { want: copy, other: p.file } : { want: p.file, other: copy };
+}
+/**
+ * The file to draw now (src/packs.ts): the one wanted once it is loaded
+ * (always, in a build without packs), else the other while that one is, so
+ * a card never asks for a file that is not there.
+ */
+function drawable(c: { want: string; other: string }): string {
+  return resident(c.want) || !c.other || !resident(c.other) ? c.want : c.other;
+}
+
+/**
+ * The catalogue paths of the picture files board `l` will draw in `host`
+ * (its destination's postcard too), for the screens to load before it opens
+ * (a packed build). A host not laid out yet (0 x 0: the screens open a board
+ * hidden) counts as the window, which errs toward the full picture.
+ */
+export function boardFiles(l: Level, host: HTMLElement): string[] {
+  const w = host.clientWidth || innerWidth || 360;
+  const h = host.clientHeight || innerHeight || 640;
+  const s = layout(w, h, l.deal.cols, l.deal.rows, peekOf(l)).s;
+  const out = new Set<string>();
+  for (const p of l.deal.pictures) {
+    const { cols, rows } = drawnSize(l, p);
+    const c = choose(p.id, cols, rows, s);
+    if (c) out.add(c.want);
   }
+  return [...out];
+}
+
+/** A drawn stand-in for a picture the catalogue lacks. */
+function standIn(id: string, cols: number, rows: number): string {
   let h = 0;
   for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
   const hue = h % 360;
@@ -279,9 +310,22 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   /** The win, as a claim needs it, from the moment the rules say the board is won (board:solved). */
   let solved: GameEvents["board:solved"] | null = null;
   let geo: Geometry = layout(host.clientWidth || 360, host.clientHeight || 480, deal.cols, deal.rows, peekOf(lvl));
+  /** The catalogue path each picture draws now ("": a stand-in). */
+  const drawn: string[] = pics.map(() => "");
+  /** Picture `i` draws `rel` (a catalogue path; "": its stand-in), its cards drawn again when the board is open. */
+  function setArt(i: number, rel: string): void {
+    drawn[i] = rel;
+    const u = rel ? fileUrl(rel) : standIn(pics[i]!.id, art[i]!.cols, art[i]!.rows);
+    if (art[i]!.url !== u) swapArt(art[i]!, u);
+  }
+  /** Picture `i`'s file for cards `cardPx` wide, of those loaded now. */
+  const pick = (i: number, cardPx: number) => {
+    const c = choose(pics[i]!.id, art[i]!.cols, art[i]!.rows, cardPx);
+    setArt(i, c ? drawable(c) : "");
+  };
   // the light copies until the box has its size (a level that shows upcoming cards draws
   // them at once); the copies are picked for the card size, and fetched, then
-  pics.forEach((p, i) => (art[i]!.url = urlOf(p.id, art[i]!.cols, art[i]!.rows, 0)));
+  pics.forEach((_, i) => pick(i, 0));
   let live: PieceView[] = [];
   const stacks: StackView[] = [];
 
@@ -1435,11 +1479,14 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
    */
   function sharpen(): void {
     pics.forEach((p, i) => {
-      const a = art[i]!;
-      const want = urlOf(p.id, a.cols, a.rows, geo.s);
-      if (want === a.url || !isCopy(a.url)) return;
-      void fetchPicture(want).then((ok) => {
-        if (ok && !destroyed && a.url !== want) swapArt(a, want);
+      const c = choose(p.id, art[i]!.cols, art[i]!.rows, geo.s);
+      // only ever up, from the board copy to the full picture
+      if (!c || c.want === drawn[i] || drawn[i] !== pictureFiles.get(p.id)?.board) return;
+      const want = c.want;
+      // a packed build loads it first (src/packs.ts); without packs it is there already
+      void (resident(want) ? Promise.resolve() : ensure([want], lvl.id).catch(() => {})).then(async () => {
+        if (destroyed || !resident(want)) return;
+        if ((await fetchPicture(fileUrl(want))) && !destroyed && drawn[i] !== want) setArt(i, want);
       });
     });
   }
@@ -1502,16 +1549,21 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     if (!host.clientWidth || !host.clientHeight) await new Promise<void>((r) => (sized = r));
     if (destroyed) return;
     const cardW = layout(host.clientWidth, host.clientHeight, deal.cols, deal.rows, peekOf(lvl)).s;
-    pics.forEach((p, i) => (art[i]!.url = urlOf(p.id, art[i]!.cols, art[i]!.rows, cardW)));
-    const ready = Promise.all(art.map(async (a, i) => {
-      if ((await fetchPicture(a.url)) || !isCopy(a.url)) return;
+    // a packed build: what the board wants that the screens have not loaded (none, as a rule)
+    const wanted = pics.flatMap((p, i) => choose(p.id, art[i]!.cols, art[i]!.rows, cardW)?.want ?? []);
+    const missing = wanted.filter((rel) => !resident(rel));
+    const ready = (missing.length ? ensure(missing, lvl.id).catch(() => {}) : Promise.resolve()).then(() => Promise.all(pics.map(async (p, i) => {
+      if (destroyed) return;
+      pick(i, cardW);
+      if (!drawn[i] || (await fetchPicture(fileUrl(drawn[i]!)))) return;
       // Art's board copy would not load: the full picture instead, from now on
-      brokenCopies.add(a.url);
-      const p = pics[i]!;
-      const full = urlOf(p.id, a.cols, a.rows);
-      await fetchPicture(full);
-      if (!destroyed) swapArt(a, full);
-    })).then(() => {});
+      const f = pictureFiles.get(p.id);
+      if (!f || drawn[i] !== f.board) return;
+      brokenCopies.add(f.board);
+      if (!resident(f.file)) await ensure([f.file], lvl.id).catch(() => {});
+      await fetchPicture(fileUrl(f.file));
+      if (!destroyed) setArt(i, f.file);
+    }))).then(() => {});
     await Promise.all([Promise.race([ready, new Promise<void>((r) => setTimeout(r, 2500))]), tuning]);
     helpers = { ...TUNING.helpers };
     changed();
@@ -1527,11 +1579,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     if (typeof which === "number" && which < levelCount()) {
       // at the card size the next board will have in this box
       const next = levelOf(which + 1);
-      const s = layout(host.clientWidth || 360, host.clientHeight || 480, next.deal.cols, next.deal.rows, peekOf(next)).s;
-      void preload(next.deal.pictures.map((p) => {
-        const { cols, rows } = drawnSize(next, p);
-        return urlOf(p.id, cols, rows, s);
-      }), 10_000, true);
+      const files = boardFiles(next, host);
+      void ensure(files, next.id).catch(() => {}).then(() => preload(files.filter((rel) => resident(rel)).map((rel) => fileUrl(rel)), 10_000, true));
     }
   })();
 
