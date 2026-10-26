@@ -34,8 +34,9 @@
 //     trip's destination);
 //   - the mark players see: a campaign board's `mark` is its role's
 //     (campaign-plan.mts MARKS), and no other board has one;
-//   - the campaign's boards but its hard ones (campaign-plan.mts MAY_TRAP) and
-//     the dev menu's experiment boards (experiments.json): a safe start
+//   - the campaign's boards but its hard ones (campaign-plan.mts MAY_TRAP), the
+//     dev menu's experiment boards (experiments.json) and the case boards
+//     (cases.json): a safe start
 //     (AGENTS.md): every picture finishable from the opening can be finished
 //     first without dooming the board, and no single move from the opening
 //     leaves it stuck.
@@ -135,7 +136,7 @@ for (const file of files) {
           if (k >= 0) fail(`${p.id} is on board ${data.levels[k].id} too (no picture is on two of boards 1-${DISTINCT})`);
         }
       }
-      if ((file.endsWith("campaign.json") && !MAY_TRAP.has(l.axes?.role)) || file.endsWith("experiments.json")) {
+      if ((file.endsWith("campaign.json") && !MAY_TRAP.has(l.axes?.role)) || file.endsWith("experiments.json") || file.endsWith("cases.json")) {
         const dead = deadFirstMoves(deal);
         if (dead.length) fail(`${dead.length} first move(s) leave the board stuck, e.g. ${dead[0].from} to ${dead[0].to}`);
         const g0 = new Game(s);
