@@ -68,6 +68,7 @@
 //   sizes     cards a picture may have: [4] squares, [2] long
 //   cards     total cards, all pictures: 16 fill a 4x4 board, the rest wait in the stacks
 //   keep      pictures the board keeps (pick.ts)
+//   newAfter  N: take no picture that is on boards 1-N (lib.mts poolOn)
 //   destination  the board's postcard (lib.mts destinationOf), in place of `drop`
 //   peek      upcoming cards each stack shows (0 on every board since 2026-10-25)
 //   chain     the chain of dependent clears (src/game/solver/metrics.ts)
@@ -207,4 +208,6 @@ export const MARKS = { hard: "hard", peak: "hard", super: "super" };
 
 // every board: card backs on the stacks, varied, nothing busy 2, and few rated busy at all
 // (an all-long board keeps all its pictures, so it has no busy cap of its own)
+// boards 31 on: every picture new to the player, none from boards 1-30 (lead, 2026-10-26: the creator's new batch)
+PLAN.forEach((row, i) => i >= 30 && (row.newAfter = 30));
 for (const row of PLAN) Object.assign(row, { peek: 0, vary: true, busyMost: row.busyMost ?? 0, liveMost: row.liveMost ?? (row.role === "pace" ? undefined : row.count >= 8 ? 2 : 1) });

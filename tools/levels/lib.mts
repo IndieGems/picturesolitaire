@@ -263,17 +263,23 @@ export function bannedOn(chosen, i, { spacing, distinct = 0 }) {
 }
 
 /** The usable pictures board i may take under the rule (all of them with no rule). */
-const poolOn = (chosen, i, rule) => {
-  if (!rule) return usable;
-  const banned = bannedOn(chosen, i, rule);
-  return usable.filter((p) => !banned.has(p.id));
+/**
+ * The pictures board i may take: the no-repeat rule's (bannedOn), and with the
+ * row's `newAfter` N none that is on boards 1-N (lead, 2026-10-26: every
+ * picture on boards 31-60 is new to the player).
+ */
+const poolOn = (chosen, i, rule, row?) => {
+  const old = row?.newAfter ? new Set(chosen.slice(0, row.newAfter).flatMap((set) => (set ?? []).map((q) => q.id))) : null;
+  if (!rule && !old) return usable;
+  const banned = rule ? bannedOn(chosen, i, rule) : new Set();
+  return usable.filter((p) => !banned.has(p.id) && !old?.has(p.id));
 };
 
 /** Why a board under the rule found no pictures: how many of each size it may still take. */
 const shortText = (plan, chosen, i, rule) => {
-  const pool = poolOn(chosen, i, rule);
+  const pool = poolOn(chosen, i, rule, plan[i]);
   const by = (n) => pool.filter((p) => p.cols * p.rows === n).length;
-  return `board ${i + 1}: no pictures fit its plan row among those not on a board within ${rule.spacing}${i < rule.distinct ? ` or on boards 1-${rule.distinct}` : ""} (it may take ${plan[i].sizes.map((n) => `${by(n)} of ${n} cards`).join(", ")}); the library needs more pictures${flags.size ? " (flagged pictures are left out)" : ""}`;
+  return `board ${i + 1}: no pictures fit its plan row among those not on a board within ${rule.spacing}${i < rule.distinct ? ` or on boards 1-${rule.distinct}` : ""}${plan[i].newAfter ? ` nor on boards 1-${plan[i].newAfter}` : ""} (it may take ${plan[i].sizes.map((n) => `${by(n)} of ${n} cards`).join(", ")}); the library needs more pictures${flags.size ? " (flagged pictures are left out)" : ""}`;
 };
 
 /** Where each picture was last before board i, from boards 0..i-1. */
@@ -326,7 +332,7 @@ export function balanceSpaced(plan, chosen, from, spacing, rule?) {
         if (keepOf(plan[i])?.includes(out.id)) continue;
         const outNow = at.get(out.id);
         const outCost = gapCost(outNow, spacing) - gapCost(outNow.filter((k) => k !== i), spacing);
-        for (const cand of poolOn(chosen, i, rule)) {
+        for (const cand of poolOn(chosen, i, rule, plan[i])) {
           if (chosen[i].some((q) => q.id === cand.id)) continue;
           const set = chosen[i].map((q, k) => (k === j ? { id: cand.id, cols: cand.cols, rows: cand.rows } : q));
           if (!fits(catalogue, specOf(plan[i]), set)) continue;
@@ -364,7 +370,7 @@ export function pickFrom(plan, chosen, from, seedOf, spacing?, rule?) {
     const cost = new Map([...base].map(([id, v]) => [id, v + (plan[i].old?.has(id) && plan[i].oldMost ? 3 : 0) + ((byId.get(id)?.busy ?? 0) >= 1 ? 0.5 : 0)]));
     // strong costs leave the picker little room; when no set fits, soften them before giving up
     let pictures = null;
-    const pool = poolOn(chosen, i, rule);
+    const pool = poolOn(chosen, i, rule, plan[i]);
     for (const k of [1, 0.5, 0.25, 0]) {
       pictures = pick(pool, specOf(plan[i]), k === 1 ? cost : new Map([...cost].map(([id, v]) => [id, v * k])), recent, random(seedOf(i)));
       if (pictures) break;
@@ -558,7 +564,7 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
       chosen[i] = d.pictures;
     });
   const uses = usesOf(chosen);
-  const poolOf = rule ? (i) => poolOn(chosen, i, rule) : undefined;
+  const poolOf = rule ? (i) => poolOn(chosen, i, rule, plan[i]) : undefined;
   // with spacing, a swap's nearness is the gap it would make (1000: the rule bans it)
   const near = spacing
     ? (i, id) => (bannedOn(chosen, i, rule).has(id) ? 1000 : 0) + chosen.reduce((n, set, k) => n + (k !== i && set?.some((q) => q.id === id) ? Math.max(0, spacing - Math.abs(k - i)) : 0), 0)
