@@ -11,6 +11,9 @@
 // setEndless for this), and the experiment boards, which only the menu loads
 // (the note at the top of src/content/levels/experiments.json). `npm run build` keeps the menu on purpose (the Editor's
 // Play and the Pit): never run this on it.
+// The Traveling Detective's case (src/ui/case*.ts, src/content/levels/cases.json) is
+// the game's, in both builds: nothing of it is marked here; only the dev menu's case
+// shortcuts leave with the menu.
 
 import { readdirSync, readFileSync } from "node:fs";
 import { extname, join, relative } from "node:path";
