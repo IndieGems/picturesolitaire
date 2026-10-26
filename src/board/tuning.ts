@@ -46,6 +46,15 @@ export const TUNING = {
   pileSlab: 0.28,
   pileStep: 0.42,
   pileMax: 12,
+  /**
+   * The next card on each stack face up again (a trial, the creator,
+   * 2026-10-25, after boards 9 and 10: to feel the difficulty with it): every
+   * board shows at least its stacks' next card, over a short pile of the
+   * table's card backs; false: each level's own (peek 0, backs only, the flat
+   * piles). Drawing only: the rules, the levels and the win checker never
+   * read it, so the config can flip it back without a build or a level change.
+   */
+  showNext: true,
   /** The largest a card may be drawn, its width in CSS px (a desktop letterbox). */
   maxCard: 136,
   /**
@@ -146,6 +155,12 @@ export const TUNING = {
   revealClueHoldMs: 2500,
   revealClueCharMs: 50,
   revealClueMaxMs: 8000,
+  /**
+   * The most positions the stuck check (after every settle) may search before
+   * it gives up; giving up claims nothing. 200,000 is the Hint's own default;
+   * the most any position of the shipped boards took was under 1 ms.
+   */
+  stuckBudget: 200_000,
   /** Shuffle: the loose cards trading places. */
   shuffleMs: 460,
   /** Hint: the ghost of the piece going to where it should be played. */

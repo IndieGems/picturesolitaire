@@ -19,7 +19,7 @@ import CATALOGUE from "../content/pictures.json";
 import { emit, type GameEvents } from "../events";
 import { gem, onArcadePause, onPlayerPrefs } from "../gem";
 import { level as levelOf, levelCount, type Level } from "../game/levels.ts";
-import { nextMove } from "../game/solver/index.ts";
+import { Game, OutOfBudget, nextMove } from "../game/solver/index.ts";
 import { rescue } from "../game/shuffle.ts";
 import {
   EMPTY, clampTarget, isDeadEnd, isWon, move, pieceAt, pieces, picOf, start,
@@ -143,6 +143,31 @@ export function setPostcardArt(fn: ((box: HTMLElement, id: string) => void) | nu
 let clueWords: ((id: string) => string | undefined) | null = null;
 export function setClueWords(fn: ((id: string) => string | undefined) | null): void {
   clueWords = fn;
+}
+
+/**
+ * How many upcoming cards a board's stacks show face up: the level's own, but
+ * at least the next one while TUNING.showNext is on (the creator's trial).
+ * Drawing only: the rules, the solver and the win checker never read it.
+ */
+function peekOf(l: Level): number {
+  return TUNING.showNext ? Math.max(1, l.peek) : l.peek;
+}
+
+/**
+ * True only when it is PROVED that no line of moves wins from `s` (helpers
+ * aside): the solver's abstract game is a relaxation of the real one, so its
+ * "lost" is certain (tools/levels/exactness.mts checks it against the real
+ * rules). Out of budget proves nothing, and nothing else is ever claimed.
+ */
+function provedLost(s: State): boolean {
+  try {
+    const g = new Game(s, TUNING.stuckBudget);
+    return !g.wins(g.root);
+  } catch (err) {
+    if (!(err instanceof OutOfBudget)) console.error("[board] the stuck check failed", err);
+    return false;
+  }
 }
 
 /** A picture file's width ÷ height, from the catalogue (a stand-in: its cells'). */
@@ -275,7 +300,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   let since: number | null = null;
   /** The win, as a claim needs it, from the moment the rules say the board is won (board:solved). */
   let solved: GameEvents["board:solved"] | null = null;
-  let geo: Geometry = layout(host.clientWidth || 360, host.clientHeight || 480, deal.cols, deal.rows, lvl.peek);
+  let geo: Geometry = layout(host.clientWidth || 360, host.clientHeight || 480, deal.cols, deal.rows, peekOf(lvl));
   // the light copies until the box has its size (a level that shows upcoming cards draws
   // them at once); the copies are picked for the card size, and fetched, then
   pics.forEach((p, i) => (art[i]!.url = urlOf(p.id, art[i]!.cols, art[i]!.rows, 0)));
@@ -319,7 +344,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   }
 
   function drawStacks(st: State, dealtSoFar?: number[]): void {
-    st.stacks.forEach((stack, c) => drawStack(stacks[c]!, geo, dealtSoFar ? stack.slice(dealtSoFar[c]) : stack, lvl.peek, art, pics, backUrl));
+    st.stacks.forEach((stack, c) => drawStack(stacks[c]!, geo, dealtSoFar ? stack.slice(dealtSoFar[c]) : stack, peekOf(lvl), art, pics, backUrl));
   }
 
   /** Draw every piece of `st` afresh (a resize, a restart). */
@@ -745,10 +770,10 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     /** Cards that have left each stack so far, as the deal plays. */
     const taken = shown.stacks.map(() => 0);
     await Promise.all(step.deals.map((d, i) => {
-      const hidden = dealt[d.col]!++ >= lvl.peek;
+      const hidden = dealt[d.col]!++ >= peekOf(lvl);
       return dropFromStack(d.col, d.card, d.to, hidden, i * TUNING.dealStagger, () => {
         const gone = ++taken[d.col]!;
-        drawStack(stacks[d.col]!, geo, shown.stacks[d.col]!.slice(gone), lvl.peek, art, pics, backUrl);
+        drawStack(stacks[d.col]!, geo, shown.stacks[d.col]!.slice(gone), peekOf(lvl), art, pics, backUrl);
         emit("stack:deal", { col: d.col, left: shown.stacks[d.col]!.length - gone });
       });
     }));
@@ -778,8 +803,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
         placeXY(v, 1 + (to.kx - 1) * t, 1 + (to.ky - 1) * Math.max(0, t * 1.5 - 0.5));
       }, { ease: ease.inOut }).then(() => dropView(v));
     }));
-    for (const col of new Set(step.toStacks.map((x) => x.col))) drawStack(stacks[col]!, geo, next.stacks[col]!, lvl.peek, art, pics, backUrl);
-    await Promise.all([slid, ...step.fromStacks.map((x, i) => dropFromStack(x.col, x.card, x.cell, x.at >= lvl.peek, i * TUNING.dealStagger, () => {}))]);
+    for (const col of new Set(step.toStacks.map((x) => x.col))) drawStack(stacks[col]!, geo, next.stacks[col]!, peekOf(lvl), art, pics, backUrl);
+    await Promise.all([slid, ...step.fromStacks.map((x, i) => dropFromStack(x.col, x.card, x.cell, x.at >= peekOf(lvl), i * TUNING.dealStagger, () => {}))]);
   }
 
   // ---------------------------------------------------------------- the hand
@@ -1120,12 +1145,38 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       won = true;
       announceIfSolved();
       emit("board:won", solved!);
-    } else if (isDeadEnd(state)) {
-      emit("board:stuck", { doomed: false });
-    }
+    } else checkStuck();
     if (resizePending) relayout();
     if (artPending) refreshArt();
     if (guideMode) relight();
+  }
+
+  /**
+   * Being stuck, said the moment it is true and only when it is proved (the
+   * creator, after boards 9 and 10: "I became stuck and didn't realise it for
+   * a good while"): board:stuck once on the way in, board:unstuck once on the
+   * way out (an Undo back past the slip, a Shuffle's rescue, a Restart). The
+   * rules' dead end (a full board, no picture whole on it) is plain to see;
+   * anything else is the solver's provedLost, run after each settle in a task
+   * of its own, never inside a frame: under 1 ms on every shipped board
+   * (35,000 positions of play measured).
+   */
+  let stuck = false;
+  let stuckCheck: ReturnType<typeof setTimeout> | undefined;
+  function setStuck(now: boolean, doomed = true): void {
+    if (now === stuck) return;
+    stuck = now;
+    if (now) emit("board:stuck", { doomed });
+    else emit("board:unstuck", {});
+  }
+  function checkStuck(): void {
+    clearTimeout(stuckCheck);
+    if (won || isWon(state)) return setStuck(false);
+    if (isDeadEnd(state)) return setStuck(true, false);
+    const at = state;
+    stuckCheck = setTimeout(() => {
+      if (!destroyed && state === at) setStuck(provedLost(at));
+    }, 0);
   }
 
   async function run2(fn: () => Promise<void>): Promise<void> {
@@ -1218,6 +1269,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
 
   async function doRestart(): Promise<void> {
     busy++;
+    clearTimeout(stuckCheck);
+    setStuck(false);
     try {
       history = [];
       actions = [];
@@ -1442,7 +1495,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     const w = host.clientWidth;
     const h = host.clientHeight;
     if (!w || !h) return;
-    const g = layout(w, h, deal.cols, deal.rows, lvl.peek);
+    const g = layout(w, h, deal.cols, deal.rows, peekOf(lvl));
     if (g.s === geo.s && g.sh === geo.sh && g.left === geo.left && g.top === geo.top) return;
     geo = g;
     sharpen();
@@ -1480,7 +1533,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     // its pictures, and deals, once the box has its size
     if (!host.clientWidth || !host.clientHeight) await new Promise<void>((r) => (sized = r));
     if (destroyed) return;
-    const cardW = layout(host.clientWidth, host.clientHeight, deal.cols, deal.rows, lvl.peek).s;
+    const cardW = layout(host.clientWidth, host.clientHeight, deal.cols, deal.rows, peekOf(lvl)).s;
     pics.forEach((p, i) => (art[i]!.url = urlOf(p.id, art[i]!.cols, art[i]!.rows, cardW)));
     const ready = Promise.all(art.map(async (a, i) => {
       if ((await fetchPicture(a.url)) || !isCopy(a.url)) return;
@@ -1506,7 +1559,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     if (typeof which === "number" && which < levelCount()) {
       // at the card size the next board will have in this box
       const next = levelOf(which + 1);
-      const s = layout(host.clientWidth || 360, host.clientHeight || 480, next.deal.cols, next.deal.rows, next.peek).s;
+      const s = layout(host.clientWidth || 360, host.clientHeight || 480, next.deal.cols, next.deal.rows, peekOf(next)).s;
       void preload(next.deal.pictures.map((p) => {
         const { cols, rows } = drawnSize(next, p);
         return urlOf(p.id, cols, rows, s);
@@ -1553,8 +1606,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       if (!m) {
         const next = nextMove(state, 20_000);
         if ("doomed" in next) {
-          // certain: the solver's "doomed" is checked against the real rules
-          emit("board:stuck", { doomed: true });
+          // certain: the solver's "doomed" is checked against the real rules (said already, as a rule)
+          setStuck(true);
           return;
         }
         if (!("move" in next)) {
@@ -1625,6 +1678,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     destroy() {
       stopHint();
       destroyed = true;
+      clearTimeout(stuckCheck);
       // a postcard on show goes with the board; the screens' name banner with it, when it was up
       if (reveal) {
         const wasOpen = reveal.isOpen();

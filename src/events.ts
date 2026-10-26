@@ -66,11 +66,16 @@ export interface GameEvents {
    */
   "board:changed": { canUndo: boolean; helpers: { undo: number; hint: number; shuffle: number }; moves: number };
   /**
-   * The player is stuck: `doomed` false means a dead end (the board is full
-   * and no picture has all its cards on it), true means Hint found no way to
-   * win from here. Either way only Undo or Restart helps.
+   * The board can no longer be won, PROVED (never on a guess), sent once the
+   * moment it becomes so (after the settle of the move that lost it): `doomed`
+   * false is the plain dead end (the board is full and no picture has all its
+   * cards on it), true the solver's proof. No move can make it winnable again;
+   * a Shuffle's rescue mix, Undo or Restart can. Followed by board:unstuck
+   * when one does.
    */
   "board:stuck": { doomed: boolean };
+  /** A stuck board can be won again (an Undo, a Shuffle's mix, a Restart); sent once, only after board:stuck. */
+  "board:unstuck": Record<string, never>;
   /**
    * Every picture restored: the board is won. `level`: the campaign number,
    * or the board's id for any other board. `line`: the actions as played,

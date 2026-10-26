@@ -4,6 +4,7 @@ import { openBoard } from "./index.ts";
 import { on, type GameEvents } from "../events";
 import { level as levelOf, loadChallenges, toLevel, type Level, type Stored } from "../game/levels.ts";
 import EXPERIMENTS from "../content/levels/experiments.json";
+import { TUNING } from "./tuning.ts";
 
 const q = new URLSearchParams(location.search);
 const host = document.getElementById("host")!;
@@ -15,6 +16,8 @@ if (q.has("hidden")) {
 }
 // ?challenge=ch16: a challenge board (any size) instead of a campaign one
 const ch = q.get("challenge");
+// ?shownext=0: the stacks as each level has them (backs only), not the trial's next card face up
+if (q.has("shownext")) TUNING.showNext = q.get("shownext") !== "0";
 let level: Level | undefined = ch ? (await loadChallenges()).find((c) => c.id === ch) : undefined;
 // ?x=x02: an experiment board (the dev menu's)
 const x = q.get("x");
@@ -39,7 +42,7 @@ if (dest) {
 }
 const board = openBoard(host, level ?? Number(q.get("level") ?? 1));
 const log: string[] = [];
-const names: (keyof GameEvents)[] = ["piece:lift", "piece:cancel", "piece:move", "piece:merge", "piece:split", "picture:complete", "picture:clear", "cards:fall", "stack:deal", "helper:undo", "helper:hint", "helper:shuffle", "board:restart", "board:won", "board:solved", "board:start", "board:changed", "board:stuck", "destination:reveal", "destination:done"];
+const names: (keyof GameEvents)[] = ["piece:lift", "piece:cancel", "piece:move", "piece:merge", "piece:split", "picture:complete", "picture:clear", "cards:fall", "stack:deal", "helper:undo", "helper:hint", "helper:shuffle", "board:restart", "board:won", "board:solved", "board:start", "board:changed", "board:stuck", "board:unstuck", "helper:refused", "destination:reveal", "destination:done"];
 for (const n of names) on(n, (p) => log.push(`${n} ${JSON.stringify(p)}`));
 for (const k of ["undo", "hint", "shuffle", "restart"] as const) {
   const b = document.createElement("button");
