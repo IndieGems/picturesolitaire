@@ -1,13 +1,13 @@
 # The relaxed campaign
 
-What each of the 60 boards asks of the player, axis by axis. Made by
+What each of the 90 boards asks of the player, axis by axis. Made by
 `node tools/levels/make-campaign.mts` from the plan in
 `tools/levels/campaign-plan.mts`; every board's winning line is re-proved by
 `node tools/levels/check.mts`. Do not edit this table by hand: change the plan
 and run the maker. The challenge route is in [challenge.md](challenge.md), the
 daily puzzle in [daily.md](daily.md).
 
-- **Destination**: the board's real place (lead, 2026-10-25: the game is a travelogue), a postcard the size of the board of which one window plays as an ordinary picture and unfolds into the whole postcard when finished. It took the place of one of the board's pictures, at the same spot and shape, so the deal and every measure below are as they were. The trips: Travel America (1-15), Japan (16-30), Italy (31-45), American West (46-60).
+- **Destination**: the board's real place (lead, 2026-10-25: the game is a travelogue), a postcard the size of the board of which one window plays as an ordinary picture and unfolds into the whole postcard when finished. It took the place of one of the board's pictures, at the same spot and shape, so the deal and every measure below are as they were. The trips: Travel America (1-15), Japan (16-30), Italy (31-45), American West (46-60), France (61-75), Canada (76-90).
 - **Role**: the board's place in the sawtooth ([difficulty-curve.md](difficulty-curve.md)): teach, bite (the first hard-for-a-beginner board), build, relief, hard, peak, super (super hard), pace (all long pictures, a change of pace). Every board but hard, peak and super starts safe: no first move or first clear dooms it. Players see a mark on hard and peak boards ("hard") and super ones ("super").
 - **Lookalikes**: pictures from the same family (they share colours and subjects).
 - **Cards per picture**: the pieces each picture is cut into.
@@ -80,8 +80,38 @@ daily puzzle in [daily.md](daily.md).
 | 58 | Painted Hills | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 4 | 45% | 1 | 41 |
 | 59 | Dog Bark Park Inn | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 41% | 2 | 32 |
 | 60 | Crater Lake | super (marked super) | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 6 | 17% | 2 | 41 |
+| 61 | The cliffs of Étretat | relief | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 36 (16) | 0 | 3 | 100% | 0 | 36 |
+| 62 | Mont-Saint-Michel | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 58% | 2 | 39 |
+| 63 | The pink granite coast | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 56% | 2 | 41 |
+| 64 | The chapel oak of Allouville | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 47% | 2 | 38 |
+| 65 | Château de Chenonceau | hard (marked hard) | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 4 | 39% | 0 | 40 |
+| 66 | The Eiffel Tower | pace | 12 | none | 2 2 2 2 2 2 2 2 2 2 2 2 | 1x2 2x1 | 4x4 | 24 (8) | 0 | 2 | 100% | 0 | 14 |
+| 67 | Colmar's Little Venice | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 54% | 1 | 35 |
+| 68 | Mont Blanc from Lac Blanc | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 7 | 47% | 3 | 42 |
+| 69 | Palais Idéal du Facteur Cheval | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 6 | 39% | 3 | 41 |
+| 70 | The lavender of Valensole | hard (marked hard) | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 34% | 2 | 35 |
+| 71 | The Gorges du Verdon | relief | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 3 | 100% | 0 | 30 |
+| 72 | The flamingos of the Camargue | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 47% | 0 | 40 |
+| 73 | Carcassonne | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 4 | 41% | 3 | 40 |
+| 74 | Bonifacio | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 4 | 37% | 0 | 35 |
+| 75 | The Dune du Pilat | super (marked super) | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 18% | 4 | 44 |
+| 76 | Moraine Lake | relief | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 4 | 87% | 1 | 38 |
+| 77 | Abraham Lake's frozen bubbles | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 56% | 2 | 34 |
+| 78 | The giant pysanka | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 60% | 2 | 32 |
+| 79 | Mac the Moose | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 51% | 2 | 52 |
+| 80 | The northern lights | hard (marked hard) | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 30% | 3 | 39 |
+| 81 | Parliament Hill | pace | 12 | none | 2 2 2 2 2 2 2 2 2 2 2 2 | 1x2 2x1 | 4x4 | 24 (8) | 0 | 2 | 100% | 0 | 13 |
+| 82 | The polar bears of Churchill | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 46% | 1 | 40 |
+| 83 | Old Quebec in winter | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 49% | 2 | 45 |
+| 84 | Percé Rock | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 4 | 45% | 5 | 39 |
+| 85 | The gannets of Bonaventure | hard (marked hard) | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 23% | 3 | 36 |
+| 86 | The Hopewell Rocks | relief | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 4 | 96% | 0 | 34 |
+| 87 | Peggy's Cove lighthouse | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 4 | 48% | 4 | 41 |
+| 88 | Lunenburg | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 37% | 4 | 40 |
+| 89 | The Cabot Trail in autumn | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 6 | 37% | 3 | 47 |
+| 90 | The icebergs of Twillingate | super (marked super) | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 16% | 4 | 48 |
 
-Every picture's appearances across the 60 boards: 0 to 2 (mean 1.0). A picture comes back 15 boards later at the soonest (median 19). Every board made since 2026-10-25 keeps the rule: no picture on two of boards 1-13, none back within 15 boards; 0 of 93 returns are sooner than 15, on boards kept from before it.
+Every picture's appearances across the 90 boards: 0 to 2 (mean 1.1). A picture comes back 15 boards later at the soonest (median 18). Every board made since 2026-10-25 keeps the rule: no picture on two of boards 1-13, none back within 15 boards; 0 of 185 returns are sooner than 15, on boards kept from before it.
 
 | picture | boards |
 |---|---|
@@ -615,3 +645,243 @@ Every picture's appearances across the 60 boards: 0 to 2 (mean 1.0). A picture c
 | ostrich (1x2, ostrich) | 36 |
 | crocodile (2x1, crocodile) | 51 |
 | sleeping-lion (2x1, sleeping lion) | 36 |
+| foxgloves (1x2, foxgloves) | 81 |
+| jacaranda (2x1, jacaranda) | 81 |
+| strawflowers (2x2, strawflowers) | 79 |
+| dogwood (2x2, dogwood) | 64, 79 |
+| azaleas (2x2, azaleas) | 63, 84 |
+| primroses (2x2, primroses) | 67, 82 |
+| poinsettia (2x2, poinsettia) | 72 |
+| heliconia (2x2, heliconia) | 76 |
+| gardenia (2x2, gardenia) | 65 |
+| freesias (2x2, freesias) | 69 |
+| tiger-lily (2x2, tiger lily) | 68, 83 |
+| love-in-a-mist (2x2, love in a mist) | 74, 89 |
+| scabious (2x2, scabious) | 77 |
+| sweet-violets (2x2, sweet violets) | 64, 87 |
+| petunias (2x2, petunias) | 63, 80 |
+| begonias (2x2, begonias) | 68 |
+| bromeliad (2x2, bromeliad) | 63, 84 |
+| bottlebrush (2x2, bottlebrush) | 77 |
+| cockscomb (2x2, cockscomb) | 69 |
+| crown-imperial (2x2, crown imperial) | 83 |
+| chamomile (2x2, chamomile) | 73, 90 |
+| borage (2x2, borage) | 69, 87 |
+| grape-hyacinths (2x2, blue spikes) | 62, 82 |
+| mimosa (2x2, mimosa) | 65 |
+| honeysuckle (2x2, honeysuckle) | 78 |
+| lantana (2x2, lantana) | 78 |
+| salvia (2x2, blue spikes) | 71, 87 |
+| sundew (2x2, sundew) | 63 |
+| clivia (2x2, clivia) |  |
+| buttercups (2x2, buttercups) | 61, 85 |
+| statice (2x2, statice) | 77 |
+| cotton-bolls (2x2, cotton bolls) | 75 |
+| iceland-poppies (2x2, iceland poppies) | 61, 90 |
+| asparagus (1x2, asparagus) |  |
+| macarons (2x1, macarons) | 81 |
+| xylophone (2x1, xylophone) | 66 |
+| cinnamon-rolls (2x2, cinnamon rolls) |  |
+| paella (2x2, paella) |  |
+| bagels (2x2, bagels) | 80 |
+| olives (2x2, olives) | 73, 88 |
+| cupcakes (2x2, cupcakes) | 67, 83 |
+| jam-jars (2x2, jam jars) | 67, 85 |
+| spaghetti (2x2, spaghetti) | 76 |
+| tempura (2x2, tempura) | 72, 87 |
+| bao-buns (2x2, bao buns) | 62 |
+| mochi (2x2, mochi) | 61, 85 |
+| persimmons (2x2, persimmons) |  |
+| blood-oranges (2x2, blood oranges) | 72, 89 |
+| pears (2x2, pears) | 76 |
+| starfruit (2x2, starfruit) | 78 |
+| beetroot (2x2, beetroot) | 73, 88 |
+| radishes (2x2, radishes) | 75 |
+| pumpkins (2x2, pumpkins) | 88 |
+| pea-pod (2x2, pea pod) | 70, 89 |
+| cocoa-pod (2x2, cocoa pod) |  |
+| coffee-beans (2x2, coffee beans) | 69, 84 |
+| candy-apples (2x2, candy apples) | 64, 82 |
+| gumball-machine (2x2, gumball machine) | 84 |
+| gingerbread-men (2x2, gingerbread men) | 72 |
+| baklava (2x2, baklava) | 63, 83 |
+| empanadas (2x2, empanadas) | 78 |
+| ravioli (2x2, ravioli) | 61, 80 |
+| scones (2x2, scones) | 67, 87 |
+| snow-globe (2x2, snow globe) | 74 |
+| ship-in-bottle (2x2, ship in bottle) | 65, 82 |
+| ukulele (2x2, ukulele) | 77 |
+| jack-in-the-box (2x2, jack in the box) | 68, 84 |
+| mortar-pestle (2x2, mortar pestle) | 64, 86 |
+| kelp-forest (1x2, kelp forest) | 81 |
+| saguaro (1x2, desert cactus) | 66 |
+| coral-reef (2x1, coral reef) |  |
+| sea-of-clouds (2x1, clouds) | 66 |
+| salt-pans (2x2, cracked ground) | 77 |
+| vineyard (2x2, vineyard) | 68, 87 |
+| rice-paddies (2x2, rice paddies) | 71, 88 |
+| cypress-swamp (2x2, cypress swamp) | 65, 85 |
+| fern-forest (2x2, green forest) | 63 |
+| aspen-grove (2x2, aspen grove) | 67, 82 |
+| cracked-earth (2x2, cracked ground) | 64, 89 |
+| hoarfrost (2x2, white snow) |  |
+| termite-mound (2x2, termite mound) | 73 |
+| saturn (2x2, space) | 68, 83 |
+| nebula (2x2, space) | 79 |
+| desert-bloom (2x2, wildflowers) | 84 |
+| wildflower-meadow (2x2, wildflowers) | 83 |
+| rain-window (2x2, rain window) | 76 |
+| sunset-clouds (2x2, clouds) | 79 |
+| limestone-cave (2x2, limestone cave) | 77 |
+| banyan (2x2, banyan) | 77 |
+| patchwork-hills (2x2, patchwork hills) | 82 |
+| petrified-wood (2x2, petrified wood) | 79 |
+| glowing-mushrooms (2x2, glowing mushrooms) | 70, 86 |
+| salt-marsh (2x2, salt marsh) | 64, 82 |
+| rainforest-canopy (2x2, rainforest canopy) |  |
+| volcano-island (2x2, volcano island) | 72 |
+| orange-grove (2x2, orange grove) | 78 |
+| barrel-cacti (2x2, desert cactus) | 77 |
+| ski-tracks (2x2, white snow) | 63, 80 |
+| sunbeam-forest (2x2, green forest) | 74, 89 |
+| zen-garden (2x2, zen garden) | 90 |
+| palm-moonrise (2x2, palm moonrise) | 63, 88 |
+| pop-sunset (2x2, pop sunset) | 85 |
+| windmill (1x2, windmill) | 66 |
+| container-house (1x2, container house) | 66 |
+| station-roof (2x1, iron glass) | 81 |
+| arch-bridge (2x1, arch bridge) | 81 |
+| hanok-eaves (2x2, hanok eaves) | 73 |
+| gazebo (2x2, gazebo) | 69 |
+| pergola (2x2, pergola) | 72, 88 |
+| brownstone (2x2, brick city) | 86 |
+| fire-escape (2x2, brick city) | 70, 85 |
+| barber-pole (2x2, barber pole) | 77 |
+| sauna-hut (2x2, sauna hut) | 61, 83 |
+| insect-hotel (2x2, insect hotel) | 67, 88 |
+| chicken-coop (2x2, chicken coop) | 79 |
+| horreo (2x2, horreo) | 73 |
+| oast-house (2x2, oast house) | 70, 88 |
+| zigzag-bridge (2x2, zigzag bridge) | 76 |
+| door-knocker (2x2, door knocker) | 64, 83 |
+| weathervane (2x2, weathervane) | 73, 90 |
+| blue-shutters (2x2, blue shutters) | 70 |
+| iron-gate (2x2, iron gate) | 68 |
+| tiled-stairs (2x2, tiled stairs) | 86 |
+| glass-arcade (2x2, iron glass) |  |
+| stone-well (2x2, stone well) | 71, 89 |
+| courtyard (2x2, courtyard) | 76 |
+| gingerbread-house (2x2, gingerbread house) | 79 |
+| dollhouse (2x2, dollhouse) | 87 |
+| kasbah (2x2, kasbah) | 72 |
+| glass-cabin (2x2, glass cabin) | 65, 80 |
+| glass-dome (2x2, glass dome) | 65, 87 |
+| tiny-house (2x2, tiny house) | 75 |
+| town-square (2x2, town square) | 79 |
+| painted-facade (2x2, painted facade) | 78 |
+| tiled-fountain (2x2, tiled fountain) | 75 |
+| lattice-window (2x2, lattice window) | 74 |
+| jellyfish (1x2, jellyfish) | 66 |
+| red-crowned-crane (1x2, red crowned crane) | 66 |
+| dolphin (2x1, dolphin) | 81 |
+| cheetah (2x1, cheetah) | 66 |
+| lynx (2x2, snow cat) | 61 |
+| wolf (2x2, wolf) | 68, 86 |
+| bison (2x2, bison) | 61 |
+| beaver (2x2, beaver) | 69, 84 |
+| narwhal (2x2, narwhal) | 73, 88 |
+| manta-ray (2x2, manta ray) |  |
+| clownfish (2x2, clownfish) | 71, 86 |
+| walrus (2x2, walrus) | 74, 89 |
+| seal-pup (2x2, seal pup) | 70, 87 |
+| pelican (2x2, pelican) | 72 |
+| cockatoo (2x2, cockatoo) | 62 |
+| hoopoe (2x2, hoopoe) | 75 |
+| bee-eater (2x2, bee eater) | 75 |
+| mandarin-duck (2x2, mandarin duck) | 73 |
+| kangaroo (2x2, kangaroo) | 62, 89 |
+| quokka (2x2, quokka) | 75 |
+| lemur (2x2, lemur) | 74, 90 |
+| orangutan (2x2, orangutan) | 64, 80 |
+| capybara (2x2, capybara) | 62 |
+| okapi (2x2, okapi) | 62, 80 |
+| rhino (2x2, rhino) | 78 |
+| hippo (2x2, hippo) | 74 |
+| snow-leopard (2x2, snow cat) | 71, 90 |
+| mountain-goat (2x2, mountain goat) | 63, 82 |
+| donkey (2x2, donkey) |  |
+| hare (2x2, hare) | 79 |
+| armadillo (2x2, armadillo) | 68 |
+| pangolin (2x2, pangolin) | 68, 85 |
+| gecko (2x2, gecko) |  |
+| blue-morpho (2x2, blue morpho) | 65, 84 |
+| corgi (2x2, corgi) | 73, 89 |
+| bagpiper (1x2, bagpiper) | 81 |
+| window-cleaner (1x2, window cleaner) | 81 |
+| curler (2x1, curler) | 66 |
+| bookbinder (2x2, bookbinder) | 67, 82 |
+| printmaker (2x2, printmaker) | 65, 80 |
+| jeweller (2x2, jeweller) | 71 |
+| basket-weaver (2x2, basket weaver) |  |
+| chocolatier (2x2, chocolatier) | 76 |
+| barista (2x2, barista) | 62, 85 |
+| ice-fisher (2x2, ice fisher) | 78 |
+| dog-walker (2x2, dog walker) | 75 |
+| kite-flyer (2x2, kite flyer) | 79 |
+| mail-carrier (2x2, mail carrier) | 64, 83 |
+| tap-dancer (2x2, tap dancer) | 65 |
+| breakdancer (2x2, breakdancer) | 75 |
+| gymnast (2x2, gymnast) | 70, 90 |
+| archer (2x2, archer) | 78 |
+| fencers (2x2, fencers) | 75 |
+| paddleboarder (2x2, paddleboarder) | 69 |
+| scuba-diver (2x2, scuba diver) | 65, 89 |
+| sledding (2x2, snow kids) | 69, 86 |
+| snowman-builders (2x2, snow kids) | 71 |
+| tai-chi (2x2, tai chi) | 74, 90 |
+| show-jumper (2x2, show jumper) | 67, 84 |
+| cabinetmaker (2x2, cabinetmaker) | 72 |
+| stonemason (2x2, stonemason) | 69, 86 |
+| thatcher (2x2, thatcher) | 68, 87 |
+| fishmonger (2x2, fishmonger) | 82 |
+| noodle-maker (2x2, noodle maker) | 65, 89 |
+| falconer (2x2, falconer) | 62 |
+| microscope (2x2, microscope) | 63, 80 |
+| quilter (2x2, quilter) | 67, 84 |
+| puppeteer (2x2, puppeteer) | 70, 90 |
+| welder (2x2, welder) | 68, 83 |
+| helter-skelter (1x2, helter skelter) | 66 |
+| rocket (1x2, rocket) | 66 |
+| plane-window (2x1, plane window) | 81 |
+| floating-market (2x1, floating market) | 81 |
+| glider (2x2, sky plane) |  |
+| paraglider (2x2, paraglider) | 74 |
+| airliner (2x2, sky plane) | 88 |
+| lifeboat (2x2, lifeboat) | 76 |
+| monorail (2x2, monorail) | 69, 88 |
+| handcar (2x2, handcar) | 62, 84 |
+| caboose (2x2, red railcar) | 72, 87 |
+| picnic-basket (2x2, picnic basket) | 85 |
+| snorkel-mask (2x2, snorkel mask) | 64 |
+| flip-flops (2x2, flip flops) | 78 |
+| cargo-bike (2x2, cargo bike) | 73, 90 |
+| toboggan (2x2, toboggan) | 71 |
+| snowshoes (2x2, snowshoes) | 70, 86 |
+| anchor (2x2, anchor) | 75 |
+| dining-car (2x2, dining car) | 79 |
+| bumper-cars (2x2, bumper cars) |  |
+| teacup-ride (2x2, teacup ride) | 70 |
+| swing-ride (2x2, swing ride) | 80 |
+| water-slide (2x2, water slide) | 80 |
+| go-kart (2x2, go kart) | 67, 82 |
+| beach-buggy (2x2, beach buggy) | 74, 90 |
+| tuk-tuk (2x2, tuk tuk) | 71 |
+| parachute (2x2, parachute) | 76 |
+| surfboards (2x2, surfboards) | 69, 85 |
+| beach-ball (2x2, beach ball) | 72 |
+| thermos (2x2, thermos) | 77 |
+| rack-railway (2x2, red railcar) | 74 |
+| pedal-car (2x2, pedal car) | 70, 85 |
+| sleigh (2x2, sleigh) | 62, 83 |
+| dragon-boat (2x2, dragon boat) |  |
+| land-yacht (2x2, land yacht) | 61 |

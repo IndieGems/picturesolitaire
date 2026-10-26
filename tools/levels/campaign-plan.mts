@@ -230,6 +230,9 @@ export const TRIPS = [
   // the creator's choice (lead, 2026-10-26)
   { id: "t3", name: "Italy", from: 31, to: 45 },
   { id: "t4", name: "American West", from: 46, to: 60 },
+  // the creator's choice (lead, 2026-10-26)
+  { id: "t5", name: "France", from: 61, to: 75 },
+  { id: "t6", name: "Canada", from: 76, to: 90 },
 ];
 
 /** Roles that may trap from the first move; every other board starts safe (check.mts). */
