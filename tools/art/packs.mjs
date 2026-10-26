@@ -11,7 +11,8 @@
 //                       Fetched whole, one request instead of ~10.
 //   f-<board id>.pack   per board: the full pictures, only for the enlarged view, which asks for
 //                       one picture with an HTTP Range request (src/packs.ts copes without).
-//   b-daily-<yyyy-mm>.pack, f-daily-<yyyy-mm>.pack   the daily, per month (lead, 2026-10-26).
+//   b-daily-<yyyy-mm>.pack   the daily's board copies, per month (lead, 2026-10-26).
+//   f-daily.pack, f-challenge.pack   those lanes' full pictures, one pack each (no repeats).
 //   p-<trip id>.pack    per trip (src/content/levels/trips.json): its postcards' passport copies.
 // A picture on no board is not shipped. public/ and the dev server are untouched: they serve the
 // separate files, and the play-test tool, the Picture Library and Trips & Cases keep using them.
@@ -34,6 +35,10 @@ const catalogue = read("src/content/pictures.json");
 const byId = new Map([...catalogue.pictures, ...(catalogue.destinations ?? [])].map((p) => [p.id, p]));
 const LANES = ["campaign", "challenge", "daily", "experiments"];
 // The daily packs per month (lead, 2026-10-26): a day's board fetches its month's pack once.
+// The daily's and the challenge route's full pictures are one pack each (lead, 2026-10-26: the
+// enlarged view reads one picture by Range anyway, and per-board copies of the same ~40 pictures
+// cost ~90 MB of build).
+const SHARED_FULL = new Set(["daily", "challenge"]);
 const packKey = (lane, id) => (lane === "daily" ? `daily-${/^d(\d{4}-\d{2})/.exec(id)?.[1] ?? "other"}` : id);
 
 const problems = [];
@@ -51,7 +56,7 @@ for (const lane of LANES) {
       if (!ids.includes(id)) ids.push(id);
     }
     const b = `b-${packKey(lane, level.id)}`;
-    const f = `f-${packKey(lane, level.id)}`;
+    const f = SHARED_FULL.has(lane) ? `f-${lane}` : `f-${packKey(lane, level.id)}`;
     for (const id of ids) {
       const p = byId.get(id);
       if (!p) {
