@@ -16,8 +16,9 @@ picture's aspect) so a picture can be re-exported without paying to generate it 
 
 Cards are PORTRAIT cells, 3:4 (creator, 2026-10-24), so a picture of cols x rows cards
 is (cols*3):(rows*4) and ships at exactly cols*384 x rows*512 px, WebP q80: that full picture
-is only for the enlarged view. The board draws <id>-board.webp, 240 x 320 px a card (a phone
-draws a card about 90 CSS px wide), and the Albums screen <id>-thumb.webp
+is only for the enlarged view. The board and the win card draw <id>-board.webp, 240 x 320 px a
+card (a phone draws a card about 90 CSS px wide); library pictures ship no thumb any more (the
+Albums screen is gone; 2026-10-26), only destinations have one, for the passport
 (creator, 2026-10-25: "a picture ships at the size it is drawn"; tools/art/check-copies.mjs
 fails the build when one is missing or over its budget). The first
 60 pictures were made for square cells; their masters keep the square-cell generation and
@@ -130,10 +131,10 @@ def export(e):
     out = PUBLIC / "pictures" / e["album"] / f"{e['id']}.webp"
     out.parent.mkdir(parents=True, exist_ok=True)
     framed(e).resize(size_of(e), Image.LANCZOS).save(out, "WEBP", quality=80, method=6)
-    if "window" in e:  # a destination
+    if "window" in e:  # a destination: the passport's copy
         make_dest_thumb(e)
-    else:
-        make_thumb(e)
+    # Library pictures ship no thumb (2026-10-26): the Albums screen that drew them is gone, the win
+    # card draws the board copy the player already has, and the build's 2,000-file cap needs the room.
     make_board(e)
     return out
 
@@ -297,7 +298,7 @@ def cmd_catalogue():
         fam = e.get("family") or e["id"]
         pictures.append({
             "id": e["id"], "album": e["album"], "title": e["title"], "medium": e["medium"],
-            "file": rel, "board": board_rel(e), "thumb": thumb_rel(e["id"]),
+            "file": rel, "board": board_rel(e),
             "cols": e["cols"], "rows": e["rows"], "px": px, "boardPx": board_px,
             "palette": e.get("palette") or p["families"][fam]["palette"], "subjects": e["subjects"],
             "family": fam, "busy": e["busy"],

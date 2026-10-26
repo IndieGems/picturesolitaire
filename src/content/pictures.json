@@ -37,7 +37,6 @@
       "medium": "painting",
       "file": "pictures/travel/dusk-harbour.webp",
       "board": "pictures/travel/dusk-harbour-board.webp",
-      "thumb": "pictures/thumbs/dusk-harbour-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -72,7 +71,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/dune-caravan.webp",
       "board": "pictures/landscapes/dune-caravan-board.webp",
-      "thumb": "pictures/thumbs/dune-caravan-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -107,7 +105,6 @@
       "medium": "photo",
       "file": "pictures/flowers/poppy-sunset.webp",
       "board": "pictures/flowers/poppy-sunset-board.webp",
-      "thumb": "pictures/thumbs/poppy-sunset-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -141,7 +138,6 @@
       "medium": "painting",
       "file": "pictures/food/candle-oranges.webp",
       "board": "pictures/food/candle-oranges-board.webp",
-      "thumb": "pictures/thumbs/candle-oranges-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -176,7 +172,6 @@
       "medium": "photo",
       "file": "pictures/travel/blossom-lane.webp",
       "board": "pictures/travel/blossom-lane-board.webp",
-      "thumb": "pictures/thumbs/blossom-lane-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -211,7 +206,6 @@
       "medium": "painting",
       "file": "pictures/flowers/peony-jug.webp",
       "board": "pictures/flowers/peony-jug-board.webp",
-      "thumb": "pictures/thumbs/peony-jug-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -246,7 +240,6 @@
       "medium": "photo",
       "file": "pictures/food/berry-cake.webp",
       "board": "pictures/food/berry-cake-board.webp",
-      "thumb": "pictures/thumbs/berry-cake-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -281,7 +274,6 @@
       "medium": "painting",
       "file": "pictures/people/rose-hat.webp",
       "board": "pictures/people/rose-hat-board.webp",
-      "thumb": "pictures/thumbs/rose-hat-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -316,7 +308,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/maple-path.webp",
       "board": "pictures/landscapes/maple-path-board.webp",
-      "thumb": "pictures/thumbs/maple-path-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -351,7 +342,6 @@
       "medium": "painting",
       "file": "pictures/food/harvest-table.webp",
       "board": "pictures/food/harvest-table-board.webp",
-      "thumb": "pictures/thumbs/harvest-table-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -386,7 +376,6 @@
       "medium": "painting",
       "file": "pictures/people/apple-orchard.webp",
       "board": "pictures/people/apple-orchard-board.webp",
-      "thumb": "pictures/thumbs/apple-orchard-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -421,7 +410,6 @@
       "medium": "photo",
       "file": "pictures/travel/ivy-lane.webp",
       "board": "pictures/travel/ivy-lane-board.webp",
-      "thumb": "pictures/thumbs/ivy-lane-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -456,7 +444,6 @@
       "medium": "photo",
       "file": "pictures/travel/blue-domes.webp",
       "board": "pictures/travel/blue-domes-board.webp",
-      "thumb": "pictures/thumbs/blue-domes-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -492,7 +479,6 @@
       "medium": "painting",
       "file": "pictures/landscapes/wave-coast.webp",
       "board": "pictures/landscapes/wave-coast-board.webp",
-      "thumb": "pictures/thumbs/wave-coast-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -527,7 +513,6 @@
       "medium": "photo",
       "file": "pictures/flowers/hydrangeas.webp",
       "board": "pictures/flowers/hydrangeas-board.webp",
-      "thumb": "pictures/thumbs/hydrangeas-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -561,7 +546,6 @@
       "medium": "painting",
       "file": "pictures/people/net-mender.webp",
       "board": "pictures/people/net-mender-board.webp",
-      "thumb": "pictures/thumbs/net-mender-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -596,7 +580,6 @@
       "medium": "painting",
       "file": "pictures/landscapes/wheat-farm.webp",
       "board": "pictures/landscapes/wheat-farm-board.webp",
-      "thumb": "pictures/thumbs/wheat-farm-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -631,7 +614,6 @@
       "medium": "photo",
       "file": "pictures/food/bread-table.webp",
       "board": "pictures/food/bread-table-board.webp",
-      "thumb": "pictures/thumbs/bread-table-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -666,7 +648,6 @@
       "medium": "painting",
       "file": "pictures/flowers/sunflower-vase.webp",
       "board": "pictures/flowers/sunflower-vase-board.webp",
-      "thumb": "pictures/thumbs/sunflower-vase-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -700,7 +681,6 @@
       "medium": "photo",
       "file": "pictures/people/wheat-walk.webp",
       "board": "pictures/people/wheat-walk-board.webp",
-      "thumb": "pictures/thumbs/wheat-walk-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -735,7 +715,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/lavender-rows.webp",
       "board": "pictures/landscapes/lavender-rows-board.webp",
-      "thumb": "pictures/thumbs/lavender-rows-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -770,7 +749,6 @@
       "medium": "painting",
       "file": "pictures/travel/wisteria-door.webp",
       "board": "pictures/travel/wisteria-door-board.webp",
-      "thumb": "pictures/thumbs/wisteria-door-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -805,7 +783,6 @@
       "medium": "painting",
       "file": "pictures/flowers/lilac-bouquet.webp",
       "board": "pictures/flowers/lilac-bouquet-board.webp",
-      "thumb": "pictures/thumbs/lilac-bouquet-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -839,7 +816,6 @@
       "medium": "photo",
       "file": "pictures/food/figs-grapes.webp",
       "board": "pictures/food/figs-grapes-board.webp",
-      "thumb": "pictures/thumbs/figs-grapes-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -874,7 +850,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/tea-terraces.webp",
       "board": "pictures/landscapes/tea-terraces-board.webp",
-      "thumb": "pictures/thumbs/tea-terraces-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -909,7 +884,6 @@
       "medium": "painting",
       "file": "pictures/food/market-greens.webp",
       "board": "pictures/food/market-greens-board.webp",
-      "thumb": "pictures/thumbs/market-greens-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -944,7 +918,6 @@
       "medium": "photo",
       "file": "pictures/people/greenhouse.webp",
       "board": "pictures/people/greenhouse-board.webp",
-      "thumb": "pictures/thumbs/greenhouse-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -979,7 +952,6 @@
       "medium": "painting",
       "file": "pictures/travel/green-alley.webp",
       "board": "pictures/travel/green-alley-board.webp",
-      "thumb": "pictures/thumbs/green-alley-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -1014,7 +986,6 @@
       "medium": "painting",
       "file": "pictures/travel/venice-canal.webp",
       "board": "pictures/travel/venice-canal-board.webp",
-      "thumb": "pictures/thumbs/venice-canal-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -1050,7 +1021,6 @@
       "medium": "photo",
       "file": "pictures/food/lantern-market.webp",
       "board": "pictures/food/lantern-market-board.webp",
-      "thumb": "pictures/thumbs/lantern-market-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -1085,7 +1055,6 @@
       "medium": "painting",
       "file": "pictures/people/lantern-child.webp",
       "board": "pictures/people/lantern-child-board.webp",
-      "thumb": "pictures/thumbs/lantern-child-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -1120,7 +1089,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/lake-village.webp",
       "board": "pictures/landscapes/lake-village-board.webp",
-      "thumb": "pictures/thumbs/lake-village-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -1155,7 +1123,6 @@
       "medium": "photo",
       "file": "pictures/food/cherry-bowl.webp",
       "board": "pictures/food/cherry-bowl-board.webp",
-      "thumb": "pictures/thumbs/cherry-bowl-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -1189,7 +1156,6 @@
       "medium": "painting",
       "file": "pictures/flowers/tulip-rows.webp",
       "board": "pictures/flowers/tulip-rows-board.webp",
-      "thumb": "pictures/thumbs/tulip-rows-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -1224,7 +1190,6 @@
       "medium": "photo",
       "file": "pictures/travel/red-tram.webp",
       "board": "pictures/travel/red-tram-board.webp",
-      "thumb": "pictures/thumbs/red-tram-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -1260,7 +1225,6 @@
       "medium": "painting",
       "file": "pictures/people/red-umbrella.webp",
       "board": "pictures/people/red-umbrella-board.webp",
-      "thumb": "pictures/thumbs/red-umbrella-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -1295,7 +1259,6 @@
       "medium": "painting",
       "file": "pictures/travel/lemon-coast.webp",
       "board": "pictures/travel/lemon-coast-board.webp",
-      "thumb": "pictures/thumbs/lemon-coast-thumb.webp",
       "cols": 3,
       "rows": 3,
       "px": [
@@ -1331,7 +1294,6 @@
       "medium": "photo",
       "file": "pictures/food/lemon-tart.webp",
       "board": "pictures/food/lemon-tart-board.webp",
-      "thumb": "pictures/thumbs/lemon-tart-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -1365,7 +1327,6 @@
       "medium": "photo",
       "file": "pictures/flowers/daffodil-meadow.webp",
       "board": "pictures/flowers/daffodil-meadow-board.webp",
-      "thumb": "pictures/thumbs/daffodil-meadow-thumb.webp",
       "cols": 3,
       "rows": 3,
       "px": [
@@ -1400,7 +1361,6 @@
       "medium": "photo",
       "file": "pictures/people/canal-bicycle.webp",
       "board": "pictures/people/canal-bicycle-board.webp",
-      "thumb": "pictures/thumbs/canal-bicycle-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -1435,7 +1395,6 @@
       "medium": "photo",
       "file": "pictures/architecture/snow-chalets.webp",
       "board": "pictures/architecture/snow-chalets-board.webp",
-      "thumb": "pictures/thumbs/snow-chalets-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -1470,7 +1429,6 @@
       "medium": "painting",
       "file": "pictures/people/skating-day.webp",
       "board": "pictures/people/skating-day-board.webp",
-      "thumb": "pictures/thumbs/skating-day-thumb.webp",
       "cols": 3,
       "rows": 3,
       "px": [
@@ -1505,7 +1463,6 @@
       "medium": "photo",
       "file": "pictures/flowers/frost-hellebores.webp",
       "board": "pictures/flowers/frost-hellebores-board.webp",
-      "thumb": "pictures/thumbs/frost-hellebores-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -1540,7 +1497,6 @@
       "medium": "painting",
       "file": "pictures/landscapes/winter-stream.webp",
       "board": "pictures/landscapes/winter-stream-board.webp",
-      "thumb": "pictures/thumbs/winter-stream-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -1575,7 +1531,6 @@
       "medium": "photo",
       "file": "pictures/architecture/riad-court.webp",
       "board": "pictures/architecture/riad-court-board.webp",
-      "thumb": "pictures/thumbs/riad-court-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -1610,7 +1565,6 @@
       "medium": "photo",
       "file": "pictures/travel/carpet-bazaar.webp",
       "board": "pictures/travel/carpet-bazaar-board.webp",
-      "thumb": "pictures/thumbs/carpet-bazaar-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -1645,7 +1599,6 @@
       "medium": "painting",
       "file": "pictures/flowers/anemones.webp",
       "board": "pictures/flowers/anemones-board.webp",
-      "thumb": "pictures/thumbs/anemones-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -1680,7 +1633,6 @@
       "medium": "painting",
       "file": "pictures/food/pomegranates.webp",
       "board": "pictures/food/pomegranates-board.webp",
-      "thumb": "pictures/thumbs/pomegranates-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -1715,7 +1667,6 @@
       "medium": "photo",
       "file": "pictures/architecture/pastel-row.webp",
       "board": "pictures/architecture/pastel-row-board.webp",
-      "thumb": "pictures/thumbs/pastel-row-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -1750,7 +1701,6 @@
       "medium": "photo",
       "file": "pictures/food/patisserie.webp",
       "board": "pictures/food/patisserie-board.webp",
-      "thumb": "pictures/thumbs/patisserie-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -1785,7 +1735,6 @@
       "medium": "painting",
       "file": "pictures/travel/beach-huts.webp",
       "board": "pictures/travel/beach-huts-board.webp",
-      "thumb": "pictures/thumbs/beach-huts-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -1820,7 +1769,6 @@
       "medium": "painting",
       "file": "pictures/people/balloon-seller.webp",
       "board": "pictures/people/balloon-seller-board.webp",
-      "thumb": "pictures/thumbs/balloon-seller-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -1855,7 +1803,6 @@
       "medium": "painting",
       "file": "pictures/architecture/copper-spires.webp",
       "board": "pictures/architecture/copper-spires-board.webp",
-      "thumb": "pictures/thumbs/copper-spires-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -1890,7 +1837,6 @@
       "medium": "photo",
       "file": "pictures/food/copper-kitchen.webp",
       "board": "pictures/food/copper-kitchen-board.webp",
-      "thumb": "pictures/thumbs/copper-kitchen-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -1925,7 +1871,6 @@
       "medium": "painting",
       "file": "pictures/people/potter-studio.webp",
       "board": "pictures/people/potter-studio-board.webp",
-      "thumb": "pictures/thumbs/potter-studio-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -1960,7 +1905,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/turquoise-falls.webp",
       "board": "pictures/landscapes/turquoise-falls-board.webp",
-      "thumb": "pictures/thumbs/turquoise-falls-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -1995,7 +1939,6 @@
       "medium": "photo",
       "file": "pictures/architecture/abbey-cloister.webp",
       "board": "pictures/architecture/abbey-cloister-board.webp",
-      "thumb": "pictures/thumbs/abbey-cloister-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2030,7 +1973,6 @@
       "medium": "painting",
       "file": "pictures/travel/stone-village.webp",
       "board": "pictures/travel/stone-village-board.webp",
-      "thumb": "pictures/thumbs/stone-village-thumb.webp",
       "cols": 3,
       "rows": 2,
       "px": [
@@ -2065,7 +2007,6 @@
       "medium": "photo",
       "file": "pictures/flowers/white-garden.webp",
       "board": "pictures/flowers/white-garden-board.webp",
-      "thumb": "pictures/thumbs/white-garden-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -2100,7 +2041,6 @@
       "medium": "painting",
       "file": "pictures/landscapes/olive-grove.webp",
       "board": "pictures/landscapes/olive-grove-board.webp",
-      "thumb": "pictures/thumbs/olive-grove-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2135,7 +2075,6 @@
       "medium": "photo",
       "file": "pictures/architecture/tiled-house.webp",
       "board": "pictures/architecture/tiled-house-board.webp",
-      "thumb": "pictures/thumbs/tiled-house-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2170,7 +2109,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/fjord-evening.webp",
       "board": "pictures/landscapes/fjord-evening-board.webp",
-      "thumb": "pictures/thumbs/fjord-evening-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2205,7 +2143,6 @@
       "medium": "photo",
       "file": "pictures/food/vintage-camera.webp",
       "board": "pictures/food/vintage-camera-board.webp",
-      "thumb": "pictures/thumbs/vintage-camera-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2236,7 +2173,6 @@
       "medium": "render",
       "file": "pictures/travel/red-scooter.webp",
       "board": "pictures/travel/red-scooter-board.webp",
-      "thumb": "pictures/thumbs/red-scooter-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2268,7 +2204,6 @@
       "medium": "low-poly",
       "file": "pictures/travel/sailboat.webp",
       "board": "pictures/travel/sailboat-board.webp",
-      "thumb": "pictures/thumbs/sailboat-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2302,7 +2237,6 @@
       "medium": "flat",
       "file": "pictures/flowers/cactus-bloom.webp",
       "board": "pictures/flowers/cactus-bloom-board.webp",
-      "thumb": "pictures/thumbs/cactus-bloom-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2334,7 +2268,6 @@
       "medium": "retro",
       "file": "pictures/landscapes/cliff-lighthouse.webp",
       "board": "pictures/landscapes/cliff-lighthouse-board.webp",
-      "thumb": "pictures/thumbs/cliff-lighthouse-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2366,7 +2299,6 @@
       "medium": "painting",
       "file": "pictures/people/blue-headscarf.webp",
       "board": "pictures/people/blue-headscarf-board.webp",
-      "thumb": "pictures/thumbs/blue-headscarf-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2398,7 +2330,6 @@
       "medium": "photo",
       "file": "pictures/flowers/pink-lotus.webp",
       "board": "pictures/flowers/pink-lotus-board.webp",
-      "thumb": "pictures/thumbs/pink-lotus-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2430,7 +2361,6 @@
       "medium": "photo",
       "file": "pictures/people/yellow-raincoat.webp",
       "board": "pictures/people/yellow-raincoat-board.webp",
-      "thumb": "pictures/thumbs/yellow-raincoat-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2463,7 +2393,6 @@
       "medium": "watercolour",
       "file": "pictures/travel/blue-bicycle.webp",
       "board": "pictures/travel/blue-bicycle-board.webp",
-      "thumb": "pictures/thumbs/blue-bicycle-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2497,7 +2426,6 @@
       "medium": "print",
       "file": "pictures/landscapes/mount-fuji.webp",
       "board": "pictures/landscapes/mount-fuji-board.webp",
-      "thumb": "pictures/thumbs/mount-fuji-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2531,7 +2459,6 @@
       "medium": "pop",
       "file": "pictures/food/ice-cream.webp",
       "board": "pictures/food/ice-cream-board.webp",
-      "thumb": "pictures/thumbs/ice-cream-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2563,7 +2490,6 @@
       "medium": "papercut",
       "file": "pictures/travel/paper-balloon.webp",
       "board": "pictures/travel/paper-balloon-board.webp",
-      "thumb": "pictures/thumbs/paper-balloon-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2596,7 +2522,6 @@
       "medium": "photo",
       "file": "pictures/animals/ginger-cat.webp",
       "board": "pictures/animals/ginger-cat-board.webp",
-      "thumb": "pictures/thumbs/ginger-cat-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2628,7 +2553,6 @@
       "medium": "render",
       "file": "pictures/animals/golden-puppy.webp",
       "board": "pictures/animals/golden-puppy-board.webp",
-      "thumb": "pictures/thumbs/golden-puppy-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2660,7 +2584,6 @@
       "medium": "pastel",
       "file": "pictures/animals/chestnut-horse.webp",
       "board": "pictures/animals/chestnut-horse-board.webp",
-      "thumb": "pictures/thumbs/chestnut-horse-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2692,7 +2615,6 @@
       "medium": "watercolour",
       "file": "pictures/flowers/orchid.webp",
       "board": "pictures/flowers/orchid-board.webp",
-      "thumb": "pictures/thumbs/orchid-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2722,7 +2644,6 @@
       "medium": "painting",
       "file": "pictures/flowers/calla-lilies.webp",
       "board": "pictures/flowers/calla-lilies-board.webp",
-      "thumb": "pictures/thumbs/calla-lilies-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2753,7 +2674,6 @@
       "medium": "print",
       "file": "pictures/flowers/irises.webp",
       "board": "pictures/flowers/irises-board.webp",
-      "thumb": "pictures/thumbs/irises-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2783,7 +2703,6 @@
       "medium": "flat",
       "file": "pictures/flowers/protea.webp",
       "board": "pictures/flowers/protea-board.webp",
-      "thumb": "pictures/thumbs/protea-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2813,7 +2732,6 @@
       "medium": "papercut",
       "file": "pictures/flowers/monstera.webp",
       "board": "pictures/flowers/monstera-board.webp",
-      "thumb": "pictures/thumbs/monstera-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2844,7 +2762,6 @@
       "medium": "photo",
       "file": "pictures/flowers/dahlia.webp",
       "board": "pictures/flowers/dahlia-board.webp",
-      "thumb": "pictures/thumbs/dahlia-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2873,7 +2790,6 @@
       "medium": "retro",
       "file": "pictures/flowers/bird-of-paradise.webp",
       "board": "pictures/flowers/bird-of-paradise-board.webp",
-      "thumb": "pictures/thumbs/bird-of-paradise-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2904,7 +2820,6 @@
       "medium": "pastel",
       "file": "pictures/flowers/magnolia.webp",
       "board": "pictures/flowers/magnolia-board.webp",
-      "thumb": "pictures/thumbs/magnolia-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2934,7 +2849,6 @@
       "medium": "low-poly",
       "file": "pictures/flowers/bonsai.webp",
       "board": "pictures/flowers/bonsai-board.webp",
-      "thumb": "pictures/thumbs/bonsai-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2965,7 +2879,6 @@
       "medium": "watercolour",
       "file": "pictures/flowers/toadstools.webp",
       "board": "pictures/flowers/toadstools-board.webp",
-      "thumb": "pictures/thumbs/toadstools-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -2996,7 +2909,6 @@
       "medium": "flat",
       "file": "pictures/food/watermelon.webp",
       "board": "pictures/food/watermelon-board.webp",
-      "thumb": "pictures/thumbs/watermelon-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3026,7 +2938,6 @@
       "medium": "photo",
       "file": "pictures/food/cappuccino.webp",
       "board": "pictures/food/cappuccino-board.webp",
-      "thumb": "pictures/thumbs/cappuccino-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3056,7 +2967,6 @@
       "medium": "photo",
       "file": "pictures/food/pancakes.webp",
       "board": "pictures/food/pancakes-board.webp",
-      "thumb": "pictures/thumbs/pancakes-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3088,7 +2998,6 @@
       "medium": "render",
       "file": "pictures/food/doughnut.webp",
       "board": "pictures/food/doughnut-board.webp",
-      "thumb": "pictures/thumbs/doughnut-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3118,7 +3027,6 @@
       "medium": "pop",
       "file": "pictures/food/pineapple.webp",
       "board": "pictures/food/pineapple-board.webp",
-      "thumb": "pictures/thumbs/pineapple-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3148,7 +3056,6 @@
       "medium": "painting",
       "file": "pictures/food/delft-teapot.webp",
       "board": "pictures/food/delft-teapot-board.webp",
-      "thumb": "pictures/thumbs/delft-teapot-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3179,7 +3086,6 @@
       "medium": "render",
       "file": "pictures/food/ramen.webp",
       "board": "pictures/food/ramen-board.webp",
-      "thumb": "pictures/thumbs/ramen-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3210,7 +3116,6 @@
       "medium": "retro",
       "file": "pictures/food/pizza.webp",
       "board": "pictures/food/pizza-board.webp",
-      "thumb": "pictures/thumbs/pizza-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3241,7 +3146,6 @@
       "medium": "deco",
       "file": "pictures/food/gramophone.webp",
       "board": "pictures/food/gramophone-board.webp",
-      "thumb": "pictures/thumbs/gramophone-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3272,7 +3176,6 @@
       "medium": "painting",
       "file": "pictures/food/violin.webp",
       "board": "pictures/food/violin-board.webp",
-      "thumb": "pictures/thumbs/violin-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3302,7 +3205,6 @@
       "medium": "photo",
       "file": "pictures/food/armchair.webp",
       "board": "pictures/food/armchair-board.webp",
-      "thumb": "pictures/thumbs/armchair-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3333,7 +3235,6 @@
       "medium": "render",
       "file": "pictures/food/rubber-duck.webp",
       "board": "pictures/food/rubber-duck-board.webp",
-      "thumb": "pictures/thumbs/rubber-duck-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3363,7 +3264,6 @@
       "medium": "photo",
       "file": "pictures/food/teddy-bear.webp",
       "board": "pictures/food/teddy-bear-board.webp",
-      "thumb": "pictures/thumbs/teddy-bear-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3393,7 +3293,6 @@
       "medium": "render",
       "file": "pictures/travel/camper-van.webp",
       "board": "pictures/travel/camper-van-board.webp",
-      "thumb": "pictures/thumbs/camper-van-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3424,7 +3323,6 @@
       "medium": "low-poly",
       "file": "pictures/travel/steam-train.webp",
       "board": "pictures/travel/steam-train-board.webp",
-      "thumb": "pictures/thumbs/steam-train-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3455,7 +3353,6 @@
       "medium": "retro",
       "file": "pictures/travel/classic-car.webp",
       "board": "pictures/travel/classic-car-board.webp",
-      "thumb": "pictures/thumbs/classic-car-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3486,7 +3383,6 @@
       "medium": "flat",
       "file": "pictures/travel/biplane.webp",
       "board": "pictures/travel/biplane-board.webp",
-      "thumb": "pictures/thumbs/biplane-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3517,7 +3413,6 @@
       "medium": "papercut",
       "file": "pictures/travel/cable-car.webp",
       "board": "pictures/travel/cable-car-board.webp",
-      "thumb": "pictures/thumbs/cable-car-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3548,7 +3443,6 @@
       "medium": "photo",
       "file": "pictures/travel/suitcase.webp",
       "board": "pictures/travel/suitcase-board.webp",
-      "thumb": "pictures/thumbs/suitcase-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3578,7 +3472,6 @@
       "medium": "watercolour",
       "file": "pictures/travel/rickshaw.webp",
       "board": "pictures/travel/rickshaw-board.webp",
-      "thumb": "pictures/thumbs/rickshaw-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3609,7 +3502,6 @@
       "medium": "print",
       "file": "pictures/travel/paper-parasol.webp",
       "board": "pictures/travel/paper-parasol-board.webp",
-      "thumb": "pictures/thumbs/paper-parasol-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3639,7 +3531,6 @@
       "medium": "deco",
       "file": "pictures/architecture/eiffel-tower.webp",
       "board": "pictures/architecture/eiffel-tower-board.webp",
-      "thumb": "pictures/thumbs/eiffel-tower-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3670,7 +3561,6 @@
       "medium": "photo",
       "file": "pictures/architecture/golden-gate.webp",
       "board": "pictures/architecture/golden-gate-board.webp",
-      "thumb": "pictures/thumbs/golden-gate-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3701,7 +3591,6 @@
       "medium": "watercolour",
       "file": "pictures/architecture/colosseum.webp",
       "board": "pictures/architecture/colosseum-board.webp",
-      "thumb": "pictures/thumbs/colosseum-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3733,7 +3622,6 @@
       "medium": "flat",
       "file": "pictures/architecture/leaning-tower.webp",
       "board": "pictures/architecture/leaning-tower-board.webp",
-      "thumb": "pictures/thumbs/leaning-tower-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3764,7 +3652,6 @@
       "medium": "papercut",
       "file": "pictures/architecture/taj-mahal.webp",
       "board": "pictures/architecture/taj-mahal-board.webp",
-      "thumb": "pictures/thumbs/taj-mahal-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3796,7 +3683,6 @@
       "medium": "render",
       "file": "pictures/architecture/tree-house.webp",
       "board": "pictures/architecture/tree-house-board.webp",
-      "thumb": "pictures/thumbs/tree-house-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3827,7 +3713,6 @@
       "medium": "photo",
       "file": "pictures/architecture/yellow-door.webp",
       "board": "pictures/architecture/yellow-door-board.webp",
-      "thumb": "pictures/thumbs/yellow-door-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3858,7 +3743,6 @@
       "medium": "print",
       "file": "pictures/architecture/red-barn.webp",
       "board": "pictures/architecture/red-barn-board.webp",
-      "thumb": "pictures/thumbs/red-barn-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3889,7 +3773,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/moai.webp",
       "board": "pictures/landscapes/moai-board.webp",
-      "thumb": "pictures/thumbs/moai-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3921,7 +3804,6 @@
       "medium": "low-poly",
       "file": "pictures/landscapes/palm-island.webp",
       "board": "pictures/landscapes/palm-island-board.webp",
-      "thumb": "pictures/thumbs/palm-island-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3952,7 +3834,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/sandstone-arch.webp",
       "board": "pictures/landscapes/sandstone-arch-board.webp",
-      "thumb": "pictures/thumbs/sandstone-arch-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -3982,7 +3863,6 @@
       "medium": "painting",
       "file": "pictures/landscapes/iceberg.webp",
       "board": "pictures/landscapes/iceberg-board.webp",
-      "thumb": "pictures/thumbs/iceberg-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -4012,7 +3892,6 @@
       "medium": "watercolour",
       "file": "pictures/landscapes/baobab.webp",
       "board": "pictures/landscapes/baobab-board.webp",
-      "thumb": "pictures/thumbs/baobab-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -4042,7 +3921,6 @@
       "medium": "retro",
       "file": "pictures/landscapes/redwoods.webp",
       "board": "pictures/landscapes/redwoods-board.webp",
-      "thumb": "pictures/thumbs/redwoods-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -4073,7 +3951,6 @@
       "medium": "flat",
       "file": "pictures/landscapes/rainbow.webp",
       "board": "pictures/landscapes/rainbow-board.webp",
-      "thumb": "pictures/thumbs/rainbow-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -4104,7 +3981,6 @@
       "medium": "low-poly",
       "file": "pictures/landscapes/sandcastle.webp",
       "board": "pictures/landscapes/sandcastle-board.webp",
-      "thumb": "pictures/thumbs/sandcastle-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -4135,7 +4011,6 @@
       "medium": "render",
       "file": "pictures/people/chef.webp",
       "board": "pictures/people/chef-board.webp",
-      "thumb": "pictures/thumbs/chef-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -4165,7 +4040,6 @@
       "medium": "watercolour",
       "file": "pictures/people/ballerina.webp",
       "board": "pictures/people/ballerina-board.webp",
-      "thumb": "pictures/thumbs/ballerina-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -4195,7 +4069,6 @@
       "medium": "papercut",
       "file": "pictures/people/red-kite.webp",
       "board": "pictures/people/red-kite-board.webp",
-      "thumb": "pictures/thumbs/red-kite-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -4226,7 +4099,6 @@
       "medium": "retro",
       "file": "pictures/people/cowboy.webp",
       "board": "pictures/people/cowboy-board.webp",
-      "thumb": "pictures/thumbs/cowboy-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -4258,7 +4130,6 @@
       "medium": "painting",
       "file": "pictures/people/painter.webp",
       "board": "pictures/people/painter-board.webp",
-      "thumb": "pictures/thumbs/painter-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -4290,7 +4161,6 @@
       "medium": "photo",
       "file": "pictures/people/bubbles.webp",
       "board": "pictures/people/bubbles-board.webp",
-      "thumb": "pictures/thumbs/bubbles-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -4320,7 +4190,6 @@
       "medium": "pop",
       "file": "pictures/people/saxophonist.webp",
       "board": "pictures/people/saxophonist-board.webp",
-      "thumb": "pictures/thumbs/saxophonist-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -4351,7 +4220,6 @@
       "medium": "flat",
       "file": "pictures/people/skier.webp",
       "board": "pictures/people/skier-board.webp",
-      "thumb": "pictures/thumbs/skier-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -4382,7 +4250,6 @@
       "medium": "papercut",
       "file": "pictures/animals/owl.webp",
       "board": "pictures/animals/owl-board.webp",
-      "thumb": "pictures/thumbs/owl-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -4413,7 +4280,6 @@
       "medium": "print",
       "file": "pictures/animals/macaw.webp",
       "board": "pictures/animals/macaw-board.webp",
-      "thumb": "pictures/thumbs/macaw-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -4443,7 +4309,6 @@
       "medium": "papercut",
       "file": "pictures/animals/giraffe.webp",
       "board": "pictures/animals/giraffe-board.webp",
-      "thumb": "pictures/thumbs/giraffe-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -4473,7 +4338,6 @@
       "medium": "retro",
       "file": "pictures/food/milkshake.webp",
       "board": "pictures/food/milkshake-board.webp",
-      "thumb": "pictures/thumbs/milkshake-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -4504,7 +4368,6 @@
       "medium": "photo",
       "file": "pictures/flowers/sunflower.webp",
       "board": "pictures/flowers/sunflower-board.webp",
-      "thumb": "pictures/thumbs/sunflower-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -4533,7 +4396,6 @@
       "medium": "deco",
       "file": "pictures/architecture/skyscraper.webp",
       "board": "pictures/architecture/skyscraper-board.webp",
-      "thumb": "pictures/thumbs/skyscraper-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -4563,7 +4425,6 @@
       "medium": "watercolour",
       "file": "pictures/people/flamenco.webp",
       "board": "pictures/people/flamenco-board.webp",
-      "thumb": "pictures/thumbs/flamenco-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -4594,7 +4455,6 @@
       "medium": "print",
       "file": "pictures/architecture/pagoda.webp",
       "board": "pictures/architecture/pagoda-board.webp",
-      "thumb": "pictures/thumbs/pagoda-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -4625,7 +4485,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/ribbon-falls.webp",
       "board": "pictures/landscapes/ribbon-falls-board.webp",
-      "thumb": "pictures/thumbs/ribbon-falls-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -4656,7 +4515,6 @@
       "medium": "flat",
       "file": "pictures/architecture/canal-house.webp",
       "board": "pictures/architecture/canal-house-board.webp",
-      "thumb": "pictures/thumbs/canal-house-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -4687,7 +4545,6 @@
       "medium": "pop",
       "file": "pictures/food/ice-lolly.webp",
       "board": "pictures/food/ice-lolly-board.webp",
-      "thumb": "pictures/thumbs/ice-lolly-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -4717,7 +4574,6 @@
       "medium": "stained-glass",
       "file": "pictures/flowers/lily-window.webp",
       "board": "pictures/flowers/lily-window-board.webp",
-      "thumb": "pictures/thumbs/lily-window-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -4748,7 +4604,6 @@
       "medium": "render",
       "file": "pictures/food/guitar.webp",
       "board": "pictures/food/guitar-board.webp",
-      "thumb": "pictures/thumbs/guitar-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -4778,7 +4633,6 @@
       "medium": "photo",
       "file": "pictures/food/grand-piano.webp",
       "board": "pictures/food/grand-piano-board.webp",
-      "thumb": "pictures/thumbs/grand-piano-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -4807,7 +4661,6 @@
       "medium": "painting",
       "file": "pictures/food/sewing-machine.webp",
       "board": "pictures/food/sewing-machine-board.webp",
-      "thumb": "pictures/thumbs/sewing-machine-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -4838,7 +4691,6 @@
       "medium": "flat",
       "file": "pictures/travel/tractor.webp",
       "board": "pictures/travel/tractor-board.webp",
-      "thumb": "pictures/thumbs/tractor-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -4868,7 +4720,6 @@
       "medium": "watercolour",
       "file": "pictures/landscapes/canoe.webp",
       "board": "pictures/landscapes/canoe-board.webp",
-      "thumb": "pictures/thumbs/canoe-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -4899,7 +4750,6 @@
       "medium": "retro",
       "file": "pictures/people/hammock.webp",
       "board": "pictures/people/hammock-board.webp",
-      "thumb": "pictures/thumbs/hammock-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -4930,7 +4780,6 @@
       "medium": "papercut",
       "file": "pictures/flowers/wheelbarrow.webp",
       "board": "pictures/flowers/wheelbarrow-board.webp",
-      "thumb": "pictures/thumbs/wheelbarrow-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -4961,7 +4810,6 @@
       "medium": "render",
       "file": "pictures/food/rocking-horse.webp",
       "board": "pictures/food/rocking-horse-board.webp",
-      "thumb": "pictures/thumbs/rocking-horse-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -4991,7 +4839,6 @@
       "medium": "print",
       "file": "pictures/travel/paddle-steamer.webp",
       "board": "pictures/travel/paddle-steamer-board.webp",
-      "thumb": "pictures/thumbs/paddle-steamer-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -5022,7 +4869,6 @@
       "medium": "pop",
       "file": "pictures/animals/dachshund.webp",
       "board": "pictures/animals/dachshund-board.webp",
-      "thumb": "pictures/thumbs/dachshund-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -5052,7 +4898,6 @@
       "medium": "deco",
       "file": "pictures/travel/sidecar.webp",
       "board": "pictures/travel/sidecar-board.webp",
-      "thumb": "pictures/thumbs/sidecar-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -5083,7 +4928,6 @@
       "medium": "low-poly",
       "file": "pictures/architecture/houseboat.webp",
       "board": "pictures/architecture/houseboat-board.webp",
-      "thumb": "pictures/thumbs/houseboat-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -5114,7 +4958,6 @@
       "medium": "photo",
       "file": "pictures/people/wok-chef.webp",
       "board": "pictures/people/wok-chef-board.webp",
-      "thumb": "pictures/thumbs/wok-chef-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5146,7 +4989,6 @@
       "medium": "print",
       "file": "pictures/people/fence-cowboy.webp",
       "board": "pictures/people/fence-cowboy-board.webp",
-      "thumb": "pictures/thumbs/fence-cowboy-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5178,7 +5020,6 @@
       "medium": "painting",
       "file": "pictures/people/plein-air.webp",
       "board": "pictures/people/plein-air-board.webp",
-      "thumb": "pictures/thumbs/plein-air-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5210,7 +5051,6 @@
       "medium": "pastel",
       "file": "pictures/people/apple-ladder.webp",
       "board": "pictures/people/apple-ladder-board.webp",
-      "thumb": "pictures/thumbs/apple-ladder-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5242,7 +5082,6 @@
       "medium": "photo",
       "file": "pictures/people/lobster-pot.webp",
       "board": "pictures/people/lobster-pot-board.webp",
-      "thumb": "pictures/thumbs/lobster-pot-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5274,7 +5113,6 @@
       "medium": "watercolour",
       "file": "pictures/people/dandelion-wish.webp",
       "board": "pictures/people/dandelion-wish-board.webp",
-      "thumb": "pictures/thumbs/dandelion-wish-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5305,7 +5143,6 @@
       "medium": "painting",
       "file": "pictures/people/carrot-harvest.webp",
       "board": "pictures/people/carrot-harvest-board.webp",
-      "thumb": "pictures/thumbs/carrot-harvest-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5337,7 +5174,6 @@
       "medium": "retro",
       "file": "pictures/people/towpath-cyclist.webp",
       "board": "pictures/people/towpath-cyclist-board.webp",
-      "thumb": "pictures/thumbs/towpath-cyclist-thumb.webp",
       "cols": 2,
       "rows": 3,
       "px": [
@@ -5369,7 +5205,6 @@
       "medium": "painting",
       "file": "pictures/people/book-reader.webp",
       "board": "pictures/people/book-reader-board.webp",
-      "thumb": "pictures/thumbs/book-reader-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5401,7 +5236,6 @@
       "medium": "photo",
       "file": "pictures/flowers/passion-flower.webp",
       "board": "pictures/flowers/passion-flower-board.webp",
-      "thumb": "pictures/thumbs/passion-flower-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5432,7 +5266,6 @@
       "medium": "flat",
       "file": "pictures/flowers/hibiscus.webp",
       "board": "pictures/flowers/hibiscus-board.webp",
-      "thumb": "pictures/thumbs/hibiscus-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5462,7 +5295,6 @@
       "medium": "watercolour",
       "file": "pictures/flowers/sweet-peas.webp",
       "board": "pictures/flowers/sweet-peas-board.webp",
-      "thumb": "pictures/thumbs/sweet-peas-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5492,7 +5324,6 @@
       "medium": "photo",
       "file": "pictures/flowers/ranunculus.webp",
       "board": "pictures/flowers/ranunculus-board.webp",
-      "thumb": "pictures/thumbs/ranunculus-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5523,7 +5354,6 @@
       "medium": "pastel",
       "file": "pictures/flowers/thistle.webp",
       "board": "pictures/flowers/thistle-board.webp",
-      "thumb": "pictures/thumbs/thistle-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5553,7 +5383,6 @@
       "medium": "embroidery",
       "file": "pictures/flowers/cornflowers.webp",
       "board": "pictures/flowers/cornflowers-board.webp",
-      "thumb": "pictures/thumbs/cornflowers-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5583,7 +5412,6 @@
       "medium": "photo",
       "file": "pictures/flowers/echeveria.webp",
       "board": "pictures/flowers/echeveria-board.webp",
-      "thumb": "pictures/thumbs/echeveria-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5613,7 +5441,6 @@
       "medium": "render",
       "file": "pictures/flowers/flytrap.webp",
       "board": "pictures/flowers/flytrap-board.webp",
-      "thumb": "pictures/thumbs/flytrap-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5644,7 +5471,6 @@
       "medium": "papercut",
       "file": "pictures/flowers/allium.webp",
       "board": "pictures/flowers/allium-board.webp",
-      "thumb": "pictures/thumbs/allium-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5673,7 +5499,6 @@
       "medium": "print",
       "file": "pictures/flowers/chrysanthemum.webp",
       "board": "pictures/flowers/chrysanthemum-board.webp",
-      "thumb": "pictures/thumbs/chrysanthemum-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5703,7 +5528,6 @@
       "medium": "retro",
       "file": "pictures/flowers/fuchsia.webp",
       "board": "pictures/flowers/fuchsia-board.webp",
-      "thumb": "pictures/thumbs/fuchsia-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5733,7 +5557,6 @@
       "medium": "painting",
       "file": "pictures/flowers/lupins.webp",
       "board": "pictures/flowers/lupins-board.webp",
-      "thumb": "pictures/thumbs/lupins-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5763,7 +5586,6 @@
       "medium": "mosaic",
       "file": "pictures/flowers/clematis.webp",
       "board": "pictures/flowers/clematis-board.webp",
-      "thumb": "pictures/thumbs/clematis-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5793,7 +5615,6 @@
       "medium": "pop",
       "file": "pictures/flowers/pansy.webp",
       "board": "pictures/flowers/pansy-board.webp",
-      "thumb": "pictures/thumbs/pansy-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5823,7 +5644,6 @@
       "medium": "photo",
       "file": "pictures/flowers/fiddlehead.webp",
       "board": "pictures/flowers/fiddlehead-board.webp",
-      "thumb": "pictures/thumbs/fiddlehead-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5852,7 +5672,6 @@
       "medium": "deco",
       "file": "pictures/flowers/ginkgo.webp",
       "board": "pictures/flowers/ginkgo-board.webp",
-      "thumb": "pictures/thumbs/ginkgo-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5882,7 +5701,6 @@
       "medium": "isometric",
       "file": "pictures/flowers/terrarium.webp",
       "board": "pictures/flowers/terrarium-board.webp",
-      "thumb": "pictures/thumbs/terrarium-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5913,7 +5731,6 @@
       "medium": "painting",
       "file": "pictures/flowers/amaryllis.webp",
       "board": "pictures/flowers/amaryllis-board.webp",
-      "thumb": "pictures/thumbs/amaryllis-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5943,7 +5760,6 @@
       "medium": "ceramic",
       "file": "pictures/flowers/camellia-plate.webp",
       "board": "pictures/flowers/camellia-plate-board.webp",
-      "thumb": "pictures/thumbs/camellia-plate-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -5974,7 +5790,6 @@
       "medium": "photo",
       "file": "pictures/food/sushi.webp",
       "board": "pictures/food/sushi-board.webp",
-      "thumb": "pictures/thumbs/sushi-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6004,7 +5819,6 @@
       "medium": "painting",
       "file": "pictures/food/croissant.webp",
       "board": "pictures/food/croissant-board.webp",
-      "thumb": "pictures/thumbs/croissant-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6033,7 +5847,6 @@
       "medium": "flat",
       "file": "pictures/food/avocado.webp",
       "board": "pictures/food/avocado-board.webp",
-      "thumb": "pictures/thumbs/avocado-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6063,7 +5876,6 @@
       "medium": "render",
       "file": "pictures/food/burger.webp",
       "board": "pictures/food/burger-board.webp",
-      "thumb": "pictures/thumbs/burger-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6094,7 +5906,6 @@
       "medium": "photo",
       "file": "pictures/food/pretzel.webp",
       "board": "pictures/food/pretzel-board.webp",
-      "thumb": "pictures/thumbs/pretzel-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6123,7 +5934,6 @@
       "medium": "render",
       "file": "pictures/food/jelly.webp",
       "board": "pictures/food/jelly-board.webp",
-      "thumb": "pictures/thumbs/jelly-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6154,7 +5964,6 @@
       "medium": "pop",
       "file": "pictures/food/egg-cup.webp",
       "board": "pictures/food/egg-cup-board.webp",
-      "thumb": "pictures/thumbs/egg-cup-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6186,7 +5995,6 @@
       "medium": "watercolour",
       "file": "pictures/food/hot-chocolate.webp",
       "board": "pictures/food/hot-chocolate-board.webp",
-      "thumb": "pictures/thumbs/hot-chocolate-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6217,7 +6025,6 @@
       "medium": "ceramic",
       "file": "pictures/food/majolica-jug.webp",
       "board": "pictures/food/majolica-jug-board.webp",
-      "thumb": "pictures/thumbs/majolica-jug-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6248,7 +6055,6 @@
       "medium": "low-poly",
       "file": "pictures/food/desk-globe.webp",
       "board": "pictures/food/desk-globe-board.webp",
-      "thumb": "pictures/thumbs/desk-globe-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6278,7 +6084,6 @@
       "medium": "retro",
       "file": "pictures/food/roller-skate.webp",
       "board": "pictures/food/roller-skate-board.webp",
-      "thumb": "pictures/thumbs/roller-skate-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6308,7 +6113,6 @@
       "medium": "painting",
       "file": "pictures/food/mussels.webp",
       "board": "pictures/food/mussels-board.webp",
-      "thumb": "pictures/thumbs/mussels-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6339,7 +6143,6 @@
       "medium": "photo",
       "file": "pictures/food/corn-cob.webp",
       "board": "pictures/food/corn-cob-board.webp",
-      "thumb": "pictures/thumbs/corn-cob-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6369,7 +6172,6 @@
       "medium": "print",
       "file": "pictures/food/chillies.webp",
       "board": "pictures/food/chillies-board.webp",
-      "thumb": "pictures/thumbs/chillies-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6399,7 +6201,6 @@
       "medium": "toy",
       "file": "pictures/food/nesting-dolls.webp",
       "board": "pictures/food/nesting-dolls-board.webp",
-      "thumb": "pictures/thumbs/nesting-dolls-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6429,7 +6230,6 @@
       "medium": "toy",
       "file": "pictures/food/tin-robot.webp",
       "board": "pictures/food/tin-robot-board.webp",
-      "thumb": "pictures/thumbs/tin-robot-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6459,7 +6259,6 @@
       "medium": "render",
       "file": "pictures/food/accordion.webp",
       "board": "pictures/food/accordion-board.webp",
-      "thumb": "pictures/thumbs/accordion-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6489,7 +6288,6 @@
       "medium": "deco",
       "file": "pictures/food/trumpet.webp",
       "board": "pictures/food/trumpet-board.webp",
-      "thumb": "pictures/thumbs/trumpet-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6519,7 +6317,6 @@
       "medium": "papercut",
       "file": "pictures/food/origami-crane.webp",
       "board": "pictures/food/origami-crane-board.webp",
-      "thumb": "pictures/thumbs/origami-crane-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6548,7 +6345,6 @@
       "medium": "photo",
       "file": "pictures/food/bento.webp",
       "board": "pictures/food/bento-board.webp",
-      "thumb": "pictures/thumbs/bento-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6579,7 +6375,6 @@
       "medium": "low-poly",
       "file": "pictures/landscapes/volcano.webp",
       "board": "pictures/landscapes/volcano-board.webp",
-      "thumb": "pictures/thumbs/volcano-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6610,7 +6405,6 @@
       "medium": "pastel",
       "file": "pictures/landscapes/aurora.webp",
       "board": "pictures/landscapes/aurora-board.webp",
-      "thumb": "pictures/thumbs/aurora-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6640,7 +6434,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/geyser.webp",
       "board": "pictures/landscapes/geyser-board.webp",
-      "thumb": "pictures/thumbs/geyser-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6670,7 +6463,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/rock-pool.webp",
       "board": "pictures/landscapes/rock-pool-board.webp",
-      "thumb": "pictures/thumbs/rock-pool-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6701,7 +6493,6 @@
       "medium": "deco",
       "file": "pictures/landscapes/basalt-columns.webp",
       "board": "pictures/landscapes/basalt-columns-board.webp",
-      "thumb": "pictures/thumbs/basalt-columns-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6731,7 +6522,6 @@
       "medium": "print",
       "file": "pictures/landscapes/karst-peaks.webp",
       "board": "pictures/landscapes/karst-peaks-board.webp",
-      "thumb": "pictures/thumbs/karst-peaks-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6762,7 +6552,6 @@
       "medium": "retro",
       "file": "pictures/landscapes/matterhorn.webp",
       "board": "pictures/landscapes/matterhorn-board.webp",
-      "thumb": "pictures/thumbs/matterhorn-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6794,7 +6583,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/pebble-cairn.webp",
       "board": "pictures/landscapes/pebble-cairn-board.webp",
-      "thumb": "pictures/thumbs/pebble-cairn-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6824,7 +6612,6 @@
       "medium": "embroidery",
       "file": "pictures/landscapes/oak-acorns.webp",
       "board": "pictures/landscapes/oak-acorns-board.webp",
-      "thumb": "pictures/thumbs/oak-acorns-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6855,7 +6642,6 @@
       "medium": "painting",
       "file": "pictures/landscapes/thunderstorm.webp",
       "board": "pictures/landscapes/thunderstorm-board.webp",
-      "thumb": "pictures/thumbs/thunderstorm-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6886,7 +6672,6 @@
       "medium": "papercut",
       "file": "pictures/landscapes/harvest-moon.webp",
       "board": "pictures/landscapes/harvest-moon-board.webp",
-      "thumb": "pictures/thumbs/harvest-moon-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6917,7 +6702,6 @@
       "medium": "flat",
       "file": "pictures/landscapes/birches.webp",
       "board": "pictures/landscapes/birches-board.webp",
-      "thumb": "pictures/thumbs/birches-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6947,7 +6731,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/amethyst.webp",
       "board": "pictures/landscapes/amethyst-board.webp",
-      "thumb": "pictures/thumbs/amethyst-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -6976,7 +6759,6 @@
       "medium": "watercolour",
       "file": "pictures/landscapes/bamboo.webp",
       "board": "pictures/landscapes/bamboo-board.webp",
-      "thumb": "pictures/thumbs/bamboo-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7005,7 +6787,6 @@
       "medium": "painting",
       "file": "pictures/landscapes/sea-stack.webp",
       "board": "pictures/landscapes/sea-stack-board.webp",
-      "thumb": "pictures/thumbs/sea-stack-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7035,7 +6816,6 @@
       "medium": "render",
       "file": "pictures/landscapes/crystal-cave.webp",
       "board": "pictures/landscapes/crystal-cave-board.webp",
-      "thumb": "pictures/thumbs/crystal-cave-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7066,7 +6846,6 @@
       "medium": "watercolour",
       "file": "pictures/landscapes/rope-bridge.webp",
       "board": "pictures/landscapes/rope-bridge-board.webp",
-      "thumb": "pictures/thumbs/rope-bridge-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7097,7 +6876,6 @@
       "medium": "print",
       "file": "pictures/landscapes/standing-stones.webp",
       "board": "pictures/landscapes/standing-stones-board.webp",
-      "thumb": "pictures/thumbs/standing-stones-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7127,7 +6905,6 @@
       "medium": "photo",
       "file": "pictures/people/beekeeper.webp",
       "board": "pictures/people/beekeeper-board.webp",
-      "thumb": "pictures/thumbs/beekeeper-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7158,7 +6935,6 @@
       "medium": "painting",
       "file": "pictures/people/cellist.webp",
       "board": "pictures/people/cellist-board.webp",
-      "thumb": "pictures/thumbs/cellist-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7189,7 +6965,6 @@
       "medium": "photo",
       "file": "pictures/people/glassblower.webp",
       "board": "pictures/people/glassblower-board.webp",
-      "thumb": "pictures/thumbs/glassblower-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7220,7 +6995,6 @@
       "medium": "painting",
       "file": "pictures/people/baker.webp",
       "board": "pictures/people/baker-board.webp",
-      "thumb": "pictures/thumbs/baker-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7251,7 +7025,6 @@
       "medium": "retro",
       "file": "pictures/people/surfer.webp",
       "board": "pictures/people/surfer-board.webp",
-      "thumb": "pictures/thumbs/surfer-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7282,7 +7055,6 @@
       "medium": "watercolour",
       "file": "pictures/people/knitting.webp",
       "board": "pictures/people/knitting-board.webp",
-      "thumb": "pictures/thumbs/knitting-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7313,7 +7085,6 @@
       "medium": "photo",
       "file": "pictures/people/climber.webp",
       "board": "pictures/people/climber-board.webp",
-      "thumb": "pictures/thumbs/climber-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7344,7 +7115,6 @@
       "medium": "flat",
       "file": "pictures/people/tyre-swing.webp",
       "board": "pictures/people/tyre-swing-board.webp",
-      "thumb": "pictures/thumbs/tyre-swing-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7375,7 +7145,6 @@
       "medium": "print",
       "file": "pictures/people/blacksmith.webp",
       "board": "pictures/people/blacksmith-board.webp",
-      "thumb": "pictures/thumbs/blacksmith-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7406,7 +7175,6 @@
       "medium": "papercut",
       "file": "pictures/people/hiker.webp",
       "board": "pictures/people/hiker-board.webp",
-      "thumb": "pictures/thumbs/hiker-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7437,7 +7205,6 @@
       "medium": "low-poly",
       "file": "pictures/people/juggler.webp",
       "board": "pictures/people/juggler-board.webp",
-      "thumb": "pictures/thumbs/juggler-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7468,7 +7235,6 @@
       "medium": "pastel",
       "file": "pictures/people/fly-fisher.webp",
       "board": "pictures/people/fly-fisher-board.webp",
-      "thumb": "pictures/thumbs/fly-fisher-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7499,7 +7265,6 @@
       "medium": "deco",
       "file": "pictures/people/tennis-player.webp",
       "board": "pictures/people/tennis-player-board.webp",
-      "thumb": "pictures/thumbs/tennis-player-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7530,7 +7295,6 @@
       "medium": "painting",
       "file": "pictures/people/washing-line.webp",
       "board": "pictures/people/washing-line-board.webp",
-      "thumb": "pictures/thumbs/washing-line-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7561,7 +7325,6 @@
       "medium": "retro",
       "file": "pictures/travel/airship.webp",
       "board": "pictures/travel/airship-board.webp",
-      "thumb": "pictures/thumbs/airship-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7591,7 +7354,6 @@
       "medium": "pixel",
       "file": "pictures/travel/skateboard.webp",
       "board": "pictures/travel/skateboard-board.webp",
-      "thumb": "pictures/thumbs/skateboard-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7621,7 +7383,6 @@
       "medium": "render",
       "file": "pictures/travel/double-decker.webp",
       "board": "pictures/travel/double-decker-board.webp",
-      "thumb": "pictures/thumbs/double-decker-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7651,7 +7412,6 @@
       "medium": "render",
       "file": "pictures/travel/tugboat.webp",
       "board": "pictures/travel/tugboat-board.webp",
-      "thumb": "pictures/thumbs/tugboat-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7681,7 +7441,6 @@
       "medium": "print",
       "file": "pictures/travel/junk-boat.webp",
       "board": "pictures/travel/junk-boat-board.webp",
-      "thumb": "pictures/thumbs/junk-boat-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7712,7 +7471,6 @@
       "medium": "deco",
       "file": "pictures/travel/ocean-liner.webp",
       "board": "pictures/travel/ocean-liner-board.webp",
-      "thumb": "pictures/thumbs/ocean-liner-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7743,7 +7501,6 @@
       "medium": "painting",
       "file": "pictures/travel/galleon.webp",
       "board": "pictures/travel/galleon-board.webp",
-      "thumb": "pictures/thumbs/galleon-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7774,7 +7531,6 @@
       "medium": "photo",
       "file": "pictures/travel/campfire.webp",
       "board": "pictures/travel/campfire-board.webp",
-      "thumb": "pictures/thumbs/campfire-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7805,7 +7561,6 @@
       "medium": "toy",
       "file": "pictures/travel/fire-engine.webp",
       "board": "pictures/travel/fire-engine-board.webp",
-      "thumb": "pictures/thumbs/fire-engine-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7835,7 +7590,6 @@
       "medium": "papercut",
       "file": "pictures/travel/penny-farthing.webp",
       "board": "pictures/travel/penny-farthing-board.webp",
-      "thumb": "pictures/thumbs/penny-farthing-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7865,7 +7619,6 @@
       "medium": "watercolour",
       "file": "pictures/travel/longtail-boat.webp",
       "board": "pictures/travel/longtail-boat-board.webp",
-      "thumb": "pictures/thumbs/longtail-boat-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7896,7 +7649,6 @@
       "medium": "low-poly",
       "file": "pictures/travel/seaplane.webp",
       "board": "pictures/travel/seaplane-board.webp",
-      "thumb": "pictures/thumbs/seaplane-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7927,7 +7679,6 @@
       "medium": "flat",
       "file": "pictures/travel/bullet-train.webp",
       "board": "pictures/travel/bullet-train-board.webp",
-      "thumb": "pictures/thumbs/bullet-train-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7956,7 +7707,6 @@
       "medium": "low-poly",
       "file": "pictures/travel/safari-truck.webp",
       "board": "pictures/travel/safari-truck-board.webp",
-      "thumb": "pictures/thumbs/safari-truck-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -7986,7 +7736,6 @@
       "medium": "embroidery",
       "file": "pictures/travel/bow-top-wagon.webp",
       "board": "pictures/travel/bow-top-wagon-board.webp",
-      "thumb": "pictures/thumbs/bow-top-wagon-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8016,7 +7765,6 @@
       "medium": "photo",
       "file": "pictures/travel/binoculars.webp",
       "board": "pictures/travel/binoculars-board.webp",
-      "thumb": "pictures/thumbs/binoculars-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8046,7 +7794,6 @@
       "medium": "photo",
       "file": "pictures/travel/speedboat.webp",
       "board": "pictures/travel/speedboat-board.webp",
-      "thumb": "pictures/thumbs/speedboat-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8077,7 +7824,6 @@
       "medium": "pastel",
       "file": "pictures/travel/pier.webp",
       "board": "pictures/travel/pier-board.webp",
-      "thumb": "pictures/thumbs/pier-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8108,7 +7854,6 @@
       "medium": "pop",
       "file": "pictures/travel/roller-coaster.webp",
       "board": "pictures/travel/roller-coaster-board.webp",
-      "thumb": "pictures/thumbs/roller-coaster-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8138,7 +7883,6 @@
       "medium": "pixel",
       "file": "pictures/travel/tent.webp",
       "board": "pictures/travel/tent-board.webp",
-      "thumb": "pictures/thumbs/tent-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8169,7 +7913,6 @@
       "medium": "watercolour",
       "file": "pictures/architecture/castle.webp",
       "board": "pictures/architecture/castle-board.webp",
-      "thumb": "pictures/thumbs/castle-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8200,7 +7943,6 @@
       "medium": "low-poly",
       "file": "pictures/architecture/igloo.webp",
       "board": "pictures/architecture/igloo-board.webp",
-      "thumb": "pictures/thumbs/igloo-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8230,7 +7972,6 @@
       "medium": "retro",
       "file": "pictures/architecture/pyramids.webp",
       "board": "pictures/architecture/pyramids-board.webp",
-      "thumb": "pictures/thumbs/pyramids-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8262,7 +8003,6 @@
       "medium": "isometric",
       "file": "pictures/architecture/greek-temple.webp",
       "board": "pictures/architecture/greek-temple-board.webp",
-      "thumb": "pictures/thumbs/greek-temple-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8292,7 +8032,6 @@
       "medium": "print",
       "file": "pictures/architecture/torii.webp",
       "board": "pictures/architecture/torii-board.webp",
-      "thumb": "pictures/thumbs/torii-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8323,7 +8062,6 @@
       "medium": "embroidery",
       "file": "pictures/architecture/yurt.webp",
       "board": "pictures/architecture/yurt-board.webp",
-      "thumb": "pictures/thumbs/yurt-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8353,7 +8091,6 @@
       "medium": "photo",
       "file": "pictures/architecture/covered-bridge.webp",
       "board": "pictures/architecture/covered-bridge-board.webp",
-      "thumb": "pictures/thumbs/covered-bridge-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8383,7 +8120,6 @@
       "medium": "watercolour",
       "file": "pictures/architecture/moon-gate.webp",
       "board": "pictures/architecture/moon-gate-board.webp",
-      "thumb": "pictures/thumbs/moon-gate-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8413,7 +8149,6 @@
       "medium": "flat",
       "file": "pictures/architecture/lifeguard-tower.webp",
       "board": "pictures/architecture/lifeguard-tower-board.webp",
-      "thumb": "pictures/thumbs/lifeguard-tower-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8443,7 +8178,6 @@
       "medium": "pastel",
       "file": "pictures/architecture/half-timbered.webp",
       "board": "pictures/architecture/half-timbered-board.webp",
-      "thumb": "pictures/thumbs/half-timbered-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8473,7 +8207,6 @@
       "medium": "photo",
       "file": "pictures/architecture/stepwell.webp",
       "board": "pictures/architecture/stepwell-board.webp",
-      "thumb": "pictures/thumbs/stepwell-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8503,7 +8236,6 @@
       "medium": "render",
       "file": "pictures/architecture/circus-tent.webp",
       "board": "pictures/architecture/circus-tent-board.webp",
-      "thumb": "pictures/thumbs/circus-tent-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8533,7 +8265,6 @@
       "medium": "deco",
       "file": "pictures/architecture/observatory.webp",
       "board": "pictures/architecture/observatory-board.webp",
-      "thumb": "pictures/thumbs/observatory-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8564,7 +8295,6 @@
       "medium": "render",
       "file": "pictures/architecture/adobe.webp",
       "board": "pictures/architecture/adobe-board.webp",
-      "thumb": "pictures/thumbs/adobe-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8594,7 +8324,6 @@
       "medium": "painting",
       "file": "pictures/architecture/petra.webp",
       "board": "pictures/architecture/petra-board.webp",
-      "thumb": "pictures/thumbs/petra-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8625,7 +8354,6 @@
       "medium": "print",
       "file": "pictures/architecture/stave-church.webp",
       "board": "pictures/architecture/stave-church-board.webp",
-      "thumb": "pictures/thumbs/stave-church-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8655,7 +8383,6 @@
       "medium": "painting",
       "file": "pictures/architecture/watermill.webp",
       "board": "pictures/architecture/watermill-board.webp",
-      "thumb": "pictures/thumbs/watermill-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8685,7 +8412,6 @@
       "medium": "papercut",
       "file": "pictures/architecture/bandstand.webp",
       "board": "pictures/architecture/bandstand-board.webp",
-      "thumb": "pictures/thumbs/bandstand-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8715,7 +8441,6 @@
       "medium": "print",
       "file": "pictures/animals/fox.webp",
       "board": "pictures/animals/fox-board.webp",
-      "thumb": "pictures/thumbs/fox-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8745,7 +8470,6 @@
       "medium": "watercolour",
       "file": "pictures/animals/hedgehog.webp",
       "board": "pictures/animals/hedgehog-board.webp",
-      "thumb": "pictures/thumbs/hedgehog-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8774,7 +8498,6 @@
       "medium": "flat",
       "file": "pictures/animals/flamingo.webp",
       "board": "pictures/animals/flamingo-board.webp",
-      "thumb": "pictures/thumbs/flamingo-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8804,7 +8527,6 @@
       "medium": "render",
       "file": "pictures/animals/panda.webp",
       "board": "pictures/animals/panda-board.webp",
-      "thumb": "pictures/thumbs/panda-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8834,7 +8556,6 @@
       "medium": "photo",
       "file": "pictures/animals/tortoise.webp",
       "board": "pictures/animals/tortoise-board.webp",
-      "thumb": "pictures/thumbs/tortoise-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8864,7 +8585,6 @@
       "medium": "stained-glass",
       "file": "pictures/animals/peacock.webp",
       "board": "pictures/animals/peacock-board.webp",
-      "thumb": "pictures/thumbs/peacock-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8894,7 +8614,6 @@
       "medium": "photo",
       "file": "pictures/animals/cow-nose.webp",
       "board": "pictures/animals/cow-nose-board.webp",
-      "thumb": "pictures/thumbs/cow-nose-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8924,7 +8643,6 @@
       "medium": "pastel",
       "file": "pictures/animals/rabbit.webp",
       "board": "pictures/animals/rabbit-board.webp",
-      "thumb": "pictures/thumbs/rabbit-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8954,7 +8672,6 @@
       "medium": "painting",
       "file": "pictures/animals/koala.webp",
       "board": "pictures/animals/koala-board.webp",
-      "thumb": "pictures/thumbs/koala-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -8985,7 +8702,6 @@
       "medium": "papercut",
       "file": "pictures/animals/penguin.webp",
       "board": "pictures/animals/penguin-board.webp",
-      "thumb": "pictures/thumbs/penguin-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9015,7 +8731,6 @@
       "medium": "photo",
       "file": "pictures/animals/chameleon.webp",
       "board": "pictures/animals/chameleon-board.webp",
-      "thumb": "pictures/thumbs/chameleon-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9045,7 +8760,6 @@
       "medium": "ceramic",
       "file": "pictures/animals/rooster.webp",
       "board": "pictures/animals/rooster-board.webp",
-      "thumb": "pictures/thumbs/rooster-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9075,7 +8789,6 @@
       "medium": "print",
       "file": "pictures/animals/heron.webp",
       "board": "pictures/animals/heron-board.webp",
-      "thumb": "pictures/thumbs/heron-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -9106,7 +8819,6 @@
       "medium": "watercolour",
       "file": "pictures/flowers/hollyhocks.webp",
       "board": "pictures/flowers/hollyhocks-board.webp",
-      "thumb": "pictures/thumbs/hollyhocks-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -9136,7 +8848,6 @@
       "medium": "retro",
       "file": "pictures/animals/whale.webp",
       "board": "pictures/animals/whale-board.webp",
-      "thumb": "pictures/thumbs/whale-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -9166,7 +8877,6 @@
       "medium": "photo",
       "file": "pictures/animals/otter.webp",
       "board": "pictures/animals/otter-board.webp",
-      "thumb": "pictures/thumbs/otter-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -9195,7 +8905,6 @@
       "medium": "photo",
       "file": "pictures/flowers/marigolds.webp",
       "board": "pictures/flowers/marigolds-board.webp",
-      "thumb": "pictures/thumbs/marigolds-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9225,7 +8934,6 @@
       "medium": "watercolour",
       "file": "pictures/flowers/bleeding-heart.webp",
       "board": "pictures/flowers/bleeding-heart-board.webp",
-      "thumb": "pictures/thumbs/bleeding-heart-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9254,7 +8962,6 @@
       "medium": "pop",
       "file": "pictures/flowers/gerbera.webp",
       "board": "pictures/flowers/gerbera-board.webp",
-      "thumb": "pictures/thumbs/gerbera-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9284,7 +8991,6 @@
       "medium": "embroidery",
       "file": "pictures/flowers/forget-me-nots.webp",
       "board": "pictures/flowers/forget-me-nots-board.webp",
-      "thumb": "pictures/thumbs/forget-me-nots-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9314,7 +9020,6 @@
       "medium": "print",
       "file": "pictures/flowers/snowdrops.webp",
       "board": "pictures/flowers/snowdrops-board.webp",
-      "thumb": "pictures/thumbs/snowdrops-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9343,7 +9048,6 @@
       "medium": "pastel",
       "file": "pictures/flowers/bluebells.webp",
       "board": "pictures/flowers/bluebells-board.webp",
-      "thumb": "pictures/thumbs/bluebells-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9373,7 +9077,6 @@
       "medium": "print",
       "file": "pictures/flowers/plum-blossom.webp",
       "board": "pictures/flowers/plum-blossom-board.webp",
-      "thumb": "pictures/thumbs/plum-blossom-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9404,7 +9107,6 @@
       "medium": "deco",
       "file": "pictures/flowers/carnation.webp",
       "board": "pictures/flowers/carnation-board.webp",
-      "thumb": "pictures/thumbs/carnation-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9434,7 +9136,6 @@
       "medium": "flat",
       "file": "pictures/flowers/zinnia.webp",
       "board": "pictures/flowers/zinnia-board.webp",
-      "thumb": "pictures/thumbs/zinnia-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9464,7 +9165,6 @@
       "medium": "watercolour",
       "file": "pictures/flowers/cosmos.webp",
       "board": "pictures/flowers/cosmos-board.webp",
-      "thumb": "pictures/thumbs/cosmos-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9493,7 +9193,6 @@
       "medium": "print",
       "file": "pictures/flowers/morning-glory.webp",
       "board": "pictures/flowers/morning-glory-board.webp",
-      "thumb": "pictures/thumbs/morning-glory-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9523,7 +9222,6 @@
       "medium": "photo",
       "file": "pictures/flowers/air-plant.webp",
       "board": "pictures/flowers/air-plant-board.webp",
-      "thumb": "pictures/thumbs/air-plant-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9554,7 +9252,6 @@
       "medium": "photo",
       "file": "pictures/flowers/frangipani.webp",
       "board": "pictures/flowers/frangipani-board.webp",
-      "thumb": "pictures/thumbs/frangipani-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9584,7 +9281,6 @@
       "medium": "papercut",
       "file": "pictures/flowers/edelweiss.webp",
       "board": "pictures/flowers/edelweiss-board.webp",
-      "thumb": "pictures/thumbs/edelweiss-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9614,7 +9310,6 @@
       "medium": "render",
       "file": "pictures/flowers/crocus.webp",
       "board": "pictures/flowers/crocus-board.webp",
-      "thumb": "pictures/thumbs/crocus-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9644,7 +9339,6 @@
       "medium": "stained-glass",
       "file": "pictures/flowers/hyacinth.webp",
       "board": "pictures/flowers/hyacinth-board.webp",
-      "thumb": "pictures/thumbs/hyacinth-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9673,7 +9367,6 @@
       "medium": "mosaic",
       "file": "pictures/flowers/bougainvillea.webp",
       "board": "pictures/flowers/bougainvillea-board.webp",
-      "thumb": "pictures/thumbs/bougainvillea-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9702,7 +9395,6 @@
       "medium": "pastel",
       "file": "pictures/flowers/lily-of-the-valley.webp",
       "board": "pictures/flowers/lily-of-the-valley-board.webp",
-      "thumb": "pictures/thumbs/lily-of-the-valley-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9731,7 +9423,6 @@
       "medium": "photo",
       "file": "pictures/flowers/pitcher-plant.webp",
       "board": "pictures/flowers/pitcher-plant-board.webp",
-      "thumb": "pictures/thumbs/pitcher-plant-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9761,7 +9452,6 @@
       "medium": "render",
       "file": "pictures/flowers/anthurium.webp",
       "board": "pictures/flowers/anthurium-board.webp",
-      "thumb": "pictures/thumbs/anthurium-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9791,7 +9481,6 @@
       "medium": "flat",
       "file": "pictures/flowers/prickly-pear.webp",
       "board": "pictures/flowers/prickly-pear-board.webp",
-      "thumb": "pictures/thumbs/prickly-pear-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9822,7 +9511,6 @@
       "medium": "photo",
       "file": "pictures/flowers/coneflower.webp",
       "board": "pictures/flowers/coneflower-board.webp",
-      "thumb": "pictures/thumbs/coneflower-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9852,7 +9540,6 @@
       "medium": "watercolour",
       "file": "pictures/flowers/nasturtiums.webp",
       "board": "pictures/flowers/nasturtiums-board.webp",
-      "thumb": "pictures/thumbs/nasturtiums-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9882,7 +9569,6 @@
       "medium": "pastel",
       "file": "pictures/flowers/snapdragons.webp",
       "board": "pictures/flowers/snapdragons-board.webp",
-      "thumb": "pictures/thumbs/snapdragons-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9912,7 +9598,6 @@
       "medium": "watercolour",
       "file": "pictures/flowers/columbine.webp",
       "board": "pictures/flowers/columbine-board.webp",
-      "thumb": "pictures/thumbs/columbine-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9942,7 +9627,6 @@
       "medium": "flat",
       "file": "pictures/flowers/kangaroo-paw.webp",
       "board": "pictures/flowers/kangaroo-paw-board.webp",
-      "thumb": "pictures/thumbs/kangaroo-paw-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -9972,7 +9656,6 @@
       "medium": "ceramic",
       "file": "pictures/flowers/cyclamen.webp",
       "board": "pictures/flowers/cyclamen-board.webp",
-      "thumb": "pictures/thumbs/cyclamen-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10002,7 +9685,6 @@
       "medium": "low-poly",
       "file": "pictures/flowers/banksia.webp",
       "board": "pictures/flowers/banksia-board.webp",
-      "thumb": "pictures/thumbs/banksia-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10032,7 +9714,6 @@
       "medium": "photo",
       "file": "pictures/flowers/sea-holly.webp",
       "board": "pictures/flowers/sea-holly-board.webp",
-      "thumb": "pictures/thumbs/sea-holly-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10061,7 +9742,6 @@
       "medium": "painting",
       "file": "pictures/flowers/black-eyed-susans.webp",
       "board": "pictures/flowers/black-eyed-susans-board.webp",
-      "thumb": "pictures/thumbs/black-eyed-susans-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10091,7 +9771,6 @@
       "medium": "watercolour",
       "file": "pictures/flowers/delphinium.webp",
       "board": "pictures/flowers/delphinium-board.webp",
-      "thumb": "pictures/thumbs/delphinium-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -10121,7 +9800,6 @@
       "medium": "print",
       "file": "pictures/flowers/gladiolus.webp",
       "board": "pictures/flowers/gladiolus-board.webp",
-      "thumb": "pictures/thumbs/gladiolus-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -10150,7 +9828,6 @@
       "medium": "ceramic",
       "file": "pictures/flowers/window-geraniums.webp",
       "board": "pictures/flowers/window-geraniums-board.webp",
-      "thumb": "pictures/thumbs/window-geraniums-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -10180,7 +9857,6 @@
       "medium": "photo",
       "file": "pictures/food/dumplings.webp",
       "board": "pictures/food/dumplings-board.webp",
-      "thumb": "pictures/thumbs/dumplings-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10211,7 +9887,6 @@
       "medium": "flat",
       "file": "pictures/food/tacos.webp",
       "board": "pictures/food/tacos-board.webp",
-      "thumb": "pictures/thumbs/tacos-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10241,7 +9916,6 @@
       "medium": "render",
       "file": "pictures/food/churros.webp",
       "board": "pictures/food/churros-board.webp",
-      "thumb": "pictures/thumbs/churros-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10272,7 +9946,6 @@
       "medium": "painting",
       "file": "pictures/food/honey-jar.webp",
       "board": "pictures/food/honey-jar-board.webp",
-      "thumb": "pictures/thumbs/honey-jar-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10303,7 +9976,6 @@
       "medium": "photo",
       "file": "pictures/food/strawberry-basket.webp",
       "board": "pictures/food/strawberry-basket-board.webp",
-      "thumb": "pictures/thumbs/strawberry-basket-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10333,7 +10005,6 @@
       "medium": "watercolour",
       "file": "pictures/food/blueberries.webp",
       "board": "pictures/food/blueberries-board.webp",
-      "thumb": "pictures/thumbs/blueberries-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10363,7 +10034,6 @@
       "medium": "pastel",
       "file": "pictures/food/peaches.webp",
       "board": "pictures/food/peaches-board.webp",
-      "thumb": "pictures/thumbs/peaches-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10393,7 +10063,6 @@
       "medium": "pop",
       "file": "pictures/food/kiwi-slices.webp",
       "board": "pictures/food/kiwi-slices-board.webp",
-      "thumb": "pictures/thumbs/kiwi-slices-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10423,7 +10092,6 @@
       "medium": "retro",
       "file": "pictures/food/blooming-tea.webp",
       "board": "pictures/food/blooming-tea-board.webp",
-      "thumb": "pictures/thumbs/blooming-tea-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10454,7 +10122,6 @@
       "medium": "photo",
       "file": "pictures/food/smoothie-bowl.webp",
       "board": "pictures/food/smoothie-bowl-board.webp",
-      "thumb": "pictures/thumbs/smoothie-bowl-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10484,7 +10151,6 @@
       "medium": "pop",
       "file": "pictures/food/popcorn.webp",
       "board": "pictures/food/popcorn-board.webp",
-      "thumb": "pictures/thumbs/popcorn-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10514,7 +10180,6 @@
       "medium": "render",
       "file": "pictures/food/cotton-candy.webp",
       "board": "pictures/food/cotton-candy-board.webp",
-      "thumb": "pictures/thumbs/cotton-candy-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10544,7 +10209,6 @@
       "medium": "pixel",
       "file": "pictures/food/waffles.webp",
       "board": "pictures/food/waffles-board.webp",
-      "thumb": "pictures/thumbs/waffles-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10574,7 +10238,6 @@
       "medium": "painting",
       "file": "pictures/food/apple-pie.webp",
       "board": "pictures/food/apple-pie-board.webp",
-      "thumb": "pictures/thumbs/apple-pie-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10604,7 +10267,6 @@
       "medium": "flat",
       "file": "pictures/food/bananas.webp",
       "board": "pictures/food/bananas-board.webp",
-      "thumb": "pictures/thumbs/bananas-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10634,7 +10296,6 @@
       "medium": "ceramic",
       "file": "pictures/food/mango.webp",
       "board": "pictures/food/mango-board.webp",
-      "thumb": "pictures/thumbs/mango-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10664,7 +10325,6 @@
       "medium": "low-poly",
       "file": "pictures/food/coconut.webp",
       "board": "pictures/food/coconut-board.webp",
-      "thumb": "pictures/thumbs/coconut-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10694,7 +10354,6 @@
       "medium": "photo",
       "file": "pictures/food/dragon-fruit.webp",
       "board": "pictures/food/dragon-fruit-board.webp",
-      "thumb": "pictures/thumbs/dragon-fruit-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10724,7 +10383,6 @@
       "medium": "painting",
       "file": "pictures/food/artichokes.webp",
       "board": "pictures/food/artichokes-board.webp",
-      "thumb": "pictures/thumbs/artichokes-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10754,7 +10412,6 @@
       "medium": "embroidery",
       "file": "pictures/food/chanterelles.webp",
       "board": "pictures/food/chanterelles-board.webp",
-      "thumb": "pictures/thumbs/chanterelles-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10783,7 +10440,6 @@
       "medium": "mosaic",
       "file": "pictures/food/garlic.webp",
       "board": "pictures/food/garlic-board.webp",
-      "thumb": "pictures/thumbs/garlic-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10812,7 +10468,6 @@
       "medium": "watercolour",
       "file": "pictures/food/vine-tomatoes.webp",
       "board": "pictures/food/vine-tomatoes-board.webp",
-      "thumb": "pictures/thumbs/vine-tomatoes-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10841,7 +10496,6 @@
       "medium": "photo",
       "file": "pictures/food/lychees.webp",
       "board": "pictures/food/lychees-board.webp",
-      "thumb": "pictures/thumbs/lychees-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10871,7 +10525,6 @@
       "medium": "flat",
       "file": "pictures/food/bubble-tea.webp",
       "board": "pictures/food/bubble-tea-board.webp",
-      "thumb": "pictures/thumbs/bubble-tea-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10901,7 +10554,6 @@
       "medium": "print",
       "file": "pictures/food/matcha.webp",
       "board": "pictures/food/matcha-board.webp",
-      "thumb": "pictures/thumbs/matcha-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10932,7 +10584,6 @@
       "medium": "render",
       "file": "pictures/food/lollipops.webp",
       "board": "pictures/food/lollipops-board.webp",
-      "thumb": "pictures/thumbs/lollipops-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10962,7 +10613,6 @@
       "medium": "photo",
       "file": "pictures/food/chocolate-truffles.webp",
       "board": "pictures/food/chocolate-truffles-board.webp",
-      "thumb": "pictures/thumbs/chocolate-truffles-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -10993,7 +10643,6 @@
       "medium": "painting",
       "file": "pictures/food/hourglass.webp",
       "board": "pictures/food/hourglass-board.webp",
-      "thumb": "pictures/thumbs/hourglass-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11023,7 +10672,6 @@
       "medium": "render",
       "file": "pictures/food/vintage-radio.webp",
       "board": "pictures/food/vintage-radio-board.webp",
-      "thumb": "pictures/thumbs/vintage-radio-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11053,7 +10701,6 @@
       "medium": "pop",
       "file": "pictures/food/rotary-phone.webp",
       "board": "pictures/food/rotary-phone-board.webp",
-      "thumb": "pictures/thumbs/rotary-phone-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11083,7 +10730,6 @@
       "medium": "photo",
       "file": "pictures/food/music-box.webp",
       "board": "pictures/food/music-box-board.webp",
-      "thumb": "pictures/thumbs/music-box-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11113,7 +10759,6 @@
       "medium": "stained-glass",
       "file": "pictures/food/kaleidoscope.webp",
       "board": "pictures/food/kaleidoscope-board.webp",
-      "thumb": "pictures/thumbs/kaleidoscope-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11143,7 +10788,6 @@
       "medium": "papercut",
       "file": "pictures/food/paper-fan.webp",
       "board": "pictures/food/paper-fan-board.webp",
-      "thumb": "pictures/thumbs/paper-fan-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11173,7 +10817,6 @@
       "medium": "embroidery",
       "file": "pictures/food/yarn-balls.webp",
       "board": "pictures/food/yarn-balls-board.webp",
-      "thumb": "pictures/thumbs/yarn-balls-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11204,7 +10847,6 @@
       "medium": "toy",
       "file": "pictures/food/spinning-top.webp",
       "board": "pictures/food/spinning-top-board.webp",
-      "thumb": "pictures/thumbs/spinning-top-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11234,7 +10876,6 @@
       "medium": "photo",
       "file": "pictures/food/parfait.webp",
       "board": "pictures/food/parfait-board.webp",
-      "thumb": "pictures/thumbs/parfait-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -11264,7 +10905,6 @@
       "medium": "photo",
       "file": "pictures/food/kebab-skewer.webp",
       "board": "pictures/food/kebab-skewer-board.webp",
-      "thumb": "pictures/thumbs/kebab-skewer-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -11294,7 +10934,6 @@
       "medium": "flat",
       "file": "pictures/food/baguette-sandwich.webp",
       "board": "pictures/food/baguette-sandwich-board.webp",
-      "thumb": "pictures/thumbs/baguette-sandwich-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -11324,7 +10963,6 @@
       "medium": "retro",
       "file": "pictures/landscapes/lone-tree.webp",
       "board": "pictures/landscapes/lone-tree-board.webp",
-      "thumb": "pictures/thumbs/lone-tree-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11354,7 +10992,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/frozen-lake.webp",
       "board": "pictures/landscapes/frozen-lake-board.webp",
-      "thumb": "pictures/thumbs/frozen-lake-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11384,7 +11021,6 @@
       "medium": "painting",
       "file": "pictures/landscapes/mangrove-roots.webp",
       "board": "pictures/landscapes/mangrove-roots-board.webp",
-      "thumb": "pictures/thumbs/mangrove-roots-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11413,7 +11049,6 @@
       "medium": "flat",
       "file": "pictures/landscapes/oasis.webp",
       "board": "pictures/landscapes/oasis-board.webp",
-      "thumb": "pictures/thumbs/oasis-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11444,7 +11079,6 @@
       "medium": "pastel",
       "file": "pictures/landscapes/hot-spring.webp",
       "board": "pictures/landscapes/hot-spring-board.webp",
-      "thumb": "pictures/thumbs/hot-spring-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11474,7 +11108,6 @@
       "medium": "watercolour",
       "file": "pictures/landscapes/tide-flats.webp",
       "board": "pictures/landscapes/tide-flats-board.webp",
-      "thumb": "pictures/thumbs/tide-flats-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11505,7 +11138,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/mossy-boulders.webp",
       "board": "pictures/landscapes/mossy-boulders-board.webp",
-      "thumb": "pictures/thumbs/mossy-boulders-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11534,7 +11166,6 @@
       "medium": "painting",
       "file": "pictures/landscapes/weeping-willow.webp",
       "board": "pictures/landscapes/weeping-willow-board.webp",
-      "thumb": "pictures/thumbs/weeping-willow-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11564,7 +11195,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/rainbow-eucalyptus.webp",
       "board": "pictures/landscapes/rainbow-eucalyptus-board.webp",
-      "thumb": "pictures/thumbs/rainbow-eucalyptus-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11594,7 +11224,6 @@
       "medium": "low-poly",
       "file": "pictures/landscapes/dragon-tree.webp",
       "board": "pictures/landscapes/dragon-tree-board.webp",
-      "thumb": "pictures/thumbs/dragon-tree-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11623,7 +11252,6 @@
       "medium": "pastel",
       "file": "pictures/landscapes/rapeseed-fields.webp",
       "board": "pictures/landscapes/rapeseed-fields-board.webp",
-      "thumb": "pictures/thumbs/rapeseed-fields-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11652,7 +11280,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/black-sand-beach.webp",
       "board": "pictures/landscapes/black-sand-beach-board.webp",
-      "thumb": "pictures/thumbs/black-sand-beach-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11682,7 +11309,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/sandbar.webp",
       "board": "pictures/landscapes/sandbar-board.webp",
-      "thumb": "pictures/thumbs/sandbar-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11712,7 +11338,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/giant-lily-pads.webp",
       "board": "pictures/landscapes/giant-lily-pads-board.webp",
-      "thumb": "pictures/thumbs/giant-lily-pads-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11741,7 +11366,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/frosted-web.webp",
       "board": "pictures/landscapes/frosted-web-board.webp",
-      "thumb": "pictures/thumbs/frosted-web-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11770,7 +11394,6 @@
       "medium": "watercolour",
       "file": "pictures/landscapes/autumn-leaves-water.webp",
       "board": "pictures/landscapes/autumn-leaves-water-board.webp",
-      "thumb": "pictures/thumbs/autumn-leaves-water-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11800,7 +11423,6 @@
       "medium": "print",
       "file": "pictures/landscapes/snowy-fence.webp",
       "board": "pictures/landscapes/snowy-fence-board.webp",
-      "thumb": "pictures/thumbs/snowy-fence-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11830,7 +11452,6 @@
       "medium": "painting",
       "file": "pictures/landscapes/seashells.webp",
       "board": "pictures/landscapes/seashells-board.webp",
-      "thumb": "pictures/thumbs/seashells-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11860,7 +11481,6 @@
       "medium": "papercut",
       "file": "pictures/landscapes/scarecrow.webp",
       "board": "pictures/landscapes/scarecrow-board.webp",
-      "thumb": "pictures/thumbs/scarecrow-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11890,7 +11510,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/braided-river.webp",
       "board": "pictures/landscapes/braided-river-board.webp",
-      "thumb": "pictures/thumbs/braided-river-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11919,7 +11538,6 @@
       "medium": "painting",
       "file": "pictures/landscapes/larch-forest.webp",
       "board": "pictures/landscapes/larch-forest-board.webp",
-      "thumb": "pictures/thumbs/larch-forest-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11948,7 +11566,6 @@
       "medium": "watercolour",
       "file": "pictures/landscapes/heather-moor.webp",
       "board": "pictures/landscapes/heather-moor-board.webp",
-      "thumb": "pictures/thumbs/heather-moor-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -11977,7 +11594,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/snowflake.webp",
       "board": "pictures/landscapes/snowflake-board.webp",
-      "thumb": "pictures/thumbs/snowflake-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12006,7 +11622,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/cranberry-bog.webp",
       "board": "pictures/landscapes/cranberry-bog-board.webp",
-      "thumb": "pictures/thumbs/cranberry-bog-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12036,7 +11651,6 @@
       "medium": "pastel",
       "file": "pictures/landscapes/pine-cone.webp",
       "board": "pictures/landscapes/pine-cone-board.webp",
-      "thumb": "pictures/thumbs/pine-cone-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12066,7 +11680,6 @@
       "medium": "painting",
       "file": "pictures/landscapes/shipwreck.webp",
       "board": "pictures/landscapes/shipwreck-board.webp",
-      "thumb": "pictures/thumbs/shipwreck-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12096,7 +11709,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/frozen-bubble.webp",
       "board": "pictures/landscapes/frozen-bubble-board.webp",
-      "thumb": "pictures/thumbs/frozen-bubble-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12125,7 +11737,6 @@
       "medium": "print",
       "file": "pictures/landscapes/stepping-stones.webp",
       "board": "pictures/landscapes/stepping-stones-board.webp",
-      "thumb": "pictures/thumbs/stepping-stones-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12154,7 +11765,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/dewdrops.webp",
       "board": "pictures/landscapes/dewdrops-board.webp",
-      "thumb": "pictures/thumbs/dewdrops-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12184,7 +11794,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/rowboat-lake.webp",
       "board": "pictures/landscapes/rowboat-lake-board.webp",
-      "thumb": "pictures/thumbs/rowboat-lake-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12213,7 +11822,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/glowing-waves.webp",
       "board": "pictures/landscapes/glowing-waves-board.webp",
-      "thumb": "pictures/thumbs/glowing-waves-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12243,7 +11851,6 @@
       "medium": "photo",
       "file": "pictures/landscapes/icy-berries.webp",
       "board": "pictures/landscapes/icy-berries-board.webp",
-      "thumb": "pictures/thumbs/icy-berries-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12273,7 +11880,6 @@
       "medium": "papercut",
       "file": "pictures/landscapes/snowy-pine.webp",
       "board": "pictures/landscapes/snowy-pine-board.webp",
-      "thumb": "pictures/thumbs/snowy-pine-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -12302,7 +11908,6 @@
       "medium": "pastel",
       "file": "pictures/landscapes/hay-bales.webp",
       "board": "pictures/landscapes/hay-bales-board.webp",
-      "thumb": "pictures/thumbs/hay-bales-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -12331,7 +11936,6 @@
       "medium": "painting",
       "file": "pictures/people/tea-pourer.webp",
       "board": "pictures/people/tea-pourer-board.webp",
-      "thumb": "pictures/thumbs/tea-pourer-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12362,7 +11966,6 @@
       "medium": "photo",
       "file": "pictures/people/candle-maker.webp",
       "board": "pictures/people/candle-maker-board.webp",
-      "thumb": "pictures/thumbs/candle-maker-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12392,7 +11995,6 @@
       "medium": "watercolour",
       "file": "pictures/people/florist.webp",
       "board": "pictures/people/florist-board.webp",
-      "thumb": "pictures/thumbs/florist-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12422,7 +12024,6 @@
       "medium": "print",
       "file": "pictures/people/cobbler.webp",
       "board": "pictures/people/cobbler-board.webp",
-      "thumb": "pictures/thumbs/cobbler-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12452,7 +12053,6 @@
       "medium": "painting",
       "file": "pictures/people/violin-maker.webp",
       "board": "pictures/people/violin-maker-board.webp",
-      "thumb": "pictures/thumbs/violin-maker-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12482,7 +12082,6 @@
       "medium": "pastel",
       "file": "pictures/people/tailor.webp",
       "board": "pictures/people/tailor-board.webp",
-      "thumb": "pictures/thumbs/tailor-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12513,7 +12112,6 @@
       "medium": "photo",
       "file": "pictures/people/pizzaiolo.webp",
       "board": "pictures/people/pizzaiolo-board.webp",
-      "thumb": "pictures/thumbs/pizzaiolo-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12542,7 +12140,6 @@
       "medium": "flat",
       "file": "pictures/people/watering-garden.webp",
       "board": "pictures/people/watering-garden-board.webp",
-      "thumb": "pictures/thumbs/watering-garden-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12572,7 +12169,6 @@
       "medium": "retro",
       "file": "pictures/people/rope-sailor.webp",
       "board": "pictures/people/rope-sailor-board.webp",
-      "thumb": "pictures/thumbs/rope-sailor-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12603,7 +12199,6 @@
       "medium": "print",
       "file": "pictures/people/woodcarver.webp",
       "board": "pictures/people/woodcarver-board.webp",
-      "thumb": "pictures/thumbs/woodcarver-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12633,7 +12228,6 @@
       "medium": "painting",
       "file": "pictures/people/shepherd-lambs.webp",
       "board": "pictures/people/shepherd-lambs-board.webp",
-      "thumb": "pictures/thumbs/shepherd-lambs-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12664,7 +12258,6 @@
       "medium": "painting",
       "file": "pictures/people/fruit-seller.webp",
       "board": "pictures/people/fruit-seller-board.webp",
-      "thumb": "pictures/thumbs/fruit-seller-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12695,7 +12288,6 @@
       "medium": "watercolour",
       "file": "pictures/people/feeding-ducks.webp",
       "board": "pictures/people/feeding-ducks-board.webp",
-      "thumb": "pictures/thumbs/feeding-ducks-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12725,7 +12317,6 @@
       "medium": "pastel",
       "file": "pictures/people/pier-fishing.webp",
       "board": "pictures/people/pier-fishing-board.webp",
-      "thumb": "pictures/thumbs/pier-fishing-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12756,7 +12347,6 @@
       "medium": "deco",
       "file": "pictures/people/high-diver.webp",
       "board": "pictures/people/high-diver-board.webp",
-      "thumb": "pictures/thumbs/high-diver-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12786,7 +12376,6 @@
       "medium": "print",
       "file": "pictures/people/taiko.webp",
       "board": "pictures/people/taiko-board.webp",
-      "thumb": "pictures/thumbs/taiko-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12817,7 +12406,6 @@
       "medium": "print",
       "file": "pictures/people/lumberjack.webp",
       "board": "pictures/people/lumberjack-board.webp",
-      "thumb": "pictures/thumbs/lumberjack-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12848,7 +12436,6 @@
       "medium": "embroidery",
       "file": "pictures/people/weaver.webp",
       "board": "pictures/people/weaver-board.webp",
-      "thumb": "pictures/thumbs/weaver-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12879,7 +12466,6 @@
       "medium": "render",
       "file": "pictures/people/pastry-chef.webp",
       "board": "pictures/people/pastry-chef-board.webp",
-      "thumb": "pictures/thumbs/pastry-chef-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12909,7 +12495,6 @@
       "medium": "retro",
       "file": "pictures/people/photographer.webp",
       "board": "pictures/people/photographer-board.webp",
-      "thumb": "pictures/thumbs/photographer-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12939,7 +12524,6 @@
       "medium": "watercolour",
       "file": "pictures/people/paper-boat.webp",
       "board": "pictures/people/paper-boat-board.webp",
-      "thumb": "pictures/thumbs/paper-boat-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -12970,7 +12554,6 @@
       "medium": "pop",
       "file": "pictures/people/snowboarder.webp",
       "board": "pictures/people/snowboarder-board.webp",
-      "thumb": "pictures/thumbs/snowboarder-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13000,7 +12583,6 @@
       "medium": "photo",
       "file": "pictures/people/swimmer.webp",
       "board": "pictures/people/swimmer-board.webp",
-      "thumb": "pictures/thumbs/swimmer-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13029,7 +12611,6 @@
       "medium": "photo",
       "file": "pictures/people/chess-move.webp",
       "board": "pictures/people/chess-move-board.webp",
-      "thumb": "pictures/thumbs/chess-move-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13059,7 +12640,6 @@
       "medium": "stained-glass",
       "file": "pictures/people/harpist.webp",
       "board": "pictures/people/harpist-board.webp",
-      "thumb": "pictures/thumbs/harpist-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13090,7 +12670,6 @@
       "medium": "painting",
       "file": "pictures/people/double-bass.webp",
       "board": "pictures/people/double-bass-board.webp",
-      "thumb": "pictures/thumbs/double-bass-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13121,7 +12700,6 @@
       "medium": "print",
       "file": "pictures/people/lantern-maker.webp",
       "board": "pictures/people/lantern-maker-board.webp",
-      "thumb": "pictures/thumbs/lantern-maker-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13152,7 +12730,6 @@
       "medium": "flat",
       "file": "pictures/people/mountain-biker.webp",
       "board": "pictures/people/mountain-biker-board.webp",
-      "thumb": "pictures/thumbs/mountain-biker-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13182,7 +12759,6 @@
       "medium": "painting",
       "file": "pictures/people/stilt-walker.webp",
       "board": "pictures/people/stilt-walker-board.webp",
-      "thumb": "pictures/thumbs/stilt-walker-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -13212,7 +12788,6 @@
       "medium": "pop",
       "file": "pictures/people/pole-vaulter.webp",
       "board": "pictures/people/pole-vaulter-board.webp",
-      "thumb": "pictures/thumbs/pole-vaulter-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -13242,7 +12817,6 @@
       "medium": "photo",
       "file": "pictures/people/rower-scull.webp",
       "board": "pictures/people/rower-scull-board.webp",
-      "thumb": "pictures/thumbs/rower-scull-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -13272,7 +12846,6 @@
       "medium": "painting",
       "file": "pictures/travel/brass-compass.webp",
       "board": "pictures/travel/brass-compass-board.webp",
-      "thumb": "pictures/thumbs/brass-compass-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13301,7 +12874,6 @@
       "medium": "render",
       "file": "pictures/travel/helicopter.webp",
       "board": "pictures/travel/helicopter-board.webp",
-      "thumb": "pictures/thumbs/helicopter-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13330,7 +12902,6 @@
       "medium": "retro",
       "file": "pictures/travel/hovercraft.webp",
       "board": "pictures/travel/hovercraft-board.webp",
-      "thumb": "pictures/thumbs/hovercraft-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13359,7 +12930,6 @@
       "medium": "toy",
       "file": "pictures/travel/submarine.webp",
       "board": "pictures/travel/submarine-board.webp",
-      "thumb": "pictures/thumbs/submarine-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13388,7 +12958,6 @@
       "medium": "pop",
       "file": "pictures/travel/jet-ski.webp",
       "board": "pictures/travel/jet-ski-board.webp",
-      "thumb": "pictures/thumbs/jet-ski-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13418,7 +12987,6 @@
       "medium": "flat",
       "file": "pictures/travel/kick-scooter.webp",
       "board": "pictures/travel/kick-scooter-board.webp",
-      "thumb": "pictures/thumbs/kick-scooter-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13447,7 +13015,6 @@
       "medium": "papercut",
       "file": "pictures/travel/tandem.webp",
       "board": "pictures/travel/tandem-board.webp",
-      "thumb": "pictures/thumbs/tandem-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13477,7 +13044,6 @@
       "medium": "photo",
       "file": "pictures/travel/river-raft.webp",
       "board": "pictures/travel/river-raft-board.webp",
-      "thumb": "pictures/thumbs/river-raft-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13507,7 +13073,6 @@
       "medium": "render",
       "file": "pictures/travel/swan-pedalo.webp",
       "board": "pictures/travel/swan-pedalo-board.webp",
-      "thumb": "pictures/thumbs/swan-pedalo-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13536,7 +13101,6 @@
       "medium": "deco",
       "file": "pictures/travel/ferris-wheel.webp",
       "board": "pictures/travel/ferris-wheel-board.webp",
-      "thumb": "pictures/thumbs/ferris-wheel-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13565,7 +13129,6 @@
       "medium": "painting",
       "file": "pictures/travel/carousel-horse.webp",
       "board": "pictures/travel/carousel-horse-board.webp",
-      "thumb": "pictures/thumbs/carousel-horse-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13595,7 +13158,6 @@
       "medium": "low-poly",
       "file": "pictures/travel/harbour-buoy.webp",
       "board": "pictures/travel/harbour-buoy-board.webp",
-      "thumb": "pictures/thumbs/harbour-buoy-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13624,7 +13186,6 @@
       "medium": "deco",
       "file": "pictures/travel/ships-wheel.webp",
       "board": "pictures/travel/ships-wheel-board.webp",
-      "thumb": "pictures/thumbs/ships-wheel-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13653,7 +13214,6 @@
       "medium": "flat",
       "file": "pictures/travel/life-ring.webp",
       "board": "pictures/travel/life-ring-board.webp",
-      "thumb": "pictures/thumbs/life-ring-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13683,7 +13243,6 @@
       "medium": "embroidery",
       "file": "pictures/travel/deck-chair.webp",
       "board": "pictures/travel/deck-chair-board.webp",
-      "thumb": "pictures/thumbs/deck-chair-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13713,7 +13272,6 @@
       "medium": "pixel",
       "file": "pictures/travel/camping-lantern.webp",
       "board": "pictures/travel/camping-lantern-board.webp",
-      "thumb": "pictures/thumbs/camping-lantern-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13742,7 +13300,6 @@
       "medium": "pastel",
       "file": "pictures/travel/hiking-boots.webp",
       "board": "pictures/travel/hiking-boots-board.webp",
-      "thumb": "pictures/thumbs/hiking-boots-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13771,7 +13328,6 @@
       "medium": "render",
       "file": "pictures/travel/backpack.webp",
       "board": "pictures/travel/backpack-board.webp",
-      "thumb": "pictures/thumbs/backpack-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13800,7 +13356,6 @@
       "medium": "retro",
       "file": "pictures/travel/chairlift.webp",
       "board": "pictures/travel/chairlift-board.webp",
-      "thumb": "pictures/thumbs/chairlift-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13829,7 +13384,6 @@
       "medium": "painting",
       "file": "pictures/travel/icebreaker.webp",
       "board": "pictures/travel/icebreaker-board.webp",
-      "thumb": "pictures/thumbs/icebreaker-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13859,7 +13413,6 @@
       "medium": "low-poly",
       "file": "pictures/travel/container-ship.webp",
       "board": "pictures/travel/container-ship-board.webp",
-      "thumb": "pictures/thumbs/container-ship-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13889,7 +13442,6 @@
       "medium": "flat",
       "file": "pictures/travel/combine.webp",
       "board": "pictures/travel/combine-board.webp",
-      "thumb": "pictures/thumbs/combine-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13918,7 +13470,6 @@
       "medium": "render",
       "file": "pictures/travel/ice-cream-van.webp",
       "board": "pictures/travel/ice-cream-van-board.webp",
-      "thumb": "pictures/thumbs/ice-cream-van-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13947,7 +13498,6 @@
       "medium": "pixel",
       "file": "pictures/travel/food-truck.webp",
       "board": "pictures/travel/food-truck-board.webp",
-      "thumb": "pictures/thumbs/food-truck-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -13976,7 +13526,6 @@
       "medium": "isometric",
       "file": "pictures/travel/teardrop-caravan.webp",
       "board": "pictures/travel/teardrop-caravan-board.webp",
-      "thumb": "pictures/thumbs/teardrop-caravan-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14005,7 +13554,6 @@
       "medium": "print",
       "file": "pictures/travel/dhow.webp",
       "board": "pictures/travel/dhow-board.webp",
-      "thumb": "pictures/thumbs/dhow-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14035,7 +13583,6 @@
       "medium": "watercolour",
       "file": "pictures/travel/catamaran.webp",
       "board": "pictures/travel/catamaran-board.webp",
-      "thumb": "pictures/thumbs/catamaran-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14064,7 +13611,6 @@
       "medium": "pop",
       "file": "pictures/travel/snowmobile.webp",
       "board": "pictures/travel/snowmobile-board.webp",
-      "thumb": "pictures/thumbs/snowmobile-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14094,7 +13640,6 @@
       "medium": "toy",
       "file": "pictures/travel/monster-truck.webp",
       "board": "pictures/travel/monster-truck-board.webp",
-      "thumb": "pictures/thumbs/monster-truck-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14123,7 +13668,6 @@
       "medium": "toy",
       "file": "pictures/travel/unicycle.webp",
       "board": "pictures/travel/unicycle-board.webp",
-      "thumb": "pictures/thumbs/unicycle-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14152,7 +13696,6 @@
       "medium": "retro",
       "file": "pictures/travel/propeller-plane.webp",
       "board": "pictures/travel/propeller-plane-board.webp",
-      "thumb": "pictures/thumbs/propeller-plane-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14181,7 +13724,6 @@
       "medium": "painting",
       "file": "pictures/travel/dog-sled.webp",
       "board": "pictures/travel/dog-sled-board.webp",
-      "thumb": "pictures/thumbs/dog-sled-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14212,7 +13754,6 @@
       "medium": "retro",
       "file": "pictures/travel/hot-air-balloon.webp",
       "board": "pictures/travel/hot-air-balloon-board.webp",
-      "thumb": "pictures/thumbs/hot-air-balloon-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -14241,7 +13782,6 @@
       "medium": "render",
       "file": "pictures/travel/vintage-motorcycle.webp",
       "board": "pictures/travel/vintage-motorcycle-board.webp",
-      "thumb": "pictures/thumbs/vintage-motorcycle-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -14271,7 +13811,6 @@
       "medium": "retro",
       "file": "pictures/travel/racing-car.webp",
       "board": "pictures/travel/racing-car-board.webp",
-      "thumb": "pictures/thumbs/racing-car-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -14300,7 +13839,6 @@
       "medium": "painting",
       "file": "pictures/travel/horse-carriage.webp",
       "board": "pictures/travel/horse-carriage-board.webp",
-      "thumb": "pictures/thumbs/horse-carriage-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -14330,7 +13868,6 @@
       "medium": "watercolour",
       "file": "pictures/architecture/dovecote.webp",
       "board": "pictures/architecture/dovecote-board.webp",
-      "thumb": "pictures/thumbs/dovecote-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14360,7 +13897,6 @@
       "medium": "photo",
       "file": "pictures/architecture/spiral-staircase.webp",
       "board": "pictures/architecture/spiral-staircase-board.webp",
-      "thumb": "pictures/thumbs/spiral-staircase-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14389,7 +13925,6 @@
       "medium": "print",
       "file": "pictures/architecture/grain-silos.webp",
       "board": "pictures/architecture/grain-silos-board.webp",
-      "thumb": "pictures/thumbs/grain-silos-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14418,7 +13953,6 @@
       "medium": "low-poly",
       "file": "pictures/architecture/geodesic-dome.webp",
       "board": "pictures/architecture/geodesic-dome-board.webp",
-      "thumb": "pictures/thumbs/geodesic-dome-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14447,7 +13981,6 @@
       "medium": "watercolour",
       "file": "pictures/architecture/stilt-house.webp",
       "board": "pictures/architecture/stilt-house-board.webp",
-      "thumb": "pictures/thumbs/stilt-house-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14476,7 +14009,6 @@
       "medium": "retro",
       "file": "pictures/architecture/fire-lookout.webp",
       "board": "pictures/architecture/fire-lookout-board.webp",
-      "thumb": "pictures/thumbs/fire-lookout-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14505,7 +14037,6 @@
       "medium": "papercut",
       "file": "pictures/architecture/drawbridge.webp",
       "board": "pictures/architecture/drawbridge-board.webp",
-      "thumb": "pictures/thumbs/drawbridge-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14536,7 +14067,6 @@
       "medium": "papercut",
       "file": "pictures/architecture/viaduct.webp",
       "board": "pictures/architecture/viaduct-board.webp",
-      "thumb": "pictures/thumbs/viaduct-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14565,7 +14095,6 @@
       "medium": "pastel",
       "file": "pictures/architecture/chimney-pots.webp",
       "board": "pictures/architecture/chimney-pots-board.webp",
-      "thumb": "pictures/thumbs/chimney-pots-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14594,7 +14123,6 @@
       "medium": "painting",
       "file": "pictures/architecture/library-shelves.webp",
       "board": "pictures/architecture/library-shelves-board.webp",
-      "thumb": "pictures/thumbs/library-shelves-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14625,7 +14153,6 @@
       "medium": "ceramic",
       "file": "pictures/architecture/garden-fountain.webp",
       "board": "pictures/architecture/garden-fountain-board.webp",
-      "thumb": "pictures/thumbs/garden-fountain-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14654,7 +14181,6 @@
       "medium": "flat",
       "file": "pictures/architecture/a-frame-cabin.webp",
       "board": "pictures/architecture/a-frame-cabin-board.webp",
-      "thumb": "pictures/thumbs/a-frame-cabin-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14684,7 +14210,6 @@
       "medium": "render",
       "file": "pictures/architecture/shepherds-hut.webp",
       "board": "pictures/architecture/shepherds-hut-board.webp",
-      "thumb": "pictures/thumbs/shepherds-hut-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14713,7 +14238,6 @@
       "medium": "photo",
       "file": "pictures/architecture/turf-house.webp",
       "board": "pictures/architecture/turf-house-board.webp",
-      "thumb": "pictures/thumbs/turf-house-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14742,7 +14266,6 @@
       "medium": "print",
       "file": "pictures/architecture/abbey-arch.webp",
       "board": "pictures/architecture/abbey-arch-board.webp",
-      "thumb": "pictures/thumbs/abbey-arch-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14771,7 +14294,6 @@
       "medium": "print",
       "file": "pictures/architecture/teahouse.webp",
       "board": "pictures/architecture/teahouse-board.webp",
-      "thumb": "pictures/thumbs/teahouse-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14801,7 +14323,6 @@
       "medium": "painting",
       "file": "pictures/architecture/boathouse.webp",
       "board": "pictures/architecture/boathouse-board.webp",
-      "thumb": "pictures/thumbs/boathouse-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14830,7 +14351,6 @@
       "medium": "photo",
       "file": "pictures/architecture/palace-window.webp",
       "board": "pictures/architecture/palace-window-board.webp",
-      "thumb": "pictures/thumbs/palace-window-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14859,7 +14379,6 @@
       "medium": "stained-glass",
       "file": "pictures/architecture/skylight.webp",
       "board": "pictures/architecture/skylight-board.webp",
-      "thumb": "pictures/thumbs/skylight-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14888,7 +14407,6 @@
       "medium": "pastel",
       "file": "pictures/architecture/round-tower.webp",
       "board": "pictures/architecture/round-tower-board.webp",
-      "thumb": "pictures/thumbs/round-tower-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14917,7 +14435,6 @@
       "medium": "watercolour",
       "file": "pictures/architecture/potting-shed.webp",
       "board": "pictures/architecture/potting-shed-board.webp",
-      "thumb": "pictures/thumbs/potting-shed-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14947,7 +14464,6 @@
       "medium": "flat",
       "file": "pictures/architecture/mailbox.webp",
       "board": "pictures/architecture/mailbox-board.webp",
-      "thumb": "pictures/thumbs/mailbox-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -14977,7 +14493,6 @@
       "medium": "isometric",
       "file": "pictures/architecture/hedge-maze.webp",
       "board": "pictures/architecture/hedge-maze-board.webp",
-      "thumb": "pictures/thumbs/hedge-maze-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15006,7 +14521,6 @@
       "medium": "painting",
       "file": "pictures/architecture/theatre-stage.webp",
       "board": "pictures/architecture/theatre-stage-board.webp",
-      "thumb": "pictures/thumbs/theatre-stage-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15036,7 +14550,6 @@
       "medium": "isometric",
       "file": "pictures/architecture/fishing-shack.webp",
       "board": "pictures/architecture/fishing-shack-board.webp",
-      "thumb": "pictures/thumbs/fishing-shack-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15065,7 +14578,6 @@
       "medium": "toy",
       "file": "pictures/architecture/birdhouse.webp",
       "board": "pictures/architecture/birdhouse-board.webp",
-      "thumb": "pictures/thumbs/birdhouse-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15094,7 +14606,6 @@
       "medium": "photo",
       "file": "pictures/architecture/red-cabin.webp",
       "board": "pictures/architecture/red-cabin-board.webp",
-      "thumb": "pictures/thumbs/red-cabin-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15124,7 +14635,6 @@
       "medium": "deco",
       "file": "pictures/architecture/lido.webp",
       "board": "pictures/architecture/lido-board.webp",
-      "thumb": "pictures/thumbs/lido-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15154,7 +14664,6 @@
       "medium": "mosaic",
       "file": "pictures/architecture/rondavel.webp",
       "board": "pictures/architecture/rondavel-board.webp",
-      "thumb": "pictures/thumbs/rondavel-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15183,7 +14692,6 @@
       "medium": "watercolour",
       "file": "pictures/architecture/porch-rocker.webp",
       "board": "pictures/architecture/porch-rocker-board.webp",
-      "thumb": "pictures/thumbs/porch-rocker-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15213,7 +14721,6 @@
       "medium": "pastel",
       "file": "pictures/architecture/lamppost-snow.webp",
       "board": "pictures/architecture/lamppost-snow-board.webp",
-      "thumb": "pictures/thumbs/lamppost-snow-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -15243,7 +14750,6 @@
       "medium": "print",
       "file": "pictures/architecture/water-tower.webp",
       "board": "pictures/architecture/water-tower-board.webp",
-      "thumb": "pictures/thumbs/water-tower-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -15272,7 +14778,6 @@
       "medium": "watercolour",
       "file": "pictures/architecture/thatched-cottage.webp",
       "board": "pictures/architecture/thatched-cottage-board.webp",
-      "thumb": "pictures/thumbs/thatched-cottage-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -15302,7 +14807,6 @@
       "medium": "print",
       "file": "pictures/architecture/conservatory.webp",
       "board": "pictures/architecture/conservatory-board.webp",
-      "thumb": "pictures/thumbs/conservatory-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -15331,7 +14835,6 @@
       "medium": "flat",
       "file": "pictures/animals/toucan.webp",
       "board": "pictures/animals/toucan-board.webp",
-      "thumb": "pictures/thumbs/toucan-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15361,7 +14864,6 @@
       "medium": "photo",
       "file": "pictures/animals/red-panda.webp",
       "board": "pictures/animals/red-panda-board.webp",
-      "thumb": "pictures/thumbs/red-panda-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15390,7 +14892,6 @@
       "medium": "watercolour",
       "file": "pictures/animals/sloth.webp",
       "board": "pictures/animals/sloth-board.webp",
-      "thumb": "pictures/thumbs/sloth-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15419,7 +14920,6 @@
       "medium": "print",
       "file": "pictures/animals/puffin.webp",
       "board": "pictures/animals/puffin-board.webp",
-      "thumb": "pictures/thumbs/puffin-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15449,7 +14949,6 @@
       "medium": "papercut",
       "file": "pictures/animals/polar-bear.webp",
       "board": "pictures/animals/polar-bear-board.webp",
-      "thumb": "pictures/thumbs/polar-bear-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15478,7 +14977,6 @@
       "medium": "photo",
       "file": "pictures/animals/hummingbird.webp",
       "board": "pictures/animals/hummingbird-board.webp",
-      "thumb": "pictures/thumbs/hummingbird-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15507,7 +15005,6 @@
       "medium": "pop",
       "file": "pictures/animals/octopus.webp",
       "board": "pictures/animals/octopus-board.webp",
-      "thumb": "pictures/thumbs/octopus-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15537,7 +15034,6 @@
       "medium": "render",
       "file": "pictures/animals/axolotl.webp",
       "board": "pictures/animals/axolotl-board.webp",
-      "thumb": "pictures/thumbs/axolotl-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15566,7 +15062,6 @@
       "medium": "photo",
       "file": "pictures/animals/tree-frog.webp",
       "board": "pictures/animals/tree-frog-board.webp",
-      "thumb": "pictures/thumbs/tree-frog-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15596,7 +15091,6 @@
       "medium": "photo",
       "file": "pictures/animals/ladybird.webp",
       "board": "pictures/animals/ladybird-board.webp",
-      "thumb": "pictures/thumbs/ladybird-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15625,7 +15119,6 @@
       "medium": "embroidery",
       "file": "pictures/animals/bumblebee.webp",
       "board": "pictures/animals/bumblebee-board.webp",
-      "thumb": "pictures/thumbs/bumblebee-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15654,7 +15147,6 @@
       "medium": "stained-glass",
       "file": "pictures/animals/monarch.webp",
       "board": "pictures/animals/monarch-board.webp",
-      "thumb": "pictures/thumbs/monarch-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15684,7 +15176,6 @@
       "medium": "render",
       "file": "pictures/animals/snail.webp",
       "board": "pictures/animals/snail-board.webp",
-      "thumb": "pictures/thumbs/snail-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15713,7 +15204,6 @@
       "medium": "print",
       "file": "pictures/animals/goldfish.webp",
       "board": "pictures/animals/goldfish-board.webp",
-      "thumb": "pictures/thumbs/goldfish-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15742,7 +15232,6 @@
       "medium": "mosaic",
       "file": "pictures/animals/sea-turtle.webp",
       "board": "pictures/animals/sea-turtle-board.webp",
-      "thumb": "pictures/thumbs/sea-turtle-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15771,7 +15260,6 @@
       "medium": "pastel",
       "file": "pictures/animals/lamb.webp",
       "board": "pictures/animals/lamb-board.webp",
-      "thumb": "pictures/thumbs/lamb-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15800,7 +15288,6 @@
       "medium": "flat",
       "file": "pictures/animals/alpaca.webp",
       "board": "pictures/animals/alpaca-board.webp",
-      "thumb": "pictures/thumbs/alpaca-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15829,7 +15316,6 @@
       "medium": "painting",
       "file": "pictures/animals/highland-cow.webp",
       "board": "pictures/animals/highland-cow-board.webp",
-      "thumb": "pictures/thumbs/highland-cow-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15858,7 +15344,6 @@
       "medium": "photo",
       "file": "pictures/animals/piglet.webp",
       "board": "pictures/animals/piglet-board.webp",
-      "thumb": "pictures/thumbs/piglet-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15887,7 +15372,6 @@
       "medium": "watercolour",
       "file": "pictures/animals/ducklings.webp",
       "board": "pictures/animals/ducklings-board.webp",
-      "thumb": "pictures/thumbs/ducklings-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15916,7 +15400,6 @@
       "medium": "deco",
       "file": "pictures/animals/kingfisher.webp",
       "board": "pictures/animals/kingfisher-board.webp",
-      "thumb": "pictures/thumbs/kingfisher-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15945,7 +15428,6 @@
       "medium": "print",
       "file": "pictures/animals/robin.webp",
       "board": "pictures/animals/robin-board.webp",
-      "thumb": "pictures/thumbs/robin-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -15974,7 +15456,6 @@
       "medium": "ceramic",
       "file": "pictures/animals/swan.webp",
       "board": "pictures/animals/swan-board.webp",
-      "thumb": "pictures/thumbs/swan-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -16003,7 +15484,6 @@
       "medium": "photo",
       "file": "pictures/animals/zebra.webp",
       "board": "pictures/animals/zebra-board.webp",
-      "thumb": "pictures/thumbs/zebra-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -16032,7 +15512,6 @@
       "medium": "render",
       "file": "pictures/animals/baby-elephant.webp",
       "board": "pictures/animals/baby-elephant-board.webp",
-      "thumb": "pictures/thumbs/baby-elephant-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -16061,7 +15540,6 @@
       "medium": "painting",
       "file": "pictures/animals/tiger.webp",
       "board": "pictures/animals/tiger-board.webp",
-      "thumb": "pictures/thumbs/tiger-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -16090,7 +15568,6 @@
       "medium": "flat",
       "file": "pictures/animals/raccoon.webp",
       "board": "pictures/animals/raccoon-board.webp",
-      "thumb": "pictures/thumbs/raccoon-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -16120,7 +15597,6 @@
       "medium": "photo",
       "file": "pictures/animals/squirrel.webp",
       "board": "pictures/animals/squirrel-board.webp",
-      "thumb": "pictures/thumbs/squirrel-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -16150,7 +15626,6 @@
       "medium": "pop",
       "file": "pictures/animals/dalmatian.webp",
       "board": "pictures/animals/dalmatian-board.webp",
-      "thumb": "pictures/thumbs/dalmatian-thumb.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -16179,7 +15654,6 @@
       "medium": "photo",
       "file": "pictures/animals/meerkat.webp",
       "board": "pictures/animals/meerkat-board.webp",
-      "thumb": "pictures/thumbs/meerkat-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -16208,7 +15682,6 @@
       "medium": "deco",
       "file": "pictures/animals/seahorse.webp",
       "board": "pictures/animals/seahorse-board.webp",
-      "thumb": "pictures/thumbs/seahorse-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -16237,7 +15710,6 @@
       "medium": "flat",
       "file": "pictures/animals/ostrich.webp",
       "board": "pictures/animals/ostrich-board.webp",
-      "thumb": "pictures/thumbs/ostrich-thumb.webp",
       "cols": 1,
       "rows": 2,
       "px": [
@@ -16267,7 +15739,6 @@
       "medium": "low-poly",
       "file": "pictures/animals/crocodile.webp",
       "board": "pictures/animals/crocodile-board.webp",
-      "thumb": "pictures/thumbs/crocodile-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [
@@ -16296,7 +15767,6 @@
       "medium": "painting",
       "file": "pictures/animals/sleeping-lion.webp",
       "board": "pictures/animals/sleeping-lion-board.webp",
-      "thumb": "pictures/thumbs/sleeping-lion-thumb.webp",
       "cols": 2,
       "rows": 1,
       "px": [

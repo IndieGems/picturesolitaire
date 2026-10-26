@@ -66,11 +66,8 @@ for (const p of catalogue.pictures) {
   }
   read(p.file, "full picture");
   check(p, p.board, p.boardPx, "board copy");
-  const thumb = read(p.thumb, "thumb");
-  if (thumb) {
-    if (!thumb.size || Math.max(...thumb.size) !== THUMB_LONG) bad.push(`${p.id}: thumb is ${thumb.size}, not ${THUMB_LONG} px long`);
-    if (thumb.bytes > THUMB_BUDGET) bad.push(`${p.id}: thumb is ${Math.round(thumb.bytes / 1024)} KB, over ${THUMB_BUDGET / 1024} KB`);
-  }
+  // Library pictures ship no thumb (2026-10-26: the Albums screen is gone, and the build's file cap).
+  if (p.thumb) bad.push(`${p.id}: lists a thumb; library pictures ship none (python tools/art/pictures.py catalogue)`);
 }
 // A trip's postcards (the catalogue's `destinations`): a whole board's picture, its board copy and
 // a passport thumb; the window that plays (2x2, or 2x1 / 1x2 on an all-long board) must lie on it,
