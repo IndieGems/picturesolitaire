@@ -35,7 +35,7 @@ import { emit } from "../events";
 import { sharpCopy, type Copy, type Picture } from "./catalogue";
 import { createViewer } from "./viewer";
 import { keepFitted } from "./fit";
-import { clueImage, clueOf, foundClues, isFound, judge, settle, theCase, verdictLine, type Clue, type Suspect, type Verdict } from "./case";
+import { clueImage, clueName, clueOf, foundClues, isFound, judge, settle, theCase, verdictLine, type Clue, type Suspect, type Verdict } from "./case";
 
 /** The gold stamp starts down at this, after case:verdict, and lands LAND_MS later: 0.76 s, Audio's thump. */
 const STAMP_DROP_AT_MS = 460;
@@ -172,11 +172,11 @@ export function createCaseScreens(nav: Nav) {
     drawStamp(deco, c.id);
     card.append(img, deco);
     pc.append(card);
-    for (const [i, w] of (words ?? [c.label]).entries()) pc.append(el(i ? "span" : "b", i ? "pc-place" : "pc-name", w));
+    for (const [i, w] of (words ?? [clueName(c)]).entries()) pc.append(el(i ? "span" : "b", i ? "pc-place" : "pc-name", w));
     if (tap) {
       (pc as HTMLButtonElement).type = "button";
       pc.dataset.press = "case.clue";
-      pc.setAttribute("aria-label", c.label);
+      pc.setAttribute("aria-label", clueName(c));
       pc.addEventListener("click", tap);
     }
     return pc;

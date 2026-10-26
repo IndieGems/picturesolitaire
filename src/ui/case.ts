@@ -14,14 +14,14 @@
 // clears it. Never browser storage.
 
 import CASE from "../content/cases/melusine.json";
-import { destination, type Destination } from "./catalogue";
+import { destination, destinationName, type Destination } from "./catalogue";
 import { devValue, keepDevValue, loadSettings } from "../settings";
 
 export interface Clue {
   n: number;
   /** Its picture's id in the catalogue. */
   id: string;
-  /** What the binder calls it, and what stands in while its picture is missing. */
+  /** What stands in for its name while its picture is missing (then the picture's own name, Art's, is shown). */
   label: string;
   /** Its one sentence, or "" where the picture tells it. */
   words: string;
@@ -64,6 +64,12 @@ export function clueOf(id: string): Clue | undefined {
 /** The clue's picture, once Art's is in the catalogue. */
 export function clueImage(c: Clue): Destination | undefined {
   return destination(c.id);
+}
+
+/** The clue's name: its picture's (Art's, as the full-size view and the win card show it), else its stand-in label. */
+export function clueName(c: Clue): string {
+  const img = destination(c.id);
+  return img ? destinationName(img.id, img.title) : c.label;
 }
 
 /** Judge an accusation: the culprit with the gold proof, with an accepted one, or anything else. */

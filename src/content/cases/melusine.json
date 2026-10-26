@@ -1,6 +1,6 @@
 {
   "v": 1,
-  "note": "The pilot case (docs/mystery-pilot.md; the answer in docs/mystery-pilot-solution.md), played from the dev menu only, as practice. UI's file: the words each clue picture carries (one sentence at most, none where the picture tells it), the suspects and their portraits, the answer, and the detective's explanation. The boards are Levels' (experiments.json, mel01-mel15); the pictures are Art's (pictures.json destinations, mel-01 to mel-15). A label names a clue in the binder and stands in while its picture is missing. A clue's stamp is writing the game draws over its picture: its text, and the gaps from its right and bottom edges to the picture's, as fractions of the picture's width and height.",
+  "note": "The pilot case (docs/mystery-pilot.md; the answer in docs/mystery-pilot-solution.md), played from the dev menu only, as practice. UI's file: the words each clue picture carries (one sentence at most, none where the picture tells it), the suspects and their portraits, the answer, and the detective's explanation. The boards are Levels' (experiments.json, mel01-mel15); the pictures are Art's (pictures.json destinations, mel-01 to mel-15). A clue is named by its picture's name (Art's, in pictures.json); its label stands in only while the picture is missing. A clue's stamp is writing the game draws over its picture: its text, and the gaps from its right and bottom edges to the picture's, as fractions of the picture's width and height.",
   "id": "melusine",
   "title": "Murder on the Melusine",
   "question": "Who killed Oskar Brandt?",
