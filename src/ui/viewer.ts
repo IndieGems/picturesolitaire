@@ -15,6 +15,12 @@
 // stretched, and swaps in the full picture once it has loaded and decoded: only
 // this view ever fetches a full picture (the creator, 2026-10-25).
 //
+// A clue of a mystery case (case-screens.ts) may carry a CAPTION, its one sentence, in a
+// glass line under the picture (the stage gives it room), and writing the game draws on
+// the picture (the photo's date stamp): `decorate` fills a box laid exactly over the
+// picture, which zooms and pans with it. It may also carry one ACTION, an amber button
+// under the caption (the accusation's "This proves it"), which closes the view and acts.
+//
 // The win card's copy (app.ts) also
 // closes on a single tap while the picture is not zoomed in (`tapToClose`): a
 // look, then back to the card.
@@ -34,9 +40,20 @@ const TAP_SLOP = 12;
 export interface Viewer {
   element: HTMLElement;
   /** Show `p` big: `shown` is the address of the copy already on screen, drawn until the full one lands. */
-  open(p: Picture, shown?: string): void;
+  open(p: Picture, shown?: string, extra?: ViewerExtra): void;
   close(): void;
   isOpen(): boolean;
+}
+
+export interface ViewerExtra {
+  /** A line under the picture (a clue's sentence). */
+  caption?: string;
+  /** Draw over the picture: `box` lies exactly on it, zooming with it. */
+  decorate?: (box: HTMLElement) => void;
+  /** One button under it: the view closes, then `go` runs. */
+  action?: { label: string; press: string; go: () => void };
+  /** `shown` is all there is (a stand-in drawn by the game): no full picture is fetched. */
+  still?: boolean;
 }
 
 export function createViewer(options: { tapToClose?: boolean } = {}): Viewer {
@@ -63,9 +80,28 @@ export function createViewer(options: { tapToClose?: boolean } = {}): Viewer {
   img.alt = "";
   img.draggable = false;
   img.decoding = "async";
-  zoom.append(img);
+  // what the game draws over the picture, laid on it exactly (layout)
+  const deco = document.createElement("div");
+  deco.className = "viewer-deco";
+  zoom.append(img, deco);
   stage.append(zoom);
-  element.append(title, back, stage);
+  // under the picture: a caption (information) and an action (a button), either or both
+  const foot = document.createElement("div");
+  foot.className = "viewer-foot";
+  foot.hidden = true;
+  const caption = document.createElement("div");
+  caption.className = "viewer-caption glass";
+  const action = document.createElement("button");
+  action.type = "button";
+  action.className = "btn amber viewer-action";
+  let acting: (() => void) | null = null;
+  action.addEventListener("click", () => {
+    const go = acting;
+    close();
+    go?.();
+  });
+  foot.append(caption, action);
+  element.append(title, back, stage, foot);
 
   let aspect = 1; // width / height: cols cards across, rows down, in the board's card shape (cards.ts)
   let s = 1;
@@ -87,6 +123,7 @@ export function createViewer(options: { tapToClose?: boolean } = {}): Viewer {
     zoom.style.width = `${W}px`;
     zoom.style.height = `${H}px`;
     Object.assign(img.style, { left: `${fit.x}px`, top: `${fit.y}px`, width: `${w}px`, height: `${h}px` });
+    Object.assign(deco.style, { left: `${fit.x}px`, top: `${fit.y}px`, width: `${w}px`, height: `${h}px` });
     apply();
   }
 
@@ -227,13 +264,23 @@ export function createViewer(options: { tapToClose?: boolean } = {}): Viewer {
 
   return {
     element,
-    open(p, shown) {
+    open(p, shown, extra) {
       aspect = pictureAspect(p.cols, p.rows);
       title.textContent = pictureTitle(p);
+      deco.replaceChildren();
+      extra?.decorate?.(deco);
+      caption.textContent = extra?.caption ?? "";
+      caption.hidden = !extra?.caption;
+      action.textContent = extra?.action?.label ?? "";
+      action.dataset.press = extra?.action?.press ?? "";
+      action.hidden = !extra?.action;
+      acting = extra?.action?.go ?? null;
+      foot.hidden = caption.hidden && action.hidden;
+      element.classList.toggle("captioned", !foot.hidden);
       const full = pictureUrl(p);
       const at = ++opening;
       img.src = shown || full;
-      if (shown && shown !== full) {
+      if (shown && shown !== full && !extra?.still) {
         const big = new Image();
         big.src = full;
         // decoded first, so the swap is the same frame; a failure keeps the copy on screen
@@ -247,6 +294,8 @@ export function createViewer(options: { tapToClose?: boolean } = {}): Viewer {
       ty = 0;
       lastTap = { x: 0, y: 0, time: -Infinity };
       element.hidden = false;
+      // the stage stops above the caption, so the picture is never under it
+      element.style.setProperty("--cap-h", foot.hidden ? "0px" : `${foot.offsetHeight + 12}px`);
       opened(element, close);
       screenChanged();
       layout();

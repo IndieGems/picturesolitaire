@@ -13,6 +13,11 @@
 //   Play any board     the campaign, the challenge route, any date of the daily pool
 //   Experiments        Levels' experiment boards (src/content/levels/experiments.json,
 //                      imported here only, so a release build drops it with the menu)
+//   Case               the mystery pilot (case.ts, case-screens.ts): its fifteen boards
+//                      (the experiment boards with a `case`), each ticked once its clue is
+//                      found, the evidence binder, Accuse now (every clue found, straight
+//                      to the accusation) and Start the case over. Its run is kept on this
+//                      device under a dev key (case.ts); it never touches the server.
 //   Guided start       board 1's guide again, from its first step
 //
 // NEVER IN A RELEASE BUILD. app.ts imports this file only behind
@@ -37,6 +42,10 @@ import { shortDate } from "./format";
 import { markOf, markTag } from "./marks";
 import type { BoardHandle, DevStep } from "./board-api";
 import type { Experiment, Play } from "./app";
+import { setClueWords, setPostcardArt } from "../board";
+import { t } from "./i18n";
+import { clueOf, find, findAll, isFound, onRun, restart, runRead, theCase } from "./case";
+import { createCaseScreens, drawStamp } from "./case-screens";
 
 /** What vite.config.ts stamps in at build time (its `define`). */
 declare const __BUILD_INFO__: { version: string; sdk: string; commit: string; changed: boolean; built: string };
@@ -55,6 +64,8 @@ export interface DevHost {
   cancelGuide(): void;
   /** The albums show every picture as restored (never saved), or go back to the record. */
   showAll(on: boolean): void;
+  /** Home, the board in hand dropped if it was won. */
+  home(): void;
 }
 
 /** What the menu lends the screens back. */
@@ -77,6 +88,10 @@ export interface DevMenu {
   next(p: Play): void;
   /** An experiment board's name for the top row ("Board x01"). */
   label(p: Extract<Play, { kind: "experiment" }>): string;
+  /** A mystery clue's sentence ("" for a wordless one), or undefined: not a clue (a place's name shows). */
+  clueWords(id: string): string | undefined;
+  /** A case board's win card: its title, and after the last board the accusation in place of Next. */
+  caseCard(p: Play): { title: string; accuse?: () => void } | null;
 }
 
 const SPEEDS = [0.25, 0.5, 1, 2];
@@ -159,16 +174,22 @@ export function mountDevMenu(host: DevHost): DevMenu {
   const clampDay = (d: string) => (!pool ? d : d < pool.first ? pool.first : d > pool.last ? pool.last : d);
   // Levels' experiment boards, read once (null until they land)
   let experiments: Experiment[] | null = null;
+  /** The case's boards among them: an experiment board's id to its number in the case. */
+  const caseBoards = new Map<string, number>();
   void import("../content/levels/experiments.json")
     .then((m) => {
-      const stored = (m.default as unknown as { levels: (Stored & { name?: string })[] }).levels;
+      const stored = (m.default as unknown as { levels: (Stored & { name?: string; case?: { id: string; n: number } })[] }).levels;
       experiments = stored.map((l, i) => ({ ...toLevel(l, i + 1), name: l.name ?? l.id }));
+      for (const l of stored) if (l.case?.id === theCase.id && Number.isInteger(l.case.n)) caseBoards.set(l.id, l.case.n);
     })
     .catch((err: unknown) => {
       console.warn("[dev-menu] the experiment boards did not load", err);
       experiments = [];
     })
-    .finally(() => drawExperiments());
+    .finally(() => {
+      drawExperiments();
+      drawCase();
+    });
 
   async function neighbour(p: Play, step: 1 | -1): Promise<Play | null> {
     if (p.kind === "campaign") {
@@ -207,6 +228,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
   function play(p: Play): void {
     hideBar();
     dialog.close();
+    cases?.close();
     host.open(p);
   }
 
@@ -459,7 +481,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     const now = host.now();
     const p = now.screen === "board" ? now.play : null;
     xList.replaceChildren(
-      ...experiments.map((x) => {
+      ...experiments.filter((x) => !caseBoards.has(x.id)).map((x) => {
         const b = btn(p?.kind === "experiment" && p.x.id === x.id ? "amber dev-x" : "dev-x", "", () => play({ kind: "experiment", x }));
         const d = x.deal;
         b.append(el("b", "", x.name), el("small", "", `${x.id} · ${d.cols}×${d.rows} grid · ${d.pictures.length} pictures`));
@@ -467,6 +489,58 @@ export function mountDevMenu(host: DevHost): DevMenu {
       }),
     );
   }
+
+  // the mystery case: its boards, the binder, the accusation
+  const caseGrid = el("div", "dev-grid");
+  const caseRow = el("div", "dev-row");
+  caseRow.append(
+    btn("", "Evidence binder", () => {
+      dialog.close();
+      caseScreens().binder();
+    }),
+    btn("amber", "Accuse now", () => {
+      dialog.close();
+      findAll();
+      caseScreens().accuse();
+    }),
+  );
+  const caseSec = el("section", "dev-case");
+  caseSec.append(
+    el("h3", "", `Case: ${theCase.title} (practice)`),
+    el("p", "dev-note", "The mystery pilot. Each board's special picture is a clue; after board 15, name the killer. Found clues are kept on this device (dev only), never in the game's progress."),
+    caseGrid,
+    caseRow,
+    btn("dev-wide", "Start the case over", () => {
+      restart();
+      drawCase();
+    }),
+  );
+  function drawCase(): void {
+    const now = host.now();
+    const p = now.screen === "board" ? now.play : null;
+    const boards = (experiments ?? []).filter((x) => caseBoards.has(x.id)).sort((a, b) => caseBoards.get(a.id)! - caseBoards.get(b.id)!);
+    if (!boards.length) return void caseGrid.replaceChildren(el("p", "dev-note", experiments ? "The case's boards are on their way (Levels)." : "Loading the case's boards…"));
+    caseGrid.replaceChildren(
+      ...boards.map((x) => {
+        const n = caseBoards.get(x.id)!;
+        return tile(String(n), [isFound(n) ? "found" : "–"], p?.kind === "experiment" && p.x.id === x.id, () => play({ kind: "experiment", x }));
+      }),
+    );
+  }
+  onRun(drawCase);
+
+  /** The binder and the accusation, made the first time they are wanted. */
+  let cases: ReturnType<typeof createCaseScreens> | null = null;
+  const caseScreens = () => (cases ??= createCaseScreens({ app: host.app, home: () => host.home() }));
+  // the board: a clue's sentence counts toward its postcard's hold, and the photo's date stamp is drawn on it
+  setClueWords((id) => clueOf(id)?.words || undefined);
+  setPostcardArt((box, id) => drawStamp(box, id));
+  // a case board won: its clue is found (practice: nothing goes anywhere else)
+  on("board:solved", () => {
+    const p = host.now().play;
+    if (p?.kind === "experiment" && caseBoards.has(p.x.id)) find(caseBoards.get(p.x.id)!);
+  });
+  void runRead;
 
   // the guided start
   const guideSec = el("section");
@@ -476,7 +550,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     el("p", "dev-note", "Board 1 with its four steps from the first, then its finish card. Nothing is saved, and no table is given."),
   );
 
-  scroll.append(title, buildBox, boardSec, switches, pickSec, xSec, guideSec);
+  scroll.append(title, buildBox, boardSec, switches, pickSec, caseSec, xSec, guideSec);
   document.body.append(dialog);
 
   // ---------- the Next move bar, over the board's foot ----------
@@ -542,6 +616,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     drawSpeed();
     drawPick();
     drawExperiments();
+    drawCase();
     scroll.scrollTop = 0;
     dialog.showModal();
   });
@@ -566,7 +641,16 @@ export function mountDevMenu(host: DevHost): DevMenu {
     },
     hasNext: (p) => hasNeighbour(p, 1),
     next: (p) => go(p, 1),
-    // its id, as its row in the menu shows it ("Experiment 1" wraps beside the tag on a small phone)
-    label: (p) => `Board ${p.x.id}`,
+    // its id, as its row in the menu shows it ("Experiment 1" wraps beside the tag on a small phone); a case board, its clue's number
+    label: (p) => (caseBoards.has(p.x.id) ? `Clue ${caseBoards.get(p.x.id)}` : `Board ${p.x.id}`),
+    clueWords(id) {
+      const c = clueOf(id);
+      return c ? c.words : undefined;
+    },
+    caseCard(p) {
+      if (p.kind !== "experiment" || !caseBoards.has(p.x.id)) return null;
+      const last = caseBoards.get(p.x.id) === theCase.clues.length;
+      return { title: t("case.found"), ...(last ? { accuse: () => caseScreens().accuse() } : {}) };
+    },
   };
 }

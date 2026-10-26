@@ -404,6 +404,9 @@ html.less-motion .mark-banner { animation-name: mark-fade; }
 .dest-name { max-width: 100%; font: 600 30px/1.08 var(--round); letter-spacing: 0.01em; text-wrap: balance; overflow-wrap: break-word; }
 .dest-place { max-width: 100%; font: 600 16px/1.2 var(--round); color: var(--ink-soft); text-wrap: balance; }
 .dest-place[hidden] { display: none; }
+/* a clue's one sentence (a mystery case): smaller, up to four lines */
+.dest-banner.clue .dest-glass { padding: 11px 20px 10px; border-radius: 22px; }
+.dest-banner.clue .dest-name { font: 600 19px/1.25 var(--round); letter-spacing: 0; }
 .dest-banner.again .dest-glass { animation: dest-fade-in 0.2s ease both; }
 .dest-banner.leaving .dest-glass { animation: dest-out 0.26s ease-in both; }
 .dest-banner:is(.again, .leaving) .twinkle { display: none; }
@@ -859,6 +862,18 @@ html.less-motion .card .coins-chip { animation: none; }
 .viewer .viewer-stage:active { cursor: grabbing; }
 .viewer .viewer-zoom { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
 .viewer img { position: absolute; display: block; object-fit: cover; border-radius: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+/* what the game draws on the picture (a clue's date stamp): a box exactly over it, sized in its own units */
+.viewer .viewer-deco { position: absolute; pointer-events: none; container-type: size; }
+/* a clue's sentence, under the picture; the stage stops above it (--cap-h, viewer.ts) */
+.viewer.captioned .viewer-stage { bottom: calc(var(--foot) + var(--cap-h, 0px)); }
+.viewer-foot {
+  position: absolute; left: 16px; right: 16px; bottom: calc(var(--foot) + 4px); max-width: 520px; margin: 0 auto;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+.viewer-foot[hidden] { display: none; }
+.viewer-caption { padding: 10px 16px; border-radius: 18px; text-align: center; font: 600 16px/1.3 var(--round); text-wrap: balance; }
+.viewer-caption[hidden], .viewer-action[hidden] { display: none; }
+.viewer-action { min-width: 200px; min-height: 56px; margin-bottom: 6px; font-size: 20px; }
 html.less-motion .viewer { animation: none; }
 
 /* ---------- a phone held sideways ----------

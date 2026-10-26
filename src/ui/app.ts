@@ -562,9 +562,13 @@ function drawStuck(): void {
   stuckNote.hidden = false;
   helperBtns.shuffle.btn.classList.toggle("beckon", shuffle);
 }
-// a finished destination: its name over the postcard while it is open, gone with it (destination.ts)
+// a finished destination: its name over the postcard while it is open, gone with it (destination.ts);
+// a mystery clue (the dev menu's pilot): its one sentence in place of a name, or nothing for a wordless one
 on("destination:reveal", (d) => {
-  if (screen === "board") destBanner.show(d, host);
+  if (screen !== "board") return;
+  const words = import.meta.env.MODE !== "release" ? dev?.clueWords(d.id) : undefined;
+  if (words === undefined) destBanner.show(d, host);
+  else if (words) destBanner.showClue(words, host, d.again);
 });
 on("destination:done", () => destBanner.hide());
 on("board:stuck", ({ doomed }) => {
@@ -892,12 +896,15 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement):
 /** An experiment board's card (the dev menu's, practice): the campaign's card, with the next experiment for Next. */
 function showExperimentWin(w: Extract<Win, { kind: "experiment" }>, gallery: HTMLElement): void {
   const p = play;
-  const after = p && dev?.hasNext(p);
+  // a board of the mystery case: "Clue found!", and after its last board the accusation (case-screens.ts)
+  const clue = p ? dev?.caseCard(p) : null;
+  const accuse = clue?.accuse;
+  const after = p && !accuse && dev?.hasNext(p);
   winVeil.replaceChildren(
     h(
       "div",
       { class: "card" },
-      h("h2", {}, t("win.title")),
+      h("h2", {}, clue ? clue.title : t("win.title")),
       gallery,
       h(
         "div",
@@ -905,7 +912,14 @@ function showExperimentWin(w: Extract<Win, { kind: "experiment" }>, gallery: HTM
         h("div", { class: "stat glass" }, h("b", {}, String(w.moves)), h("span", {}, t("win.moves"))),
         h("div", { class: "stat glass" }, h("b", {}, clock(w.ms)), h("span", {}, t("win.time"))),
       ),
-      after
+      accuse
+        ? withClick(button("amber next", "case.accuse", t("case.accuse")), () =>
+            leaveTo("case-accuse", () => {
+              hideCard(winVeil);
+              accuse();
+            }),
+          )
+        : after
         ? h(
             "div",
             { class: "row" },
@@ -1197,6 +1211,7 @@ export async function startApp(): Promise<void> {
         },
         cancelGuide: () => guide.cancel(),
         showAll: (on) => albumsUi.showAll(on),
+        home: goHome,
       });
     })().catch((err: unknown) => console.warn("[dev-menu] did not load", err));
   }

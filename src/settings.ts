@@ -64,6 +64,21 @@ export function choose(patch: Omit<Chosen, "v">): void {
   changed();
 }
 
+/**
+ * The dev menu's own values kept on this device beside the settings (the object is one
+ * whole, so they ride in it): a key that starts "dev", read and written by dev-only code
+ * alone, so a release build never writes one. Read once the settings have loaded
+ * (loadSettings); undefined before that and when never kept.
+ */
+export function devValue(key: `dev${string}`): unknown {
+  return (chosen as Record<string, unknown>)[key];
+}
+export function keepDevValue(key: `dev${string}`, value: unknown): void {
+  chosen = { ...chosen, [key]: value } as Chosen;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => void saveDeviceSettings(chosen), 400);
+}
+
 /** Run `listener` whenever a setting may have changed, whoever changed it. Returns the unsubscribe. */
 export function onSettingsChange(listener: () => void): () => void {
   listeners.add(listener);
