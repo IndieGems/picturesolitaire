@@ -200,7 +200,7 @@ html.less-motion .home-note { animation: none; }
 /* Art's drawn title (2 : 1, its own lip and shadow): 300-340 px on a phone, growing with a
    tablet's home (the 1400 px file there, sharp to ~700 px; wordmark.ts); a short screen gives it
    less so Play stays in view */
-.home h1 { margin: 0; width: min(100%, calc(340px * var(--k)), 600px, calc((100dvh - 430px) * 2)); min-width: 200px; line-height: 0; }
+.home h1 { margin: 0; width: min(100%, calc(340px * var(--k)), 600px, calc((100dvh - 500px) * 2)); min-width: 200px; line-height: 0; }
 .home h1 picture, .home .wordmark { display: block; width: 100%; height: auto; }
 /* where the player is: the trip and how far through it, over the board's number (and its hard tag) */
 .home .where { display: flex; flex-direction: column; align-items: center; gap: calc(3px * var(--k)); padding: calc(8px * var(--k)) calc(20px * var(--k)); font-size: calc(18px * var(--k)); font-weight: 600; text-align: center; }
@@ -754,8 +754,13 @@ html.less-motion .marker.next::after { animation-duration: 3.4s; }
 .daily-btn .words { display: flex; flex-direction: column; gap: calc(4px * var(--k)); min-width: 0; }
 .daily-btn .words b { font: 600 calc(18px * var(--k))/1.1 var(--round); }
 .daily-btn .words span { font: 500 calc(13px * var(--k))/1.2 var(--round); color: var(--ink-soft); white-space: nowrap; }
+/* the Traveling Detective's button: the daily's shape, its line (the case's name and how far) may take two */
+.btn.daily-btn.detective { min-height: calc(62px * var(--k)); padding-top: calc(8px * var(--k)); padding-bottom: calc(8px * var(--k)); }
+.daily-btn.detective .words span { white-space: normal; }
 /* a short phone: the three stacks over the title make way for the buttons */
 @media (max-height: 720px) { .home .emblem { display: none; } }
+/* a short phone, with the Traveling Detective's row too: the rows sit closer, so the last is never cut */
+@media (max-height: 700px) { .home { gap: calc(15px * var(--k)); } }
 
 /* the results screen: the player's result, the line that says what counts, then the friends' rows */
 .daily-you { max-width: 440px; margin: 4px auto 10px; padding: 14px 18px; border-radius: 22px; text-align: center; }
@@ -921,8 +926,12 @@ html.less-motion .viewer { animation: none; }
     column-gap: 28px; row-gap: 14px; justify-items: center;
     padding: calc(var(--row-bottom) + 4px) 24px calc(var(--foot) + 8px);
   }
-  .home .brand { grid-column: 1; grid-row: 2 / 5; align-self: center; gap: 14px; }
-  .home h1 { width: min(100%, 340px, calc((100dvh - 190px) * 2)); }
+  /* the title, the daily and the Traveling Detective on the left; where the player is, Play and the tiles on the right */
+  .home { row-gap: 10px; }
+  .home .brand { grid-column: 1; grid-row: 2; align-self: center; gap: 14px; }
+  .home h1 { width: min(100%, 340px, calc((100dvh - 250px) * 2)); }
+  .home .daily-btn { grid-column: 1; grid-row: 3; }
+  .home .daily-btn.detective { grid-row: 4; }
   .home .where { grid-column: 2; grid-row: 2; }
   .home .play { grid-column: 2; grid-row: 3; }
   .home .more { grid-column: 2; grid-row: 4; }

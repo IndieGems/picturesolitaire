@@ -1,32 +1,38 @@
-// A mystery case's own screens (the pilot, "Murder on the Melusine"): the EVIDENCE
-// BINDER and the ACCUSATION. DEV ONLY, as the case is (case.ts): the dev menu creates
-// them, so a release build carries none of this.
+// The Traveling Detective's screens (the case, "Murder on the Melusine": case.ts): the CASE
+// itself, its EVIDENCE BINDER and the ACCUSATION. Home's Traveling Detective button opens the
+// case (the creator, 2026-10-25); every screen here is a layer over home's, and Back goes a
+// step back (to the case from the binder or the accusation, then home).
 //
+//   the case        Art's cover of the case, its name, how far the player is ("4 of 15
+//                   clues found"), and what is next: Play clue N (the first board not yet
+//                   won; the boards play in story order), then after board 15 "Name the
+//                   killer", then the verdict as it was, its explanation one tap away. Under
+//                   it the evidence binder, and the fifteen boards: won ones ticked and
+//                   played again on a tap, the next one lit, the rest waiting.
 //   the binder      the case's passport page: a brown folder with the case's name, open
 //                   at its pages: the SUSPECTS first (their portraits, once found), then
 //                   the CLUES in the case's order. A found clue opens full size with its
 //                   sentence under it, so a clock, the photo's date stamp or running ink
 //                   can be read; one not found yet is a blank with its number.
-//   the accusation  after board 15 (or the dev menu's "Accuse now"): "Who killed Oskar
-//                   Brandt?" (the four portraits), then "Which picture proves it?" (the
-//                   clues found; each opens full size, with "This proves it" under it).
+//   the accusation  after board 15: "Who killed Oskar Brandt?" (the four portraits), then
+//                   "Which picture proves it?" (the clues found; each opens full size, with
+//                   "This proves it" under it).
 //   the verdict     the culprit with the gold proof: "Case closed!" and the gold stamp
 //                   lands; with an accepted proof: "Solved!"; anything else: "Not quite."
 //                   Then the detective explains, four lines, each with its pictures, and
-//                   Done. Never a dead end: Back is always there, and the case is done.
+//                   Done. Never a dead end: Back is always there, and the case is done; the
+//                   first verdict stands, and the case shows it again as it was.
 //
-// `case:verdict` { right, gold } goes out as the verdict shows; the gold stamp lands
+// `case:verdict` { right, gold } goes out as the verdict is reached; the gold stamp lands
 // 0.76 s after it, on Audio's thump. Less motion: it fades in, there by the same moment.
 //
 // The game draws a clue's own writing (the photo's "10:25 PM" date stamp) over its
-// picture, here and on the board's postcard (drawStamp, given to the board by the dev
-// menu). A clue whose picture Art has not made yet stands in as a numbered card with its
-// label, drawn here.
+// picture, here and on the board's postcard (drawStamp, given to the board by app.ts). A
+// clue whose picture Art has not made yet stands in as a numbered card with its label.
 //
-// The two screens are a layer over the app's (z 25: over the board and its cards, under
-// the full-size view and the gear), with the standard's top row: the title on the left,
-// Back then the gear at the right end. Their words: the case's own from its file, the
-// rest from the locale files (case.*).
+// The layer sits over the app's screens (z 25: over home, under the full-size view and the
+// gear), with the standard's top row: the title on the left, Back then the gear at the right
+// end. Words: the case's own from its file, the rest from the locale files (case.*).
 
 import "./case.css";
 import { ICONS } from "./icons";
@@ -35,7 +41,26 @@ import { emit } from "../events";
 import { sharpCopy, type Copy, type Picture } from "./catalogue";
 import { createViewer } from "./viewer";
 import { keepFitted } from "./fit";
-import { clueImage, clueName, clueOf, foundClues, isFound, judge, settle, theCase, verdictLine, type Clue, type Suspect, type Verdict } from "./case";
+import {
+  caseBoards,
+  caseCount,
+  clueImage,
+  clueName,
+  clueOf,
+  foundClues,
+  isWon,
+  judge,
+  nextBoard,
+  onCase,
+  settle,
+  theCase,
+  theVerdict,
+  verdictLine,
+  type CaseBoard,
+  type Clue,
+  type Kept,
+  type Suspect,
+} from "./case";
 
 /** The gold stamp starts down at this, after case:verdict, and lands LAND_MS later: 0.76 s, Audio's thump. */
 const STAMP_DROP_AT_MS = 460;
@@ -59,6 +84,8 @@ function btn(cls: string, press: string, label: string, glyph = ""): HTMLButtonE
 }
 
 const lessMotion = () => document.documentElement.classList.contains("less-motion") || matchMedia("(prefers-reduced-motion: reduce)").matches;
+const coverUrl = () => `${import.meta.env.BASE_URL}art/cases/${theCase.id}-cover.webp`;
+const stampUrl = () => `${import.meta.env.BASE_URL}art/stamps/stamp-${theCase.id}.webp`;
 
 /**
  * A clue's own writing, over its picture: `box` lies on the picture's whole extent and
@@ -110,8 +137,10 @@ const sizes = new ResizeObserver((entries) => {
 type Nav = {
   /** The app's column: the layer goes in it. */
   app: HTMLElement;
-  /** Done: home. */
+  /** Back from the case: home. */
   home(): void;
+  /** Play one of the case's boards. */
+  play(b: CaseBoard): void;
 };
 
 export function createCaseScreens(nav: Nav) {
@@ -129,21 +158,29 @@ export function createCaseScreens(nav: Nav) {
   layer.append(pill, back, scroll, foot);
   nav.app.append(layer);
 
-  /** What Back does now (a step back in the accusation, or close). */
-  let onBack: () => void = close;
+  /** What Back does now: a step back (the accusation's), to the case, or home. */
+  let onBack: () => void = () => leave();
   back.addEventListener("click", () => onBack());
   let timers: number[] = [];
+  /** Which screen is up, so the case redraws when the record lands. */
+  let at: "case" | "binder" | "other" | null = null;
 
   function close(): void {
     for (const id of timers) clearTimeout(id);
     timers = [];
     layer.hidden = true;
+    at = null;
     viewer.close();
   }
+  function leave(): void {
+    close();
+    nav.home();
+  }
 
-  function up(title: string): void {
+  function up(title: string, where: "case" | "binder" | "other"): void {
     for (const id of timers) clearTimeout(id);
     timers = [];
+    at = where;
     pill.textContent = title;
     foot.replaceChildren();
     foot.hidden = true;
@@ -208,39 +245,104 @@ export function createCaseScreens(nav: Nav) {
   const portraits = () => theCase.suspects.map((s) => ({ s, c: clueOf(s.portrait)! }));
   const evidence = () => theCase.clues.filter((c) => !theCase.suspects.some((s) => s.portrait === c.id));
 
+  // ---------- the case ----------
+
+  function caseScreen(): void {
+    up(t("home.detective"), "case");
+    onBack = leave;
+    const card = el("div", "card case-card case-home");
+    const cover = el("img", "case-cover");
+    cover.alt = "";
+    cover.addEventListener("error", () => cover.remove(), { once: true });
+    cover.src = coverUrl();
+    const { done, all } = caseCount();
+    card.append(cover, el("h2", "", theCase.title), el("p", "case-progress", t("case.progress", { done, all })));
+    // what is next: the next board, the accusation, or the verdict as it was
+    const kept = theVerdict();
+    const next = nextBoard();
+    if (kept) {
+      const said = el("div", `case-said glass ${kept.v}`);
+      if (kept.v === "gold") {
+        const mini = el("img", "case-said-stamp");
+        mini.alt = "";
+        mini.addEventListener("error", () => mini.remove(), { once: true });
+        mini.src = stampUrl();
+        said.append(mini);
+      }
+      said.append(el("span", "", `${t(kept.v === "wrong" ? "case.wrong" : kept.v === "gold" ? "case.closed" : "case.solved")} ${verdictLine(kept.v, kept.suspect)}`));
+      card.append(said);
+      const again = btn("case-go", "case.review", t("case.how"));
+      again.addEventListener("click", () => showVerdict(kept, false));
+      card.append(again);
+    } else if (next === null) {
+      const go = btn("amber case-go", "case.accuse", t("case.accuse"));
+      go.addEventListener("click", () => accuse());
+      card.append(go);
+    } else {
+      const go = btn("amber case-go", "case.play", t("case.play", { n: next }), ICONS.play);
+      go.addEventListener("click", () => void playBoard(next));
+      card.append(go);
+    }
+    const binderBtn = btn("case-binder-btn", "case.openBinder", t("case.openBinder"));
+    binderBtn.addEventListener("click", () => binder());
+    card.append(binderBtn);
+    // the boards, in story order: won ones ticked (a tap plays one again), the next lit, the rest waiting
+    card.append(el("h3", "case-boards-head", t("case.clues")));
+    const grid = el("div", "case-boards");
+    for (const c of theCase.clues) {
+      const won = isWon(c.n);
+      const isNext = c.n === next;
+      const tile = btn(`case-board${won ? " won" : ""}${isNext ? " next" : ""}${!won && !isNext ? " waiting" : ""}`, "case.board", "");
+      tile.append(el("b", "", String(c.n)));
+      if (won) tile.insertAdjacentHTML("beforeend", ICONS.check);
+      tile.setAttribute("aria-label", won ? t("case.replay", { n: c.n }) : isNext ? t("case.play", { n: c.n }) : t("case.notFound", { n: c.n }));
+      if (won || isNext) tile.addEventListener("click", () => void playBoard(c.n));
+      else tile.disabled = true;
+      grid.append(tile);
+    }
+    card.append(grid);
+    scroll.replaceChildren(card);
+  }
+
+  async function playBoard(n: number): Promise<void> {
+    const b = (await caseBoards()).find((x) => x.n === n);
+    if (!b) return;
+    close();
+    nav.play(b);
+  }
+
+  // the record landed or changed (a board won elsewhere, the account's copy): the case redraws
+  onCase(() => {
+    if (at === "case") caseScreen();
+  });
+
   // ---------- the binder ----------
 
   let page = 0;
 
   function binder(): void {
-    up(t("case.binder"));
-    onBack = close;
+    up(t("case.binder"), "binder");
+    onBack = caseScreen;
     const book = el("div", "pp-book case-book");
     book.append(el("div", "pp-brand", theCase.title));
-    // Art's cover of the case (the ship at dusk), once there is one
-    const cover = el("img", "case-cover");
-    cover.alt = "";
-    cover.addEventListener("error", () => cover.remove(), { once: true });
-    cover.src = `${import.meta.env.BASE_URL}art/cases/${theCase.id}-cover.webp`;
-    if (page === 0) book.append(cover);
     const sheet = el("section", "pp-page");
     const head = el("div", "pp-head case-head");
     const titles = el("div", "pp-titles");
     const grid = el("div", page === 0 ? "pp-grid case-suspects" : "pp-grid");
     if (page === 0) {
-      const found = portraits().filter(({ c }) => isFound(c.n)).length;
+      const found = portraits().filter(({ c }) => isWon(c.n)).length;
       titles.append(el("h2", "pp-trip", t("case.suspects")), el("span", "pp-count", t("case.count", { done: found, all: theCase.suspects.length })));
       for (const { s, c } of portraits()) {
-        const card = isFound(c.n) ? clueCard(c, () => look(c), [s.name, s.who]) : blank(c);
+        const card = isWon(c.n) ? clueCard(c, () => look(c), [s.name, s.who]) : blank(c);
         card.dataset.clue = c.id;
         grid.append(card);
       }
     } else {
       const list = evidence();
-      const found = list.filter((c) => isFound(c.n)).length;
+      const found = list.filter((c) => isWon(c.n)).length;
       titles.append(el("h2", "pp-trip", t("case.clues")), el("span", "pp-count", t("case.count", { done: found, all: list.length })));
       for (const c of list) {
-        const card = isFound(c.n) ? clueCard(c, () => look(c)) : blank(c);
+        const card = isWon(c.n) ? clueCard(c, () => look(c)) : blank(c);
         card.dataset.clue = c.id;
         grid.append(card);
       }
@@ -270,8 +372,8 @@ export function createCaseScreens(nav: Nav) {
       if (Math.abs(dx) >= 56 && Math.abs(dx) > Math.abs(dy) * 1.5) turn(dx < 0 ? 1 : 0);
     });
     scroll.replaceChildren(book, turnRow);
-    // every clue found: the accusation, from here too
-    if (foundClues().length === theCase.clues.length) {
+    // every clue found and no verdict yet: the accusation, from here too
+    if (nextBoard() === null && !theVerdict()) {
       const accuseBtn = btn("amber case-go", "case.accuse", t("case.accuse"));
       accuseBtn.addEventListener("click", () => accuse());
       foot.append(accuseBtn);
@@ -288,8 +390,8 @@ export function createCaseScreens(nav: Nav) {
   // ---------- the accusation ----------
 
   function accuse(): void {
-    up(theCase.title);
-    onBack = close;
+    up(theCase.title, "other");
+    onBack = caseScreen;
     const card = el("div", "card case-card");
     card.append(el("h2", "", theCase.question));
     const grid = el("div", "pp-grid case-suspects");
@@ -305,7 +407,7 @@ export function createCaseScreens(nav: Nav) {
   }
 
   function prove(s: Suspect): void {
-    up(theCase.title);
+    up(theCase.title, "other");
     onBack = accuse;
     const card = el("div", "card case-card");
     const who = el("div", "case-accused glass");
@@ -315,7 +417,11 @@ export function createCaseScreens(nav: Nav) {
     card.append(who, el("h2", "", theCase.proofQuestion));
     const grid = el("div", "pp-grid");
     for (const c of foundClues()) {
-      const choose = () => verdict(s, c);
+      const choose = () => {
+        const k: Kept = { v: judge(s.id, c.id), suspect: s.id, proof: c.id };
+        settle(k);
+        showVerdict(k, true);
+      };
       const tile = clueCard(c, () => look(c, choose));
       tile.dataset.clue = c.id;
       grid.append(tile);
@@ -326,17 +432,17 @@ export function createCaseScreens(nav: Nav) {
 
   // ---------- the verdict ----------
 
-  function verdict(s: Suspect, proof: Clue): void {
-    const v: Verdict = judge(s.id, proof.id);
-    settle(v);
-    up(theCase.title);
-    onBack = close;
+  /** The verdict: `fresh` as it is reached (its sound, the stamp coming down), else shown again as it was. */
+  function showVerdict(k: Kept, fresh: boolean): void {
+    const v = k.v;
+    up(theCase.title, "other");
+    onBack = caseScreen;
     const card = el("div", `card case-card case-verdict ${v}`);
     const heading = el("h2", "", t(v === "gold" ? "case.closed" : v === "solved" ? "case.solved" : "case.wrong"));
     // the gold stamp comes down on the file, over its heading (Art's, or a gold ring with its words)
     const spot = el("div", "case-stamp-spot");
     if (v === "gold") card.append(spot);
-    card.append(heading, el("p", "case-line", verdictLine(v, s.id)));
+    card.append(heading, el("p", "case-line", verdictLine(v, k.suspect)));
     if (v === "gold") {
       const stamp = el("div", "case-stamp");
       stamp.setAttribute("role", "img");
@@ -347,19 +453,21 @@ export function createCaseScreens(nav: Nav) {
         stamp.classList.add("drawn");
         stamp.replaceChildren(el("b", "", t("case.closedStamp")));
       }, { once: true });
-      img.src = `${import.meta.env.BASE_URL}art/stamps/stamp-${theCase.id}.webp`;
+      img.src = stampUrl();
       stamp.append(img);
-      stamp.style.animationDelay = `${STAMP_DROP_AT_MS}ms`;
-      stamp.classList.add(lessMotion() ? "fading" : "landing");
+      if (fresh) {
+        stamp.style.animationDelay = `${STAMP_DROP_AT_MS}ms`;
+        stamp.classList.add(lessMotion() ? "fading" : "landing");
+        if (!lessMotion())
+          timers.push(window.setTimeout(() => {
+            for (const [i, xy] of [[-8, 20], [104, 12], [96, 96], [2, 98]].entries()) {
+              const tw = el("i", "twinkle");
+              tw.style.cssText = `left:${xy[0]}%;top:${xy[1]}%;--s:${22 + (i % 2) * 6}px;animation-delay:${i * 0.05}s`;
+              stamp.append(tw);
+            }
+          }, STAMP_DROP_AT_MS + LAND_MS));
+      }
       spot.append(stamp);
-      if (!lessMotion())
-        timers.push(window.setTimeout(() => {
-          for (const [i, at] of [[-8, 20], [104, 12], [96, 96], [2, 98]].entries()) {
-            const tw = el("i", "twinkle");
-            tw.style.cssText = `left:${at[0]}%;top:${at[1]}%;--s:${22 + (i % 2) * 6}px;animation-delay:${i * 0.05}s`;
-            stamp.append(tw);
-          }
-        }, STAMP_DROP_AT_MS + LAND_MS));
     }
     // the detective explains, a line at a time, each with its pictures
     card.append(el("h3", "case-how", t("case.how")));
@@ -380,17 +488,16 @@ export function createCaseScreens(nav: Nav) {
     }
     card.append(why);
     const done = btn("amber case-go", "case.done", t("case.done"));
-    done.addEventListener("click", () => {
-      close();
-      nav.home();
-    });
+    done.addEventListener("click", () => caseScreen());
     card.append(done);
     scroll.replaceChildren(card);
-    emit("case:verdict", { right: v !== "wrong", gold: v === "gold" }); // Audio's resolve, its thump on the stamp
+    if (fresh) emit("case:verdict", { right: v !== "wrong", gold: v === "gold" }); // Audio's resolve, its thump on the stamp
   }
 
   return {
-    /** The binder, at the suspects' page (or the page it was left at). */
+    /** The case: its cover, how far the player is, what is next. */
+    open: caseScreen,
+    /** The binder, at the page it was left at. */
     binder,
     /** The accusation, from its first question. */
     accuse,

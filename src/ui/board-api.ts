@@ -23,5 +23,5 @@
 //   dev.info()             id, size, pictures and shapes, stacks, peek, par, line, axes
 // None of it changes the rules or what the win checker replays; practice gating is ours.
 
-export { openBoard, levelCount } from "../board";
+export { openBoard, levelCount, setClueWords, setPostcardArt } from "../board";
 export type { BoardDev, BoardHandle, BoardInfo, BoardPicture, DevStep, HelperCounts } from "../board";

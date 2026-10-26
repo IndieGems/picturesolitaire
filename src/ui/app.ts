@@ -61,10 +61,12 @@ import { closed, opened } from "./dialogs";
 import { markOf, markTag, markWords, pretendMarks, type Mark } from "./marks";
 import { createDestinationBanner, type Destination } from "./destination";
 import { createPassport, type AfterStamp } from "./passport";
+import { caseBoards, caseCount, clueOf, loadCase, nextBoard, onCase, theCase, theVerdict, win as caseWin, type CaseBoard } from "./case";
+import { createCaseScreens, drawStamp } from "./case-screens";
 import { currentTrip, tripById, tripCount, tripEndingAt, tripName } from "./trips";
 import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy } from "./catalogue";
 import { mountParticles } from "./particles";
-import { levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
+import { levelCount, openBoard, setClueWords, setPostcardArt, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
 import type { DevMenu } from "./dev-menu";
 
 // ---------- a little DOM ----------
@@ -101,6 +103,15 @@ const homePlay = button("amber play", "home.play", icon("play"), homePlayLabel);
 const homePassport = button("tile-btn passport", "home.passport", icon("passport"), h("span", {}, t("home.passport")));
 // the daily puzzle (daily.ts): its Home button shows today's state, and is hidden until the day's board is known
 const dailyUi = createDaily({ home: () => goHome(), show: () => show("daily"), play: (d) => openPlay({ kind: "daily", d }) });
+// the Traveling Detective (case.ts, case-screens.ts; the creator, 2026-10-25): the case's own button, as
+// wide as the daily's, its name and how far the player is under the title
+const homeDetectiveStatus = h("span");
+const homeDetective = button(
+  "daily-btn detective",
+  "home.detective",
+  icon("detective"),
+  h("span", { class: "words" }, h("b", {}, t("home.detective")), homeDetectiveStatus),
+);
 // shown once the challenge boards exist: nothing promises a screen with nothing on it
 const homeChallenges = button("tile-btn challenges", "home.challenges", icon("challenges"), h("span", {}, t("home.challenges")));
 homeChallenges.hidden = true;
@@ -132,6 +143,7 @@ const home = h(
   homeWhere,
   homePlay,
   dailyUi.homeButton,
+  homeDetective,
   h("div", { class: "more" }, homePassport, homeChallenges),
 );
 
@@ -191,6 +203,21 @@ const offlineVeil = h(
 const albumsUi = createAlbums({ home: () => goHome(), show: (which) => show(which) });
 // the passport (passport.ts): a page per trip, and the stamp moment
 const passportUi = createPassport({ home: () => goHome(), show: () => show("passport") });
+// the Traveling Detective's case (case-screens.ts): a layer over home; a board of it plays as any other
+const caseUi = (() => {
+  const screens = createCaseScreens({ app, home: () => goHome(), play: (c) => openPlay({ kind: "case", c }) });
+  return {
+    ...screens,
+    /** Play the case's board `n`. */
+    async playNumber(n: number): Promise<void> {
+      const c = (await caseBoards()).find((b) => b.n === n);
+      if (c) openPlay({ kind: "case", c });
+    },
+  };
+})();
+// the board: a clue's sentence counts toward its postcard's hold, and the photo's date stamp is drawn on it
+setClueWords((id) => clueOf(id)?.words || undefined);
+setPostcardArt((box, id) => drawStamp(box, id));
 // the challenge route (challenges.ts)
 const routeUi = createChallenges({ home: () => goHome(), show: () => show("challenges"), play: (c) => openPlay({ kind: "challenge", c }) });
 
@@ -209,6 +236,7 @@ export type Play = (
   | { kind: "challenge"; c: Challenge }
   | { kind: "daily"; d: Daily }
   | { kind: "experiment"; x: Experiment }
+  | { kind: "case"; c: CaseBoard }
 ) & {
   practice?: boolean;
   guide?: boolean;
@@ -224,6 +252,7 @@ const samePlay = (a: Play | null, b: Play): boolean => {
   if (a.kind === "campaign") return a.level === (b as typeof a).level;
   if (a.kind === "challenge") return a.c.id === (b as typeof a).c.id;
   if (a.kind === "experiment") return a.x.id === (b as typeof a).x.id;
+  if (a.kind === "case") return a.c.id === (b as typeof a).c.id;
   return a.d.id === (b as typeof a).d.id;
 };
 
@@ -273,6 +302,7 @@ function show(next: Screen): void {
   albumsUi.albumScreen.hidden = next !== "album";
   passportUi.screen.hidden = next !== "passport";
   if (next !== "passport") passportUi.leave();
+  if (next !== "home") caseUi.close();
   routeUi.screen.hidden = next !== "challenges";
   dailyUi.screen.hidden = next !== "daily";
   if (next === "home") drawHomeNote();
@@ -306,6 +336,11 @@ function drawHome(): void {
   if (trip) homeTrip.textContent = t("home.trip", { trip: tripName(trip), ...tripCount(trip) });
   homePlayLabel.textContent = t("home.play");
   homeChallenges.hidden = !routeUi.exists();
+  // the case: its name, and how far ("Murder on the Melusine · 4 of 15"), or how it ended
+  const kept = theVerdict();
+  homeDetectiveStatus.textContent = kept
+    ? t(kept.v === "wrong" ? "home.caseOver" : "home.caseClosed", { title: theCase.title })
+    : t("home.case", { title: theCase.title, ...caseCount() });
 }
 
 let playing = false;
@@ -331,6 +366,7 @@ homePlay.addEventListener("click", async () => {
 });
 
 homePassport.addEventListener("click", () => passportUi.open());
+homeDetective.addEventListener("click", () => caseUi.open());
 
 /** Paid verdicts of claims from an earlier session (Server's claims.ts marks them resumed), waiting for home. */
 const lastWins: Verdict[] = [];
@@ -380,7 +416,7 @@ function openPlay(next: Play): void {
     // the board reports its helpers and undo through board:changed, once at start too
     drawHelpers({ undo: 3, hint: 3, shuffle: 3 }, false);
     guide.cancel();
-    board = openBoard(host, next.kind === "campaign" ? next.level : next.kind === "challenge" ? next.c.level : next.kind === "daily" ? next.d : next.x);
+    board = openBoard(host, next.kind === "campaign" ? next.level : next.kind === "challenge" ? next.c.level : next.kind === "daily" ? next.d : next.kind === "case" ? next.c : next.x);
     showMarkBanner(next.kind === "campaign" ? markOf(campaignLevel(next.level)) : null);
     if (import.meta.env.MODE !== "release") dev?.opened(board);
     // the first board teaches the game, once the save says the player has not learnt it yet;
@@ -433,6 +469,10 @@ function drawPill(): void {
   }
   if (play.kind === "experiment") {
     levelPill.replaceChildren(dev?.label(play) ?? play.x.id, ...(tag ? [tag] : []));
+    return;
+  }
+  if (play.kind === "case") {
+    levelPill.replaceChildren(h("span", { class: "level-name" }, t("case.board", { n: play.c.n })));
     return;
   }
   const par = play.kind === "challenge" ? play.c.par : play.d.par;
@@ -595,7 +635,7 @@ function pointAt(target: HTMLElement): void {
 // a mystery clue (the dev menu's pilot): its one sentence in place of a name, or nothing for a wordless one
 on("destination:reveal", (d) => {
   if (screen !== "board") return;
-  const words = import.meta.env.MODE !== "release" ? dev?.clueWords(d.id) : undefined;
+  const words = clueOf(d.id)?.words;
   if (words === undefined) destBanner.show(d, host);
   else if (words) destBanner.showClue(words, host, d.again);
 });
@@ -673,6 +713,7 @@ type Win = (
   | { kind: "challenge"; c: Challenge; moves: number; ms: number; first: boolean; better: boolean }
   | { kind: "daily"; d: Daily; moves: number; ms: number; first: boolean }
   | { kind: "experiment"; x: Experiment; moves: number; ms: number }
+  | { kind: "case"; c: CaseBoard; moves: number; ms: number }
 ) & {
   /** The win checker's word, once it lands (it may take a while offline). */
   verdict?: Verdict;
@@ -694,6 +735,12 @@ on("board:solved", ({ moves, ms, line }) => {
   // the dev menu's experiment boards: practice always (no checker lane knows them)
   if (play.kind === "experiment") {
     lastWin = { kind: "experiment", x: play.x, moves, ms, practice: true };
+    return;
+  }
+  // the detective's case: its clue is found, kept with the player (case.ts); no claim and no Coins
+  if (play.kind === "case") {
+    caseWin(play.c.n);
+    lastWin = { kind: "case", c: play.c, moves, ms };
     return;
   }
   let win: Win;
@@ -794,6 +841,7 @@ function showWin(): void {
   if (lastWin.kind === "challenge") return void showChallengeWin(lastWin, gallery);
   if (lastWin.kind === "daily") return void showDailyWin(lastWin, gallery);
   if (lastWin.kind === "experiment") return void (import.meta.env.MODE !== "release" && showExperimentWin(lastWin, gallery));
+  if (lastWin.kind === "case") return void showCaseWin(lastWin, gallery);
   if (lastWin.milestone) return void showMilestone(gallery);
   const { level, moves, ms } = lastWin;
   const practice = isPractice(lastWin);
@@ -933,15 +981,12 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement):
 /** An experiment board's card (the dev menu's, practice): the campaign's card, with the next experiment for Next. */
 function showExperimentWin(w: Extract<Win, { kind: "experiment" }>, gallery: HTMLElement): void {
   const p = play;
-  // a board of the mystery case: "Clue found!", and after its last board the accusation (case-screens.ts)
-  const clue = p ? dev?.caseCard(p) : null;
-  const accuse = clue?.accuse;
-  const after = p && !accuse && dev?.hasNext(p);
+  const after = p && dev?.hasNext(p);
   winVeil.replaceChildren(
     h(
       "div",
       { class: "card" },
-      h("h2", {}, clue ? clue.title : t("win.title")),
+      h("h2", {}, t("win.title")),
       gallery,
       h(
         "div",
@@ -949,14 +994,7 @@ function showExperimentWin(w: Extract<Win, { kind: "experiment" }>, gallery: HTM
         h("div", { class: "stat glass" }, h("b", {}, String(w.moves)), h("span", {}, t("win.moves"))),
         h("div", { class: "stat glass" }, h("b", {}, clock(w.ms)), h("span", {}, t("win.time"))),
       ),
-      accuse
-        ? withClick(button("amber next", "case.accuse", t("case.accuse")), () =>
-            leaveTo("case-accuse", () => {
-              hideCard(winVeil);
-              accuse();
-            }),
-          )
-        : after
+      after
         ? h(
             "div",
             { class: "row" },
@@ -968,6 +1006,60 @@ function showExperimentWin(w: Extract<Win, { kind: "experiment" }>, gallery: HTM
   );
   showCard(winVeil);
   drawCoins(w);
+}
+
+/**
+ * A case board's card: "Clue found!", the pictures (its clue among them, whole), moves and time,
+ * then the story on: the next board not yet won, else the accusation, else the case file.
+ * The case file (the case's own screen) is always beside it.
+ */
+function showCaseWin(w: Extract<Win, { kind: "case" }>, gallery: HTMLElement): void {
+  const toCase = () => {
+    goHome();
+    caseUi.open();
+  };
+  const nb = nextBoard();
+  const fileBtn = (amber: boolean) =>
+    withClick(button(amber ? "amber next" : "", "case.file", t("case.file")), () => leaveTo("case-file", toCase));
+  let next: HTMLElement;
+  if (nb !== null)
+    next = h(
+      "div",
+      { class: "row" },
+      fileBtn(false),
+      withClick(button("amber next", "case.play", t("case.nextClue"), icon("next")), () =>
+        leaveInto("case-next", () => void caseUi.playNumber(nb)),
+      ),
+    );
+  else if (!theVerdict())
+    next = h(
+      "div",
+      { class: "row" },
+      fileBtn(false),
+      withClick(button("amber next", "case.accuse", t("case.accuse")), () =>
+        leaveTo("case-accuse", () => {
+          goHome();
+          caseUi.accuse();
+        }),
+      ),
+    );
+  else next = fileBtn(true);
+  winVeil.replaceChildren(
+    h(
+      "div",
+      { class: "card" },
+      h("h2", {}, t("case.found")),
+      gallery,
+      h(
+        "div",
+        { class: "stats" },
+        h("div", { class: "stat glass" }, h("b", {}, String(w.moves)), h("span", {}, t("win.moves"))),
+        h("div", { class: "stat glass" }, h("b", {}, clock(w.ms)), h("span", {}, t("win.time"))),
+      ),
+      next,
+    ),
+  );
+  showCard(winVeil);
 }
 
 /** A challenge board's card: the pictures, then "Par N · You M". No fail: over par, it is still cleared. */
@@ -1175,6 +1267,7 @@ export async function startApp(): Promise<void> {
   // the first screen draws, and redraws when the record lands
   loadProgress();
   loadGuideSave();
+  loadCase();
   await Promise.all([
     Promise.race([
       Promise.all([face.load().catch(() => undefined), wordmark.decode().catch(() => undefined)]),
@@ -1184,6 +1277,9 @@ export async function startApp(): Promise<void> {
   ]);
 
   onProgress(drawHome);
+  onCase(() => {
+    if (screen === "home") drawHome();
+  });
   // a tablet's big column: home grows with it (style.css, --k), up to 1.7, never past what fits its height
   new ResizeObserver(() => {
     const k = Math.max(1, Math.min(1.7, app.clientWidth / 400, (app.clientHeight - 200) / 680));
@@ -1238,17 +1334,19 @@ export async function startApp(): Promise<void> {
           host.replaceChildren();
           board = null;
           boardWon = false;
-          openPlay({ ...p, practice: true });
+          // a case board counts as ever: its progress is the player's own, and nothing of it is for the server
+          openPlay(p.kind === "case" ? p : { ...p, practice: true });
         },
         now: () => ({ screen, play, board, won: boardWon }),
         practise() {
-          if (!play || play.practice) return;
+          if (!play || play.practice || play.kind === "case") return;
           play.practice = true;
           drawPill();
         },
         cancelGuide: () => guide.cancel(),
         showAll: (on) => albumsUi.showAll(on),
         home: goHome,
+        caseScreens: () => caseUi,
       });
     })().catch((err: unknown) => console.warn("[dev-menu] did not load", err));
   }

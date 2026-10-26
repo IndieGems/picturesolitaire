@@ -1,6 +1,6 @@
 {
   "v": 1,
-  "note": "The pilot case (docs/mystery-pilot.md; the answer in docs/mystery-pilot-solution.md), played from the dev menu only, as practice. UI's file: the words each clue picture carries (one sentence at most, none where the picture tells it), the suspects and their portraits, the answer, and the detective's explanation. The boards are Levels' (experiments.json, mel01-mel15); the pictures are Art's (pictures.json destinations, mel-01 to mel-15). A clue is named by its picture's name (Art's, in pictures.json); its label stands in only while the picture is missing. A clue's stamp is writing the game draws over its picture: its text, and the gaps from its right and bottom edges to the picture's, as fractions of the picture's width and height.",
+  "note": "The pilot case (docs/mystery-pilot.md; the answer in docs/mystery-pilot-solution.md), played from the dev menu only, as practice. UI's file: the one sentence each clue picture carries (the creator, 2026-10-25: every clue has a line, so the cadence never breaks), the suspects and their portraits, the answer, and the detective's explanation. The boards are Levels' (experiments.json, mel01-mel15); the pictures are Art's (pictures.json destinations, mel-01 to mel-15). A clue is named by its picture's name (Art's, in pictures.json); its label stands in only while the picture is missing. A clue's stamp is writing the game draws over its picture: its text, and the gaps from its right and bottom edges to the picture's, as fractions of the picture's width and height.",
   "id": "melusine",
   "title": "Murder on the Melusine",
   "question": "Who killed Oskar Brandt?",
@@ -12,14 +12,14 @@
     { "n": 4, "id": "mel-04", "label": "Margit", "words": "Margit, a dealer, swore she'd have the waltz at any price." },
     { "n": 5, "id": "mel-05", "label": "Professor Duval", "words": "Professor Duval, the old friend who found the waltz, says he sat in the front row all concert." },
     { "n": 6, "id": "mel-06", "label": "The cabin at dawn", "words": "7 am: Brandt is found poisoned, and the waltz is gone." },
-    { "n": 7, "id": "mel-07", "label": "The pocket watch", "words": "" },
-    { "n": 8, "id": "mel-08", "label": "The medicine bottle", "words": "" },
+    { "n": 7, "id": "mel-07", "label": "The pocket watch", "words": "Under his hand: his watch, stopped at 9:45." },
+    { "n": 8, "id": "mel-08", "label": "The medicine bottle", "words": "The doctor's sleeping drops, every last one in the pot." },
     { "n": 9, "id": "mel-09", "label": "A tray for two", "words": "His guest is already inside." },
     { "n": 10, "id": "mel-10", "label": "The new will", "words": "Unsigned, it would have left Clara nothing." },
-    { "n": 11, "id": "mel-11", "label": "The doctor's night", "words": "" },
-    { "n": 12, "id": "mel-12", "label": "Margit ashore", "words": "" },
+    { "n": 11, "id": "mel-11", "label": "The doctor's night", "words": "10:25: Dr Fehr is tending a seasick passenger." },
+    { "n": 12, "id": "mel-12", "label": "Margit ashore", "words": "10:25: Margit is still ashore, over a glass of wine." },
     { "n": 13, "id": "mel-13", "label": "A scrap of the waltz", "words": "Strauss's ink would be brown with age." },
-    { "n": 14, "id": "mel-14", "label": "The concert photo", "words": "", "stamp": { "text": "10:25 PM", "right": 0.06, "bottom": 0.08 } },
+    { "n": 14, "id": "mel-14", "label": "The concert photo", "words": "A passenger's snapshot of the concert.", "stamp": { "text": "10:25 PM", "right": 0.06, "bottom": 0.08 } },
     { "n": 15, "id": "mel-15", "label": "Budapest", "words": "Who killed Oskar Brandt?" }
   ],
   "suspects": [

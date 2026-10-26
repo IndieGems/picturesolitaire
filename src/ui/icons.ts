@@ -31,6 +31,7 @@ export const ICONS = {
   chevron: art("chevron"),
   albums: art("photos"),
   passport: art("passport"),
+  detective: art("detective"),
   challenges: art("route"),
   check: art("check"),
   lock: art("lock"),
