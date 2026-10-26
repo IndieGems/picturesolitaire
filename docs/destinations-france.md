@@ -22,8 +22,10 @@ gems and 3 silly.
   sparkle are protected works.
 - **The national estates.** Since 2016, a commercial image of one of the 21 *domaines
   nationaux* needs its manager's permission. These include Chambord, the Louvre and
-  Tuileries, Vincennes, Pierrefonds, the Palais de la Cité (the Sainte-Chapelle and
-  Conciergerie), Compiègne and Saint-Germain-en-Laye. All are left out.
+  Tuileries, Versailles, Fontainebleau, Vincennes, Pierrefonds, the Palais de la Cité (the
+  Sainte-Chapelle and Conciergerie), Compiègne and Saint-Germain-en-Laye. All are left out.
+  Checked against the decrees of 2017, 2021, 2022 and 2024 (Culture Ministry, 2026-10-26):
+  Mont-Saint-Michel, Carcassonne and Chenonceau are not on the list.
 - **Private buildings are fine to picture from outside.** French courts let an owner
   object only when a picture causes them real harm (Cour de cassation, 2004).
 - **No writing:** shop signs, boat names and carved inscriptions are kept out.
@@ -96,9 +98,8 @@ so the two never share a board:
 - **The Louvre Pyramid, the Pompidou Centre, the Grande Arche, the Millau Viaduct.**
   Modern works, and France has no freedom of panorama.
 - **The Eiffel Tower at night.** The lighting is protected.
-- **Chambord, the Louvre and the other national estates.** Their managers' permission is
+- **Chambord, the Louvre, Versailles and the other national estates.** Their managers' permission is
   needed for commercial images.
-- **Versailles.** The palace licenses commercial filming and images; left out to be safe.
 - **The Machines de l'Île elephant, Nantes, and La Maison Picassiette, Chartres.** Modern
   works by artists still in copyright.
 - **The Wall of Love and the Moulin Rouge.** Writing, and a famous sign.

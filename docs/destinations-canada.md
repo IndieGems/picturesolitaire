@@ -27,9 +27,8 @@ so the two never share a board:
 - Moraine Lake takes *Rowboat Lake*.
 - Abraham Lake takes *Frozen Bubble*.
 - The Yellowknife aurora takes *Aurora*.
-- Niagara takes *Ribbon Falls*.
 - Churchill takes *Polar Bear*.
-- Old Quebec takes *Castle*.
+- Old Quebec and Parliament Hill take *Castle*.
 - Percé and Hopewell take *Sea Stack*.
 - The gannets take *Puffin*.
 - Peggy's Cove takes *Cliff Lighthouse*.
@@ -66,10 +65,10 @@ so the two never share a board:
 
 | # | Place | Tag | Why | Best crop | Rights | Can the generator get it right? |
 | --- | --- | --- | --- | --- | --- | --- |
-| 12 | ✔ **Niagara Falls**, Ontario | famous | The great curve of the Horseshoe Falls in a cloud of mist. | A wide strip across the falls (board 81). | Safe. No boats with names. | Yes. |
+| 12 | ✔ **Parliament Hill**, Ottawa | famous | Gothic parliament buildings with green copper roofs and the Peace Tower, on a wooded cliff above the Ottawa River. | A wide strip across the towers (board 81). | Canada's law lets anyone picture a building. The clock face shows no readable numbers. | **Yes, made.** |
 | 13 | **Algonquin in autumn**, Ontario | famous | A still lake ringed by blazing red maples. | The maples. | Safe. | Yes. Too close to the Cabot Trail. |
 | 14 | ✔ **Old Quebec in winter** | famous | The turreted Château Frontenac above snowy roofs and the St Lawrence. | The towers and green copper roofs. | The 1893 building is long out of copyright, and Canada's law lets anyone picture a building. The hotel's name is a trademark, so no signs. | Yes (oil painting). |
-| 15 | **Montmorency Falls**, Quebec | hidden gem | A waterfall taller than Niagara, with a footbridge over it. | The falls. | Safe. | Yes. Too many waterfalls with Niagara. |
+| 15 | **Montmorency Falls**, Quebec | hidden gem | A waterfall taller than Niagara, with a footbridge over it. | The falls. | Safe. | Yes. |
 | 16 | ✔ **Percé Rock**, Gaspé | famous | A giant limestone ship of rock, pierced by an arch. | The arch. | Safe. | Yes. |
 | 17 | ✔ **The gannets of Bonaventure Island** | silly | Over 100,000 white gannets packed together on a cliff top. | Gannets close up. | Safe. | Yes. |
 
@@ -88,6 +87,8 @@ so the two never share a board:
 
 ## Left out, and why
 
+- **Niagara Falls.** Trip 1 has it already, from the New York side (board 2).
+- **Spirit Island, Maligne Lake.** Reported as sacred to the Stoney Nakoda, and landing on it is banned.
 - **The CN Tower.** Canada Lands licenses its image.
 - **SGang Gwaay's poles (Haida Gwaii).** A Haida heritage site, visited only with the
   Haida Watchmen.
@@ -102,7 +103,7 @@ so the two never share a board:
 ## The suggested 15
 
 8 famous, 4 hidden gems and 3 silly. A road trip from the Rockies across the Prairies,
-north for the aurora and the bears, then east through Quebec to Newfoundland.
+north for the aurora, by Ottawa and the bears, then east through Quebec to Newfoundland.
 
 | Board | Place | Tag | Shape | Style |
 | --- | --- | --- | --- | --- |
@@ -111,7 +112,7 @@ north for the aurora and the bears, then east through Quebec to Newfoundland.
 | 78 | The giant pysanka | silly | 4×5 | photo |
 | 79 | Mac the Moose | silly | 4×5 | photo |
 | 80 | The northern lights, Yellowknife | hidden gem | 4×5 | pastel |
-| 81 | Niagara Falls | famous | 4×4, wide strip | photo |
+| 81 | Parliament Hill | famous | 4×4, wide strip | photo |
 | 82 | The polar bears of Churchill | famous | 4×5 | photo |
 | 83 | Old Quebec in winter | famous | 4×5 | oil painting |
 | 84 | Percé Rock | famous | 4×5 | photo |

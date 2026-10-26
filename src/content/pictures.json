@@ -19406,24 +19406,24 @@
       "busy": 0
     },
     {
-      "id": "dest-niagara",
-      "name": "Niagara Falls",
-      "place": "Ontario, Canada",
+      "id": "dest-parliament-hill",
+      "name": "Parliament Hill",
+      "place": "Ottawa, Ontario",
       "trip": "canada",
       "tag": "famous",
       "cols": 4,
       "rows": 4,
       "crop": [
-        2,
+        1,
         1
       ],
       "window": [
         2,
         1
       ],
-      "file": "pictures/destinations/dest-niagara.webp",
-      "board": "pictures/destinations/dest-niagara-board.webp",
-      "thumb": "pictures/destinations/dest-niagara-thumb.webp",
+      "file": "pictures/destinations/dest-parliament-hill.webp",
+      "board": "pictures/destinations/dest-parliament-hill-board.webp",
+      "thumb": "pictures/destinations/dest-parliament-hill-thumb.webp",
       "px": [
         1536,
         2048
@@ -19437,14 +19437,14 @@
         400
       ],
       "medium": "photo",
-      "family": "ribbon-falls",
+      "family": "castle",
       "subjects": [
-        "Niagara Falls",
-        "Horseshoe Falls"
+        "Parliament Hill",
+        "Peace Tower"
       ],
       "palette": [
+        "cream",
         "green",
-        "white",
         "blue",
         "grey"
       ],
