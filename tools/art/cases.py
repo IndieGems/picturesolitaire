@@ -3,9 +3,10 @@ picture plan, "case": <id>, made by pictures.py; their clock hands are painted o
 
     python tools/art/cases.py cover <raw.png> <case id>
 
-The cover is the case's card art: generated at 3:4 (prompt in tools/art/prompts.txt), kept as a
-master in tools/art/masters/chrome/<case>-cover.webp and shipped as public/art/cases/<case>-cover.webp
-at COVER px (sharp at 3x on a card up to 300 CSS px wide). The case-closed stamp is stamps.py's.
+The cover is the band across the case binder's folder (UI): 16:9, about 310 CSS px wide on a phone
+and up to 500 on a desktop, so COVER is sharp at 3x on a phone. Generated at 16:9 (prompt in
+tools/art/prompts.txt), kept as a master in tools/art/masters/chrome/<case>-cover.webp and shipped
+as public/art/cases/<case>-cover.webp. The case-closed stamp is stamps.py's.
 """
 import sys
 from pathlib import Path
@@ -19,12 +20,12 @@ from pictures import crop_to  # noqa: E402
 ROOT = Path(__file__).resolve().parents[2]
 MASTERS = ROOT / "tools/art/masters/chrome"
 OUT = ROOT / "public/art/cases"
-COVER = (900, 1200)
-BUDGET = 140 * 1024
+COVER = (1080, 608)
+BUDGET = 110 * 1024
 
 
 def cover(raw, case):
-    im = crop_to(Image.open(raw).convert("RGB"), 3, 4)
+    im = crop_to(Image.open(raw).convert("RGB"), 16, 9)
     MASTERS.mkdir(parents=True, exist_ok=True)
     im.save(MASTERS / f"{case}-cover.webp", "WEBP", quality=90, method=6)
     OUT.mkdir(parents=True, exist_ok=True)
