@@ -62,6 +62,25 @@
             "prefix": "PICTURES_PORT "
           }
         ]
+      },
+      {
+        "id": "tripscases",
+        "command": [
+          "node",
+          "tools/trips-cases/server.mjs"
+        ],
+        "ports": [
+          {
+            "name": "port",
+            "env": "TRIPSCASES_PORT"
+          }
+        ],
+        "ready": [
+          {
+            "name": "port",
+            "prefix": "TRIPSCASES_PORT "
+          }
+        ]
       }
     ]
   },
@@ -77,6 +96,12 @@
       "label": "Picture Library",
       "kind": "web",
       "url": "http://127.0.0.1:{pictures.port}/"
+    },
+    {
+      "id": "trips-cases",
+      "label": "Trips & Cases",
+      "kind": "web",
+      "url": "http://127.0.0.1:{tripscases.port}/"
     }
   ]
 }

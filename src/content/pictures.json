@@ -9195,6 +9195,7 @@
       "name": "Grand Canyon",
       "place": "Arizona, USA",
       "trip": "america",
+      "tag": "famous",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -9240,6 +9241,7 @@
       "name": "Statue of Liberty",
       "place": "New York, USA",
       "trip": "america",
+      "tag": "famous",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -9284,6 +9286,7 @@
       "name": "Niagara Falls",
       "place": "New York, USA",
       "trip": "america",
+      "tag": "famous",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -9329,6 +9332,7 @@
       "name": "Letchworth State Park",
       "place": "New York, USA",
       "trip": "america",
+      "tag": "hidden gem",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -9375,6 +9379,7 @@
       "name": "Lucy the Elephant",
       "place": "Margate, New Jersey",
       "trip": "america",
+      "tag": "silly",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -9419,6 +9424,7 @@
       "name": "Mabry Mill",
       "place": "Virginia, USA",
       "trip": "america",
+      "tag": "hidden gem",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -9464,6 +9470,7 @@
       "name": "Castillo de San Marcos",
       "place": "St. Augustine, Florida",
       "trip": "america",
+      "tag": "hidden gem",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -9509,6 +9516,7 @@
       "name": "French Quarter",
       "place": "New Orleans, Louisiana",
       "trip": "america",
+      "tag": "famous",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -9554,6 +9562,7 @@
       "name": "World's Largest Ball of Twine",
       "place": "Cawker City, Kansas",
       "trip": "america",
+      "tag": "silly",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -9598,6 +9607,7 @@
       "name": "Paul Bunyan & Babe",
       "place": "Bemidji, Minnesota",
       "trip": "america",
+      "tag": "silly",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -9643,6 +9653,7 @@
       "name": "Pictured Rocks",
       "place": "Michigan, USA",
       "trip": "america",
+      "tag": "hidden gem",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -9688,6 +9699,7 @@
       "name": "Grand Prismatic Spring",
       "place": "Wyoming, USA",
       "trip": "america",
+      "tag": "famous",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -9732,6 +9744,7 @@
       "name": "Delicate Arch",
       "place": "Utah, USA",
       "trip": "america",
+      "tag": "famous",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -9776,6 +9789,7 @@
       "name": "Yosemite Valley",
       "place": "California, USA",
       "trip": "america",
+      "tag": "famous",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -9821,6 +9835,7 @@
       "name": "Nā Pali Coast",
       "place": "Kauaʻi, Hawaii",
       "trip": "america",
+      "tag": "famous",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -9865,6 +9880,7 @@
       "name": "Mount Fuji",
       "place": "Yamanashi, Japan",
       "trip": "japan",
+      "tag": "famous",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -9910,6 +9926,7 @@
       "name": "Lucky Cat Temple",
       "place": "Gōtoku-ji, Tokyo",
       "trip": "japan",
+      "tag": "silly",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -9955,6 +9972,7 @@
       "name": "Great Buddha of Kamakura",
       "place": "Kanagawa, Japan",
       "trip": "japan",
+      "tag": "famous",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -9999,6 +10017,7 @@
       "name": "Snow Monkey Park",
       "place": "Jigokudani, Nagano",
       "trip": "japan",
+      "tag": "silly",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -10043,6 +10062,7 @@
       "name": "Shirakawa-gō",
       "place": "Gifu, Japan",
       "trip": "japan",
+      "tag": "famous",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -10088,6 +10108,7 @@
       "name": "Golden Pavilion",
       "place": "Kinkaku-ji, Kyoto",
       "trip": "japan",
+      "tag": "famous",
       "cols": 4,
       "rows": 4,
       "crop": [
@@ -10133,6 +10154,7 @@
       "name": "Fushimi Inari Shrine",
       "place": "Kyoto, Japan",
       "trip": "japan",
+      "tag": "famous",
       "cols": 4,
       "rows": 5,
       "crop": [
@@ -10177,6 +10199,7 @@
       "name": "Kiyomizu-dera",
       "place": "Kyoto, Japan",
       "trip": "japan",
+      "tag": "famous",
       "cols": 4,
       "rows": 5,
       "crop": [
@@ -10222,6 +10245,7 @@
       "name": "Nachi Falls",
       "place": "Wakayama, Japan",
       "trip": "japan",
+      "tag": "hidden gem",
       "cols": 4,
       "rows": 5,
       "crop": [
@@ -10267,6 +10291,7 @@
       "name": "Himeji Castle",
       "place": "Hyōgo, Japan",
       "trip": "japan",
+      "tag": "famous",
       "cols": 4,
       "rows": 5,
       "crop": [
@@ -10311,6 +10336,7 @@
       "name": "Rabbit Island",
       "place": "Ōkunoshima, Hiroshima",
       "trip": "japan",
+      "tag": "silly",
       "cols": 4,
       "rows": 5,
       "crop": [
@@ -10355,6 +10381,7 @@
       "name": "Itsukushima Shrine",
       "place": "Miyajima, Hiroshima",
       "trip": "japan",
+      "tag": "famous",
       "cols": 4,
       "rows": 5,
       "crop": [
@@ -10399,6 +10426,7 @@
       "name": "Kintai Bridge",
       "place": "Iwakuni, Yamaguchi",
       "trip": "japan",
+      "tag": "hidden gem",
       "cols": 4,
       "rows": 5,
       "crop": [
@@ -10444,6 +10472,7 @@
       "name": "Takachiho Gorge",
       "place": "Miyazaki, Japan",
       "trip": "japan",
+      "tag": "hidden gem",
       "cols": 4,
       "rows": 5,
       "crop": [
@@ -10489,6 +10518,7 @@
       "name": "Taketomi Island",
       "place": "Okinawa, Japan",
       "trip": "japan",
+      "tag": "hidden gem",
       "cols": 4,
       "rows": 5,
       "crop": [

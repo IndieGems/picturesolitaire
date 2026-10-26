@@ -318,7 +318,7 @@ def destinations(p):
             board_px = list(im.size)
         with Image.open(PUBLIC / dest_thumb_rel(e)) as im:
             thumb_px = list(im.size)
-        out.append({k: e[k] for k in ("id", "name", "place", "trip", "case") if k in e} | {
+        out.append({k: e[k] for k in ("id", "name", "place", "trip", "tag", "case") if k in e} | {
             "cols": e["cols"], "rows": e["rows"], "crop": e["crop"], "window": e["window"],
             "file": rel, "board": board_rel(e), "thumb": dest_thumb_rel(e), "px": px, "boardPx": board_px, "thumbPx": thumb_px,
             "medium": e["medium"], "family": e["family"], "subjects": e["subjects"], "palette": e["palette"], "busy": e["busy"],
