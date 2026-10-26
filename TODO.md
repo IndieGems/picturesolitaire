@@ -9,7 +9,7 @@
 
 ## The travelogue (2026-10-25)
 
-- **Trip 3 and on.** The creator picks where; the lead suggested alternating home and abroad (American West next). Each trip needs 15 postcards (Art, about $1) and a destination list. The library has no unseen calm squares left: trip 3 can reuse pictures 15+ boards back, or a batch of about 120 new squares makes every picture new. The creator's call.
+- **Trip 7 and on.** Six trips ship (America, Japan, Italy, American West, France, Canada: boards 1–90). The creator picks where. A trip of all-new pictures costs about $5.50 of art (15 postcards, about 120 pictures); Art's cap is $27, with $26.16 spent. A 4×5 board already holds the most pictures it can (12), so later trips rise only by traps and busier relief boards (Levels).
 - **The challenge route and daily** still deal some landmark pictures (`"landmark": true`). Swap them out when those are redone under the new picture rules.
 - **The old albums' code** is unreachable from home; remove it, and the albums' catalogue fields, when the passport has settled.
 - **At release:** a travel key art for the store page (the current one is the old winter table), and a new preview video showing a postcard unfolding.
