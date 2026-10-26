@@ -72,6 +72,7 @@
 //   cards     total cards, all pictures: 16 fill a 4x4 board, the rest wait in the stacks
 //   keep      pictures the board keeps (pick.ts)
 //   newFrom   a catalogue id: take only it and the pictures after it (a batch; lib.mts poolOn)
+//   newTo     a catalogue id: and only the pictures before it (the next batch's first)
 //   destination  the board's postcard (lib.mts destinationOf), in place of `drop`
 //   peek      upcoming cards each stack shows (0 on every board since 2026-10-25)
 //   chain     the chain of dependent clears (src/game/solver/metrics.ts)
@@ -178,6 +179,40 @@ export const PLAN = [
   /* 58 */ { role: "build",  destination: "dest-painted-hills", drop: "palace-window", board: [4, 5], ...sq(12), careless: [0.4, 0.5], chain: ANY, ...NEW_ONLY },
   /* 59 */ { role: "build",  destination: "dest-dog-bark", drop: "shepherds-hut", board: [4, 5], ...sq(12), careless: [0.35, 0.45], chain: ANY, ...NEW_ONLY },
   /* 60 */ { role: "super",  destination: "dest-crater-lake", drop: "jet-ski", board: [4, 5], ...sq(12), careless: [0.08, 0.2], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  // ---- trip 5, France (lead, 2026-10-26): trip 4's shape, its floor a little higher. 4x5 holds 12 at the
+  // most (past it most deals cannot be won), so the floor rises by a 10-picture relief at x11, lower
+  // build ranges, and a trap more allowed on the hard boards
+  /* 61 */ { role: "relief", destination: "dest-etretat", drop: "gecko", board: [4, 5], ...sq(9), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
+  /* 62 */ { role: "build",  destination: "dest-mont-saint-michel", drop: "bagels", board: [4, 5], ...sq(11), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
+  /* 63 */ { role: "build",  destination: "dest-ploumanach", drop: "water-slide", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 64 */ { role: "build",  destination: "dest-chapel-oak", drop: "donkey", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 65 */ { role: "hard",   destination: "dest-chenonceau", drop: "crown-imperial", board: [4, 5], ...sq(12), careless: [0.25, 0.4], traps: [0, 3], chain: ANY, ...NEW_ONLY },
+  /* 66 */ { role: "pace",   destination: "dest-eiffel", drop: "asparagus", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
+  /* 67 */ { role: "build",  destination: "dest-colmar", drop: "brownstone", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 68 */ { role: "build",  destination: "dest-lac-blanc", drop: "persimmons", board: [4, 5], ...sq(12), careless: [0.4, 0.5], chain: ANY, ...NEW_ONLY },
+  /* 69 */ { role: "build",  destination: "dest-palais-ideal", drop: "pop-sunset", board: [4, 5], ...sq(12), careless: [0.35, 0.45], chain: ANY, ...NEW_ONLY },
+  /* 70 */ { role: "hard",   destination: "dest-valensole", drop: "airliner", board: [4, 5], ...sq(12), careless: [0.2, 0.35], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  /* 71 */ { role: "relief", destination: "dest-verdon", drop: "clivia", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
+  /* 72 */ { role: "build",  destination: "dest-camargue-flamingos", drop: "cocoa-pod", board: [4, 5], ...sq(12), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 73 */ { role: "build",  destination: "dest-carcassonne", drop: "manta-ray", board: [4, 5], ...sq(12), careless: [0.4, 0.5], chain: ANY, ...NEW_ONLY },
+  /* 74 */ { role: "build",  destination: "dest-bonifacio", drop: "hoarfrost", board: [4, 5], ...sq(12), careless: [0.35, 0.45], chain: ANY, ...NEW_ONLY },
+  /* 75 */ { role: "super",  destination: "dest-dune-pilat", drop: "zen-garden", board: [4, 5], ...sq(12), careless: [0.08, 0.2], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  // ---- trip 6, Canada: the same shape, its floor higher again (both reliefs 10 pictures)
+  /* 76 */ { role: "relief", destination: "dest-moraine", drop: "glider", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
+  /* 77 */ { role: "build",  destination: "dest-abraham-lake", drop: "cinnamon-rolls", board: [4, 5], ...sq(11), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
+  /* 78 */ { role: "build",  destination: "dest-pysanka", drop: "basket-weaver", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 79 */ { role: "build",  destination: "dest-mac-moose", drop: "gecko", board: [4, 5], ...sq(12), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 80 */ { role: "hard",   destination: "dest-yellowknife-aurora", drop: "glass-arcade", board: [4, 5], ...sq(12), careless: [0.25, 0.35], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  /* 81 */ { role: "pace",   destination: "dest-parliament-hill", drop: "coral-reef", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
+  /* 82 */ { role: "build",  destination: "dest-churchill-bears", drop: "capybara", board: [4, 5], ...sq(12), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 83 */ { role: "build",  destination: "dest-old-quebec", drop: "rainforest-canopy", board: [4, 5], ...sq(12), careless: [0.4, 0.5], chain: ANY, ...NEW_ONLY },
+  /* 84 */ { role: "build",  destination: "dest-perce", drop: "cockscomb", board: [4, 5], ...sq(12), careless: [0.35, 0.45], chain: ANY, ...NEW_ONLY },
+  /* 85 */ { role: "hard",   destination: "dest-bonaventure-gannets", drop: "dragon-boat", board: [4, 5], ...sq(12), careless: [0.2, 0.3], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  /* 86 */ { role: "relief", destination: "dest-hopewell", drop: "paella", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
+  /* 87 */ { role: "build",  destination: "dest-peggys-cove", drop: "bumper-cars", board: [4, 5], ...sq(12), careless: [0.4, 0.5], chain: ANY, ...NEW_ONLY },
+  /* 88 */ { role: "build",  destination: "dest-lunenburg", drop: "paddleboarder", board: [4, 5], ...sq(12), careless: [0.35, 0.45], chain: ANY, ...NEW_ONLY },
+  /* 89 */ { role: "build",  destination: "dest-cabot-trail", drop: "clivia", board: [4, 5], ...sq(12), careless: [0.3, 0.4], chain: ANY, ...NEW_ONLY },
+  /* 90 */ { role: "super",  destination: "dest-twillingate-iceberg", drop: "lattice-window", board: [4, 5], ...sq(12), careless: [0.08, 0.18], traps: [0, 4], chain: ANY, ...NEW_ONLY },
 ];
 
 /**
@@ -213,5 +248,7 @@ export const MARKS = { hard: "hard", peak: "hard", super: "super" };
 // (an all-long board keeps all its pictures, so it has no busy cap of its own)
 // boards 31 on: every picture from the creator's new batch (lead, 2026-10-26; Art 6d0e96a: the 240
 // catalogue entries from marigolds on), so all of them are new to the player
-PLAN.forEach((row, i) => i >= 30 && (row.newFrom = "marigolds"));
+// boards 61 on: every picture from the next batch (lead, 2026-10-26; Art: foxgloves on), new to the player again;
+// 1-60 never take from it (newTo), so a re-dealt board there cannot show one early
+PLAN.forEach((row, i) => Object.assign(row, i < 30 ? { newTo: "foxgloves" } : i < 60 ? { newFrom: "marigolds", newTo: "foxgloves" } : { newFrom: "foxgloves" }));
 for (const row of PLAN) Object.assign(row, { peek: 0, vary: true, busyMost: row.busyMost ?? 0, liveMost: row.liveMost ?? (row.role === "pace" ? undefined : row.count >= 8 ? 2 : 1) });

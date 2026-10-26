@@ -5,7 +5,7 @@
 // (lib.mts, route), and writes
 //   src/content/levels/campaign.json   the boards, each with its winning line
 //   docs/levels.md                     the table of axes, for the reader
-// Run: node tools/levels/make-campaign.mts [--fresh] [--repair-only] [--out FILE]
+// Run: node tools/levels/make-campaign.mts [--fresh] [--repair-only] [--out FILE] [--old FILE]
 //   --fresh        remake every board from the plan, ignoring the file (a
 //                  board a player has won keeps its id and pays no more)
 //   --keep N       keep the file's first N boards, remake the rest from the plan
@@ -16,6 +16,8 @@
 //   --rows N       make the plan's first N rows only (e.g. while the library
 //                  cannot fill the rest yet)
 //   --out FILE     write the boards there instead, and no docs (for trials)
+//   --old FILE     start from the boards in FILE instead of campaign.json (a
+//                  staged trial: e.g. a second pass that swaps new boards' postcards in)
 //   PICKS_ONLY=1   pick the pictures and report their spacing; no deals
 // Pictures follow the plan's rows (shapes, keep lists) and its no-repeat rule
 // (DISTINCT, SPACING; campaign-plan.mts), which every board it makes keeps.
@@ -37,11 +39,13 @@ const has = (f) => process.argv.includes(f);
 const rowsAt = process.argv.indexOf("--rows");
 const PLAN = rowsAt > 0 ? FULL.slice(0, Number(process.argv[rowsAt + 1])) : FULL;
 const outAt = process.argv.indexOf("--out");
-const FILE = join(root, "src/content/levels/campaign.json");
-const OUT = outAt > 0 ? process.argv[outAt + 1] : FILE;
+const SHIPPED = join(root, "src/content/levels/campaign.json");
+const oldAt = process.argv.indexOf("--old");
+const FILE = oldAt > 0 ? process.argv[oldAt + 1] : SHIPPED;
+const OUT = outAt > 0 ? process.argv[outAt + 1] : SHIPPED;
 const keepAt = process.argv.indexOf("--keep");
 const old = has("--fresh") ? [] : keepAt > 0 ? readBoards(FILE).slice(0, Number(process.argv[keepAt + 1])) : readBoards(FILE);
-const shipped = readBoards(FILE);
+const shipped = readBoards(SHIPPED);
 const fileTag = existsSync(FILE) ? JSON.parse(readFileSync(FILE, "utf8")).plan : undefined;
 const redealAt = process.argv.indexOf("--redeal");
 const redeal = new Set(redealAt > 0 ? process.argv[redealAt + 1].split(",").map((n) => Number(n) - 1) : []);
@@ -94,7 +98,7 @@ const sp = spacingOf(levels.map((l) => l.pictures), SPACING);
 console.log(`spacing: a picture comes back after ${sp.shortest} boards at the soonest (median ${sp.median}); ${sp.short} of ${sp.gaps} returns are sooner than ${SPACING}`);
 writeBoards(OUT, "relaxed campaign; made by tools/levels/make-campaign.mts, checked by tools/levels/check.mts", levels, tag ? { plan: tag } : {});
 
-if (OUT !== FILE) process.exit(0);
+if (OUT !== SHIPPED) process.exit(0);
 // ---------------------------------------------------------------- docs/levels.md
 const counts = usable.map((p) => levels.filter((l) => l.pictures.some((q) => q.id === p.id)).length);
 const rows = levels.map((l, i) => {

@@ -273,9 +273,11 @@ const catalogueAt = new Map(catalogue.map((p, k) => [p.id, k]));
 const poolOn = (chosen, i, rule, row?) => {
   const from = row?.newFrom ? catalogueAt.get(row.newFrom) : undefined;
   if (row?.newFrom && from === undefined) throw new Error(`board ${i + 1}: newFrom ${row.newFrom} is not in the catalogue`);
+  // newTo (the next batch's first id) not in the catalogue yet: that batch is not in, so nothing is cut
+  const to = row?.newTo ? catalogueAt.get(row.newTo) ?? Infinity : Infinity;
   if (!rule && from === undefined) return usable;
   const banned = rule ? bannedOn(chosen, i, rule) : new Set();
-  return usable.filter((p) => !banned.has(p.id) && (from === undefined || catalogueAt.get(p.id) >= from));
+  return usable.filter((p) => !banned.has(p.id) && (from === undefined || catalogueAt.get(p.id) >= from) && catalogueAt.get(p.id) < to);
 };
 
 /** Why a board under the rule found no pictures: how many of each size it may still take. */
