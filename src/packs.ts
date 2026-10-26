@@ -105,6 +105,9 @@ type Read = { bytes: Uint8Array; at: number; ranged: boolean };
  * so one stream serves every span of it), then dropped.
  */
 async function readSpan(url: string, from: number, to: number, orTo = to): Promise<Read> {
+  // a host that ignores Range: what an earlier stream already read of this pack serves again
+  const pre = prefixes.get(url);
+  if (ignoresRange && pre && pre.length >= orTo) return { bytes: pre, at: 0, ranged: false };
   const stop = new AbortController();
   const r = await fetch(url, { headers: { Range: `bytes=${from}-${to - 1}` }, signal: stop.signal });
   if (r.status === 206) {
@@ -114,17 +117,62 @@ async function readSpan(url: string, from: number, to: number, orTo = to): Promi
   }
   if (!r.ok || !r.body) throw new Error(`${url}: ${r.status}`);
   note("whole");
-  const reader = r.body.getReader();
+  ignoresRange = true;
+  return { bytes: await streamPrefix(url, r, stop, () => orTo), at: 0, ranged: false };
+}
+
+/** The host answered a Range with the whole pack (200): from then on a pack's stream is shared. */
+let ignoresRange = false;
+/** What streams have read of each pack from its start (the last few packs), when Range is ignored. */
+const prefixes = new Map<string, Uint8Array>();
+
+/**
+ * Read a 200 stream of a pack from its start until `need(bytes so far)` bytes are in (need may
+ * be Infinity until it can tell, e.g. until the pack's index is in), then drop it; what was read
+ * is kept for the next read of the same pack.
+ */
+async function streamPrefix(url: string, r: Response, stop: AbortController, need: (b: Uint8Array) => number): Promise<Uint8Array> {
+  const reader = r.body!.getReader();
   const chunks: Uint8Array[] = [];
   let got = 0;
-  while (got < orTo) {
+  let want = Infinity;
+  for (;;) {
+    if (want === Infinity && got) want = need(join(chunks, got));
+    if (got >= want) break;
     const { done, value } = await reader.read();
     if (done) break;
     chunks.push(value);
     got += value.length;
   }
   stop.abort();
-  return { bytes: join(chunks, Math.min(got, orTo)), at: 0, ranged: false };
+  const bytes = join(chunks, got);
+  const pre = prefixes.get(url);
+  if (!pre || bytes.length > pre.length) {
+    prefixes.delete(url);
+    prefixes.set(url, bytes);
+    while (prefixes.size > 2) prefixes.delete(prefixes.keys().next().value!);
+  }
+  return bytes;
+}
+
+/**
+ * The host is known to ignore Range: pack `name`'s index and the files wanted come in ONE stream
+ * (or none, if an earlier one already read that far).
+ */
+async function oneStream(name: string, paths: string[]): Promise<Uint8Array> {
+  const url = packUrl(name);
+  const need = (b: Uint8Array) => {
+    const head = headFrom(b);
+    if (!head) return Infinity;
+    const ends = paths.map((p) => head.files.get(p)).filter((e): e is Entry => !!e).map((e) => head.start + e.offset + e.length);
+    return ends.length ? Math.max(...ends) : head.start;
+  };
+  const pre = prefixes.get(url);
+  if (pre && need(pre) <= pre.length) return pre;
+  const stop = new AbortController();
+  const r = await fetch(url, { signal: stop.signal });
+  if (!r.ok || !r.body) throw new Error(`${url}: ${r.status}`);
+  return streamPrefix(url, r, stop, need);
 }
 
 /** A whole pack, in one request (one board's own). */
@@ -194,6 +242,14 @@ async function fromPack(name: string, paths: string[], whole: boolean): Promise<
     heads.set(name, Promise.resolve(head));
     // every file of a board's own pack: the board wants them all
     keep([...head.files.values()], head, bytes, 0);
+    return paths.filter((p) => !head.files.has(p));
+  }
+  if (ignoresRange) {
+    const bytes = await oneStream(name, paths);
+    const head = headFrom(bytes);
+    if (!head) throw new Error(`${name}: no index`);
+    heads.set(name, Promise.resolve(head));
+    keep(paths.map((p) => head.files.get(p)).filter((e): e is Entry => !!e), head, bytes, 0);
     return paths.filter((p) => !head.files.has(p));
   }
   const head = await headOf(name);
