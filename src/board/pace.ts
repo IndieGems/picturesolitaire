@@ -93,6 +93,7 @@ export function setPaused(on: boolean): void {
     raf = 0;
   }
   lastRefresh = lastDrawn = null; // the first frame back advances by 0
+  holdRests(on);
   if (!on && jobs.size && !raf) raf = requestAnimationFrame(frame);
 }
 
@@ -104,8 +105,58 @@ export function run(fn: (dt: number) => boolean, calm = true): () => void {
   return () => jobs.delete(job);
 }
 
+/** Holds in progress (rest): each a timer, stopped while paused. */
+interface Rest {
+  /** Board ms still to go, as of `since`. */
+  left: number;
+  since: number;
+  timer: ReturnType<typeof setTimeout> | 0;
+  resolve: () => void;
+}
+const rests = new Set<Rest>();
+function armRest(r: Rest): void {
+  r.since = performance.now();
+  r.timer = setTimeout(() => {
+    rests.delete(r);
+    r.resolve();
+  }, Math.max(0, r.left / timeScale));
+}
+function holdRests(on: boolean): void {
+  for (const r of rests) {
+    if (on) {
+      if (r.timer) clearTimeout(r.timer);
+      r.timer = 0;
+      r.left = Math.max(0, r.left - (performance.now() - r.since) * timeScale);
+    } else if (!r.timer) armRest(r);
+  }
+}
+
+/**
+ * Wait `ms` of board time WITHOUT drawing frames: a hold where nothing on the
+ * board moves (a postcard held open while it is read). A plain timer, held
+ * while the game is paused or hidden, at the dev menu's speed as it was when
+ * the hold began. `cancel` drops it unresolved.
+ */
+export function rest(ms: number): { done: Promise<void>; cancel(): void } {
+  let r!: Rest;
+  const done = new Promise<void>((resolve) => {
+    r = { left: ms, since: 0, timer: 0, resolve };
+  });
+  rests.add(r);
+  if (!paused) armRest(r);
+  return {
+    done,
+    cancel: () => {
+      if (r.timer) clearTimeout(r.timer);
+      rests.delete(r);
+    },
+  };
+}
+
 /** Stop and forget every job (the board closed). */
 export function stopAll(): void {
+  for (const r of rests) if (r.timer) clearTimeout(r.timer);
+  rests.clear();
   jobs.clear();
   if (raf) cancelAnimationFrame(raf);
   raf = 0;

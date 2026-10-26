@@ -135,6 +135,16 @@ export const TUNING = {
   revealLeaveMs: 380,
   revealFadeMs: 260,
   revealShortHoldMs: 700,
+  /**
+   * A mystery's clue (a destination whose catalogue entry has a `case`) is
+   * held long enough to read its sentence: revealClueHoldMs (a wordless one
+   * too, to look at its clock), plus revealClueCharMs for each character of
+   * its words, at most revealClueMaxMs. A tap still skips it (the evidence
+   * binder keeps it). A repeat is the short one all the same.
+   */
+  revealClueHoldMs: 2500,
+  revealClueCharMs: 50,
+  revealClueMaxMs: 8000,
   /** Shuffle: the loose cards trading places. */
   shuffleMs: 460,
   /** Hint: the ghost of the piece going to where it should be played. */

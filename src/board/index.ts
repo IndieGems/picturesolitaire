@@ -115,6 +115,8 @@ function loadTuning(): void {
 type PictureFiles = {
   id: string; file: string; board?: string; boardPx?: number[]; px?: number[];
   name?: string; title?: string; place?: string;
+  /** A mystery's clue: its case, and its one sentence (none where the picture tells it). */
+  case?: unknown; words?: string;
 };
 const catalogue = CATALOGUE as unknown as { pictures: PictureFiles[]; destinations?: PictureFiles[] };
 const pictureFiles = new Map([...catalogue.pictures, ...(catalogue.destinations ?? [])].map((p) => [p.id, p]));
@@ -122,6 +124,17 @@ const pictureFiles = new Map([...catalogue.pictures, ...(catalogue.destinations 
 function drawnSize(l: Level, p: Picture): { cols: number; rows: number } {
   return l.destination?.id === p.id ? { cols: l.deal.cols, rows: l.deal.rows } : { cols: p.cols, rows: p.rows };
 }
+/**
+ * The screens' writing on an open postcard (a photo's date stamp), set once by
+ * the screens (src/ui): called with the element covering the picture file's
+ * whole extent, and the picture's id. The board draws the postcard; what is
+ * written on it, and how it looks, is the screens'.
+ */
+let postcardArt: ((box: HTMLElement, id: string) => void) | null = null;
+export function setPostcardArt(fn: ((box: HTMLElement, id: string) => void) | null): void {
+  postcardArt = fn;
+}
+
 /** A picture file's width ÷ height, from the catalogue (a stand-in: its cells'). */
 function aspectOf(id: string, cols: number, rows: number): number {
   const px = pictureFiles.get(id)?.px ?? pictureFiles.get(id)?.boardPx;
@@ -632,10 +645,19 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     const again = revealedOnce;
     revealedOnce = true;
     const a = art[destPic]!;
+    // a mystery's clue stays open long enough to read (a repeat is the short one all the same)
+    const clue = entry?.case != null;
+    const words = typeof entry?.words === "string" ? entry.words.trim().length : 0;
+    const clueHold = Math.min(TUNING.revealClueMaxMs, TUNING.revealClueHoldMs + TUNING.revealClueCharMs * words);
+    const art0 = postcardArt;
     const r = revealPostcard({
       geo, layer: fxEl, piece: v, url: a.url, aspect: aspectOf(id, a.cols, a.rows), crop: dest!.crop,
       mode: lessMotion() ? "calm" : again ? "short" : "full",
-      onOpen: () => emit("destination:reveal", { id, name: entry?.name ?? entry?.title ?? id, place: entry?.place ?? "", again }),
+      ...(clue && !again ? { hold: clueHold } : {}),
+      ...(art0 ? { decorate: (box: HTMLElement) => art0(box, id) } : {}),
+      onOpen: () => emit("destination:reveal", {
+        id, name: entry?.name ?? entry?.title ?? id, place: entry?.place ?? "", again, ...(clue ? { clue: true as const } : {}),
+      }),
       onLeave: () => emit("picture:clear", { pictureId: id }),
     });
     reveal = r;

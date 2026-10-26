@@ -16,10 +16,12 @@
 // Reduced motion, and a repeat on the same opening of the board, crossfade
 // the postcard in and out where the piece stands instead. One animation job
 // drives it all from one clock, so a tap (skip) jumps straight to the end and
-// a pause holds it like every other board animation. Every time is TUNING's
-// (revealSlideMs ...).
+// a pause holds it like every other board animation. While it is held open
+// nothing moves, so no frames are drawn then (a timer, pace.ts's rest). Every
+// time is TUNING's (revealSlideMs ...), and the hold can be set per postcard
+// (a mystery's clue is held long enough to read).
 
-import { ease, run } from "./pace.ts";
+import { ease, rest, run } from "./pace.ts";
 import { TUNING } from "./tuning.ts";
 import { place, type Geometry, type PieceView } from "./view.ts";
 
@@ -47,6 +49,15 @@ export interface RevealOptions {
   /** The window's top-left cell on the board (col, row). */
   crop: [number, number];
   mode: "full" | "calm" | "short";
+  /** How long it stays open, board ms; by default revealHoldMs (a repeat: revealShortHoldMs). */
+  hold?: number;
+  /**
+   * Draw on the open picture (the screens' writing on a photo: a date stamp):
+   * called once with an element covering the picture file's whole extent
+   * (where the board crops a sliver of it, too), shown from the moment it is
+   * fully open and leaving with it.
+   */
+  decorate?: (box: HTMLElement) => void;
   /** The postcard is fully open (the screens show the name now). */
   onOpen(): void;
   /** The postcard starts to leave. */
@@ -122,6 +133,18 @@ export function revealPostcard(o: RevealOptions): Reveal {
   // the whole postcard in one piece, for once it is open (no seams between flaps)
   const whole = panel({ x0: 0, y0: 0, x1: W, y1: H }, "50% 50%");
   whole.style.visibility = "hidden";
+  if (o.decorate) {
+    const box = document.createElement("div");
+    box.className = "bd-postcard-art";
+    box.style.cssText = `left:${ix.toFixed(2)}px;top:${iy.toFixed(2)}px;width:${dw.toFixed(2)}px;height:${dh.toFixed(2)}px`;
+    whole.style.overflow = "hidden";
+    whole.append(box);
+    try {
+      o.decorate(box);
+    } catch (err) {
+      console.error("[board] the postcard's decoration failed", err);
+    }
+  }
   const frame = document.createElement("div");
   frame.className = "bd-postcard-rim";
   frame.style.cssText = `border-radius:${R}px;opacity:0;box-shadow:` +
@@ -138,7 +161,7 @@ export function revealPostcard(o: RevealOptions): Reveal {
   const S = crossfade || !travels ? 0 : TUNING.revealSlideMs;
   const U = crossfade ? TUNING.revealFadeMs : TUNING.revealUnfoldMs;
   const open = S + U;
-  const hold = o.mode === "short" ? TUNING.revealShortHoldMs : TUNING.revealHoldMs;
+  const hold = Math.max(0, o.hold ?? (o.mode === "short" ? TUNING.revealShortHoldMs : TUNING.revealHoldMs));
   const leave = crossfade ? TUNING.revealFadeMs : TUNING.revealLeaveMs;
   const end = open + hold + leave;
   const span = (t: number, t0: number, ms: number) => (ms <= 0 ? (t >= t0 ? 1 : 0) : Math.max(0, Math.min(1, (t - t0) / ms)));
@@ -213,6 +236,7 @@ export function revealPostcard(o: RevealOptions): Reveal {
     if (ended) return;
     ended = true;
     stop();
+    resting?.cancel();
     if (call && !opened) {
       opened = true;
       o.onOpen();
@@ -226,16 +250,31 @@ export function revealPostcard(o: RevealOptions): Reveal {
     resolve();
   }
 
-  draw();
-  const stop = run((dt) => {
+  let resting: ReturnType<typeof rest> | null = null;
+  let stop: () => void = () => {};
+  const tick = (dt: number): boolean => {
     t += dt;
     if (t >= end) {
       finish(true);
       return false;
     }
     draw();
+    if (t >= open && t < open + hold) {
+      // held open: nothing moves, so no frames until it leaves
+      const r = rest(open + hold - t);
+      resting = r;
+      void r.done.then(() => {
+        resting = null;
+        if (ended) return;
+        t = open + hold;
+        stop = run(tick);
+      });
+      return false;
+    }
     return true;
-  });
+  };
+  draw();
+  stop = run(tick);
 
   return {
     done,
