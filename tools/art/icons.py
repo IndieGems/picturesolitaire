@@ -171,9 +171,19 @@ def passport():
                '<path d="M22.5 33 H31.5" stroke-width="3.5"/>')
 
 
+def detective():
+    # The Traveling Detective (UI, 2026-10-25: the mystery cases' button on home): a magnifying
+    # glass with a question mark in its lens, read at 28-30 px. A suitcase behind it was tried and
+    # turned to mush at that size.
+    return svg('<circle cx="20" cy="20" r="13"/>'
+               '<path d="M29.5 29.5 L40.5 40.5" stroke-width="7"/>'
+               '<path d="M15.8 16.6 A4.4 4.4 0 1 1 22.6 20.2 C21 21.2 20 22 20 24" stroke-width="3.4"/>'
+               f'<circle cx="20" cy="28.6" r="2" fill="{SLATE}" stroke="none"/>')
+
+
 ICONS = {"gear": gear, "back": back, "undo": undo, "hint": hint, "shuffle": shuffle, "restart": restart, "play": play,
          "next": next_, "home": home, "chevron": chevron, "photos": photos,
-         "route": route, "lock": lock, "check": check, "daily": daily, "passport": passport}
+         "route": route, "lock": lock, "check": check, "daily": daily, "passport": passport, "detective": detective}
 
 
 def main():
