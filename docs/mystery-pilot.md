@@ -2,50 +2,43 @@
 
 A cozy murder mystery as one trip of 15 boards (creator, 2026-10-25: "a murder
 mystery as part of a set", the player a world-travelling detective). Nothing is
-built. This is the story, to be read and solved before any art is made. The
-answer is in `mystery-pilot-solution.md`: don't open it until you've guessed.
+built yet. The answer is in `mystery-pilot-solution.md`.
 
 **How it plays.** Each board's special picture is a clue. Finishing it unfolds it
-the way a postcard does, with one line from the detective's notes, and it goes
-into the evidence binder. The trip still travels: the Danube's real places are
-the backdrops. After board 15 the player names the killer and points to the
+the way a postcard does, with its words if it has any, and it goes into the
+evidence binder. After board 15 the player names the killer and points to the
 picture that proves it. Getting it right first time earns a gold stamp. A wrong
 guess never blocks: the detective explains, and the trip is done.
 
-**The rules for pictures.** The pictures carry recognition and the notes carry
-facts. A suspect has one portrait. Clues turn on objects and colours (a
-mustard-yellow scarf, green ink), never on a face seen twice. Any time or
-writing is written by the game, never painted into a picture. Every portrait
-carries one distinctive thing (Clara's red shawl, the doctor's green pen and bow
-tie, Margit's pearl brooch, Henri's mustard scarf), so no single one stands out.
+**The rules for clue pictures** (creator, 2026-10-25: "we've got to be very
+concise"):
+- **One sentence at most per picture, and none where the picture can tell it.**
+- **Time is told by clocks in the scene.** Generated clock hands are unreliable,
+  so Art paints them on.
+- **A suspect has one portrait** with one distinctive thing: Clara's red shawl,
+  the doctor's bow tie and green pen, Margit's pearl brooch, Henri's mustard scarf
+  and green pen. Later pictures identify people by those things, never by a face
+  alone.
+- **Any other writing is drawn by the game**, such as the photo's orange date
+  stamp.
 
-**Tested.** A fresh reader with no answer solved it at about 85% confidence and
-called it "about right, leaning slightly easy". This version fixes the two weak
-spots it found: when the poison went in, and the green pen singling out Henri.
+You're a travelling detective on a Danube river cruise from Passau to Budapest.
+One night, one murder, four suspects.
 
----
-
-You are a travelling detective, on holiday aboard the river cruiser *Melusine*,
-sailing the Danube from Passau to Budapest. One night, one murder, four
-suspects. The captain asks you to name the killer before Budapest, where the
-police are waiting.
-
-| Board | Picture | The detective's note |
+| # | Picture | Words |
 |---|---|---|
-| 1 | **The lost waltz.** An old handwritten music manuscript on a candlelit dinner table in the ship's salon, Passau's green domes through the window. | At dinner, the collector Oskar Brandt shows off his treasure: a lost waltz in Johann Strauss's own hand. Tomorrow in Vienna, the Strauss archive will examine it. |
-| 2 | **Clara Weiss.** A young violinist practising on the sun deck as Melk Abbey glides past. | Brandt's niece and heir, and tonight's concert soloist. She and her uncle argued at dinner, and he told her she'd "not see a cent". *Her account:* "I was on stage all evening, apart from the interval, then signed programmes on deck until midnight." The passengers in her queue agree. |
-| 3 | **Dr Lukas Fehr.** The ship's doctor in his surgery, vineyards through the porthole. | He prescribed Brandt sleeping drops for the voyage. *His account:* "Before ten I was alone in my surgery, writing up notes. From a quarter past ten I was looking after a seasick passenger." |
-| 4 | **Margit Halász.** An elegant antiques dealer stepping onto the gangway at dusk, Dürnstein's blue church tower behind. | A dealer from Budapest. Brandt refused to sell her the waltz; she said she'd have it "whatever it costs". *Her account:* "I went ashore for dinner in Dürnstein and came back late." |
-| 5 | **Professor Henri Duval.** A silver-haired man in a mustard-yellow scarf, writing with a green fountain pen in the salon. | Brandt's old friend, who found the waltz for him in a Paris bookshop. *His account:* "I sat in the front row all concert, except at the interval, when I fetched my scarf." |
-| 6 | **The concert programme.** A printed programme card on a deck chair beside a violin case, fairy lights, Dürnstein at dusk. | *Sun-deck concert.* Part 1: 9:00 to 10:00. Interval: 10:00 to 10:20. Part 2: 10:20 to 11:00. Soloist: Clara Weiss. |
-| 7 | **Cabin 7, morning.** A writing desk by a porthole: two teacups and an open, empty leather folder. | Brandt was found dead here at 7 am, poisoned. The waltz is gone. The steward had brought one cup of tea at 9:30 pm. The cabin door locks itself when it shuts. |
-| 8 | **The pocket watch.** A gold pocket watch, its glass cracked, stopped at 9:45, on the cabin carpet. | Found under Brandt's hand. |
-| 9 | **The sleeping drops.** A small brown medicine bottle, empty, beside a saucer. | Dr Fehr's prescription. A whole bottle of it was in the fresh pot of tea, the one the steward brought at 10:25. The bottle was wiped clean, even of Brandt's own fingerprints. |
-| 10 | **The service bells.** A brass board of cabin bells in the steward's pantry, one bell's flag dropped. | Cabin 7 rang at 10:25 pm. Brandt opened the door himself and asked for a second cup and a fresh pot, "for a friend". At 11:05 the steward came for the tray: the door was locked, and nobody answered. |
-| 11 | **The doctor's logbook.** An open surgery logbook, written in green ink, with a green fountain pen and a bottle of seasickness pills. | *10:15 to 11:10 pm: Mrs Ilona Kovács, cabin 12, seasick.* Mrs Kovács says the doctor never left her side. |
-| 12 | **The gangway log.** A clipboard hanging by the gangway at night, lanterns on the dark river. | *Mrs M. Halász: ashore 8:30 pm, back aboard 11:15 pm.* The gangway was watched all night. |
-| 13 | **The new will.** Cream paper with a red wax seal, in a desk drawer. | In Brandt's desk: a new will leaving everything to the Strauss archive in Vienna, dated yesterday. It was never signed. Had he signed it, Clara would have got nothing. |
-| 14 | **The scrap on the anchor chain.** A wet scrap of music paper caught on the anchor chain at dawn, the notes in green ink, Dürnstein behind. | Raised with the anchor at Dürnstein: a torn corner of the waltz. Strauss wrote it some 150 years ago, in ink that has long since turned brown. This ink is green, and it runs in the wet. |
-| 15 | **A passenger's photo.** Clara playing on the sun deck under fairy lights. In the front row is one empty chair with a mustard-yellow scarf draped over it. | Taken at 10:35 pm, during Part 2, by a passenger, who shows it to you as the ship reaches Budapest. |
-
-**Who killed Oskar Brandt, and which picture proves it?**
+| 1 | Brandt at a candlelit dinner holding up an old manuscript, Passau's domes through the window | "Oskar Brandt's treasure: a lost Strauss waltz, going to experts in Vienna tomorrow." |
+| 2 | Clara with her violin, red shawl, Melk Abbey passing | "Clara, his niece and heir, plays tonight's concert." |
+| 3 | Dr Fehr, burgundy bow tie, green pen | "Dr Fehr, the ship's doctor, gave Brandt his sleeping drops." |
+| 4 | Margit, pearl brooch, Dürnstein's blue tower behind | "Margit, a dealer, swore she'd have the waltz at any price." |
+| 5 | Henri Duval, mustard scarf, writing with a green pen | "Professor Duval, the old friend who found the waltz, says he sat in the front row all concert." |
+| 6 | The cabin at dawn: two cups, a teapot and an empty leather folder | "7 am: Brandt is found poisoned, and the waltz is gone." |
+| 7 | A cracked gold pocket watch stopped at 9:45 | — |
+| 8 | An empty brown medicine bottle with a red-cross label, beside the teapot | — |
+| 9 | Brandt at his door taking a tray for two from a steward, corridor clock at 10:25 | "His guest is already inside." |
+| 10 | A will on cream paper, red wax seal, no signature | "Unsigned, it would have left Clara nothing." |
+| 11 | The bow-tied doctor at a seasick woman's bunk, clock at 10:25 | — |
+| 12 | Margit at a wine-tavern table ashore, clock at 10:25, Dürnstein's tower through the window | — |
+| 13 | A wet scrap of the manuscript on the anchor chain, its green ink running | "Strauss's ink would be brown with age." |
+| 14 | A passenger's photo stamped 10:25 PM: Clara playing on the sun deck, an empty front-row chair with a mustard scarf over it | — |
+| 15 | Budapest's parliament at night, a police launch waiting | "Who killed Oskar Brandt?" |
