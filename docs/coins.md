@@ -14,9 +14,9 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 
 ## The hourly maths (the standard: about 500 an hour of ordinary play)
 
-- Campaign: 60 boards, 1970 Coins in all (1870 without the onboarding prize).
-  The design puts a relaxed board at 2 to 4 minutes. At 3 minutes a board, 32 a board
-  is about 634 Coins an hour; at 2 minutes 951, at 4 minutes 475.
+- Campaign: 90 boards, 3100 Coins in all (3000 without the onboarding prize).
+  The design puts a relaxed board at 2 to 4 minutes. At 3 minutes a board, 34 a board
+  is about 674 Coins an hour; at 2 minutes 1011, at 4 minutes 506.
 - Challenge route: 20 boards, 540 Coins in all, 27 a board on average.
   At 4 minutes a board that is about 405 an hour; at 5 minutes 324.
 - Daily: 50 once a day, on top.
@@ -88,6 +88,36 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 | c58 | campaign 58 | 41 | 40 |
 | c59 | campaign 59 | 32 | 35 |
 | c60 | campaign 60 | 41 | 40 |
+| c61 | campaign 61 | 36 | 40 |
+| c62 | campaign 62 | 39 | 40 |
+| c63 | campaign 63 | 41 | 40 |
+| c64 | campaign 64 | 38 | 40 |
+| c65 | campaign 65 | 40 | 40 |
+| c66 | campaign 66 | 14 | 15 |
+| c67 | campaign 67 | 35 | 40 |
+| c68 | campaign 68 | 42 | 40 |
+| c69 | campaign 69 | 41 | 40 |
+| c70 | campaign 70 | 35 | 40 |
+| c71 | campaign 71 | 30 | 35 |
+| c72 | campaign 72 | 40 | 40 |
+| c73 | campaign 73 | 40 | 40 |
+| c74 | campaign 74 | 35 | 40 |
+| c75 | campaign 75 | 44 | 40 |
+| c76 | campaign 76 | 38 | 40 |
+| c77 | campaign 77 | 34 | 35 |
+| c78 | campaign 78 | 32 | 35 |
+| c79 | campaign 79 | 52 | 40 |
+| c80 | campaign 80 | 39 | 40 |
+| c81 | campaign 81 | 13 | 15 |
+| c82 | campaign 82 | 40 | 40 |
+| c83 | campaign 83 | 45 | 40 |
+| c84 | campaign 84 | 39 | 40 |
+| c85 | campaign 85 | 36 | 40 |
+| c86 | campaign 86 | 34 | 35 |
+| c87 | campaign 87 | 41 | 40 |
+| c88 | campaign 88 | 40 | 40 |
+| c89 | campaign 89 | 47 | 40 |
+| c90 | campaign 90 | 48 | 40 |
 | ch01 | challenge 1 | 19 | 20 |
 | ch02 | challenge 2 | 21 | 25 |
 | ch03 | challenge 3 | 19 | 20 |
