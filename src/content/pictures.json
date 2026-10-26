@@ -18504,6 +18504,1356 @@
         "white"
       ],
       "busy": 0
+    },
+    {
+      "id": "dest-etretat",
+      "name": "The cliffs of Étretat",
+      "place": "Normandy, France",
+      "trip": "france",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-etretat.webp",
+      "board": "pictures/destinations/dest-etretat-board.webp",
+      "thumb": "pictures/destinations/dest-etretat-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "sea-stack",
+      "subjects": [
+        "Étretat",
+        "chalk cliffs"
+      ],
+      "palette": [
+        "white",
+        "green",
+        "blue",
+        "cream"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-mont-saint-michel",
+      "name": "Mont-Saint-Michel",
+      "place": "Normandy, France",
+      "trip": "france",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-mont-saint-michel.webp",
+      "board": "pictures/destinations/dest-mont-saint-michel-board.webp",
+      "thumb": "pictures/destinations/dest-mont-saint-michel-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "tide-flats",
+      "subjects": [
+        "Mont-Saint-Michel",
+        "island abbey"
+      ],
+      "palette": [
+        "grey",
+        "gold",
+        "blue",
+        "sand"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-ploumanach",
+      "name": "The pink granite coast",
+      "place": "Ploumanac'h, Brittany",
+      "trip": "france",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-ploumanach.webp",
+      "board": "pictures/destinations/dest-ploumanach-board.webp",
+      "thumb": "pictures/destinations/dest-ploumanach-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "cliff-lighthouse",
+      "subjects": [
+        "pink granite",
+        "boulders"
+      ],
+      "palette": [
+        "pink",
+        "rose",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-chapel-oak",
+      "name": "The chapel oak of Allouville",
+      "place": "Normandy, France",
+      "trip": "france",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-chapel-oak.webp",
+      "board": "pictures/destinations/dest-chapel-oak-board.webp",
+      "thumb": "pictures/destinations/dest-chapel-oak-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "chapel-oak",
+      "subjects": [
+        "chapel oak",
+        "ancient oak"
+      ],
+      "palette": [
+        "brown",
+        "green",
+        "grey",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-chenonceau",
+      "name": "Château de Chenonceau",
+      "place": "Loire Valley, France",
+      "trip": "france",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-chenonceau.webp",
+      "board": "pictures/destinations/dest-chenonceau-board.webp",
+      "thumb": "pictures/destinations/dest-chenonceau-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "castle",
+      "subjects": [
+        "Chenonceau",
+        "château"
+      ],
+      "palette": [
+        "cream",
+        "slate",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-eiffel",
+      "name": "The Eiffel Tower",
+      "place": "Paris, France",
+      "trip": "france",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        2,
+        0
+      ],
+      "window": [
+        1,
+        2
+      ],
+      "file": "pictures/destinations/dest-eiffel.webp",
+      "board": "pictures/destinations/dest-eiffel-board.webp",
+      "thumb": "pictures/destinations/dest-eiffel-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "photo",
+      "family": "eiffel-tower",
+      "subjects": [
+        "Eiffel Tower",
+        "iron tower"
+      ],
+      "palette": [
+        "bronze",
+        "blue",
+        "green",
+        "cream"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-colmar",
+      "name": "Colmar's Little Venice",
+      "place": "Alsace, France",
+      "trip": "france",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-colmar.webp",
+      "board": "pictures/destinations/dest-colmar-board.webp",
+      "thumb": "pictures/destinations/dest-colmar-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "half-timbered",
+      "subjects": [
+        "Colmar",
+        "canal houses"
+      ],
+      "palette": [
+        "yellow",
+        "pink",
+        "blue",
+        "red"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "dest-lac-blanc",
+      "name": "Mont Blanc from Lac Blanc",
+      "place": "Chamonix, France",
+      "trip": "france",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-lac-blanc.webp",
+      "board": "pictures/destinations/dest-lac-blanc-board.webp",
+      "thumb": "pictures/destinations/dest-lac-blanc-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "lac-blanc",
+      "subjects": [
+        "Mont Blanc",
+        "alpine lake"
+      ],
+      "palette": [
+        "white",
+        "blue",
+        "grey",
+        "green"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-palais-ideal",
+      "name": "Palais Idéal du Facteur Cheval",
+      "place": "Drôme, France",
+      "trip": "france",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-palais-ideal.webp",
+      "board": "pictures/destinations/dest-palais-ideal-board.webp",
+      "thumb": "pictures/destinations/dest-palais-ideal-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "palais-ideal",
+      "subjects": [
+        "postman's palace",
+        "pebble palace"
+      ],
+      "palette": [
+        "ochre",
+        "grey",
+        "green",
+        "blue"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "dest-valensole",
+      "name": "The lavender of Valensole",
+      "place": "Provence, France",
+      "trip": "france",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-valensole.webp",
+      "board": "pictures/destinations/dest-valensole-board.webp",
+      "thumb": "pictures/destinations/dest-valensole-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "pastel",
+      "family": "lavender",
+      "subjects": [
+        "lavender field",
+        "Provence"
+      ],
+      "palette": [
+        "purple",
+        "violet",
+        "gold",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-verdon",
+      "name": "The Gorges du Verdon",
+      "place": "Provence, France",
+      "trip": "france",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-verdon.webp",
+      "board": "pictures/destinations/dest-verdon-board.webp",
+      "thumb": "pictures/destinations/dest-verdon-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "copper-teal",
+      "subjects": [
+        "Verdon",
+        "canyon river"
+      ],
+      "palette": [
+        "turquoise",
+        "cream",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-camargue-flamingos",
+      "name": "The flamingos of the Camargue",
+      "place": "Camargue, France",
+      "trip": "france",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-camargue-flamingos.webp",
+      "board": "pictures/destinations/dest-camargue-flamingos-board.webp",
+      "thumb": "pictures/destinations/dest-camargue-flamingos-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "flamingo",
+      "subjects": [
+        "Camargue",
+        "flamingos"
+      ],
+      "palette": [
+        "pink",
+        "blue",
+        "silver",
+        "green"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-carcassonne",
+      "name": "Carcassonne",
+      "place": "Occitanie, France",
+      "trip": "france",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-carcassonne.webp",
+      "board": "pictures/destinations/dest-carcassonne-board.webp",
+      "thumb": "pictures/destinations/dest-carcassonne-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "castle",
+      "subjects": [
+        "Carcassonne",
+        "walled city"
+      ],
+      "palette": [
+        "honey",
+        "slate",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-bonifacio",
+      "name": "Bonifacio",
+      "place": "Corsica, France",
+      "trip": "france",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        2,
+        0
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-bonifacio.webp",
+      "board": "pictures/destinations/dest-bonifacio-board.webp",
+      "thumb": "pictures/destinations/dest-bonifacio-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "bonifacio",
+      "subjects": [
+        "Bonifacio",
+        "cliff town"
+      ],
+      "palette": [
+        "white",
+        "cream",
+        "turquoise",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-dune-pilat",
+      "name": "The Dune du Pilat",
+      "place": "Arcachon, France",
+      "trip": "france",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-dune-pilat.webp",
+      "board": "pictures/destinations/dest-dune-pilat-board.webp",
+      "thumb": "pictures/destinations/dest-dune-pilat-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "warm-dusk",
+      "subjects": [
+        "Dune du Pilat",
+        "sand dune"
+      ],
+      "palette": [
+        "gold",
+        "green",
+        "blue",
+        "sand"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-moraine",
+      "name": "Moraine Lake",
+      "place": "Banff, Alberta",
+      "trip": "canada",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-moraine.webp",
+      "board": "pictures/destinations/dest-moraine-board.webp",
+      "thumb": "pictures/destinations/dest-moraine-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "rowboat-lake",
+      "subjects": [
+        "Moraine Lake",
+        "glacial lake"
+      ],
+      "palette": [
+        "turquoise",
+        "grey",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-abraham-lake",
+      "name": "Abraham Lake's frozen bubbles",
+      "place": "Alberta, Canada",
+      "trip": "canada",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-abraham-lake.webp",
+      "board": "pictures/destinations/dest-abraham-lake-board.webp",
+      "thumb": "pictures/destinations/dest-abraham-lake-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "frozen-bubble",
+      "subjects": [
+        "frozen bubbles",
+        "lake ice"
+      ],
+      "palette": [
+        "white",
+        "blue",
+        "black",
+        "grey"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-pysanka",
+      "name": "The giant pysanka",
+      "place": "Vegreville, Alberta",
+      "trip": "canada",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-pysanka.webp",
+      "board": "pictures/destinations/dest-pysanka-board.webp",
+      "thumb": "pictures/destinations/dest-pysanka-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "pysanka",
+      "subjects": [
+        "pysanka",
+        "giant egg"
+      ],
+      "palette": [
+        "bronze",
+        "gold",
+        "silver",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-mac-moose",
+      "name": "Mac the Moose",
+      "place": "Moose Jaw, Saskatchewan",
+      "trip": "canada",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-mac-moose.webp",
+      "board": "pictures/destinations/dest-mac-moose-board.webp",
+      "thumb": "pictures/destinations/dest-mac-moose-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "mac-moose",
+      "subjects": [
+        "Mac the Moose",
+        "giant moose"
+      ],
+      "palette": [
+        "brown",
+        "cream",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-yellowknife-aurora",
+      "name": "The northern lights",
+      "place": "Yellowknife, Northwest Territories",
+      "trip": "canada",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-yellowknife-aurora.webp",
+      "board": "pictures/destinations/dest-yellowknife-aurora-board.webp",
+      "thumb": "pictures/destinations/dest-yellowknife-aurora-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "pastel",
+      "family": "aurora",
+      "subjects": [
+        "northern lights",
+        "Yellowknife"
+      ],
+      "palette": [
+        "green",
+        "violet",
+        "navy",
+        "white"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-niagara",
+      "name": "Niagara Falls",
+      "place": "Ontario, Canada",
+      "trip": "canada",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        2,
+        1
+      ],
+      "window": [
+        2,
+        1
+      ],
+      "file": "pictures/destinations/dest-niagara.webp",
+      "board": "pictures/destinations/dest-niagara-board.webp",
+      "thumb": "pictures/destinations/dest-niagara-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "photo",
+      "family": "ribbon-falls",
+      "subjects": [
+        "Niagara Falls",
+        "Horseshoe Falls"
+      ],
+      "palette": [
+        "green",
+        "white",
+        "blue",
+        "grey"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-churchill-bears",
+      "name": "The polar bears of Churchill",
+      "place": "Manitoba, Canada",
+      "trip": "canada",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-churchill-bears.webp",
+      "board": "pictures/destinations/dest-churchill-bears-board.webp",
+      "thumb": "pictures/destinations/dest-churchill-bears-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "polar-bear",
+      "subjects": [
+        "polar bears",
+        "Hudson Bay"
+      ],
+      "palette": [
+        "cream",
+        "grey",
+        "blue",
+        "white"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-old-quebec",
+      "name": "Old Quebec in winter",
+      "place": "Quebec City, Canada",
+      "trip": "canada",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-old-quebec.webp",
+      "board": "pictures/destinations/dest-old-quebec-board.webp",
+      "thumb": "pictures/destinations/dest-old-quebec-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "castle",
+      "subjects": [
+        "Old Quebec",
+        "Château Frontenac"
+      ],
+      "palette": [
+        "copper green",
+        "brick",
+        "white",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-perce",
+      "name": "Percé Rock",
+      "place": "Gaspé, Quebec",
+      "trip": "canada",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        2,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-perce.webp",
+      "board": "pictures/destinations/dest-perce-board.webp",
+      "thumb": "pictures/destinations/dest-perce-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "sea-stack",
+      "subjects": [
+        "Percé Rock",
+        "rock arch"
+      ],
+      "palette": [
+        "ochre",
+        "orange",
+        "grey",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-bonaventure-gannets",
+      "name": "The gannets of Bonaventure",
+      "place": "Gaspé, Quebec",
+      "trip": "canada",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-bonaventure-gannets.webp",
+      "board": "pictures/destinations/dest-bonaventure-gannets-board.webp",
+      "thumb": "pictures/destinations/dest-bonaventure-gannets-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "puffin",
+      "subjects": [
+        "gannets",
+        "bird colony"
+      ],
+      "palette": [
+        "white",
+        "yellow",
+        "blue",
+        "grey"
+      ],
+      "busy": 1
+    },
+    {
+      "id": "dest-hopewell",
+      "name": "The Hopewell Rocks",
+      "place": "Bay of Fundy, New Brunswick",
+      "trip": "canada",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-hopewell.webp",
+      "board": "pictures/destinations/dest-hopewell-board.webp",
+      "thumb": "pictures/destinations/dest-hopewell-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "sea-stack",
+      "subjects": [
+        "Hopewell Rocks",
+        "flowerpot rocks"
+      ],
+      "palette": [
+        "red-brown",
+        "green",
+        "grey",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-peggys-cove",
+      "name": "Peggy's Cove lighthouse",
+      "place": "Nova Scotia, Canada",
+      "trip": "canada",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        0
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-peggys-cove.webp",
+      "board": "pictures/destinations/dest-peggys-cove-board.webp",
+      "thumb": "pictures/destinations/dest-peggys-cove-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "cliff-lighthouse",
+      "subjects": [
+        "Peggy's Cove",
+        "lighthouse"
+      ],
+      "palette": [
+        "white",
+        "red",
+        "grey",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-lunenburg",
+      "name": "Lunenburg",
+      "place": "Nova Scotia, Canada",
+      "trip": "canada",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-lunenburg.webp",
+      "board": "pictures/destinations/dest-lunenburg-board.webp",
+      "thumb": "pictures/destinations/dest-lunenburg-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "red-waterside",
+      "subjects": [
+        "Lunenburg",
+        "harbour warehouses"
+      ],
+      "palette": [
+        "red",
+        "ochre",
+        "white",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-cabot-trail",
+      "name": "The Cabot Trail in autumn",
+      "place": "Cape Breton, Nova Scotia",
+      "trip": "canada",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-cabot-trail.webp",
+      "board": "pictures/destinations/dest-cabot-trail-board.webp",
+      "thumb": "pictures/destinations/dest-cabot-trail-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "autumn-rust",
+      "subjects": [
+        "Cabot Trail",
+        "coast road"
+      ],
+      "palette": [
+        "red",
+        "orange",
+        "gold",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-twillingate-iceberg",
+      "name": "The icebergs of Twillingate",
+      "place": "Newfoundland, Canada",
+      "trip": "canada",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-twillingate-iceberg.webp",
+      "board": "pictures/destinations/dest-twillingate-iceberg-board.webp",
+      "thumb": "pictures/destinations/dest-twillingate-iceberg-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "photo",
+      "family": "iceberg",
+      "subjects": [
+        "iceberg",
+        "Twillingate"
+      ],
+      "palette": [
+        "white",
+        "blue",
+        "red",
+        "green"
+      ],
+      "busy": 0
     }
   ]
 }
