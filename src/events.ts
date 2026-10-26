@@ -99,6 +99,13 @@ export interface GameEvents {
    * stamp's thud.
    */
   "trip:stamp": { trip: string };
+  /**
+   * A mystery case's accusation was judged (UI, once per accusation, as the
+   * result shows; docs/mystery-pilot.md). `right`: the killer was named;
+   * `gold`: named with the proving picture, and the gold "case closed" stamp
+   * lands. Sound plays "Case closed" or "Not quite".
+   */
+  "case:verdict": { right: boolean; gold: boolean };
   /** Any button pressed in the interface (for its click sound). */
   "ui:press": { id: string };
   /**
