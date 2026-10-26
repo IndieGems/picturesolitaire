@@ -39,31 +39,40 @@ export interface Geometry {
   height: number;
   left: number;
   top: number;
-  /** The stacks' row: its height, a stack's face (its top card: width, height) and that face's top in the row. */
+  /**
+   * The stacks' row: its height, a stack's face (its top card: width, height)
+   * and that face's top in the row, near the row's floor: the room above it is
+   * for the cards waiting under it.
+   */
   stackH: number;
   face: number;
   faceH: number;
   faceTop: number;
-  /** How far the second upcoming card fans out above the first, and the most layers a pile shows. */
+  /** How far the second upcoming card fans out above the first (a level that shows two). */
   fan: number;
-  layers: number;
   /**
-   * The stacks are flat piles (a board with no upcoming card, peek 0): `face`
-   * x `faceH` is then one flat back, the front one (the next card) at
-   * `faceTop`, and `step` the most each card behind it shows.
+   * The cards waiting under a stack's top card, face down, each `edge` px
+   * higher than the one in front of it (whole device pixels), so only its top
+   * edge shows: one edge a card, up to `edges` of them (what fits above the face).
    */
-  pile: boolean;
-  step: number;
+  edge: number;
+  edges: number;
 }
 
 /**
  * The stacks' row, as fractions of a card: roomy, and compact for a short box
- * (a phone held sideways). `face` is of a card's width; the rest of its height.
+ * (a small phone on a tall board). `face` is of a card's width (a portrait
+ * face, so its height is the same share of a card's height); the rest of its
+ * height. Either row grows, if it must, to hold the face, the most edges
+ * (TUNING.stackEdge x stackEdges) above it and FACE_FLOOR under it.
  */
-const ROOMY = { row: 1.18, gap: 0.2, face: 0.8, top: 0.22, fan: 0.2, layers: 6 };
-const COMPACT = { row: 0.8, gap: 0.1, face: 0.62, top: 0.1, fan: 0.09, layers: 3 };
+const ROOMY = { row: 1.18, gap: 0.2, face: 0.8, fan: 0.2 };
+const COMPACT = { row: 0.8, gap: 0.1, face: 0.62, fan: 0.09 };
+/** Under a stack's face, in the row: a sliver, the row's gap does the parting. */
+const FACE_FLOOR = 0.02;
 /** Cards smaller than this (CSS px) with the roomy stacks: use the compact ones. */
 const COMPACT_BELOW = 56;
+const dpr = () => (typeof devicePixelRatio === "number" && devicePixelRatio > 0 ? devicePixelRatio : 1);
 
 /**
  * The largest a card is drawn: a desktop with a mouse keeps the board at a
@@ -78,22 +87,25 @@ export const cardAspect = () => (Number.isFinite(TUNING.cardAspect) ? Math.min(2
 
 /**
  * Fit the stacks and the grid, with portrait cards (TUNING.cardAspect), inside
- * a host of w x h. A board that shows `peek` upcoming cards keeps a tall row
- * for them; with none, the stacks are flat piles in a short row (TUNING.pile*).
+ * a host of w x h. The stacks' row is the same whether the level shows its
+ * next card or only backs (`_peek`), so the switch never resizes the board.
  */
-export function layout(w: number, h: number, cols: number, rows: number, peek = 0): Geometry {
+export function layout(w: number, h: number, cols: number, rows: number, _peek = 0): Geometry {
   const pad = Math.max(10, Math.min(18, w * 0.035));
   const G = TUNING.gutter;
   const A = cardAspect();
   const unitsW = cols + (cols - 1) * G;
   const cap = cardCap();
+  const most = Math.max(0, Math.round(TUNING.stackEdges));
+  const step = Math.max(0, TUNING.stackEdge);
+  // a row holds its face, the most edges above it and the sliver under it
+  const fit = (st: typeof ROOMY) => ({ ...st, row: Math.max(st.row, st.face + most * step + FACE_FLOOR) });
   // in card widths: the stacks' row and the rows are card heights (1/A widths), the gutters widths
   const size = (st: typeof ROOMY) => Math.floor(Math.min((w - 2 * pad) / unitsW, (h - 2 * 6) / ((st.row + st.gap + rows) / A + (rows - 1) * G), cap));
-  const pile = peek <= 0;
-  // the roomy stacks, unless the box is so short (a phone held sideways) that cards would come out small
-  const st = pile
-    ? { ...ROOMY, row: TUNING.pileRow, gap: TUNING.pileGap, layers: Math.max(1, Math.round(TUNING.pileMax)) }
-    : size(ROOMY) < COMPACT_BELOW && size(COMPACT) > size(ROOMY) ? { ...COMPACT, row: TUNING.stackRow * (COMPACT.row / ROOMY.row) } : { ...ROOMY, row: TUNING.stackRow, gap: TUNING.stackGap };
+  const roomy = fit({ ...ROOMY, row: TUNING.stackRow, gap: TUNING.stackGap });
+  const compact = fit({ ...COMPACT, row: TUNING.stackRow * (COMPACT.row / ROOMY.row) });
+  // the roomy stacks, unless the box is so short that cards would come out small
+  const st = size(roomy) < COMPACT_BELOW && size(compact) > size(roomy) ? compact : roomy;
   const s = Math.max(24, size(st));
   const sh = Math.round(s / A);
   const g = Math.max(3, Math.round(s * G));
@@ -101,9 +113,15 @@ export function layout(w: number, h: number, cols: number, rows: number, peek = 
   const gridY = Math.round(sh * (st.row + st.gap));
   const height = gridY + rows * sh + (rows - 1) * g;
   const stackH = Math.round(sh * st.row);
-  // a flat pile: a back as wide as the pile, squashed flat; the front one sits on the row's floor
-  const face = pile ? Math.round(s * TUNING.pileWidth) : Math.round(s * st.face);
-  const faceH = pile ? Math.max(6, Math.round(face * TUNING.pileSlab)) : Math.round(face / A);
+  const face = Math.round(s * st.face);
+  const faceH = Math.round(face / A);
+  // the face sits near the row's floor; the edges stack up from it
+  const faceTop = Math.max(0, stackH - faceH - Math.round(sh * FACE_FLOOR));
+  // an edge in whole device pixels, so every edge of a pile is the same: as
+  // tuned, or thinner if rounding up would leave the most edges no room
+  const k = dpr();
+  const fits = most ? Math.floor((faceTop / most) * k) / k : Infinity;
+  const edge = Math.max(Math.max(1, TUNING.stackEdgeMin), Math.min(Math.round(sh * step * k) / k, fits));
   return {
     cols, rows, s, sh, g,
     gridX: 0, gridY,
@@ -113,11 +131,10 @@ export function layout(w: number, h: number, cols: number, rows: number, peek = 
     stackH,
     face,
     faceH,
-    faceTop: pile ? Math.max(0, stackH - faceH) : Math.round(sh * st.top),
+    faceTop,
     fan: Math.round(sh * st.fan),
-    layers: st.layers,
-    pile,
-    step: Math.max(1, faceH * TUNING.pileStep),
+    edge,
+    edges: Math.min(most, Math.floor(faceTop / edge)),
   };
 }
 
@@ -302,7 +319,6 @@ export interface StackView {
   el: HTMLDivElement;
 }
 
-/** Draw one stack: its pile (as many layers as it has cards, up to the layout's most) and the upcoming cards the level shows. */
 /**
  * A face-down card's look: the table's own card back when the screens set
  * --stack-back on :root (an absolute url(...)), else `fallback`. A CSS
@@ -312,32 +328,45 @@ export function backImage(fallback: string): string {
   return `var(--stack-back, url("${fallback}"))`;
 }
 
+/**
+ * How many of a stack's `n` cards show as edges above its top card: one a
+ * card under the top one, up to what fits (geo.edges).
+ */
+export const edgesOf = (geo: Geometry, n: number): number => Math.max(0, Math.min(geo.edges, n - 1));
+
+/**
+ * Draw one stack: its top card on the face, face up when the level shows it
+ * (peek; a second one fanned above it), else the table's back; and under it
+ * the cards still waiting, face down, each an edge higher than the one in
+ * front of it, so only their top edges show, like a deck seen from the front:
+ * one edge a card (edgesOf). An empty stack keeps its dashed slot.
+ */
 export function drawStack(
   sv: StackView, geo: Geometry, stack: readonly Card[], peek: number, art: Art[], pictures: readonly Picture[], backUrl: string,
 ): void {
   const { face, faceH, faceTop, s, fan } = geo;
   sv.el.replaceChildren();
   const x0 = Math.round((s - face) / 2);
+  const radius = `${Math.round(face * 0.16)}px`;
   if (!stack.length) {
     const slot = document.createElement("div");
     slot.className = "bd-slot";
-    const r = geo.pile ? `${Math.round(face * 0.1)}px / ${Math.max(2, Math.round(faceH * 0.3))}px` : `${Math.round(face * 0.16)}px`;
-    slot.style.cssText = `left:${x0}px;top:${faceTop}px;width:${face}px;height:${faceH}px;border-radius:${r}`;
+    slot.style.cssText = `left:${x0}px;top:${faceTop}px;width:${face}px;height:${faceH}px;border-radius:${radius}`;
     sv.el.append(slot);
     return;
   }
-  if (geo.pile) return drawPile(sv, geo, stack.length, x0, backUrl);
-  const step = Math.max(2, Math.round(faceH * 0.035));
-  const layers = Math.min(geo.layers, stack.length);
-  for (let i = layers - 1; i >= 0; i--) {
-    const back = document.createElement("div");
-    back.className = i ? "bd-back under" : "bd-back";
-    back.style.cssText = `left:${x0}px;top:${faceTop + i * step}px;width:${face}px;height:${faceH}px;border-radius:${Math.round(face * 0.16)}px;${i ? `filter:brightness(${(1 - i * 0.1).toFixed(2)})` : ""}`;
-    back.style.backgroundImage = backImage(backUrl);
-    sv.el.append(back);
-  }
-  // the level's upcoming cards, face up: the next on the pile, the one after it fanned behind
+  const back = (top: number, className: string) => {
+    const el = document.createElement("div");
+    el.className = className;
+    el.style.cssText = `left:${x0}px;top:${top.toFixed(2)}px;width:${face}px;height:${faceH}px;border-radius:${radius}`;
+    el.style.backgroundImage = backImage(backUrl);
+    sv.el.append(el);
+  };
+  // the waiting cards, the furthest first (each nearer one covers all but its top edge)
+  for (let i = edgesOf(geo, stack.length); i >= 1; i--) back(faceTop - i * geo.edge, "bd-back bd-edge");
   const shown = Math.min(peek, stack.length);
+  if (!shown) return back(faceTop, "bd-back");
+  // the level's upcoming cards, face up: the next on the face, the one after it fanned behind
   for (let i = shown - 1; i >= 0; i--) {
     const f = drawFace(face, faceH, stack[i]!, art, pictures);
     f.classList.add("bd-peek");
@@ -347,28 +376,6 @@ export function drawStack(
     if (i > 0) wrap.style.filter = "brightness(0.82)";
     wrap.append(f);
     sv.el.append(wrap);
-  }
-}
-
-/**
- * A flat pile of `n` backs: the front one (the next card) on the row's floor,
- * each one behind it a band higher, as far apart as the row lets them be (up
- * to geo.step), so a deep pile stands taller and packs tighter. Nothing moves.
- */
-function drawPile(sv: StackView, geo: Geometry, n: number, x0: number, backUrl: string): void {
-  const { face, faceH, faceTop } = geo;
-  const shown = Math.min(geo.layers, n);
-  const step = shown > 1 ? Math.min(geo.step, (faceTop - 1) / (shown - 1)) : 0;
-  const rx = Math.round(face * 0.1);
-  const ry = Math.max(2, Math.round(faceH * 0.3));
-  for (let i = shown - 1; i >= 0; i--) {
-    const back = document.createElement("div");
-    back.className = i ? "bd-back bd-flat under" : "bd-back bd-flat";
-    // the cards further back a shade darker, the pile's depth
-    const dim = Math.min(0.42, i * 0.045);
-    back.style.cssText = `left:${x0}px;top:${Math.round(faceTop - i * step)}px;width:${face}px;height:${faceH}px;border-radius:${rx}px / ${ry}px;--dim:${dim.toFixed(3)}`;
-    back.style.backgroundImage = backImage(backUrl);
-    sv.el.append(back);
   }
 }
 

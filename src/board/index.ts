@@ -31,7 +31,7 @@ import { makeDev, type BoardDev } from "./dev.ts";
 import { revealPostcard, type Reveal } from "./reveal.ts";
 import { TUNING, applyTuning } from "./tuning.ts";
 import {
-  addRing, backImage, cellAt, drawPiece, drawRing, drawStack, keyOf, layout, mountDefs, nearestCell, place,
+  addRing, backImage, cellAt, drawPiece, drawRing, drawStack, edgesOf, keyOf, layout, mountDefs, nearestCell, place,
   type Art, type Geometry, type PieceView, type StackView,
 } from "./view.ts";
 
@@ -720,7 +720,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
 
   /**
    * Where a card sits on stack `col`'s face: its piece element's corner, and
-   * its scale across and down (a flat pile's front back is squashed: ky < kx).
+   * its scale across and down (the face is a smaller card: the same both ways).
    */
   function onStackFace(col: number): { x: number; y: number; kx: number; ky: number } {
     const m = Math.ceil(geo.s * 0.16);
@@ -762,9 +762,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       return tween(TUNING.dealMs, (t) => {
         v.x = sx + (v.ox - sx) * t;
         v.y = sy + (v.oy - sy) * t;
-        // off a flat pile it stands up as it comes (ky catches kx up early)
         const kx = skx + (1 - skx) * t;
-        const ky = sky + (1 - sky) * Math.min(1, t * 1.5);
+        const ky = sky + (1 - sky) * t;
         // a card the level did not show turns face up on the way
         const flip = cover ? Math.max(0.02, Math.abs(Math.cos(Math.PI * Math.min(1, t * 1.6)))) : 1;
         if (cover && t > 1 / 3.2 && cover.isConnected) cover.remove();
@@ -773,6 +772,32 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
         v.el.classList.remove("moving");
         place(v);
       });
+    });
+  }
+
+  /** Each stack's settle in progress (settleStack): its stop. */
+  const settling: ((() => void) | undefined)[] = [];
+  /**
+   * Stack `col` has just been drawn one card shorter: its pile, drawn where it
+   * now rests, starts one edge higher (where its cards were) and drops into
+   * place, quickly. A card dealt off it mid-settle starts it again from the top.
+   */
+  function settleStack(col: number): void {
+    const el = stacks[col]?.el;
+    const ms = TUNING.stackSettleMs;
+    settling[col]?.();
+    settling[col] = undefined;
+    if (!el || ms <= 0 || lessMotion()) return;
+    const from = geo.edge;
+    let t = 0;
+    const at = (y: number) => (el.style.transform = y ? `translate3d(0, ${y.toFixed(2)}px, 0)` : "");
+    at(-from);
+    settling[col] = run((dt) => {
+      t += dt;
+      const p = Math.min(1, t / ms);
+      at(p >= 1 ? 0 : -from * (1 - ease.out(p)));
+      if (p >= 1) settling[col] = undefined;
+      return p < 1;
     });
   }
 
@@ -785,8 +810,10 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       const hidden = dealt[d.col]!++ >= peekOf(lvl);
       return dropFromStack(d.col, d.card, d.to, hidden, i * TUNING.dealStagger, () => {
         const gone = ++taken[d.col]!;
+        const left = shown.stacks[d.col]!.length - gone;
         drawStack(stacks[d.col]!, geo, shown.stacks[d.col]!.slice(gone), peekOf(lvl), art, pics, backUrl);
-        emit("stack:deal", { col: d.col, left: shown.stacks[d.col]!.length - gone });
+        if (edgesOf(geo, left) < edgesOf(geo, left + 1)) settleStack(d.col);
+        emit("stack:deal", { col: d.col, left });
       });
     }));
   }
@@ -811,8 +838,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       return tween(rise, (t) => {
         v.x = x0 + (to.x - x0) * t;
         v.y = y0 + (to.y - y0) * t - Math.sin(Math.PI * t) * geo.s * 0.3;
-        // onto a flat pile it lies down as it lands (ky drops late)
-        placeXY(v, 1 + (to.kx - 1) * t, 1 + (to.ky - 1) * Math.max(0, t * 1.5 - 0.5));
+        placeXY(v, 1 + (to.kx - 1) * t, 1 + (to.ky - 1) * t);
       }, { ease: ease.inOut }).then(() => dropView(v));
     }));
     for (const col of new Set(step.toStacks.map((x) => x.col))) drawStack(stacks[col]!, geo, next.stacks[col]!, peekOf(lvl), art, pics, backUrl);

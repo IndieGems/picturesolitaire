@@ -48,12 +48,12 @@ config:
   #   gutter         the gap between cards
   #   frame          the pale frame round every picture, as a share of a card (thin: 0.025),
   #                  never under frameMin px
-  #   stackRow       the stacks' row above the grid; stackGap the gap under it (a board that
-  #                  shows upcoming cards)
-  #   pileRow        a board that shows none (peek 0): the row of flat piles of card backs, and
-  #                  pileGap under it, in card heights; pileWidth a pile's width (of a card's),
-  #                  pileSlab one flat back's height (of the pile's width), pileStep the most each
-  #                  card behind it shows (of a flat back's height), pileMax the most a pile shows
+  #   stackRow       the stacks' row above the grid; stackGap the gap under it (the row grows
+  #                  if the edges below need it)
+  #   stackEdge      the cards left in a stack stand face down behind its top card, each this
+  #                  much of a card's height higher (never under stackEdgeMin px): one edge a
+  #                  card, up to stackEdges; stackSettleMs a pile dropping one edge on a deal
+  #   showNext       each stack's next card face up (true, the trial) or its card back (false)
   #   boardCopyMin   the board draws the light board copy of a picture while it has this share
   #                  of the pixels a card needs on the screen, else the full picture; 0.85 lets a
   #                  big phone (3x) use the light copy, as sharp as it needs to look
@@ -82,12 +82,10 @@ config:
       "frameMin": 2,
       "stackRow": 1.18,
       "stackGap": 0.2,
-      "pileRow": 0.62,
-      "pileGap": 0.14,
-      "pileWidth": 0.96,
-      "pileSlab": 0.28,
-      "pileStep": 0.42,
-      "pileMax": 12,
+      "stackEdge": 0.03,
+      "stackEdgeMin": 2,
+      "stackEdges": 12,
+      "stackSettleMs": 120,
       "boardCopyMin": 0.85,
       "maxCard": 136,
       "maxCardTouch": 320,

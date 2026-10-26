@@ -26,33 +26,32 @@ export const TUNING = {
    */
   frame: 0.025,
   frameMin: 2,
-  /** The stacks' row above the grid, and the gap under it. */
+  /** The stacks' row above the grid, and the gap under it (the row grows if the edges need it). */
   stackRow: 1.18,
   stackGap: 0.2,
   /**
-   * A board that shows no upcoming card (peek 0, every board since the
-   * creator's "make the game harder"): each stack is a tidy pile of the
-   * table's card backs lying flat, one band per card, the next card at the
-   * front, so its depth says roughly how many are left (as Jigsaw Drop).
-   * pileRow / pileGap: the piles' row and the gap under it, in card heights.
-   * pileWidth: a pile's width, of a card's. pileSlab: one flat back's height,
-   * of the pile's width. pileStep: the most a band shows, of a flat back's
-   * height (a big pile packs its bands closer to fit the row). pileMax: the
-   * most bands a pile shows.
+   * How many cards a stack has left (the creator, 2026-10-26: "face down cards
+   * underneath the facing card, slightly pushed up so the edges are
+   * visible"): the cards under its top card stand behind it, face down, each
+   * stackEdge of a card's height higher than the one in front of it (never
+   * under stackEdgeMin CSS px), so one top edge shows a card. stackEdges: the
+   * most edges shown (12, so a stack of 13 counts exactly: the fullest stack
+   * after the opening deal is 12); a deeper stack shows that many. The row
+   * makes room for them all above the face. stackSettleMs: a pile dropping
+   * by one edge when its top card is dealt.
    */
-  pileRow: 0.62,
-  pileGap: 0.14,
-  pileWidth: 0.96,
-  pileSlab: 0.28,
-  pileStep: 0.42,
-  pileMax: 12,
+  stackEdge: 0.03,
+  stackEdgeMin: 2,
+  stackEdges: 12,
+  stackSettleMs: 120,
   /**
    * The next card on each stack face up again (a trial, the creator,
    * 2026-10-25, after boards 9 and 10: to feel the difficulty with it): every
-   * board shows at least its stacks' next card, over a short pile of the
-   * table's card backs; false: each level's own (peek 0, backs only, the flat
-   * piles). Drawing only: the rules, the levels and the win checker never
-   * read it, so the config can flip it back without a build or a level change.
+   * board shows at least its stacks' next card face up on top of its pile;
+   * false: each level's own (peek 0, the table's card back on top). Drawing
+   * only: the rules, the levels and the win checker never read it, so the
+   * config can flip it back without a build or a level change, and the board
+   * keeps its size either way.
    */
   showNext: true,
   /** The largest a card may be drawn, its width in CSS px (a desktop letterbox). */
