@@ -1,8 +1,8 @@
 // Re-proves every shipped board. Run: node tools/levels/check.mts [file ...]
 // (default: every .json in src/content/levels). Exit code 0 = every board passes.
 // trips.json is no boards file: it must be campaign-plan.mts TRIPS, one trip
-// after another from board 1, covering every campaign board (only the last may
-// run past the boards made so far).
+// after another from board 1, covering every campaign board (trips may run
+// past the boards made so far: a trip is planned before its boards are dealt).
 //
 // For each board:
 //   - its pictures are in the catalogue at the same size, and the stacks hold
@@ -196,7 +196,6 @@ if (!process.argv.slice(2).length && existsSync(tripsFile)) {
   });
   if (new Set(trips.map((t) => t.id)).size !== trips.length) bad.push("two trips share an id");
   if (trips.length && trips.at(-1).to < made) bad.push(`the trips end at board ${trips.at(-1).to}, the campaign has ${made}`);
-  if (trips.length > 1 && trips.at(-2).to > made) bad.push("a trip past the campaign's end is not the last");
   if (bad.length) {
     failed++;
     console.error(`FAIL trips.json: ${bad.join("; ")}`);
