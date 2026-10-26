@@ -21,6 +21,7 @@ import { isMuted, onMutedChange, setMuted } from "./sound";
 import { choose, loadSettings, onSettingsChange, setting } from "./settings";
 import { t } from "./ui/i18n";
 import { ICONS } from "./ui/icons";
+import { cornerKey } from "./ui/dialogs";
 import { chooseTable, chosenTable, onTableChange, ownedTableArts, tableTitle, thumbOf } from "./ui/tables";
 import { startMenuSettings } from "./menu-settings";
 
@@ -130,18 +131,14 @@ export function mountSettings(parent: HTMLElement = document.body): void {
     if (screen.open) void drawTables();
   });
 
-  const close = document.createElement("button");
-  close.type = "button";
-  close.className = "btn close";
-  close.dataset.press = "settings.close";
-  close.textContent = t("settings.close");
-  close.addEventListener("click", () => screen.close());
+  // its own way out, an X at its top right (dialogs.ts)
+  const close = cornerKey("close", t("settings.close"), "settings.close", () => screen.close());
   // a tap on the shade outside the screen closes it too
   screen.addEventListener("click", (e) => {
     if (e.target === screen) screen.close();
   });
 
-  screen.append(title, row(t("settings.sound"), sound), row(t("settings.volume"), volume), vibrationRow, tablesRow, extra, close);
+  screen.append(close, title, row(t("settings.sound"), sound), row(t("settings.volume"), volume), vibrationRow, tablesRow, extra);
 
   const render = () => {
     sound.checked = !isMuted();

@@ -12,6 +12,33 @@
 // The gear's screen and the dev menu are <dialog>s shown modal: the browser does
 // all three for them, and Escape here leaves them to it. Focus rings are the
 // stylesheet's (:focus-visible), shown for a keyboard only.
+//
+// A window's own way out is its CORNER KEY (cornerKey, below), at its top right, never a
+// Close, Home or Route button at its foot (the game standard, "A window over part of the
+// screen has its own back key at its own top right"): an X where the window only closes
+// (the settings screen), Home or Back where it leaves (a win card's way home, or back to
+// the challenge route). The window's own action stays its big button (Next, Results), and
+// a question keeps both its answers (the restart card).
+
+import { ICONS } from "./icons";
+
+/** A window's corner key: an X where it only closes, Home or Back where it leaves. */
+export type CornerKind = "close" | "home" | "back";
+
+/**
+ * The corner key of a window (style.css, .corner-key): a full tap target at its top right,
+ * named by `label` (it has no words of its own). The window must be positioned (relative).
+ */
+export function cornerKey(kind: CornerKind, label: string, press: string, go: () => void): HTMLButtonElement {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = `btn round corner-key ck-${kind}`;
+  b.dataset.press = press;
+  b.setAttribute("aria-label", label);
+  if (kind !== "close") b.innerHTML = kind === "home" ? ICONS.home : ICONS.back;
+  b.addEventListener("click", go);
+  return b;
+}
 
 type Entry = { el: HTMLElement; back: HTMLElement | null; escape?: () => void };
 /** The cards open now, the last opened last. */

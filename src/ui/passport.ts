@@ -98,8 +98,8 @@ const cardSizes = new ResizeObserver((entries) => {
   }
 });
 
-/** Art's stamp for a trip. */
-const stampUrl = (tr: Trip) => `${import.meta.env.BASE_URL}art/stamps/stamp-${tr.id}.webp`;
+/** Art's stamp for a trip (home draws it too, at the route's last stop). */
+export const stampUrl = (tr: Trip) => `${import.meta.env.BASE_URL}art/stamps/stamp-${tr.id}.webp`;
 
 /** Load and decode a trip's stamp ahead of the moment it lands (a failure resolves too: the ring stands in). */
 function stampReady(tr: Trip): Promise<void> {

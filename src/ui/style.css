@@ -141,6 +141,18 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
 .btn:disabled { cursor: default; }
 .btn[hidden] { display: none; }
 
+/* A window's own way out (dialogs.ts, cornerKey): a round key in its top-right corner, an X
+   where the window only closes, Home or Back where it leaves; the window is positioned. */
+.btn.corner-key { --size: 44px; position: absolute; z-index: 3; top: 12px; right: 12px; }
+.btn.corner-key :is(svg, .ico) { width: 24px; height: 24px; }
+.btn.corner-key.ck-close::before, .btn.corner-key.ck-close::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 20px; height: 4px; margin: -2px 0 0 -10px;
+  border-radius: 2px; background: currentColor; transform: rotate(45deg);
+}
+.btn.corner-key.ck-close::after { transform: rotate(-45deg); }
+/* a card's title stays clear of its corner key */
+.card:has(> .corner-key) h2 { padding: 0 40px; }
+
 /* ---------- information ---------- */
 
 .glass {
@@ -183,33 +195,110 @@ html.less-motion .home-note { animation: none; }
 }
 #settings-button :is(svg, .ico) { width: 28px; height: 28px; }
 
-/* ---------- home ---------- */
+/* ---------- home (home.ts): the title, the trip's ticket, Next stop, and the dock ---------- */
 
-/* --k: home grows with a big column (a tablet), 1 on a phone up to 1.7 (app.ts sets it), so a
-   tablet's home reads as a tablet screen, not a phone screen floating in the middle */
-.home { --k: 1; align-items: center; justify-content: center; padding: calc(var(--row-bottom) + 12px) 20px calc(var(--foot) + 24px); gap: calc(26px * var(--k)); }
-.home .emblem { display: grid; grid-template-columns: repeat(3, calc(52px * var(--k))); gap: calc(10px * var(--k)); transform: rotate(-4deg); }
-/* three chubby stacks, as on the board: the art member's card back, a few deep */
-.home .emblem i {
-  display: block; height: calc(52px * var(--k) / var(--card-aspect)); position: relative;
-  background: var(--stack-back, url("/art/stack-back.webp")) center / 100% 100% no-repeat;
-  filter: drop-shadow(0 3px 0 #1f2834) drop-shadow(0 6px 0 #1a222d) drop-shadow(0 8px 10px rgba(0, 0, 0, 0.45));
+/* --k: home grows with a big column (a tablet), 1 on a phone up to 1.7 (home.ts sets it), so a
+   tablet's home reads as a tablet screen, not a phone screen floating in the middle. --pin: a
+   stop on the route. The backdrop is home's own, Art's traveller's desk (its detail at the edges,
+   a calm middle); the boards keep the player's table. */
+.screen.home {
+  --k: 1; --pin: calc(44px * var(--k));
+  align-items: center; justify-content: safe center;
+  padding: calc(var(--row-bottom) + 8px) 16px calc(var(--foot) + 14px);
+  gap: clamp(10px, 2.2dvh, calc(24px * var(--k)));
+  background: #232d3a url("/art/home-desk.webp") center / cover no-repeat;
 }
-.home .emblem i:nth-child(2) { transform: translateY(calc(-10px * var(--k))); }
-.home .brand { display: flex; flex-direction: column; align-items: center; gap: calc(22px * var(--k)); width: 100%; }
-/* Art's drawn title (2 : 1, its own lip and shadow): 300-340 px on a phone, growing with a
-   tablet's home (the 1400 px file there, sharp to ~700 px; wordmark.ts); a short screen gives it
-   less so Play stays in view */
-.home h1 { margin: 0; width: min(100%, calc(340px * var(--k)), 600px, calc((100dvh - 430px) * 2)); min-width: 200px; line-height: 0; }
+/* Art's drawn title (2 : 1, its own lip and shadow): what the column's height leaves it, 150 px
+   wide at the least, up to 300 on a phone (the 1400 px file where it draws large; wordmark.ts) */
+.home h1 { flex: none; margin: 0; line-height: 0; width: clamp(150px, calc((100dvh - 560px * var(--k)) * 2), calc(300px * var(--k))); max-width: 100%; }
 .home h1 picture, .home .wordmark { display: block; width: 100%; height: auto; }
-/* where the player is: the trip and how far through it, over the board's number (and its hard tag) */
-.home .where { display: flex; flex-direction: column; align-items: center; gap: calc(3px * var(--k)); padding: calc(8px * var(--k)) calc(20px * var(--k)); font-size: calc(18px * var(--k)); font-weight: 600; text-align: center; }
-.home .where .trip { font-size: calc(14px * var(--k)); color: var(--ink-soft); }
-.home .where .trip[hidden] { display: none; }
-.home .where .level { display: flex; align-items: center; justify-content: center; }
-.home .where .mark-tag { margin-left: calc(10px * var(--k)); padding: calc(5px * var(--k)) calc(10px * var(--k)) calc(4px * var(--k)); font-size: calc(13px * var(--k)); }
-.home .play { min-width: calc(210px * var(--k)); min-height: calc(68px * var(--k)); padding: 0 calc(34px * var(--k)); font-size: calc(26px * var(--k)); }
-.home .play :is(svg, .ico) { width: calc(28px * var(--k)); height: calc(28px * var(--k)); }
+
+/* the ticket: frosted glass (information), a ticket's two notches at the tear under its head */
+.home .ticket {
+  --tear: calc(58px * var(--k)); --notch: calc(10px * var(--k));
+  flex: none; position: relative; width: min(100%, calc(380px * var(--k)));
+  padding: 0 calc(12px * var(--k)) calc(10px * var(--k)); border-radius: calc(24px * var(--k));
+  -webkit-mask: radial-gradient(circle var(--notch) at 0 var(--tear), #0000 95%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle var(--notch) at 100% var(--tear), #0000 95%, #000) right / 51% 100% no-repeat;
+  mask: radial-gradient(circle var(--notch) at 0 var(--tear), #0000 95%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle var(--notch) at 100% var(--tear), #0000 95%, #000) right / 51% 100% no-repeat;
+}
+.home .ticket[hidden] { display: none; }
+.ticket-head {
+  display: flex; align-items: center; gap: calc(11px * var(--k)); height: var(--tear); margin: 0 calc(6px * var(--k));
+  padding: 0 calc(4px * var(--k)); border-bottom: 2px dashed rgba(85, 101, 124, 0.38);
+}
+.ticket-head .ico { width: calc(30px * var(--k)); height: calc(30px * var(--k)); color: var(--amber-lip); }
+.ticket-words { display: flex; flex-direction: column; gap: calc(3px * var(--k)); min-width: 0; }
+.ticket-trip { font: 600 calc(21px * var(--k))/1.1 var(--round); }
+.ticket-count { font: 500 calc(14px * var(--k))/1.2 var(--round); color: var(--ink-soft); }
+.ticket.waiting .ticket-words { visibility: hidden; }
+
+/* the route: five stops to a row, snaking down, on a dotted path (walked in amber up to the next stop) */
+.tr-route { position: relative; margin-top: calc(12px * var(--k)); }
+.tr-path { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.tr-path path { fill: none; stroke-width: calc(3.5px * var(--k)); stroke-linecap: round; stroke-dasharray: 0 calc(8.5px * var(--k)); }
+.tr-path path.walked { stroke: var(--amber-lo); }
+.tr-path path.ahead { stroke: rgba(85, 101, 124, 0.45); }
+.tr-stops { position: relative; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); row-gap: calc(2px * var(--k)); }
+.tr-stop { position: relative; display: flex; flex-direction: column; align-items: center; min-height: calc(var(--pin) + 12px * var(--k)); }
+.tr-stop .tr-pin { position: relative; display: grid; place-items: center; width: var(--pin); height: var(--pin); border-radius: 50%; }
+.tr-stop .n { position: relative; font: 600 calc(14px * var(--k))/1 var(--round); color: var(--ink-soft); }
+/* visited: its postcard, round, in a white rim (faded in once its picture is in) */
+.tr-stop.visited .tr-pin { background: var(--frost-lo); box-shadow: 0 0 0 calc(3px * var(--k)) var(--frost-hi); }
+.tr-stop.visited .tr-pin img { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; opacity: 0; transition: opacity 0.25s; }
+.tr-stop.visited .tr-pin img.in { opacity: 1; }
+/* still to come: a dashed ring with its board number; a board not made yet, fainter */
+.tr-stop.ahead .tr-pin { background: rgba(255, 255, 255, 0.5); border: 2px dashed rgba(85, 101, 124, 0.5); }
+.tr-stop.soon .tr-pin { background: rgba(255, 255, 255, 0.25); border: 2px dotted rgba(85, 101, 124, 0.3); }
+.tr-stop.soon .n { opacity: 0.6; }
+.ticket.waiting .tr-stop .tr-pin { background: rgba(255, 255, 255, 0.4); border: 2px dashed rgba(85, 101, 124, 0.35); box-shadow: none; }
+/* the next stop: an amber ring and a pulse, its number and nothing else (its place is the board's reveal) */
+.tr-stop.next .tr-pin { background: var(--frost-hi); box-shadow: 0 0 0 calc(3px * var(--k)) var(--amber-lo); }
+.tr-stop.next .n { color: var(--ink); font-size: calc(16px * var(--k)); }
+.tr-stop.here.visited .tr-pin { box-shadow: 0 0 0 calc(3px * var(--k)) var(--amber-lo); }
+.tr-stop.here .tr-pin::after {
+  content: ""; position: absolute; inset: calc(-3px * var(--k)); border-radius: 50%; pointer-events: none;
+  box-shadow: 0 0 0 calc(3px * var(--k)) var(--amber-hi); animation: stop-pulse 1.7s ease-out infinite;
+}
+@keyframes stop-pulse { from { opacity: 0.95; transform: scale(1); } to { opacity: 0; transform: scale(1.55); } }
+html.less-motion .tr-stop.here .tr-pin::after { display: none; }
+@media (prefers-reduced-motion: reduce) { .tr-stop.here .tr-pin::after { display: none; } }
+/* the trip's last stop: its stamp as a faint outline, until the trip is done; then Art's stamp, over the postcard */
+.tr-stop.last:not(.visited) .tr-pin { background: transparent; border: 0; }
+.tr-stop.last .ghost {
+  position: absolute; left: 50%; top: 50%; width: calc(var(--pin) * 1.4); height: calc(var(--pin) * 1.4);
+  transform: translate(-50%, -50%) rotate(-8deg); background: rgba(52, 67, 90, 0.34);
+  -webkit-mask: var(--stamp) center / contain no-repeat; mask: var(--stamp) center / contain no-repeat;
+}
+.tr-stop.last.next .ghost { background: rgba(173, 100, 36, 0.45); }
+.tr-stop.earned .stamp {
+  position: absolute; z-index: 1; left: 50%; top: 0; width: calc(var(--pin) * 1.15); height: auto;
+  transform: translate(-64%, -26%) rotate(-12deg); pointer-events: none;
+}
+/* a hard board's tag on its stop's foot (marks.ts), over the path */
+.tr-stop .mark-tag { position: relative; z-index: 1; margin: calc(-9px * var(--k)) 0 0; padding: 2px 6px 1px; font-size: calc(12px * var(--k)); }
+
+/* Next stop: the amber button, the board it opens under the words */
+.home .play { flex: none; min-width: calc(232px * var(--k)); min-height: calc(66px * var(--k)); padding: 0 calc(30px * var(--k)) 0 calc(24px * var(--k)); gap: calc(12px * var(--k)); }
+.home .play .ico { width: calc(30px * var(--k)); height: calc(30px * var(--k)); }
+.home .play .words { display: flex; flex-direction: column; align-items: flex-start; gap: calc(4px * var(--k)); }
+.home .play .words b { font: 600 calc(25px * var(--k))/1 var(--round); }
+.home .play .words small { font: 600 calc(14px * var(--k))/1 var(--round); }
+
+/* the dock: Daily (daily.ts), the passport's booklet and its stamps, the challenge route; three tiles */
+.home .dock { flex: none; display: flex; justify-content: center; gap: calc(10px * var(--k)); width: min(100%, calc(380px * var(--k))); }
+.btn.tile-btn {
+  flex: 1 1 0; min-width: 0; max-width: calc(150px * var(--k)); min-height: calc(92px * var(--k));
+  padding: calc(9px * var(--k)) calc(6px * var(--k)) calc(10px * var(--k)); border-radius: calc(24px * var(--k));
+  flex-direction: column; justify-content: flex-start; gap: calc(4px * var(--k)); text-align: center;
+}
+.btn.tile-btn > .ico { width: calc(34px * var(--k)); height: calc(36px * var(--k)); }
+.tile-btn .booklet { display: block; height: calc(36px * var(--k)); }
+.tile-btn .booklet img { display: block; height: 100%; width: auto; }
+.tile-btn .words { display: flex; flex-direction: column; align-items: center; gap: calc(4px * var(--k)); min-width: 0; }
+.tile-btn :is(.label, .words b) { font: 600 calc(16px * var(--k))/1.1 var(--round); }
+.tile-btn :is(small, .words span) { font: 500 calc(12.5px * var(--k))/1.15 var(--round); color: var(--ink-soft); }
 
 /* ---------- the board ---------- */
 
@@ -470,6 +559,7 @@ html.less-motion .twinkle { display: none; }
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
 }
 #settings-screen::backdrop { background: var(--shade); }
+#settings-screen h2 { padding: 0 44px; }
 #settings-screen h2 { margin: 0 0 12px; text-align: center; font: 600 26px/1.15 var(--round); }
 #settings-screen .set-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 56px; font-size: 18px; font-weight: 500; }
 #settings-screen .set-row[hidden] { display: none; }
@@ -493,17 +583,6 @@ html.less-motion .twinkle { display: none; }
 #settings-screen input[type="range"]::-moz-range-track { height: 10px; border-radius: 5px; background: #b9c5d3; }
 #settings-screen input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; margin-top: -9px; border-radius: 50%; background: linear-gradient(180deg, var(--amber-hi), var(--amber-lo)); box-shadow: 0 2px 4px rgba(20, 30, 50, 0.45); }
 #settings-screen input[type="range"]::-moz-range-thumb { width: 28px; height: 28px; border: 0; border-radius: 50%; background: linear-gradient(180deg, var(--amber-hi), var(--amber-lo)); }
-#settings-screen .close { display: flex; width: 100%; margin-top: 16px; min-height: 52px; font-size: 18px; }
-
-/* ---------- home's other buttons: Albums and Challenges, side by side ---------- */
-
-.home .more { display: flex; justify-content: center; gap: calc(14px * var(--k)); width: 100%; }
-.btn.tile-btn {
-  flex: 0 1 calc(150px * var(--k)); min-width: 0; min-height: calc(78px * var(--k)); padding: calc(10px * var(--k)) calc(12px * var(--k));
-  border-radius: calc(26px * var(--k)); flex-direction: column; gap: calc(6px * var(--k)); font-size: calc(17px * var(--k));
-}
-.btn.tile-btn :is(svg, .ico) { width: calc(28px * var(--k)); height: calc(28px * var(--k)); }
-.btn.tile-btn span { white-space: nowrap; }
 
 /* ---------- menu screens: the top row over a scrolling column ---------- */
 
@@ -743,17 +822,6 @@ html.less-motion .marker.next::after { animation-duration: 3.4s; }
 .card .prize .won-table img { width: 34px; height: 42px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 6px rgba(6, 12, 24, 0.35); }
 .card .prize .prize-note { flex-basis: 100%; text-align: center; font: 500 14px/1.2 var(--round); color: var(--ink-soft); }
 
-.btn.daily-btn {
-  width: min(100%, calc(300px * var(--k))); min-height: calc(62px * var(--k)); padding: 0 calc(20px * var(--k)); border-radius: calc(26px * var(--k));
-  justify-content: flex-start; gap: calc(12px * var(--k)); text-align: left;
-}
-.btn.daily-btn .ico { width: calc(30px * var(--k)); height: calc(30px * var(--k)); }
-.daily-btn .words { display: flex; flex-direction: column; gap: calc(4px * var(--k)); min-width: 0; }
-.daily-btn .words b { font: 600 calc(18px * var(--k))/1.1 var(--round); }
-.daily-btn .words span { font: 500 calc(13px * var(--k))/1.2 var(--round); color: var(--ink-soft); white-space: nowrap; }
-/* a short phone: the three stacks over the title make way for the buttons */
-@media (max-height: 720px) { .home .emblem { display: none; } }
-
 /* the results screen: the player's result, the line that says what counts, then the friends' rows */
 .daily-you { max-width: 440px; margin: 4px auto 10px; padding: 14px 18px; border-radius: 22px; text-align: center; }
 .daily-you span { display: block; font-size: 15px; font-weight: 500; color: var(--ink-soft); }
@@ -853,7 +921,7 @@ html.less-motion .particles, html.battery-saver .particles { display: none; }
 }
 /* on a win card: a chip on the card's top edge, so nothing on the card moves */
 .card .coins-chip {
-  position: absolute; top: -18px; right: 18px; display: flex; align-items: center; gap: 7px;
+  position: absolute; top: -18px; left: 18px; display: flex; align-items: center; gap: 7px;
   padding: 6px 13px 6px 8px; font: 600 18px/1 var(--round); animation: coins-in 0.35s ease-out both;
 }
 /* on the guide's milestone card: the prize in its own place, kept from the start */
@@ -878,57 +946,23 @@ html.less-motion .card .coins-chip { animation: none; }
 .viewer img { position: absolute; display: block; object-fit: cover; border-radius: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
 html.less-motion .viewer { animation: none; }
 
-/* ---------- a phone held sideways ----------
-   Drawn at the upright size, laid out wider (the standard: "Sideways is drawn at the upright
-   size"): the whole width, the helpers in a column at the side, Restart alone at the other, the
-   board the full height under the top row; home and the win card in two columns. A tablet or a
-   desktop keeps the portrait column. app.ts asks the same question (SIDEWAYS). */
-@media (orientation: landscape) and (max-height: 560px) {
-  #app { max-width: none; }
-  .top-pill { max-width: 360px; }
-
-  .board-screen {
-    display: grid; grid-template-columns: minmax(118px, auto) 1fr 96px; grid-template-rows: repeat(3, 1fr);
-    padding: calc(var(--row-bottom) + 6px) max(10px, var(--safe-right)) var(--foot) max(12px, var(--safe-left));
+/* ---------- a phone held sideways: turn it upright ----------
+   The game is laid out upright only (the store page says portrait; a PC or a TV letterboxes it).
+   A phone browser that turns anyway gets this card over everything (app.ts puts it on the page)
+   instead of a layout of its own (the creator, 2026-10-26). A tablet keeps its portrait column. */
+.upright { display: none; }
+@media (orientation: landscape) and (max-height: 560px) and (pointer: coarse) {
+  .upright {
+    position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 16px;
+    background: #232d3a url("/art/home-desk.webp") center / cover no-repeat;
   }
-  .board-screen .board-host { grid-column: 2; grid-row: 1 / -1; }
-  .board-screen .helpers { display: contents; }
-  .board-screen .helpers .spacer { display: none; }
-  .board-screen .helpers .restart { grid-column: 1; grid-row: 3; align-self: end; justify-self: start; margin-bottom: 4px; }
-  .board-screen .helper { grid-column: 3; justify-self: center; align-self: center; }
-  .board-screen .helper.undo { grid-row: 1; }
-  .board-screen .helper.hint { grid-row: 2; }
-  .board-screen .helper.shuffle { grid-row: 3; }
-  .stuck-note { bottom: calc(var(--foot) + 8px); }
-
-  .home {
-    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr auto auto auto 1fr;
-    column-gap: 28px; row-gap: 14px; justify-items: center;
-    padding: calc(var(--row-bottom) + 4px) 24px calc(var(--foot) + 8px);
+  .upright .glass {
+    display: flex; flex-direction: column; align-items: center; gap: 10px; max-width: 420px;
+    padding: 20px 28px 22px; border-radius: 26px; text-align: center;
   }
-  /* the title and the daily on the left; where the player is, Play and the tiles on the right */
-  .home { row-gap: 10px; }
-  .home .brand { grid-column: 1; grid-row: 2; align-self: center; gap: 14px; }
-  .home h1 { width: min(100%, 340px, calc((100dvh - 250px) * 2)); }
-  .home .daily-btn { grid-column: 1; grid-row: 3; }
-  .home .where { grid-column: 2; grid-row: 2; }
-  .home .play { grid-column: 2; grid-row: 3; }
-  .home .more { grid-column: 2; grid-row: 4; }
-
-  .win .card {
-    width: min(720px, 100%); display: grid; grid-template-columns: 1.25fr 1fr; column-gap: 22px; row-gap: 16px; align-items: center;
-    padding: 16px 22px 20px;
-  }
-  .win .card h2 { grid-column: 1 / -1; }
-  .win .card .gallery { grid-column: 1; grid-row: 2 / span 3; margin: 6px 0; }
-  .win .card .stats { grid-column: 2; margin-bottom: 0; }
-  .win .card p { grid-column: 2; margin: 0; }
-  .win .card .next { grid-column: 2; justify-self: center; min-width: 180px; }
-  .win .card .row { grid-column: 2; }
-  .veil { place-items: safe center; }
-
-  /* the passport: the whole width, five postcards across */
-  .pp-book { max-width: 760px; }
-  .pp-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-  .pp-head { min-height: 0; }
+  .upright .ico { width: 56px; height: 56px; animation: upright-turn 2.4s ease-in-out infinite; }
+  .upright h2 { margin: 0; font: 600 22px/1.15 var(--round); }
+  .upright p { margin: 0; font: 500 15px/1.3 var(--round); color: var(--ink-soft); }
+  html.less-motion .upright .ico { animation: none; }
 }
+@keyframes upright-turn { 0%, 30% { transform: rotate(-90deg); } 60%, 100% { transform: rotate(0deg); } }

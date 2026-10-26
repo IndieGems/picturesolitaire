@@ -36,6 +36,8 @@ export const ICONS = {
   check: art("check"),
   lock: art("lock"),
   daily: art("daily"),
+  plane: art("plane"),
+  rotate: art("rotate"),
 } as const;
 
 export type IconName = keyof typeof ICONS;

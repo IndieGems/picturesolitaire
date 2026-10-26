@@ -54,14 +54,14 @@ import { claimWin, cueCoins, onVerdict, type Verdict } from "../net/claims";
 import { KEEPSAKE } from "../net/keepsake";
 import { knownTable, startTables, tableTitle, thumbOf } from "./tables";
 import { keepFitted } from "./fit";
-import { WORDMARK } from "./wordmark";
 import { cardAspect, syncCardAspect } from "./cards";
 import { createViewer } from "./viewer";
-import { closed, opened } from "./dialogs";
+import { closed, cornerKey, opened } from "./dialogs";
 import { markOf, markTag, markWords, pretendMarks, type Mark } from "./marks";
+import { allDone, awaitingRecord, createHome, nextBoard } from "./home";
 import { createDestinationBanner, type Destination } from "./destination";
 import { createPassport, type AfterStamp } from "./passport";
-import { currentTrip, tripById, tripCount, tripEndingAt, tripName } from "./trips";
+import { tripById, tripEndingAt, tripName } from "./trips";
 import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy } from "./catalogue";
 import { ensure, resident } from "../packs";
 import { mountParticles } from "./particles";
@@ -91,50 +91,22 @@ function button(cls: string, press: string, ...kids: Kids): HTMLButtonElement {
 
 const app = h("div", { id: "app" });
 
-// home: the game's name, where the player is (the trip, then the board), and Play
-const homeWhere = h("div", { class: "where glass" });
-const homeTrip = h("span", { class: "trip" });
-const homeLevel = h("span", { class: "level" });
-homeWhere.append(homeTrip, homeLevel);
-const homePlayLabel = h("span");
-const homePlay = button("amber play", "home.play", icon("play"), homePlayLabel);
-// the passport (passport.ts) in the albums' place (the creator, 2026-10-25)
-const homePassport = button("tile-btn passport", "home.passport", icon("passport"), h("span", {}, t("home.passport")));
-// the daily puzzle (daily.ts): its Home button shows today's state, and is hidden until the day's board is known
-const dailyUi = createDaily({ home: () => goHome(), show: () => show("daily"), play: (d) => openPlay({ kind: "daily", d }) });
-// shown once the challenge boards exist: nothing promises a screen with nothing on it
-const homeChallenges = button("tile-btn challenges", "home.challenges", icon("challenges"), h("span", {}, t("home.challenges")));
-homeChallenges.hidden = true;
-// the game's name is Art's drawn title (wordmark.ts: the 840 px file, or the 1400 px one where home
-// draws it large); its words reach screen readers as the picture's alt
-const wordmark = h("img", {
-  class: "wordmark",
-  src: WORDMARK.small,
-  alt: t("game.title"),
-  width: "840",
-  height: "420",
-  draggable: "false",
-  decoding: "async",
-});
-const wordmarkPicture = h("picture", {}, h("source", { media: WORDMARK.bigWhere, srcset: WORDMARK.big, width: "1400", height: "700" }), wordmark);
 // a win from an earlier session that the checker accepted at this start, and paid: one line in home's
 // top row (information, never a button), its Coins flown to the Arcade's total once
 const homeNote = h("div", { class: "top-pill glass home-note", role: "status", hidden: "" });
-const home = h(
-  "section",
-  { class: "screen home", "aria-label": t("game.title") },
-  homeNote,
-  h(
-    "div",
-    { class: "brand" },
-    h("div", { class: "emblem", "aria-hidden": "true" }, h("i"), h("i"), h("i")),
-    h("h1", {}, wordmarkPicture),
-  ),
-  homeWhere,
-  homePlay,
-  dailyUi.homeButton,
-  h("div", { class: "more" }, homePassport, homeChallenges),
+// the daily puzzle (daily.ts): its Home button shows today's state, and is hidden until the day's board is known
+const dailyUi = createDaily({ home: () => goHome(), show: () => show("daily"), play: (d) => openPlay({ kind: "daily", d }) });
+// home (home.ts): the trip as a ticket and its route, Next stop, and Daily, the passport and the challenges
+const homeUi = createHome(
+  {
+    play: () => void playNext(),
+    passport: () => passportUi.open(),
+    challenges: () => void routeUi.openRoute(),
+  },
+  // the challenge tile shows once the challenge boards exist: nothing promises a screen with nothing on it
+  { note: homeNote, daily: dailyUi.homeButton, challengesShown: () => routeUi.exists() },
 );
+const home = homeUi.screen;
 
 // the board: the level (on a challenge: its number, par and the moves so far), Back, the board, the helpers
 const levelPill = h("div", { class: "top-pill glass" });
@@ -187,6 +159,10 @@ const offlineVeil = h(
     h("div", { class: "waiting" }, h("i", { "aria-hidden": "true" }), t("offline.reconnecting")),
   ),
 );
+
+// a phone held sideways: one card over everything asking for it upright, shown by the stylesheet
+// alone (style.css, .upright); the game is laid out upright only (the creator, 2026-10-26)
+const upright = h("div", { class: "upright", role: "status" }, h("div", { class: "glass" }, icon("rotate"), h("h2", {}, t("upright.title")), h("p", {}, t("upright.why"))));
 
 // the albums (albums.ts): no longer on home (the passport took their place); kept, unreached, until they are tidied away
 const albumsUi = createAlbums({ home: () => goHome(), show: (which) => show(which) });
@@ -257,8 +233,6 @@ const guide = createGuide({
 });
 
 const levels = () => levelCount();
-/** Every board of the campaign won once: its position is past the last, where it stays (home's Play then goes round). */
-const allDone = () => campaignNext() > levels();
 /** A campaign position as the board's own number (the campaign goes round past the last board). */
 const boardNumber = (n: number) => ((n - 1) % levels()) + 1;
 
@@ -286,54 +260,31 @@ function show(next: Screen): void {
 
 // ---------- home ----------
 
-/**
- * The Arcade is there, and its record of the player's progress has not landed yet. Only then
- * does Home hold back the level: with no Arcade at all (a plain tab, the play-test tool),
- * what this page holds is all there is, Level 1 on a fresh device.
- */
-const awaitingRecord = () => gem.frame.currentState === "connected" && !progress().known;
-
 function drawHome(): void {
-  // where the player is is the server's word (src/net/progress.ts)
-  const p = progress();
-  const known = !awaitingRecord() && !allDone();
-  const where = awaitingRecord() ? t("home.level", { level: "–" }) : allDone() ? t("home.allDone") : t("home.level", { level: p.campaign.next });
-  // the next board's mark, if it is a hard one (marks.ts)
-  const mark = known ? markOf(campaignLevel(p.campaign.next)) : null;
-  homeLevel.replaceChildren(where, ...(mark ? [markTag(mark)] : []));
-  // the trip the player is on, and how far through it ("Travel America · 4 of 15")
-  const trip = known ? currentTrip() : undefined;
-  homeTrip.hidden = !trip;
-  if (trip) homeTrip.textContent = t("home.trip", { trip: tripName(trip), ...tripCount(trip) });
-  homePlayLabel.textContent = t("home.play");
-  homeChallenges.hidden = !routeUi.exists();
-  // the board Play opens, its pictures fetched ahead while home is up
-  if (known) prefetch(campaignLevel(allDone() ? (p.campaign.won % levels()) + 1 : p.campaign.next));
+  homeUi.draw();
+  // the board Next stop opens, its pictures fetched ahead while home is up
+  if (!awaitingRecord()) prefetch(campaignLevel(nextBoard()));
 }
 
 let playing = false;
-homePlay.addEventListener("click", async () => {
+async function playNext(): Promise<void> {
   if (playing) return;
   // where the player is is the server's record: if it is still on its way, the press answers at
   // once ("Opening…") and the board opens as soon as the record lands (3 s at most, then on what
   // we have), never a press that seems to do nothing
   if (awaitingRecord()) {
     playing = true;
-    homePlay.setAttribute("aria-busy", "true");
-    homePlayLabel.textContent = t("home.opening");
+    homeUi.opening(true);
     await waitForProgress(3000);
     playing = false;
-    homePlay.removeAttribute("aria-busy");
+    homeUi.opening(false);
     drawHome();
     if (screen !== "home") return; // the player went elsewhere meanwhile
   }
   // the next position; once every board is won the position stays at "all done" (the server's
-  // rule), and Play goes round the boards in order, keyed on the campaign wins the record keeps
-  // (the lead, 2026-10-25): no save of its own, and the checker takes each as a replay
-  openLevel(allDone() ? (progress().campaign.won % levels()) + 1 : campaignNext());
-});
-
-homePassport.addEventListener("click", () => passportUi.open());
+  // rule), and Next stop goes round the boards in order (home.ts, nextBoard)
+  openLevel(nextBoard());
+}
 
 /** Paid verdicts of claims from an earlier session (Server's claims.ts marks them resumed), waiting for home. */
 const lastWins: Verdict[] = [];
@@ -351,7 +302,6 @@ function drawHomeNote(): void {
   homeNote.hidden = false;
   for (const v of paid) cueCoins(v, coin);
 }
-homeChallenges.addEventListener("click", () => void routeUi.openRoute());
 
 // ---------- the board ----------
 
@@ -396,17 +346,11 @@ function openPlay(next: Play): void {
   if (!paths.every(resident)) {
     const at = ++packWait;
     const onHome = screen === "home";
-    if (onHome) {
-      homePlay.setAttribute("aria-busy", "true");
-      homePlayLabel.textContent = t("home.opening");
-    }
+    if (onHome) homeUi.opening(true);
     void ensure(paths, lvl.id)
       .catch(() => suspect())
       .finally(() => {
-        if (onHome) {
-          homePlay.removeAttribute("aria-busy");
-          homePlayLabel.textContent = t("home.play");
-        }
+        if (onHome) homeUi.opening(false);
         if (at === packWait) openLoaded(next);
       });
     return;
@@ -862,6 +806,7 @@ function showWin(): void {
   const after: AfterStamp = last
     ? { label: t("passport.home"), icon: icon("home"), press: "passport.home", go: goHome }
     : { label: t("passport.nextTrip"), icon: icon("next"), trailing: true, press: "passport.nextTrip", go: () => openPlay({ kind: "campaign", level: level + 1 }) };
+  // Next goes on, round to board 1 after the last (boardNumber); Home is the card's corner key
   const next = ended
     ? withClick(button("amber next", "win.stamp", icon("passport"), t("win.stamp")), () =>
         leaveTo("win-stamp", () => {
@@ -869,15 +814,15 @@ function showWin(): void {
           passportUi.stamp(ended.id, after);
         }),
       )
-    : last
-    ? withClick(button("amber next", "win.home", icon("home"), t("win.home")), () => leaveTo("win-home", goHome))
     : withClick(button("amber next", "win.next", t("win.next"), icon("next")), () =>
         leaveInto("win-next", () => openPlay({ kind: "campaign", level: level + 1, ...(practice ? { practice } : {}) })),
       );
+  const toHome = () => leaveTo("win-home", goHome);
   winVeil.replaceChildren(
     h(
       "div",
       { class: "card" },
+      cornerKey("home", t("win.home"), "win.home", toHome),
       h("h2", {}, t("win.title")),
       mark ? h("p", { class: `mark-beaten ${mark}` }, t(mark === "hard" ? "win.beatHard" : "win.beatSuper")) : null,
       gallery,
@@ -892,7 +837,7 @@ function showWin(): void {
       next,
     ),
   );
-  showCard(winVeil);
+  showCard(winVeil, toHome);
   drawCoins(lastWin);
 }
 
@@ -961,10 +906,12 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement):
           void dailyUi.openResults();
         }),
       );
+  const toHome = () => leaveTo("daily-home", goHome);
   winVeil.replaceChildren(
     h(
       "div",
       { class: "card" },
+      cornerKey("home", t("win.home"), "win.home", toHome),
       h("h2", {}, t("win.title")),
       gallery,
       h(
@@ -974,15 +921,10 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement):
         h("div", { class: "stat glass" }, h("b", {}, clock(w.ms)), h("span", {}, t("win.time"))),
       ),
       h("p", { class: "daily-line" }, line),
-      h(
-        "div",
-        { class: "row" },
-        withClick(button("", "win.home", t("win.home")), () => leaveTo("daily-home", goHome)),
-        after,
-      ),
+      after,
     ),
   );
-  showCard(winVeil);
+  showCard(winVeil, toHome);
   drawCoins(w);
 }
 
@@ -990,10 +932,12 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement):
 function showExperimentWin(w: Extract<Win, { kind: "experiment" }>, gallery: HTMLElement): void {
   const p = play;
   const after = p && dev?.hasNext(p);
+  const toHome = () => leaveTo("experiment-home", goHome);
   winVeil.replaceChildren(
     h(
       "div",
       { class: "card" },
+      cornerKey("home", t("win.home"), "win.home", toHome),
       h("h2", {}, t("win.title")),
       gallery,
       h(
@@ -1002,17 +946,10 @@ function showExperimentWin(w: Extract<Win, { kind: "experiment" }>, gallery: HTM
         h("div", { class: "stat glass" }, h("b", {}, String(w.moves)), h("span", {}, t("win.moves"))),
         h("div", { class: "stat glass" }, h("b", {}, clock(w.ms)), h("span", {}, t("win.time"))),
       ),
-      after
-        ? h(
-            "div",
-            { class: "row" },
-            withClick(button("", "win.home", t("win.home")), () => leaveTo("experiment-home", goHome)),
-            withClick(button("amber next", "win.next", t("win.next"), icon("next")), () => leaveTo("experiment-next", () => p && dev?.next(p))),
-          )
-        : withClick(button("amber next", "win.home", icon("home"), t("win.home")), () => leaveTo("experiment-home", goHome)),
+      after ? withClick(button("amber next", "win.next", t("win.next"), icon("next")), () => leaveTo("experiment-next", () => p && dev?.next(p))) : null,
     ),
   );
-  showCard(winVeil);
+  showCard(winVeil, toHome);
   drawCoins(w);
 }
 
@@ -1023,24 +960,18 @@ function showChallengeWin(w: Extract<Win, { kind: "challenge" }>, gallery: HTMLE
   const after = routeUi.after(c);
   // a word only for a good result; going over par says nothing against the player
   const praise = better ? t("win.newBest") : moves < c.par ? t("win.underPar") : moves === c.par ? t("win.onPar") : "";
-  // beside Next it is the plain one, its word alone so both fit a small phone; on the last board, the main one
-  const toRouteBtn = after
-    ? withClick(button("", "win.route", t("win.route")), () => leaveTo("challenge-route", toRoute))
-    : withClick(button("amber next", "win.route", icon("challenges"), t("win.route")), () => leaveTo("challenge-route", toRoute));
-  const buttons = after
-    ? h(
-        "div",
-        { class: "row" },
-        toRouteBtn,
-        withClick(button("amber next", "win.next", t("win.next"), icon("next")), () =>
-          leaveInto("challenge-next", () => openPlay({ kind: "challenge", c: after, ...(practice ? { practice } : {}) })),
-        ),
+  // back to the route is the card's corner key; Next, while there is a next board, its big button
+  const back = () => leaveTo("challenge-route", toRoute);
+  const next = after
+    ? withClick(button("amber next", "win.next", t("win.next"), icon("next")), () =>
+        leaveInto("challenge-next", () => openPlay({ kind: "challenge", c: after, ...(practice ? { practice } : {}) })),
       )
-    : toRouteBtn;
+    : null;
   winVeil.replaceChildren(
     h(
       "div",
       { class: "card" },
+      cornerKey("back", t("win.route"), "win.route", back),
       h("h2", {}, t("win.title")),
       gallery,
       h(
@@ -1050,10 +981,10 @@ function showChallengeWin(w: Extract<Win, { kind: "challenge" }>, gallery: HTMLE
         h("div", { class: "stat glass" }, h("b", {}, String(moves)), h("span", {}, t("win.you"))),
       ),
       praise ? h("p", { class: "praise" }, praise) : null,
-      buttons,
+      next,
     ),
   );
-  showCard(winVeil);
+  showCard(winVeil, back);
   drawCoins(w);
 }
 
@@ -1074,13 +1005,11 @@ function showChallengeWin(w: Extract<Win, { kind: "challenge" }>, gallery: HTMLE
 const GAP = 10;
 const TAP = 36;
 const STRIP_U = 60;
-/** A phone held sideways: the same question as the stylesheet's sideways block. */
-const SIDEWAYS = matchMedia("(orientation: landscape) and (max-height: 560px)");
 function layoutGallery(pics: BoardPicture[]): HTMLElement {
-  // upright the gallery has the card's width and a third of the height; sideways, the card's left
-  // column and the height under its title
-  const width = SIDEWAYS.matches ? Math.min(720, app.clientWidth - 32) * 0.55 - 34 : Math.min(360, app.clientWidth - 32) - 44 - 4;
-  const height = SIDEWAYS.matches ? Math.max(110, app.clientHeight - 210) : Math.max(120, Math.min(300, app.clientHeight * 0.34));
+  // the gallery has the card's width and a third of the height (a phone held sideways is asked to
+  // turn upright, style.css: the game is laid out upright only)
+  const width = Math.min(360, app.clientWidth - 32) - 44 - 4;
+  const height = Math.max(120, Math.min(300, app.clientHeight * 0.34));
   const aspect = cardAspect();
   let best: { u: number; rows: BoardPicture[][] } = { u: 0, rows: [pics] };
   for (let n = 1; n <= Math.min(3, pics.length); n++) {
@@ -1154,10 +1083,11 @@ function withClick(b: HTMLButtonElement, fn: () => void): HTMLButtonElement {
   b.addEventListener("click", fn);
   return b;
 }
-function showCard(veil: HTMLElement): void {
+/** Show a card; `escape` is its corner key's way out, for Escape (dialogs.ts). */
+function showCard(veil: HTMLElement, escape?: () => void): void {
   veil.hidden = false;
-  // to a keyboard (dialogs.ts): Escape on the restart card keeps playing; the win card's ways out are its buttons
-  opened(veil, veil === restartVeil ? () => hideCard(restartVeil) : undefined);
+  // to a keyboard (dialogs.ts): Escape on the restart card keeps playing; on a win card, its corner key
+  opened(veil, veil === restartVeil ? () => hideCard(restartVeil) : escape);
   screenChanged();
   drawOffline();
 }
@@ -1210,37 +1140,34 @@ onArcadePause((p) => {
 });
 document.addEventListener("visibilitychange", drawPaused);
 
+/** The longest the first screen waits for home's pictures (the lead, 2026-10-26: "about 1.5 s"). */
+const HOME_WAIT_MS = 1500;
+
 /** Draw the first screen. Called once by the boot entry (src/main.ts). */
 export async function startApp(): Promise<void> {
-  // the round type and the title, asked for beside this code by the boot; a
-  // moment's wait so the first screen does not redraw in another font or pop
-  // its title in, never longer
+  // HOME APPEARS WHOLE (the creator, 2026-10-26, as Untangled does): the round type, home's own
+  // pictures (the title, the desk, the booklet) and the route's postcards are waited for, at most
+  // HOME_WAIT_MS from here, then home shows anyway and a late picture fades in where it belongs
+  const by = performance.now() + HOME_WAIT_MS;
   const face = new FontFace("Fredoka", `url(${import.meta.env.BASE_URL}fonts/fredoka-latin.woff2)`, { weight: "300 700", display: "swap" });
   document.fonts.add(face);
+  const fonts = face.load().catch(() => undefined);
+  void homeUi.warmArt();
   // and the player's progress, the server's record: a second at most (the game standard), then
-  // the first screen draws, and redraws when the record lands
+  // home draws, and redraws when the record lands
   loadProgress();
   loadGuideSave();
-  await Promise.all([
-    Promise.race([
-      Promise.all([face.load().catch(() => undefined), wordmark.decode().catch(() => undefined)]),
-      new Promise((r) => setTimeout(r, 400)),
-    ]),
-    waitForProgress(1000),
-  ]);
+  await waitForProgress(1000);
+  drawHome();
+  await Promise.race([Promise.all([fonts, homeUi.whole()]), new Promise((r) => setTimeout(r, Math.max(0, by - performance.now())))]);
 
   onProgress(drawHome);
-  // a tablet's big column: home grows with it (style.css, --k), up to 1.7, never past what fits its height
-  new ResizeObserver(() => {
-    const k = Math.max(1, Math.min(1.7, app.clientWidth / 400, (app.clientHeight - 200) / 680));
-    home.style.setProperty("--k", k.toFixed(3));
-  }).observe(app);
   onProgress(albumsUi.redraw);
   onProgress(passportUi.redraw);
   onProgress(routeUi.redraw);
   onProgress(dailyUi.redraw);
   drawHome();
-  document.body.append(app);
+  document.body.append(app, upright);
   mountSettings(app);
   document.getElementById("boot")?.remove();
   show("home");
