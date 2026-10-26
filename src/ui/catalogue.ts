@@ -15,7 +15,9 @@
 // only seen big, and a destination's passport copy (300 px wide, its size listed) for
 // the passport's postcards. The library's own thumbs no longer ship (2026-10-26: the
 // albums that drew them are unreached, and the build has a file cap), so nothing picks
-// them. A copy the catalogue does not list falls back to the full.
+// them. A copy the catalogue does not list falls back to the full. In a built game the
+// files are in Art's packs (src/packs.ts): an address is the file's blob URL once its pack
+// is loaded, the plain path until then (and always, in the dev loop).
 //
 // The DESTINATIONS (the travelogue, 2026-10-25) are Art's list of their own beside the
 // pictures: one real place per campaign board, a postcard the size of the board whose
@@ -26,6 +28,7 @@
 
 import CATALOGUE from "../content/pictures.json";
 import { t } from "./i18n";
+import { fileUrl } from "../packs";
 
 export interface Album {
   id: string;
@@ -123,12 +126,12 @@ export function picture(id: string): Picture | undefined {
 
 /** The picture's address at full size, as an <img> takes it. */
 export function pictureUrl(p: Picture): string {
-  return `${import.meta.env.BASE_URL}${p.file}`;
+  return fileUrl(p.file);
 }
 
 /** Its small copy's address, for grids and covers. */
 export function thumbUrl(p: Picture): string {
-  return `${import.meta.env.BASE_URL}${p.thumb}`;
+  return fileUrl(p.thumb);
 }
 
 /** A copy short of sharp by this little looks the same (a thumb on a 3x phone's win card is 1% short). */
@@ -149,7 +152,7 @@ export function sharpCopy(p: Picture, w: number, h: number, dpr = window.deviceP
 
 /** A copy's address, as an <img> takes it (and as the board names the copy it drew). */
 export function copyUrl(c: Copy): string {
-  return `${import.meta.env.BASE_URL}${c.file}`;
+  return fileUrl(c.file);
 }
 
 /** A catalogue title, in the player's language where a locale has one. */

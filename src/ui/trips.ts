@@ -54,6 +54,8 @@ const lastWon = (): number => Math.min(progress().campaign.next - 1, levelCount(
 /** One place of a trip: its board, whether that board exists yet and is won, and its destination. */
 export interface Place {
   board: number;
+  /** Its board's id ("c07"): where its pictures' packs are found (src/packs.ts), when it exists. */
+  id: string | null;
   exists: boolean;
   won: boolean;
   /** Its postcard, or null while the board names none or Art has not made it. */
@@ -70,7 +72,7 @@ export function placesOf(tr: Trip): Place[] {
     const exists = n <= levelCount();
     const lvl = exists ? campaignLevel(n) : null;
     const dest = (lvl?.destination && destination(lvl.destination.id)) || null;
-    out.push({ board: n, exists, won: exists && n <= won, dest, cols: dest?.cols ?? lvl?.deal.cols ?? 4, rows: dest?.rows ?? lvl?.deal.rows ?? 4 });
+    out.push({ board: n, id: lvl?.id ?? null, exists, won: exists && n <= won, dest, cols: dest?.cols ?? lvl?.deal.cols ?? 4, rows: dest?.rows ?? lvl?.deal.rows ?? 4 });
   }
   return out;
 }

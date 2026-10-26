@@ -5,7 +5,8 @@
 // used as a CSS mask over the ink colour (.ico in style.css), so a glyph on an
 // amber button can be white. A new glyph is a file there and a line here.
 
-const file = (name: string) => `${import.meta.env.BASE_URL}art/ui/icon-${name}.svg`;
+// absolute: a relative base ("./" in a build) in a CSS url() would be read from the stylesheet's folder
+const file = (name: string) => new URL(`${import.meta.env.BASE_URL}art/ui/icon-${name}.svg`, location.href).href;
 const FILES = new Set<string>();
 
 /**

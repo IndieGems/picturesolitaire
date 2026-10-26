@@ -27,8 +27,9 @@
 import { ICONS } from "./icons";
 import { t } from "./i18n";
 import { emit } from "../events";
-import { destinationName, destinationPlace, sharpCopy, type Copy, type Destination } from "./catalogue";
+import { copyUrl, destinationName, destinationPlace, sharpCopy, type Copy, type Destination } from "./catalogue";
 import { createViewer } from "./viewer";
+import { ensureTrip, resident } from "../packs";
 import { currentTrip, placesOf, tripById, tripCount, tripDone, tripName, trips, type Place, type Trip } from "./trips";
 
 type Nav = {
@@ -83,7 +84,14 @@ const cardSizes = new ResizeObserver((entries) => {
     const it = sizing.get(e.target);
     const { width, height } = e.contentRect;
     if (!it || !width || !height) continue;
-    const { copy, url } = sharpCopy(it.d, width, height);
+    // the sharp copy where it is loaded (a built game's passport pack holds the passport copy), else that
+    let { copy, url } = sharpCopy(it.d, width, height);
+    if (!resident(copy.file)) {
+      const thumb = it.d.copies.find((c) => c.file === it.d.thumb);
+      if (!thumb || !resident(thumb.file)) continue;
+      copy = thumb;
+      url = copyUrl(thumb);
+    }
     if (it.copy && copy.w * copy.h <= it.copy.w * it.copy.h) continue;
     it.copy = copy;
     it.img.src = url;
@@ -203,7 +211,7 @@ export function createPassport(nav: Nav) {
     pc.append(card, el("b", "pc-name", name));
     if (place) pc.append(el("span", "pc-place", place));
     // seen big from the copy on screen, the full postcard swapped in once it lands (viewer.ts)
-    pc.addEventListener("click", () => viewer.open(d, img.currentSrc || img.src));
+    pc.addEventListener("click", () => viewer.open(d, img.currentSrc || img.src, p.id ?? undefined));
     return pc;
   }
 
@@ -219,7 +227,20 @@ export function createPassport(nav: Nav) {
     if (tripDone(tr) && landing !== tr.id) spot.append(stampOf(tr));
     head.append(titles, spot);
     const grid = el("div", "pp-grid");
-    for (const p of placesOf(tr)) grid.append(postcard(p, tr));
+    const places = placesOf(tr);
+    for (const p of places) grid.append(postcard(p, tr));
+    // a built game: the trip's passport copies come in one pack; each postcard picks its picture again
+    // once it is in (observing a card anew reports its size), the page itself left as it is
+    if (places.some((p) => p.won && p.dest && !resident(p.dest.thumb)))
+      void ensureTrip(tr.id).then(
+        () => {
+          for (const c of grid.querySelectorAll(".pc-card")) {
+            cardSizes.unobserve(c);
+            cardSizes.observe(c);
+          }
+        },
+        () => {},
+      );
     page.replaceChildren(head, grid);
     page.setAttribute("aria-label", tripName(tr));
     where.textContent = t("passport.page", { n: at + 1, all: trips.length });

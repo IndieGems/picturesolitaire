@@ -39,7 +39,7 @@ import { startSound } from "../sound";
 import { t } from "./i18n";
 import { ICONS, keepIcons, type IconName } from "./icons";
 import { firstScreen, screenChanged } from "./browser";
-import { online, onOnline, pretend } from "./online";
+import { online, onOnline, pretend, suspect } from "./online";
 import { loadGuideSave } from "./guide-save";
 import { campaignNext, challengeBest, dailyResult, guideDone, hold, loadProgress, onProgress, progress, waitForProgress } from "../net/progress";
 import { createAlbums } from "./albums";
@@ -63,8 +63,9 @@ import { createDestinationBanner, type Destination } from "./destination";
 import { createPassport, type AfterStamp } from "./passport";
 import { currentTrip, tripById, tripCount, tripEndingAt, tripName } from "./trips";
 import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy } from "./catalogue";
+import { ensure, resident } from "../packs";
 import { mountParticles } from "./particles";
-import { levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
+import { boardFiles, levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
 import type { DevMenu } from "./dev-menu";
 
 // ---------- a little DOM ----------
@@ -306,6 +307,8 @@ function drawHome(): void {
   if (trip) homeTrip.textContent = t("home.trip", { trip: tripName(trip), ...tripCount(trip) });
   homePlayLabel.textContent = t("home.play");
   homeChallenges.hidden = !routeUi.exists();
+  // the board Play opens, its pictures fetched ahead while home is up
+  if (known) prefetch(campaignLevel(allDone() ? (p.campaign.won % levels()) + 1 : p.campaign.next));
 }
 
 let playing = false;
@@ -356,6 +359,27 @@ function openLevel(level: number): void {
   openPlay({ kind: "campaign", level });
 }
 
+/** The level a play opens (the campaign's by its number, which goes round). */
+function levelOfPlay(p: Play): Level {
+  return p.kind === "campaign" ? campaignLevel(p.level) : p.kind === "challenge" ? p.c.level : p.kind === "daily" ? p.d : p.x;
+}
+
+/**
+ * The picture files a board will draw in the board's box (catalogue paths, the board's own
+ * choice: Gameplay's boardFiles), to load from its pack before it opens (src/packs.ts).
+ */
+const boardPaths = (lvl: Level): string[] => boardFiles(lvl, host);
+
+/** Load a board's pictures ahead (the next board, while the win card or home is up); a miss costs nothing. */
+function prefetch(lvl: Level | null | undefined): void {
+  if (!lvl) return;
+  const paths = boardPaths(lvl);
+  if (!paths.every(resident)) void ensure(paths, lvl.id).catch(() => undefined);
+}
+
+/** Counts each board asked for while its pictures load, so only the last one asked for opens. */
+let packWait = 0;
+
 function openPlay(next: Play): void {
   // the dev menu's endless helpers are on: a win helped along never pays, so every board is practice
   if (import.meta.env.MODE !== "release" && dev?.practiceOnly() && !next.practice) next = { ...next, practice: true };
@@ -365,6 +389,39 @@ function openPlay(next: Play): void {
     return;
   }
   waiting = null;
+  // a built game: the board's pictures come from its pack first (src/packs.ts); usually they are in
+  // already (fetched while the last card or home was up), else home's Play says "Opening…" meanwhile
+  const lvl = levelOfPlay(next);
+  const paths = boardPaths(lvl);
+  if (!paths.every(resident)) {
+    const at = ++packWait;
+    const onHome = screen === "home";
+    if (onHome) {
+      homePlay.setAttribute("aria-busy", "true");
+      homePlayLabel.textContent = t("home.opening");
+    }
+    void ensure(paths, lvl.id)
+      .catch(() => suspect())
+      .finally(() => {
+        if (onHome) {
+          homePlay.removeAttribute("aria-busy");
+          homePlayLabel.textContent = t("home.play");
+        }
+        if (at === packWait) openLoaded(next);
+      });
+    return;
+  }
+  ++packWait;
+  openLoaded(next);
+}
+
+/** Open `next`, its pictures in (or plain files). */
+function openLoaded(next: Play): void {
+  if (!online()) {
+    waiting = next;
+    drawOffline();
+    return;
+  }
   hideCard(winVeil);
   hideCard(restartVeil);
   // the board in hand is kept (Back, then the same board again, carries on)
@@ -785,6 +842,9 @@ function drawCoins(win: Win): void {
 
 function showWin(): void {
   if (!lastWin || !board) return;
+  // the board Next opens, its pictures fetched while the card is up
+  if (lastWin.kind === "campaign") prefetch(campaignLevel(lastWin.level + 1));
+  else if (lastWin.kind === "challenge") prefetch(routeUi.after(lastWin.c)?.level);
   syncCardAspect();
   const gallery = layoutGallery(board.pictures());
   if (lastWin.kind === "challenge") return void showChallengeWin(lastWin, gallery);
@@ -1064,7 +1124,7 @@ function galleryPicture(p: BoardPicture, i: number, drawn: { u: number; aspect: 
   if (src !== p.src) img.addEventListener("error", () => (img.src = p.src), { once: true });
   const b = h("button", { type: "button", class: "pic", style, "data-press": "win.picture", "aria-label": pictureTitle(known) }, img);
   // seen big from the copy already on screen, the full picture swapped in once it lands (viewer.ts)
-  b.addEventListener("click", () => winViewer.open(known, img.currentSrc || img.src));
+  b.addEventListener("click", () => winViewer.open(known, img.currentSrc || img.src, play ? levelOfPlay(play).id : undefined));
   return b;
 }
 

@@ -13,7 +13,8 @@
 //
 // It shows the copy already on screen at once (the win card's, the album's thumb),
 // stretched, and swaps in the full picture once it has loaded and decoded: only
-// this view ever fetches a full picture (the creator, 2026-10-25).
+// this view ever fetches a full picture (the creator, 2026-10-25). In a built game
+// that picture is in its board's full-picture pack (src/packs.ts): `board` names it.
 //
 // The win card's copy (app.ts) also
 // closes on a single tap while the picture is not zoomed in (`tapToClose`): a
@@ -22,6 +23,7 @@
 import { ICONS } from "./icons";
 import { t } from "./i18n";
 import { pictureTitle, pictureUrl, type Picture } from "./catalogue";
+import { ensure, resident } from "../packs";
 import { screenChanged } from "./browser";
 import { pictureAspect } from "./cards";
 import { closed, opened } from "./dialogs";
@@ -33,8 +35,11 @@ const TAP_SLOP = 12;
 
 export interface Viewer {
   element: HTMLElement;
-  /** Show `p` big: `shown` is the address of the copy already on screen, drawn until the full one lands. */
-  open(p: Picture, shown?: string): void;
+  /**
+   * Show `p` big: `shown` is the address of the copy already on screen, drawn until the full one
+   * lands; `board` is the board whose packs hold its full picture (a built game).
+   */
+  open(p: Picture, shown?: string, board?: string): void;
   close(): void;
   isOpen(): boolean;
 }
@@ -227,13 +232,14 @@ export function createViewer(options: { tapToClose?: boolean } = {}): Viewer {
 
   return {
     element,
-    open(p, shown) {
+    open(p, shown, board) {
       aspect = pictureAspect(p.cols, p.rows);
       title.textContent = pictureTitle(p);
-      const full = pictureUrl(p);
       const at = ++opening;
-      img.src = shown || full;
-      if (shown && shown !== full) {
+      img.src = shown || (resident(p.file) ? pictureUrl(p) : "");
+      const swap = () => {
+        const full = pictureUrl(p);
+        if (at !== opening || full === img.src) return;
         const big = new Image();
         big.src = full;
         // decoded first, so the swap is the same frame; a failure keeps the copy on screen
@@ -241,7 +247,10 @@ export function createViewer(options: { tapToClose?: boolean } = {}): Viewer {
           () => at === opening && (img.src = full),
           () => {},
         );
-      }
+      };
+      // the full picture: at once where it is a plain file (or already loaded), else from its board's pack
+      if (resident(p.file)) swap();
+      else if (board) void ensure([p.file], board).then(swap, () => {});
       s = 1;
       tx = 0;
       ty = 0;

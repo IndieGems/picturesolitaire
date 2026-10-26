@@ -50,6 +50,8 @@ const wantedBy = new Map<string, Set<string>>();
 const KEEP = 6;
 /** A pack's index is near its start: the first read asks for this much. */
 const HEAD_BYTES = 32 * 1024;
+/** Files in a shared pack this close together are read in one span (a gap costs less than a request). */
+const GAP = 64 * 1024;
 
 const packUrl = (name: string) => `${base}packs/${name}.pack`;
 
@@ -94,30 +96,35 @@ function note(how: "range" | "whole"): void {
   console.info(`[packs] the host ${how === "range" ? "answers Range requests (206)" : "ignores Range (200): packs are read up to what is wanted"}`);
 }
 
-/** Bytes [from, to) of a pack: a Range request, or on a 200 the stream read that far and dropped. */
-async function readSpan(url: string, from: number, to: number): Promise<Uint8Array> {
+/** Bytes read from a pack, starting at its byte `at`; `ranged`: the host answered the Range. */
+type Read = { bytes: Uint8Array; at: number; ranged: boolean };
+
+/**
+ * Bytes [from, to) of a pack by a Range request. A host that ignores Range answers 200 with
+ * the whole pack: its stream is read only as far as `orTo` (all that is wanted of the pack,
+ * so one stream serves every span of it), then dropped.
+ */
+async function readSpan(url: string, from: number, to: number, orTo = to): Promise<Read> {
   const stop = new AbortController();
   const r = await fetch(url, { headers: { Range: `bytes=${from}-${to - 1}` }, signal: stop.signal });
   if (r.status === 206) {
     const first = Number(/bytes (\d+)-/.exec(r.headers.get("Content-Range") ?? "")?.[1] ?? from);
     note("range");
-    const all = new Uint8Array(await r.arrayBuffer());
-    return all.subarray(from - first, from - first + (to - from));
+    return { bytes: new Uint8Array(await r.arrayBuffer()), at: first, ranged: true };
   }
   if (!r.ok || !r.body) throw new Error(`${url}: ${r.status}`);
   note("whole");
   const reader = r.body.getReader();
   const chunks: Uint8Array[] = [];
   let got = 0;
-  while (got < to) {
+  while (got < orTo) {
     const { done, value } = await reader.read();
     if (done) break;
     chunks.push(value);
     got += value.length;
   }
   stop.abort();
-  const all = join(chunks, Math.min(got, to));
-  return all.subarray(Math.min(from, all.length), Math.min(to, all.length));
+  return { bytes: join(chunks, Math.min(got, orTo)), at: 0, ranged: false };
 }
 
 /** A whole pack, in one request (one board's own). */
@@ -153,11 +160,11 @@ function headOf(name: string): Promise<Head> {
   let h = heads.get(name);
   if (!h) {
     h = (async () => {
-      const first = await readSpan(packUrl(name), 0, HEAD_BYTES);
+      const first = (await readSpan(packUrl(name), 0, HEAD_BYTES)).bytes;
       const head = headFrom(first);
       if (head) return head;
       const n = new DataView(first.buffer, first.byteOffset, first.byteLength).getUint32(0, true);
-      const more = headFrom(await readSpan(packUrl(name), 0, 4 + n));
+      const more = headFrom((await readSpan(packUrl(name), 0, 4 + n)).bytes);
       if (!more) throw new Error(`${name}: no index`);
       return more;
     })();
@@ -190,11 +197,35 @@ async function fromPack(name: string, paths: string[], whole: boolean): Promise<
     return paths.filter((p) => !head.files.has(p));
   }
   const head = await headOf(name);
-  const here = paths.map((p) => head.files.get(p)).filter((e): e is Entry => !!e);
+  const here = paths
+    .map((p) => head.files.get(p))
+    .filter((e): e is Entry => !!e)
+    .sort((a, b) => a.offset - b.offset);
   if (here.length) {
-    const from = head.start + Math.min(...here.map((e) => e.offset));
-    const to = head.start + Math.max(...here.map((e) => e.offset + e.length));
-    keep(here, head, await readSpan(packUrl(name), from, to), from);
+    // runs of files close together: a gap under GAP is read rather than asked for twice
+    const runs: Entry[][] = [];
+    for (const e of here) {
+      const run = runs[runs.length - 1];
+      const end = run ? run[run.length - 1]!.offset + run[run.length - 1]!.length : -Infinity;
+      if (run && e.offset - end <= GAP) run.push(e);
+      else runs.push([e]);
+    }
+    const span = (run: Entry[]) => [head.start + run[0]!.offset, head.start + run[run.length - 1]!.offset + run[run.length - 1]!.length] as const;
+    const last = span(runs[runs.length - 1]!)[1];
+    // the first run says whether the host answers Range; a 200's one stream then serves them all
+    const [from, to] = span(runs[0]!);
+    const first = await readSpan(packUrl(name), from, to, last);
+    if (!first.ranged) keep(here, head, first.bytes, first.at);
+    else {
+      keep(runs[0]!, head, first.bytes, first.at);
+      await Promise.all(
+        runs.slice(1).map(async (run) => {
+          const [a, b] = span(run);
+          const r = await readSpan(packUrl(name), a, b, last);
+          keep(r.ranged ? run : here, head, r.bytes, r.at);
+        }),
+      );
+    }
   }
   return paths.filter((p) => !head.files.has(p));
 }
