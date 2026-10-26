@@ -13,7 +13,7 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { random } from "../../src/game/rules.ts";
+import { random, replay } from "../../src/game/rules.ts";
 import { generate } from "../../src/game/levels/generate.ts";
 import { alikeOf, fits, pick, shapeOf } from "../../src/game/levels/pick.ts";
 
@@ -88,6 +88,14 @@ export function swappedInPlace(b, i, chosen, row, rule) {
     pictures[k] = { id: r.id, cols: r.cols, rows: r.rows };
   }
   return { ...b, pictures, ...(b.axes?.families ? { axes: { ...b.axes, families: pictures.map((q) => familyOf(q.id)) } } : {}) };
+}
+
+/** The board's pictures (indices) in the order its stored line finishes them. */
+export function clearOrder(b) {
+  const deal = { cols: b.cols, rows: b.rows, pictures: b.pictures, stacks: b.stacks, seed: b.seed };
+  const order = [];
+  for (let m = 1; m <= b.line.length; m++) for (const c of replay(deal, b.line.slice(0, m).map(([from, to]) => ({ from, to }))).cleared) if (!order.includes(c)) order.push(c);
+  return order;
 }
 
 export function destinedInPlace(b, row) {
