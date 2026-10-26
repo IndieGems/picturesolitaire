@@ -15,14 +15,17 @@ save_schemas:
     max_size_bytes: 16384
   # The player's PROGRESS, owned by the server: the player reads it, and only the
   # win checker (functions/checker, progress.rs) writes it, after replaying a win.
-  # The campaign position, wins, challenge bests, daily results (last ~100 days)
-  # and restored pictures: a few KB at most.
+  # The campaign position, wins, challenge bests, daily results (the last 100 days)
+  # and restored pictures. Pictures grow with the game, about 14 bytes each: 60
+  # boards' 519 pictures are 7 KB, so 32 KB would fill near board 190. A write past
+  # this size is refused and the checker answers retry("config") for good, so keep
+  # it far ahead of the campaign (256 KiB: thousands of boards).
   - key: progress
     access_self_read: true
     access_self_write: false
     access_game_server_read: true
     access_game_server_write: true
-    max_size_bytes: 32768
+    max_size_bytes: 262144
   # Wins the checker has not answered yet (src/net/claims.ts), kept so a win made
   # just before the game closed is sent at the next start. The device's own word
   # and nothing more: the checker replays each claim and applies each claim id once.
