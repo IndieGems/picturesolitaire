@@ -7,13 +7,13 @@
 // Every board in every lane is dealt ahead of time (src/content/levels/*.json), so the build knows
 // which pictures each board shows. It writes, with each board's postcard first (UI: the most
 // tapped, and the shortest read when a host ignores Range):
-//   b-<board id>.pack   per board: the board copies its board, postcard reveal and win card draw.
+//   b-<board id>.bin    per board: the board copies its board, postcard reveal and win card draw.
 //                       Fetched whole, one request instead of ~10.
-//   f-<board id>.pack   per board: the full pictures, only for the enlarged view, which asks for
+//   f-<board id>.bin    per board: the full pictures, only for the enlarged view, which asks for
 //                       one picture with an HTTP Range request (src/packs.ts copes without).
-//   b-daily-<yyyy-mm>.pack   the daily's board copies, per month (lead, 2026-10-26).
-//   f-daily.pack, f-challenge.pack   those lanes' full pictures, one pack each (no repeats).
-//   p-<trip id>.pack    per trip (src/content/levels/trips.json): its postcards' passport copies.
+//   b-daily-<yyyy-mm>.bin    the daily's board copies, per month (lead, 2026-10-26).
+//   f-daily.bin, f-challenge.bin     those lanes' full pictures, one pack each (no repeats).
+//   p-<trip id>.bin     per trip (src/content/levels/trips.json): its postcards' passport copies.
 // A picture on no board is not shipped. public/ and the dev server are untouched: they serve the
 // separate files, and the play-test tool, the Picture Library and Trips & Cases keep using them.
 //
@@ -109,7 +109,7 @@ for (const [name, paths] of packs) {
   const pack = Buffer.concat([len, json, ...blobs]);
   count++;
   bytes += pack.length;
-  if (!dry) writeFileSync(join(outDir, `${name}.pack`), pack);
+  if (!dry) writeFileSync(join(outDir, `${name}.bin`), pack);
 }
 if (problems.length) {
   console.error(`packs: ${problems.length} problem(s):`);

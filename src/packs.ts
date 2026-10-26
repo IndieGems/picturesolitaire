@@ -4,7 +4,7 @@
 // each trip's passport copies in a third, and takes the single files out of dist:
 //
 //   packs/index.json       { boards: { <board id>: { b, f } }, trips: { <trip id>: <pack> } }
-//   packs/<name>.pack      a uint32 little-endian JSON length, then {"files":[{path, offset,
+//   packs/<name>.bin       a uint32 little-endian JSON length, then {"files":[{path, offset,
 //                          length, type}]} (path as the catalogue names it, offset from the
 //                          end of the JSON), then the bytes
 //
@@ -53,7 +53,7 @@ const HEAD_BYTES = 32 * 1024;
 /** Files in a shared pack this close together are read in one span (a gap costs less than a request). */
 const GAP = 64 * 1024;
 
-const packUrl = (name: string) => `${base}packs/${name}.pack`;
+const packUrl = (name: string) => `${base}packs/${name}.bin`;
 
 function loadIndex(): Promise<Index | null> {
   if (!BUILT) return Promise.resolve(null);
