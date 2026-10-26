@@ -5,7 +5,7 @@
 // answers each with its sound. A new event that needs a sound gets a line in
 // listen() below and, if it needs a new file, a row in src/audio/sounds.ts.
 
-import { on } from "../events";
+import { on, type GameEvents } from "../events";
 import { loadSettings } from "../settings";
 import { devProbe, fileOf, load, play, refreshMix, wireEngine, type Voice } from "./engine";
 import { duckMusic, startMusic } from "./music";
@@ -120,17 +120,19 @@ function milestone(): void {
 // repeat (after Undo or a restart) has had its harp: nothing more. The postcard
 // holds 1.5 s, then leaves and destination:done comes; sooner than that is a
 // tap that skipped, which stops the fanfare (at once if the postcard never
-// opened), while the natural end lets it ring out.
+// opened), while the natural end lets it ring out. A mystery clue's postcard
+// holds longer (2.5 s and up, to read its sentence): its 1.2 s cue is long over
+// by then, so the same rule holds.
 
 const REVEAL_HOLD = 1500;
 let fanfare: Voice | null = null;
 let fanfareAt = 0;
 
-function reveal(p: { again: boolean }): void {
+function reveal(p: GameEvents["destination:reveal"]): void {
   if (p.again) return;
-  // A mystery case's clue (Gameplay's `clue`, from the catalogue's "case"):
-  // "Clue found" instead, and the accusation's cues start loading.
-  const clue = (p as { clue?: unknown }).clue === true;
+  // A mystery case's clue (the catalogue entry has a "case"): "Clue found"
+  // instead, and the accusation's cues start loading.
+  const clue = p.clue === true;
   if (clue) for (const name of VERDICT_CUES) void load(fileOf(name));
   flourish?.fadeOut(0.5);
   flourish = null;
