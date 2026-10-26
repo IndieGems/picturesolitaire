@@ -157,10 +157,12 @@ export const TUNING = {
   revealClueMaxMs: 8000,
   /**
    * The most positions the stuck check (after every settle) may search before
-   * it gives up; giving up claims nothing. 200,000 is the Hint's own default;
-   * the most any position of the shipped boards took was under 1 ms.
+   * it gives up; giving up claims nothing (no warning, never a false one).
+   * 20,000 (the lead, from Levels' flag): a tenth of the Hint's default, so a
+   * rare position cannot hitch a slow phone; the most any position of the
+   * shipped boards took was under 1 ms.
    */
-  stuckBudget: 200_000,
+  stuckBudget: 20_000,
   /** Shuffle: the loose cards trading places. */
   shuffleMs: 460,
   /** Hint: the ghost of the piece going to where it should be played. */
