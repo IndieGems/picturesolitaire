@@ -63,6 +63,10 @@ const SOUNDS = [
   { name: "stuck", label: "Stuck", moment: "The player is stuck: a dead end, or Hint finds no way. Also a Shuffle that can't help. The hint chime, lower and softer." },
   { name: "won", label: "Board won", moment: "Every picture restored: the board is won. It is the win sting too." },
   { name: "stamp", label: "Passport stamp", moment: "A trip's last board is won and the player stamps the passport: the stamp lands on the trip's page." },
+  { name: "caseclue", label: "Clue found", moment: "Mystery pilot: a case board's clue picture unfolds. Plays instead of the destination fanfare." },
+  { name: "caseclosed", label: "Case closed", moment: "Mystery pilot: the killer named with the proving picture. The gold stamp lands on its thump." },
+  { name: "casesolved", label: "Case solved", moment: "Mystery pilot: the killer named, but not with the proving picture (no gold stamp). Case closed without the thump." },
+  { name: "casewrong", label: "Not quite", moment: "Mystery pilot: a wrong accusation, and the detective explains. Gentle, never a buzzer." },
   { name: "milestone", label: "Milestone", moment: "A milestone card with fireworks: today, finishing the guided start. Bigger than a board win, and plays instead of it." },
 ];
 const NAMES = new Set(SOUNDS.map((s) => s.name));

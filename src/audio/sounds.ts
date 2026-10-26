@@ -25,7 +25,11 @@ export type EffectName =
   | "hardmark"
   | "supermark"
   | "stamp"
-  | "fanfare";
+  | "fanfare"
+  | "caseclue"
+  | "caseclosed"
+  | "casesolved"
+  | "casewrong";
 
 export type EffectDef = {
   /** The file in public/audio/, when it is not the effect's own name. */
@@ -81,13 +85,25 @@ export const EFFECTS: Record<EffectName, EffectDef> = {
   // orchestral flourish (horns, strings, glockenspiel). Every board has one,
   // so it sits under the win cue and stays light enough to hear often.
   fanfare: { gain: 0.6, jitter: 0, minGap: 1 },
+  // The mystery pilot (docs/mystery-pilot.md): pizzicato, celesta, clarinet.
+  // A case clue unfolds, in place of the fanfare: a 1.2 s D minor phrase that
+  // stops unresolved.
+  caseclue: { gain: 0.6, jitter: 0, minGap: 1 },
+  // The accusation. Right with the proving picture: a warm E-flat resolve, the
+  // gold stamp's thump at 0.76 s (UI lands the stamp then: move one, move both).
+  caseclosed: { gain: 0.8, jitter: 0, minGap: 1 },
+  // Right without it: the same resolve, no thump. Wrong: a kind little "hm".
+  casesolved: { gain: 0.75, jitter: 0, minGap: 1 },
+  casewrong: { gain: 0.5, jitter: 0, minGap: 1 },
 };
 
 /** The order effects load in: what a first move needs comes first. */
 export const LOAD_ORDER: EffectName[] = [
   "ui", "lift", "land", "slide", "merge", "split", "deal", "fall",
-  "complete", "undo", "hint", "shuffle", "restart", "won", "fanfare", "hardmark", "supermark", "stamp",
+  "complete", "undo", "hint", "shuffle", "restart", "won", "fanfare", "hardmark", "supermark", "stamp", "caseclue",
 ];
+// Not loaded up front: caseclosed, casesolved, casewrong (fetched at a case's
+// first clue, src/audio/index.ts), and milestone.
 
 /** The background music: one calm loop under the whole game. */
 export const MUSIC = {

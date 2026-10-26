@@ -62,6 +62,12 @@ const MUSIC = [
   // glockenspiel sparkle, its body ~1.8 s, the ring cut short. A touch quieter
   // than the win cue: it plays on every board.
   { name: "fanfare", src: "fanfare.mp3", start: 0, end: 2.6, fade: 0.8, lufs: -16 },
+  // The mystery pilot (docs/mystery-pilot.md), one palette of pizzicato,
+  // celesta and clarinet. A case clue unfolds: a D minor pizzicato phrase cut
+  // as it reaches the dominant (A), so it stops unresolved, intrigued.
+  { name: "caseclue", src: "case-clue.mp3", start: 0.24, end: 1.48, fade: 0.3, lufs: -17 },
+  // A wrong accusation: a soft low pluck and a small kind answer, never a buzzer.
+  { name: "casewrong", src: "case-wrong.mp3", start: 0, end: 1.6, fade: 0.45, lufs: -18 },
   // The bed: its own ending fade is cut; the game crossfades the last few
   // seconds into the start (src/audio/music.ts), so no loop point is baked in.
   { name: "bed", src: "bed.mp3", start: 0, end: 86.5, fade: 0.05, lufs: -20 },
@@ -69,8 +75,9 @@ const MUSIC = [
 // Effects arranged from slices of the originals, when no single generation
 // played what was asked: each part is a slice (start..end) of a source, faded
 // at its end, re-pitched by `rate` (below 1 is lower and slower, as on tape),
-// starting `at` seconds in, `db` louder or softer. The mix is cut to `len`,
-// faded over `fade`, high-passed and peak-normalised like any effect.
+// starting `at` seconds in, `db` louder or softer, `lowpass` (Hz) to soften
+// it. The mix is cut to `len`, faded over `fade`, high-passed and
+// peak-normalised like any effect; `stereo` keeps a music part's width.
 const B3 = 2 ** (-3 / 12); // a minor third down
 const P4 = 2 ** (-5 / 12); // a fourth down
 const BUILT = [
@@ -83,6 +90,16 @@ const BUILT = [
       { src: "mark-marimba.wav", start: 0.695, end: 1.35, at: 0.26, rate: B3, db: -2 },
     ],
   },
+  // The case closed: the take's last phrase (G, Bb, F over Bb) resolving to
+  // E-flat at 4.04, with the passport stamp's thump landing on the resolve.
+  {
+    name: "caseclosed", stereo: true, len: 2.02, fade: 0.7, parts: [
+      { src: "case-closed.mp3", start: 3.28, end: 5.3, at: 0 },
+      { src: "stamp.wav", start: 0.525, end: 0.82, at: 0.76, db: -5, lowpass: 5000 },
+    ],
+  },
+  // Solved without the proving picture: the same resolve, no stamp (none lands).
+  { name: "casesolved", stereo: true, len: 2.02, fade: 0.7, parts: [{ src: "case-closed.mp3", start: 3.28, end: 5.3, at: 0 }] },
   // A super hard board's: the same "uh-oh" a fourth deeper (G3, E3), with a
   // soft low thump (C2, ringing E3) landing under the "oh" for weight.
   {
@@ -159,6 +176,8 @@ function built(s, dir) {
       p.rate ? `asetrate=${(48000 * p.rate).toFixed(1)},aresample=48000` : null,
       `adelay=${Math.round(p.at * 1000)}:all=1`,
       p.db ? `volume=${p.db}dB` : null,
+      p.lowpass ? `lowpass=f=${p.lowpass}` : null,
+      s.stereo ? "aformat=channel_layouts=stereo" : null,
     ].filter(Boolean).join(",") + `[p${i}]`;
   });
   const mixed = `${s.parts.map((_, i) => `[p${i}]`).join("")}amix=inputs=${s.parts.length}:normalize=0:duration=longest`;
@@ -166,7 +185,7 @@ function built(s, dir) {
   const inputs = s.parts.map((p) => p.src);
   const log = analyse([...inputs.flatMap((f) => ["-i", join(here, f)]), "-filter_complex", `${base},volumedetect`, "-f", "null", "-"]);
   const peak = Number(/max_volume: (-?[\d.]+) dB/.exec(log)[1]);
-  encode(s, `${base},volume=${(PEAK_DB - peak).toFixed(2)}dB`, false, dir, inputs);
+  encode(s, `${base},volume=${(PEAK_DB - peak).toFixed(2)}dB`, !!s.stereo, dir, inputs);
 }
 
 for (const s of EFFECTS.filter(wanted)) effect(s, out);

@@ -174,6 +174,8 @@ export type PlayOptions = {
   pan?: number;
   /** Seconds from now. */
   delay?: number;
+  /** Seconds into the sound to start from: a cue that arrived late keeps its timing. */
+  offset?: number;
 };
 
 const MAX_VOICES = 16;
@@ -272,7 +274,7 @@ export function play(name: EffectName, opts: PlayOptions = {}): Voice | null {
     out.disconnect();
     level.disconnect();
   };
-  source.start(at);
+  source.start(at, Math.max(0, opts.offset ?? 0));
   return {
     fadeOut(seconds) {
       const now = ctx.currentTime;
