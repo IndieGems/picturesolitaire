@@ -602,6 +602,8 @@ export function mountDevMenu(host: DevHost): DevMenu {
     if (!ok) showBar("Win now stopped: try again");
   }
   on("board:won", hideBar);
+  on("destination:reveal", () => bar.classList.add("aside"));
+  on("destination:done", () => bar.classList.remove("aside"));
 
   // ---------- the Developer button, in the gear's screen ----------
 
