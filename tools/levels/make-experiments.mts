@@ -5,8 +5,6 @@
 // but the win checker does not pay them: they are no lane of it
 // (functions/checker/build.rs LANES), so a change here needs no server rebuild.
 //   src/content/levels/experiments.json   the boards, each with its winning line and "name"
-// (The Traveling Detective's case boards were here as a pilot; they are
-// make-cases.mts's now, in cases.json.)
 // Run: node tools/levels/make-experiments.mts [--fresh] [--remake x01,x02] [--out FILE]
 //   It KEEPS every board already in the file, re-dealing only one that uses a
 //   flagged picture (picture-flags.json) or is named by --remake; --fresh
@@ -44,7 +42,6 @@ const at = process.argv.indexOf("--remake");
 const remake = new Set(at > 0 ? process.argv[at + 1].split(",") : []);
 const outAt = process.argv.indexOf("--out");
 const OUT = outAt > 0 ? process.argv[outAt + 1] : FILE;
-// the case boards moved to cases.json (make-cases.mts, 2026-10-25), so only these rows' boards are kept
 const old = has("--fresh") ? [] : readBoards(FILE);
 const levels = makeExtras(EXPERIMENTS, old, remake);
 // keep the phrase "creator's dev menu only" in the note: tools/no-dev-menu.mjs fails a release build that holds it (UI, 068d37d)

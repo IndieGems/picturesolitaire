@@ -31,9 +31,6 @@ original holds.
 | mark-thump.wav | super hard board sting: the low thump | 0-0.66 s | one soft C2 thump, under supermark's second note |
 | stamp.wav | passport stamp lands | 0.525-0.82 s | rubber hit then its body; low-passed at 5 kHz (a first take was silent, regenerated) |
 | fanfare.mp3 | destination postcard opens (music cue, 4 s) | 0-2.6 s | D major horns and strings, glockenspiel sparkle; -16 LUFS |
-| case-clue.mp3 | mystery: a clue unfolds (music cue, 6 s) | 0.24-1.48 s | D minor pizzicato, cut on the dominant (unresolved) |
-| case-closed.mp3 | mystery: case closed / solved (music cue, 6 s) | 3.28-5.3 s | its last phrase resolving to E-flat at 4.04; caseclosed adds stamp.wav's thump there (BUILT), casesolved not |
-| case-wrong.mp3 | mystery: not quite (music cue, 3 s) | 0-1.6 s | a low pluck and a soft answer |
 | bed.mp3 | background music, 90 s | 0-86.5 s | loop: crossfade last ~4 s into the start at run time |
 
 Shipped: Ogg Opus (effects mono 40 kbps, won/bed stereo 48 kbps), about

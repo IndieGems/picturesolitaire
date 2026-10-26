@@ -35,11 +35,8 @@ export interface GameEvents {
    * from the picture catalogue. `again`: a repeat on this opening of the
    * board (after Undo or a restart), the short version. Always followed by
    * one destination:done, at once when the board closes or restarts.
-   * `clue`: a mystery's clue (its catalogue entry has a `case`, or the
-   * screens gave its words: setClueWords), held long enough to read; Sound
-   * plays "Clue found", UI shows its sentence.
    */
-  "destination:reveal": { id: string; name: string; place: string; again: boolean; clue?: true };
+  "destination:reveal": { id: string; name: string; place: string; again: boolean };
   /** The postcard has gone (or was skipped); the board's cards fall and refill next. */
   "destination:done": { id: string };
   /** Cards fell into gaps. `ms`: from now until the first of them lands. */
@@ -107,13 +104,6 @@ export interface GameEvents {
    * stamp's thud.
    */
   "trip:stamp": { trip: string };
-  /**
-   * A mystery case's accusation was judged (UI, once per accusation, as the
-   * result shows; docs/mystery-pilot.md). `right`: the killer was named;
-   * `gold`: named with the proving picture, and the gold "case closed" stamp
-   * lands. Sound plays "Case closed" or "Not quite".
-   */
-  "case:verdict": { right: boolean; gold: boolean };
   /** Any button pressed in the interface (for its click sound). */
   "ui:press": { id: string };
   /**

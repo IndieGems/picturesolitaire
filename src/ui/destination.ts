@@ -23,10 +23,6 @@
 // destination.<id>.place in the locale files once a translation has them, else the English
 // the event carries. A long name ("World's Largest Ball of Twine") wraps to two balanced
 // lines, then steps down in size, never under 12 px and never cut off.
-//
-// A CLUE of a mystery case (the dev menu's pilot) opens the same way; its banner holds
-// the clue's one sentence in place of a name (smaller, up to four lines, no location
-// line), and a clue with no words shows no banner at all (app.ts).
 
 import { destinationName, destinationPlace } from "./catalogue";
 
@@ -42,8 +38,6 @@ export interface DestinationBanner {
   element: HTMLElement;
   /** Show `d` over the top of `over` (the board's box), replacing whatever it showed. */
   show(d: Destination, over: HTMLElement): void;
-  /** A clue's one sentence in place of a name (`again`: quietly, as for a place). */
-  showClue(words: string, over: HTMLElement, again?: boolean): void;
   /** Take it away (a short fade); nothing if it is not up. */
   hide(): void;
   /** Gone at once, with no fade (the board was left). */
@@ -112,13 +106,12 @@ export function createDestinationBanner(): DestinationBanner {
     fitName();
   }
 
-  /** Two lines at most at the name's own size (a clue's sentence: four), else smaller, never under MIN_PX or cut off. */
+  /** Two lines at most at the name's own size, else smaller, never under MIN_PX or cut off. */
   function fitName(): void {
     name.style.removeProperty("font-size");
     let size = parseFloat(getComputedStyle(name).fontSize);
-    const lines = element.classList.contains("clue") ? 4 : 2;
     const lineH = () => parseFloat(getComputedStyle(name).lineHeight) || size * 1.1;
-    const fits = () => name.scrollWidth <= name.clientWidth + 1 && name.offsetHeight <= lineH() * lines + 2;
+    const fits = () => name.scrollWidth <= name.clientWidth + 1 && name.offsetHeight <= lineH() * 2 + 2;
     while (!fits() && size > MIN_PX) {
       size = Math.max(MIN_PX, size - 1);
       name.style.fontSize = `${size}px`;
@@ -126,20 +119,6 @@ export function createDestinationBanner(): DestinationBanner {
   }
 
   const sizes = new ResizeObserver(() => requestAnimationFrame(position));
-
-  function open(over: HTMLElement, big: string, small: string, again: boolean, clue: boolean): void {
-    clear();
-    host = over;
-    name.textContent = big;
-    place.textContent = small;
-    place.hidden = !small;
-    element.classList.toggle("again", again);
-    element.classList.toggle("clue", clue);
-    shownAt = performance.now();
-    element.hidden = false; // shown again, so its arrival and the sparkles start over
-    position();
-    sizes.observe(over);
-  }
 
   function clear(): void {
     clearTimeout(leaving);
@@ -153,10 +132,16 @@ export function createDestinationBanner(): DestinationBanner {
   return {
     element,
     show(d, over) {
-      open(over, destinationName(d.id, d.name), destinationPlace(d.id, d.place), d.again === true, false);
-    },
-    showClue(words, over, again) {
-      open(over, words, "", again === true, true);
+      clear();
+      host = over;
+      name.textContent = destinationName(d.id, d.name);
+      place.textContent = destinationPlace(d.id, d.place);
+      place.hidden = !place.textContent;
+      element.classList.toggle("again", d.again === true);
+      shownAt = performance.now();
+      element.hidden = false; // shown again, so its arrival and the sparkles start over
+      position();
+      sizes.observe(over);
     },
     hide() {
       if (element.hidden || leaving) return;

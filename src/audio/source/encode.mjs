@@ -62,12 +62,6 @@ const MUSIC = [
   // glockenspiel sparkle, its body ~1.8 s, the ring cut short. A touch quieter
   // than the win cue: it plays on every board.
   { name: "fanfare", src: "fanfare.mp3", start: 0, end: 2.6, fade: 0.8, lufs: -16 },
-  // The mystery pilot (docs/mystery-pilot.md), one palette of pizzicato,
-  // celesta and clarinet. A case clue unfolds: a D minor pizzicato phrase cut
-  // as it reaches the dominant (A), so it stops unresolved, intrigued.
-  { name: "caseclue", src: "case-clue.mp3", start: 0.24, end: 1.48, fade: 0.3, lufs: -17 },
-  // A wrong accusation: a soft low pluck and a small kind answer, never a buzzer.
-  { name: "casewrong", src: "case-wrong.mp3", start: 0, end: 1.6, fade: 0.45, lufs: -18 },
   // The bed: its own ending fade is cut; the game crossfades the last few
   // seconds into the start (src/audio/music.ts), so no loop point is baked in.
   { name: "bed", src: "bed.mp3", start: 0, end: 86.5, fade: 0.05, lufs: -20 },
@@ -90,16 +84,6 @@ const BUILT = [
       { src: "mark-marimba.wav", start: 0.695, end: 1.35, at: 0.26, rate: B3, db: -2 },
     ],
   },
-  // The case closed: the take's last phrase (G, Bb, F over Bb) resolving to
-  // E-flat at 4.04, with the passport stamp's thump landing on the resolve.
-  {
-    name: "caseclosed", stereo: true, len: 2.02, fade: 0.7, parts: [
-      { src: "case-closed.mp3", start: 3.28, end: 5.3, at: 0 },
-      { src: "stamp.wav", start: 0.525, end: 0.82, at: 0.76, db: -5, lowpass: 5000 },
-    ],
-  },
-  // Solved without the proving picture: the same resolve, no stamp (none lands).
-  { name: "casesolved", stereo: true, len: 2.02, fade: 0.7, parts: [{ src: "case-closed.mp3", start: 3.28, end: 5.3, at: 0 }] },
   // A super hard board's: the same "uh-oh" a fourth deeper (G3, E3), with a
   // soft low thump (C2, ringing E3) landing under the "oh" for weight.
   {

@@ -13,11 +13,6 @@
 //   Play any board     the campaign, the challenge route, any date of the daily pool
 //   Experiments        Levels' experiment boards (src/content/levels/experiments.json,
 //                      imported here only, so a release build drops it with the menu)
-//   Case               the Traveling Detective's case (case.ts, case-screens.ts; on home in
-//                      every build): its fifteen boards in any order, each ticked once won,
-//                      the evidence binder, Accuse now (every board won, straight to the
-//                      accusation) and Start the case over. These change the player's own
-//                      case progress (a player value), which never touches the server.
 //   Guided start       board 1's guide again, from its first step
 //
 // NEVER IN A RELEASE BUILD. app.ts imports this file only behind
@@ -42,7 +37,6 @@ import { shortDate } from "./format";
 import { markOf, markTag } from "./marks";
 import type { BoardHandle, DevStep } from "./board-api";
 import type { Experiment, Play } from "./app";
-import { caseBoards as loadCaseBoards, isWon, onCase, restart as restartCase, theCase, winAll, type CaseBoard } from "./case";
 
 /** What vite.config.ts stamps in at build time (its `define`). */
 declare const __BUILD_INFO__: { version: string; sdk: string; commit: string; changed: boolean; built: string };
@@ -61,10 +55,6 @@ export interface DevHost {
   cancelGuide(): void;
   /** The albums show every picture as restored (never saved), or go back to the record. */
   showAll(on: boolean): void;
-  /** Home, the board in hand dropped if it was won. */
-  home(): void;
-  /** The Traveling Detective's screens (case-screens.ts). */
-  caseScreens(): { open(): void; binder(): void; accuse(): void; close(): void };
 }
 
 /** What the menu lends the screens back. */
@@ -97,8 +87,8 @@ const WHY_NOT: Record<Extract<DevStep, { ok: false }>["reason"], string> = {
   closed: "The board has closed",
 };
 
-/** The lists of Play any board (the experiments and the case have their own sections). */
-type Kind = Exclude<Play["kind"], "experiment" | "case">;
+/** The lists of Play any board (the experiments have their own section). */
+type Kind = Exclude<Play["kind"], "experiment">;
 const KINDS: Kind[] = ["campaign", "challenge", "daily"];
 const KIND_NAMES: Record<Kind, string> = { campaign: "Campaign", challenge: "Challenge", daily: "Daily" };
 
@@ -169,15 +159,9 @@ export function mountDevMenu(host: DevHost): DevMenu {
   const clampDay = (d: string) => (!pool ? d : d < pool.first ? pool.first : d > pool.last ? pool.last : d);
   // Levels' experiment boards, read once (null until they land)
   let experiments: Experiment[] | null = null;
-  // the Traveling Detective's case boards (Levels' cases.json), read once
-  let caseBoards: CaseBoard[] = [];
-  void loadCaseBoards().then((b) => {
-    caseBoards = b;
-    drawCase();
-  });
   void import("../content/levels/experiments.json")
     .then((m) => {
-      const stored = (m.default as unknown as { levels: (Stored & { name?: string; case?: { id: string; n: number } })[] }).levels;
+      const stored = (m.default as unknown as { levels: (Stored & { name?: string })[] }).levels;
       experiments = stored.map((l, i) => ({ ...toLevel(l, i + 1), name: l.name ?? l.id }));
     })
     .catch((err: unknown) => {
@@ -199,10 +183,6 @@ export function mountDevMenu(host: DevHost): DevMenu {
       const x = experiments?.[p.x.number - 1 + step];
       return x ? { kind: "experiment", x } : null;
     }
-    if (p.kind === "case") {
-      const c = caseBoards.find((b) => b.n === p.c.n + step);
-      return c ? { kind: "case", c } : null;
-    }
     const date = addDays(p.d.date, step);
     if (pool && (date < pool.first || date > pool.last)) return null;
     const d = await loadDaily(date);
@@ -215,7 +195,6 @@ export function mountDevMenu(host: DevHost): DevMenu {
     }
     if (p.kind === "challenge") return !!route[p.c.n - 1 + step];
     if (p.kind === "experiment") return !!experiments?.[p.x.number - 1 + step];
-    if (p.kind === "case") return caseBoards.some((b) => b.n === p.c.n + step);
     if (!pool) return false;
     const date = addDays(p.d.date, step);
     return date >= pool.first && date <= pool.last;
@@ -228,7 +207,6 @@ export function mountDevMenu(host: DevHost): DevMenu {
   function play(p: Play): void {
     hideBar();
     dialog.close();
-    host.caseScreens().close();
     host.open(p);
   }
 
@@ -299,7 +277,6 @@ export function mountDevMenu(host: DevHost): DevMenu {
     if (p.kind === "campaign") return `Campaign board ${campaignNumber(p.level)}`;
     if (p.kind === "challenge") return `Challenge ${p.c.n}`;
     if (p.kind === "experiment") return `Experiment ${p.x.number}: ${p.x.name}`;
-    if (p.kind === "case") return `${theCase.title}, board ${p.c.n}`;
     return `Daily, ${shortDate(p.d.date)}`;
   }
 
@@ -491,44 +468,6 @@ export function mountDevMenu(host: DevHost): DevMenu {
     );
   }
 
-  // the mystery case: its boards, the binder, the accusation
-  const caseGrid = el("div", "dev-grid");
-  const caseRow = el("div", "dev-row");
-  caseRow.append(
-    btn("", "Evidence binder", () => {
-      dialog.close();
-      host.home();
-      host.caseScreens().binder();
-    }),
-    btn("amber", "Accuse now", () => {
-      dialog.close();
-      winAll();
-      host.home();
-      host.caseScreens().accuse();
-    }),
-  );
-  const caseSec = el("section", "dev-case");
-  caseSec.append(
-    el("h3", "", `Case: ${theCase.title} (practice)`),
-    el("p", "dev-note", "The Traveling Detective's case (on home). Any board here plays in any order. Accuse now and Start over change your own case progress (kept with your account); no Coins and nothing for the server."),
-    caseGrid,
-    caseRow,
-    btn("dev-wide", "Start the case over", () => {
-      restartCase();
-      drawCase();
-    }),
-  );
-  function drawCase(): void {
-    const now = host.now();
-    const p = now.screen === "board" ? now.play : null;
-    if (!caseBoards.length) return void caseGrid.replaceChildren(el("p", "dev-note", "Loading the case's boards…"));
-    caseGrid.replaceChildren(
-      ...caseBoards.map((c) => tile(String(c.n), [isWon(c.n) ? "won" : "–"], p?.kind === "case" && p.c.n === c.n, () => play({ kind: "case", c }))),
-    );
-  }
-  onCase(drawCase);
-
-
   // the guided start
   const guideSec = el("section");
   guideSec.append(
@@ -537,7 +476,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     el("p", "dev-note", "Board 1 with its four steps from the first, then its finish card. Nothing is saved, and no table is given."),
   );
 
-  scroll.append(title, buildBox, boardSec, switches, pickSec, caseSec, xSec, guideSec);
+  scroll.append(title, buildBox, boardSec, switches, pickSec, xSec, guideSec);
   document.body.append(dialog);
 
   // ---------- the Next move bar, over the board's foot ----------
@@ -599,13 +538,12 @@ export function mountDevMenu(host: DevHost): DevMenu {
     void drawBuild();
     drawBoard();
     const p = host.now().play;
-    if (host.now().screen === "board" && p && p.kind !== "experiment" && p.kind !== "case") tab = p.kind;
+    if (host.now().screen === "board" && p && p.kind !== "experiment") tab = p.kind;
     endlessSwitch.checked = endless;
     picturesSwitch.checked = everyPicture;
     drawSpeed();
     drawPick();
     drawExperiments();
-    drawCase();
     scroll.scrollTop = 0;
     dialog.showModal();
   });
@@ -630,7 +568,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     },
     hasNext: (p) => hasNeighbour(p, 1),
     next: (p) => go(p, 1),
-    // its id, as its row in the menu shows it ("Experiment 1" wraps beside the tag on a small phone); a case board, its clue's number
+    // its id, as its row in the menu shows it ("Experiment 1" wraps beside the tag on a small phone)
     label: (p) => `Board ${p.x.id}`,
   };
 }

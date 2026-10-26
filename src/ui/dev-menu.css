@@ -81,7 +81,7 @@
   display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: 999px;
 }
 .dev-bar[hidden] { display: none; }
-/* while a postcard (a clue) is open it steps aside, so its foot (the photo's date stamp) is seen */
+/* while a postcard is open it steps aside, so the whole postcard is seen */
 .dev-bar.aside { display: none; }
 .dev-bar .btn { min-height: 44px; padding: 0 14px; font-size: 15px; }
 .dev-bar .dev-bar-text { padding: 0 6px; font: 600 14px/1.2 var(--round); text-align: center; }

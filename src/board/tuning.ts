@@ -145,17 +145,6 @@ export const TUNING = {
   revealFadeMs: 260,
   revealShortHoldMs: 700,
   /**
-   * A mystery's clue (a destination whose catalogue entry has a `case`) is
-   * held long enough to read its sentence: revealClueHoldMs (a wordless one
-   * too, to look at its clock), plus revealClueCharMs for each character of
-   * its words (the screens give them: setClueWords), at most revealClueMaxMs.
-   * A tap still skips it (the evidence binder keeps it). A repeat is the
-   * short one all the same.
-   */
-  revealClueHoldMs: 2500,
-  revealClueCharMs: 50,
-  revealClueMaxMs: 8000,
-  /**
    * The most positions the stuck check (after every settle) may search before
    * it gives up; giving up claims nothing (no warning, never a false one).
    * 20,000 (the lead, from Levels' flag): a tenth of the Hint's default, so a

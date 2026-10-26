@@ -64,21 +64,21 @@
         ]
       },
       {
-        "id": "tripscases",
+        "id": "trips",
         "command": [
           "node",
-          "tools/trips-cases/server.mjs"
+          "tools/trips/server.mjs"
         ],
         "ports": [
           {
             "name": "port",
-            "env": "TRIPSCASES_PORT"
+            "env": "TRIPS_PORT"
           }
         ],
         "ready": [
           {
             "name": "port",
-            "prefix": "TRIPSCASES_PORT "
+            "prefix": "TRIPS_PORT "
           }
         ]
       }
@@ -98,10 +98,10 @@
       "url": "http://127.0.0.1:{pictures.port}/"
     },
     {
-      "id": "trips-cases",
-      "label": "Trips & Cases",
+      "id": "trips",
+      "label": "Trips",
       "kind": "web",
-      "url": "http://127.0.0.1:{tripscases.port}/"
+      "url": "http://127.0.0.1:{trips.port}/"
     }
   ]
 }

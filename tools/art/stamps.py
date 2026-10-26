@@ -1,7 +1,6 @@
-"""Passport stamps, one per trip or case: a generated rubber-stamp impression, squared and sized.
+"""Passport stamps, one per trip: a generated rubber-stamp impression, squared and sized.
 
-    python tools/art/stamps.py <raw.png> <trip-or-case id>     e.g. stamps.py raw/stamp-t1.png t1
-                                                               or  stamps.py raw/stamp-melusine.png melusine
+    python tools/art/stamps.py <raw.png> <trip id>     e.g. stamps.py raw/stamp-t1.png t1
 
 The raw image is a transparent PNG from the generator (prompts in tools/art/prompts.txt).
 It is cropped to the stamp, centred on a square with a little air, kept as a master in

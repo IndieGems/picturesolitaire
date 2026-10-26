@@ -18,8 +18,7 @@
 // drives it all from one clock, so a tap (skip) jumps straight to the end and
 // a pause holds it like every other board animation. While it is held open
 // nothing moves, so no frames are drawn then (a timer, pace.ts's rest). Every
-// time is TUNING's (revealSlideMs ...), and the hold can be set per postcard
-// (a mystery's clue is held long enough to read).
+// time is TUNING's (revealSlideMs ...), and the hold can be set per postcard.
 
 import { ease, rest, run } from "./pace.ts";
 import { TUNING } from "./tuning.ts";
@@ -51,13 +50,6 @@ export interface RevealOptions {
   mode: "full" | "calm" | "short";
   /** How long it stays open, board ms; by default revealHoldMs (a repeat: revealShortHoldMs). */
   hold?: number;
-  /**
-   * Draw on the open picture (the screens' writing on a photo: a date stamp):
-   * called once with an element covering the picture file's whole extent
-   * (where the board crops a sliver of it, too), shown from the moment it is
-   * fully open and leaving with it.
-   */
-  decorate?: (box: HTMLElement) => void;
   /** The postcard is fully open (the screens show the name now). */
   onOpen(): void;
   /** The postcard starts to leave. */
@@ -133,18 +125,6 @@ export function revealPostcard(o: RevealOptions): Reveal {
   // the whole postcard in one piece, for once it is open (no seams between flaps)
   const whole = panel({ x0: 0, y0: 0, x1: W, y1: H }, "50% 50%");
   whole.style.visibility = "hidden";
-  if (o.decorate) {
-    const box = document.createElement("div");
-    box.className = "bd-postcard-art";
-    box.style.cssText = `left:${ix.toFixed(2)}px;top:${iy.toFixed(2)}px;width:${dw.toFixed(2)}px;height:${dh.toFixed(2)}px`;
-    whole.style.overflow = "hidden";
-    whole.append(box);
-    try {
-      o.decorate(box);
-    } catch (err) {
-      console.error("[board] the postcard's decoration failed", err);
-    }
-  }
   const frame = document.createElement("div");
   frame.className = "bd-postcard-rim";
   frame.style.cssText = `border-radius:${R}px;opacity:0;box-shadow:` +

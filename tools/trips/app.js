@@ -1,4 +1,4 @@
-// Trips & Cases: draws /api/data (server.mjs). Read-only; reload the page to see changes.
+// Trips: draws /api/data (server.mjs). Read-only; reload the page to see changes.
 
 const STYLE = { photo: "photo", painting: "painting", print: "woodblock print", watercolour: "watercolour", retro: "travel poster" };
 
@@ -71,60 +71,6 @@ function tripSection(t) {
   return s;
 }
 
-function caseSection(c) {
-  const s = el("section", "group");
-  s.id = `case-${c.id}`;
-  const head = el("header", "group-head");
-  if (c.stamp) {
-    const st = el("img", "stamp");
-    st.src = c.stamp;
-    st.alt = "Case closed stamp";
-    head.append(st);
-  }
-  head.append(el("h2", null, `${c.title} · mystery case`));
-  s.append(head);
-  if (c.cover) {
-    const cov = el("img", "cover");
-    cov.src = c.cover;
-    cov.alt = `${c.title} cover`;
-    s.append(cov);
-  }
-  const grid = el("div", "grid");
-  for (const k of c.clues) {
-    const card = el("article", "card");
-    card.append(el("span", "num", String(k.n)));
-    card.append(k.picture ? figure(k.picture, `${k.n}. ${k.label}${k.words ? ` — ${k.words}` : ""}`) : missing("No picture yet"));
-    card.append(el("p", "name", k.label));
-    if (k.suspect) card.append(el("p", "suspect", `Suspect: ${k.suspect.name}, ${k.suspect.who.toLowerCase()}`));
-    card.append(k.words ? el("p", "words", k.words) : el("p", "words none", "no words"));
-    grid.append(card);
-  }
-  s.append(grid);
-  if (c.question) s.append(el("p", "question", c.question));
-
-  // The answer stays hidden until asked for.
-  const a = c.answer;
-  const toggle = el("button", "toggle", "Show the answer");
-  toggle.type = "button";
-  const box = el("div", "answer");
-  box.hidden = true;
-  if (a.culprit) box.append(el("p", "culprit", `The culprit: ${a.culprit}`));
-  if (a.verdict) box.append(el("p", null, a.verdict));
-  if (a.gold) box.append(el("p", null, `The proof for the gold stamp: picture ${a.gold.n ?? "?"}, ${a.gold.label}.`));
-  if (a.accepted.length) box.append(el("p", null, `Also accepted as proof: ${a.accepted.map((x) => `picture ${x.n ?? "?"}, ${x.label}`).join("; ")}.`));
-  if (a.explanation.length) {
-    const ul = el("ul");
-    for (const e of a.explanation) ul.append(el("li", null, `${e.text}${e.pictures.length ? ` (pictures ${e.pictures.join(", ")})` : ""}`));
-    box.append(ul);
-  }
-  toggle.addEventListener("click", () => {
-    box.hidden = !box.hidden;
-    toggle.textContent = box.hidden ? "Show the answer" : "Hide the answer";
-  });
-  s.append(toggle, box);
-  return s;
-}
-
 async function load() {
   const main = document.getElementById("main");
   const notes = document.getElementById("notes");
@@ -134,17 +80,14 @@ async function load() {
     if (!r.ok) throw new Error(`the server answered ${r.status}`);
     d = await r.json();
   } catch (e) {
-    main.replaceChildren(el("p", "loading", `Could not load the trips and cases (${e.message}). Reload to try again.`));
+    main.replaceChildren(el("p", "loading", `Could not load the trips (${e.message}). Reload to try again.`));
     return;
   }
   notes.replaceChildren(...d.problems.map((p) => el("p", null, p)));
   const jump = document.getElementById("jump");
-  jump.replaceChildren(
-    ...d.trips.map((t) => Object.assign(el("a", null, t.name), { href: `#trip-${t.id}` })),
-    ...d.cases.map((c) => Object.assign(el("a", "case-link", c.title), { href: `#case-${c.id}` })),
-  );
-  main.replaceChildren(...d.trips.map(tripSection), ...d.cases.map(caseSection));
-  if (!d.trips.length && !d.cases.length) main.append(el("p", "loading", "No trips or cases yet."));
+  jump.replaceChildren(...d.trips.map((t) => Object.assign(el("a", null, t.name), { href: `#trip-${t.id}` })));
+  main.replaceChildren(...d.trips.map(tripSection));
+  if (!d.trips.length) main.append(el("p", "loading", "No trips yet."));
 }
 
 document.getElementById("big").addEventListener("click", (e) => {

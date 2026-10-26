@@ -200,7 +200,7 @@ html.less-motion .home-note { animation: none; }
 /* Art's drawn title (2 : 1, its own lip and shadow): 300-340 px on a phone, growing with a
    tablet's home (the 1400 px file there, sharp to ~700 px; wordmark.ts); a short screen gives it
    less so Play stays in view */
-.home h1 { margin: 0; width: min(100%, calc(340px * var(--k)), 600px, calc((100dvh - 500px) * 2)); min-width: 200px; line-height: 0; }
+.home h1 { margin: 0; width: min(100%, calc(340px * var(--k)), 600px, calc((100dvh - 430px) * 2)); min-width: 200px; line-height: 0; }
 .home h1 picture, .home .wordmark { display: block; width: 100%; height: auto; }
 /* where the player is: the trip and how far through it, over the board's number (and its hard tag) */
 .home .where { display: flex; flex-direction: column; align-items: center; gap: calc(3px * var(--k)); padding: calc(8px * var(--k)) calc(20px * var(--k)); font-size: calc(18px * var(--k)); font-weight: 600; text-align: center; }
@@ -421,9 +421,6 @@ html.less-motion .mark-banner { animation-name: mark-fade; }
 .dest-name { max-width: 100%; font: 600 30px/1.08 var(--round); letter-spacing: 0.01em; text-wrap: balance; overflow-wrap: break-word; }
 .dest-place { max-width: 100%; font: 600 16px/1.2 var(--round); color: var(--ink-soft); text-wrap: balance; }
 .dest-place[hidden] { display: none; }
-/* a clue's one sentence (a mystery case): smaller, up to four lines */
-.dest-banner.clue .dest-glass { padding: 11px 20px 10px; border-radius: 22px; }
-.dest-banner.clue .dest-name { font: 600 19px/1.25 var(--round); letter-spacing: 0; }
 .dest-banner.again .dest-glass { animation: dest-fade-in 0.2s ease both; }
 .dest-banner.leaving .dest-glass { animation: dest-out 0.26s ease-in both; }
 .dest-banner:is(.again, .leaving) .twinkle { display: none; }
@@ -754,13 +751,8 @@ html.less-motion .marker.next::after { animation-duration: 3.4s; }
 .daily-btn .words { display: flex; flex-direction: column; gap: calc(4px * var(--k)); min-width: 0; }
 .daily-btn .words b { font: 600 calc(18px * var(--k))/1.1 var(--round); }
 .daily-btn .words span { font: 500 calc(13px * var(--k))/1.2 var(--round); color: var(--ink-soft); white-space: nowrap; }
-/* the Traveling Detective's button: the daily's shape, its line (the case's name and how far) may take two */
-.btn.daily-btn.detective { min-height: calc(62px * var(--k)); padding-top: calc(8px * var(--k)); padding-bottom: calc(8px * var(--k)); }
-.daily-btn.detective .words span { white-space: normal; }
 /* a short phone: the three stacks over the title make way for the buttons */
 @media (max-height: 720px) { .home .emblem { display: none; } }
-/* a short phone, with the Traveling Detective's row too: the rows sit closer, so the last is never cut */
-@media (max-height: 700px) { .home { gap: calc(15px * var(--k)); } }
 
 /* the results screen: the player's result, the line that says what counts, then the friends' rows */
 .daily-you { max-width: 440px; margin: 4px auto 10px; padding: 14px 18px; border-radius: 22px; text-align: center; }
@@ -884,18 +876,6 @@ html.less-motion .card .coins-chip { animation: none; }
 .viewer .viewer-stage:active { cursor: grabbing; }
 .viewer .viewer-zoom { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
 .viewer img { position: absolute; display: block; object-fit: cover; border-radius: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
-/* what the game draws on the picture (a clue's date stamp): a box exactly over it, sized in its own units */
-.viewer .viewer-deco { position: absolute; pointer-events: none; container-type: size; }
-/* a clue's sentence, under the picture; the stage stops above it (--cap-h, viewer.ts) */
-.viewer.captioned .viewer-stage { bottom: calc(var(--foot) + var(--cap-h, 0px)); }
-.viewer-foot {
-  position: absolute; left: 16px; right: 16px; bottom: calc(var(--foot) + 4px); max-width: 520px; margin: 0 auto;
-  display: flex; flex-direction: column; align-items: center; gap: 12px;
-}
-.viewer-foot[hidden] { display: none; }
-.viewer-caption { padding: 10px 16px; border-radius: 18px; text-align: center; font: 600 16px/1.3 var(--round); text-wrap: balance; }
-.viewer-caption[hidden], .viewer-action[hidden] { display: none; }
-.viewer-action { min-width: 200px; min-height: 56px; margin-bottom: 6px; font-size: 20px; }
 html.less-motion .viewer { animation: none; }
 
 /* ---------- a phone held sideways ----------
@@ -926,12 +906,11 @@ html.less-motion .viewer { animation: none; }
     column-gap: 28px; row-gap: 14px; justify-items: center;
     padding: calc(var(--row-bottom) + 4px) 24px calc(var(--foot) + 8px);
   }
-  /* the title, the daily and the Traveling Detective on the left; where the player is, Play and the tiles on the right */
+  /* the title and the daily on the left; where the player is, Play and the tiles on the right */
   .home { row-gap: 10px; }
   .home .brand { grid-column: 1; grid-row: 2; align-self: center; gap: 14px; }
   .home h1 { width: min(100%, 340px, calc((100dvh - 250px) * 2)); }
   .home .daily-btn { grid-column: 1; grid-row: 3; }
-  .home .daily-btn.detective { grid-row: 4; }
   .home .where { grid-column: 2; grid-row: 2; }
   .home .play { grid-column: 2; grid-row: 3; }
   .home .more { grid-column: 2; grid-row: 4; }

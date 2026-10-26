@@ -110,5 +110,3 @@
   background: rgba(6, 10, 16, var(--shade, 0));
 }
 .bd-postcard-rim { position: absolute; inset: 0; pointer-events: none; }
-/* the picture file's whole extent on the open postcard, for the screens' writing on it */
-.bd-postcard-art { position: absolute; pointer-events: none; }

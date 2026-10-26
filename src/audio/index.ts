@@ -120,9 +120,7 @@ function milestone(): void {
 // repeat (after Undo or a restart) has had its harp: nothing more. The postcard
 // holds 1.5 s, then leaves and destination:done comes; sooner than that is a
 // tap that skipped, which stops the fanfare (at once if the postcard never
-// opened), while the natural end lets it ring out. A mystery clue's postcard
-// holds longer (2.5 s and up, to read its sentence): its 1.2 s cue is long over
-// by then, so the same rule holds.
+// opened), while the natural end lets it ring out.
 
 const REVEAL_HOLD = 1500;
 let fanfare: Voice | null = null;
@@ -130,13 +128,9 @@ let fanfareAt = 0;
 
 function reveal(p: GameEvents["destination:reveal"]): void {
   if (p.again) return;
-  // A mystery case's clue (the catalogue entry has a "case"): "Clue found"
-  // instead, and the accusation's cues start loading.
-  const clue = p.clue === true;
-  if (clue) for (const name of VERDICT_CUES) void load(fileOf(name));
   flourish?.fadeOut(0.5);
   flourish = null;
-  fanfare = play(clue ? "caseclue" : "fanfare", { delay: 0.03 });
+  fanfare = play("fanfare", { delay: 0.03 });
   fanfareAt = performance.now();
   if (fanfare) duckMusic(0.3, 2, 1.5);
 }
@@ -145,27 +139,6 @@ function revealDone(): void {
   const held = performance.now() - fanfareAt;
   fanfare?.fadeOut(held < 150 ? 0.03 : held < REVEAL_HOLD ? 0.25 : 0.8);
   fanfare = null;
-}
-
-// --- The mystery pilot's accusation ------------------------------------------------
-//
-// case:verdict (UI, as the result shows): right with the proving picture is
-// "Case closed", whose thump UI's gold stamp lands on (0.76 s in); right without
-// it the same resolve with no thump; wrong a kind "hm". A cue still loading
-// joins late at the point it would have reached, so the thump still meets the
-// stamp; later than LATE_VERDICT it is dropped.
-
-const VERDICT_CUES = ["caseclosed", "casesolved", "casewrong"] as const;
-const LATE_VERDICT = 0.6;
-
-function verdict({ right, gold }: { right: boolean; gold: boolean }): void {
-  const name = !right ? "casewrong" : gold ? "caseclosed" : "casesolved";
-  const asked = performance.now();
-  void load(fileOf(name)).then((buffer) => {
-    const late = (performance.now() - asked) / 1000;
-    if (!buffer || late > LATE_VERDICT) return;
-    if (play(name, { offset: late > 0.02 ? late : 0 }) && right) duckMusic(0.3, 2.2, 1.6);
-  });
 }
 
 function listen(): void {
@@ -218,6 +191,5 @@ function listen(): void {
   on("board:mark", ({ mark }) => play(mark === "super" ? "supermark" : "hardmark"));
   // A trip's stamp lands on its passport page (UI, the instant it lands).
   on("trip:stamp", () => play("stamp"));
-  on("case:verdict", verdict);
   on("ui:press", () => play("ui"));
 }
