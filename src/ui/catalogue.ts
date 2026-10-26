@@ -10,10 +10,12 @@
 //
 // Each picture comes in copies of three sizes (Art's, all at the full picture's
 // aspect), and a screen draws the smallest that is sharp where it is shown (the
-// creator, 2026-10-25: "a picture ships at the size it is drawn"): the thumb (320 px
-// on the long side) for grids and covers, the board copy (240 x 320 a card) for the
-// board and the win card, the full file (384 x 512 a card) only seen big. A copy
-// the catalogue does not list (a picture Art has not reached) falls back to the full.
+// creator, 2026-10-25: "a picture ships at the size it is drawn"): the board copy
+// (240 x 320 a card) for the board and the win card, the full file (384 x 512 a card)
+// only seen big, and a destination's passport copy (300 px wide, its size listed) for
+// the passport's postcards. The library's own thumbs no longer ship (2026-10-26: the
+// albums that drew them are unreached, and the build has a file cap), so nothing picks
+// them. A copy the catalogue does not list falls back to the full.
 //
 // The DESTINATIONS (the travelogue, 2026-10-25) are Art's list of their own beside the
 // pictures: one real place per campaign board, a postcard the size of the board whose
@@ -54,20 +56,15 @@ export interface Copy {
   h: number;
 }
 
-/** Art's thumbs: the full picture's aspect, 320 px on the long side (measured on all 156, 2026-10-25). */
-const THUMB_LONG = 320;
-
 type Sizes = { file: string; thumb?: string; thumbPx?: number[]; px?: number[]; board?: string; boardPx?: number[] };
 type Entry = (typeof CATALOGUE.pictures)[number] & Sizes;
 function copiesOf(p: Sizes): Copy[] {
   const [w, h] = p.px?.length === 2 ? (p.px as [number, number]) : [Infinity, Infinity];
   const list: Copy[] = [{ file: p.file, w, h }];
   if (p.board && p.boardPx?.length === 2) list.push({ file: p.board, w: p.boardPx[0]!, h: p.boardPx[1]! });
+  // a thumb only where its size is listed (a destination's passport copy): the library's
+  // thumbs no longer ship (the albums are unreached; Art, 2026-10-26, the build's file cap)
   if (p.thumb && p.thumb !== p.file && p.thumbPx?.length === 2) list.push({ file: p.thumb, w: p.thumbPx[0]!, h: p.thumbPx[1]! });
-  else if (p.thumb && p.thumb !== p.file && Number.isFinite(w)) {
-    const k = THUMB_LONG / Math.max(w, h);
-    list.push({ file: p.thumb, w: Math.round(w * k), h: Math.round(h * k) });
-  }
   return list.sort((a, b) => a.w * a.h - b.w * b.h);
 }
 
