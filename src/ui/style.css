@@ -669,8 +669,8 @@ html.less-motion .twinkle { display: none; }
     linear-gradient(180deg, #fbf8f1, #eee6d6);
   box-shadow: inset 0 0 0 1px rgba(120, 100, 70, 0.2);
 }
-.pp-page.from-right { animation: pp-from-right 0.28s ease-out both; }
-.pp-page.from-left { animation: pp-from-left 0.28s ease-out both; }
+.pp-content.from-right { animation: pp-from-right 0.28s ease-out both; }
+.pp-content.from-left { animation: pp-from-left 0.28s ease-out both; }
 @keyframes pp-from-right { from { opacity: 0; transform: translateX(28px); } }
 @keyframes pp-from-left { from { opacity: 0; transform: translateX(-28px); } }
 /* the stamp lands: the page gives a little under it */
@@ -735,17 +735,18 @@ html.less-motion .twinkle { display: none; }
 .pc-n { font: 600 22px/1 var(--round); color: rgba(85, 101, 124, 0.5); }
 
 /* turning the pages: ‹ the page › under the book */
-.pp-turn { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 16px auto 0; }
+/* turning the pages: a row at the top of the page, over the trip's title, that stays put as it turns */
+.pp-turn { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: -6px -4px 8px; }
 .pp-turn[hidden] { display: none; }
-.pp-turn .btn.round { --size: 48px; }
+.pp-turn .btn.round { --size: 44px; }
 .pp-prev .ico { transform: rotate(180deg); }
-.pp-where { padding: 8px 16px; font: 600 15px/1 var(--round); }
+.pp-where { padding: 7px 14px; font: 600 15px/1 var(--round); }
 /* the stamp moment's way on, under the book */
 .pp-foot { flex: none; display: flex; justify-content: center; padding: 12px 16px calc(var(--foot) + 8px); }
 .pp-foot[hidden] { display: none; }
 .pp-on { min-width: 200px; min-height: 60px; font-size: 22px; animation: veil-in 0.25s ease both; }
-html.less-motion :is(.pp-page, .pp-on) { animation: none; }
-@media (prefers-reduced-motion: reduce) { :is(.pp-page, .pp-on) { animation: none; } }
+html.less-motion :is(.pp-page, .pp-content, .pp-on) { animation: none; }
+@media (prefers-reduced-motion: reduce) { :is(.pp-page, .pp-content, .pp-on) { animation: none; } }
 
 /* ---------- the challenge route (src/ui/challenges.ts) ---------- */
 

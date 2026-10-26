@@ -7,7 +7,8 @@
 //               its places: a visited one as its postcard, with its name and where it
 //               is; one not visited yet as a blank card with its board number
 //   a postcard  tapped, it opens big (viewer.ts), the only place the full picture is fetched
-//   pages       ‹ and › under the book, or a swipe across the page
+//   pages       ‹ and › at the top of the page, over the trip's title (never a scroll away;
+//               QA, 2026-10-26), or a swipe across the page
 //
 // What is visited and stamped follows from the server's record of the boards won
 // (trips.ts); nothing is saved here.
@@ -134,6 +135,8 @@ export function createPassport(nav: Nav) {
   const brand = el("div", "pp-brand", t("game.title"));
   const page = el("section", "pp-page");
   book.append(brand, page);
+  // what turns with the page (its title, stamp and postcards): the keys above it stay put
+  const content = el("div", "pp-content");
 
   // turning the pages
   const prev = roundButton("pp-prev", "passport.prev", t("passport.prev"), ICONS.chevron);
@@ -141,13 +144,14 @@ export function createPassport(nav: Nav) {
   const where = el("span", "pp-where glass");
   const turn = el("div", "pp-turn");
   turn.append(prev, where, next);
+  page.append(turn, content);
 
   // the stamp moment's way on, under the book
   const foot = el("div", "pp-foot");
   foot.hidden = true;
 
   const scroll = el("div", "scroll");
-  scroll.append(book, turn);
+  scroll.append(book);
   const screen = el("section", "screen menu-screen passport-screen");
   screen.hidden = true;
   screen.setAttribute("aria-label", t("passport.title"));
@@ -218,7 +222,7 @@ export function createPassport(nav: Nav) {
   function draw(): void {
     const tr = trips[at];
     for (const c of page.querySelectorAll(".pc-card")) cardSizes.unobserve(c);
-    if (!tr) return void page.replaceChildren();
+    if (!tr) return void content.replaceChildren();
     const { done, all } = tripCount(tr);
     const head = el("div", "pp-head");
     const titles = el("div", "pp-titles");
@@ -241,7 +245,7 @@ export function createPassport(nav: Nav) {
         },
         () => {},
       );
-    page.replaceChildren(head, grid);
+    content.replaceChildren(head, grid);
     page.setAttribute("aria-label", tripName(tr));
     where.textContent = t("passport.page", { n: at + 1, all: trips.length });
     prev.disabled = at === 0;
@@ -256,13 +260,14 @@ export function createPassport(nav: Nav) {
     draw();
     scroll.scrollTop = 0;
     if (!lessMotion()) {
-      page.classList.remove("from-left", "from-right");
-      void page.offsetWidth; // the class again starts the slide over
-      page.classList.add(forward ? "from-right" : "from-left");
+      content.classList.remove("from-left", "from-right");
+      void content.offsetWidth; // the class again starts the slide over
+      content.classList.add(forward ? "from-right" : "from-left");
     }
   }
   // a slide or a thud plays once: its class goes when it ends, so another never starts it over
-  page.addEventListener("animationend", (e) => e.target === page && page.classList.remove("from-left", "from-right", "thud"));
+  content.addEventListener("animationend", (e) => e.target === content && content.classList.remove("from-left", "from-right"));
+  page.addEventListener("animationend", (e) => e.target === page && page.classList.remove("thud"));
   prev.addEventListener("click", () => turnTo(at - 1));
   next.addEventListener("click", () => turnTo(at + 1));
   // a swipe across the page turns it (the page scrolls up and down as ever: touch-action pan-y)
