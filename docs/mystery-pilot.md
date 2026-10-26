@@ -12,7 +12,9 @@ guess never blocks: the detective explains, and the trip is done.
 
 **The rules for clue pictures** (creator, 2026-10-25: "we've got to be very
 concise"):
-- **One sentence at most per picture, and none where the picture can tell it.**
+- **One short line on every picture.** The story lives in the picture and the
+  line moves it on. Every clue has one, for an even cadence (creator, after
+  playing: the wordless ones "felt like they were actually missing something").
 - **Time is told by clocks in the scene.** Generated clock hands are unreliable,
   so Art paints them on.
 - **A suspect has one portrait** with one distinctive thing: Clara's red shawl,
@@ -33,12 +35,12 @@ One night, one murder, four suspects.
 | 4 | Margit, pearl brooch, Dürnstein's blue tower behind | "Margit, a dealer, swore she'd have the waltz at any price." |
 | 5 | Henri Duval, mustard scarf, writing with a green pen | "Professor Duval, the old friend who found the waltz, says he sat in the front row all concert." |
 | 6 | The cabin at dawn: two cups, a teapot and an empty leather folder | "7 am: Brandt is found poisoned, and the waltz is gone." |
-| 7 | A cracked gold pocket watch stopped at 9:45 | — |
-| 8 | An empty brown medicine bottle with a red-cross label, beside the teapot | — |
+| 7 | A cracked gold pocket watch stopped at 9:45 | "Under his hand: his watch, stopped at 9:45." |
+| 8 | An empty brown medicine bottle with a red-drop label, beside the teapot | "The doctor's sleeping drops, every last one in the pot." |
 | 9 | Brandt at his door taking a tray for two from a steward, corridor clock at 10:25 | "His guest is already inside." |
 | 10 | A will on cream paper, red wax seal, no signature | "Unsigned, it would have left Clara nothing." |
-| 11 | The bow-tied doctor at a seasick woman's bunk, clock at 10:25 | — |
-| 12 | Margit at a wine-tavern table ashore, clock at 10:25, Dürnstein's tower through the window | — |
+| 11 | The bow-tied doctor at a seasick woman's bunk, clock at 10:25 | "10:25: Dr Fehr is tending a seasick passenger." |
+| 12 | Margit at a wine-tavern table ashore, clock at 10:25, Dürnstein's tower through the window | "10:25: Margit is still ashore, over a glass of wine." |
 | 13 | A wet scrap of the manuscript on the anchor chain, its green ink running | "Strauss's ink would be brown with age." |
-| 14 | A passenger's photo stamped 10:25 PM: Clara playing on the sun deck, an empty front-row chair with a mustard scarf over it | — |
+| 14 | A passenger's photo stamped 10:25 PM: Clara playing on the sun deck, an empty front-row chair with a mustard scarf over it | "A passenger's snapshot of the concert." |
 | 15 | Budapest's parliament at night, a police launch waiting | "Who killed Oskar Brandt?" |
