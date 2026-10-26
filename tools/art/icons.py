@@ -171,9 +171,33 @@ def passport():
                '<path d="M22.5 33 H31.5" stroke-width="3.5"/>')
 
 
+def plane():
+    # The trip's ticket and the Next stop button (UI, 2026-10-26): a plump airliner seen from
+    # above, flying up and to the right. One filled shape; the stroke rounds its corners.
+    body = ("M24 4.5 C26.4 4.5 27.4 7.2 27.4 10.2 V18.6 L41.5 27 V31.4 L27.4 26.8 V35.2 L32 38.8 V42 "
+            "L24 39.8 L16 42 V38.8 L20.6 35.2 V26.8 L6.5 31.4 V27 L20.6 18.6 V10.2 C20.6 7.2 21.6 4.5 24 4.5 Z")
+    return svg(f'<path d="{body}" fill="{SLATE}" stroke-width="2.5" transform="translate(24 25) rotate(45) scale(0.92) translate(-24 -23.5)"/>')
+
+
+def rotate():
+    # "Turn your phone upright" (UI, 2026-10-26): an upright phone, and an arrow curling up
+    # its left side towards it.
+    cx, cy, r = 26.5, 24, 18
+    a0, a1 = 130, 220
+    s = pt(cx, cy, r, a0)
+    e = pt(cx, cy, r, a1)
+    t = (-math.sin(math.radians(a1)), math.cos(math.radians(a1)))
+    tip = pt(cx, cy, r, a1 + 17)
+    return svg('<rect x="23.5" y="7.5" width="16" height="33" rx="4.5" stroke-width="4.5"/>'
+               '<path d="M29 35 H34" stroke-width="3"/>'
+               f'<path d="M{f(s[0])} {f(s[1])} A{r} {r} 0 0 1 {f(e[0])} {f(e[1])}" stroke-width="4.5"/>'
+               + arrowhead(tip, t, 7, 6))
+
+
 ICONS = {"gear": gear, "back": back, "undo": undo, "hint": hint, "shuffle": shuffle, "restart": restart, "play": play,
          "next": next_, "home": home, "chevron": chevron, "photos": photos,
-         "route": route, "lock": lock, "check": check, "daily": daily, "passport": passport}
+         "route": route, "lock": lock, "check": check, "daily": daily, "passport": passport,
+         "plane": plane, "rotate": rotate}
 
 
 def main():
