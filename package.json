@@ -16,7 +16,7 @@
     "out": "dist"
   },
   "dependencies": {
-    "@indiegems/gem-web-sdk": "15.3.0"
+    "@indiegems/gem-web-sdk": "15.3.2"
   },
   "devDependencies": {
     "typescript": "^5.7.3",
