@@ -14,9 +14,9 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 
 ## The hourly maths (the standard: about 500 an hour of ordinary play)
 
-- Campaign: 30 boards, 905 Coins in all (805 without the onboarding prize).
-  The design puts a relaxed board at 2 to 4 minutes. At 3 minutes a board, 28 a board
-  is about 555 Coins an hour; at 2 minutes 833, at 4 minutes 416.
+- Campaign: 60 boards, 1970 Coins in all (1870 without the onboarding prize).
+  The design puts a relaxed board at 2 to 4 minutes. At 3 minutes a board, 32 a board
+  is about 634 Coins an hour; at 2 minutes 951, at 4 minutes 475.
 - Challenge route: 20 boards, 540 Coins in all, 27 a board on average.
   At 4 minutes a board that is about 405 an hour; at 5 minutes 324.
 - Daily: 50 once a day, on top.
@@ -58,6 +58,36 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 | c28 | campaign 28 | 29 | 30 |
 | c29 | campaign 29 | 39 | 40 |
 | c30 | campaign 30 | 46 | 40 |
+| c31 | campaign 31 | 22 | 25 |
+| c32 | campaign 32 | 37 | 40 |
+| c33 | campaign 33 | 31 | 35 |
+| c34 | campaign 34 | 33 | 35 |
+| c35 | campaign 35 | 34 | 35 |
+| c36 | campaign 36 | 14 | 15 |
+| c37 | campaign 37 | 33 | 35 |
+| c38 | campaign 38 | 45 | 40 |
+| c39 | campaign 39 | 33 | 35 |
+| c40 | campaign 40 | 42 | 40 |
+| c41 | campaign 41 | 28 | 30 |
+| c42 | campaign 42 | 38 | 40 |
+| c43 | campaign 43 | 43 | 40 |
+| c44 | campaign 44 | 35 | 40 |
+| c45 | campaign 45 | 43 | 40 |
+| c46 | campaign 46 | 28 | 30 |
+| c47 | campaign 47 | 33 | 35 |
+| c48 | campaign 48 | 40 | 40 |
+| c49 | campaign 49 | 35 | 40 |
+| c50 | campaign 50 | 41 | 40 |
+| c51 | campaign 51 | 13 | 15 |
+| c52 | campaign 52 | 42 | 40 |
+| c53 | campaign 53 | 44 | 40 |
+| c54 | campaign 54 | 44 | 40 |
+| c55 | campaign 55 | 48 | 40 |
+| c56 | campaign 56 | 28 | 30 |
+| c57 | campaign 57 | 32 | 35 |
+| c58 | campaign 58 | 41 | 40 |
+| c59 | campaign 59 | 32 | 35 |
+| c60 | campaign 60 | 41 | 40 |
 | ch01 | challenge 1 | 19 | 20 |
 | ch02 | challenge 2 | 21 | 25 |
 | ch03 | challenge 3 | 19 | 20 |
