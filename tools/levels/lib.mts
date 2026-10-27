@@ -460,13 +460,13 @@ export function swapSets(spec, pictures, uses, near, max = 6) {
  * of the plan's row: the board's record for the boards file, or null (with
  * the tally of why not) when `tries` seeds find none.
  */
-export function dealBoard(row, pictures, { id, date, cols, rows, par, tries = 3000, extra, safeFirstMove = false }) {
+export function dealBoard(row, pictures, { id, date, cols, rows, par, tries = 3000, extra, safeFirstMove = false, from = 1 }) {
   // the deal is shuffled from the pictures in a fixed order, so it does not hang on how they were picked
   pictures = [...pictures].sort((a, b) => (a.id < b.id ? -1 : 1));
   const targets = { chain: row.chain, careless: row.careless, traps: row.traps, bigWait: row.bigWait, orderTraps: row.orderTraps };
   const spec = { id, cols, rows, pictures, targets, par, safeFirstMove };
   const tally = new Map();
-  const made = generate(spec, 1, tries, tally);
+  const made = generate(spec, from, tries, tally);
   if (!made) return { board: null, tally };
   const m = made.measures;
   const axes = {
@@ -537,6 +537,56 @@ export function makeBoard(plan, i, chosen, uses, opts) {
 }
 
 /**
+ * Re-deal board i, which has a destination (lead, 2026-10-27: hard boards and
+ * finales grown to 5x5): it KEEPS its library pictures and its destination,
+ * whose window joins the deal as an ordinary picture (no drop: the window is
+ * dealt from the start, at the catalogue's crop), and takes the row's count
+ * with new pictures, only from catalogue id `row.addFrom` on (a batch nobody
+ * has met) and only those the no-repeat rule allows. A set that finds no deal
+ * on the row's targets gives way to other new pictures; the kept ones stay.
+ */
+function redealDestined(plan, i, b, chosen, uses, rule, opts, seed) {
+  const row = plan[i];
+  const dest = destinationOf(row.destination, row.crop);
+  const w = destPicture(dest.id);
+  const keep = b.pictures.filter((p) => p.id !== dest.id && !destById.has(p.id) && !flags.has(p.id)).map((p) => p.id);
+  if (!row.addFrom) throw new Error(`${b.id}: re-dealing a board with a destination needs the row's addFrom (the batch its new pictures come from)`);
+  // never a lookalike of the postcard (check.mts): Art gives a postcard its lookalike's family
+  const fam = destById.get(dest.id)?.family ?? dest.id;
+  const fresh = poolOn(chosen, i, rule, { newFrom: row.addFrom }).filter((p) => (p.family ?? p.id) !== fam);
+  const pool = [...keep.map((id) => byId.get(id)), ...fresh.filter((p) => !keep.includes(p.id))];
+  const n = row.count - 1;
+  const spec = { ...specOf(row), count: n, cards: [n * 4, n * 4], keep };
+  if (n - keep.length < 0) throw new Error(`${b.id}: keeps ${keep.length} pictures, more than its row's ${row.count} less the window`);
+  const base = rule ? spacedCost(chosen, i, rule.spacing) : uses;
+  const failed = new Map();
+  console.log(`${b.id}: re-dealing it at ${opts.cols}x${opts.rows}, keeping its ${keep.length} pictures and ${dest.id}, ${n - keep.length} new from ${row.addFrom} on`);
+  for (let attempt = 0; attempt < 12; attempt++) {
+    const cost = new Map(pool.map((p) => [p.id, (base.get(p.id) ?? 0) + (p.busy ?? 0) * 2 + (failed.get(p.id) ?? 0)]));
+    const set = pick(pool, spec, cost, new Set(), random((seed + attempt * 104729) >>> 0));
+    if (!set) throw new Error(`${b.id}: no new pictures fit its row with the ones it keeps (${fresh.length} new from ${row.addFrom} the no-repeat rule allows); the batch needs more`);
+    const pictures = [...set, w];
+    // the postcard opens mid-board on the proved line, as on every destined board (never its first
+    // or last clear): a deal that clears it first or last gives way to the next seed
+    let { board, tally } = dealBoard(row, pictures, opts);
+    for (let again = 0; board && again < 20; again++) {
+      const order = clearOrder(board), at = order.indexOf(board.pictures.findIndex((p) => p.id === dest.id));
+      if (at > 0 && at < order.length - 1) break;
+      console.log(`${b.id}: the postcard is the ${at ? "last" : "first"} clear on seed ${board.seed}'s line; the next seed`);
+      ({ board, tally } = dealBoard(row, pictures, { ...opts, from: board.seed + 1, tries: 3000 - board.seed }));
+    }
+    if (board) {
+      for (const q of pictures) uses.set(q.id, (uses.get(q.id) ?? 0) + 1);
+      chosen[i] = pictures;
+      return withDestination(board, dest);
+    }
+    for (const q of set) if (!keep.includes(q.id)) failed.set(q.id, (failed.get(q.id) ?? 0) + 3);
+    console.log(`${b.id}: pictures set ${attempt} found no deal (${tallyText(tally)})`);
+  }
+  throw new Error(`${b.id}: no deal meets its row with the pictures it keeps; loosen the row`);
+}
+
+/**
  * The boards of a route: keep the boards already made (`old`), re-deal those
  * that use a flagged picture (same id and place in the plan, as few pictures
  * changed as can be), and make the plan's rows past the end. `optsOf(i)` gives
@@ -600,11 +650,14 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
   const again = [...redeal].sort((a, b) => a - b);
   for (const i of again) {
     if (!old[i]) throw new Error(`board ${i + 1} is not in the file`);
-    if (plan[i].destination) throw new Error(`board ${i + 1} has a destination, and the makers cannot re-deal one yet`);
     for (const q of old[i].pictures) uses.set(q.id, uses.get(q.id) - 1);
     chosen[i] = null;
   }
   for (const i of again) {
+    if (plan[i].destination) {
+      levels[i] = redealDestined(plan, i, old[i], chosen, uses, rule, optsOf(i), seedOf(i));
+      continue;
+    }
     console.log(`${old[i].id}: re-dealing it from the plan`);
     // with spacing: unseen first, then the longest unseen (spacedCost), and nothing the rule bans;
     // without: not near it. Then calm before busy, and new before a picture the row limits (old)
@@ -631,10 +684,10 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
   return levels;
 }
 
-/** Write a boards file: one board a line, so a diff shows which boards changed. */
 /** The most moves a lesson board may take after its staged helper (make-lessons.mts; check.mts holds it). */
 export const LESSON_MOVES = 8;
 
+/** Write a boards file: one board a line, so a diff shows which boards changed. */
 export function writeBoards(file, note, levels, extra = {}) {
   mkdirSync(dirname(file), { recursive: true });
   const json = JSON.stringify({ v: 2, board: note, ...extra, levels })
