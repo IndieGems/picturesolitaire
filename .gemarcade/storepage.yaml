@@ -8,7 +8,7 @@ title: "Picture Passport"
 
 tagline: "Piece the world together"
 
-short_description: "Swap scattered cards until each picture is whole. Every board hides a real place, from the Grand Canyon to the world's largest ball of twine: finish it and it unfolds into a postcard. Fill your passport trip by trip, with no timers."
+short_description: "Swap scattered cards until each picture is whole. Every board hides a real place, from Iguazú Falls to a giant banana: finish it and it unfolds into a postcard. Travel the world trip by trip and fill your passport, with no timers."
 
 description: |
   ## Piece the pictures together
@@ -17,25 +17,26 @@ description: |
 
   ## A real place on every board
 
-  Each board hides one destination. Finish it and it unfolds into a postcard of the whole place, with its name: famous sights like Niagara Falls and Yosemite, hidden gems like Letchworth State Park, and roadside wonders like Lucy the Elephant.
+  Each board hides one destination. Finish it and it unfolds into a postcard of the whole place, with its name: famous sights like Mont-Saint-Michel and the Sydney Harbour Bridge, hidden gems like Hutt Lagoon's pink lake, and roadside wonders like Lucy the Elephant.
 
-  ## Fill your passport
+  ## Travel the world
 
-  Boards come in trips of 15, starting with Travel America, with Japan next. Every place you visit goes in your passport, and finishing a trip stamps it. How many have you been to for real?
+  Boards come in trips of 15: America, Japan, Italy, the American West, France, Canada, Argentina, Australia and more. Finish a trip and your passport gets its stamp. Boards grow as you go, from small tables to big 5×5 and 6×6 finales.
 
   ## Play at your own pace
 
-  - **No timers and no move limits.** Every board can be won without help, and undo, hint and shuffle are there when you want them.
+  - **No timers and no move limits.** Every board can be won without help, and Restart is always free.
   - **Hard and super hard boards are marked**, with easier boards in between.
-  - **A daily puzzle**: the same board for everyone each day, to compare with friends.
+  - **Helpers when you want them.** Start with a travel kit of Undos, Hints and Shuffles. Earn more on hard boards, at the end of each trip and from the daily puzzle, or buy them with Coins.
+  - **A daily puzzle**: the same board for everyone, every day.
 
 feature_bullets:
   - "Swap cards to piece together photographs and paintings"
   - "A real place on every board, unfolding into a postcard when you finish it"
-  - "Famous sights, hidden gems and roadside oddities"
-  - "Fill your passport trip by trip, from Travel America to Japan"
+  - "Famous sights, hidden gems and roadside oddities around the world"
+  - "Trips of 15 boards, each ending in a passport stamp"
   - "No timers and no move limits: every board can be won without help"
-  - "A daily puzzle, the same for everyone, to compare with friends"
+  - "A daily puzzle, the same for everyone"
 
 # Played on phones (portrait) and desktop browsers throughout. Tablets: QA played every screen
 # at 768x1024, 820x1180 and 1024x1366 (portrait, touch) with no faults; on the largest the board
@@ -89,7 +90,7 @@ media:
     logo: hero/logo.png
   share_card:
     src: hero/share_card.jpg
-    alt: "Picture Passport: a harbour painting being pieced together from its cards on a snowy, candlelit table"
+    alt: "Picture Passport: a postcard of a famous place being pieced together from its cards"
   portrait_borders:
     - name: winter-table
       src: borders/winter-table.jpg
