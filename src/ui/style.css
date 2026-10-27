@@ -1116,11 +1116,8 @@ html.less-motion .card .gift { animation: none; }
 .event-banner:focus-visible { outline: 3px solid var(--amber-hi); outline-offset: 3px; }
 .event-banner:active { transform: scale(0.98); }
 
-/* a small closed suitcase, drawn here until Art's picture comes: leather, a handle, a strap */
-.mini-case { position: relative; flex: none; display: inline-block; width: 30px; height: 24px; }
-.mini-case .handle { position: absolute; left: 30%; right: 30%; top: 0; height: 7px; border: 2.5px solid #7a4a26; border-bottom: 0; border-radius: 5px 5px 0 0; }
-.mini-case .body { position: absolute; left: 0; right: 0; top: 5px; bottom: 0; border-radius: 5px; background: linear-gradient(180deg, #c98a4e, #a0612f); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.18); }
-.mini-case .strap { position: absolute; top: 5px; bottom: 0; left: 44%; width: 12%; background: #f0c27a; opacity: 0.9; }
+/* a closed suitcase, Art's (the small one; the shelf's is the bigger file) */
+.mini-case { flex: none; display: inline-block; width: 32px; height: 24px; object-fit: contain; }
 .mini-case.bump { animation: case-bump 0.45s ease-out; }
 @keyframes case-bump { 40% { transform: scale(1.25) rotate(-6deg); } }
 html.less-motion .mini-case.bump { animation: none; }
@@ -1132,41 +1129,42 @@ html.less-motion .mini-case.bump { animation: none; }
 .case-status b { color: var(--ink); font-weight: 600; }
 .case-empty { margin: 30px 0; text-align: center; color: #e8eef6; font: 500 16px/1.3 var(--round); }
 
-/* the open suitcase: leather round a lining, the 10 slots in it (Art's picture replaces the CSS) */
+/* the open suitcase: Art's, as a 9-slice (its 1080 px picture cut at 200 / 100 / 165 / 100), so the plain
+   teal floor stretches to the slots while the lid, the corners and the handle keep their shape; the
+   border widths are the cuts scaled to the suitcase's width (a container query) */
+.case-wrap { container-type: inline-size; }
 .case {
-  position: relative; padding: 26px 10px 12px; border-radius: 20px;
-  background: linear-gradient(180deg, #b9773f, #8f5427); box-shadow: inset 0 0 0 3px rgba(60, 30, 10, 0.25), 0 8px 18px rgba(6, 12, 24, 0.35);
+  border-style: solid; border-color: transparent;
+  border-width: calc(100cqw * 200 / 1080) calc(100cqw * 100 / 1080) calc(100cqw * 165 / 1080);
+  border-image: var(--case-art) 200 100 165 100 fill / calc(100cqw * 200 / 1080) calc(100cqw * 100 / 1080) calc(100cqw * 165 / 1080) stretch;
+  filter: drop-shadow(0 8px 14px rgba(6, 12, 24, 0.35));
 }
-.case .case-handle { position: absolute; left: 38%; right: 38%; top: -10px; height: 16px; border: 4px solid #6e3f1f; border-bottom: 0; border-radius: 10px 10px 0 0; }
-.case .case-lid { position: absolute; left: 10px; right: 10px; top: 8px; height: 8px; border-radius: 4px; background: rgba(240, 194, 122, 0.55); }
-.case-slots {
-  display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; padding: 8px 6px; border-radius: 14px;
-  background: linear-gradient(180deg, #f3ead9, #e6d7bd);
-}
+.case-slots { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px 2px; padding: 2px 0 4px; margin: 0 -4px; }
 .case-slots .slot {
   position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; min-height: 44px;
-  padding: 3px 1px 4px; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; text-align: center;
+  padding: 3px 0 4px; border: 0; border-radius: 12px; background: transparent; color: #f2f8f8; font: inherit; text-align: center;
 }
 .case-slots button.slot { cursor: pointer; touch-action: manipulation; }
 .case-slots button.slot:focus-visible { outline: 3px solid var(--amber-lo); outline-offset: 1px; }
-.case-slots .slot.picked { background: rgba(246, 194, 122, 0.45); box-shadow: inset 0 0 0 2.5px var(--amber-lo); }
+.case-slots .slot.picked { background: rgba(246, 194, 122, 0.3); box-shadow: inset 0 0 0 2.5px var(--amber-hi); }
 .case-slots .item-pic { display: grid; place-items: center; width: 100%; aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: rgba(255, 255, 255, 0.6); }
 .case-slots .item-pic img { width: 100%; height: 100%; object-fit: cover; }
 /* missing: the item's outline, faint (Art's cut-out darkened; the stand-in a dashed box) */
-.case-slots .item-pic.missing { background: rgba(120, 100, 70, 0.08); box-shadow: inset 0 0 0 2px rgba(120, 100, 70, 0.3); }
-.case-slots .item-pic.missing img { filter: brightness(0); opacity: 0.22; }
+.case-slots .item-pic.missing { background: rgba(255, 255, 255, 0.06); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.28); }
+.case-slots .item-pic.missing img { filter: brightness(0); opacity: 0.35; }
 /* a cut-out (the object alone): on the lining as it is, never cropped */
 .case-slots .item-pic.cutout { background: transparent; }
 .case-slots .item-pic.cutout img { object-fit: contain; }
 .case-slots .item-pic.cutout.missing { box-shadow: none; }
 .item-pic.stand-in { background: hsl(var(--hue, 30) 55% 62%); color: #fff; font: 700 22px/1 var(--round); text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25); }
-.item-pic.stand-in.missing { background: transparent; color: rgba(120, 100, 70, 0.45); text-shadow: none; outline: 2px dashed rgba(120, 100, 70, 0.35); outline-offset: -5px; }
-.case-slots .slot-name { font: 600 12px/1.1 var(--round); overflow-wrap: anywhere; hyphens: auto; }
-.case-slots .slot.missing .slot-name { color: #7d6d55; font-weight: 500; }
+.item-pic.stand-in.missing { background: transparent; color: rgba(255, 255, 255, 0.45); text-shadow: none; outline: 2px dashed rgba(255, 255, 255, 0.35); outline-offset: -5px; }
+/* a long word breaks only where the language hyphenates it ("Ear-muffs"), never mid-letter */
+.case-slots .slot-name { max-width: 100%; font: 600 12px/1.1 var(--round); overflow-wrap: normal; -webkit-hyphens: auto; hyphens: auto; text-shadow: 0 1px 2px rgba(0, 30, 35, 0.6); }
+.case-slots .slot.missing .slot-name { color: rgba(242, 248, 248, 0.72); font-weight: 500; }
 .case-slots .slot-count {
   position: absolute; top: -4px; right: -3px; min-width: 24px; height: 22px; padding: 0 5px; border-radius: 11px;
   display: grid; place-items: center; font: 700 13px/1 var(--round); color: #fff;
-  background: linear-gradient(180deg, var(--amber-hi), var(--amber-lo)); box-shadow: 0 0 0 2px #f6efe2;
+  background: linear-gradient(180deg, var(--amber-hi), var(--amber-lo)); box-shadow: 0 0 0 2px #4d7c81;
 }
 .case-slots .slot.arrived .item-pic { animation: badge-pop 0.5s ease-out; }
 html.less-motion .case-slots .slot.arrived .item-pic { animation: none; }
@@ -1199,7 +1197,7 @@ html.less-motion .case-slots .slot.arrived .item-pic { animation: none; }
 .case-shelf h2 { margin: 6px 0 8px; text-align: center; font: 600 18px/1.2 var(--round); color: #eef3f9; }
 .case-shelf .shelf-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .btn.shelf-case { flex-direction: column; gap: 3px; min-height: 104px; padding: 10px 6px; border-radius: 18px; text-align: center; }
-.shelf-case .mini-case { width: 40px; height: 32px; margin-bottom: 2px; }
+.shelf-case .mini-case { width: 50px; height: 37px; margin-bottom: 2px; }
 .shelf-case b { font: 600 15px/1.1 var(--round); }
 .shelf-case span { font: 500 12.5px/1.15 var(--round); color: var(--ink-soft); overflow-wrap: anywhere; }
 .shelf-case small { font: 600 12px/1.1 var(--round); color: var(--ink-soft); }
@@ -1216,7 +1214,7 @@ html.less-motion .case-slots .slot.arrived .item-pic { animation: none; }
 
 /* the daily card: the item packed, its suitcase in the line */
 .card .daily-line.packed { display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; color: var(--ink); }
-.card .daily-line.packed .mini-case { width: 34px; height: 28px; }
+.card .daily-line.packed .mini-case { width: 40px; height: 30px; }
 .item-flight {
   position: fixed; z-index: 60; width: 74px; height: 74px; object-fit: cover; border-radius: 12px; pointer-events: none;
   box-shadow: 0 0 0 3px #fff, 0 8px 16px rgba(6, 12, 24, 0.4);

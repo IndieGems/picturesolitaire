@@ -55,11 +55,14 @@ const say = () => {
 };
 const found = import.meta.glob<Net>("../net/suitcase.ts");
 for (const load of Object.values(found))
-  void load().then((m) => {
-    net = m;
-    m.suitcase.onChange(say);
-    say();
-  });
+  void load().then(
+    (m) => {
+      net = m;
+      m.suitcase.onChange(say);
+      say();
+    },
+    (err) => console.warn("[suitcase] the platform's module did not load:", err),
+  );
 
 // ---------------------------------------------------------------- the dev stand-in
 type Pretend = { now: Suitcase | null; past: Suitcase[] };
@@ -91,7 +94,7 @@ export function standIn(): Pretend {
   const counts: Record<string, number> = {};
   [1, 2, 1, 3, 0, 1, 0, 1, 2, 0].forEach((n, i) => n && (counts[items[i]!.id] = n));
   return {
-    now: month("2026-11", "Ski Trip", items, counts, 12, "table-autumn-study"),
+    now: month("2026-11", "Ski Trip", items, counts, 12, "table-ski-lodge"),
     past: [
       month("2026-10", "Autumn Road Trip", names("Road map, Sunglasses, Camera, Snacks, Cooler, Playlist, Blanket, Flashlight, Pumpkin, Postcards"), Object.fromEntries(names("Road map, Sunglasses, Camera, Snacks, Cooler, Playlist, Blanket, Flashlight, Pumpkin, Postcards").map((i) => [i.id, 1])), 0, "table-autumn-study"),
       month("2026-09", "Beach Week", names("Sunhat, Towel, Flip-flops, Sunscreen, Bucket, Snorkel, Book, Shell, Kite, Lemonade"), Object.fromEntries(names("Sunhat, Towel, Flip-flops, Sunscreen, Bucket, Snorkel, Book").map((i) => [i.id, 1])), 0, "table-autumn-study"),

@@ -80,11 +80,18 @@ function itemPic(it: SuitItem, missing: boolean): HTMLElement {
   return box;
 }
 
-/** A small closed suitcase, drawn in CSS (Art's picture replaces it when it comes). */
-export function miniCase(cls = ""): HTMLElement {
-  const c = el("span", `mini-case${cls ? ` ${cls}` : ""}`);
+/** Art's suitcases (public/art, transparent): open from above (its teal lining plain across the middle), closed, and small. */
+const ART = {
+  open: new URL(`${import.meta.env.BASE_URL}art/suitcase-open.webp`, location.href).href,
+  closed: `${import.meta.env.BASE_URL}art/suitcase-closed.webp`,
+  small: `${import.meta.env.BASE_URL}art/suitcase-closed-small.webp`,
+};
+
+/** A closed suitcase, Art's: the small one (the banner, the win card), or the shelf's. */
+export function miniCase(cls = "", big = false): HTMLElement {
+  const c = el("img", `mini-case${cls ? ` ${cls}` : ""}`);
+  Object.assign(c, { src: big ? ART.closed : ART.small, alt: "", draggable: false, decoding: "async" });
   c.setAttribute("aria-hidden", "true");
-  c.append(el("i", "handle"), el("i", "body"), el("i", "strap"));
   return c;
 }
 
@@ -248,7 +255,7 @@ export function createSuitcase(nav: Nav) {
       const b = el("button", `btn shelf-case${s.complete ? " full" : ""}`);
       b.type = "button";
       b.dataset.press = "case.shelf";
-      b.append(miniCase(), el("b", "", monthName(s.month)), el("span", "", s.theme), el("small", "", t("case.packedOf", { count: held(s), all: s.items.length })));
+      b.append(miniCase("", true), el("b", "", monthName(s.month)), el("span", "", s.theme), el("small", "", t("case.packedOf", { count: held(s), all: s.items.length })));
       b.setAttribute("aria-label", `${eventTitle(s)}: ${t("case.packedOf", { count: held(s), all: s.items.length })}`);
       b.addEventListener("click", () => open(s.month));
       row.append(b);
@@ -275,9 +282,13 @@ export function createSuitcase(nav: Nav) {
       el("span", "", open ? t("case.daysLeft", { count: s.daysLeft }) : t("case.closed")),
     );
     const parts: (HTMLElement | null)[] = [status];
+    // Art's open suitcase round the slots, its plain lining stretched to fit them (a 9-slice, style.css)
     const suitcase = el("div", "case");
-    suitcase.append(el("i", "case-handle"), el("i", "case-lid"), slots(s, open && !s.complete));
-    parts.push(suitcase);
+    suitcase.style.setProperty("--case-art", `url("${ART.open}")`);
+    suitcase.append(slots(s, open && !s.complete));
+    const wrap = el("div", "case-wrap");
+    wrap.append(suitcase);
+    parts.push(wrap);
     if (open && !s.complete) parts.push(swapPanel(s));
     parts.push(prize(s));
     if (!viewing) {
