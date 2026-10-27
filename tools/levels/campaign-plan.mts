@@ -274,39 +274,39 @@ export const PLAN = [
   // half of each board's everyday pictures come back from boards 1-60 (BACK, set below), the rest are new
   // (Art's batch after LAST_BEFORE_T9, and the spares no board has shown). Each row deals one new picture
   // more than it shows: the drop, whose place the postcard takes once Art's postcards are in
-  /* 121 */ { role: "relief", destination: "dest-table-mountain", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
-  /* 122 */ { role: "build", destination: "dest-bo-kaap", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
-  /* 123 */ { role: "build", destination: "dest-oudtshoorn-ostriches", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 124 */ { role: "build", destination: "dest-cape-winelands", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 125 */ { role: "hard",  destination: "dest-cape-point", board: [4, 5], ...sq(12), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
-  /* 126 */ { role: "pace",  destination: "dest-amphitheatre", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
-  /* 127 */ { role: "build", destination: "dest-wolfberg-arch", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 128 */ { role: "build", destination: "dest-kalahari-meerkats", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 129 */ { role: "build", destination: "dest-augrabies", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 130 */ { role: "hard",  destination: "dest-namaqualand", board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
-  /* 131 */ { role: "relief", destination: "dest-bourkes-luck", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
-  /* 132 */ { role: "build", destination: "dest-kruger-elephants", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 133 */ { role: "build", destination: "dest-sani-pass", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 134 */ { role: "build", destination: "dest-st-lucia-hippos", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 135 */ { role: "super", destination: "dest-three-rondavels", board: [5, 5], ...sq(14), careless: [0.08, 0.2], traps: [0, 4], chain: ANY },
+  /* 121 */ { role: "relief", destination: "dest-table-mountain", drop: "sundial", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 122 */ { role: "build", destination: "dest-bo-kaap", drop: "oyster-farmer", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 123 */ { role: "build", destination: "dest-oudtshoorn-ostriches", drop: "caver", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 124 */ { role: "build", destination: "dest-cape-winelands", drop: "cockscomb", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 125 */ { role: "hard",  destination: "dest-cape-point", drop: "rowboat-lake", board: [4, 5], ...sq(12), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 126 */ { role: "pace",  destination: "dest-amphitheatre", drop: "orca", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
+  /* 127 */ { role: "build", destination: "dest-wolfberg-arch", drop: "lotus-pod", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 128 */ { role: "build", destination: "dest-kalahari-meerkats", drop: "alstroemeria", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 129 */ { role: "build", destination: "dest-augrabies", drop: "cotton-grass", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 130 */ { role: "hard",  destination: "dest-namaqualand", drop: "cannoli", board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 131 */ { role: "relief", destination: "dest-bourkes-luck", drop: "eclairs", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 132 */ { role: "build", destination: "dest-kruger-elephants", drop: "persimmons", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 133 */ { role: "build", destination: "dest-sani-pass", drop: "hot-rod", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 134 */ { role: "build", destination: "dest-st-lucia-hippos", drop: "porch-rocker", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 135 */ { role: "super", destination: "dest-three-rondavels", drop: "mooncakes", board: [5, 5], ...sq(14), careless: [0.08, 0.2], traps: [0, 4], chain: ANY },
   // ---- trip 10, the UK and Ireland (the creator, 2026-10-27; Art's places, docs/destinations-uk-ireland.md):
   // trip 8's shape and targets; big boards 140 at
   // 5x5 and the finale 150 at 6x6 (every other finale: 30, 60, 90, 120, 150); 145 is 4x5. Half new, as trip 9
-  /* 136 */ { role: "relief", destination: "dest-westminster", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
-  /* 137 */ { role: "build", destination: "dest-royal-crescent", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
-  /* 138 */ { role: "build", destination: "dest-stonehenge", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 139 */ { role: "build", destination: "dest-durdle-door", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 140 */ { role: "hard",  destination: "dest-pontcysyllte", board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
-  /* 141 */ { role: "pace",  destination: "dest-dark-hedges", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
-  /* 142 */ { role: "build", destination: "dest-giants-causeway", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 143 */ { role: "build", destination: "dest-connemara-sheep", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 144 */ { role: "build", destination: "dest-cliffs-of-moher", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 145 */ { role: "hard",  destination: "dest-dublin-doors", board: [4, 5], ...sq(12), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
-  /* 146 */ { role: "relief", destination: "dest-highland-cow", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
-  /* 147 */ { role: "build", destination: "dest-fairy-pools", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 148 */ { role: "build", destination: "dest-keem-bay", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 149 */ { role: "build", destination: "dest-loch-ness", board: [4, 5], ...sq(11), careless: [0.4, 0.5], chain: ANY },
-  /* 150 */ { role: "super", destination: "dest-edinburgh-castle", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY },
+  /* 136 */ { role: "relief", destination: "dest-westminster", drop: "atoll", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 137 */ { role: "build", destination: "dest-royal-crescent", drop: "bushbaby", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 138 */ { role: "build", destination: "dest-stonehenge", drop: "tow-truck", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 139 */ { role: "build", destination: "dest-durdle-door", drop: "icicles", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 140 */ { role: "hard",  destination: "dest-pontcysyllte", drop: "gecko", board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 141 */ { role: "pace",  destination: "dest-dark-hedges", drop: "springbok", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
+  /* 142 */ { role: "build", destination: "dest-giants-causeway", drop: "watchmaker", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 143 */ { role: "build", destination: "dest-connemara-sheep", drop: "rhubarb", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 144 */ { role: "build", destination: "dest-cliffs-of-moher", drop: "shortbread", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 145 */ { role: "hard",  destination: "dest-dublin-doors", drop: "beach-ball", board: [4, 5], ...sq(12), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 146 */ { role: "relief", destination: "dest-highland-cow", drop: "seagrass", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 147 */ { role: "build", destination: "dest-fairy-pools", drop: "glider", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 148 */ { role: "build", destination: "dest-keem-bay", drop: "coleus", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 149 */ { role: "build", destination: "dest-loch-ness", drop: "red-deer", board: [4, 5], ...sq(11), careless: [0.4, 0.5], chain: ANY },
+  /* 150 */ { role: "super", destination: "dest-edinburgh-castle", drop: "tree-tent", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY },
 ];
 
 /**
@@ -330,6 +330,9 @@ export const TRIPS = [
   // the creator's choices (2026-10-27): Argentina, and Australia (New Zealand in reserve)
   { id: "t7", name: "Argentina", from: 91, to: 105 },
   { id: "t8", name: "Australia", from: 106, to: 120 },
+  // the creator's choices (2026-10-27): South Africa, and the UK and Ireland (New Zealand in reserve)
+  { id: "t9", name: "South Africa", from: 121, to: 135 },
+  { id: "t10", name: "UK & Ireland", from: 136, to: 150 },
 ];
 
 /** Roles that may trap from the first move; every other board starts safe (check.mts). */

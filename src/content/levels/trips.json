@@ -6,5 +6,7 @@
 {"id":"t5","name":"France","from":61,"to":75},
 {"id":"t6","name":"Canada","from":76,"to":90},
 {"id":"t7","name":"Argentina","from":91,"to":105},
-{"id":"t8","name":"Australia","from":106,"to":120}
+{"id":"t8","name":"Australia","from":106,"to":120},
+{"id":"t9","name":"South Africa","from":121,"to":135},
+{"id":"t10","name":"UK & Ireland","from":136,"to":150}
 ]}

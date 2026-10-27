@@ -438,6 +438,23 @@ A trial on stand-in pictures picked every board cleanly with 100 new
 squares, and also with 80. At 100, 33 of the new pictures appear twice,
 each time 15 boards or more apart; on trips 7 and 8 it was 83.
 
+**Dealt (2026-10-27).** All 30 boards were dealt on the first try with Art's
+pictures and postcards. Each postcard took the place of a new picture
+finished mid-board, so every board keeps its half of pictures back: 151 back,
+162 new. No picture comes back within 15 boards.
+
+- **Unmarked boards:** a reader wins 85–100%; builds are 45–65% careless.
+- **Marked boards** (careless / reader):
+
+| Board | Careless | Reader |
+|---|---|---|
+| 125, hard, 4×5 | 32% | 38% |
+| 130, hard, 5×5 | 22% | 31% |
+| 135, super, 5×5 | 16% | 26% |
+| 140, hard, 5×5 | 26% | 57% |
+| 145, hard, 4×5 | 26% | 43% |
+| 150, super, 6×6 | 15% | 27% |
+
 **The places, by slot.** Art fact-checked them and set them on the boards
 (`docs/destinations-south-africa.md`, `docs/destinations-uk-ireland.md`, with
 the rights rules and what was left out). Each trip has 8 famous places, 4
