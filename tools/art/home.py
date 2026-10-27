@@ -2,6 +2,7 @@
 
     python tools/art/home.py desk <raw.png>        public/art/home-desk.webp
     python tools/art/home.py booklet <raw.png>     public/art/passport-booklet.webp
+    python tools/art/home.py satchel <raw.png>     public/art/shop-satchel.webp
 
 The raws are from the generator (prompts in tools/art/prompts.txt); each is kept as a
 master in tools/art/masters/chrome/ and shipped small.
@@ -66,5 +67,22 @@ def booklet(raw):
     print(out.relative_to(ROOT), f"{W}x{H}", f"{out.stat().st_size // 1024} KB")
 
 
+def satchel(raw):
+    """Home's Shop tile (UI, 2026-10-27): a leather satchel with the brass magnifier peeking out,
+    beside the booklet in the dock. 108 px tall (a 36 px box at 3x), at most 120 wide, no shadow."""
+    im = Image.open(raw).convert("RGBA")
+    im = im.crop(im.getchannel("A").point(lambda v: 255 if v > 8 else 0).getbbox())
+    im.putalpha(im.getchannel("A").point(lambda v: min(255, round(v * 255 / 250))))
+    s = min(108 / im.height, 120 / im.width)
+    small = im.resize((round(im.width * s), round(im.height * s)), Image.LANCZOS)
+    small = Image.composite(small, Image.new("RGBA", small.size, (0, 0, 0, 0)),
+                            small.getchannel("A").point(lambda v: 255 if v else 0))
+    MASTERS.mkdir(parents=True, exist_ok=True)
+    im.save(MASTERS / "shop-satchel.webp", "WEBP", quality=92, method=6)
+    out = OUT / "shop-satchel.webp"
+    small.save(out, "WEBP", quality=84, alpha_quality=90, method=6)
+    print(out.relative_to(ROOT), f"{small.width}x{small.height}", f"{out.stat().st_size // 1024} KB")
+
+
 if __name__ == "__main__":
-    {"desk": desk, "booklet": booklet}[sys.argv[1]](sys.argv[2])
+    {"desk": desk, "booklet": booklet, "satchel": satchel}[sys.argv[1]](sys.argv[2])
