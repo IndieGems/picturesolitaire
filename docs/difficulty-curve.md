@@ -372,6 +372,23 @@ The Big Banana and the Harbour Bridge stay. Art found no image licence on
 either, and Australian law lets anyone picture a building. The bridge
 postcard shows no climbers and no Opera House.
 
+## Watching real players (from config v28)
+
+Each campaign board sends `board_started`, `board_won`, `board_lost` (it
+ended stuck) and `board_quit`. Each carries the try number, the helpers
+spent and the pictures left, and won and lost can be split by `mercy` (the
+free-Hint help).
+
+- **Tries per win:**
+  `gemctl analytics event board_started --by board` divided by
+  `gemctl analytics event board_won --by board`.
+- **Quits:** `gemctl analytics event board_quit --by board`.
+- **Real players:** add `--channel release`. Dev is mostly the team, and a
+  test account counts only when its Count in Analytics is on.
+- **When to act:** past about 2 tries on an unmarked board, 3 on a hard one
+  or 5 on a super hard one, or where players stop. Re-deal it a little
+  easier (below). Harder than the genre is fine (the creator, 2026-10-27).
+
 ## Re-dealing a board from the Difficulty editor (the creator, 2026-10-27)
 
 This comes from Match3Mahjong's Level lab. In the Difficulty editor, a
