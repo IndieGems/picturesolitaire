@@ -39,16 +39,19 @@
 //     (AGENTS.md): every picture finishable from the opening can be finished
 //     first without dooming the board, and no single move from the opening
 //     leaves it stuck.
+//   - a lesson board (lessons.json; make-lessons.mts), which opens stuck on
+//     purpose: its own proof instead of "not a dead end" and "the solver can
+//     win the deal" (checkLesson), and its line replays after its shuffle.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { cardsOf, isDeadEnd, isWon, joinCount, replay, start } from "../../src/game/rules.ts";
+import { arrange, cardsOf, isDeadEnd, isWon, joinCount, replay, start } from "../../src/game/rules.ts";
 import { Game } from "../../src/game/solver/index.ts";
 import { along, careless, chain, orderTraps, traps, unavoidable, wait } from "../../src/game/solver/metrics.ts";
 import { BIG, dealFor, deadFirstMoves, doomingFirstClears } from "../../src/game/levels/generate.ts";
-import { byId, destById, flags } from "./lib.mts";
+import { byId, destById, flags, LESSON_MOVES } from "./lib.mts";
 import { DISTINCT, MARKS, MAY_TRAP, TRIPS } from "./campaign-plan.mts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
@@ -57,6 +60,36 @@ const catalogue = byId;
 const files = process.argv.slice(2);
 const dir = join(root, "src/content/levels");
 if (!files.length) for (const f of readdirSync(dir).sort()) if (f.endsWith(".json") && f !== "trips.json") files.push(join(dir, f));
+
+// the campaign's first trip, for the lessons (a lesson's pictures are none of its boards')
+const campaignFile = join(dir, "campaign.json");
+const FIRST_TRIP = existsSync(campaignFile) ? JSON.parse(readFileSync(campaignFile, "utf8")).levels.slice(0, 15) : [];
+/**
+ * A lesson board's own proof (lead, 2026-10-27; make-lessons.mts). The Shuffle
+ * lesson: the opening is a dead end (nothing can ever be finished) that the
+ * solver calls lost, exactly; the stored shuffle is one the rules play on the
+ * opening (arrange: only loose cards, at most MAX_SWAPS stack places); the
+ * board after it is winnable, and the stored line (moves after the shuffle) is
+ * a handful of moves; no picture of the first trip's boards, and no landmark.
+ */
+function checkLesson(l, deal, s, fail) {
+  if (l.lesson !== "shuffle") return fail(`no proof for lesson ${l.lesson}`);
+  if (!isDeadEnd(s)) fail("the Shuffle lesson must open stuck: a dead end");
+  const g = new Game(s);
+  if (g.wins(g.root)) fail("the solver can win the opening: the Shuffle lesson must open stuck");
+  const after = l.shuffle && arrange(s, l.shuffle);
+  if (!after) fail("its shuffle is no Shuffle the rules play on the opening (rules.ts arrange)");
+  else {
+    const g2 = new Game(after.state);
+    if (!g2.wins(g2.root)) fail("the solver cannot win the board after its shuffle");
+  }
+  if (!(l.line.length >= 1 && l.line.length <= LESSON_MOVES)) fail(`${l.line.length} moves after the shuffle, the lesson takes 1-${LESSON_MOVES}`);
+  for (const p of l.pictures) {
+    const k = FIRST_TRIP.findIndex((b) => b.pictures.some((q) => q.id === p.id));
+    if (k >= 0) fail(`${p.id} is on campaign board ${k + 1} (a lesson takes none from boards 1-15)`);
+    if (catalogue.get(p.id)?.landmark) fail(`${p.id} is a landmark`);
+  }
+}
 
 let boards = 0;
 let failed = 0;
@@ -125,7 +158,10 @@ for (const file of files) {
       if (JSON.stringify(again.stacks) !== JSON.stringify(l.stacks)) fail("the generator does not deal these stacks from this id and seed");
       const s = start(deal).state;
       if (s.cleared.length || joinCount(s) > 0) fail("something is joined or finished at the opening");
-      if (isDeadEnd(s)) fail("the opening is a dead end");
+      // a lesson board (lessons.json) opens stuck on purpose and has a lesson's own proof (checkLesson)
+      if (file.endsWith("lessons.json") !== (l.lesson !== undefined)) fail(l.lesson === undefined ? "a board in lessons.json with no lesson" : `a lesson board (${l.lesson}) outside lessons.json`);
+      if (l.lesson !== undefined) checkLesson(l, deal, s, fail);
+      else if (isDeadEnd(s)) fail("the opening is a dead end");
       // a landmark (Art's "landmark": true) waits for its trip's destination: none on a campaign board (lead, 2026-10-25)
       if (file.endsWith("campaign.json")) for (const p of l.pictures) if (catalogue.get(p.id)?.landmark) fail(`${p.id} is a landmark, saved for a future trip's destination (make-campaign.mts swaps it out in place)`);
       // pictures rarely repeat: none on two of campaign boards 1-DISTINCT
@@ -145,13 +181,14 @@ for (const file of files) {
       const line = l.line.map(([from, to]) => ({ from, to }));
       let won = false;
       try {
-        won = isWon(replay(deal, line));
+        // a Shuffle lesson's line is the moves after its stored shuffle
+        won = isWon(replay(deal, l.lesson === "shuffle" && l.shuffle ? [l.shuffle, ...line] : line));
       } catch (err) {
         fail(`the line breaks: ${err.message}`);
       }
       if (!won) fail("the line does not win");
       const game = new Game(s);
-      if (!game.wins(game.root)) fail("the solver says the deal cannot be won");
+      if (l.lesson === undefined && !game.wins(game.root)) fail("the solver says the deal cannot be won");
       if (l.axes && won) {
         const a = l.axes;
         const ch = chain(game);

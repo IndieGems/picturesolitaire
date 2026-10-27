@@ -632,6 +632,9 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
 }
 
 /** Write a boards file: one board a line, so a diff shows which boards changed. */
+/** The most moves a lesson board may take after its staged helper (make-lessons.mts; check.mts holds it). */
+export const LESSON_MOVES = 8;
+
 export function writeBoards(file, note, levels, extra = {}) {
   mkdirSync(dirname(file), { recursive: true });
   const json = JSON.stringify({ v: 2, board: note, ...extra, levels })
