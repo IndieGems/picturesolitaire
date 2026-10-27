@@ -1859,11 +1859,85 @@ items:
     transfer_policy: none
     client_writable: false
     icon: tools/art/items/table-autumn-study.png
+  - id: 0509bc8d-f22b-5bb5-a24a-c9e93c642a75
+    slug: table-ski-lodge
+    display_name: "Ski Lodge table"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 1
+    transfer_policy: none
+    client_writable: false
+    icon: tools/art/items/table-ski-lodge.png
+  - id: c6c2ed4a-1334-55ad-b2e2-0441c48a9f34
+    slug: table-winter-market
+    display_name: "Winter Market table"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 1
+    transfer_policy: none
+    client_writable: false
+    icon: tools/art/items/table-winter-market.png
+  - id: 8c90751b-e919-5d81-a24a-bec0d0cb84bf
+    slug: table-arctic-cabin
+    display_name: "Arctic Cabin table"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 1
+    transfer_policy: none
+    client_writable: false
+  - id: a872b829-18d1-5346-8dfe-5bd6e6edf540
+    slug: table-carnival
+    display_name: "Carnival table"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 1
+    transfer_policy: none
+    client_writable: false
+  - id: 55cf8fa9-c5b5-521d-b10f-a42cb9facfe9
+    slug: table-flower-market
+    display_name: "Flower Market table"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 1
+    transfer_policy: none
+    client_writable: false
+  - id: 4cf6826d-d0ac-560f-b642-9e621a52d88a
+    slug: table-blossom-picnic
+    display_name: "Blossom Picnic table"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 1
+    transfer_policy: none
+    client_writable: false
+  - id: af06c306-677c-5ba5-8244-d65d27b17aef
+    slug: table-roadside-diner
+    display_name: "Roadside Diner table"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 1
+    transfer_policy: none
+    client_writable: false
+  - id: 992429f8-a991-5ac2-b96a-bc11296e9635
+    slug: table-island-terrace
+    display_name: "Island Terrace table"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 1
+    transfer_policy: none
+    client_writable: false
 # The suitcase items (src/content/levels/suitcases.json): a copy held per day packed, spares
 # swapped by the checker; cosmetic, never traded, never written by the game.
   - id: 6bd4759e-2705-5a7e-a95c-201fa7c3b17d
     slug: item-2026-11-01
-    display_name: "Item 1"
+    display_name: "Ski goggles"
     item_type: item
     category: cosmetic
     fungible: true
@@ -1872,7 +1946,7 @@ items:
     client_writable: false
   - id: 100c37b3-b190-5ce8-8249-1e45f4104378
     slug: item-2026-11-02
-    display_name: "Item 2"
+    display_name: "Bobble hat"
     item_type: item
     category: cosmetic
     fungible: true
@@ -1881,7 +1955,7 @@ items:
     client_writable: false
   - id: cf5a6c3d-7932-5f18-babb-2665a1dfa0be
     slug: item-2026-11-03
-    display_name: "Item 3"
+    display_name: "Mittens"
     item_type: item
     category: cosmetic
     fungible: true
@@ -1890,7 +1964,7 @@ items:
     client_writable: false
   - id: e490543f-03f3-5671-9906-d60983de19fb
     slug: item-2026-11-04
-    display_name: "Item 4"
+    display_name: "Ski boots"
     item_type: item
     category: cosmetic
     fungible: true
@@ -1899,7 +1973,7 @@ items:
     client_writable: false
   - id: 1eca481d-0f3d-5ced-87f9-89e019563d5b
     slug: item-2026-11-05
-    display_name: "Item 5"
+    display_name: "Nordic jumper"
     item_type: item
     category: cosmetic
     fungible: true
@@ -1908,7 +1982,7 @@ items:
     client_writable: false
   - id: 21cd4f3a-86eb-5cb0-b3c6-40dd0088d4c7
     slug: item-2026-11-06
-    display_name: "Item 6"
+    display_name: "Striped scarf"
     item_type: item
     category: cosmetic
     fungible: true
@@ -1917,7 +1991,7 @@ items:
     client_writable: false
   - id: 1424513f-8ae7-574a-81e3-aa8d1a7d0052
     slug: item-2026-11-07
-    display_name: "Item 7"
+    display_name: "Earmuffs"
     item_type: item
     category: cosmetic
     fungible: true
@@ -1926,7 +2000,7 @@ items:
     client_writable: false
   - id: 1b8861c2-c0bb-5263-91b2-16271787e2a4
     slug: item-2026-11-08
-    display_name: "Item 8"
+    display_name: "Ice skates"
     item_type: item
     category: cosmetic
     fungible: true
@@ -1935,7 +2009,7 @@ items:
     client_writable: false
   - id: f68f49ee-7c9c-5b20-83f4-60d97f516ec7
     slug: item-2026-11-09
-    display_name: "Item 9"
+    display_name: "Fondue pot"
     item_type: item
     category: cosmetic
     fungible: true
@@ -1944,7 +2018,7 @@ items:
     client_writable: false
   - id: 3752d5ab-f851-59f6-a535-bdd77c34afcf
     slug: item-2026-11-10
-    display_name: "Item 10"
+    display_name: "Hot-water bottle"
     item_type: item
     category: cosmetic
     fungible: true
@@ -1953,7 +2027,7 @@ items:
     client_writable: false
   - id: daf632a6-269d-5d1b-ae16-ac94d12b9ae3
     slug: item-2026-12-01
-    display_name: "Item 1"
+    display_name: "Glass bauble"
     item_type: item
     category: cosmetic
     fungible: true
@@ -1962,7 +2036,7 @@ items:
     client_writable: false
   - id: c300ff72-f75c-530a-b788-55d0115d098a
     slug: item-2026-12-02
-    display_name: "Item 2"
+    display_name: "Wooden nutcracker"
     item_type: item
     category: cosmetic
     fungible: true
@@ -1971,7 +2045,7 @@ items:
     client_writable: false
   - id: 7ad338b7-ed9c-5fc2-9ef5-f7e63c39a0a6
     slug: item-2026-12-03
-    display_name: "Item 3"
+    display_name: "Roasted chestnuts"
     item_type: item
     category: cosmetic
     fungible: true
@@ -1980,7 +2054,7 @@ items:
     client_writable: false
   - id: b4279259-1f68-5d53-a8f5-ba18ea171a9c
     slug: item-2026-12-04
-    display_name: "Item 4"
+    display_name: "Hot cider"
     item_type: item
     category: cosmetic
     fungible: true
@@ -1989,7 +2063,7 @@ items:
     client_writable: false
   - id: aa44aa3f-e5d9-5677-ba20-007697c542a7
     slug: item-2026-12-05
-    display_name: "Item 5"
+    display_name: "Paper star lantern"
     item_type: item
     category: cosmetic
     fungible: true
@@ -1998,7 +2072,7 @@ items:
     client_writable: false
   - id: 1cdb755a-9af3-5740-b37b-d101c5ad29ad
     slug: item-2026-12-06
-    display_name: "Item 6"
+    display_name: "Carved reindeer"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2007,7 +2081,7 @@ items:
     client_writable: false
   - id: fa8341b8-2390-55ca-b6c7-0ec8167878e9
     slug: item-2026-12-07
-    display_name: "Item 7"
+    display_name: "Gift box"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2016,7 +2090,7 @@ items:
     client_writable: false
   - id: 4d7a3b61-1dbf-52b1-ba1a-324de2e0864d
     slug: item-2026-12-08
-    display_name: "Item 8"
+    display_name: "Candle arch"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2025,7 +2099,7 @@ items:
     client_writable: false
   - id: 8bace094-e781-5a1d-9256-cea358ed0776
     slug: item-2026-12-09
-    display_name: "Item 9"
+    display_name: "Knitted stocking"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2034,7 +2108,7 @@ items:
     client_writable: false
   - id: 4a6e2f8b-c14b-5e0e-8a97-57e6c507a0aa
     slug: item-2026-12-10
-    display_name: "Item 10"
+    display_name: "Pine wreath"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2043,7 +2117,7 @@ items:
     client_writable: false
   - id: 8ad1cda2-4a98-5eaf-a5d0-25ce88e3d515
     slug: item-2027-01-01
-    display_name: "Item 1"
+    display_name: "Headlamp"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2052,7 +2126,7 @@ items:
     client_writable: false
   - id: a2565933-5bb8-5334-a697-c4e5dd3ca22b
     slug: item-2027-01-02
-    display_name: "Item 2"
+    display_name: "Trapper hat"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2061,7 +2135,7 @@ items:
     client_writable: false
   - id: aea152c9-7c98-513a-8908-dbac18e39994
     slug: item-2027-01-03
-    display_name: "Item 3"
+    display_name: "Wool socks"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2070,7 +2144,7 @@ items:
     client_writable: false
   - id: 3821ec88-e321-5505-ab90-b76610db40a2
     slug: item-2027-01-04
-    display_name: "Item 4"
+    display_name: "Camera tripod"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2079,7 +2153,7 @@ items:
     client_writable: false
   - id: 66e3183f-d114-5e81-90ad-2b1bc82fa1f3
     slug: item-2027-01-05
-    display_name: "Item 5"
+    display_name: "Kuksa cup"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2088,7 +2162,7 @@ items:
     client_writable: false
   - id: a613159d-9da0-535c-ad52-d0c6a6b48685
     slug: item-2027-01-06
-    display_name: "Item 6"
+    display_name: "Cinnamon bun"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2097,7 +2171,7 @@ items:
     client_writable: false
   - id: 15e82255-abe7-52c9-a762-7c583fd0bb3c
     slug: item-2027-01-07
-    display_name: "Item 7"
+    display_name: "Kick-sled"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2106,7 +2180,7 @@ items:
     client_writable: false
   - id: 427949f9-33b1-5797-950d-8f64aa2c4809
     slug: item-2027-01-08
-    display_name: "Item 8"
+    display_name: "Felt slippers"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2115,7 +2189,7 @@ items:
     client_writable: false
   - id: a629c711-f135-5ee7-ac97-77a9fdd3c163
     slug: item-2027-01-09
-    display_name: "Item 9"
+    display_name: "Pocket telescope"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2124,7 +2198,7 @@ items:
     client_writable: false
   - id: f52428ba-76aa-50c3-9101-8e66c2406164
     slug: item-2027-01-10
-    display_name: "Item 10"
+    display_name: "Ice lantern"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2133,7 +2207,7 @@ items:
     client_writable: false
   - id: 21868f06-da24-5f44-bf84-965640abb6a3
     slug: item-2027-02-01
-    display_name: "Item 1"
+    display_name: "Venetian mask"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2142,7 +2216,7 @@ items:
     client_writable: false
   - id: 687b9267-65c2-5e32-b158-62388e5df8ea
     slug: item-2027-02-02
-    display_name: "Item 2"
+    display_name: "Feather fan"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2151,7 +2225,7 @@ items:
     client_writable: false
   - id: 0365605b-3ed8-571f-875f-0a3eebe374d3
     slug: item-2027-02-03
-    display_name: "Item 3"
+    display_name: "Tambourine"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2160,7 +2234,7 @@ items:
     client_writable: false
   - id: e64581f1-ab47-50a5-bc11-49b9353d691f
     slug: item-2027-02-04
-    display_name: "Item 4"
+    display_name: "Maracas"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2169,7 +2243,7 @@ items:
     client_writable: false
   - id: bc75db83-24d7-58f6-82ee-f4f0207562f6
     slug: item-2027-02-05
-    display_name: "Item 5"
+    display_name: "Jester hat"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2178,7 +2252,7 @@ items:
     client_writable: false
   - id: 08da6934-60d6-5282-acf0-95e71d1896c4
     slug: item-2027-02-06
-    display_name: "Item 6"
+    display_name: "Party popper"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2187,7 +2261,7 @@ items:
     client_writable: false
   - id: 44e5ac65-9b0b-54fd-9176-840a3370868c
     slug: item-2027-02-07
-    display_name: "Item 7"
+    display_name: "Sequinned shoes"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2196,7 +2270,7 @@ items:
     client_writable: false
   - id: a92f8f7b-1397-5f4b-96dc-82fd3cf3c746
     slug: item-2027-02-08
-    display_name: "Item 8"
+    display_name: "Bead necklaces"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2205,7 +2279,7 @@ items:
     client_writable: false
   - id: 1cde7b3e-e0ae-5931-8387-d3cb10ccb5cd
     slug: item-2027-02-09
-    display_name: "Item 9"
+    display_name: "Party horn"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2214,7 +2288,7 @@ items:
     client_writable: false
   - id: 8de614e1-5ff0-5582-bec9-660c3ebce77e
     slug: item-2027-02-10
-    display_name: "Item 10"
+    display_name: "Plumed tiara"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2223,7 +2297,7 @@ items:
     client_writable: false
   - id: 62ae1d10-c523-5458-b0a8-9ad7373a21e6
     slug: item-2027-03-01
-    display_name: "Item 1"
+    display_name: "Wooden clogs"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2232,7 +2306,7 @@ items:
     client_writable: false
   - id: d834cb3e-a11b-5268-b4ce-e09965e93a7b
     slug: item-2027-03-02
-    display_name: "Item 2"
+    display_name: "Tulip bulbs"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2241,7 +2315,7 @@ items:
     client_writable: false
   - id: 3970706e-9756-5418-a3d8-780323f6db09
     slug: item-2027-03-03
-    display_name: "Item 3"
+    display_name: "Bicycle basket"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2250,7 +2324,7 @@ items:
     client_writable: false
   - id: 1d603c6a-6865-5e6b-9ae3-22f96ff23c91
     slug: item-2027-03-04
-    display_name: "Item 4"
+    display_name: "Garden trowel"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2259,7 +2333,7 @@ items:
     client_writable: false
   - id: cef0b6f1-d748-5d07-85d0-8cd2b1e677dd
     slug: item-2027-03-05
-    display_name: "Item 5"
+    display_name: "Flower bucket"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2268,7 +2342,7 @@ items:
     client_writable: false
   - id: fb0d9d8e-7d2f-538a-996a-61425822943c
     slug: item-2027-03-06
-    display_name: "Item 6"
+    display_name: "Stroopwafel"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2277,7 +2351,7 @@ items:
     client_writable: false
   - id: a71433c4-fd63-594a-b828-d6773620879d
     slug: item-2027-03-07
-    display_name: "Item 7"
+    display_name: "Watering can"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2286,7 +2360,7 @@ items:
     client_writable: false
   - id: b37f1191-571c-526d-a331-ac2bfbe26921
     slug: item-2027-03-08
-    display_name: "Item 8"
+    display_name: "Pinwheel"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2295,7 +2369,7 @@ items:
     client_writable: false
   - id: 1f66418d-01e5-5681-be73-f25b0a9c0ede
     slug: item-2027-03-09
-    display_name: "Item 9"
+    display_name: "Wellies"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2304,7 +2378,7 @@ items:
     client_writable: false
   - id: 9ea2f0d1-7f59-5dce-afc6-6c3b9b0614b0
     slug: item-2027-03-10
-    display_name: "Item 10"
+    display_name: "Cheese wheel"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2313,7 +2387,7 @@ items:
     client_writable: false
   - id: 561d7a5d-2c62-55db-8180-7f9d4aca3883
     slug: item-2027-04-01
-    display_name: "Item 1"
+    display_name: "Furoshiki bundle"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2322,7 +2396,7 @@ items:
     client_writable: false
   - id: 880340cb-a0fd-5eba-b5fd-faec5440abd8
     slug: item-2027-04-02
-    display_name: "Item 2"
+    display_name: "Sakura mochi"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2331,7 +2405,7 @@ items:
     client_writable: false
   - id: 45d5cc7b-21b3-5219-a932-82e10963cd5b
     slug: item-2027-04-03
-    display_name: "Item 3"
+    display_name: "Kokeshi doll"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2340,7 +2414,7 @@ items:
     client_writable: false
   - id: a11e4983-1968-565a-ad9e-4809ce682c71
     slug: item-2027-04-04
-    display_name: "Item 4"
+    display_name: "Sakura tea"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2349,7 +2423,7 @@ items:
     client_writable: false
   - id: 249d08f5-b55f-5d76-b6be-fa5acc7cfda7
     slug: item-2027-04-05
-    display_name: "Item 5"
+    display_name: "Geta sandals"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2358,7 +2432,7 @@ items:
     client_writable: false
   - id: dc35b3a3-9995-5253-a499-1ee6194fe2d1
     slug: item-2027-04-06
-    display_name: "Item 6"
+    display_name: "Wind chime"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2367,7 +2441,7 @@ items:
     client_writable: false
   - id: cfb20668-9d1b-5b09-95bf-4aa3a86c45ca
     slug: item-2027-04-07
-    display_name: "Item 7"
+    display_name: "Marble soda"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2376,7 +2450,7 @@ items:
     client_writable: false
   - id: 4e53cfc0-a192-5553-845f-d9821c2bdcfb
     slug: item-2027-04-08
-    display_name: "Item 8"
+    display_name: "Carp streamer"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2385,7 +2459,7 @@ items:
     client_writable: false
   - id: 41f4389c-6e12-5a73-8ec9-d0df43b635ef
     slug: item-2027-04-09
-    display_name: "Item 9"
+    display_name: "Kendama"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2394,7 +2468,7 @@ items:
     client_writable: false
   - id: 691922aa-cb62-54d9-9163-55b590912fd5
     slug: item-2027-04-10
-    display_name: "Item 10"
+    display_name: "Taiyaki"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2403,7 +2477,7 @@ items:
     client_writable: false
   - id: 6cf78062-bc68-524a-b1cb-0dbaee0b39e9
     slug: item-2027-05-01
-    display_name: "Item 1"
+    display_name: "Folded map"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2412,7 +2486,7 @@ items:
     client_writable: false
   - id: 4f69aea9-e6b0-5a1a-8a64-9018bd600b36
     slug: item-2027-05-02
-    display_name: "Item 2"
+    display_name: "Aviator sunglasses"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2421,7 +2495,7 @@ items:
     client_writable: false
   - id: 41f5c8b0-936c-57b0-97a6-8e5c6c0ffd9d
     slug: item-2027-05-03
-    display_name: "Item 3"
+    display_name: "Cool box"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2430,7 +2504,7 @@ items:
     client_writable: false
   - id: 7851b998-96a3-5e22-841c-dcfe84f80c0e
     slug: item-2027-05-04
-    display_name: "Item 4"
+    display_name: "Fuzzy dice"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2439,7 +2513,7 @@ items:
     client_writable: false
   - id: da52db15-186f-55c6-8dd2-1799a0812ea3
     slug: item-2027-05-05
-    display_name: "Item 5"
+    display_name: "Cassette tape"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2448,7 +2522,7 @@ items:
     client_writable: false
   - id: 822c2e70-dd93-5654-9bec-c67bf59e7299
     slug: item-2027-05-06
-    display_name: "Item 6"
+    display_name: "Jerry can"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2457,7 +2531,7 @@ items:
     client_writable: false
   - id: 80cecfa3-2f13-5da5-81c2-c02461372b02
     slug: item-2027-05-07
-    display_name: "Item 7"
+    display_name: "Dashboard dog"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2466,7 +2540,7 @@ items:
     client_writable: false
   - id: e62e3639-99b2-5f91-87db-c56e91869da0
     slug: item-2027-05-08
-    display_name: "Item 8"
+    display_name: "Travel pillow"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2475,7 +2549,7 @@ items:
     client_writable: false
   - id: dcaec389-b242-5494-ba02-6c85d41bfb6a
     slug: item-2027-05-09
-    display_name: "Item 9"
+    display_name: "Car keys"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2484,7 +2558,7 @@ items:
     client_writable: false
   - id: a575c6a5-45ac-5de6-8e7d-497f6154c953
     slug: item-2027-05-10
-    display_name: "Item 10"
+    display_name: "Takeaway coffee"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2493,7 +2567,7 @@ items:
     client_writable: false
   - id: 9368efb1-26b5-595a-a284-4a717a306c5a
     slug: item-2027-06-01
-    display_name: "Item 1"
+    display_name: "Straw tote"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2502,7 +2576,7 @@ items:
     client_writable: false
   - id: 21ed6bf7-8a2c-5abb-a9b9-6921a9e79579
     slug: item-2027-06-02
-    display_name: "Item 2"
+    display_name: "Espadrilles"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2511,7 +2585,7 @@ items:
     client_writable: false
   - id: da2e8f06-d1ec-5b45-8357-16bd3c8c0b8f
     slug: item-2027-06-03
-    display_name: "Item 3"
+    display_name: "Worry beads"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2520,7 +2594,7 @@ items:
     client_writable: false
   - id: fea11ebd-3e82-5f43-977d-bcc5443d904f
     slug: item-2027-06-04
-    display_name: "Item 4"
+    display_name: "Olive-oil bottle"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2529,7 +2603,7 @@ items:
     client_writable: false
   - id: 1032bb26-ad5e-59d5-88a0-ed5e97b2cf94
     slug: item-2027-06-05
-    display_name: "Item 5"
+    display_name: "Sea sponge"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2538,7 +2612,7 @@ items:
     client_writable: false
   - id: e651ce97-cbc1-5b2a-bc8d-a39bdf1983fd
     slug: item-2027-06-06
-    display_name: "Item 6"
+    display_name: "Fisherman's cap"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2547,7 +2621,7 @@ items:
     client_writable: false
   - id: e4a90192-7f20-56eb-a9f8-71d5874f4991
     slug: item-2027-06-07
-    display_name: "Item 7"
+    display_name: "Painted plate"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2556,7 +2630,7 @@ items:
     client_writable: false
   - id: 43f7e705-4c72-50b3-9924-dce5711726ec
     slug: item-2027-06-08
-    display_name: "Item 8"
+    display_name: "Leather sandals"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2565,7 +2639,7 @@ items:
     client_writable: false
   - id: a81e4a0a-d0b2-5cb4-b26f-92ff169c893f
     slug: item-2027-06-09
-    display_name: "Item 9"
+    display_name: "Beach towel"
     item_type: item
     category: cosmetic
     fungible: true
@@ -2574,7 +2648,7 @@ items:
     client_writable: false
   - id: 17f62043-b1af-532f-9921-cc29bad5c0d8
     slug: item-2027-06-10
-    display_name: "Item 10"
+    display_name: "Shell necklace"
     item_type: item
     category: cosmetic
     fungible: true
