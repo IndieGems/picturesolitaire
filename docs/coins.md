@@ -87,7 +87,7 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 | c57 | campaign 57 | 36 | 40 |
 | c58 | campaign 58 | 48 | 40 |
 | c59 | campaign 59 | 35 | 40 |
-| c60 | campaign 60 | 54 | 40 |
+| c60 | campaign 60 | 67 | 40 |
 | c61 | campaign 61 | 36 | 40 |
 | c62 | campaign 62 | 44 | 40 |
 | c63 | campaign 63 | 43 | 40 |
@@ -117,7 +117,7 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 | c87 | campaign 87 | 42 | 40 |
 | c88 | campaign 88 | 39 | 40 |
 | c89 | campaign 89 | 46 | 40 |
-| c90 | campaign 90 | 67 | 40 |
+| c90 | campaign 90 | 55 | 40 |
 | ch01 | challenge 1 | 19 | 20 |
 | ch02 | challenge 2 | 21 | 25 |
 | ch03 | challenge 3 | 19 | 20 |
