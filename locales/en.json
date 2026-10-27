@@ -3,6 +3,7 @@
   "albums.count": "{{done}} of {{all}} restored",
   "albums.title": "Albums",
   "board.back": "Back to home",
+  "board.bigger": "A bigger board!",
   "board.challenge": "Challenge {{n}}",
   "board.daily": "Daily · {{date}}",
   "board.helperLeft_one": "{{count}} left",

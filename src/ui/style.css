@@ -48,6 +48,8 @@
   /* a hard board's tag (marks.ts): warm red-coral and deep purple, as r g b, both 4.7:1 or more under white */
   --mark-hard: 204 68 52;
   --mark-super: 91 42 134;
+  /* the first 5x5 board's banner (app.ts): a deep sea blue, 6:1 under white */
+  --mark-big: 30 100 140;
   /* a card's width ÷ height: the board's TUNING.cardAspect, set again on every screen (cards.ts) */
   --card-aspect: 0.75;
   --round: "Fredoka", ui-rounded, "Nunito", "Segoe UI", system-ui, sans-serif;
@@ -458,6 +460,7 @@ html.less-motion .card, html.less-motion .win .gallery .pic, html.less-motion .v
 }
 .mark-tag.hard, .mark-banner.hard, .mark-beaten.hard { background: rgb(var(--mark-hard) / 0.94); }
 .mark-tag.super, .mark-banner.super, .mark-beaten.super { background: rgb(var(--mark-super) / 0.94); }
+.mark-banner.big { background: rgb(var(--mark-big) / 0.94); }
 /* by the board number (as the practice tag), on home's line, in the dev menu's board list */
 .mark-tag {
   display: inline-flex; align-items: center; flex: none; margin-left: 8px; padding: 4px 9px 3px;

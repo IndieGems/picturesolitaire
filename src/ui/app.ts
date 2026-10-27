@@ -40,7 +40,7 @@ import { t } from "./i18n";
 import { ICONS, keepIcons, type IconName } from "./icons";
 import { firstScreen, screenChanged } from "./browser";
 import { online, onOnline, pretend, suspect } from "./online";
-import { loadGuideSave } from "./guide-save";
+import { learnt, lessonSeen, loadGuideSave } from "./guide-save";
 import { campaignNext, challengeBest, dailyResult, guideDone, hold, loadProgress, onProgress, progress, waitForProgress } from "../net/progress";
 import { createAlbums } from "./albums";
 import { createChallenges } from "./challenges";
@@ -417,7 +417,8 @@ function openLoaded(next: Play): void {
     board = openBoard(host, next.kind === "campaign" ? next.level : next.kind === "challenge" ? next.c.level : next.kind === "daily" ? next.d : next.x);
     // the player's own stock on the buttons (the board reports undo through board:changed)
     drawHelpers();
-    showMarkBanner(next.kind === "campaign" ? markOf(campaignLevel(next.level)) : null);
+    // a hard board's banner; the first 5x5 board a player opens says so after it, once (bannersFor)
+    showBanners(bannersFor(next));
     if (import.meta.env.MODE !== "release") dev?.opened(board);
     // the first board teaches the game, once the save says the player has not learnt it yet;
     // in practice only when the dev menu asked for the guide again (and then it saves nothing)
@@ -432,26 +433,49 @@ function openLoaded(next: Play): void {
   show("board");
 }
 
-/** How long a hard board's banner stays (style.css's mark-banner animation lasts as long). */
+/** How long a banner stays (style.css's mark-banner animation lasts as long). */
 const BANNER_MS = 1200;
 let bannerTimer = 0;
-/** A hard board's banner over the board as it opens, about a second, then gone by itself. */
-function showMarkBanner(m: Mark | null): void {
+/** A banner over the board as it opens: its look (style.css), its words, and what happens as it shows. */
+type Banner = { cls: string; text: string; shown?: () => void };
+
+/**
+ * The banners a board opens with: a hard board's (marks.ts); then, the first time a player opens
+ * a 5x5 campaign board, "A bigger board!" (the creator, 2026-10-27: the hard and finale boards from
+ * board 10), once per player, remembered beside the lessons (guide-save.ts). Never in practice.
+ */
+function bannersFor(p: Play): Banner[] {
+  if (p.kind !== "campaign") return [];
+  const lvl = campaignLevel(p.level);
+  const m = markOf(lvl);
+  const out: Banner[] = m ? [{ cls: m, text: markWords(m), shown: () => emit("board:mark", { mark: m }) }] : [];
+  if (!isPractice(p) && lvl.deal.cols >= 5 && lvl.deal.rows >= 5 && !lessonSeen("big"))
+    out.push({ cls: "big", text: t("board.bigger"), shown: () => learnt("big") });
+  return out;
+}
+
+/** The board's banners over its middle, one after another, about a second each, then gone by themselves; they take no touch. */
+function showBanners(list: Banner[]): void {
   clearTimeout(bannerTimer);
   markBanner.hidden = true;
-  if (!m) return;
-  markBanner.className = `mark-banner ${m}`;
-  markBanner.textContent = markWords(m);
-  // over the middle of the board, once the board screen is laid out
-  requestAnimationFrame(() => {
-    if (screen !== "board") return;
-    const a = host.getBoundingClientRect();
-    const b = boardScreen.getBoundingClientRect();
-    markBanner.style.top = `${Math.round(a.top - b.top + a.height / 2)}px`;
-    markBanner.hidden = false; // shown again, the animation starts over
-    emit("board:mark", { mark: m }); // Audio's sting under it
-    bannerTimer = window.setTimeout(() => (markBanner.hidden = true), BANNER_MS);
-  });
+  const next = (i: number): void => {
+    const b = list[i];
+    markBanner.hidden = true;
+    if (!b) return;
+    markBanner.className = `mark-banner ${b.cls}`;
+    markBanner.textContent = b.text;
+    // over the middle of the board, once the board screen is laid out
+    requestAnimationFrame(() => {
+      if (screen !== "board") return;
+      const a = host.getBoundingClientRect();
+      const r = boardScreen.getBoundingClientRect();
+      markBanner.style.top = `${Math.round(a.top - r.top + a.height / 2)}px`;
+      markBanner.hidden = false; // shown again, the animation starts over
+      b.shown?.(); // the hard banner: Audio's sting under it
+      bannerTimer = window.setTimeout(() => next(i + 1), BANNER_MS);
+    });
+  };
+  next(0);
 }
 
 /** The top row's information: the level; on a challenge or the daily, its name over the par and the moves so far. */
@@ -1513,6 +1537,8 @@ export async function startApp(): Promise<void> {
         lastWin = { kind: "campaign", level: 1, moves: 12, ms: 64_000, milestone: true };
         showWin();
       },
+      /** The first-5x5 banner over the board in hand, as on a player's first 5x5 board (nothing is saved). */
+      bigger: () => showBanners([{ cls: "big", text: t("board.bigger") }]),
       /** A pretend board:stuck, to see the notice (the board's own word clears it). */
       stuck: () => emit("board:stuck", { doomed: true } as never),
     };
