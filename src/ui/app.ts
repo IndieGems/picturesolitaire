@@ -1062,12 +1062,16 @@ function drawCoins(win: Win): void {
   }
   if (!v || v.status !== "paid" || !card) return;
   const tools = landedTools(v);
-  // the guide's finish card already says its prize and the travel kit: the Coins fly from its coin,
-  // each tool that landed is ringed and flies to its button, and nothing on it moves
-  const promised = card.querySelector<HTMLElement>(".prize .coin");
+  // the guide's finish card says its travel kit up front: each tool that landed is ringed and flies to its
+  // button. Its Coins, as many as LANDED (none for a guest: the platform pays a guest no Coins), take the
+  // same chip on the card's top edge as any card's, so nothing on it moves when they come
   const kit = card.querySelector<HTMLElement>(".kit");
-  if (promised || kit) {
-    if (promised && v.coins > 0 && !win.cued) win.cued = cueCoins(v, promised) || true;
+  if (kit) {
+    if (v.coins > 0 && !card.querySelector(".coins-chip")) {
+      const coin = coinIcon(24, false, "coin");
+      card.append(h("div", { class: "coins-chip glass", role: "status" }, coin, h("span", {}, t("win.coins", { count: v.coins }))));
+      if (!win.cued) win.cued = cueCoins(v, coin) || true;
+    }
     for (const k of KINDS) {
       const tool = kit?.querySelector<HTMLElement>(`.tool.${k}`);
       if (!tool || !tools[k]) continue;
@@ -1213,20 +1217,20 @@ function showWin(): void {
 }
 
 /**
- * The guide's prize, said up front (the game standard: the card says what the prize is;
- * what lands is the Arcade's to show): its Coins, and the table, with where to choose it.
- * Both come from Server's list (src/net/tables.json), never written here.
+ * The guide's prize: the table, with where to choose it (Server's list, src/net/tables.json). Its
+ * Coins are not promised here: they are drawn only once the checker's verdict says they LANDED, as
+ * the card's top-edge chip (drawCoins; QA, 2026-10-27: the platform pays no Coins to a guest, so a
+ * number up front would be wrong for one).
  */
 function guidePrize(): HTMLElement | null {
-  if (!KEEPSAKE) return null;
-  const a = knownTable(KEEPSAKE.slug);
-  const coins = KEEPSAKE.coins ?? 0;
-  const parts: Node[] = [];
-  if (coins > 0) parts.push(h("span", { class: "won-coins" }, coinIcon(38, false, "coin"), h("span", {}, t("guide.prize", { count: coins }))));
-  if (a) parts.push(h("span", { class: "won-table" }, h("img", { src: thumbOf(a), alt: "", draggable: "false" }), h("span", {}, tableTitle(a))));
-  if (!parts.length) return null;
-  if (a) parts.push(h("span", { class: "prize-note" }, t("guide.tableNote")));
-  return h("div", { class: "prize" }, ...parts);
+  const a = KEEPSAKE ? knownTable(KEEPSAKE.slug) : undefined;
+  if (!a) return null;
+  return h(
+    "div",
+    { class: "prize" },
+    h("span", { class: "won-table" }, h("img", { src: thumbOf(a), alt: "", draggable: "false" }), h("span", {}, tableTitle(a))),
+    h("span", { class: "prize-note" }, t("guide.tableNote")),
+  );
 }
 
 /**
