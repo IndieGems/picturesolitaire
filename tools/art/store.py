@@ -1,15 +1,21 @@
-"""Store page art, written into the store-page bundle (.gemarcade/), from the shipped art only.
+"""Store page art, written into the store-page bundle (.gemarcade/), from the game's own art only.
 
-    python tools/art/store.py <wide-table.png>       build everything (needs the wide table, see below)
-    python tools/art/store.py <wide-table.png> <out.png>   also a contact sheet of it all
+    python tools/art/store.py <wide-desk.png>              build everything
+    python tools/art/store.py <wide-desk.png> <out.png>    also a contact sheet of it all
 
-What it is made of, and nothing else: the winter table (the portrait table master and a
-wide 16:9 table generated from game-l.png, prompt in tools/art/prompts.txt), REAL puzzle
-pictures in frames drawn to tools/art/chrome-spec.md (the same numbers the board uses),
-and the wordmark. No fake interface: no buttons, counters or bars.
+The travel set (lead, 2026-10-27, after the game became Picture Passport). It is made of the
+game's art and nothing else:
+- the traveller's desk from home, made wide (generated from the home-desk master and game-l.png;
+  the prompt is in tools/art/prompts.txt);
+- REAL destination postcards from the trips, cut into 3:4 cards in frames drawn to
+  tools/art/chrome-spec.md (the numbers the board uses);
+- the passport as the game draws it (src/ui/style.css .pp-*), with a trip's stamp;
+- the wordmark.
+There is no fake interface: no buttons, counters or text other than the title.
 
-The scene everywhere is one picture being mended: the harbour at sunset, five of its six
-cards already joined into one piece, the last card lifted over its empty cell.
+The scene is postcards being pieced together. Mont-Saint-Michel sits in the middle, its last
+card lifted over its empty cell and another lying loose. Iguazú is nearly done beside it, and
+the passport lies open at Australia's page, the Harbour Bridge among its postcards.
 
 Writes (paths are the bundle's; storepage.yaml names them under media):
   hero/key_art.jpg            2560x1440, no text      media.hero.key_art_clean
@@ -17,126 +23,275 @@ Writes (paths are the bundle's; storepage.yaml names them under media):
   hero/capsule_square.jpg     1024x1024, with title   media.capsules.square
   hero/logo.png               the wordmark, alpha     media.hero.logo
   hero/share_card.jpg         1200x630, with title    media.share_card
+  borders/travel-desk.jpg     2560x1440, opaque       media.portrait_borders[0]
 Opaque art is JPEG q92: the Arcade re-encodes every image anyway, and this keeps the
 bundle (which is committed) small.
-  borders/winter-table.jpg    2560x1440, opaque       media.portrait_borders[0]
 """
+import ctypes
 import json
 import math
 import sys
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageChops, ImageDraw, ImageFilter
+
+if sys.platform == "win32":  # AGENTS.md: the machine is shared, so this runs at below-normal priority
+    ctypes.windll.kernel32.SetPriorityClass(ctypes.windll.kernel32.GetCurrentProcess(), 0x4000)
 
 sys.dont_write_bytecode = True  # importing mockup must not leave a __pycache__ in the repo
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from mockup import (LIP, LIP_BOTTOM, LIP_TOP, R_IN, R_OUT, RIM, RIM_BOTTOM, RIM_LINE, RIM_TOP,  # noqa: E402
+from mockup import (LIP, LIP_BOTTOM, LIP_TOP, R_OUT, RIM, RIM_BOTTOM, RIM_LINE, RIM_TOP,  # noqa: E402
                     SHADOW_BLUR, SHADOW_Y, vgrad)
 
 ROOT = Path(__file__).resolve().parents[2]
 BUNDLE = ROOT / ".gemarcade"
 MASTERS = ROOT / "tools/art/masters/chrome"
 SS = 3  # supersampling for smooth rounded edges
-GUTTER = 0.08  # between cells, fraction of the cell (chrome-spec.md)
-HERO = "dusk-harbour"  # 3x2, warm sunset against the cold table
+GUTTER = 0.08  # between cells, fraction of the cell width (chrome-spec.md)
+ASPECT = 4 / 3  # a card is a 3:4 portrait cell (AGENTS.md)
+HERO, SIDE = "dest-mont-saint-michel", "dest-iguazu"
+PAGE_STAMP, PAGE = "stamp-t8", ["dest-harbour-bridge", "dest-twelve-apostles", "dest-heart-reef", None]
 
 
-def picture(pid):
+def dest(pid):
     cat = json.loads((ROOT / "src/content/pictures.json").read_text(encoding="utf-8"))
-    p = next(x for x in cat["pictures"] if x["id"] == pid)
+    d = next(x for x in cat["destinations"] if x["id"] == pid)
     # The master is the generated pixels at full size: sharper than the shipped copy.
-    return Image.open(MASTERS.parent / f"{pid}.webp").convert("RGB"), p
+    return Image.open(MASTERS.parent / f"{pid}.webp").convert("RGB"), d
 
 
-def shape(size, rects, concave, inset, r, rc):
-    """Mask of a piece's outline: rounded rects (each inset), plus an inverted round at each
-    concave corner. concave: (x, y, dx, dy), the corner and the direction into the empty cell."""
-    m = Image.new("L", (size[0] * SS, size[1] * SS), 0)
-    d = ImageDraw.Draw(m)
-    for x0, y0, x1, y1 in rects:
-        d.rounded_rectangle([(x0 + inset) * SS, (y0 + inset) * SS, (x1 - inset) * SS, (y1 - inset) * SS],
-                            radius=r * SS, fill=255)
-    for cx, cy, dx, dy in concave:
-        px, py, rr = cx - dx * inset, cy - dy * inset, rc + inset
-        xs, ys = sorted((px, px + dx * rr)), sorted((py, py + dy * rr))
-        d.rectangle([xs[0] * SS, ys[0] * SS, xs[1] * SS, ys[1] * SS], fill=255)
-        ex, ey = px + dx * rr, py + dy * rr
-        d.ellipse([(ex - rr) * SS, (ey - rr) * SS, (ex + rr) * SS, (ey + rr) * SS], fill=0)
-    return m.resize(size, Image.LANCZOS)
+def phi(x):
+    return 0.5 * (1 + math.erf(x / math.sqrt(2)))
 
 
-def piece(s, w, h, rects, concave, pic, lifted=False):
-    """One framed piece (a card or merged cards) on its own transparent layer.
-    w, h: the piece's outer size; rects/concave in piece coordinates; pic covers w x h.
-    Returns (layer, (ox, oy)): where the piece's top-left sits inside the layer."""
+def offset(im, dx, dy):
+    out = Image.new(im.mode, im.size, 0)
+    out.paste(im, (round(dx), round(dy)))
+    return out
+
+
+def piece(cw, w, h, rects, pic, lifted=False):
+    """One framed piece (a card, or cards joined) on its own transparent layer.
+    cw: the card's width, which scales the frame; w, h: the piece's bounding box; rects: the
+    cells and the gutters between joined cells, sharp, in piece coordinates; pic covers w x h.
+    The outline is rounded by blurring the sharp shape and cutting it at a level: concave and
+    convex corners both round, and the inner edges (rim, picture) are the same cut at a higher
+    level, so every edge is concentric. Returns (layer, (ox, oy)), the piece's top-left in it."""
+    s = cw
     pad = round(s * 0.35)
-    W, H = round(w + 2 * pad), round(h + 2 * pad + s * LIP)
+    W, H = round(w + 2 * pad), round(h + 2 * pad + s * LIP * 2)
     k = 2 if lifted else 1  # a lifted card's shadow doubles (chrome-spec.md)
+    sharp = Image.new("L", (W * SS, H * SS), 0)
+    d = ImageDraw.Draw(sharp)
+    for x0, y0, x1, y1 in rects:
+        d.rectangle([(x0 + pad) * SS, (y0 + pad) * SS, (x1 + pad) * SS - 1, (y1 + pad) * SS - 1], fill=255)
+    sigma = s * R_OUT * SS / 1.86  # a blurred right angle cut at 50% rounds with radius ~1.86 sigma
+    blur = sharp.filter(ImageFilter.GaussianBlur(sigma))
+
+    def cut(inset):
+        thr = max(1, min(254, round(255 * phi(inset * SS / sigma))))
+        return blur.point(lambda v: 255 if v >= thr else 0).resize((W, H), Image.LANCZOS)
+
+    outer = cut(0)
     layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-
-    def at(dx, dy):
-        return [(x0 + pad + dx, y0 + pad + dy, x1 + pad + dx, y1 + pad + dy) for x0, y0, x1, y1 in rects], \
-               [(cx + pad + dx, cy + pad + dy, ddx, ddy) for cx, cy, ddx, ddy in concave]
-
     # The drop shadow on the table: the face and its lip, pushed down, blurred.
-    r_, c_ = at(0, s * SHADOW_Y * k)
-    sh = shape((W, H), r_ + [(x0, y0 + s * LIP, x1, y1 + s * LIP) for x0, y0, x1, y1 in r_],
-               [(cx, cy + s * LIP, dx, dy) for cx, cy, dx, dy in c_] + c_, 0, s * R_OUT, s * R_OUT)
+    sh = ImageChops.lighter(offset(outer, 0, s * SHADOW_Y * k), offset(outer, 0, s * (SHADOW_Y * k + LIP)))
     sh = sh.filter(ImageFilter.GaussianBlur(s * SHADOW_BLUR * k))
     layer.paste(Image.new("RGBA", (W, H), (8, 14, 22, 160)), (0, 0), sh)
     # The plump lip below the face.
-    r_, c_ = at(0, s * LIP)
-    layer.paste(vgrad((W, H), LIP_TOP, LIP_BOTTOM).convert("RGBA"), (0, 0), shape((W, H), r_, c_, 0, s * R_OUT, s * R_OUT))
+    layer.paste(vgrad((W, H), LIP_TOP, LIP_BOTTOM).convert("RGBA"), (0, 0), offset(outer, 0, s * LIP))
     # The frosted rim, with its bright top edge.
-    r_, c_ = at(0, 0)
     rim = Image.new("RGBA", (W, H))
     rim.paste(vgrad((round(w), round(h)), RIM_TOP, RIM_BOTTOM), (pad, pad))
-    layer.paste(rim, (0, 0), shape((W, H), r_, c_, 0, s * R_OUT, s * R_OUT))
-    top = shape((W, H), r_, c_, 0, s * R_OUT, s * R_OUT)
-    below = shape((W, H), *at(0, 1.6), 0, s * R_OUT, s * R_OUT)
-    hi = Image.composite(top, Image.new("L", (W, H), 0), Image.eval(below, lambda v: 255 - v))
+    layer.paste(rim, (0, 0), outer)
+    hi = ImageChops.subtract(outer, offset(outer, 0, 1.6))
     layer.paste(Image.new("RGBA", (W, H), (244, 247, 251, 255)), (0, 0), hi)
     # The hairline where rim meets picture, then the picture, untouched.
     i = s * RIM
-    layer.paste(Image.new("RGBA", (W, H), RIM_LINE + (255,)), (0, 0), shape((W, H), r_, c_, i - 1.5, s * R_IN + 1.5, s * R_OUT))
+    layer.paste(Image.new("RGBA", (W, H), RIM_LINE + (255,)), (0, 0), cut(i - 1.5))
     full = Image.new("RGBA", (W, H))
     full.paste(pic.resize((round(w - 2 * i), round(h - 2 * i)), Image.LANCZOS), (round(pad + i), round(pad + i)))
-    layer.paste(full, (0, 0), shape((W, H), r_, c_, i, s * R_IN, s * R_OUT))
+    layer.paste(full, (0, 0), cut(i))
     return layer, (pad, pad)
 
 
-def faint_cell(canvas, x, y, s):
-    """An empty cell as the board draws it: a faint frosted square on the table."""
-    m = shape(canvas.size, [(x, y, x + s, y + s)], [], 0, s * R_OUT, 0)
+def faint_cell(canvas, x, y, cw, ch):
+    """An empty cell as the board draws it: a faint frosted card on the table."""
+    m = Image.new("L", (canvas.width * 1, canvas.height * 1), 0)
+    ImageDraw.Draw(m).rounded_rectangle([x, y, x + cw, y + ch], radius=cw * R_OUT, fill=255)
     edge = m.filter(ImageFilter.FIND_EDGES)
-    canvas.alpha_composite(Image.composite(Image.new("RGBA", canvas.size, (214, 226, 240, 20)),
-                                           Image.new("RGBA", canvas.size, (0, 0, 0, 0)), m))
-    canvas.alpha_composite(Image.composite(Image.new("RGBA", canvas.size, (214, 226, 240, 40)),
-                                           Image.new("RGBA", canvas.size, (0, 0, 0, 0)), edge))
+    clear = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    canvas.alpha_composite(Image.composite(Image.new("RGBA", canvas.size, (214, 226, 240, 22)), clear, m))
+    canvas.alpha_composite(Image.composite(Image.new("RGBA", canvas.size, (214, 226, 240, 46)), clear, edge))
 
 
-def mending(canvas, cx, cy, s, angle=-7, lift=(0.30, -0.42)):
-    """The hero picture, five cards joined and the last one lifted over its cell.
-    (cx, cy) is the centre of the whole 3x2 picture; s the cell size in px."""
-    pic, _ = picture(HERO)
-    g = s * GUTTER
-    W, H = 3 * s + 2 * g, 2 * s + g
-    x0, y0 = cx - W / 2, cy - H / 2
-    faint_cell(canvas, x0 + 2 * (s + g), y0 + s + g, s)
-    # The joined five: the top row plus the two bottom-left cards, one frame, one picture.
-    rects = [(0, 0, W, s), (0, 0, 2 * s + g, H)]
-    concave = [(2 * s + g, s, 1, 1)]
-    layer, (ox, oy) = piece(s, W, H, rects, concave, pic)
+def pieced(pid, cw, lift=None, loose=(), angle=0.0):
+    """A postcard on the table, its cards joined but for one lifted over its empty cell and a
+    few lying loose. lift: (col, row, dx, dy, tilt) with dx, dy in card widths from the cell;
+    loose: a list of the same. Returns a transparent layer and the postcard's centre in it."""
+    pic, d = dest(pid)
+    cols, rows = d["cols"], d["rows"]
+    ch, g = cw * ASPECT, cw * GUTTER
+    W, H = cols * cw + (cols - 1) * g, rows * ch + (rows - 1) * g
+    specs = list(loose) + ([lift] if lift else [])
+    gone = {(sp[0], sp[1]) for sp in specs}
+    margin = round(cw * 2.2)
+    canvas = Image.new("RGBA", (round(W + 2 * margin), round(H + 2 * margin)), (0, 0, 0, 0))
+    x0, y0 = margin, margin
+
+    def box(c, r):
+        return c * (cw + g), r * (ch + g), c * (cw + g) + cw, r * (ch + g) + ch
+
+    for c, r in gone:
+        bx = box(c, r)
+        faint_cell(canvas, x0 + bx[0], y0 + bx[1], cw, ch)
+    # The joined cards: each cell, and the gutter to each joined neighbour, one frame, one picture.
+    rects = []
+    for r in range(rows):
+        for c in range(cols):
+            if (c, r) in gone:
+                continue
+            a = box(c, r)
+            rects.append(a)
+            if c + 1 < cols and (c + 1, r) not in gone:
+                rects.append((a[2], a[1], a[2] + g, a[3]))
+            if r + 1 < rows and (c, r + 1) not in gone:
+                rects.append((a[0], a[3], a[2], a[3] + g))
+            if c + 1 < cols and r + 1 < rows and not {(c + 1, r), (c, r + 1), (c + 1, r + 1)} & gone:
+                rects.append((a[2], a[3], a[2] + g, a[3] + g))
+    layer, (ox, oy) = piece(cw, W, H, rects, pic)
     canvas.alpha_composite(layer, (round(x0 - ox), round(y0 - oy)))
-    # The last card, its own part of the picture, lifted: 6% bigger, tilted, shadow doubled.
+    # The loose cards, then the lifted one: each its own part of the picture; the lifted one
+    # 6% bigger, tilted, its shadow doubled.
     pw, ph = pic.size
-    cut = pic.crop((round(pw * 2 / 3), round(ph / 2), pw, ph))
-    S = s * 1.06
-    card, (ox, oy) = piece(S, S, S, [(0, 0, S, S)], [], cut, lifted=True)
-    card = card.rotate(angle, resample=Image.BICUBIC, expand=True)
-    tx = x0 + 2 * (s + g) + s / 2 + lift[0] * s
-    ty = y0 + s + g + s / 2 + lift[1] * s
-    canvas.alpha_composite(card, (round(tx - card.width / 2), round(ty - card.height / 2 + S * LIP / 2)))
+    for sp in specs:
+        c, r, dx, dy, tilt = sp
+        lifted = sp is lift
+        a = box(c, r)
+        cut = pic.crop((round(a[0] / W * pw), round(a[1] / H * ph), round(a[2] / W * pw), round(a[3] / H * ph)))
+        k = 1.06 if lifted else 1.0
+        card, _ = piece(cw * k, cw * k, ch * k, [(0, 0, cw * k, ch * k)], cut, lifted=lifted)
+        card = card.rotate(tilt, resample=Image.BICUBIC, expand=True)
+        tx, ty = x0 + (a[0] + a[2]) / 2 + dx * cw, y0 + (a[1] + a[3]) / 2 + dy * cw
+        canvas.alpha_composite(card, (round(tx - card.width / 2), round(ty - card.height / 2 + cw * LIP)))
+    centre = (x0 + W / 2, y0 + H / 2)
+    if angle:
+        before = canvas.size
+        canvas = canvas.rotate(angle, resample=Image.BICUBIC, expand=True)
+        centre = (centre[0] + (canvas.width - before[0]) / 2, centre[1] + (canvas.height - before[1]) / 2)
+    return canvas, centre
+
+
+def place(canvas, layer, centre, at):
+    canvas.alpha_composite(layer, (round(at[0] - centre[0]), round(at[1] - centre[1])))
+
+
+def rounded(size, radius):
+    m = Image.new("L", (size[0] * SS, size[1] * SS), 0)
+    ImageDraw.Draw(m).rounded_rectangle([0, 0, size[0] * SS - 1, size[1] * SS - 1], radius=radius * SS, fill=255)
+    return m.resize(size, Image.LANCZOS)
+
+
+def white_card(pid, width):
+    """A postcard as the passport shows it: the picture in a white border, in its board's shape."""
+    pic, d = dest(pid)
+    h = round(width * d["rows"] / d["cols"] * ASPECT)
+    pad = max(2, round(width * 0.045))
+    card = Image.new("RGBA", (width, h), (0, 0, 0, 0))
+    card.paste(Image.new("RGBA", (width, h), (255, 255, 255, 255)), (0, 0), rounded((width, h), width * 0.09))
+    inner = (width - 2 * pad, h - 2 * pad)
+    card.paste(pic.resize(inner, Image.LANCZOS), (pad, pad), rounded(inner, width * 0.05))
+    return card
+
+
+def shadowed(layer, blur, dy, alpha=150, colour=(8, 14, 22)):
+    """A layer over its own soft shadow, with room for it."""
+    m = round(blur * 3 + abs(dy))
+    out = Image.new("RGBA", (layer.width + 2 * m, layer.height + 2 * m), (0, 0, 0, 0))
+    a = Image.new("L", out.size, 0)
+    a.paste(layer.getchannel("A"), (m, m + round(dy)))
+    a = a.filter(ImageFilter.GaussianBlur(blur)).point(lambda v: v * alpha // 255)
+    out.paste(Image.new("RGBA", out.size, colour + (255,)), (0, 0), a)
+    out.alpha_composite(layer, (m, m))
+    return out
+
+
+def dashed(w, h, u):
+    """A place not visited yet: a dashed blank in its postcard's shape (style.css .pc.soon)."""
+    im = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    dd = ImageDraw.Draw(im)
+    step, per, t = 7 * u, 2 * (w + h), 0.0
+
+    def at(v):
+        if v < w:
+            return v, 0
+        if v < w + h:
+            return w - 1, v - w
+        if v < 2 * w + h:
+            return w - 1 - (v - w - h), h - 1
+        return 0, h - 1 - (v - 2 * w - h)
+
+    while t < per:
+        dd.line([at(t), at(min(per - 0.01, t + step * 0.55))], fill=(85, 101, 124, 90), width=max(1, round(2 * u)))
+        t += step
+    return im
+
+
+def press(page, stamp_id, side, at, tilt):
+    """A trip's stamp pressed into the paper: its ink multiplied in, a little faded."""
+    st = Image.open(MASTERS / f"{stamp_id}.webp").convert("RGBA")
+    st = st.resize((side, side), Image.LANCZOS).rotate(tilt, resample=Image.BICUBIC, expand=True)
+    sx, sy = round(at[0] - st.width / 2), round(at[1] - st.height / 2)
+    region = page.crop((sx, sy, sx + st.width, sy + st.height)).convert("RGB")
+    page.paste(ImageChops.multiply(region, st.convert("RGB")), (sx, sy), st.getchannel("A").point(lambda v: v * 0.88))
+
+
+def passport(width, angle=0.0):
+    """The passport lying open, in the game's colours (src/ui/style.css .pp-*): a navy book,
+    warm paper with a faint engraved pattern, trips' stamps on the left page and postcards in
+    white borders on the right, a place still to visit as a dashed blank. No text."""
+    W, H = width, round(width * 0.68)
+    u = W / 560
+    book = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    book.paste(vgrad((W, H), (52, 72, 106), (31, 44, 66)).convert("RGBA"), (0, 0), rounded((W, H), 18 * u))
+    m, gap = round(11 * u), round(5 * u)
+    pw, ph = (W - 2 * m - gap) // 2, H - 2 * m
+    for side in (0, 1):
+        page = vgrad((pw, ph), (251, 248, 241), (238, 230, 214)).convert("RGBA")
+        rings = Image.new("L", (pw, ph), 0)
+        rd = ImageDraw.Draw(rings)
+        ox, oy = pw / 2, -0.3 * ph
+        for rr in range(round(9 * u), round(2 * ph), max(3, round(9 * u))):
+            rd.ellipse([ox - rr, oy - rr, ox + rr, oy + rr], outline=18, width=max(1, round(u)))
+        page.paste(Image.new("RGBA", (pw, ph), (70, 110, 160, 255)), (0, 0), rings)
+        if side == 0:
+            press(page, "stamp-t5", round(118 * u), (pw * 0.31, ph * 0.27), 12)
+            press(page, "stamp-t7", round(112 * u), (pw * 0.70, ph * 0.47), -9)
+            press(page, PAGE_STAMP, round(120 * u), (pw * 0.36, ph * 0.74), 6)
+        else:
+            gx, gy, cg = round(17 * u), round(16 * u), round(13 * u)
+            cwid = (pw - 2 * gx - cg) // 2
+            ys = [gy, gy]
+            for n in range(4):
+                x = gx + (n % 2) * (cwid + cg)
+                if n < len(PAGE) - 1:
+                    card = shadowed(white_card(PAGE[n], cwid), 2.5 * u, 2 * u, alpha=90, colour=(60, 45, 25))
+                    mm = round(2.5 * u * 3 + 2 * u)
+                    page.alpha_composite(card, (x - mm, ys[n % 2] - mm))
+                    ys[n % 2] += card.height - 2 * mm + cg
+                else:
+                    blank = dashed(cwid, round(cwid * ASPECT), u)
+                    page.alpha_composite(blank, (x, ys[n % 2]))
+                    ys[n % 2] += blank.height + cg
+        # The fold: the paper dips into shade towards the spine.
+        fold = Image.new("L", (pw, 1), 0)
+        for x in range(pw):
+            t = (x / pw) if side == 0 else 1 - x / pw
+            fold.putpixel((x, 0), round(70 * max(0.0, (t - 0.82) / 0.18) ** 2))
+        page.paste(Image.new("RGBA", (pw, ph), (90, 70, 40, 255)), (0, 0), fold.resize((pw, ph)))
+        book.paste(page, (m + side * (pw + gap), m), rounded((pw, ph), 9 * u))
+    book = shadowed(book, 12 * u, 9 * u, alpha=170)
+    return book.rotate(angle, resample=Image.BICUBIC, expand=True) if angle else book
 
 
 def wordmark(width):
@@ -158,43 +313,64 @@ def save(im, rel, out):
     out[rel] = im
 
 
+# Mont-Saint-Michel: the abbey's card lifted over its gap, the walls' card and a card of the
+# sands lying loose. Iguazú: a card of the falls lying loose below it.
+HERO_CARDS = dict(lift=(1, 1, 0.34, -0.30, -6), loose=[(2, 2, 1.95, -0.55, 9), (0, 4, -1.15, 0.30, -12)])
+SIDE_CARDS = dict(loose=[(2, 2, -1.3, 4.1, 12)])
+
+
+def scene(canvas, k):
+    """The key art's scene on a canvas k times 2560 x 1440: the hero postcard in the middle,
+    Iguazú to its left, the passport open to its right."""
+    side, c = pieced(SIDE, 90 * k, angle=-6, **SIDE_CARDS)
+    place(canvas, side, c, (650 * k, 640 * k))
+    book = passport(round(560 * k), angle=8)
+    canvas.alpha_composite(book, (round(1885 * k - book.width / 2), round(930 * k - book.height / 2)))
+    hero, c = pieced(HERO, 148 * k, **HERO_CARDS)
+    place(canvas, hero, c, (1250 * k, 735 * k))
+
+
 def build(wide_path):
     out = {}
-    wide = Image.open(wide_path).convert("RGB").resize((2560, 1440), Image.LANCZOS)
-    wide.save(MASTERS / "wide-table.webp", "WEBP", quality=92, method=6)
+    desk = Image.open(wide_path).convert("RGB").resize((2560, 1440), Image.LANCZOS)
+    desk.save(MASTERS / "travel-desk-wide.webp", "WEBP", quality=92, method=6)
     (BUNDLE / "hero").mkdir(parents=True, exist_ok=True)
     (BUNDLE / "borders").mkdir(parents=True, exist_ok=True)
 
-    # PC/TV side art: the wide table as it is; the game covers its calm middle.
-    wide.save(BUNDLE / "borders/winter-table.jpg", "JPEG", quality=90, optimize=True, progressive=True)
-    out["borders/winter-table.jpg"] = wide
+    # PC/TV side art: the wide desk as it is; the game covers its calm middle.
+    desk.save(BUNDLE / "borders/travel-desk.jpg", "JPEG", quality=90, optimize=True, progressive=True)
+    out["borders/travel-desk.jpg"] = desk
 
-    # Key art, no text: the picture being mended in the calm middle of the wide table.
-    key = wide.convert("RGBA")
-    mending(key, 1280, 730, 330)
+    # Key art, no text.
+    key = desk.convert("RGBA")
+    scene(key, 1.0)
     save(key, "hero/key_art.jpg", out)
 
-    # Desktop tile, 16:9: picture left, title right. The tile's name bar covers the foot on
-    # hover and badges sit top-left, so the title stays in the upper middle of the right half.
-    cap = wide.convert("RGBA").resize((1920, 1080), Image.LANCZOS)
-    mending(cap, 610, 560, 224)
-    wm = wordmark(780)
-    tx, ty = 1450 - wm.width // 2, 470 - wm.height // 2
+    # Desktop tile, 16:9: the hero postcard left, the title right. The tile's name bar covers
+    # the foot on hover and badges sit top-left, so the title stays in the upper middle.
+    cap = desk.convert("RGBA").resize((1920, 1080), Image.LANCZOS)
+    hero, c = pieced(HERO, 104, **HERO_CARDS)
+    place(cap, hero, c, (600, 545))
+    book = passport(400, angle=7)
+    cap.alpha_composite(book, (round(1400 - book.width / 2), round(745 - book.height / 2)))
+    wm = wordmark(760)
+    tx, ty = 1400 - wm.width // 2, 300 - wm.height // 2
     glow(cap, (tx - 60, ty - 40, tx + wm.width + 60, ty + wm.height + 40), 120)
     cap.alpha_composite(wm, (tx, ty))
     save(cap, "hero/capsule_landscape.jpg", out)
 
-    # Share card 1.91:1, from the desktop tile: nothing essential in the top 20%.
-    share = cap.resize((1200, 675), Image.LANCZOS).crop((0, 30, 1200, 660))
+    # Share card 1.91:1, from the desktop tile.
+    share = cap.resize((1200, 675), Image.LANCZOS).crop((0, 22, 1200, 652))
     save(share, "hero/share_card.jpg", out)
 
-    # Phone tile, square: the top of the portrait table (lanterns in both corners),
-    # the title under the lanterns, the picture below it.
-    t = Image.open(MASTERS / "table.webp").convert("RGB")
+    # Phone tile, square: the top of home's desk (a lantern in the corner), the title at the
+    # top, the hero postcard below it.
+    t = Image.open(MASTERS / "home-desk.webp").convert("RGB")
     sq = t.crop((0, 0, t.width, t.width)).resize((1024, 1024), Image.LANCZOS).convert("RGBA")
-    mending(sq, 512, 716, 196, lift=(0.26, -0.40))
-    wm = wordmark(820)
-    tx, ty = 512 - wm.width // 2, 322 - wm.height // 2
+    hero, c = pieced(HERO, 80, **HERO_CARDS)
+    place(sq, hero, c, (500, 668))
+    wm = wordmark(800)
+    tx, ty = 512 - wm.width // 2, 175 - wm.height // 2
     glow(sq, (tx - 40, ty - 30, tx + wm.width + 40, ty + wm.height + 30), 90)
     sq.alpha_composite(wm, (tx, ty))
     save(sq, "hero/capsule_square.jpg", out)
@@ -229,9 +405,9 @@ def sheet(out, path):
     canvas.paste(sq.resize((96, 96), Image.LANCZOS), (560, y2 + 220))
     canvas.paste(out["hero/share_card.jpg"].convert("RGB").resize((600, 315), Image.LANCZOS), (1280, y + 450))
     # The border as a 16:9 PC screen: the game's 9:16 box drawn in the middle.
-    b = out["borders/winter-table.jpg"].resize((1040, 585), Image.LANCZOS)
+    b = out["borders/travel-desk.jpg"].resize((1040, 585), Image.LANCZOS)
     gw = round(585 * 9 / 16)
-    game = Image.open(ROOT / "public/art/table.webp").convert("RGB").resize((gw, 585), Image.LANCZOS)
+    game = Image.open(ROOT / "public/art/home-desk.webp").convert("RGB").resize((gw, 585), Image.LANCZOS)
     b.paste(game, ((1040 - gw) // 2, 0))
     canvas.paste(b, (800, y2 + 250))
     canvas.save(path)

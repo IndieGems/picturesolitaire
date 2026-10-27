@@ -92,10 +92,11 @@ media:
     src: hero/share_card.jpg
     alt: "Picture Passport: a postcard of a famous place being pieced together from its cards"
   portrait_borders:
-    - name: winter-table
-      src: borders/winter-table.jpg
-  # The desktop tile's hover loop: board 4 played from its own winning line, the harvest
-  # painting snapping whole (tools/art/preview/, re-record when the board's look changes).
+    - name: travel-desk
+      src: borders/travel-desk.jpg
+  # The desktop tile's hover loop: board 62 played on its own winning line, Mont-Saint-Michel's
+  # picture finished and its postcard unfolding with the place's name (tools/art/preview/,
+  # re-record when the board's look changes).
   preview: video/preview.mp4
   # The game at phone portrait, 1080x1920, from the play-test tool with progress set by the dev
   # hooks and each board played by its own proved line (the UI member, 2026-10-27).

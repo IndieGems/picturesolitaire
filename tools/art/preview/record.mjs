@@ -51,7 +51,7 @@ try {
     await t.waitFor(`!__board.busy()`, 20000);
     const log = await t.eval(`log.slice(${seen})`); seen += log.length;
     const now = Date.now() / 1000;
-    for (const l of log) if (/picture:complete|picture:clear|piece:merge|board:won/.test(l)) events.push({ at: now, what: l.slice(0, 160) });
+    for (const l of log) if (/picture:complete|picture:clear|piece:merge|board:won|destination:reveal|destination:done/.test(l)) events.push({ at: now, what: l.slice(0, 160) });
     await t.wait(120);
   }
   await t.wait(1500);

@@ -1,52 +1,71 @@
 """The store tile's hover loop, step 2: cut a take (record.mjs) into 1280x720 frames at 30 fps.
 
-    python tools/art/preview/cut.py <take-dir> <frames-out> <move a> <move b> [lead-in s]
+    python tools/art/preview/cut.py <take-dir> <frames-out> <dest id> <start move> <length s> <banner in s> <banner out s>
 
-Moves a and b are two moves of the line that make the same drag (board 4: 10 and 12, both
-4->17): the loop runs from just after move a to just after move b, so the end flows into
-the start, and its last half second dissolves into the frames before the start. The board's
-rows 1 to 4 sit in the middle over the wide winter table (the PC/TV side art), with the
-game's own snow drifting at the edges and a slow push-in and back out (the tile's checks
-want motion in every frame; the finished picture's glow holds still for a second).
+The loop (lead, 2026-10-27, for the travel game): a board played on its own winning line, a
+few moves that finish its destination's picture, the postcard unfolding over the whole board
+with the place's name on its banner, and the postcard going again. Times are seconds after
+<start move>'s drag begins; the last half second dissolves into the frames before the start, so
+the end flows into the start. Pick them from a contact sheet of the take.
 
-Then encode (ffmpeg with libx264: a system ffmpeg, or `npm i ffmpeg-static` in a scratch
-folder, never in the game):
+The whole board sits in the middle over the travel desk (the PC/TV side art), with the game's
+own snow drifting at the edges and a slow push-in and back out (the tile's checks want motion
+in every frame). The bench (src/board/try.html) has no screens, so the name banner is drawn
+here as the game draws it (src/ui/style.css .dest-banner: flat frosted glass, Fredoka, the
+name over its place), at the top of the board, for the time the postcard is open.
+
+Then encode at below-normal priority (ffmpeg with libx264: a system ffmpeg, or
+`npm i ffmpeg-static` in a scratch folder, never in the game):
     ffmpeg -framerate 30 -i <frames-out>/%04d.png -c:v libx264 -profile:v high -preset slow
            -crf 18 -pix_fmt yuv420p -movflags +faststart -an .gemarcade/video/preview.mp4
 and check it as the gemctl store-page skill says (freezedetect, mpdecimate, frames).
 """
-import json, sys, bisect
+import bisect
+import ctypes
+import json
+import math
+import random
+import sys
 from pathlib import Path
-from PIL import Image
+
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
+
+if sys.platform == "win32":  # AGENTS.md: the machine is shared, encode at below-normal priority
+    ctypes.windll.kernel32.SetPriorityClass(ctypes.windll.kernel32.GetCurrentProcess(), 0x4000)
+
 ROOT = Path(__file__).resolve().parents[3]
-take, out_dir, m_start, m_again = sys.argv[1], Path(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])
+take, out_dir, dest, m_start = sys.argv[1], Path(sys.argv[2]), sys.argv[3], int(sys.argv[4])
+L, b_in, b_out = float(sys.argv[5]), float(sys.argv[6]), float(sys.argv[7])
 d = json.loads(Path(take, "take.json").read_text())
-frames = d["frames"]; ts = [f["t"] for f in frames]
+frames = d["frames"]
+ts = [f["t"] for f in frames]
 at = {e["what"].split()[1]: e["at"] for e in d["events"] if e["what"].startswith("move ")}
-S = at[str(m_start)] + float(sys.argv[5] if len(sys.argv) > 5 else 0.15)
-L = at[str(m_again)] - at[str(m_start)]
+S = at[str(m_start)]
 FPS, XF = 30, 0.5
 n_body = round(L * FPS)
 W, H = 1280, 720
-bg = Image.open(ROOT / ".gemarcade/borders/winter-table.jpg").convert("RGB").resize((W, H), Image.LANCZOS)
+bg = Image.open(ROOT / ".gemarcade/borders/travel-desk.jpg").convert("RGB").resize((W, H), Image.LANCZOS)
 FW, FH = d["size"]
-cells = d["cells"]; ys = sorted({round(c["y"]) for c in cells}); pitch = ys[1] - ys[0]
-y0, y1 = round(ys[1] - 0.62 * pitch), round(ys[4] + 0.62 * pitch)   # the board's rows 1 to 4
-cw = round(FW * H / (y1 - y0)); x = (W - cw) // 2
+cells = d["cells"]
+ys = sorted({round(c["y"]) for c in cells})
+pitch = ys[1] - ys[0]
+y0, y1 = round(ys[0] - 0.62 * pitch), round(ys[-1] + 0.62 * pitch)  # the whole board, top row to bottom
+cw = round(FW * H / (y1 - y0))
+x = (W - cw) // 2
 feather = Image.new("L", (cw, H), 255)
-fw = 70
+fw = 60
 for i in range(fw):
     v = round(255 * (i / fw) ** 1.5)
     for xx in (i, cw - 1 - i):
         feather.paste(v, (xx, 0, xx + 1, H))
+
 # The game's own snow (public/art/snow.png), drifting at the edges as the real screen does;
 # every flake's path repeats once per loop, so the loop has no seam.
-import math, random
 random.seed(7)
 strip = Image.open(ROOT / "public/art/snow.png").convert("RGBA")
 FL = [strip.crop((i * 32, 0, i * 32 + 32, 32)) for i in range(4)]
 flakes = []
-for i in range(46):
+for i in range(40):
     side = i % 2
     fx = random.uniform(8, x - 24) if side == 0 else random.uniform(x + cw + 4, W - 20)
     kind = random.choices([0, 1, 2, 3], [6, 2, 3, 1])[0]
@@ -54,36 +73,86 @@ for i in range(46):
     flakes.append(dict(x=fx, y=random.uniform(-40, H), fall=random.uniform(70, 140), sway=random.uniform(4, 10),
                        ph=random.random(), sw=random.random(), a=random.uniform(0.45, 0.9) * (0.5 if kind == 1 else 1),
                        img=FL[kind].resize((round(size), round(size)), Image.LANCZOS), rot=random.uniform(-40, 40) if kind == 3 else 0))
+
+
 def snow(o, k):
     for f in flakes:
         u = (k / n_body + f["ph"]) % 1.0
-        env = math.sin(math.pi * u)            # fades in and out over its life
+        env = math.sin(math.pi * u)  # fades in and out over its life
         fy = f["y"] + f["fall"] * u
         fx = f["x"] + f["sway"] * math.sin(2 * math.pi * (k / n_body + f["sw"]))
         im = f["img"].rotate(f["rot"] * u, resample=Image.BICUBIC) if f["rot"] else f["img"]
         a = im.getchannel("A").point(lambda v, m=f["a"] * env: round(v * m))
         o.paste(im.convert("RGB"), (round(fx), round(fy)), a)
     return o
+
+
+# The name banner, as the game draws it.
+cat = json.loads((ROOT / "src/content/pictures.json").read_text(encoding="utf-8"))
+place = next(p for p in cat["destinations"] if p["id"] == dest)
+font = ROOT / "public/fonts/fredoka-latin.woff2"
+SC = cw / 430  # the game's CSS px at this board width (a phone's board is about 430 px across)
+fn, fp = ImageFont.truetype(str(font), round(26 * SC)), ImageFont.truetype(str(font), round(14 * SC))
+fn.set_variation_by_axes([600]) if hasattr(fn, "set_variation_by_axes") else None
+nb, pb = fn.getbbox(place["name"]), fp.getbbox(place["place"])
+bw = max(nb[2] - nb[0], pb[2] - pb[0]) + round(36 * SC)
+bh = round((7 + 6 + 2) * SC) + (nb[3] - nb[1]) + (pb[3] - pb[1]) + round(8 * SC)
+banner = Image.new("RGBA", (bw, bh), (0, 0, 0, 0))
+m = Image.new("L", (bw * 3, bh * 3), 0)
+ImageDraw.Draw(m).rounded_rectangle([0, 0, bw * 3 - 1, bh * 3 - 1], radius=20 * SC * 3, fill=255)
+m = m.resize((bw, bh), Image.LANCZOS)
+banner.paste(Image.new("RGBA", (bw, bh), (232, 240, 248, 209)), (0, 0), m)
+edge = ImageDraw.Draw(banner)
+edge.rounded_rectangle([0, 0, bw - 1, bh - 1], radius=20 * SC, outline=(255, 255, 255, 190), width=max(1, round(1.5 * SC)))
+ty = round(7 * SC) - nb[1]
+edge.text(((bw - (nb[2] - nb[0])) / 2 - nb[0], ty), place["name"], font=fn, fill=(52, 67, 90, 255))
+ty2 = ty + nb[3] + round(4 * SC) - pb[1]
+edge.text(((bw - (pb[2] - pb[0])) / 2 - pb[0], ty2), place["place"], font=fp, fill=(85, 101, 124, 255))
+BY = round(14 * SC)  # the banner's top, inside the board's top edge
+
+
+def with_banner(o, t):
+    """The banner arrives with a little overshoot (dest-in, 0.5 s) and fades out (0.26 s)."""
+    if not (b_in <= t <= b_out):
+        return o
+    u = min(1.0, (t - b_in) / 0.5)
+    s = 0.9 + 0.1 * (1 - (1 - u) ** 3) + 0.04 * math.sin(math.pi * u) * (1 - u)
+    a = min(1.0, u * 2.5) * min(1.0, max(0.0, (b_out - t) / 0.26))
+    im = banner.resize((round(bw * s), round(bh * s)), Image.LANCZOS)
+    im.putalpha(im.getchannel("A").point(lambda v: round(v * a)))
+    base = o.convert("RGBA")
+    base.alpha_composite(im, (round(W / 2 - im.width / 2), BY + round((bh - im.height) / 2)))
+    return base.convert("RGB")
+
+
 ZOOM = 0.02  # a slow push-in and back out over the loop (periodic, so no seam)
+
+
 def frame_at(t, k=0):
     i = max(0, bisect.bisect_right(ts, t) - 1)
     z = 1 + ZOOM * (1 - math.cos(2 * math.pi * (k % n_body) / n_body)) / 2
-    bw, bh = FW / z, (y1 - y0) / z
+    bw_, bh_ = FW / z, (y1 - y0) / z
     cx, cy = FW / 2, (y0 + y1) / 2
     im = Image.open(Path(take, frames[i]["f"])).convert("RGB").resize(
-        (cw, H), Image.LANCZOS, box=(cx - bw / 2, cy - bh / 2, cx + bw / 2, cy + bh / 2))
-    o = bg.copy(); o.paste(im, (x, 0), feather); return o, i
+        (cw, H), Image.LANCZOS, box=(cx - bw_ / 2, cy - bh_ / 2, cx + bw_ / 2, cy + bh_ / 2))
+    o = bg.copy()
+    o.paste(im, (x, 0), feather)
+    return with_banner(o, t - S), i
+
+
 out_dir.mkdir(parents=True, exist_ok=True)
-for p in out_dir.glob("*.png"): p.unlink()
-src_used = []
+for p in out_dir.glob("*.png"):
+    p.unlink()
+used = []
 nx = round(XF * FPS)
 for k in range(n_body):
     t = S + k / FPS
     o, i = frame_at(t, k)
-    if k >= n_body - nx:   # dissolve into the opening frames, so the end flows into the start
+    if k >= n_body - nx:  # dissolve into the frames before the start, so the end flows into the start
         a = (k - (n_body - nx) + 1) / (nx + 1)
-        h, _ = frame_at(S + (k - n_body) / FPS, k)   # the frames just before the start: same motion
+        h, _ = frame_at(S + (k - n_body) / FPS, k)
         o = Image.blend(o, h, a)
     snow(o, k)
-    o.save(out_dir / f"{k:04d}.png"); src_used.append(i)
-print(f"start {S - ts[0]:.2f}s, loop {L:.2f}s, {n_body} frames, {len(set(src_used))} distinct source frames")
+    o.save(out_dir / f"{k:04d}.png")
+    used.append(i)
+print(f"start {S - ts[0]:.2f}s, loop {L:.2f}s, {n_body} frames, {len(set(used))} distinct source frames")
