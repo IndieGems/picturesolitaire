@@ -942,6 +942,9 @@ html.less-motion .particles, html.battery-saver .particles { display: none; }
   font: 600 22px/1 var(--round); color: var(--amber-lip);
 }
 .card .prize .coin { width: 38px; height: 38px; }
+/* its place kept until the verdict says what landed (the table's row and its note), closed if nothing did */
+.card .prize.pending { min-height: 67px; }
+.card .prize[hidden] { display: none; }
 @keyframes coins-in { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
 html.less-motion .card .coins-chip { animation: none; }
 

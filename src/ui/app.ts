@@ -1033,8 +1033,11 @@ function packedMoment(v: Verdict, line: HTMLElement): void {
   const before = s ? heldOf(s) : 0;
   const had = !!s && (s.counts[p.item] ?? 0) > 0;
   const packed = had || p.count > 1 ? before : before + 1;
-  // the 10th: the prize came with this claim (the verdict's gifts say "suitcase", Server's)
-  const full = (v as { gifts?: string[] }).gifts?.includes("suitcase") ? (s?.month ?? "") : null;
+  // the 10th: the prize came with this claim (the verdict's gifts say "suitcase", Server's); its table is
+  // named only if it LANDED (the verdict's items), as every reward on a card is
+  const full = (v as { gifts?: string[] }).gifts?.includes("suitcase")
+    ? { month: s?.month ?? "", table: !!s && ((v as { items?: string[] }).items ?? []).includes(s.prize.table) }
+    : null;
   packedOnCard(line, it, dayItem?.id === p.item ? dayItem.url : "", p.count, packed, s?.items.length ?? 10, full);
 }
 
@@ -1052,7 +1055,7 @@ function dailyLine(w: Extract<Win, { kind: "daily" }>): string {
  * the player's finger moves), and the Coins flying to the Arcade's wallet once.
  * Nothing for a win that paid nothing new.
  */
-function drawCoins(win: Win): void {
+function drawCoins(win: Win, fresh = false): void {
   const v = win.verdict;
   const card = winVeil.querySelector<HTMLElement>(".card");
   // practice: "nothing saved" where the Coins would be
@@ -1067,6 +1070,8 @@ function drawCoins(win: Win): void {
   // same chip on the card's top edge as any card's, so nothing on it moves when they come
   const kit = card.querySelector<HTMLElement>(".kit");
   if (kit) {
+    // the keepsake table, said only if it landed
+    settlePrize(card, v, fresh);
     if (v.coins > 0 && !card.querySelector(".coins-chip")) {
       const coin = coinIcon(24, false, "coin");
       card.append(h("div", { class: "coins-chip glass", role: "status" }, coin, h("span", {}, t("win.coins", { count: v.coins }))));
@@ -1217,17 +1222,30 @@ function showWin(): void {
 }
 
 /**
- * The guide's prize: the table, with where to choose it (Server's list, src/net/tables.json). Its
- * Coins are not promised here: they are drawn only once the checker's verdict says they LANDED, as
- * the card's top-edge chip (drawCoins; QA, 2026-10-27: the platform pays no Coins to a guest, so a
- * number up front would be wrong for one).
+ * The guide's prize, its place on the card: nothing is promised up front (QA, 2026-10-27: the platform
+ * withholds some rewards from a guest, so a promise could be wrong for one). The table (Server's list,
+ * src/net/tables.json) and where to choose it fill it once the checker's verdict says the table LANDED
+ * (drawCoins); otherwise the place closes. Its Coins are the card's top-edge chip, as many as landed.
  */
 function guidePrize(): HTMLElement | null {
+  if (!KEEPSAKE || !knownTable(KEEPSAKE.slug)) return null;
+  return h("div", { class: "prize pending" });
+}
+/**
+ * The guide's table, on its card, once the verdict says it landed. If it did not, its place closes when
+ * the verdict was in as the card opened (`fresh`), and otherwise stays, empty, so nothing on the card
+ * moves under the player's finger.
+ */
+function settlePrize(card: HTMLElement, v: Extract<Verdict, { status: "paid" }>, fresh: boolean): void {
+  const box = card.querySelector<HTMLElement>(".prize.pending");
+  if (!box) return;
   const a = KEEPSAKE ? knownTable(KEEPSAKE.slug) : undefined;
-  if (!a) return null;
-  return h(
-    "div",
-    { class: "prize" },
+  if (!a || !KEEPSAKE || !v.items?.includes(KEEPSAKE.slug)) {
+    if (fresh) box.hidden = true;
+    return;
+  }
+  box.classList.remove("pending");
+  box.replaceChildren(
     h("span", { class: "won-table" }, h("img", { src: thumbOf(a), alt: "", draggable: "false" }), h("span", {}, tableTitle(a))),
     h("span", { class: "prize-note" }, t("guide.tableNote")),
   );
@@ -1269,7 +1287,7 @@ function showMilestone(gallery: HTMLElement): void {
   showCard(winVeil);
   fireworks(card, 6, 3000);
   emit("milestone:show", { id: "guide" });
-  if (lastWin) drawCoins(lastWin);
+  if (lastWin) drawCoins(lastWin, true);
 }
 
 /**

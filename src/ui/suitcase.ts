@@ -213,7 +213,9 @@ export function createSuitcase(nav: Nav) {
     const now = suitcases.current();
     const prize = answer === "ok" ? suitcases.lastPrize() : null;
     if (answer === "ok" && (prize || now?.complete)) {
-      said = t("case.swappedFull", { item: it.title });
+      // the table is said only once the platform holds it for the player (Server's `paid`: the month's table held)
+      const table = !!now?.paid && now.prize.table !== DEFAULT_TABLE;
+      said = t(table ? "case.swappedFull" : "case.swappedFullPlain", { item: it.title });
       emit("suitcase:full", { month: prize?.month ?? now?.month ?? "" });
     }
     draw();
@@ -360,7 +362,16 @@ export function createSuitcase(nav: Nav) {
  * suitcase in the card's line, the item's picture flying into it from `from` (the board's copy,
  * suitcase:item's url, else Art's), and the line saying what came. Takes no touch, holds nothing.
  */
-export function packedOnCard(line: HTMLElement, item: SuitItem, url: string, count: number, packed: number, all: number, full: string | null = null): void {
+export function packedOnCard(
+  line: HTMLElement,
+  item: SuitItem,
+  url: string,
+  count: number,
+  packed: number,
+  all: number,
+  /** The 10th: the month, and whether its table landed with the prize (else the helpers alone are said). */
+  full: { month: string; table: boolean } | null = null,
+): void {
   const mini = miniCase("on-card");
   // a new item says how full the suitcase is; a spare copy says how many of it there are now
   const words = el("span", "packed-words", count > 1 ? t("case.packedAgain", { item: item.title, count }) : t("case.packedCard", { item: item.title, count: packed, all }));
@@ -371,8 +382,8 @@ export function packedOnCard(line: HTMLElement, item: SuitItem, url: string, cou
     mini.classList.add("bump");
     emit("suitcase:packed", { id: item.id, count });
     if (full) {
-      words.textContent = t("case.fullCard");
-      emit("suitcase:full", { month: full });
+      words.textContent = t(full.table ? "case.fullCard" : "case.fullHelpers");
+      emit("suitcase:full", { month: full.month });
     }
   };
   // it takes off from its own picture in the card's gallery (the item and its picture share an id), else the card's middle
