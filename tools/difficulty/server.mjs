@@ -11,6 +11,13 @@
 // It watches nothing: every request reads the level files again (measures are cached by the
 // board's content, so a re-dealt board is measured afresh), so a reload shows what changed.
 //
+// It never loads the game's code itself. The measures and the level plans run in a worker thread
+// (measure-worker.mjs) with a module graph of its own: Node keeps a module that failed to load
+// failed for the life of its graph, so a load caught while someone is mid-edit would otherwise stick
+// until a restart (2026-10-27: every lane answered 503 for good). The worker is thrown away when a
+// call fails and when the game's sources or the plans change (their newest change time), and the
+// next request starts a fresh one; the measures cache, kept here, empties with it.
+//
 //   GET /                     the page (index.html, app.js, style.css beside this file)
 //   GET /api/lane?lane=L      every board of lane L (campaign | challenge | daily), with its numbers
 //   GET /api/board?lane=L&id= one board: its numbers, its pictures and its opening (cards and stacks)
@@ -26,8 +33,8 @@
 import { createServer } from "node:http";
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
-import { careless, opening, reader, safeStart } from "./measure.mjs";
+import { fileURLToPath } from "node:url";
+import { Worker } from "node:worker_threads";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..", "..");
@@ -39,43 +46,94 @@ async function readJson(rel) {
   return JSON.parse(await fs.readFile(path.join(root, rel), "utf8"));
 }
 
-/** A plan module, re-imported when its file changes (a changed target shows on reload). */
-const plans = new Map();
-async function plan(rel) {
-  const file = path.join(root, rel);
-  const t = (await fs.stat(file)).mtimeMs;
-  const had = plans.get(rel);
-  if (had?.t === t) return had.mod;
-  const mod = await import(`${pathToFileURL(file).href}?v=${t}`);
-  plans.set(rel, { t, mod });
-  return mod;
-}
+// ------------------------------------------------------------------ the measuring worker
 
-/** Each board's careless-win target [lo, hi] and what the plan calls its role. */
-async function targets(lane, levels) {
-  if (lane === "campaign") {
-    const { PLAN } = await plan("tools/levels/campaign-plan.mts");
-    return levels.map((_, i) => PLAN[i]?.careless ?? null);
-  }
-  if (lane === "challenge") {
-    const { PLAN } = await plan("tools/levels/challenge-plan.mts");
-    return levels.map((_, i) => PLAN[i]?.careless ?? null);
-  }
-  const { WEEK } = await plan("tools/levels/daily-plan.mts");
-  return levels.map((l) => WEEK.find((r) => r.role === l.axes?.role)?.careless ?? null);
+/** What the worker loads: when any of it changes, a fresh worker (and fresh measures). */
+const SOURCES = [path.join(root, "src", "game"), path.join(root, "tools", "levels"), path.join(here, "measure.mjs"), path.join(here, "measure-worker.mjs")];
+/** The newest change time among the sources (a few dozen files: cheap on every call). */
+async function sourcesStamp() {
+  let latest = 0;
+  const walk = async (p) => {
+    const st = await fs.stat(p).catch(() => null);
+    if (!st) return;
+    if (!st.isDirectory()) latest = Math.max(latest, st.mtimeMs);
+    else for (const e of await fs.readdir(p)) await walk(path.join(p, e));
+  };
+  for (const p of SOURCES) await walk(p);
+  return latest;
 }
 
 /** Measures by board content: a board re-dealt under the same id is measured again. */
 const cache = new Map();
-function measures(l) {
-  const key = `${l.cols}x${l.rows}|${l.seed}|${JSON.stringify(l.stacks)}`;
-  let m = cache.get(key);
-  if (!m) {
-    const c = typeof l.axes?.careless === "number" ? l.axes.careless : careless(l);
-    m = { careless: c, reader: reader(l), ...safeStart(l) };
-    cache.set(key, m);
+const keyOf = (l) => `${l.cols}x${l.rows}|${l.seed}|${JSON.stringify(l.stacks)}`;
+
+let worker = null;
+let workerStamp = 0;
+let seq = 0;
+const pending = new Map();
+
+function spawn() {
+  const w = new Worker(new URL("./measure-worker.mjs", import.meta.url));
+  w.on("message", ({ id, result, error }) => {
+    const p = pending.get(id);
+    if (!p) return;
+    pending.delete(id);
+    clearTimeout(p.timer);
+    if (error) p.reject(new Error(error));
+    else p.resolve(result);
+  });
+  w.on("error", (e) => retire(w, e));
+  w.on("exit", (code) => retire(w, new Error(`the measuring worker stopped (${code})`)));
+  return w;
+}
+
+/** Throw worker w away: its calls fail, and the next call starts a fresh worker. */
+function retire(w, err) {
+  if (worker === w) worker = null;
+  for (const [id, p] of pending) {
+    if (p.w !== w) continue;
+    pending.delete(id);
+    clearTimeout(p.timer);
+    p.reject(err);
   }
-  return m;
+  w.terminate().catch(() => {});
+}
+
+/** Run op in the worker: a fresh one when the sources changed since it started or the last call failed. */
+async function call(op, ...args) {
+  const stamp = await sourcesStamp();
+  if (stamp !== workerStamp) {
+    if (worker) retire(worker, new Error("the game's sources changed"));
+    cache.clear();
+    workerStamp = stamp;
+  }
+  worker ??= spawn();
+  const w = worker;
+  const id = ++seq;
+  try {
+    return await new Promise((resolve, reject) => {
+      const timer = setTimeout(() => retire(w, new Error("a measure took over two minutes")), 120_000);
+      pending.set(id, { resolve, reject, timer, w });
+      w.postMessage({ id, op, args });
+    });
+  } catch (e) {
+    // most likely a source caught mid-edit: this worker's module graph may stay broken, so drop it
+    if (worker === w) retire(w, e);
+    throw e;
+  }
+}
+
+/** Each board's careless-win target [lo, hi], from its plan (in the worker: the plans load the solver). */
+const targets = (lane, levels) => call("targets", lane, levels.map((l) => ({ axes: { role: l.axes?.role } })));
+
+/** The measures of these boards: the cached ones, and the rest from the worker in one call. */
+async function measuresOf(levels) {
+  const missing = levels.filter((l) => !cache.has(keyOf(l)));
+  if (missing.length) {
+    const got = await call("measures", missing);
+    missing.forEach((l, k) => cache.set(keyOf(l), got[k]));
+  }
+  return levels.map((l) => cache.get(keyOf(l)));
 }
 
 const pct = (x) => Math.round(x * 1000) / 10;
@@ -84,10 +142,12 @@ async function lane(name) {
   const levels = (await readJson(`src/content/levels/${name}.json`)).levels;
   const cat = await readJson("src/content/pictures.json");
   const dests = new Map((cat.destinations ?? []).map((d) => [d.id, d]));
+  // the targets first: that call is where a change in the sources empties the cache
   const tgt = await targets(name, levels);
+  const all = await measuresOf(levels);
   const trips = name === "campaign" ? (await readJson("src/content/levels/trips.json")).trips : [];
   const boards = levels.map((l, i) => {
-    const m = measures(l);
+    const m = all[i];
     const long = l.pictures.every((p) => p.cols * p.rows === 2);
     const d = l.destination ? dests.get(l.destination.id) : null;
     return {
@@ -134,7 +194,7 @@ async function board(name, id) {
     return { id: p.id, title: c?.title ?? p.id, cols: p.cols, rows: p.rows, img: c?.board ?? c?.file ?? null, grid: [p.cols, p.rows], at: [0, 0], busy: c?.busy ?? 0, medium: c?.medium ?? null };
   });
   const d = l.destination ? dests.get(l.destination.id) : null;
-  return { ...all.find((b) => b.id === id), destination: d ? { id: d.id, name: d.name, place: d.place ?? null } : null, picturesOn: pictures, opening: opening(l) };
+  return { ...all.find((b) => b.id === id), destination: d ? { id: d.id, name: d.name, place: d.place ?? null } : null, picturesOn: pictures, opening: await call("opening", l) };
 }
 
 async function file(res, abs, base) {
