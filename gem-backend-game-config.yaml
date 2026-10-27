@@ -173,7 +173,10 @@ catalogs:
 # per win (board_started over board_won) and quits per board. Campaign boards
 # only; never practice, lessons or the dev menu. Each try sends board_started,
 # then exactly one of won, lost or quit when it ends. Every dimension must be
-# sent; measures are optional. `board` is the campaign number; `attempt` the
+# sent; measures are optional. `board` is the campaign number, SENT AS A STRING
+# ("7"): the SDK's track makes every number a measure, so a number here arrives
+# without its dimension and is refused (missing_dimension; tested on dev
+# 2026-10-27, SDK 15.3.2, whatever its analytics guide's example shows). `attempt` the
 # player's try at it since their last win of it; helpers count only uses taken
 # from the stock (mercy's free Hint and the lessons are 0).
 # Once live, an id, a dimension or a value is permanent: a rename starts over.
