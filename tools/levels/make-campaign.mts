@@ -15,6 +15,8 @@
 //                  board (and add no plan rows)
 //   --reseat 1,2,3 re-deal these boards with exactly their own pictures and
 //                  destination, on their rows' targets (e.g. made readable)
+//   --from N       with --reseat: start the seed search at N (a seed found by
+//                  scanning a big board's seeds in parallel; any seed is as good)
 //   --rows N       make the plan's first N rows only (e.g. while the library
 //                  cannot fill the rest yet)
 //   --out FILE     write the boards there instead, and no docs (for trials)
@@ -53,6 +55,8 @@ const redealAt = process.argv.indexOf("--redeal");
 const redeal = new Set(redealAt > 0 ? process.argv[redealAt + 1].split(",").map((n) => Number(n) - 1) : []);
 const reseatAt = process.argv.indexOf("--reseat");
 const reseat = new Set(reseatAt > 0 ? process.argv[reseatAt + 1].split(",").map((n) => Number(n) - 1) : []);
+const fromAt = process.argv.indexOf("--from");
+const FROM = fromAt > 0 ? Number(process.argv[fromAt + 1]) : undefined;
 const adding = PLAN.length > old.length && !has("--repair-only") && !redeal.size && !reseat.size;
 if (adding && old.length && fileTag !== PLAN_TAG && keepAt < 0) {
   console.error(`campaign.json was made from another plan (${fileTag ?? "before plans were named"}), not ${PLAN_TAG}: remake it with --fresh, or re-deal flagged boards only with --repair-only`);
@@ -73,6 +77,10 @@ const made = route(PLAN, old, {
     cols: PLAN[i].board?.[0] ?? BOARD.cols,
     rows: PLAN[i].board?.[1] ?? BOARD.rows,
     reseedOf: (i, attempt) => 0xbadcafe + i * 7919 + attempt * 104729,
+    // a readable deal at a build's target is about one in 5,000 seeds (docs/difficulty-curve.md), and
+    // other pictures of the same shapes deal the same: search further, stopping at the first that fits
+    tries: PLAN[i].reader ? 80000 : 3000,
+    ...(FROM !== undefined && reseat.has(i) ? { from: FROM } : {}),
     // the relaxed campaign's rule: a safe start (AGENTS.md)
     safeFirstMove: true,
   }),

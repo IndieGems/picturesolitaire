@@ -563,13 +563,15 @@ function reseatBoard(row, b, opts) {
   if ((dest?.id ?? null) !== (b.destination?.id ?? null)) throw new Error(`${b.id}: its destination is not its row's; re-deal it with --redeal`);
   // readable deals in a build's careless range are a few in a thousand: search further than a new board does
   const TRIES = 80000;
+  // (opts.from: where the search starts, e.g. a seed found by scanning a 6x6 board's seeds in parallel)
+  const first = opts.from ?? 1;
   const deal = (pictures) => {
-    let { board, tally } = dealBoard(row, pictures, { ...opts, tries: TRIES });
+    let { board, tally } = dealBoard(row, pictures, { ...opts, from: first, tries: TRIES });
     for (let again = 0; board && again < 30; again++) {
       const why = seatProblem(board, dest);
       if (!why) break;
       console.log(`${b.id}: ${why} on seed ${board.seed}; the next seed`);
-      ({ board, tally } = dealBoard(row, pictures, { ...opts, from: board.seed + 1, tries: TRIES - board.seed }));
+      ({ board, tally } = dealBoard(row, pictures, { ...opts, from: board.seed + 1, tries: first + TRIES - board.seed - 1 }));
     }
     return { board, tally };
   };

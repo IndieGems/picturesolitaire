@@ -80,6 +80,8 @@ function chart() {
   if (state.lane === "campaign") {
     el("line", { x1: M.l, x2: W - M.r, y1: y(15), y2: y(15), stroke: "var(--reader)", "stroke-width": 1, "stroke-dasharray": "1 4", opacity: 0.8 }, svg);
     el("text", { x: W - M.r - 2, y: y(15) - 4, "text-anchor": "end", "font-size": 10, fill: "var(--muted)" }, svg).textContent = "readable: orange at or under this, unmarked boards";
+    el("line", { x1: M.l, x2: W - M.r, y1: y(75), y2: y(75), stroke: "var(--reader)", "stroke-width": 1, "stroke-dasharray": "1 4", opacity: 0.8 }, svg);
+    el("text", { x: W - M.r - 2, y: y(75) - 4, "text-anchor": "end", "font-size": 10, fill: "var(--muted)" }, svg).textContent = "never a wall: orange at or under this, marked boards";
   }
   // targets: the band each board was dealt to (as games lost)
   boards.forEach((b, i) => {
@@ -194,7 +196,9 @@ async function open(id) {
     ["Winning line", `${b.moves} moves`],
     ...(b.par != null ? [["Par", b.par]] : []),
     ["Starts safe", b.safe ? "yes" : "no: a first move can lose it"],
-    ...(state.lane === "campaign" ? [["Readable (85%+ drawing by the face-up cards)", b.mark ? "not required: marked" : b.reader >= 85 ? "yes" : "no"]] : []),
+    ...(state.lane === "campaign"
+      ? [b.mark ? ["A careful player wins 1 in 4 or more (marked)", b.reader >= 25 ? "yes" : "no: a wall"] : ["Readable (85%+ drawing by the face-up cards)", b.reader >= 85 ? "yes" : "no"]]
+      : []),
     ["Board", sizeOf(b)],
   ];
   $("detail").innerHTML = `

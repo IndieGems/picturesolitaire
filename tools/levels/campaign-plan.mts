@@ -82,7 +82,7 @@
 //   traps     (optional) the winning line's steps where another choice loses the board
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
-import { READABLE } from "../../src/game/solver/metrics.ts";
+import { CAREFUL, READABLE } from "../../src/game/solver/metrics.ts";
 
 /**
  * The plan's name, stored in campaign.json: the maker adds rows to a file only
@@ -230,6 +230,43 @@ export const PLAN = [
   /* 88 */ { role: "build",  destination: "dest-lunenburg", drop: "paddleboarder", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
   /* 89 */ { role: "build",  destination: "dest-cabot-trail", drop: "clivia", board: [4, 5], ...sq(11), careless: [0.4, 0.5], chain: ANY, ...NEW_ONLY },
   /* 90 */ { role: "super",  destination: "dest-twillingate-iceberg", board: [6, 6], addFrom: ADD_5X5, ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  // ---- trip 7, Argentina (the creator, 2026-10-27; docs/difficulty-curve.md "Trips 7 and 8"): the trip
+  // shape since trip 3, every unmarked board readable and every marked one beatable by a careful player
+  // (metrics.ts READABLE, CAREFUL; set below), which caps the builds at 10-11 pictures (12 on 4x5 is not
+  // readable at a build's target). Big boards: 95 and 100 at 5x5; the finale 105 stays 4x5 (the 6x6
+  // finales are every other one: 90, then 120). Postcards come from Art's batch; rows take them when it lands
+  /* 91 */ { role: "relief", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
+  /* 92 */ { role: "build",  board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
+  /* 93 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 94 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 95 */ { role: "hard",   board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  /* 96 */ { role: "pace",   count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
+  /* 97 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 98 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 99 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 100 */ { role: "hard",  board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  /* 101 */ { role: "relief", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
+  /* 102 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 103 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 104 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 105 */ { role: "super", board: [4, 5], ...sq(12), careless: [0.08, 0.2], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  // ---- trip 8, Australia (New Zealand in reserve, the creator, 2026-10-27): the same shape; big boards
+  // 110 at 5x5 and the finale 120 at 6x6
+  /* 106 */ { role: "relief", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
+  /* 107 */ { role: "build", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
+  /* 108 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 109 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 110 */ { role: "hard",  board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  /* 111 */ { role: "pace",  count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
+  /* 112 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 113 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 114 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 115 */ { role: "hard",  board: [4, 5], ...sq(12), careless: [0.2, 0.3], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  /* 116 */ { role: "relief", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
+  /* 117 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 118 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 119 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.4, 0.5], chain: ANY, ...NEW_ONLY },
+  /* 120 */ { role: "super", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY, ...NEW_ONLY },
 ];
 
 /**
@@ -270,7 +307,10 @@ export const MARKS = { hard: "hard", peak: "hard", super: "super" };
 // catalogue entries from marigolds on), so all of them are new to the player
 // boards 61 on: every picture from the next batch (lead, 2026-10-26; Art: foxgloves on), new to the player again;
 // 1-60 never take from it (newTo), so a re-dealt board there cannot show one early
-PLAN.forEach((row, i) => Object.assign(row, i < 30 ? { newTo: "foxgloves" } : i < 60 ? { newFrom: "marigolds", newTo: "foxgloves" } : { newFrom: "foxgloves" }));
+// boards 91 on (trips 7 and 8): only from the batch Art makes for them (NEXT_BATCH, its first id once it
+// lands), and boards 61-90 never take from it
+export const NEXT_BATCH = "next-batch";
+PLAN.forEach((row, i) => Object.assign(row, i < 30 ? { newTo: "foxgloves" } : i < 60 ? { newFrom: "marigolds", newTo: "foxgloves" } : i < 90 ? { newFrom: "foxgloves", newTo: NEXT_BATCH } : { newFrom: NEXT_BATCH }));
 // every unmarked board is READABLE (creator, 2026-10-27, after "rigged"-feeling boards 18-19): a player who
 // draws by the face-up cards wins it 85% or more; hard and super hard boards may still hide the way. Where
 // no deal of a board's pictures is readable at its target (the 12-picture builds late in trips 3-6 above
@@ -279,4 +319,8 @@ PLAN.forEach((row, i) => Object.assign(row, i < 30 ? { newTo: "foxgloves" } : i 
 // (54, 58, 59, 69, 74, 89, each its trip's hardest unmarked build, and 88 under the same rule) ease
 // their target one step (creator's choice (a), 2026-10-27; make-campaign.mts --reseat)
 for (const row of PLAN) if (!MAY_TRAP.has(row.role)) row.reader = [READABLE, 1];
+// and a marked board never walls a thinking player (creator, 2026-10-27, after board 60): the reader
+// wins it 1 in 4 or more. The 6x6 finales 60 and 90, re-dealt for it, stay the game's hardest: 25-40%
+for (const row of PLAN) if (MAY_TRAP.has(row.role)) row.reader = [CAREFUL, 1];
+PLAN[59].reader = PLAN[89].reader = [CAREFUL, 0.4];
 for (const row of PLAN) Object.assign(row, { peek: 0, vary: true, busyMost: row.busyMost ?? 0, liveMost: row.liveMost ?? (row.role === "pace" ? undefined : row.count >= 8 ? 2 : 1) });

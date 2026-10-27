@@ -12,7 +12,8 @@
 //   the board (ties: a coin toss). Rarely below CARELESS. Where the two are
 //   close, looking does not help: what decides the board is the hidden cards
 //   behind, which come down when a picture is finished. An unmarked campaign
-//   board must be READABLE: the reader wins 85% or more (READABLE; check.mts).
+//   board must be READABLE: the reader wins 85% or more (READABLE; check.mts),
+//   and a marked one must not wall it: 25% or more (CAREFUL).
 //   It assumes the next card face up (board tuning showNext); with card backs
 //   it would need measuring again. (Choosing WHICH picture to finish by the
 //   face-up cards was tried too: a fixed rule there is wrong every time on
@@ -64,6 +65,12 @@ export function careless(game: Game): number {
 
 /** An unmarked board's reader must win at least this often (creator, 2026-10-27). */
 export const READABLE = 0.85;
+/**
+ * A marked (hard or super hard) board's reader must win at least this often (creator, 2026-10-27,
+ * after board 60: "I know I'm very very likely to get stuck and can't do anything about it"): a
+ * marked board may hide the way, but must not wall a thinking player, who wins about 1 in 4 or more.
+ */
+export const CAREFUL = 0.25;
 
 /** The reader's chance of winning from the root: the careless player, drawing by the face-up cards. */
 export function reader(game: Game): number {

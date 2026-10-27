@@ -259,6 +259,114 @@ marked. `tools/levels/check.mts` fails an unmarked board that is not.
   `showNext`). If the stacks go back to card backs, the reader sees nothing,
   and readability must be measured again.
 
+**Marked boards never wall a careful player (the creator, 2026-10-27).**
+After board 60 the creator said: "I know I'm very very likely to get stuck
+and can't do anything about it." A hard or super hard board may still hide
+the way. But the reader must win it about 1 in 4 or more (25%, `CAREFUL` in
+`metrics.ts`), and `tools/levels/check.mts` fails a marked campaign board
+under that.
+
+- **Two boards failed: 60 and 90.** Both were re-dealt at 6×6 with their own
+  pictures and postcards. Their careless play stays in the super band, and
+  the reader is now 25–40%, so they stay the game's hardest boards.
+
+| Board | Careless, before → now | Reader, before → now |
+|---|---|---|
+| 60 | 9.3% → 19% | 10.6% → 29% |
+| 90 | 14.9% → 16% | 20.9% → 34% |
+
+- **Every other marked board already passed.** The lowest is board 20, at
+  exactly 25%.
+- **The floor applies to the campaign only.**
+
+## Trips 7 and 8 (plan, the creator's choices, 2026-10-27)
+
+**Trip 7 is Argentina, boards 91–105. Trip 8 is Australia, boards
+106–120**, with New Zealand to join it only if Australia runs short of
+places that fit the postcard rules.
+
+**The shape** is the one since trip 3: relief after the stamp, hard at x5
+and x10, an all-long breather at x6, a relief at x11, and a super hard
+finale. Two rules now cap how hard a board can be:
+
+- every unmarked board is readable (85% or more for a player who draws by
+  the face-up cards);
+- every marked board lets that player win 1 in 4 or more.
+
+So the builds sit at 10–11 pictures, not 12: on 4×5, 12 pictures is not
+readable at a build's target. The bigger board sizes are where the trips
+grow.
+
+| In the trip | Argentina | Australia | Pictures | Careless target |
+|---|---|---|---|---|
+| x1 relief | 91 | 106 | 10 | 80–100% |
+| x2 build | 92 | 107 | 10 | 55–65% |
+| x3 build | 93 | 108 | 11 | 50–60% |
+| x4 build | 94 | 109 | 11 | 50–60% |
+| x5 hard | 95, 5×5 | 110, 5×5 | 13 | 25–35% |
+| x6 all long, 4×4 | 96 | 111 | 12 | 85–100% |
+| x7 build | 97 | 112 | 11 | 50–60% |
+| x8 build | 98 | 113 | 11 | 45–55% |
+| x9 build | 99 | 114 | 11 | 45–55% |
+| x10 hard | 100, 5×5, 13 pictures, 20–30% | 115, 4×5, 12 pictures, 20–30% | | |
+| x11 relief | 101 | 116 | 10 | 80–100% |
+| x12 build | 102 | 117 | 11 | 50–60% |
+| x13 build | 103 | 118 | 11 | 45–55% |
+| x14 build | 104 | 119 | 11 | 45–55% (Australia 40–50%) |
+| x15 super | 105, 4×5, 12 pictures, 8–20% | 120, **6×6**, 19 pictures, 8–18% | | |
+
+Every square board not marked otherwise above is 4×5.
+
+- **Big boards:** two a trip, in new slots: Argentina's x5 and x10 (its finale
+  stays 4×5), and Australia's x5 and its finale, 6×6 as every other finale
+  is (90, then 120).
+
+**Art's work, as for trips 5–6:**
+
+- 240 new everyday pictures: 216 squares, 12 tall and 12 wide.
+- 30 postcards:
+  - 4×5 for the square boards;
+  - 5×5 for 95, 100 and 110;
+  - 6×6 for 120;
+  - 4×4 with a long window for 96 and 111.
+
+**The places: a shortlist for Art to fact-check.** Each trip has about 8
+famous places, 4 hidden gems and 3 silly ones. They are set by slot: a
+famous opener, vistas on the big boards, a tall or wide place on the
+all-long board, and the most famous as the finale.
+
+| Slot | Argentina | Australia |
+|---|---|---|
+| x1 | Iguazú Falls (famous) | The Twelve Apostles (famous) |
+| x2 | La Boca's painted houses, Caminito (famous) | Brighton's bathing boxes (famous) |
+| x3 | The Hill of Seven Colours, Purmamarca (famous) | Hutt Lagoon, the pink lake (gem) |
+| x4 | Capybaras of the Iberá wetlands (gem) | Cape Hillsborough's beach kangaroos at sunrise (silly) |
+| x5, big | Mount Fitz Roy at sunrise (famous) | Whitehaven Beach's swirling sands (famous) |
+| x6, long | Les Éclaireurs lighthouse, Ushuaia (famous, tall) | Sydney Harbour Bridge (famous, wide) |
+| x7 | The End of the World Post Office, Ushuaia (silly) | The Bay of Fires' orange rocks (gem) |
+| x8 | Salinas Grandes salt flats (famous) | The Pinnacles Desert (famous) |
+| x9 | The Train to the Clouds' La Polvorilla viaduct (gem) | A Rottnest Island quokka (silly) |
+| x10 | A southern right whale off the Valdés Peninsula (famous, big) | Remarkable Rocks, Kangaroo Island (famous) |
+| x11 | Punta Tombo's penguins crossing the path (silly) | Cape Tribulation, where the rainforest meets the reef (famous) |
+| x12 | The Hornocal, the "fourteen colours" hills (gem) | Karijini's gorges (gem) |
+| x13 | Tandil's balancing stone, Piedra Movediza (silly) | The Big Banana, Coffs Harbour (silly) |
+| x14 | La Payunia's black lava fields (gem) | Cradle Mountain over Dove Lake (gem) |
+| x15 | Perito Moreno Glacier (famous, the finale) | The Great Barrier Reef's Heart Reef (famous, the 6×6 finale) |
+
+**Left out by the postcard rules:**
+
+- Uluru (sacred).
+- The Sydney Opera House (its owners license its image).
+- The Three Sisters (a Dreamtime story site).
+
+**For Art to confirm:**
+
+- the Big Banana's owners, else the Big Pineapple or another of the "Big
+  Things";
+- the Harbour Bridge without BridgeClimb's branding;
+- Ischigualasto, held back as a reserve in case its guided-only entry counts
+  as a permit.
+
 ## Sources
 
 - [Bugnet: difficulty curves, how to get them right](https://bugnet.io/blog/difficulty-curves-how-to-get-them-right)
