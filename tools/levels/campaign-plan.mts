@@ -88,6 +88,17 @@
  */
 export const PLAN_TAG = "sawtooth-2026-10-25";
 
+/**
+ * 5x5 boards (creator, 2026-10-27, after Jigsaw Drop's level 18; AGENTS.md): about 65% of the
+ * hard and finale boards from board 10, a frequent variation and never a rule: 10, then two a
+ * trip in different slots. Each was re-dealt from its 4x4 or 4x5 board (make-campaign.mts
+ * --redeal; lib.mts redealDestined) KEEPING its pictures and destination, the window at a 5x5
+ * postcard's crop, with new pictures from ADD_5X5 on (Art's batch for them: nobody has met them)
+ * to reach the row's count. 5x5 holds more than 4x5 (docs/difficulty-curve.md survey): 13 for a
+ * hard board, 13-14 for a finale (14 where 4 traps are allowed), 11 for board 10, the first.
+ */
+export const ADD_5X5 = "sweet-william";
+
 /** The board unless a row says otherwise. */
 export const BOARD = { cols: 4, rows: 4 };
 
@@ -118,7 +129,7 @@ export const PLAN = [
   /*  7 */ { role: "hard",   destination: "dest-french-quarter", drop: "fjord-evening", ...sq(8, { keep: ["biplane", "bonsai", "cowboy", "fjord-evening", "gramophone", "owl", "redwoods", "tree-house"] }), careless: [0.3, 0.5], chain: ANY, ...STAND_IN },
   /*  8 */ { role: "relief", destination: "dest-twine-ball", drop: "tiled-house", ...sq(5, { keep: ["armchair", "ballerina", "bird-of-paradise", "sandstone-arch", "tiled-house"] }), careless: [0.85, 1], chain: [2, 2], ...STAND_IN },
   /*  9 */ { role: "build",  destination: "dest-paul-bunyan", drop: "baobab", ...sq(7, { keep: ["baobab", "delft-teapot", "doughnut", "monstera", "palm-island", "red-kite"] }), careless: [0.5, 0.7], chain: ANY, ...STAND_IN },
-  /* 10 */ { role: "peak",   destination: "dest-pictured-rocks", drop: "golden-gate", ...sq(8, { keep: ["chestnut-horse", "dahlia", "golden-gate", "protea", "rainbow", "rickshaw", "sandcastle", "colosseum"] }), careless: [0.3, 0.5], chain: ANY, ...STAND_IN },
+  /* 10 */ { role: "peak",   destination: "dest-pictured-rocks", board: [5, 5], addFrom: ADD_5X5, ...sq(11, { keep: ["chestnut-horse", "dahlia", "golden-gate", "protea", "rainbow", "rickshaw", "sandcastle", "colosseum"] }), careless: [0.3, 0.5], chain: ANY, ...STAND_IN },
   // ---- the second cycle: more pictures; a hard board at 15, super hard at 20
   /* 11 */ { role: "pace",   destination: "dest-grand-prismatic", drop: "paddle-steamer", ...long(["guitar", "hammock", "houseboat", "ice-lolly", "canal-house", "flamenco", "tractor", "pagoda", "rocking-horse", "paddle-steamer"]), careless: [0.85, 1], chain: ANY, ...STAND_IN },
   /* 12 */ { role: "build",  destination: "dest-delicate-arch", drop: "taj-mahal", ...sq(7, { keep: ["cable-car", "eiffel-tower", "iceberg", "rubber-duck", "taj-mahal", "calla-lilies", "moai"] }), careless: [0.7, 0.8], chain: ANY, ...STAND_IN },
@@ -129,7 +140,7 @@ export const PLAN = [
   /* 17 */ { role: "build",  destination: "dest-gotokuji-cats", drop: "rooster", ...sq(8), careless: [0.6, 0.7], chain: ANY, ...NEW_ONLY },
   /* 18 */ { role: "build",  destination: "dest-kamakura-buddha", drop: "amaryllis", ...sq(8), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
   /* 19 */ { role: "build",  destination: "dest-snow-monkeys", drop: "majolica-jug", ...sq(9), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
-  /* 20 */ { role: "super",  destination: "dest-shirakawa-go", drop: "harvest-moon", ...sq(9), careless: [0.1, 0.3], chain: ANY, ...NEW_ONLY },
+  /* 20 */ { role: "super",  destination: "dest-shirakawa-go", board: [5, 5], addFrom: ADD_5X5, ...sq(13), careless: [0.1, 0.3], traps: [0, 3], chain: ANY, ...NEW_ONLY },
   // ---- the third cycle: 4x5 boards from 22 (Gameplay, 2026-10-25: about 60x80 a card on a 360x640 phone)
   /* 21 */ { role: "pace",   destination: "dest-kinkakuji", drop: "dachshund", ...long(["canoe", "dachshund", "giraffe", "grand-piano", "lily-window", "milkshake", "ribbon-falls", "sewing-machine", "sidecar", "skyscraper", "sunflower", "wheelbarrow"]), careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
   /* 22 */ { role: "build",  destination: "dest-fushimi-inari", drop: "observatory", board: [4, 5], ...sq(9), careless: [0.7, 0.8], chain: ANY, ...NEW_ONLY },
@@ -143,7 +154,7 @@ export const PLAN = [
   /* 28 */ { role: "build",  destination: "dest-kintai-bridge", drop: "castle", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
   /* 29 */ { role: "build",  destination: "dest-takachiho", drop: "armchair", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
   // (traps capped: the first deal in range had 8, where board 20 has 1 and 25 has 2; a finale is beaten in a few tries)
-  /* 30 */ { role: "super",  destination: "dest-taketomi", drop: "stave-church", board: [4, 5], ...sq(12), careless: [0.1, 0.3], traps: [0, 3], chain: ANY, ...NEW_ONLY },
+  /* 30 */ { role: "super",  destination: "dest-taketomi", board: [5, 5], addFrom: ADD_5X5, ...sq(13), careless: [0.1, 0.3], traps: [0, 3], chain: ANY, ...NEW_ONLY },
   // ---- trip 3, Italy (lead, 2026-10-26; docs/difficulty-curve.md "Trips of 15 boards"): relief after the
   // stamp, hard at x5 and x10, super hard at x15, one all-long 4x4 board (x6, the relief after a spike);
   // every square board 4x5 (the campaign's largest: cards stay about 60x80 on a 360x640 phone), one
@@ -157,23 +168,23 @@ export const PLAN = [
   /* 37 */ { role: "build",  destination: "dest-burano", drop: "chocolate-truffles", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
   /* 38 */ { role: "build",  destination: "dest-parmigiano", drop: "sea-holly", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
   /* 39 */ { role: "build",  destination: "dest-val-dorcia", drop: "kick-scooter", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
-  /* 40 */ { role: "hard",   destination: "dest-civita", drop: "baby-elephant", board: [4, 5], ...sq(12), careless: [0.25, 0.4], traps: [0, 3], chain: ANY, ...NEW_ONLY },
+  /* 40 */ { role: "hard",   destination: "dest-civita", board: [5, 5], addFrom: ADD_5X5, ...sq(13), careless: [0.25, 0.4], traps: [0, 3], chain: ANY, ...NEW_ONLY },
   /* 41 */ { role: "relief", destination: "dest-bomarzo", drop: "dumplings", board: [4, 5], ...sq(9), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
   /* 42 */ { role: "build",  destination: "dest-positano", drop: "pine-cone", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
   /* 43 */ { role: "build",  destination: "dest-capri", drop: "edelweiss", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
   /* 44 */ { role: "build",  destination: "dest-matera", drop: "shepherds-hut", board: [4, 5], ...sq(11), careless: [0.4, 0.5], chain: ANY, ...NEW_ONLY },
-  /* 45 */ { role: "super",  destination: "dest-alberobello", drop: "stilt-house", board: [4, 5], ...sq(12), careless: [0.1, 0.25], traps: [0, 3], chain: ANY, ...NEW_ONLY },
+  /* 45 */ { role: "super",  destination: "dest-alberobello", board: [5, 5], addFrom: ADD_5X5, ...sq(13), careless: [0.1, 0.25], traps: [0, 3], chain: ANY, ...NEW_ONLY },
   // ---- trip 4, the American West: the same shape, its floor a little higher again
   /* 46 */ { role: "relief", destination: "dest-bixby", drop: "ice-cream-van", board: [4, 5], ...sq(9), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
   /* 47 */ { role: "build",  destination: "dest-emerald-bay", drop: "marigolds", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
   /* 48 */ { role: "build",  destination: "dest-mono-lake", drop: "crocus", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
   /* 49 */ { role: "build",  destination: "dest-joshua-tree", drop: "porch-rocker", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
-  /* 50 */ { role: "hard",   destination: "dest-oatman", drop: "turf-house", board: [4, 5], ...sq(12), careless: [0.25, 0.4], traps: [0, 3], chain: ANY, ...NEW_ONLY },
+  /* 50 */ { role: "hard",   destination: "dest-oatman", board: [5, 5], addFrom: ADD_5X5, ...sq(13), careless: [0.25, 0.4], traps: [0, 3], chain: ANY, ...NEW_ONLY },
   /* 51 */ { role: "pace",   destination: "dest-horseshoe", drop: "baguette-sandwich", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
   /* 52 */ { role: "build",  destination: "dest-zion", drop: "tea-pourer", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
   /* 53 */ { role: "build",  destination: "dest-bryce", drop: "river-raft", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
   /* 54 */ { role: "build",  destination: "dest-valley-of-fire", drop: "rowboat-lake", board: [4, 5], ...sq(12), careless: [0.35, 0.45], chain: ANY, ...NEW_ONLY },
-  /* 55 */ { role: "hard",   destination: "dest-teton", drop: "library-shelves", board: [4, 5], ...sq(12), careless: [0.2, 0.35], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  /* 55 */ { role: "hard",   destination: "dest-teton", board: [5, 5], addFrom: ADD_5X5, ...sq(13), careless: [0.2, 0.35], traps: [0, 4], chain: ANY, ...NEW_ONLY },
   /* 56 */ { role: "relief", destination: "dest-palouse", drop: "ferris-wheel", board: [4, 5], ...sq(9), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
   /* 57 */ { role: "build",  destination: "dest-teapot", drop: "spinning-top", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
   /* 58 */ { role: "build",  destination: "dest-painted-hills", drop: "palace-window", board: [4, 5], ...sq(12), careless: [0.4, 0.5], chain: ANY, ...NEW_ONLY },
@@ -186,7 +197,7 @@ export const PLAN = [
   /* 62 */ { role: "build",  destination: "dest-mont-saint-michel", drop: "bagels", board: [4, 5], ...sq(11), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
   /* 63 */ { role: "build",  destination: "dest-ploumanach", drop: "water-slide", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
   /* 64 */ { role: "build",  destination: "dest-chapel-oak", drop: "donkey", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
-  /* 65 */ { role: "hard",   destination: "dest-chenonceau", drop: "crown-imperial", board: [4, 5], ...sq(12), careless: [0.25, 0.4], traps: [0, 3], chain: ANY, ...NEW_ONLY },
+  /* 65 */ { role: "hard",   destination: "dest-chenonceau", board: [5, 5], addFrom: ADD_5X5, ...sq(13), careless: [0.25, 0.4], traps: [0, 3], chain: ANY, ...NEW_ONLY },
   /* 66 */ { role: "pace",   destination: "dest-eiffel", drop: "asparagus", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
   /* 67 */ { role: "build",  destination: "dest-colmar", drop: "brownstone", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
   /* 68 */ { role: "build",  destination: "dest-lac-blanc", drop: "persimmons", board: [4, 5], ...sq(12), careless: [0.4, 0.5], chain: ANY, ...NEW_ONLY },
@@ -196,7 +207,7 @@ export const PLAN = [
   /* 72 */ { role: "build",  destination: "dest-camargue-flamingos", drop: "cocoa-pod", board: [4, 5], ...sq(12), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
   /* 73 */ { role: "build",  destination: "dest-carcassonne", drop: "manta-ray", board: [4, 5], ...sq(12), careless: [0.4, 0.5], chain: ANY, ...NEW_ONLY },
   /* 74 */ { role: "build",  destination: "dest-bonifacio", drop: "hoarfrost", board: [4, 5], ...sq(12), careless: [0.35, 0.45], chain: ANY, ...NEW_ONLY },
-  /* 75 */ { role: "super",  destination: "dest-dune-pilat", drop: "zen-garden", board: [4, 5], ...sq(12), careless: [0.08, 0.2], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  /* 75 */ { role: "super",  destination: "dest-dune-pilat", board: [5, 5], addFrom: ADD_5X5, ...sq(14), careless: [0.08, 0.2], traps: [0, 4], chain: ANY, ...NEW_ONLY },
   // ---- trip 6, Canada: the same shape, its floor higher again (both reliefs 10 pictures)
   /* 76 */ { role: "relief", destination: "dest-moraine", drop: "glider", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
   /* 77 */ { role: "build",  destination: "dest-abraham-lake", drop: "cinnamon-rolls", board: [4, 5], ...sq(11), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
@@ -207,12 +218,12 @@ export const PLAN = [
   /* 82 */ { role: "build",  destination: "dest-churchill-bears", drop: "capybara", board: [4, 5], ...sq(12), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
   /* 83 */ { role: "build",  destination: "dest-old-quebec", drop: "rainforest-canopy", board: [4, 5], ...sq(12), careless: [0.4, 0.5], chain: ANY, ...NEW_ONLY },
   /* 84 */ { role: "build",  destination: "dest-perce", drop: "cockscomb", board: [4, 5], ...sq(12), careless: [0.35, 0.45], chain: ANY, ...NEW_ONLY },
-  /* 85 */ { role: "hard",   destination: "dest-bonaventure-gannets", drop: "dragon-boat", board: [4, 5], ...sq(12), careless: [0.2, 0.3], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  /* 85 */ { role: "hard",   destination: "dest-bonaventure-gannets", board: [5, 5], addFrom: ADD_5X5, ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY, ...NEW_ONLY },
   /* 86 */ { role: "relief", destination: "dest-hopewell", drop: "paella", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
   /* 87 */ { role: "build",  destination: "dest-peggys-cove", drop: "bumper-cars", board: [4, 5], ...sq(12), careless: [0.4, 0.5], chain: ANY, ...NEW_ONLY },
   /* 88 */ { role: "build",  destination: "dest-lunenburg", drop: "paddleboarder", board: [4, 5], ...sq(12), careless: [0.35, 0.45], chain: ANY, ...NEW_ONLY },
   /* 89 */ { role: "build",  destination: "dest-cabot-trail", drop: "clivia", board: [4, 5], ...sq(12), careless: [0.3, 0.4], chain: ANY, ...NEW_ONLY },
-  /* 90 */ { role: "super",  destination: "dest-twillingate-iceberg", drop: "lattice-window", board: [4, 5], ...sq(12), careless: [0.08, 0.18], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  /* 90 */ { role: "super",  destination: "dest-twillingate-iceberg", board: [5, 5], addFrom: ADD_5X5, ...sq(14), careless: [0.08, 0.18], traps: [0, 4], chain: ANY, ...NEW_ONLY },
 ];
 
 /**

@@ -62,17 +62,21 @@ draws while the cards showed, now plays closer to it. A survey of random
 square-only deals that can be won, careless win by picture count (Levels,
 2026-10-25; median, with the middle half in brackets):
 
-| board | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
-|---|---|---|---|---|---|---|---|---|
-| 4×4 | 100% | 100% | 100% (67–100) | 44% (25–67) | 18% (10–41) | 5%, rare | — | — |
-| 4×5 | — | — | 100% | 100% (89–100) | 67% (42–96) | 39% (21–67) | 22% (11–44) | 11%, rare |
+| board | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 4×4 | 100% | 100% | 100% (67–100) | 44% (25–67) | 18% (10–41) | 5%, rare | — | — | — | — |
+| 4×5 | — | — | 100% | 100% (89–100) | 67% (42–96) | 39% (21–67) | 22% (11–44) | 11%, rare | — | — |
+| 5×5 | — | — | — | — | — | — | 91% (62–100) | 54% (28–86) | 26% (9–48) | 8% (3–21) |
+
+(5×5 surveyed 2026-10-27; at 15 pictures the median is 2% and most deals cannot be won.)
 
 - A 4×4 board of long pictures (tall and wide mixed) is won carelessly
   every time, from 7 pictures to 12: a change of pace, never a bite.
-- Past about 9 pictures on 4×4 (11 on 4×5), most deals cannot be won at all,
+- Past about 9 pictures on 4×4 (11 on 4×5, 13 on 5×5), most deals cannot be won at all,
   and the chain of dependent clears grows by about one per added picture.
 - So: relief takes 5 squares on 4×4 (8 on 4×5). A build takes 7–8 (9–10), a
-  hard board 8–9 (10–11), and a super hard one 9 (11–12). The maker then
+  hard board 8–9 (10–11), and a super hard one 9 (11–12). On 5×5 a hard
+  board takes 13 and a super hard one 13–14. The maker then
   picks the deal inside the row's careless-win range
   (`tools/levels/campaign-plan.mts`).
 - Every board but hard, peak and super starts safe: no first move or first
@@ -166,6 +170,32 @@ only, and Art's entry would say which way it runs.
   (one board re-dealt). I would keep it.
 - The challenge route and the daily stay library-only, with no destinations,
   unless the creator wants them.
+
+## 5×5 boards (creator, 2026-10-27)
+
+After Jigsaw Drop's level 18, the creator asked for 5×5 boards as a frequent
+variation on hard boards and finales, never a rule. About 65% of the marked
+boards from board 10 are 5×5: 11 of 17. Board 10 is first, then two a trip
+from trip 2, in different slots each trip. The bigger board is the change of
+feel, not an extra spike: each keeps its role, mark and careless-win target.
+
+| Trip | 5×5 boards (slot in the trip) |
+|---|---|
+| 1, Travel America | 10 (the peak, at trip 1's gentler target) |
+| 2, Japan | 20 (x5, super hard), 30 (x15, the finale) |
+| 3, Italy | 40 (x10), 45 (x15, the finale) |
+| 4, American West | 50 (x5), 55 (x10) |
+| 5, France | 65 (x5), 75 (x15, the finale) |
+| 6, Canada | 85 (x10), 90 (x15, the finale) |
+
+- **Hard and finale boards that stay 4×5 or 4×4:** 15, 25, 35, 60, 70 and 80.
+- **How they were made:** each board was re-dealt at 5×5. It keeps all its
+  pictures and its destination, and Art's new pictures, met nowhere else,
+  bring it up to the row's count.
+- **Counts:** board 10 takes 11 pictures. The hard boards take 13. The
+  finales take 13, or 14 where four traps are allowed (75 and 90).
+- **The postcard:** it is a 5×5 postcard with a 2×2 window. It opens
+  mid-board on the proved line, never as the first or last clear.
 
 ## Sources
 
