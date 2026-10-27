@@ -80,6 +80,9 @@ function itemPic(it: SuitItem, missing: boolean): HTMLElement {
   return box;
 }
 
+/** The table every player has (public/art/tables/tables.json's default): never a month's prize. */
+const DEFAULT_TABLE = "table-winter-dusk";
+
 /** Art's suitcases (public/art, transparent): open from above (its teal lining plain across the middle), closed, and small. */
 const ART = {
   open: new URL(`${import.meta.env.BASE_URL}art/suitcase-open.webp`, location.href).href,
@@ -206,11 +209,12 @@ export function createSuitcase(nav: Nav) {
     swapping = false;
     picked = answer === "ok" ? null : picked;
     said = answer === "ok" ? t("case.swapped", { item: it.title }) : t(`case.refused.${answer}`);
-    // the swap that brought the 10th: the prize lands with it (Server pays; the sting is Audio's)
+    // the swap that brought the 10th: the prize lands with it (Server pays, and says so once; the sting is Audio's)
     const now = suitcases.current();
-    if (answer === "ok" && now?.complete) {
+    const prize = answer === "ok" ? suitcases.lastPrize() : null;
+    if (answer === "ok" && (prize || now?.complete)) {
       said = t("case.swappedFull", { item: it.title });
-      emit("suitcase:full", { month: now.month });
+      emit("suitcase:full", { month: prize?.month ?? now?.month ?? "" });
     }
     draw();
     if (answer === "ok") screen.querySelector(`.slot[aria-label^="${CSS.escape(it.title)}"]`)?.classList.add("arrived");
@@ -218,7 +222,9 @@ export function createSuitcase(nav: Nav) {
 
   function prize(s: Suitcase): HTMLElement {
     const box = el("div", `case-prize glass${s.paid ? " won" : ""}`);
-    const art = knownTable(s.prize.table);
+    // a month whose table Art has not made yet names the built-in one (Server's): its prize is the helpers alone
+    const own = s.prize.table !== DEFAULT_TABLE;
+    const art = own ? knownTable(s.prize.table) : undefined;
     const pic = el("span", "prize-table");
     if (art) {
       const img = el("img");
@@ -228,7 +234,7 @@ export function createSuitcase(nav: Nav) {
     pic.setAttribute("aria-hidden", "true");
     const words = el("div", "prize-words");
     words.append(el("b", "", s.paid ? t("case.prizeWon") : t("case.prizeHead", { count: s.items.length })));
-    words.append(el("span", "", t("case.prizeTable", { table: s.prize.tableTitle ?? art?.title ?? "" })));
+    words.append(el("span", "", own ? t("case.prizeTable", { table: s.prize.tableTitle ?? art?.title ?? "" }) : t("case.prizeHelpers")));
     const tools = el("span", "prize-tools");
     for (const k of ["hint", "undo", "shuffle"] as HelperKind[]) {
       const n = s.prize.helpers[k];
@@ -240,8 +246,9 @@ export function createSuitcase(nav: Nav) {
       tools.append(tool);
     }
     words.append(tools);
-    if (s.paid) words.append(el("span", "prize-note", t("case.prizeWhere")));
-    box.append(pic, words);
+    if (s.paid && own) words.append(el("span", "prize-note", t("case.prizeWhere")));
+    if (art) box.append(pic);
+    box.append(words);
     return box;
   }
 

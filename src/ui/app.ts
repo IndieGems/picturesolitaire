@@ -1094,6 +1094,9 @@ function drawCoins(win: Win): void {
   // the kit on a later board's card (a player past board 1 without it): said in words too
   const gifts = (v as { gifts?: string[] }).gifts ?? [];
   if (gifts.includes("kit") && glyphs.length) chip.setAttribute("aria-label", t("win.kitLanded"));
+  // a full suitcase's prize (its helpers in the same chip): said as what it is
+  else if (gifts.includes("suitcase") && glyphs.length)
+    chip.setAttribute("aria-label", `${v.coins > 0 ? `${t("win.coins", { count: v.coins })}, ` : ""}${t("case.prizeWon")}: ${glyphs.map(([k]) => t(`win.gift.${k}`, { count: tools[k]! })).join(", ")}`);
   // the daily's first win of the day pays a helper (Server's rotation): said, for a screen reader, as what it is
   else if (gifts.includes("daily") && glyphs.length)
     chip.setAttribute("aria-label", `${v.coins > 0 ? `${t("win.coins", { count: v.coins })}, ` : ""}${t("win.gift.daily")}: ${glyphs.map(([k]) => t(`win.gift.${k}`, { count: tools[k]! })).join(", ")}`);

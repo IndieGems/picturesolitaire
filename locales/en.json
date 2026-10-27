@@ -55,6 +55,7 @@
   "case.pickOne": "Tap a missing item to swap for it.",
   "case.play": "Play today's daily",
   "case.prizeHead": "Pack all {{count}} to unlock",
+  "case.prizeHelpers": "A pack of helpers",
   "case.prizeTable": "The {{table}} table, and helpers",
   "case.prizeWhere": "Choose the new table in Settings.",
   "case.prizeWon": "Suitcase full!",

@@ -1,68 +1,33 @@
 // THE DAILY SUITCASE as the screens see it (docs/daily-suitcase.md; the creator, 2026-10-27): this
 // month's themed suitcase of 10 travel items, the copies the player holds, the swap, the prize, and
 // the shelf of past months. The record is the platform's, read and written by Server's
-// src/net/suitcase.ts (a monthly progression; the daily claim packs the day's item; the swap is
-// checked on the server). This file only puts a dev-only stand-in in front of it (__ps.suitcase), so
-// the screens can be built and checked in the play-test tool, where no platform answers, and before
-// Server's module and Levels' months exist.
+// src/net/suitcase.ts (platform items and a monthly challenge; the daily claim packs the day's item;
+// the swap is checked on the server; the prize paid once). This file only puts a dev-only stand-in
+// in front of it (__ps.suitcase), so the screens can be checked in the play-test tool, where no
+// platform answers.
 //
 // Nothing here is the device's: no count, no "paid" flag, no date of its own.
 
+import { suitcase as platform, type Suitcase as NetSuitcase, type SwapAnswer } from "../net/suitcase";
 import type { HelperKind } from "./stock";
 import { suitcaseItemsOf } from "./catalogue";
 
-export type SuitItem = { id: string; title: string; /** Art's picture, when there is one (else a stand-in is drawn). */ pic?: string };
-
-export type Suitcase = {
-  /** "2026-11": the player's own month. */
-  month: string;
-  /** "Ski Trip". */
-  theme: string;
-  /** The 10, in slot order. */
-  items: SuitItem[];
-  /** Copies held, by item id (absent or 0: missing). */
-  counts: Record<string, number>;
-  /** Days left, today included; 0 once the month is over (a shelf suitcase). */
-  daysLeft: number;
-  /** All 10 are held. */
-  complete: boolean;
-  /** What all 10 unlock: a table (its id in public/art/tables/tables.json) and some helpers. */
-  prize: { table: string; tableTitle?: string; helpers: Partial<Record<HelperKind, number>> };
-  /** The platform has paid the prize. */
-  paid: boolean;
-};
-
-export type SwapAnswer = "ok" | "short" | "has" | "closed" | "failed";
+export type { SwapAnswer };
+/** An item: its id (Levels', "item-2026-11-04", also its picture's) and title; `pic` only for a stand-in drawn from elsewhere. */
+export type SuitItem = { id: string; title: string; pic?: string };
+/** The month as Server's module gives it (`ends` optional for the stand-in). */
+export type Suitcase = Omit<NetSuitcase, "ends" | "items"> & { ends?: string; items: SuitItem[] };
 
 /** Copies beyond the first, of any item: what the swap spends, 3 at a time. */
 export const spares = (s: Suitcase): number => s.items.reduce((n, it) => n + Math.max(0, (s.counts[it.id] ?? 0) - 1), 0);
 export const held = (s: Suitcase): number => s.items.filter((it) => (s.counts[it.id] ?? 0) > 0).length;
 export const SWAP_COST = 3;
 
-/** Server's module, once it exists (a bridge: its file is not in the tree yet). */
-type Net = {
-  suitcase: {
-    current(): Suitcase | null;
-    past(): Suitcase[];
-    onChange(fn: () => void): () => void;
-    swap(want: string): Promise<SwapAnswer>;
-  };
-};
-let net: Net | null = null;
 const heard = new Set<() => void>();
 const say = () => {
   for (const fn of [...heard]) fn();
 };
-const found = import.meta.glob<Net>("../net/suitcase.ts");
-for (const load of Object.values(found))
-  void load().then(
-    (m) => {
-      net = m;
-      m.suitcase.onChange(say);
-      say();
-    },
-    (err) => console.warn("[suitcase] the platform's module did not load:", err),
-  );
+platform.onChange(say);
 
 // ---------------------------------------------------------------- the dev stand-in
 type Pretend = { now: Suitcase | null; past: Suitcase[] };
@@ -104,12 +69,14 @@ export function standIn(): Pretend {
 
 export const suitcases = {
   /** This month's suitcase, or null (not read yet, or no event this month). */
-  current: (): Suitcase | null => (pretend ? pretend.now : (net?.suitcase.current() ?? null)),
-  /** The shelf: closed months, newest first. */
-  past: (): Suitcase[] => (pretend ? pretend.past : (net?.suitcase.past() ?? [])),
+  current: (): Suitcase | null => (pretend ? pretend.now : platform.current()),
+  /** The shelf: closed months, newest first (empty ones left out: nothing to look back on). */
+  past: (): Suitcase[] => (pretend ? pretend.past : platform.past().filter((s) => Object.values(s.counts).some((n) => n > 0))),
+  /** A prize that landed since last asked (a swap's, a win's, a read's), once; null otherwise. */
+  lastPrize: (): { month: string; helpers: Partial<Record<HelperKind, number>> } | null => (pretend ? null : platform.lastPrize()),
   /** Swap 3 spares for missing item `want` (the server picks which spares go). */
   async swap(want: string): Promise<SwapAnswer> {
-    if (!pretend) return net ? net.suitcase.swap(want) : "failed";
+    if (!pretend) return platform.swap(want);
     const s = pretend.now;
     if (!s || s.daysLeft <= 0) return "closed";
     if ((s.counts[want] ?? 0) > 0) return "has";
