@@ -2,7 +2,8 @@
 // step the player has seen, and whether its finish card has shown), and which of
 // the later lessons (lessons.ts: Undo on board 2, Shuffle before board 4) the
 // player has done, and the one-time notes ("big" and "biggest": the first 5x5 and
-// 6x6 boards' banners, app.ts; "hintTip": hint-nudge.ts). Kept in the
+// 6x6 boards' banners, app.ts; "hintTip": hint-nudge.ts), and the campaign boards'
+// tries (tries.ts: the analytics' attempt, mercy help's stuck tries). Kept in the
 // player's "campaign" save slot (declared in the game config), never in browser
 // storage.
 //
@@ -24,8 +25,14 @@ import { onOnline, suspect } from "./online";
 
 const SLOT = "campaign";
 
-/** The slot as stored: the guide's step, the lessons done, and anything an older build left in it (kept as it is). */
-type Stored = { v: 1; guide: number; lessons?: string[]; [older: string]: unknown };
+/**
+ * A campaign board's tries (tries.ts): `boards`, the tries started at each board since its last
+ * win (the analytics' `attempt`); `mercy`, the newest board's tries that ended stuck (mercy help).
+ */
+export type Tries = { boards: Record<string, number>; mercy: { n: number; stuck: number } | null };
+
+/** The slot as stored: the guide's step, the lessons done, the tries, and anything an older build left in it (kept as it is). */
+type Stored = { v: 1; guide: number; lessons?: string[]; tries?: Tries; [older: string]: unknown };
 
 let state: Stored = { v: 1, guide: 0 };
 let read = false;
@@ -59,6 +66,29 @@ export function learnt(name: string): void {
   schedulePush();
 }
 
+/** A tries record as stored, or an empty one; anything malformed reads as nothing. */
+function triesOf(x: unknown): Tries {
+  const o = (x && typeof x === "object" ? x : {}) as { boards?: unknown; mercy?: unknown };
+  const boards: Record<string, number> = {};
+  if (o.boards && typeof o.boards === "object") for (const [k, v] of Object.entries(o.boards)) if (/^\d+$/.test(k) && count(v) > 0) boards[k] = count(v);
+  const m = o.mercy as { n?: unknown; stuck?: unknown } | null | undefined;
+  const mercy = m && count(m.n) > 0 && count(m.stuck) > 0 ? { n: count(m.n), stuck: count(m.stuck) } : null;
+  return { boards, mercy };
+}
+
+/** The tries as they stand (a copy). */
+export const savedTries = (): Tries => triesOf(state.tries);
+
+/** Keep the tries (tries.ts); saved now. Only the 30 newest boards are kept: the slot has a ceiling. */
+export function keepTries(next: Tries): void {
+  const keys = Object.keys(next.boards).sort((a, b) => Number(b) - Number(a)).slice(0, 30);
+  state = { ...state, tries: { boards: Object.fromEntries(keys.map((k) => [k, next.boards[k]!])), mercy: next.mercy } };
+  triesTouched = true;
+  schedulePush();
+}
+/** This session changed the tries before the account's copy landed: this device's are the newer. */
+let triesTouched = false;
+
 /** Hear when the guide's step changes (the account's copy landed). Returns the unsubscribe. */
 export function onGuideSave(fn: () => void): () => void {
   listeners.add(fn);
@@ -85,7 +115,9 @@ async function readCloud(): Promise<void> {
     // lessons only add up too: this device's done this session, and the account's
     if (got && typeof got === "object") {
       const lessons = [...new Set([...names(got.lessons), ...names(state.lessons)])];
-      state = { ...got, v: 1, guide: Math.max(state.guide, count(got.guide)), ...(lessons.length ? { lessons } : {}) };
+      // the tries: the account's, unless this session already moved them (then this device's, the newer)
+      const tries = triesTouched ? state.tries : got.tries;
+      state = { ...got, v: 1, guide: Math.max(state.guide, count(got.guide)), ...(lessons.length ? { lessons } : {}), ...(tries ? { tries: triesOf(tries) } : {}) };
     }
     finishRead();
   } catch (err) {

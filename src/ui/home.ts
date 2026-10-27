@@ -10,8 +10,9 @@
 //                 (marks.ts); the last stop holds the trip's stamp, a faint outline until
 //                 the trip is done
 //   Next stop     the amber button, with the board number under it
-//   the dock      Daily (daily.ts), the passport (a booklet, with its count of stamps) and
-//                 the challenge route, as three tiles
+//   the dock      Daily (daily.ts), the passport (a booklet, with its count of stamps), the
+//                 challenge route and, once the first board is done, the Shop (home-shop.ts:
+//                 helpers, one or a pack of 3; the creator, 2026-10-27), as up to four tiles
 //
 // Every board won: the itinerary shows the trip of the board Play goes round to, every stop
 // visited and the stamp earned, and the button says Play again.
@@ -41,6 +42,8 @@ const ART = {
   desk: new URL(`${import.meta.env.BASE_URL}art/home-desk.webp`, location.href).href,
   /** The passport booklet on the Passport tile. */
   booklet: `${import.meta.env.BASE_URL}art/passport-booklet.webp`,
+  /** The satchel on the Shop tile. */
+  satchel: `${import.meta.env.BASE_URL}art/shop-satchel.webp`,
 };
 
 /** Stops to a row of the route. */
@@ -51,6 +54,7 @@ type Nav = {
   play(): void;
   passport(): void;
   challenges(): void;
+  shop(): void;
 };
 
 type Parts = {
@@ -60,6 +64,8 @@ type Parts = {
   daily: HTMLElement;
   /** Is the challenge route there to open? */
   challengesShown(): boolean;
+  /** Is the Shop on home (the first board done, so the helpers are known)? */
+  shopShown(): boolean;
 };
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", text = ""): HTMLElementTagNameMap[K] {
@@ -159,9 +165,18 @@ export function createHome(nav: Nav, parts: Parts) {
   challenges.append(glyph(ICONS.challenges), el("span", "label", t("home.challenges")), el("small", "", t("home.challengesLine")));
   challenges.hidden = true;
   challenges.addEventListener("click", () => nav.challenges());
+  // the Shop: Art's satchel, the Hint's magnifier peeking out
+  const shopArt = el("span", "booklet");
+  shopArt.append(bookletImg(ART.satchel));
+  const shop = el("button", "btn tile-btn shop");
+  shop.type = "button";
+  shop.dataset.press = "home.shop";
+  shop.append(shopArt, el("span", "label", t("home.shop")), el("small", "", t("home.shopLine")));
+  shop.hidden = true;
+  shop.addEventListener("click", () => nav.shop());
   parts.daily.classList.add("tile-btn");
   const dock = el("div", "dock");
-  dock.append(parts.daily, passport, challenges);
+  dock.append(parts.daily, passport, challenges, shop);
 
   const screen = el("section", "screen home");
   screen.setAttribute("aria-label", t("game.title"));
@@ -309,6 +324,8 @@ export function createHome(nav: Nav, parts: Parts) {
     stampsLine.textContent = t("home.stamps", { count: stamped });
     passport.setAttribute("aria-label", `${t("home.passport")}: ${stampsLine.textContent}`);
     challenges.hidden = !parts.challengesShown();
+    shop.hidden = !parts.shopShown();
+    dock.classList.toggle("four", [...dock.children].filter((c) => !(c as HTMLElement).hidden).length > 3);
   }
 
   /** The press is answered at once while the board's pictures come ("Opening…"), and put back after. */
@@ -324,7 +341,7 @@ export function createHome(nav: Nav, parts: Parts) {
 
   /** Home's own pictures, asked for once; settles once they are decoded. */
   let art: Promise<unknown> | null = null;
-  const warmArt = () => (art ??= Promise.all([wordmark.decode().catch(() => undefined), warm(ART.desk), warm(ART.booklet)]));
+  const warmArt = () => (art ??= Promise.all([wordmark.decode().catch(() => undefined), warm(ART.desk), warm(ART.booklet), warm(ART.satchel)]));
 
   return {
     screen,

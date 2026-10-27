@@ -288,7 +288,7 @@ html.less-motion .tr-stop.here .tr-pin::after { display: none; }
 .home .play .words b { font: 600 calc(25px * var(--k))/1 var(--round); }
 .home .play .words small { font: 600 calc(14px * var(--k))/1 var(--round); }
 
-/* the dock: Daily (daily.ts), the passport's booklet and its stamps, the challenge route; three tiles */
+/* the dock: Daily (daily.ts), the passport's booklet and its stamps, the challenge route, the Shop; up to four tiles */
 .home .dock { flex: none; display: flex; justify-content: center; gap: calc(10px * var(--k)); width: min(100%, calc(380px * var(--k))); }
 .btn.tile-btn {
   flex: 1 1 0; min-width: 0; max-width: calc(150px * var(--k)); min-height: calc(92px * var(--k));
@@ -301,6 +301,10 @@ html.less-motion .tr-stop.here .tr-pin::after { display: none; }
 .tile-btn .words { display: flex; flex-direction: column; align-items: center; gap: calc(4px * var(--k)); min-width: 0; }
 .tile-btn :is(.label, .words b) { font: 600 calc(16px * var(--k))/1.1 var(--round); }
 .tile-btn :is(small, .words span) { font: 500 calc(12.5px * var(--k))/1.15 var(--round); color: var(--ink-soft); }
+/* four tiles: a little closer, the names a little smaller, so "Challenges" keeps its margin on a 360 px phone */
+.home .dock.four { gap: calc(8px * var(--k)); }
+.dock.four .btn.tile-btn { padding-left: calc(4px * var(--k)); padding-right: calc(4px * var(--k)); }
+.dock.four .tile-btn :is(.label, .words b) { font-size: calc(14.5px * var(--k)); }
 
 /* ---------- the board ---------- */
 
@@ -919,12 +923,13 @@ html.less-motion .particles, html.battery-saver .particles { display: none; }
 .win .card { position: relative; }
 .card .fireworks { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; border-radius: inherit; }
 
-/* Coins a win paid (the checker's word): an amber coin, drawn here, the Arcade's wallet takes it from there */
-.coin {
-  display: inline-block; flex: none; width: 24px; height: 24px; border-radius: 50%;
-  background: radial-gradient(circle at 36% 30%, #fff1c9 0 14%, var(--amber-hi) 15% 52%, var(--amber-lo) 53% 100%);
-  box-shadow: inset 0 0 0 2px rgba(173, 100, 36, 0.55), 0 2px 0 var(--amber-lip);
-}
+/* THE COIN (coin.ts): the Arcade's own Coins icon, on every price and every amount just paid. Drawn as
+   the SDK ships it: scaled, never tinted, greyed, faded, outlined or shadowed (brand-art.md) */
+.coin-icon { display: inline-block; flex: none; width: 20px; height: 20px; object-fit: contain; filter: none; }
+/* a price: the number, then the coin */
+.price-tag { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+/* Coins a win paid (the checker's word): the coin the Arcade's wallet takes them from */
+.coin { width: 24px; height: 24px; }
 /* on a win card: a chip on the card's top edge, so nothing on the card moves */
 .card .coins-chip {
   position: absolute; top: -18px; left: 18px; display: flex; align-items: center; gap: 7px;
@@ -988,13 +993,49 @@ html.less-motion .helper.grew .badge { animation: none; }
 .veil.shop { z-index: 25; }
 .shop-card { display: flex; flex-direction: column; align-items: center; gap: 12px; }
 .shop-card h2 { margin: 0; }
-.shop-glyph { display: grid; place-items: center; width: 68px; height: 68px; border-radius: 50%; background: rgba(246, 194, 122, 0.25); color: var(--ink); }
+.shop-glyph { display: grid; place-items: center; width: 76px; height: 76px; border-radius: 50%; background: rgba(246, 194, 122, 0.25); color: var(--ink); }
 .shop-glyph :is(svg, .ico) { width: 38px; height: 38px; }
 .btn.shop-buy { min-width: 230px; min-height: 58px; padding: 0 22px; font-size: 20px; }
-.btn.amber.shop-buy.short { filter: grayscale(0.85); opacity: 0.8; }
+/* greyed: the Coins do not cover it, or there is no room under the cap. The button's own colour goes
+   grey and its words soften; the coin stays as the Arcade draws it (never greyscaled) */
+.btn.shop-buy.short, .btn.amber.shop-buy.short {
+  background: linear-gradient(180deg, #e4e8ee 0%, #c9d0da 100%); color: var(--ink-soft); text-shadow: none;
+  box-shadow: inset 0 2px 0 #fff, 0 5px 0 #9aa6b6, 0 9px 14px rgba(6, 12, 24, 0.35);
+}
+.shop-buy .buy-words { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.shop-buys { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+/* the pack: the same button, white, under the single */
+.btn.shop-buy.pack { min-height: 52px; font-size: 18px; }
+.shop-glyph .helper-pic { width: 64px; height: 64px; }
+.helper-pic { display: block; object-fit: contain; }
 .card p.shop-earn { margin: 0; font-size: 15px; color: var(--ink-soft); }
 .card p.shop-say { margin: 0; font: 600 15px/1.3 var(--round); color: rgb(var(--mark-hard)); }
 .card p.shop-say:empty { display: none; }
+.card p.shop-earn .price-tag { font-weight: 600; color: var(--ink); vertical-align: baseline; margin-right: 1px; }
+
+/* HOME'S SHOP (home-shop.ts): a glass row per helper, its picture, its name and count, two price buttons */
+.home-shop-card { gap: 8px; width: min(100%, 380px); padding-top: 18px; padding-bottom: 16px; }
+.home-shop-card h2 { margin-bottom: 2px; }
+.shop-item {
+  display: grid; grid-template-columns: 48px 1fr; grid-template-areas: "pic words" "buys buys" "say say";
+  align-items: center; column-gap: 12px; row-gap: 6px; width: 100%; padding: 8px 12px 12px; border-radius: 20px;
+}
+.shop-item .item-pic { grid-area: pic; width: 48px; height: 48px; }
+.shop-item .item-pic .helper-pic { width: 100%; height: 100%; }
+.shop-item .item-pic.grew { animation: badge-pop 0.5s ease-out; }
+html.less-motion .shop-item .item-pic.grew { animation: none; }
+.shop-item .item-words { grid-area: words; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; min-width: 0; }
+.shop-item .item-words b { font: 600 19px/1.1 var(--round); }
+.shop-item .item-have { font: 500 14px/1.2 var(--round); color: var(--ink-soft); }
+.shop-item .item-buys { grid-area: buys; display: flex; gap: 10px; }
+.shop-item .btn.shop-buy { flex: 1 1 0; min-width: 0; min-height: 46px; padding: 0 10px; font-size: 17px; }
+.shop-item p.item-say { grid-area: say; margin: 0; font: 600 13px/1.3 var(--round); color: var(--ink-soft); text-align: center; }
+.shop-item p.item-say:empty { display: none; }
+.shop-item p.item-say.good { color: #2e7d5a; }
+.home-shop-card p.shop-earn { font-size: 14px; }
+
+/* mercy help (tries.ts): this try's free Hints on the Hint badge, in their own colour */
+.helper.gifted .badge { background: linear-gradient(180deg, #6fd3a6, #2e9d6c); text-shadow: 0 1px 0 rgba(10, 80, 50, 0.5); }
 
 /* the stuck notice's three ways out, each with what it costs: its count, its price, or free */
 .stuck-note .ways { display: flex; justify-content: center; gap: 6px; margin-top: 8px; }

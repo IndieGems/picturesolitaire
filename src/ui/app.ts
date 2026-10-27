@@ -61,6 +61,11 @@ import { markOf, markTag, markWords, pretendMarks, type Mark } from "./marks";
 import { allDone, awaitingRecord, createHome, nextBoard } from "./home";
 import { KINDS, KIT, stock, type HelperKind } from "./stock";
 import { createRunOut } from "./helper-shop";
+import { createHomeShop } from "./home-shop";
+import { coinIcon, priceTag } from "./coin";
+import { createTries } from "./tries";
+import { createMercyNote } from "./mercy-note";
+import { recentStats } from "./board-stats";
 import { createLessons, type LessonName } from "./lessons";
 import { createHintNudge } from "./hint-nudge";
 import { createDestinationBanner, type Destination } from "./destination";
@@ -106,9 +111,11 @@ const homeUi = createHome(
     play: () => void playNext(),
     passport: () => passportUi.open(),
     challenges: () => void routeUi.openRoute(),
+    shop: () => homeShop.open(),
   },
-  // the challenge tile shows once the challenge boards exist: nothing promises a screen with nothing on it
-  { note: homeNote, daily: dailyUi.homeButton, challengesShown: () => routeUi.exists() },
+  // the challenge tile shows once the challenge boards exist: nothing promises a screen with nothing on it;
+  // the Shop once the first board is done (its travel kit is how a player first meets the helpers)
+  { note: homeNote, daily: dailyUi.homeButton, challengesShown: () => routeUi.exists(), shopShown: () => guideDone() },
 );
 const home = homeUi.screen;
 
@@ -177,8 +184,10 @@ const routeUi = createChallenges({ home: () => goHome(), show: () => show("chall
 
 // RUN-OUT (helper-shop.ts): a helper with none left, tapped; bought, it is used at once
 const runOut = createRunOut(stock, (k) => pressHelper(k));
+// home's shop (home-shop.ts): the helpers, one or a pack of 3, bought ahead
+const homeShop = createHomeShop(stock);
 
-app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, runOut.element, offlineVeil);
+app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, runOut.element, homeShop.element, offlineVeil);
 
 // ---------- state ----------
 
@@ -280,6 +289,21 @@ const levels = () => levelCount();
 /** A campaign position as the board's own number (the campaign goes round past the last board). */
 const boardNumber = (n: number) => ((n - 1) % levels()) + 1;
 
+// a campaign board's tries (tries.ts): the boards' player numbers, and mercy help's free Hints after
+// repeated stuck tries, said on the board (mercy-note.ts) and paid by the board (grantFree)
+const mercyNote = createMercyNote({ hint: helperBtns.hint.btn, layer: boardScreen });
+/** The board's mercy call (the gameplay member's): `n` uses of a helper this try pays for. */
+type MercyBoard = BoardHandle & { grantFree?: (k: HelperKind, n?: number) => void };
+const tries = createTries({
+  counted: () => (play?.kind === "campaign" && !isPractice(play) ? boardNumber(play.level) : null),
+  pictures: () => board?.pictures().length ?? 0,
+  grant: (n) => (board as MercyBoard | null)?.grantFree?.("hint", n),
+  announce: (n) => {
+    if (screen === "board") mercyNote.show(n);
+  },
+  changed: () => drawHelpers(),
+});
+
 function show(next: Screen): void {
   screen = next;
   if (import.meta.env.MODE !== "release") dev?.screen(next);
@@ -297,8 +321,10 @@ function show(next: Screen): void {
   if (next === "home") drawHomeNote();
   else homeNote.hidden = true;
   if (next !== "album") albumsUi.closeViewer();
+  if (next !== "home") homeShop.close();
   if (next !== "board") {
     runOut.close();
+    mercyNote.clear();
     lessons.cancel();
     hintNudge.reset();
   }
@@ -346,7 +372,7 @@ onVerdict((v) => {
 function drawHomeNote(): void {
   if (!lastWins.length) return;
   const paid = lastWins.splice(0);
-  const coin = h("span", { class: "coin", "aria-hidden": "true" });
+  const coin = coinIcon(20, false, "coin");
   homeNote.replaceChildren(coin, h("span", {}, t("home.lastWin", { count: paid.reduce((sum, v) => sum + (v.status === "paid" ? v.coins : 0), 0) })));
   homeNote.hidden = false;
   for (const v of paid) cueCoins(v, coin);
@@ -422,6 +448,9 @@ function openLoaded(next: Play): void {
   hideCard(restartVeil);
   // the board in hand is kept (Back, then the same board again, carries on)
   if (!board || !samePlay(play, next) || boardWon) {
+    // the try in hand ends here (lost if it stood stuck, else quit; a won one has ended already)
+    tries.end();
+    mercyNote.clear();
     board?.destroy();
     host.replaceChildren();
     destBanner.clear();
@@ -634,13 +663,17 @@ function freeHelpers(): boolean {
 const shown: Partial<Record<HelperKey, number>> = {};
 function drawHelpers(): void {
   const free = freeHelpers();
+  // mercy help: this try's free Hints, on the Hint badge in their own colour until used (tries.ts)
+  const gifted = free ? 0 : tries.freeHints();
   for (const key of KINDS) {
     const { btn, badge } = helperBtns[key];
     const left = stock.count(key);
-    const out = !free && left <= 0;
+    const given = key === "hint" ? gifted : 0;
+    const out = !free && !given && left <= 0;
     // none left: "+" (more to be had), and a tap opens the run-out panel
-    badge.textContent = out ? "+" : String(left);
+    badge.textContent = given ? String(given) : out ? "+" : String(left);
     btn.classList.toggle("free", free);
+    btn.classList.toggle("gifted", given > 0);
     btn.classList.toggle("out", out);
     btn.classList.toggle("resting", key === "undo" && !out && !canUndoNow);
     if ((shown[key] ?? left) < left) {
@@ -651,7 +684,13 @@ function drawHelpers(): void {
     shown[key] = left;
     btn.setAttribute(
       "aria-label",
-      free ? t(`board.${key}`) : out ? `${t(`board.${key}`)}, ${t("board.helperNone")}` : `${t(`board.${key}`)}, ${t("board.helperLeft", { count: left })}`,
+      free
+        ? t(`board.${key}`)
+        : given
+          ? `${t(`board.${key}`)}, ${t("board.helperFree", { count: given })}`
+          : out
+            ? `${t(`board.${key}`)}, ${t("board.helperNone")}`
+            : `${t(`board.${key}`)}, ${t("board.helperLeft", { count: left })}`,
     );
   }
 }
@@ -659,19 +698,22 @@ function drawHelpers(): void {
 /** A helper pressed (or just bought): it acts, or, with none left and nothing free, the run-out panel opens. */
 function pressHelper(k: HelperKey): void {
   if (!board || boardWon) return;
-  if (!freeHelpers() && lessons.lit() !== k && stock.count(k) <= 0) return void runOut.open(k);
+  const given = k === "hint" && tries.freeHints() > 0;
+  if (!freeHelpers() && !given && lessons.lit() !== k && stock.count(k) <= 0) return void runOut.open(k);
   if (k === "undo") board.undo();
   else if (k === "hint") board.hint();
   else board.shuffle();
 }
 for (const k of KINDS) helperBtns[k].btn.addEventListener("click", () => pressHelper(k));
 
-// the board acted: one spent, unless it was free (a lesson's, the guide's Hint: `lesson`), or the board
-// costs nothing; a spend that got no answer is Server's to send again, and "none" (another device used
-// the last) is read again, the act standing
-const spendOn = (k: HelperKey) => (e: { lesson?: boolean }) => {
+// the board acted: one spent, unless it was free (a lesson's, the guide's Hint: `lesson`; mercy help's:
+// `free`), or the board costs nothing; a spend that got no answer is Server's to send again, and "none"
+// (another device used the last) is read again, the act standing
+const spendOn = (k: HelperKey) => (e: { lesson?: boolean; free?: boolean }) => {
   if (e.lesson || freeHelpers()) return;
+  if (e.free) return void tries.usedFree();
   void stock.spend(k);
+  tries.spent(k);
   drawHelpers();
 };
 on("helper:undo", spendOn("undo"));
@@ -681,6 +723,7 @@ stock.onChange(() => {
   drawHelpers();
   drawStuck();
   runOut.redraw();
+  homeShop.redraw();
 });
 
 on("board:changed", (e) => {
@@ -734,8 +777,8 @@ function wayChip(w: WayOut, lit: boolean): HTMLElement {
     "span",
     { class: cls, "aria-label": `${name}: ${t("board.wayPrice", { price })}` },
     icon(w),
-    h("span", {}, String(price)),
-    h("span", { class: "coin", "aria-hidden": "true" }),
+    // the price with the Arcade's own Coin (coin.ts)
+    priceTag(price, 16),
   );
 }
 const wayButton = (w: WayOut): HTMLElement => (w === "restart" ? restartBtn : helperBtns[w].btn);
@@ -807,7 +850,11 @@ for (const type of ["board:unstuck", "board:restart", "board:start", "board:solv
 // Restart is free; the card only checks it was meant. Before the first move there is nothing to lose.
 restartBtn.addEventListener("click", () => {
   if (!board || boardWon) return;
-  if (!board.canUndo()) return void board.restart();
+  // the try in hand ends as the board is dealt again: lost if it stood stuck, else quit (tries.ts)
+  if (!board.canUndo()) {
+    tries.end();
+    return void board.restart();
+  }
   restartVeil.replaceChildren(
     h(
       "div",
@@ -824,6 +871,7 @@ restartBtn.addEventListener("click", () => {
           void signalBreak("level_end", "restart").then(() => {
             restartVeil.inert = false;
             hideCard(restartVeil);
+            tries.end();
             board?.restart();
           });
         }),
@@ -861,6 +909,9 @@ let lastWin: Win | null = null;
 on("board:solved", ({ moves, ms, line }) => {
   if (!play || boardWon) return;
   boardWon = true;
+  // the try's ending (a campaign board's player numbers; mercy help starts over): tries.ts says which count
+  tries.won();
+  mercyNote.clear();
   // the dev menu's experiment boards: practice always (no checker lane knows them)
   if (play.kind === "experiment") {
     lastWin = { kind: "experiment", x: play.x, moves, ms, practice: true };
@@ -969,7 +1020,7 @@ function drawCoins(win: Win): void {
   // any other win card: one chip on its top edge (so nothing on the card moves): the Coins, then each
   // helper that landed (the travel kit, a hard board's gift, a trip's stamp), which flies to its button
   const chip = h("div", { class: "coins-chip glass", role: "status" });
-  const coin = h("span", { class: "coin", "aria-hidden": "true" });
+  const coin = coinIcon(24, false, "coin");
   if (v.coins > 0) chip.append(coin, h("span", {}, t("win.coins", { count: v.coins })));
   const glyphs: Array<[HelperKey, Element]> = [];
   for (const k of KINDS) {
@@ -980,7 +1031,11 @@ function drawCoins(win: Win): void {
     chip.append(h("span", { class: "gift-tool", "aria-label": t(`win.gift.${k}`, { count: n }) }, g, h("span", { "aria-hidden": "true" }, `+${n}`)));
   }
   // the kit on a later board's card (a player past board 1 without it): said in words too
-  if ((v as { gifts?: string[] }).gifts?.includes("kit") && glyphs.length) chip.setAttribute("aria-label", t("win.kitLanded"));
+  const gifts = (v as { gifts?: string[] }).gifts ?? [];
+  if (gifts.includes("kit") && glyphs.length) chip.setAttribute("aria-label", t("win.kitLanded"));
+  // the daily's first win of the day pays a helper (Server's rotation): said, for a screen reader, as what it is
+  else if (gifts.includes("daily") && glyphs.length)
+    chip.setAttribute("aria-label", `${v.coins > 0 ? `${t("win.coins", { count: v.coins })}, ` : ""}${t("win.gift.daily")}: ${glyphs.map(([k]) => t(`win.gift.${k}`, { count: tools[k]! })).join(", ")}`);
   card.querySelector(".coins-chip")?.remove();
   card.append(chip);
   if (v.coins > 0 && !win.cued) win.cued = cueCoins(v, coin) || true;
@@ -1103,7 +1158,7 @@ function guidePrize(): HTMLElement | null {
   const a = knownTable(KEEPSAKE.slug);
   const coins = KEEPSAKE.coins ?? 0;
   const parts: Node[] = [];
-  if (coins > 0) parts.push(h("span", { class: "won-coins" }, h("span", { class: "coin", "aria-hidden": "true" }), h("span", {}, t("guide.prize", { count: coins }))));
+  if (coins > 0) parts.push(h("span", { class: "won-coins" }, coinIcon(38, false, "coin"), h("span", {}, t("guide.prize", { count: coins }))));
   if (a) parts.push(h("span", { class: "won-table" }, h("img", { src: thumbOf(a), alt: "", draggable: "false" }), h("span", {}, tableTitle(a))));
   if (!parts.length) return null;
   if (a) parts.push(h("span", { class: "prize-note" }, t("guide.tableNote")));
@@ -1493,7 +1548,8 @@ export async function startApp(): Promise<void> {
       dev = mountDevMenu({
         app,
         open(p) {
-          // always a fresh board from the menu: the one in hand is dropped
+          // always a fresh board from the menu: the one in hand is dropped (its try ends)
+          tries.end();
           board?.destroy();
           host.replaceChildren();
           board = null;
@@ -1567,6 +1623,8 @@ export async function startApp(): Promise<void> {
       bigger: () => showBanners([{ cls: "big", text: t("board.bigger") }]),
       /** A pretend board:stuck, to see the notice (the board's own word clears it). */
       stuck: () => emit("board:stuck", { doomed: true } as never),
+      /** The boards' player numbers sent so far (board-stats.ts), and the try in hand (tries.ts). */
+      stats: () => ({ sent: recentStats.slice(), now: tries.current() }),
     };
     // ?restored=id,id shows those pictures as restored in the albums (never saved)
     const fake = new URLSearchParams(location.search).get("restored");
