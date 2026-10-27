@@ -18,9 +18,16 @@ use crate::rules::{self, Action, Deal, Picture};
 /// Shuffles one line may hold. Helpers are the player's own stock since 2026-10-27,
 /// and the board caps none: a full pouch is 10 (src/net/helper-ids.json `cap`), and a
 /// player may buy more mid-board, so this is only a bound on the replay's work, far
-/// past real play (a real win refused here would leave its board unwon). The checker
-/// does not ask whether each was paid for: every board is winnable with no helper,
-/// so a shuffle buys a forged claim nothing a solver's line would not.
+/// past real play (a real win refused here would leave its board unwon).
+///
+/// NO CHECK THAT EACH SHUFFLE WAS PAID FOR, on purpose (the lead, 2026-10-27, as
+/// mahjong-solitaire ships): every board is winnable with no helper, so a forged win
+/// never needs a shuffle (a solver's line wins without one), Coins pay once per board,
+/// and Hints and Undos never appear in a line at all, so the checker could only ever
+/// catch a modified game that skips paying for shuffles. The cheap way to add it (each
+/// use-shuffle also grants a hidden token; a win's order spends one per shuffle, any
+/// shortfall from the Shuffle stock) costs a currency, makes claims wait for the uses
+/// before them, and charges twice a use still on its way. Ask the lead before adding it.
 pub const SHUFFLES: u32 = 100;
 /// A line longer than this is not a real game.
 const MAX_ACTIONS: usize = 5000;
