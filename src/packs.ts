@@ -59,6 +59,25 @@ const KEEP = 6;
 const HEAD_BYTES = 32 * 1024;
 /** Files in a shared pack this close together are read in one span (a gap costs less than a request). */
 const GAP = 64 * 1024;
+/**
+ * Full-picture chunks read at once, at most (QA, 0.32.0: a daily opened after two boards waited
+ * seconds where a cold one did not; the guess, not reproduced here, was earlier streams holding the
+ * host's connections). Over HTTP/1.1 a browser opens 6 connections a host, so the enlarged view's
+ * chunks can take 2 and a board's own pack (or the daily's week) never queues behind them.
+ */
+const CHUNK_READS = 2;
+let chunkReads = 0;
+const chunkQueue: (() => void)[] = [];
+async function chunkSlot<T>(run: () => Promise<T>): Promise<T> {
+  while (chunkReads >= CHUNK_READS) await new Promise<void>((go) => chunkQueue.push(go));
+  chunkReads++;
+  try {
+    return await run();
+  } finally {
+    chunkReads--;
+    chunkQueue.shift()?.();
+  }
+}
 
 const packUrl = (name: string) => `${base}packs/${name}.bin`;
 
@@ -122,7 +141,10 @@ async function readSpan(url: string, from: number, to: number, orTo = to): Promi
     note("range");
     return { bytes: new Uint8Array(await r.arrayBuffer()), at: first, ranged: true };
   }
-  if (!r.ok || !r.body) throw new Error(`${url}: ${r.status}`);
+  if (!r.ok || !r.body) {
+    stop.abort(); // nothing of it is wanted: its connection goes back at once
+    throw new Error(`${url}: ${r.status}`);
+  }
   note("whole");
   ignoresRange = true;
   return { bytes: await streamPrefix(url, r, stop, () => orTo), at: 0, ranged: false };
@@ -151,6 +173,9 @@ async function streamPrefix(url: string, r: Response, stop: AbortController, nee
     chunks.push(value);
     got += value.length;
   }
+  // the rest of the pack is not wanted: the stream is cancelled and the request aborted, so its
+  // connection is released now rather than left draining the rest (what was read is kept below)
+  void reader.cancel().catch(() => undefined);
   stop.abort();
   const bytes = join(chunks, got);
   const pre = prefixes.get(url);
@@ -178,14 +203,20 @@ async function oneStream(name: string, paths: string[]): Promise<Uint8Array> {
   if (pre && need(pre) <= pre.length) return pre;
   const stop = new AbortController();
   const r = await fetch(url, { signal: stop.signal });
-  if (!r.ok || !r.body) throw new Error(`${url}: ${r.status}`);
+  if (!r.ok || !r.body) {
+    stop.abort();
+    throw new Error(`${url}: ${r.status}`);
+  }
   return streamPrefix(url, r, stop, need);
 }
 
 /** A whole pack, in one request (one board's own). */
 async function readWhole(url: string): Promise<Uint8Array> {
   const r = await fetch(url);
-  if (!r.ok) throw new Error(`${url}: ${r.status}`);
+  if (!r.ok) {
+    void r.body?.cancel().catch(() => undefined);
+    throw new Error(`${url}: ${r.status}`);
+  }
   return new Uint8Array(await r.arrayBuffer());
 }
 
@@ -375,7 +406,7 @@ export async function ensure(paths: string[], board: string): Promise<void> {
       if (chunked.length) {
         const by = new Map<string, string[]>();
         for (const p of chunked) by.set(chunkOf(idx, p)!, [...(by.get(chunkOf(idx, p)!) ?? []), p]);
-        const rest = await Promise.all([...by].map(([name, ps]) => fromPack(name, ps, false)));
+        const rest = await Promise.all([...by].map(([name, ps]) => chunkSlot(() => fromPack(name, ps, false))));
         left = [...left, ...rest.flat()];
       }
       if (left.length) throw new Error(`packs: board ${board} has no ${left.join(", ")}`);
