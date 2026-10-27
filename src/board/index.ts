@@ -50,6 +50,8 @@ export interface BoardPicture {
   src: string;
   cols: number;
   rows: number;
+  /** The day's suitcase item this picture is (its id), on a daily board that carries one. */
+  item?: string;
 }
 
 /** What the screens hold of an open board (agreed with the UI member). */
@@ -79,6 +81,13 @@ export interface BoardHandle {
    * board:restart, so grant the next try's from there), as a new board does.
    */
   grantFree(k: keyof HelperCounts, n?: number): void;
+  /**
+   * Called from a suitcase:item handler, during that event: the screens fly
+   * their own copy of the item from its rect, so the board hides its piece
+   * at once instead of shrinking it (the glow and twinkles still fade, and
+   * the cards fall on the usual timing). At any other time it does nothing.
+   */
+  takeItem(): void;
   /** Deal the same board again, at once (the screens confirm first). */
   restart(): void;
   canUndo(): boolean;
@@ -136,14 +145,16 @@ function loadTuning(): void {
 /**
  * A picture's files: the full one, and Art's light board copy with its size in pixels (none yet:
  * the full). A destination's postcard is in the catalogue's own `destinations` list, with the
- * place's name.
+ * place's name; a daily's suitcase item in its `items` list (Levels' ids, item-YYYY-MM-NN).
  */
 type PictureFiles = {
   id: string; file: string; board?: string; boardPx?: number[]; px?: number[];
   name?: string; title?: string; place?: string;
 };
-const catalogue = CATALOGUE as unknown as { pictures: PictureFiles[]; destinations?: PictureFiles[] };
-const pictureFiles = new Map([...catalogue.pictures, ...(catalogue.destinations ?? [])].map((p) => [p.id, p]));
+const catalogue = CATALOGUE as unknown as { pictures: PictureFiles[]; destinations?: PictureFiles[]; items?: PictureFiles[] };
+const pictureFiles = new Map(
+  [...catalogue.pictures, ...(catalogue.destinations ?? []), ...(catalogue.items ?? [])].map((p) => [p.id, p]),
+);
 /** A picture's file is drawn over this many cells: a destination's postcard over the whole board. */
 function drawnSize(l: Level, p: Picture): { cols: number; rows: number } {
   return l.destination?.id === p.id ? { cols: l.deal.cols, rows: l.deal.rows } : { cols: p.cols, rows: p.rows };
@@ -273,6 +284,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   /** The board's destination (a window cut from a postcard the size of the board), if it has one. */
   const dest = lvl.destination && pics.some((p) => p.id === lvl.destination!.id) ? lvl.destination : undefined;
   const destPic = dest ? pics.findIndex((p) => p.id === dest.id) : -1;
+  /** The day's suitcase item (a daily's 2×2 picture, docs/daily-suitcase.md), if it has one: -1 for none. */
+  const itemPic = lvl.item ? pics.findIndex((p, i) => p.id === lvl.item!.id && p.cols === 2 && p.rows === 2 && i !== destPic) : -1;
   // the copies are picked for the card size the board opens at (sharpen() picks again on a resize)
   const art: Art[] = pics.map((p, i) => ({
     url: "", ...drawnSize(lvl, p), ...(i === destPic ? { dx: dest!.crop[0], dy: dest!.crop[1] } : {}),
@@ -335,6 +348,11 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   let reveal: Reveal | null = null;
   /** The destination has been revealed on this opening of the board: a repeat is the short one. */
   let revealedOnce = false;
+  /** The item has been finished on this opening of the board (suitcase:item's again). */
+  let itemOnce = false;
+  /** suitcase:item is being sent (takeItem() may answer), and whether it was answered. */
+  let itemAsking = false;
+  let itemTaken = false;
   /** The opening deal has played: the clock may run. */
   let opened = false;
   let activeMs = 0;
@@ -793,6 +811,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       }, { ease: ease.out });
       glow.style.opacity = "1";
       await wait(holdMs);
+      if (pic === itemPic) sendItem(v, glow);
       emit("picture:clear", { pictureId: id });
       const leaving = tween(leaveMs, (t) => {
         // to nothing, faster as it goes (reduced motion: a soft fade where it stands)
@@ -818,6 +837,27 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       live = live.filter((x) => x !== v);
       void gone.then(() => v.el.remove());
     }));
+  }
+
+  /**
+   * The day's suitcase item is finished, at its fullest: say where it is on
+   * screen (the glow is the picture's box, grown with it) and with which
+   * copy, and hide the board's piece if the screens take it (takeItem()).
+   */
+  function sendItem(v: PieceView, box: HTMLElement): void {
+    const r = box.getBoundingClientRect();
+    const again = itemOnce;
+    itemOnce = true;
+    itemAsking = true;
+    itemTaken = false;
+    try {
+      emit("suitcase:item", {
+        id: lvl.item!.id, rect: { x: r.left, y: r.top, w: r.width, h: r.height }, url: art[itemPic]!.url, again,
+      });
+    } finally {
+      itemAsking = false;
+    }
+    if (itemTaken) v.el.style.visibility = "hidden";
   }
 
   /**
@@ -1982,6 +2022,9 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       const add = Math.max(0, Math.floor(n));
       if (add) freeLeft.set(k, (freeLeft.get(k) ?? 0) + add);
     },
+    takeItem() {
+      if (itemAsking) itemTaken = true;
+    },
     restart() {
       stopHint();
       // solved, the finish still playing: the win stands and the card follows
@@ -2008,7 +2051,9 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       relight();
     },
     // a destination is its whole postcard here (the win card shows the place, not the window)
-    pictures: () => pics.map((p, i) => ({ id: p.id, src: art[i]!.url, cols: art[i]!.cols, rows: art[i]!.rows })),
+    pictures: () => pics.map((p, i) => ({
+      id: p.id, src: art[i]!.url, cols: art[i]!.cols, rows: art[i]!.rows, ...(i === itemPic ? { item: lvl.item!.id } : {}),
+    })),
     destroy() {
       stopHint();
       destroyed = true;

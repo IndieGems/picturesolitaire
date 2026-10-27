@@ -39,6 +39,20 @@ export interface GameEvents {
   "destination:reveal": { id: string; name: string; place: string; again: boolean };
   /** The postcard has gone (or was skipped); the board's cards fall and refill next. */
   "destination:done": { id: string };
+  /**
+   * The day's suitcase item (a daily board's item picture, docs/daily-suitcase.md)
+   * was finished: sent once its grow and hold are done, at its fullest, the
+   * same moment as its picture:clear, on every finish (practice and replays
+   * too: whether it packs is the screens' and the server's). `id`: the item's
+   * id from the level data. `rect`: the picture's box on screen then, in
+   * viewport CSS px. `url`: the copy the board drew ("" if none had loaded).
+   * `again`: finished before on this opening of the board (after Undo or a
+   * restart). No pause, no reveal: the board shrinks it away as any picture
+   * and the cards fall, unless a handler calls board.takeItem() during this
+   * event, which hides the board's own piece at once so the screens' copy is
+   * the one that leaves.
+   */
+  "suitcase:item": { id: string; rect: { x: number; y: number; w: number; h: number }; url: string; again: boolean };
   /** Cards fell into gaps. `ms`: from now until the first of them lands. */
   "cards:fall": { cards: number; ms?: number };
   /** A stack dealt a card into its column. `left` is what the stack still holds. */

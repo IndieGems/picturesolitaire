@@ -43,9 +43,15 @@ if (dest) {
     };
   }
 }
+// ?item=1: the board's first 2x2 picture made the day's suitcase item (its id the picture's)
+if (q.has("item")) {
+  const base = level ?? levelOf(Number(q.get("level") ?? 1));
+  const p = base.deal.pictures.find((p) => p.cols === 2 && p.rows === 2 && p.id !== base.destination?.id);
+  if (p) level = { ...base, item: { id: p.id } };
+}
 const board = openBoard(host, level ?? Number(q.get("level") ?? 1));
 const log: string[] = [];
-const names: (keyof GameEvents)[] = ["piece:lift", "piece:cancel", "piece:move", "piece:merge", "piece:split", "picture:complete", "picture:clear", "cards:fall", "stack:deal", "stack:nope", "column:land", "helper:undo", "helper:hint", "helper:shuffle", "board:restart", "board:won", "board:solved", "board:start", "board:changed", "board:stuck", "board:unstuck", "helper:refused", "destination:reveal", "destination:done"];
+const names: (keyof GameEvents)[] = ["piece:lift", "piece:cancel", "piece:move", "piece:merge", "piece:split", "picture:complete", "picture:clear", "cards:fall", "stack:deal", "stack:nope", "column:land", "helper:undo", "helper:hint", "helper:shuffle", "board:restart", "board:won", "board:solved", "board:start", "board:changed", "board:stuck", "board:unstuck", "helper:refused", "destination:reveal", "destination:done", "suitcase:item"];
 for (const n of names) on(n, (p) => log.push(`${n} ${JSON.stringify(p)}`));
 for (const k of ["undo", "hint", "shuffle", "restart"] as const) {
   const b = document.createElement("button");

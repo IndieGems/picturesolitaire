@@ -32,6 +32,13 @@ export interface Level {
    */
   destination?: Destination;
   /**
+   * The day's suitcase item, on a daily board (docs/daily-suitcase.md): picture
+   * `id` of the deal, a 2×2, is that item's picture, and its id is the item's.
+   * The rules see an ordinary picture; finishing it sends suitcase:item, with
+   * no pause and no reveal.
+   */
+  item?: { id: string };
+  /**
    * A lesson's staged board (lessonLevel): it opens stuck on purpose, so the
    * board says nothing of being stuck on it, and the screens play it as
    * practice (no claim, no Coins).
@@ -62,6 +69,7 @@ export interface Stored {
   line: number[][];
   axes?: Record<string, unknown>;
   destination?: { id: string; crop: number[] };
+  item?: { id: string };
 }
 
 /** A stored board as the board plays it; `number` is its place in its list, from 1. */
@@ -76,6 +84,7 @@ export function toLevel(l: Stored, number: number): Level {
     ...(l.destination && typeof l.destination.id === "string" && l.destination.crop?.length === 2
       ? { destination: { id: l.destination.id, crop: [l.destination.crop[0]!, l.destination.crop[1]!] as [number, number] } }
       : {}),
+    ...(l.item && typeof l.item.id === "string" ? { item: { id: l.item.id } } : {}),
   };
 }
 
