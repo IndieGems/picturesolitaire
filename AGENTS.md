@@ -99,6 +99,7 @@ Install Playwright in a scratch folder, never in the game.
 - **A wrong-looking GPU render gets one SwiftShader pass**: the same
   picture is a game bug, a different one a real driver artifact.
 - **Several GPU browsers share the one card**: keep them to a handful.
+- **The machine is shared by every project's task force** (creator, 2026-10-27, after CPU sat at 100%): at most 2–4 CPU-heavy processes per session, level and seed searches at below-normal priority, one play-test browser at a time per session, and nothing left running in the background after a check.
 
 ## ⚠️ Where the build lands is DECLARED, in `package.json`
 
