@@ -14,9 +14,9 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 
 ## The hourly maths (the standard: about 500 an hour of ordinary play)
 
-- Campaign: 90 boards, 3100 Coins in all (3000 without the onboarding prize).
+- Campaign: 90 boards, 3115 Coins in all (3015 without the onboarding prize).
   The design puts a relaxed board at 2 to 4 minutes. At 3 minutes a board, 34 a board
-  is about 674 Coins an hour; at 2 minutes 1011, at 4 minutes 506.
+  is about 678 Coins an hour; at 2 minutes 1016, at 4 minutes 508.
 - Challenge route: 20 boards, 540 Coins in all, 27 a board on average.
   At 4 minutes a board that is about 405 an hour; at 5 minutes 324.
 - Daily: 50 once a day, on top.
@@ -37,7 +37,7 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 | c07 | campaign 7 | 26 | 30 |
 | c08 | campaign 8 | 15 | 15 |
 | c09 | campaign 9 | 23 | 25 |
-| c10 | campaign 10 | 26 | 30 |
+| c10 | campaign 10 | 37 | 40 |
 | c11 | campaign 11 | 13 | 15 |
 | c12 | campaign 12 | 22 | 25 |
 | c13 | campaign 13 | 25 | 30 |
@@ -47,7 +47,7 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 | c17 | campaign 17 | 27 | 30 |
 | c18 | campaign 18 | 21 | 25 |
 | c19 | campaign 19 | 30 | 35 |
-| c20 | campaign 20 | 33 | 35 |
+| c20 | campaign 20 | 41 | 40 |
 | c21 | campaign 21 | 13 | 15 |
 | c22 | campaign 22 | 28 | 30 |
 | c23 | campaign 23 | 30 | 35 |
@@ -57,7 +57,7 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 | c27 | campaign 27 | 29 | 30 |
 | c28 | campaign 28 | 29 | 30 |
 | c29 | campaign 29 | 39 | 40 |
-| c30 | campaign 30 | 46 | 40 |
+| c30 | campaign 30 | 40 | 40 |
 | c31 | campaign 31 | 22 | 25 |
 | c32 | campaign 32 | 37 | 40 |
 | c33 | campaign 33 | 31 | 35 |
@@ -72,17 +72,17 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 | c42 | campaign 42 | 38 | 40 |
 | c43 | campaign 43 | 43 | 40 |
 | c44 | campaign 44 | 35 | 40 |
-| c45 | campaign 45 | 43 | 40 |
+| c45 | campaign 45 | 49 | 40 |
 | c46 | campaign 46 | 28 | 30 |
 | c47 | campaign 47 | 33 | 35 |
 | c48 | campaign 48 | 40 | 40 |
 | c49 | campaign 49 | 35 | 40 |
-| c50 | campaign 50 | 41 | 40 |
+| c50 | campaign 50 | 44 | 40 |
 | c51 | campaign 51 | 13 | 15 |
 | c52 | campaign 52 | 42 | 40 |
 | c53 | campaign 53 | 44 | 40 |
 | c54 | campaign 54 | 44 | 40 |
-| c55 | campaign 55 | 48 | 40 |
+| c55 | campaign 55 | 38 | 40 |
 | c56 | campaign 56 | 28 | 30 |
 | c57 | campaign 57 | 32 | 35 |
 | c58 | campaign 58 | 41 | 40 |
@@ -92,7 +92,7 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 | c62 | campaign 62 | 39 | 40 |
 | c63 | campaign 63 | 41 | 40 |
 | c64 | campaign 64 | 38 | 40 |
-| c65 | campaign 65 | 40 | 40 |
+| c65 | campaign 65 | 47 | 40 |
 | c66 | campaign 66 | 14 | 15 |
 | c67 | campaign 67 | 35 | 40 |
 | c68 | campaign 68 | 42 | 40 |
@@ -102,7 +102,7 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 | c72 | campaign 72 | 40 | 40 |
 | c73 | campaign 73 | 40 | 40 |
 | c74 | campaign 74 | 35 | 40 |
-| c75 | campaign 75 | 44 | 40 |
+| c75 | campaign 75 | 41 | 40 |
 | c76 | campaign 76 | 38 | 40 |
 | c77 | campaign 77 | 34 | 35 |
 | c78 | campaign 78 | 32 | 35 |
@@ -112,12 +112,12 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 | c82 | campaign 82 | 40 | 40 |
 | c83 | campaign 83 | 45 | 40 |
 | c84 | campaign 84 | 39 | 40 |
-| c85 | campaign 85 | 36 | 40 |
+| c85 | campaign 85 | 53 | 40 |
 | c86 | campaign 86 | 34 | 35 |
 | c87 | campaign 87 | 41 | 40 |
 | c88 | campaign 88 | 40 | 40 |
 | c89 | campaign 89 | 47 | 40 |
-| c90 | campaign 90 | 48 | 40 |
+| c90 | campaign 90 | 47 | 40 |
 | ch01 | challenge 1 | 19 | 20 |
 | ch02 | challenge 2 | 21 | 25 |
 | ch03 | challenge 3 | 19 | 20 |
