@@ -64,6 +64,9 @@ const SOUNDS = [
   { name: "ui", label: "Button", moment: "Any button in the menus and screens." },
   { name: "stuck", label: "Stuck", moment: "The player is stuck: a dead end, or Hint finds no way. Also a Shuffle that can't help. The hint chime, lower and softer." },
   { name: "won", label: "Board won", moment: "Every picture restored: the board is won. It is the win sting too." },
+  { name: "found", label: "Found it", moment: "The Daily Suitcase: the day's item picture is finished on the daily board, over the picture-whole harp." },
+  { name: "packed", label: "Packed", moment: "The Daily Suitcase: the item flies into the suitcase on the daily win card and the case latches. A little softer for a spare copy." },
+  { name: "suitcase", label: "Suitcase full", moment: "The Daily Suitcase: the 10th item is in and the month's suitcase is full, on the win card (just after its latch) or after a swap." },
   { name: "stamp", label: "Passport stamp", moment: "A trip's last board is won and the player stamps the passport: the stamp lands on the trip's page." },
   { name: "milestone", label: "Milestone", moment: "A milestone card with fireworks: today, finishing the guided start. Bigger than a board win, and plays instead of it." },
 ];

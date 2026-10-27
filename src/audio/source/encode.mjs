@@ -74,10 +74,11 @@ const MUSIC = [
 // played what was asked: each part is a slice (start..end) of a source, faded
 // at its end, re-pitched by `rate` (below 1 is lower and slower, as on tape),
 // starting `at` seconds in, `db` louder or softer, `lowpass` (Hz) to soften
-// it. The mix is cut to `len`, faded over `fade`, high-passed and
+// it, `highpass` (Hz) to thin it. The mix is cut to `len`, faded over `fade`, high-passed and
 // peak-normalised like any effect; `stereo` keeps a music part's width.
 const B3 = 2 ** (-3 / 12); // a minor third down
 const P4 = 2 ** (-5 / 12); // a fourth down
+const up = (semis) => 2 ** (semis / 12); // from the source note, up
 const BUILT = [
   // A press on a stack, which can't be picked up: the deal tick twice, lower
   // and softened ("tk-tk"), the second quieter, under the stack's 250 ms
@@ -104,6 +105,42 @@ const BUILT = [
       { src: "mark-marimba.wav", start: 0, end: 0.29, at: 0, rate: P4 },
       { src: "mark-marimba.wav", start: 0.695, end: 1.2, at: 0.32, rate: P4 * B3, db: -2 },
       { src: "mark-thump.wav", start: 0, end: 0.66, at: 0.32, db: -3 },
+    ],
+  },
+  // The Daily Suitcase (docs/daily-suitcase.md). Found it: the day's item
+  // finished on the board, over the picture-whole harp (C major / A minor): a
+  // quick bright marimba "ba-ding" up a fifth (C5, G5) under a glass ping (the
+  // hint chime an octave up, E7). Short: it lands on the picture's clear.
+  {
+    name: "found", len: 0.5, fade: 0.25, parts: [
+      { src: "mark-marimba.wav", start: 0.695, end: 1.1, at: 0, rate: up(12) },
+      { src: "mark-marimba.wav", start: 0.695, end: 1.2, at: 0.075, rate: up(19) },
+      { src: "hint.wav", start: 0.02, end: 0.8, at: 0.075, rate: up(12), db: 6 },
+    ],
+  },
+  // (Part levels are relative to each source's own: the hint chime's original
+  // peaks at -17 dB, the marimba's at -1, the latch's at -7.)
+  // Packed: the item lands in the suitcase on the daily win card, over the
+  // win cue (E major): the case's lid and its two latches (thud-click, click),
+  // its boom thinned, then a tiny glass sparkle (E7).
+  {
+    name: "packed", len: 0.6, fade: 0.3, parts: [
+      { src: "latch.wav", start: 1.575, end: 1.8, at: 0, highpass: 180 },
+      { src: "hint.wav", start: 0.02, end: 0.8, at: 0.1, rate: up(12), db: -2 },
+    ],
+  },
+  // The suitcase full (all ten items): a rising E major marimba arpeggio (E4,
+  // G#4, B4, E5) over the win cue, a soft low E thump and two glass pings under
+  // the top note.
+  {
+    name: "suitcase", len: 1.3, fade: 0.6, parts: [
+      { src: "mark-marimba.wav", start: 0.695, end: 1.2, at: 0, rate: up(4), db: -3 },
+      { src: "mark-marimba.wav", start: 0.695, end: 1.2, at: 0.09, rate: up(8), db: -3 },
+      { src: "mark-marimba.wav", start: 0.695, end: 1.25, at: 0.18, rate: up(11), db: -2 },
+      { src: "mark-marimba.wav", start: 0.695, end: 1.35, at: 0.27, rate: up(16) },
+      { src: "mark-thump.wav", start: 0, end: 0.66, at: 0.27, rate: up(4), db: -4 },
+      { src: "hint.wav", start: 0.02, end: 1.2, at: 0.27, rate: up(12), db: 8 },
+      { src: "hint.wav", start: 0.02, end: 1.0, at: 0.36, rate: up(7), db: 3 },
     ],
   },
 ];
@@ -174,6 +211,7 @@ function built(s, dir) {
       `adelay=${Math.round(p.at * 1000)}:all=1`,
       p.db ? `volume=${p.db}dB` : null,
       p.lowpass ? `lowpass=f=${p.lowpass}` : null,
+      p.highpass ? `highpass=f=${p.highpass}` : null,
       s.stereo ? "aformat=channel_layouts=stereo" : null,
     ].filter(Boolean).join(",") + `[p${i}]`;
   });

@@ -135,6 +135,20 @@ export interface GameEvents {
    * stamp's thud.
    */
   "trip:stamp": { trip: string };
+  /**
+   * The Daily Suitcase (docs/daily-suitcase.md), sent by UI. The day's item
+   * just landed in the suitcase on the daily win card (as it touches, with its
+   * bump; under reduced motion, as its line appears). `id`: the item; `count`:
+   * the player's copies after packing, 1 for a new item, 2+ for a spare.
+   * Sound plays the case's latch.
+   */
+  "suitcase:packed": { id: string; count: number };
+  /**
+   * The month's suitcase is full (its 10th item): on the win card right after
+   * that item's suitcase:packed (the same frame), or on the suitcase screen
+   * when a swap brings it. Once per moment. Sound plays the full-suitcase sting.
+   */
+  "suitcase:full": { month: string };
   /** Any button pressed in the interface (for its click sound). */
   "ui:press": { id: string };
   /**

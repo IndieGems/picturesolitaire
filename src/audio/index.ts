@@ -103,6 +103,8 @@ function landsIn(payload: object, fallback: number, at = 0.85): number {
 let flourish: Voice | null = null;
 /** The win cue, cut short if a milestone card replaces the win card. */
 let winCue: Voice | null = null;
+/** When the last suitcase item was packed (performance.now ms). */
+let packedAt = -Infinity;
 
 // --- Milestones ------------------------------------------------------------------
 //
@@ -218,5 +220,23 @@ function listen(): void {
   on("board:mark", ({ mark }) => play(mark === "super" ? "supermark" : "hardmark"));
   // A trip's stamp lands on its passport page (UI, the instant it lands).
   on("trip:stamp", () => play("stamp"));
+  // The Daily Suitcase. The day's item finished on the board, at its picture's
+  // clear (the harp is ringing): its "found it", once per opening of the board.
+  on("suitcase:item", ({ again }) => {
+    if (!again) play("found");
+  });
+  // The item lands in the suitcase on the win card (UI): the latch, a little
+  // softer for a spare copy.
+  on("suitcase:packed", ({ count }) => {
+    packedAt = performance.now();
+    play("packed", count > 1 ? { gain: 0.75 } : {});
+  });
+  // The suitcase full: on the win card it comes in the same frame as the 10th
+  // item's latch, so the sting waits for the latch to be heard; on the suitcase
+  // screen (a swap) it plays at once. It sits in the win cue's key, over it.
+  on("suitcase:full", () => {
+    play("suitcase", { delay: performance.now() - packedAt < 150 ? 0.3 : 0 });
+    duckMusic(0.3, 1.5, 1.5);
+  });
   on("ui:press", () => play("ui"));
 }

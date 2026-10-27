@@ -27,7 +27,10 @@ export type EffectName =
   | "stamp"
   | "fanfare"
   | "nope"
-  | "settle";
+  | "settle"
+  | "found"
+  | "packed"
+  | "suitcase";
 
 export type EffectDef = {
   /** The file in public/audio/, when it is not the effect's own name. */
@@ -90,12 +93,23 @@ export const EFFECTS: Record<EffectName, EffectDef> = {
   // orchestral flourish (horns, strings, glockenspiel). Every board has one,
   // so it sits under the win cue and stays light enough to hear often.
   fanfare: { gain: 0.6, jitter: 0, minGap: 1 },
+  // The Daily Suitcase. Found it: the day's item finished on the board, a
+  // bright marimba "ba-ding" with a glass ping, over the picture-whole harp
+  // (which stays the bigger sound).
+  found: { gain: 0.5, jitter: 0, minGap: 1 },
+  // Packed: the item lands in the suitcase on the win card, its lid and latches
+  // and a tiny sparkle (softer for a spare copy, src/audio/index.ts).
+  packed: { gain: 0.55, jitter: 0, minGap: 0.3 },
+  // The suitcase full: a rising marimba arpeggio in the win cue's key, with a
+  // low thump and glass pings.
+  suitcase: { gain: 0.7, jitter: 0, minGap: 1 },
 };
 
 /** The order effects load in: what a first move needs comes first. */
 export const LOAD_ORDER: EffectName[] = [
   "ui", "lift", "land", "slide", "merge", "split", "deal", "nope", "fall", "settle",
   "complete", "undo", "hint", "shuffle", "restart", "won", "fanfare", "hardmark", "supermark", "stamp",
+  "found", "packed", "suitcase",
 ];
 // Not loaded up front: milestone.
 
