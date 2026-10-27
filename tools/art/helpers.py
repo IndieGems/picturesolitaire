@@ -1,6 +1,7 @@
 """The home shop's helper pictures (UI, 2026-10-27): Hint, Undo and Shuffle, single and as a pack of 3.
 
     python tools/art/helpers.py <raw-dir>     raw <name>-raw.png -> masters + public/art/helper-<name>.webp
+    python tools/art/helpers.py items         masters -> tools/art/items/<name>-1.webp and -3.webp, 512 px (the offers)
 
 The raws are transparent PNGs from the generator in game-l.png's look (prompts in
 tools/art/prompts.txt). Each is cropped to its object, centred on a square, kept as a master in
@@ -70,5 +71,20 @@ def main(raw_dir):
         ship(pack_of_three(im), OUT / f"helper-{name}-3.webp")
 
 
+ITEMS = ROOT / "tools/art/items"
+ITEM_SIZE = 512  # the platform's offer picture: square, 256-1024 px, under 2 MB (Server, 2026-10-27)
+
+
+def items():
+    """The six helper offers' pictures for the game config (not shipped in the build), from the masters."""
+    ITEMS.mkdir(parents=True, exist_ok=True)
+    for name in NAMES:
+        master = Image.open(MASTERS / f"helper-{name}.webp").convert("RGBA")
+        for suffix, im in (("1", master), ("3", pack_of_three(master))):
+            out = ITEMS / f"{name}-{suffix}.webp"
+            clean(im.resize((ITEM_SIZE, ITEM_SIZE), Image.LANCZOS)).save(out, "WEBP", quality=88, alpha_quality=95, method=6)
+            print(out.relative_to(ROOT), f"{ITEM_SIZE}x{ITEM_SIZE}", f"{out.stat().st_size // 1024} KB")
+
+
 if __name__ == "__main__":
-    main(sys.argv[1])
+    items() if sys.argv[1] == "items" else main(sys.argv[1])
