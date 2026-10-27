@@ -290,6 +290,47 @@ def destinations(p):
     return out
 
 
+ITEMS_PLAN = ROOT / "tools/art/items-plan.json"
+
+
+def items_plan():
+    return json.loads(ITEMS_PLAN.read_text(encoding="utf-8")) if ITEMS_PLAN.exists() else {"items": [], "suitcases": []}
+
+
+def items(p):
+    """The Daily Suitcase's items (creator, 2026-10-27; docs/daily-suitcase.md): each month's 10
+    travel objects, one per daily board as an ordinary 2x2 picture, kept out of `pictures` so the
+    makers never deal one as a library picture. Planned in tools/art/items-plan.json, ids
+    item-YYYY-MM-NN that never change (Levels' schedules name them). Until its own picture is
+    drawn, an item stands in with a library square's files (`standin`), which changes no deal.
+    `cutout` is the object alone on transparency, for the suitcase's slots and silhouettes."""
+    lib = {e["id"]: e for e in p["pictures"]}
+    out = []
+    for e in items_plan()["items"]:
+        rel = f"pictures/items/{e['id']}.webp"
+        src = e if (PUBLIC / rel).exists() else lib.get(e.get("standin"))
+        if src is None:
+            continue
+        rel = f"pictures/{src['album']}/{src['id']}.webp"
+        with Image.open(PUBLIC / rel) as im:
+            px = list(im.size)
+        with Image.open(PUBLIC / board_rel(src)) as im:
+            board_px = list(im.size)
+        x = {
+            "id": e["id"], "month": e["month"], "slot": e["slot"], "album": "items", "title": e["title"],
+            "medium": src["medium"], "file": rel, "board": board_rel(src), "cols": 2, "rows": 2,
+            "px": px, "boardPx": board_px, "palette": src.get("palette") or p["families"][src.get("family") or src["id"]]["palette"],
+            "subjects": e.get("subjects") or src["subjects"], "family": e.get("family") or e["id"], "busy": src["busy"],
+        }
+        cut = f"pictures/items/{e['id']}-cutout.webp"
+        if src is e and (PUBLIC / cut).exists():
+            x["cutout"] = cut
+        if src is not e:
+            x["standin"] = True
+        out.append(x)
+    return out
+
+
 def cmd_catalogue():
     """Every planned picture that has a shipped file. `family` groups look-alikes (a board
     takes at most one per family); a picture with none is its own family. `busy` is 0 calm,
@@ -318,7 +359,7 @@ def cmd_catalogue():
             pictures[-1]["landmark"] = True
     used = {x["album"] for x in pictures}
     out = {"albums": [a for a in p["albums"] if a["id"] in used], "pictures": pictures,
-           "destinations": destinations(p)}
+           "destinations": destinations(p), "items": items(p), "suitcases": items_plan()["suitcases"]}
     CATALOGUE.parent.mkdir(parents=True, exist_ok=True)
     CATALOGUE.write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     total = sum((PUBLIC / x["file"]).stat().st_size for x in pictures)

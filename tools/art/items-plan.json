@@ -1,0 +1,607 @@
+{
+ "//": "The Daily Suitcase's items (docs/daily-suitcase.md), read by tools/art/pictures.py into the catalogue's `items` and `suitcases`. An item's id never changes; `standin` is the library square it borrows until its own picture is drawn. `suitcases`: each month's theme and its table's id (public/art/tables/tables.json).",
+ "items": [
+  {
+   "id": "item-2026-11-01",
+   "month": "2026-11",
+   "slot": 1,
+   "title": "Item 1",
+   "standin": "vintage-camera"
+  },
+  {
+   "id": "item-2026-11-02",
+   "month": "2026-11",
+   "slot": 2,
+   "title": "Item 2",
+   "standin": "ginger-cat"
+  },
+  {
+   "id": "item-2026-11-03",
+   "month": "2026-11",
+   "slot": 3,
+   "title": "Item 3",
+   "standin": "bird-of-paradise"
+  },
+  {
+   "id": "item-2026-11-04",
+   "month": "2026-11",
+   "slot": 4,
+   "title": "Item 4",
+   "standin": "delft-teapot"
+  },
+  {
+   "id": "item-2026-11-05",
+   "month": "2026-11",
+   "slot": 5,
+   "title": "Item 5",
+   "standin": "steam-train"
+  },
+  {
+   "id": "item-2026-11-06",
+   "month": "2026-11",
+   "slot": 6,
+   "title": "Item 6",
+   "standin": "red-barn"
+  },
+  {
+   "id": "item-2026-11-07",
+   "month": "2026-11",
+   "slot": 7,
+   "title": "Item 7",
+   "standin": "passion-flower"
+  },
+  {
+   "id": "item-2026-11-08",
+   "month": "2026-11",
+   "slot": 8,
+   "title": "Item 8",
+   "standin": "allium"
+  },
+  {
+   "id": "item-2026-11-09",
+   "month": "2026-11",
+   "slot": 9,
+   "title": "Item 9",
+   "standin": "amaryllis"
+  },
+  {
+   "id": "item-2026-11-10",
+   "month": "2026-11",
+   "slot": 10,
+   "title": "Item 10",
+   "standin": "egg-cup"
+  },
+  {
+   "id": "item-2026-12-01",
+   "month": "2026-12",
+   "slot": 1,
+   "title": "Item 1",
+   "standin": "tin-robot"
+  },
+  {
+   "id": "item-2026-12-02",
+   "month": "2026-12",
+   "slot": 2,
+   "title": "Item 2",
+   "standin": "pebble-cairn"
+  },
+  {
+   "id": "item-2026-12-03",
+   "month": "2026-12",
+   "slot": 3,
+   "title": "Item 3",
+   "standin": "rope-bridge"
+  },
+  {
+   "id": "item-2026-12-04",
+   "month": "2026-12",
+   "slot": 4,
+   "title": "Item 4",
+   "standin": "campfire"
+  },
+  {
+   "id": "item-2026-12-05",
+   "month": "2026-12",
+   "slot": 5,
+   "title": "Item 5",
+   "standin": "binoculars"
+  },
+  {
+   "id": "item-2026-12-06",
+   "month": "2026-12",
+   "slot": 6,
+   "title": "Item 6",
+   "standin": "covered-bridge"
+  },
+  {
+   "id": "item-2026-12-07",
+   "month": "2026-12",
+   "slot": 7,
+   "title": "Item 7",
+   "standin": "bandstand"
+  },
+  {
+   "id": "item-2026-12-08",
+   "month": "2026-12",
+   "slot": 8,
+   "title": "Item 8",
+   "standin": "koala"
+  },
+  {
+   "id": "item-2026-12-09",
+   "month": "2026-12",
+   "slot": 9,
+   "title": "Item 9",
+   "standin": "snowdrops"
+  },
+  {
+   "id": "item-2026-12-10",
+   "month": "2026-12",
+   "slot": 10,
+   "title": "Item 10",
+   "standin": "frangipani"
+  },
+  {
+   "id": "item-2027-01-01",
+   "month": "2027-01",
+   "slot": 1,
+   "title": "Item 1",
+   "standin": "prickly-pear"
+  },
+  {
+   "id": "item-2027-01-02",
+   "month": "2027-01",
+   "slot": 2,
+   "title": "Item 2",
+   "standin": "sea-holly"
+  },
+  {
+   "id": "item-2027-01-03",
+   "month": "2027-01",
+   "slot": 3,
+   "title": "Item 3",
+   "standin": "peaches"
+  },
+  {
+   "id": "item-2027-01-04",
+   "month": "2027-01",
+   "slot": 4,
+   "title": "Item 4",
+   "standin": "bananas"
+  },
+  {
+   "id": "item-2027-01-05",
+   "month": "2027-01",
+   "slot": 5,
+   "title": "Item 5",
+   "standin": "lychees"
+  },
+  {
+   "id": "item-2027-01-06",
+   "month": "2027-01",
+   "slot": 6,
+   "title": "Item 6",
+   "standin": "music-box"
+  },
+  {
+   "id": "item-2027-01-07",
+   "month": "2027-01",
+   "slot": 7,
+   "title": "Item 7",
+   "standin": "oasis"
+  },
+  {
+   "id": "item-2027-01-08",
+   "month": "2027-01",
+   "slot": 8,
+   "title": "Item 8",
+   "standin": "black-sand-beach"
+  },
+  {
+   "id": "item-2027-01-09",
+   "month": "2027-01",
+   "slot": 9,
+   "title": "Item 9",
+   "standin": "larch-forest"
+  },
+  {
+   "id": "item-2027-01-10",
+   "month": "2027-01",
+   "slot": 10,
+   "title": "Item 10",
+   "standin": "rowboat-lake"
+  },
+  {
+   "id": "item-2027-02-01",
+   "month": "2027-02",
+   "slot": 1,
+   "title": "Item 1",
+   "standin": "kick-scooter"
+  },
+  {
+   "id": "item-2027-02-02",
+   "month": "2027-02",
+   "slot": 2,
+   "title": "Item 2",
+   "standin": "deck-chair"
+  },
+  {
+   "id": "item-2027-02-03",
+   "month": "2027-02",
+   "slot": 3,
+   "title": "Item 3",
+   "standin": "ice-cream-van"
+  },
+  {
+   "id": "item-2027-02-04",
+   "month": "2027-02",
+   "slot": 4,
+   "title": "Item 4",
+   "standin": "propeller-plane"
+  },
+  {
+   "id": "item-2027-02-05",
+   "month": "2027-02",
+   "slot": 5,
+   "title": "Item 5",
+   "standin": "viaduct"
+  },
+  {
+   "id": "item-2027-02-06",
+   "month": "2027-02",
+   "slot": 6,
+   "title": "Item 6",
+   "standin": "palace-window"
+  },
+  {
+   "id": "item-2027-02-07",
+   "month": "2027-02",
+   "slot": 7,
+   "title": "Item 7",
+   "standin": "red-cabin"
+  },
+  {
+   "id": "item-2027-02-08",
+   "month": "2027-02",
+   "slot": 8,
+   "title": "Item 8",
+   "standin": "polar-bear"
+  },
+  {
+   "id": "item-2027-02-09",
+   "month": "2027-02",
+   "slot": 9,
+   "title": "Item 9",
+   "standin": "snail"
+  },
+  {
+   "id": "item-2027-02-10",
+   "month": "2027-02",
+   "slot": 10,
+   "title": "Item 10",
+   "standin": "kingfisher"
+  },
+  {
+   "id": "item-2027-03-01",
+   "month": "2027-03",
+   "slot": 1,
+   "title": "Item 1",
+   "standin": "dalmatian"
+  },
+  {
+   "id": "item-2027-03-02",
+   "month": "2027-03",
+   "slot": 2,
+   "title": "Item 2",
+   "standin": "freesias"
+  },
+  {
+   "id": "item-2027-03-03",
+   "month": "2027-03",
+   "slot": 3,
+   "title": "Item 3",
+   "standin": "bottlebrush"
+  },
+  {
+   "id": "item-2027-03-04",
+   "month": "2027-03",
+   "slot": 4,
+   "title": "Item 4",
+   "standin": "lantana"
+  },
+  {
+   "id": "item-2027-03-05",
+   "month": "2027-03",
+   "slot": 5,
+   "title": "Item 5",
+   "standin": "cinnamon-rolls"
+  },
+  {
+   "id": "item-2027-03-06",
+   "month": "2027-03",
+   "slot": 6,
+   "title": "Item 6",
+   "standin": "mochi"
+  },
+  {
+   "id": "item-2027-03-07",
+   "month": "2027-03",
+   "slot": 7,
+   "title": "Item 7",
+   "standin": "cocoa-pod"
+  },
+  {
+   "id": "item-2027-03-08",
+   "month": "2027-03",
+   "slot": 8,
+   "title": "Item 8",
+   "standin": "snow-globe"
+  },
+  {
+   "id": "item-2027-03-09",
+   "month": "2027-03",
+   "slot": 9,
+   "title": "Item 9",
+   "standin": "cypress-swamp"
+  },
+  {
+   "id": "item-2027-03-10",
+   "month": "2027-03",
+   "slot": 10,
+   "title": "Item 10",
+   "standin": "rain-window"
+  },
+  {
+   "id": "item-2027-04-01",
+   "month": "2027-04",
+   "slot": 1,
+   "title": "Item 1",
+   "standin": "orange-grove"
+  },
+  {
+   "id": "item-2027-04-02",
+   "month": "2027-04",
+   "slot": 2,
+   "title": "Item 2",
+   "standin": "gazebo"
+  },
+  {
+   "id": "item-2027-04-03",
+   "month": "2027-04",
+   "slot": 3,
+   "title": "Item 3",
+   "standin": "horreo"
+  },
+  {
+   "id": "item-2027-04-04",
+   "month": "2027-04",
+   "slot": 4,
+   "title": "Item 4",
+   "standin": "courtyard"
+  },
+  {
+   "id": "item-2027-04-05",
+   "month": "2027-04",
+   "slot": 5,
+   "title": "Item 5",
+   "standin": "lattice-window"
+  },
+  {
+   "id": "item-2027-04-06",
+   "month": "2027-04",
+   "slot": 6,
+   "title": "Item 6",
+   "standin": "walrus"
+  },
+  {
+   "id": "item-2027-04-07",
+   "month": "2027-04",
+   "slot": 7,
+   "title": "Item 7",
+   "standin": "quokka"
+  },
+  {
+   "id": "item-2027-04-08",
+   "month": "2027-04",
+   "slot": 8,
+   "title": "Item 8",
+   "standin": "mountain-goat"
+  },
+  {
+   "id": "item-2027-04-09",
+   "month": "2027-04",
+   "slot": 9,
+   "title": "Item 9",
+   "standin": "glider"
+  },
+  {
+   "id": "item-2027-04-10",
+   "month": "2027-04",
+   "slot": 10,
+   "title": "Item 10",
+   "standin": "flip-flops"
+  },
+  {
+   "id": "item-2027-05-01",
+   "month": "2027-05",
+   "slot": 1,
+   "title": "Item 1",
+   "standin": "beach-buggy"
+  },
+  {
+   "id": "item-2027-05-02",
+   "month": "2027-05",
+   "slot": 2,
+   "title": "Item 2",
+   "standin": "sleigh"
+  },
+  {
+   "id": "item-2027-05-03",
+   "month": "2027-05",
+   "slot": 3,
+   "title": "Item 3",
+   "standin": "abacus"
+  },
+  {
+   "id": "item-2027-05-04",
+   "month": "2027-05",
+   "slot": 4,
+   "title": "Item 4",
+   "standin": "dormouse"
+  },
+  {
+   "id": "item-2027-05-05",
+   "month": "2027-05",
+   "slot": 5,
+   "title": "Item 5",
+   "standin": "eclairs"
+  },
+  {
+   "id": "item-2027-05-06",
+   "month": "2027-05",
+   "slot": 6,
+   "title": "Item 6",
+   "standin": "stag-beetle"
+  },
+  {
+   "id": "item-2027-05-07",
+   "month": "2027-05",
+   "slot": 7,
+   "title": "Item 7",
+   "standin": "canna"
+  },
+  {
+   "id": "item-2027-05-08",
+   "month": "2027-05",
+   "slot": 8,
+   "title": "Item 8",
+   "standin": "cymbidium"
+  },
+  {
+   "id": "item-2027-05-09",
+   "month": "2027-05",
+   "slot": 9,
+   "title": "Item 9",
+   "standin": "jasmine"
+  },
+  {
+   "id": "item-2027-05-10",
+   "month": "2027-05",
+   "slot": 10,
+   "title": "Item 10",
+   "standin": "aloe-bloom"
+  },
+  {
+   "id": "item-2027-06-01",
+   "month": "2027-06",
+   "slot": 1,
+   "title": "Item 1",
+   "standin": "lamingtons"
+  },
+  {
+   "id": "item-2027-06-02",
+   "month": "2027-06",
+   "slot": 2,
+   "title": "Item 2",
+   "standin": "pho"
+  },
+  {
+   "id": "item-2027-06-03",
+   "month": "2027-06",
+   "slot": 3,
+   "title": "Item 3",
+   "standin": "gooseberries"
+  },
+  {
+   "id": "item-2027-06-04",
+   "month": "2027-06",
+   "slot": 4,
+   "title": "Item 4",
+   "standin": "shooting-stars"
+  },
+  {
+   "id": "item-2027-06-05",
+   "month": "2027-06",
+   "slot": 5,
+   "title": "Item 5",
+   "standin": "pampas-grass"
+  },
+  {
+   "id": "item-2027-06-06",
+   "month": "2027-06",
+   "slot": 6,
+   "title": "Item 6",
+   "standin": "malachite"
+  },
+  {
+   "id": "item-2027-06-07",
+   "month": "2027-06",
+   "slot": 7,
+   "title": "Item 7",
+   "standin": "mirage"
+  },
+  {
+   "id": "item-2027-06-08",
+   "month": "2027-06",
+   "slot": 8,
+   "title": "Item 8",
+   "standin": "rotunda"
+  },
+  {
+   "id": "item-2027-06-09",
+   "month": "2027-06",
+   "slot": 9,
+   "title": "Item 9",
+   "standin": "oculus"
+  },
+  {
+   "id": "item-2027-06-10",
+   "month": "2027-06",
+   "slot": 10,
+   "title": "Item 10",
+   "standin": "hacienda"
+  }
+ ],
+ "suitcases": [
+  {
+   "month": "2026-11",
+   "theme": "Stand-in",
+   "table": "table-winter-dusk"
+  },
+  {
+   "month": "2026-12",
+   "theme": "Stand-in",
+   "table": "table-winter-dusk"
+  },
+  {
+   "month": "2027-01",
+   "theme": "Stand-in",
+   "table": "table-winter-dusk"
+  },
+  {
+   "month": "2027-02",
+   "theme": "Stand-in",
+   "table": "table-winter-dusk"
+  },
+  {
+   "month": "2027-03",
+   "theme": "Stand-in",
+   "table": "table-winter-dusk"
+  },
+  {
+   "month": "2027-04",
+   "theme": "Stand-in",
+   "table": "table-winter-dusk"
+  },
+  {
+   "month": "2027-05",
+   "theme": "Stand-in",
+   "table": "table-winter-dusk"
+  },
+  {
+   "month": "2027-06",
+   "theme": "Stand-in",
+   "table": "table-winter-dusk"
+  }
+ ]
+}

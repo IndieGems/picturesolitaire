@@ -52,6 +52,8 @@ stamp-t6 (Canada, 2026-10-26): ... in deep teal ink, a ring of small maple leave
 
 stamp-t7 (Argentina, 2026-10-27): ... in cerulean sky-blue ink, a ring of small diamonds between the two rings, and in the centre a simple bold pictogram of the jagged granite spires of Mount Fitz Roy with a condor flying above them. COMMON
 stamp-t8 (Australia, 2026-10-27): ... in golden ochre ink, a ring of small round wattle blossoms between the two rings, and in the centre a simple bold pictogram of a kangaroo leaping in front of a round setting sun. COMMON
+stamp-t9 (South Africa, 2026-10-27): ... in deep magenta-pink ink, a ring of small daisies between the two rings, and in the centre a simple bold pictogram of a king protea flower in front of the long flat-topped Table Mountain. COMMON
+stamp-t10 (UK & Ireland, 2026-10-27): ... in deep burgundy ink, a ring of small raindrops between the two rings, and in the centre a simple bold pictogram of a cluster of hexagonal stone columns of different heights, like the Giant's Causeway, with small curling waves at their feet. COMMON
 
 helpers (home shop, UI, 2026-10-27; --from design/concepts/game-l.png [shuffle also --from public/art/stack-back.webp], 1024x1024 high, transparent, then tools/art/helpers.py):
 STYLE = Match the soft painted 3D finish of the reference's frosted buttons, cards and lanterns: rounded chunky shapes, gentle highlights, a warm amber accent. Draw ONLY one object, centred and filling most of the frame, seen slightly from the front, readable as a small icon. No text, letters or numbers. No shadow, no background, isolated.
