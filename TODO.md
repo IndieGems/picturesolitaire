@@ -1,11 +1,16 @@
 # What is still owed
 
-- **Before 31 Jan 2027: extend the daily puzzle.** The shipped pool ends on
-  2027-01-31; past it there is no daily. Run
-  `node tools/levels/make-daily.mts --to <a date months ahead>` (it only
-  appends days), commit `src/content/levels/daily.json`, then rebuild and
-  publish the Server's win checker (`functions/checker`) so it knows the new
-  days.
+- **Before 30 Jun 2027: extend the daily puzzle** (it now runs to 2027-06-30, with the
+  Daily Suitcase's items). Levels runs `make-daily.mts` for the new months once Art's
+  items for them exist, then Server rebuilds the checker.
+- **Each month's suitcase art a month ahead** (Art): 10 items, the table and its icon
+  for the next theme in `docs/daily-suitcase.md`. January's is due by 1 Dec 2026.
+- **On or after 1 Nov 2026: a framed check of the first live suitcase** as a new test
+  guest: the home banner, the first pack flying in on the daily's win card, and the
+  suitcase screen (UI or QA).
+- **Build size:** 0.31.0 is 618 MB of a 1 GiB limit, up from 349 MB, mostly the
+  re-dealt dailies' packs. Before more trips or months, Art de-duplicates pictures
+  that repeat across packs, or ships a month's dailies only near their month.
 
 ## The travelogue (2026-10-25)
 
