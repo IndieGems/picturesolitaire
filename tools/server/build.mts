@@ -64,6 +64,7 @@ writeFileSync(file, JSON.stringify(archive, null, 0).replace(/\},\{"lane"/g, '},
 console.log(`archive: ${archive.deals.length} board versions (${added} new)`);
 
 // 2. the agreement check
+run(process.execPath, [join(root, "tools/server/helpers-check.mts")]);
 if (!process.argv.includes("--skip-check")) run(process.execPath, [join(root, "tools/server/check.mts")]);
 
 // 3. build and package

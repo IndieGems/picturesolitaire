@@ -100,4 +100,91 @@ fn main() {
         .map(|t| json!({ "board": t["board"], "slug": t["slug"] }))
         .collect();
     fs::write(Path::new(&env::var("OUT_DIR").unwrap()).join("tables.json"), Value::Array(tables).to_string()).unwrap();
+
+    // WHAT A WIN PAYS WITH (OUT_DIR/pay.json): each board's progression id (the config's, from
+    // tools/server/make-config.mts's uuid5, so an order can name it), the campaign boards whose
+    // first win gives a gift ("hard": a hard or super mark; "stamp": a trip's last board, which
+    // wins over "hard"), and the helper ids and gift sizes (src/net/helper-ids.json).
+    let mut boards = serde_json::Map::new();
+    let mut gifts = serde_json::Map::new();
+    let read = |p: &Path| -> Value {
+        println!("cargo:rerun-if-changed={}", p.display());
+        serde_json::from_str(&fs::read_to_string(p).unwrap_or_else(|e| panic!("{}: {e}", p.display()))).unwrap()
+    };
+    let trips = read(&levels.join("trips.json"));
+    let last: Vec<u64> = trips["trips"].as_array().into_iter().flatten().filter_map(|t| t["to"].as_u64()).collect();
+    for lane in ["campaign", "challenge"] {
+        let data = read(&levels.join(format!("{lane}.json")));
+        for (i, l) in data["levels"].as_array().into_iter().flatten().enumerate() {
+            let id = l["id"].as_str().expect("a level has an id");
+            boards.insert(format!("board_{id}"), json!(uuid5(&format!("board:{lane}:{id}"))));
+            if lane != "campaign" {
+                continue;
+            }
+            if last.contains(&(i as u64 + 1)) {
+                gifts.insert(id.into(), json!("stamp"));
+            } else if matches!(l["mark"].as_str(), Some("hard") | Some("super")) {
+                gifts.insert(id.into(), json!("hard"));
+            }
+        }
+    }
+    let helpers = read(&Path::new(&here).join("../../src/net/helper-ids.json"));
+    let pay = json!({ "boards": boards, "gifts": gifts, "helpers": helpers });
+    fs::write(Path::new(&env::var("OUT_DIR").unwrap()).join("pay.json"), pay.to_string()).unwrap();
+}
+
+/// The game id: the namespace of the config's name-based ids (tools/server/make-config.mts).
+const NAMESPACE: [u8; 16] = [0x9c, 0x56, 0x21, 0x25, 0xf1, 0x55, 0x46, 0x01, 0xa3, 0x49, 0xf6, 0x6c, 0xa3, 0xc5, 0xf2, 0xb6];
+
+/// A name-based UUID (RFC 4122 version 5), exactly as make-config.mts makes the config's.
+fn uuid5(name: &str) -> String {
+    let mut msg = NAMESPACE.to_vec();
+    msg.extend_from_slice(name.as_bytes());
+    let mut h = sha1(&msg);
+    h[6] = (h[6] & 0x0f) | 0x50;
+    h[8] = (h[8] & 0x3f) | 0x80;
+    let x: String = h[..16].iter().map(|b| format!("{b:02x}")).collect();
+    format!("{}-{}-{}-{}-{}", &x[0..8], &x[8..12], &x[12..16], &x[16..20], &x[20..32])
+}
+
+/// SHA-1 (FIPS 180-4), for the name-based ids only.
+fn sha1(data: &[u8]) -> [u8; 20] {
+    let mut h: [u32; 5] = [0x6745_2301, 0xefcd_ab89, 0x98ba_dcfe, 0x1032_5476, 0xc3d2_e1f0];
+    let mut m = data.to_vec();
+    let bits = (data.len() as u64).wrapping_mul(8);
+    m.push(0x80);
+    while m.len() % 64 != 56 {
+        m.push(0);
+    }
+    m.extend_from_slice(&bits.to_be_bytes());
+    for chunk in m.chunks(64) {
+        let mut w = [0u32; 80];
+        for i in 0..16 {
+            w[i] = u32::from_be_bytes([chunk[4 * i], chunk[4 * i + 1], chunk[4 * i + 2], chunk[4 * i + 3]]);
+        }
+        for i in 16..80 {
+            w[i] = (w[i - 3] ^ w[i - 8] ^ w[i - 14] ^ w[i - 16]).rotate_left(1);
+        }
+        let (mut a, mut b, mut c, mut d, mut e) = (h[0], h[1], h[2], h[3], h[4]);
+        for (i, wi) in w.iter().enumerate() {
+            let (f, k) = match i {
+                0..=19 => ((b & c) | (!b & d), 0x5a82_7999),
+                20..=39 => (b ^ c ^ d, 0x6ed9_eba1),
+                40..=59 => ((b & c) | (b & d) | (c & d), 0x8f1b_bcdc),
+                _ => (b ^ c ^ d, 0xca62_c1d6u32),
+            };
+            let t = a.rotate_left(5).wrapping_add(f).wrapping_add(e).wrapping_add(k).wrapping_add(*wi);
+            e = d;
+            d = c;
+            c = b.rotate_left(30);
+            b = a;
+            a = t;
+        }
+        h = [h[0].wrapping_add(a), h[1].wrapping_add(b), h[2].wrapping_add(c), h[3].wrapping_add(d), h[4].wrapping_add(e)];
+    }
+    let mut out = [0u8; 20];
+    for (i, v) in h.iter().enumerate() {
+        out[4 * i..4 * i + 4].copy_from_slice(&v.to_be_bytes());
+    }
+    out
 }

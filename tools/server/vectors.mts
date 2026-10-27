@@ -12,7 +12,7 @@
 //     picture shapes, some boards dealt part-full, mostly legal moves, some
 //     moves the rules refuse, and shuffles both legal and not;
 //   - forged claims: a line cut short, a board that does not exist, a deal
-//     version the function does not know, a fourth shuffle, a bad action;
+//     version the function does not know, one shuffle past the limit, a bad action;
 //   - when the Shuffle helper returns the action it picked (src/game/shuffle.ts),
 //     real rescue shuffles inside winning lines.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
@@ -262,11 +262,13 @@ claim("a daily whose board is not its date", { ...base0, lane: "daily", board: "
 claim("a move off the board", { ...base0, line: [{ from: 0, to: 9999 }, ...b0.line] }, { reason: "bad_action" });
 claims.push({ name: "not JSON", input: "{nope", expect: { reason: "bad_claim" } });
 
-// four shuffles: a legal mix each time (when the board has loose cards), then the line cannot win
+// one shuffle past the checker's limit (claim.rs SHUFFLES): a legal mix each time (when the
+// board has loose cards), then the line cannot win
 {
+  const LIMIT = Number(/pub const SHUFFLES: u32 = (\d+);/.exec(readFileSync(join(root, "functions/checker/src/claim.rs"), "utf8"))[1]);
   let s = start(b0.deal).state;
   const line = [];
-  for (let i = 0; i < 4; i++) {
+  for (let tries = 0; line.length < LIMIT + 1 && tries < 20 * (LIMIT + 1); tries++) {
     const m = legalMix(s);
     if (!m) break;
     const next = apply(s, m);
@@ -274,7 +276,8 @@ claims.push({ name: "not JSON", input: "{nope", expect: { reason: "bad_claim" } 
     line.push(m);
     s = next;
   }
-  if (line.length === 4) claim("a fourth shuffle", { ...base0, line }, { reason: "too_many_shuffles" });
+  if (line.length !== LIMIT + 1) throw new Error(`vectors: only ${line.length} legal shuffles for the over-limit claim`);
+  claim("one shuffle past the limit", { ...base0, line }, { reason: "too_many_shuffles" });
 }
 
 // real rescue shuffles, once the Shuffle helper hands back the action it picked

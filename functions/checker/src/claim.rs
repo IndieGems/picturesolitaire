@@ -15,10 +15,13 @@ use serde_json::Value;
 
 use crate::rules::{self, Action, Deal, Picture};
 
-/// Shuffles a board allows: the creator's ruling (AGENTS.md, "Helpers in the
-/// first build: 3 undo, 3 hint, 3 shuffle"). The game config's
-/// `board.helpers.shuffle` must not exceed it.
-pub const SHUFFLES: u32 = 3;
+/// Shuffles one line may hold. Helpers are the player's own stock since 2026-10-27,
+/// and the board caps none: a full pouch is 10 (src/net/helper-ids.json `cap`), and a
+/// player may buy more mid-board, so this is only a bound on the replay's work, far
+/// past real play (a real win refused here would leave its board unwon). The checker
+/// does not ask whether each was paid for: every board is winnable with no helper,
+/// so a shuffle buys a forged claim nothing a solver's line would not.
+pub const SHUFFLES: u32 = 100;
 /// A line longer than this is not a real game.
 const MAX_ACTIONS: usize = 5000;
 /// The fastest a move can be played and shown (drop, slide, fall, deal):

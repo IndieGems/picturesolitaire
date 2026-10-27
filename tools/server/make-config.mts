@@ -110,6 +110,18 @@ for (const r of rows) {
     }
   }
 }
+{
+  // the kit's mark (src/net/helper-ids.json): set by the checker in the same order as the kit
+  const KIT = JSON.parse(readFileSync(join(root, "src/net/helper-ids.json"), "utf8")).kit;
+  y.push("  # THE HELPER KIT: 3 of each helper, once ever, at the end of board 1 (the guided start),");
+  y.push("  # or on the next win of a player already past it. The win checker pays it into the");
+  y.push("  # helper currencies and sets this to 1 in the same order, so it is paid once or not at all.");
+  y.push(`  - id: ${KIT.progression}`);
+  y.push(`    slug: ${KIT.slug}`);
+  y.push(`    display_name: "Helper kit"`);
+  y.push("    config:");
+  y.push("      completion_threshold: 1");
+}
 y.push("  # THE DAILY PUZZLE: one board a day, the same for everyone (src/content/levels/daily.json,");
 y.push("  # the board \"d\" + the date). The function checks the date is the player's own today,");
 y.push("  # posts moves and time to the \"daily\" board below, and completes this once a day.");

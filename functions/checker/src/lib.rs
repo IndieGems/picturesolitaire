@@ -9,6 +9,8 @@
 //!   - daily: check the date is the player's own today (or yesterday, late),
 //!     post the result (moves, time) to the "daily" board under that date, and
 //!     move "daily_picture" to 1, which pays once per day.
+//! That move goes in ONE order with the helper gifts due (pay.rs: board 1's kit, a
+//! hard board's or a trip's last board's gift), and the verdict says what landed.
 //! The verdict goes back as JSON; the device follows it, never the other way.
 //! Platform refusals that may pass (busy, rate limited) answer "retry".
 //!
@@ -28,6 +30,7 @@
 
 pub mod canon;
 pub mod claim;
+pub mod pay;
 pub mod progress;
 pub mod rules;
 
@@ -82,6 +85,7 @@ mod function {
     use serde_json::{json, Value};
 
     use crate::claim::{self, Lane, Refusal, Win};
+    use crate::pay;
     use crate::progress::{self, Wait};
 
     struct Function;
@@ -109,18 +113,26 @@ mod function {
         json!({ "v": 1, "status": "retry", "reason": why })
     }
 
-    /// What one completion granted, from the platform's receipt.
+    /// What one win's order granted, from the platform's receipt.
     struct Granted {
         coins: i64,
         /// Items granted now, by slug or id (the onboarding keepsake, by board 1's rewards_on_complete).
         items: Vec<String>,
-        /// This write completed the progression for the first time.
+        /// This win completed the progression for the first time.
         first: bool,
+        /// What landed of each helper ({ hint, undo, shuffle }), after the cap's clamp.
+        helpers: Value,
+        /// The gifts the order carried: "kit", "hard", "stamp".
+        gifts: Vec<&'static str>,
     }
 
     impl Granted {
+        fn nothing() -> Granted {
+            Granted { coins: 0, items: Vec::new(), first: false, helpers: pay::none(), gifts: Vec::new() }
+        }
         fn status(&self) -> &'static str {
-            if self.coins > 0 || !self.items.is_empty() {
+            let helped = pay::KINDS.iter().any(|k| self.helpers[*k].as_i64().unwrap_or(0) > 0);
+            if self.coins > 0 || !self.items.is_empty() || helped {
                 "paid"
             } else {
                 "kept"
@@ -128,45 +140,69 @@ mod function {
         }
     }
 
-    /// Move a paying progression to 1: completes it the first time, pays its
-    /// mapping and its rewards then, and nothing after. Ok(what landed now) or Err(verdict).
-    fn complete(player: &str, slug: &str) -> Result<Granted, Value> {
-        let res = api(
-            "POST",
-            format!("/v1/inventory/players/{player}/progressions/{slug}/max"),
-            Some(json!({ "value": 1, "reason": "verified win" })),
-        )
-        .map_err(|e| {
-            host::log(LogLevel::Warn, &format!("progression {slug}: no answer: {e}"));
+    /// A progression's value for the player, by id (0 when never written). Err: the verdict.
+    fn value_of(player: &str, id: &str) -> Result<f64, Value> {
+        let res = api("GET", format!("/v1/inventory/players/{player}/progressions/{id}"), None).map_err(|e| {
+            host::log(LogLevel::Warn, &format!("progression {id}: no answer: {e}"));
             retry("platform")
         })?;
-        if !(200..300).contains(&res.status) {
-            host::log(LogLevel::Warn, &format!("progression {slug} answered {}: {}", res.status, res.body));
-            // a progression this channel's config does not declare is the config's fault, not the player's
+        match res.status {
+            200..=299 => Ok(res.body["current_value"].as_f64().unwrap_or(0.0)),
+            404 => Ok(0.0),
+            s => {
+                host::log(LogLevel::Warn, &format!("progression {id} answered {s}: {}", res.body));
+                Err(retry(if passing(s) { "platform" } else { "config" }))
+            }
+        }
+    }
+
+    /// Pay a verified win in ONE order (pay.rs): `progression` to 1 if this is its first
+    /// completion (which pays its Coins and rewards), the board's gift with it, and the kit
+    /// if due. Ok(what landed now) or Err(verdict).
+    fn pay_win(player: &str, progression: &str, what: &str, nonce: &str, gift: Option<&'static str>, kit: bool) -> Result<Granted, Value> {
+        let first = value_of(player, progression)? < 1.0;
+        let Some(order) = pay::order(progression, what, nonce, first, gift, kit) else {
+            return Ok(Granted::nothing());
+        };
+        let body = json!({ "source": "reward", "nonce": order.nonce, "operations": order.operations });
+        let res = api("POST", format!("/v1/inventory/players/{player}/orders"), Some(body)).map_err(|e| {
+            host::log(LogLevel::Warn, &format!("order {}: no answer: {e}", order.nonce));
+            retry("platform")
+        })?;
+        if res.status == 409 {
+            // this nonce landed already (a claim racing this one for the same first win)
+            host::log(LogLevel::Info, &format!("order {}: landed before: {}", order.nonce, res.body));
+            return Ok(Granted::nothing());
+        }
+        if !(200..300).contains(&res.status) || res.body["status"] == "failed" {
+            host::log(LogLevel::Warn, &format!("order {} answered {}: {}", order.nonce, res.status, res.body));
+            // a progression or currency this channel's config does not declare is the config's fault, not the player's
             return Err(retry(if passing(res.status) { "platform" } else { "config" }));
         }
-        let mut coins = 0;
-        let mut items = Vec::new();
-        let mut first = false;
-        for ch in res.body["changes"].as_array().into_iter().flatten() {
-            if ch["type"] == "progression" && ch["value_before"].as_f64().unwrap_or(0.0) < 1.0 && ch["value_after"].as_f64().unwrap_or(0.0) >= 1.0 {
-                first = true;
-            }
+        let changes = res.body["changes"].as_array().cloned().unwrap_or_default();
+        let mut g = Granted { first, helpers: pay::landed(&changes), gifts: order.gifts.clone(), ..Granted::nothing() };
+        for ch in &changes {
             if ch["type"] == "item" && ch["quantity_after"].as_i64().unwrap_or(0) > ch["quantity_before"].as_i64().unwrap_or(0) {
                 let id = ch["item_definition_id"].as_str().unwrap_or_default().to_string();
-                host::log(LogLevel::Info, &format!("item {slug}: {id}"));
-                items.push(id);
+                host::log(LogLevel::Info, &format!("item {what}: {id}"));
+                g.items.push(id);
             }
             if ch["type"] == "platform_grant" {
                 let granted = ch["granted"].as_i64().unwrap_or(0);
-                coins += granted;
+                g.coins += granted;
                 host::log(
                     LogLevel::Info,
-                    &format!("grant {slug}: {} {} of {}{}", ch["outcome"], granted, ch["requested"], ch["reason"].as_str().map(|r| format!(" ({r})")).unwrap_or_default()),
+                    &format!("grant {what}: {} {} of {}{}", ch["outcome"], granted, ch["requested"], ch["reason"].as_str().map(|r| format!(" ({r})")).unwrap_or_default()),
                 );
             }
+            if ch["type"] == "currency" {
+                host::log(LogLevel::Info, &format!("helper {what}: {} {} -> {}", ch["currency_id"], ch["balance_before"], ch["balance_after"]));
+            }
         }
-        Ok(Granted { coins, items, first })
+        if !g.gifts.is_empty() {
+            host::log(LogLevel::Info, &format!("gifts {what}: {:?}, landed {}", g.gifts, g.helpers));
+        }
+        Ok(g)
     }
 
     /// The table items a board's first completion grants (src/net/tables.json, through build.rs).
@@ -195,14 +231,20 @@ mod function {
         }
     }
 
-    fn board_win(player: &str, win: &Win) -> Value {
+    fn board_win(player: &str, win: &Win, kit: bool) -> Value {
         // a campaign board that has left the campaign (an older build still plays it; claim.rs
         // gives it no position): a real win, but its pay left with it, and asking for it would
         // only answer "retry" for ever
         if win.lane == Lane::Campaign && win.n.is_none() {
-            return json!({ "v": 1, "status": "kept", "lane": "campaign", "board": win.board, "moves": win.moves, "coins": 0, "items": [] });
+            return json!({ "v": 1, "status": "kept", "lane": "campaign", "board": win.board, "moves": win.moves, "coins": 0, "items": [], "helpers": pay::none(), "gifts": [] });
         }
-        let done = complete(player, &crate::board_slug(&win.board)).map(|mut g| {
+        let Some(progression) = pay::board_id(&win.board) else {
+            host::log(LogLevel::Warn, &format!("no progression for {}", win.board));
+            return retry("config");
+        };
+        let what = format!("{} {}", win.lane.name(), win.board);
+        let nonce = format!("first:{}:{}", win.lane.name(), win.board);
+        let done = pay_win(player, progression, &what, &nonce, pay::gift_of(win.lane.clone(), &win.board), kit).map(|mut g| {
             // a completion's item rewards land in a step of their own, which this receipt does
             // not list: on the first completion, confirm each table the board grants is held
             if g.first && win.lane == Lane::Campaign {
@@ -218,6 +260,7 @@ mod function {
             Ok(g) => json!({
                 "v": 1, "status": g.status(), "lane": win.lane.name(),
                 "board": win.board, "moves": win.moves, "coins": g.coins, "items": g.items,
+                "helpers": g.helpers, "gifts": g.gifts,
             }),
             Err(v) => v,
         }
@@ -255,7 +298,7 @@ mod function {
         }
     }
 
-    fn daily_win(game: &str, player: &str, win: &Win, late: bool) -> Value {
+    fn daily_win(game: &str, player: &str, win: &Win, late: bool, kit: bool) -> Value {
         let date = win.date.clone().unwrap_or_default();
 
         // the result, on the date's board (moves, then time); the first one a day stands
@@ -286,15 +329,19 @@ mod function {
         if late {
             // the platform files a progression write under the period it arrives in,
             // so yesterday's daily can no longer be marked or paid
+            // (a kit still due waits for the next win)
             return json!({
                 "v": 1, "status": "late", "lane": "daily", "board": win.board, "date": date,
                 "moves": win.moves, "ms": win.ms, "coins": 0, "recorded": recorded, "first": first,
+                "helpers": pay::none(), "gifts": [],
             });
         }
-        match complete(player, crate::DAILY_SLUG) {
+        // the date is the platform's (the player's own day), so the nonce keys one daily a day
+        match pay_win(player, crate::DAILY_ID, &format!("daily {date}"), &format!("daily:{date}"), None, kit) {
             Ok(g) => json!({
                 "v": 1, "status": g.status(), "lane": "daily", "board": win.board, "date": date,
                 "moves": win.moves, "ms": win.ms, "coins": g.coins, "items": g.items, "recorded": recorded, "first": first,
+                "helpers": g.helpers, "gifts": g.gifts,
             }),
             Err(v) => v,
         }
@@ -398,19 +445,33 @@ mod function {
             Ok(r) => r,
             Err(v) => return v,
         };
-        match progress::apply(&mut doc, win, win.claim_id.as_deref(), win.n, boards) {
+        let changed = match progress::apply(&mut doc, win, win.claim_id.as_deref(), win.n, boards) {
             Err(Wait::Order) => return retry("order"),
-            Ok(changed) => {
-                if changed || !stored {
-                    if let Err(v) = write_save(player, crate::PROGRESS, &doc) {
-                        return v;
-                    }
+            Ok(changed) => changed,
+        };
+        // THE KIT is due once the player is past board 1 (this win included) and its mark
+        // still reads 0: board 1's first win, or the next win of a player who was past it
+        // before the kit existed. The record notes a mark read as 1, so it is read no more.
+        let mut kit = false;
+        let mut marked = false;
+        if doc["campaign"]["next"].as_u64().unwrap_or(1) > 1 && doc["kit"] != json!(true) {
+            match value_of(player, pay::kit_mark().0) {
+                Ok(v) if v >= 1.0 => {
+                    doc["kit"] = json!(true);
+                    marked = true;
                 }
+                Ok(_) => kit = true,
+                Err(v) => return v,
+            }
+        }
+        if changed || marked || !stored {
+            if let Err(v) = write_save(player, crate::PROGRESS, &doc) {
+                return v;
             }
         }
         let mut verdict = match win.lane {
-            Lane::Daily => daily_win(game, player, win, late),
-            _ => board_win(player, win),
+            Lane::Daily => daily_win(game, player, win, late, kit),
+            _ => board_win(player, win, kit),
         };
         if verdict["status"] != "retry" {
             verdict["progress"] = public(&doc);

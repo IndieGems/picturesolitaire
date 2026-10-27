@@ -37,6 +37,103 @@ save_schemas:
     access_game_server_read: true
     access_game_server_write: false
     max_size_bytes: 131072
+  # Helper uses the platform has not taken yet (src/net/helpers.ts): a helper is
+  # used at once and taken behind, and a use left unsent when the game closed is
+  # sent at the next start. Counts and the one use in flight, a few dozen bytes.
+  - key: spends
+    access_self_read: true
+    access_self_write: true
+    access_game_server_read: true
+    access_game_server_write: false
+    max_size_bytes: 4096
+
+# THE HELPERS (creator, 2026-10-27; AGENTS.md): Hint, Undo and Shuffle are the
+# player's own stock, carried from board to board, at most 10 of each, never in
+# a save. The ids are src/net/helper-ids.json's (tools/server/helpers-check.mts
+# holds the two together). Earned stock never resets and there is no daily top-up.
+# Gifts are paid by the win checker, straight into "earned" and clamped at the
+# cap: the kit (3 of each) at the end of board 1, a hard board's first win 1 Hint
+# and 1 Undo, a trip's last board 1 of each. More are bought with Coins below.
+currencies:
+  - id: cb0abfc5-ef5e-4342-9943-241b126afd54
+    slug: hints
+    display_name: Hints
+    max_balance: 10
+    client_writable: false
+    transfer_policy: none
+    bucket_config:
+      - { name: earned, priority: 0, reset_interval: never, grant_sources: [reward, system, play, platform_purchase, recipe] }
+  - id: f05a54c9-1920-4a36-889d-c03244e8291c
+    slug: undos
+    display_name: Undos
+    max_balance: 10
+    client_writable: false
+    transfer_policy: none
+    bucket_config:
+      - { name: earned, priority: 0, reset_interval: never, grant_sources: [reward, system, play, platform_purchase, recipe] }
+  - id: 3b52bc66-7b5e-4c8b-a280-0df1f829694f
+    slug: shuffles
+    display_name: Shuffles
+    max_balance: 10
+    client_writable: false
+    transfer_policy: none
+    bucket_config:
+      - { name: earned, priority: 0, reset_interval: never, grant_sources: [reward, system, play, platform_purchase, recipe] }
+
+catalogs:
+  # Using a helper: a consume with nothing granted, run by the game after the act.
+  # Buying one: 1 for Coins (ARCADE_TICKETS, whose spend scope is `any`). A buy
+  # at the cap is refused before anything is charged (the grant's overflow: fail).
+  # The prices are set HERE and nowhere else: the game reads them from this file.
+  - id: 330c9600-3e06-4829-bdfe-e26b6e6889f2
+    slug: helpers
+    display_name: Helpers
+    recipes:
+      - id: 39de65a1-e48c-4267-8117-9fb505ca803d
+        slug: use-hint
+        recipe_type: exchange
+        client_writable: true
+        display_name: Use a hint
+        costs:
+          - { type: currency_consume, currency_slug: hints, amount: 1 }
+      - id: acb411f6-085a-4974-b1c5-db7afe170ad0
+        slug: use-undo
+        recipe_type: exchange
+        client_writable: true
+        display_name: Use an undo
+        costs:
+          - { type: currency_consume, currency_slug: undos, amount: 1 }
+      - id: 5f8077cf-eafe-4cb1-b915-1dfc445e7f85
+        slug: use-shuffle
+        recipe_type: exchange
+        client_writable: true
+        display_name: Use a shuffle
+        costs:
+          - { type: currency_consume, currency_slug: shuffles, amount: 1 }
+      - id: fad7c2dc-ea26-4ddc-ad8e-119bc60525d1
+        slug: buy-hint
+        recipe_type: purchase
+        display_name: 1 Hint
+        grants:
+          - { type: currency_grant, currency_slug: hints, amount: 1, overflow: fail }
+        platform_prices:
+          - { currency: ARCADE_TICKETS, price: 150 }
+      - id: e092faaf-a8e4-4ae9-b43b-bb36d88fd455
+        slug: buy-undo
+        recipe_type: purchase
+        display_name: 1 Undo
+        grants:
+          - { type: currency_grant, currency_slug: undos, amount: 1, overflow: fail }
+        platform_prices:
+          - { currency: ARCADE_TICKETS, price: 100 }
+      - id: 973ad69a-2bf2-4286-a587-762f6c1cada1
+        slug: buy-shuffle
+        recipe_type: purchase
+        display_name: 1 Shuffle
+        grants:
+          - { type: currency_grant, currency_slug: shuffles, amount: 1, overflow: fail }
+        platform_prices:
+          - { currency: ARCADE_TICKETS, price: 250 }
 
 config:
   # The board's tuning (src/board/tuning.ts has the defaults, and what each one
@@ -1222,6 +1319,14 @@ progressions:
         - mode: on_complete
           amount: 35
           target: { platform_currency_slug: ARCADE_TICKETS }
+  # THE HELPER KIT: 3 of each helper, once ever, at the end of board 1 (the guided start),
+  # or on the next win of a player already past it. The win checker pays it into the
+  # helper currencies and sets this to 1 in the same order, so it is paid once or not at all.
+  - id: a99673df-c47a-4837-b77a-d8420cdf74e3
+    slug: helpers_kit
+    display_name: "Helper kit"
+    config:
+      completion_threshold: 1
   # THE DAILY PUZZLE: one board a day, the same for everyone (src/content/levels/daily.json,
   # the board "d" + the date). The function checks the date is the player's own today,
   # posts moves and time to the "daily" board below, and completes this once a day.

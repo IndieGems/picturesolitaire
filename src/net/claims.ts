@@ -43,6 +43,7 @@ import { isWon, replay, type Action, type Deal } from "../game/rules";
 import { onOnline, online, suspect } from "../ui/online";
 import { dealHash } from "./deal-hash";
 import { nextToSend, trimHeld } from "./held-wins";
+import { helpers, type Gift, type HelperKind } from "./helpers";
 import { noAnswer, refusalOf } from "./no-answer";
 import { answered, hold, type HeldWin } from "./progress";
 import { tableOf } from "./tables";
@@ -74,6 +75,10 @@ interface Answered {
   coins: number;
   /** Items this win granted now, by slug: the onboarding keepsake table, on campaign board 1 (src/net/tables.ts). */
   items?: string[];
+  /** Helpers that LANDED now, after the cap's clamp (src/net/helpers.ts): 0s when none were given. */
+  helpers?: Record<HelperKind, number>;
+  /** What they were given for: the kit (board 1's end, or the next win of a player past it), a hard board's first win, a trip's last board. */
+  gifts?: Gift[];
   /** Daily only: the date, the time the board shows, whether the result is on the day's board, whether it is this player's first of the day. */
   date?: string;
   ms?: number;
@@ -194,6 +199,8 @@ function settle(h: Held, answer: Verdict, record: unknown = null): void {
   const v: Verdict = h.resumed ? { ...answer, resumed: true } : answer;
   // the server's word replaces the held win (a refusal just drops it)
   answered(h.id, record, v.status === "refused");
+  // a gift the checker paid is outside the SDK's snapshot: read the stock again
+  if (v.status !== "refused" && v.status !== "unframed") void helpers.refresh();
   h.resolve(v);
   for (const fn of [...listeners]) fn(v);
 }
@@ -264,10 +271,19 @@ async function send(h: Held): Promise<void> {
       ...(typeof answer.ms === "number" ? { ms: answer.ms } : {}),
       ...(typeof answer.recorded === "boolean" ? { recorded: answer.recorded } : {}),
       ...(typeof answer.first === "boolean" ? { first: answer.first } : {}),
+      helpers: landedOf(answer.helpers),
+      gifts: Array.isArray(answer.gifts) ? answer.gifts.filter((g): g is Gift => g === "kit" || g === "hard" || g === "stamp") : [],
     }, answer.progress);
   }
   console.warn(`[claims] ${lane} ${board} refused: ${String(answer.reason)}`);
   return settle(h, { status: "refused", lane, board, reason: String(answer.reason ?? "unknown") });
+}
+
+/** The helpers a verdict says landed, as whole numbers (0 for any it leaves out). */
+function landedOf(x: unknown): Record<HelperKind, number> {
+  const h = (x && typeof x === "object" ? x : {}) as Partial<Record<HelperKind, unknown>>;
+  const n = (v: unknown): number => Math.max(0, Math.floor(Number(v) || 0));
+  return { hint: n(h.hint), undo: n(h.undo), shuffle: n(h.shuffle) };
 }
 
 /** Send what is due, one claim at a time (a player's calls are budgeted per minute). */
