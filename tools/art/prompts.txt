@@ -52,3 +52,9 @@ stamp-t6 (Canada, 2026-10-26): ... in deep teal ink, a ring of small maple leave
 
 stamp-t7 (Argentina, 2026-10-27): ... in cerulean sky-blue ink, a ring of small diamonds between the two rings, and in the centre a simple bold pictogram of the jagged granite spires of Mount Fitz Roy with a condor flying above them. COMMON
 stamp-t8 (Australia, 2026-10-27): ... in golden ochre ink, a ring of small round wattle blossoms between the two rings, and in the centre a simple bold pictogram of a kangaroo leaping in front of a round setting sun. COMMON
+
+helpers (home shop, UI, 2026-10-27; --from design/concepts/game-l.png [shuffle also --from public/art/stack-back.webp], 1024x1024 high, transparent, then tools/art/helpers.py):
+STYLE = Match the soft painted 3D finish of the reference's frosted buttons, cards and lanterns: rounded chunky shapes, gentle highlights, a warm amber accent. Draw ONLY one object, centred and filling most of the frame, seen slightly from the front, readable as a small icon. No text, letters or numbers. No shadow, no background, isolated.
+helper-hint: A chunky brass magnifying glass with a thick rounded handle and a clear, slightly glinting glass lens with a soft amber reflection. STYLE
+helper-undo: A thick curled-back arrow that sweeps round to the left like a U-turn, made of pale frosted white-blue glossy material with a thick blue-grey rim like the reference's buttons, its arrowhead tipped with warm amber. STYLE
+helper-shuffle: Two of the second reference's portrait card backs, fanned and overlapping at an angle, each with its small glowing amber dot, with two curved amber arrows crossing over them to show shuffling. STYLE
