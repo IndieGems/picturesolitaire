@@ -23,7 +23,9 @@ UI), cards as keyboard dialogs (UI), held wins trimmed in order
 Still owed:
 
 - **At release:** analytics events and funnels (Untangled's
-  `docs/analytics.md` shape); twelve locales, with a fallback font behind
+  `docs/analytics.md` shape), including per board: tries per win, stuck
+  notices, helpers spent and bought, and where players stop; Levels re-deals a
+  board one picture lighter past ~2 tries (hard 3, super hard 5); twelve locales, with a fallback font behind
   Fredoka for ą ę ż İ ğ ş and Cyrillic (Untangled's `FACES`) and a text-fit
   check per language; the store page rewritten (it still says 30 boards and
   look-alike pictures), new screenshots and hover loop.
