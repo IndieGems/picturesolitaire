@@ -81,6 +81,25 @@
             "prefix": "TRIPS_PORT "
           }
         ]
+      },
+      {
+        "id": "difficulty",
+        "command": [
+          "node",
+          "tools/difficulty/server.mjs"
+        ],
+        "ports": [
+          {
+            "name": "port",
+            "env": "DIFFICULTY_PORT"
+          }
+        ],
+        "ready": [
+          {
+            "name": "port",
+            "prefix": "DIFFICULTY_PORT "
+          }
+        ]
       }
     ]
   },
@@ -102,6 +121,12 @@
       "label": "Trips",
       "kind": "web",
       "url": "http://127.0.0.1:{trips.port}/"
+    },
+    {
+      "id": "difficulty",
+      "label": "Difficulty",
+      "kind": "web",
+      "url": "http://127.0.0.1:{difficulty.port}/"
     }
   ]
 }

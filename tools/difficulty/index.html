@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Difficulty</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header class="bar">
+      <h1>Difficulty</h1>
+      <nav class="tabs" role="tablist">
+        <button role="tab" data-lane="campaign" aria-selected="true">Campaign</button>
+        <button role="tab" data-lane="challenge" aria-selected="false">Challenge route</button>
+        <button role="tab" data-lane="daily" aria-selected="false">Daily</button>
+      </nav>
+    </header>
+    <main>
+      <p class="lede" id="lede"></p>
+      <div class="legend" id="legend"></div>
+      <div class="chart" id="chart" aria-label="How hard each board is"></div>
+      <section class="detail" id="detail" aria-live="polite">
+        <p class="hint">Tap a board in the chart to see its numbers and how it opens.</p>
+      </section>
+      <details class="table">
+        <summary>Every board as a table</summary>
+        <div id="table"></div>
+      </details>
+      <p class="problem" id="problem" hidden></p>
+    </main>
+    <div class="tip" id="tip" hidden></div>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
