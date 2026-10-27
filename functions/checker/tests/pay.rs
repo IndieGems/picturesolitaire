@@ -49,7 +49,7 @@ fn every_board_progression_id_is_the_configs() {
 
 #[test]
 fn a_first_win_of_a_hard_board_marks_it_and_pays_its_gift_in_one_order() {
-    let o = pay::order("p-c07", "campaign c07", "first:campaign:c07", true, pay::gift_of(Lane::Campaign, "c07"), false).unwrap();
+    let o = pay::order("p-c07", "campaign c07", "first:campaign:c07", true, pay::gift_of(Lane::Campaign, "c07"), vec![], false).unwrap();
     assert_eq!(o.nonce, "first:campaign:c07");
     assert_eq!(o.gifts, vec!["hard"]);
     let k = ids();
@@ -61,20 +61,20 @@ fn a_first_win_of_a_hard_board_marks_it_and_pays_its_gift_in_one_order() {
 
 #[test]
 fn a_replay_pays_nothing_and_writes_nothing() {
-    assert_eq!(pay::order("p-c07", "campaign c07", "first:campaign:c07", false, pay::gift_of(Lane::Campaign, "c07"), false), None);
+    assert_eq!(pay::order("p-c07", "campaign c07", "first:campaign:c07", false, pay::gift_of(Lane::Campaign, "c07"), vec![], false), None);
 }
 
 #[test]
 fn the_kit_comes_with_its_mark_on_board_1_and_on_its_own_after() {
     // board 1's first win: its completion (Coins and the table), the kit's mark, 3 of each
-    let o = pay::order("p-c01", "campaign c01", "first:campaign:c01", true, None, true).unwrap();
+    let o = pay::order("p-c01", "campaign c01", "first:campaign:c01", true, None, vec![], true).unwrap();
     assert_eq!(o.nonce, "first:campaign:c01");
     assert_eq!(o.gifts, vec!["kit"]);
     assert_eq!(o.operations.len(), 5);
     assert_eq!(o.operations[1]["progression_definition_id"], pay::kit_mark().0);
     assert!(o.operations[2..].iter().all(|op| op["amount"] == 3));
     // a player already past board 1, replaying: the kit alone, under its own nonce
-    let o = pay::order("p-c05", "campaign c05", "first:campaign:c05", false, None, true).unwrap();
+    let o = pay::order("p-c05", "campaign c05", "first:campaign:c05", false, None, vec![], true).unwrap();
     assert_eq!(o.nonce, "kit");
     assert_eq!(o.gifts, vec!["kit"]);
     assert_eq!(o.operations.len(), 4);
@@ -82,7 +82,7 @@ fn the_kit_comes_with_its_mark_on_board_1_and_on_its_own_after() {
 
 #[test]
 fn a_trips_last_board_with_the_kit_due_pays_both() {
-    let o = pay::order("p-c15", "campaign c15", "first:campaign:c15", true, pay::gift_of(Lane::Campaign, "c15"), true).unwrap();
+    let o = pay::order("p-c15", "campaign c15", "first:campaign:c15", true, pay::gift_of(Lane::Campaign, "c15"), vec![], true).unwrap();
     assert_eq!(o.gifts, vec!["stamp", "kit"]);
     // mark, kit mark, stamp 1/1/1, kit 3/3/3
     assert_eq!(o.operations.len(), 8);
@@ -118,12 +118,12 @@ fn the_daily_first_win_pays_the_days_helper_with_the_days_mark() {
     let sat = pay::daily_gift("2026-10-31").unwrap();
     assert_eq!(sat, ("daily", json!({ "hint": 0, "undo": 0, "shuffle": 1 })));
     assert_eq!(pay::daily_gift("2026-10-27").unwrap().1, json!({ "hint": 1, "undo": 0, "shuffle": 0 })); // Tuesday: a Hint
-    let o = pay::order("p-daily", "daily 2026-10-31", "daily:2026-10-31", true, Some(sat.clone()), false).unwrap();
+    let o = pay::order("p-daily", "daily 2026-10-31", "daily:2026-10-31", true, Some(sat.clone()), vec![], false).unwrap();
     assert_eq!(o.nonce, "daily:2026-10-31");
     assert_eq!(o.gifts, vec!["daily"]);
     assert_eq!(o.operations.len(), 2);
     assert_eq!(o.operations[1]["currency_id"], k["kinds"]["shuffle"]["currency"]);
     assert_eq!(o.operations[1]["amount"], 1);
     // a second daily win the same day: nothing
-    assert_eq!(pay::order("p-daily", "daily 2026-10-31", "daily:2026-10-31", false, Some(sat), false), None);
+    assert_eq!(pay::order("p-daily", "daily 2026-10-31", "daily:2026-10-31", false, Some(sat), vec![], false), None);
 }

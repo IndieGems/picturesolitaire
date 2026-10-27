@@ -131,6 +131,75 @@ fn main() {
     let helpers = read(&Path::new(&here).join("../../src/net/helper-ids.json"));
     let pay = json!({ "boards": boards, "gifts": gifts, "helpers": helpers });
     fs::write(Path::new(&env::var("OUT_DIR").unwrap()).join("pay.json"), pay.to_string()).unwrap();
+
+    // THE DAILY SUITCASE (OUT_DIR/suitcases.json, read by src/suitcase.rs): Levels' months
+    // (src/content/levels/suitcases.json) with each item's and each month's prize mark's id
+    // (name-based, exactly as make-config.mts writes them into the config), the month's table
+    // item (src/net/tables.json) unless it is the built-in table, and the fixed ids
+    // (src/net/suitcase-ids.json). The schedule is the date's, so a day's item is the same
+    // whichever version of its board was played. A daily board that names its item must name
+    // its date's, and hold it as one of its own pictures (check.mts proves the same).
+    let fixed = read(&Path::new(&here).join("../../src/net/suitcase-ids.json"));
+    let built_in = fixed["builtInTable"].as_str().unwrap_or("table-winter-dusk");
+    let table_items = read(&tables_file)["tables"].as_array().cloned().unwrap_or_default();
+    let schedule = levels.join("suitcases.json");
+    println!("cargo:rerun-if-changed={}", schedule.display());
+    let source: Vec<Value> = fs::read_to_string(&schedule)
+        .ok()
+        .map(|t| serde_json::from_str::<Value>(&t).unwrap_or_else(|e| panic!("{}: {e}", schedule.display())))
+        .and_then(|v| v["months"].as_array().cloned())
+        .unwrap_or_default();
+    let daily = read(&levels.join("daily.json"));
+    let by_date: std::collections::HashMap<&str, &Value> =
+        daily["levels"].as_array().into_iter().flatten().filter_map(|l| Some((l["date"].as_str()?, l))).collect();
+    let mut months: Vec<Value> = Vec::new();
+    let mut unmarked = 0;
+    for m in &source {
+        let month = m["month"].as_str().expect("a suitcase month names its month");
+        let items: Vec<Value> = m["items"]
+            .as_array()
+            .unwrap_or_else(|| panic!("suitcases.json {month}: no items"))
+            .iter()
+            .map(|i| {
+                let id = i["id"].as_str().unwrap_or_else(|| panic!("suitcases.json {month}: an item with no id"));
+                json!({ "id": id, "uuid": uuid5(&format!("suitcase:item:{id}")) })
+            })
+            .collect();
+        let days = m["days"].as_object().unwrap_or_else(|| panic!("suitcases.json {month}: no days"));
+        for (date, item) in days {
+            let item = item.as_str().unwrap_or_default();
+            assert!(date.starts_with(month), "suitcases.json {month}: {date} is not in the month");
+            assert!(items.iter().any(|i| i["id"] == item), "suitcases.json {month}: {date}'s item {item} is not one of the month's");
+            let Some(level) = by_date.get(date.as_str()) else { continue };
+            match level["item"]["id"].as_str() {
+                Some(named) if named == item => assert!(
+                    level["pictures"].as_array().into_iter().flatten().any(|p| p["id"] == item),
+                    "daily {date}: its item {item} is not one of its pictures"
+                ),
+                Some(named) => panic!("daily {date}: its board's item is {named}, but suitcases.json says {item}"),
+                None => unmarked += 1,
+            }
+        }
+        let slug = m["table"].as_str().unwrap_or(built_in);
+        let table = if slug == built_in {
+            Value::Null
+        } else {
+            let t = table_items
+                .iter()
+                .find(|t| t["slug"] == slug)
+                .unwrap_or_else(|| panic!("suitcases.json {month}: its table {slug} is not in src/net/tables.json (node tools/server/make-config.mts adds it)"));
+            json!({ "slug": slug, "uuid": t["id"] })
+        };
+        months.push(json!({ "month": month, "items": items, "table": table, "mark": uuid5(&format!("suitcase:prize:{month}")), "days": days }));
+    }
+    if unmarked > 0 {
+        println!("cargo:warning=suitcase: {unmarked} scheduled daily boards do not name their item yet (packing goes by the date all the same)");
+    }
+    let suitcases = json!({
+        "event": fixed["event"], "prize": fixed["prize"], "spares": fixed["spares"],
+        "stack": fixed["stack"], "shelf": fixed["shelf"], "months": months,
+    });
+    fs::write(Path::new(&env::var("OUT_DIR").unwrap()).join("suitcases.json"), suitcases.to_string()).unwrap();
 }
 
 /// The game id: the namespace of the config's name-based ids (tools/server/make-config.mts).

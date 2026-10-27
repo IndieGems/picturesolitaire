@@ -46,6 +46,7 @@ import { nextToSend, trimHeld } from "./held-wins";
 import { helpers, type Gift, type HelperKind } from "./helpers";
 import { noAnswer, refusalOf } from "./no-answer";
 import { answered, hold, type HeldWin } from "./progress";
+import { accept as acceptSuitcase, suitcase, type Suitcase } from "./suitcase";
 import { tableOf } from "./tables";
 
 export type Lane = "campaign" | "challenge" | "daily";
@@ -77,8 +78,12 @@ interface Answered {
   items?: string[];
   /** Helpers that LANDED now, after the cap's clamp (src/net/helpers.ts): 0s when none were given. */
   helpers?: Record<HelperKind, number>;
-  /** What they were given for: the kit (board 1's end, or the next win of a player past it), a hard board's first win, a trip's last board, the daily puzzle's first win of the day. */
+  /** What they were given for: the kit (board 1's end, or the next win of a player past it), a hard board's first win, a trip's last board, the daily puzzle's first win of the day, a full Daily Suitcase (its helpers are in `helpers` too). */
   gifts?: Gift[];
+  /** Daily only: the day's suitcase item this win packed, and the copies held after it. Only on the day's first win: a replay or a late finish packs nothing. */
+  packed?: { item: string; count: number };
+  /** Daily only, with `packed`: the month's suitcase after it (src/net/suitcase.ts). */
+  suitcase?: Suitcase;
   /** Daily only: the date, the time the board shows, whether the result is on the day's board, whether it is this player's first of the day. */
   date?: string;
   ms?: number;
@@ -260,6 +265,17 @@ async function send(h: Held): Promise<void> {
     const items = Array.isArray(answer.items) ? answer.items.filter((i): i is string => typeof i === "string").map(tableOf) : [];
     // the server granted what this device's cached inventory cannot know: read it afresh next time
     if (status === "paid" || items.length) gem.me.inventory.refresh();
+    // the Daily Suitcase follows the server's word too (a pack carries the month after it)
+    let packed: { item: string; count: number } | undefined;
+    let month: Suitcase | undefined;
+    if (lane === "daily") {
+      acceptSuitcase(answer);
+      const p = answer.packed as { item?: unknown; count?: unknown } | undefined;
+      if (p && typeof p.item === "string") {
+        packed = { item: p.item, count: Math.max(1, Math.floor(Number(p.count) || 1)) };
+        month = suitcase.current() ?? undefined;
+      }
+    }
     return settle(h, {
       status,
       lane,
@@ -272,7 +288,9 @@ async function send(h: Held): Promise<void> {
       ...(typeof answer.recorded === "boolean" ? { recorded: answer.recorded } : {}),
       ...(typeof answer.first === "boolean" ? { first: answer.first } : {}),
       helpers: landedOf(answer.helpers),
-      gifts: Array.isArray(answer.gifts) ? answer.gifts.filter((g): g is Gift => g === "kit" || g === "hard" || g === "stamp" || g === "daily") : [],
+      gifts: Array.isArray(answer.gifts) ? answer.gifts.filter((g): g is Gift => g === "kit" || g === "hard" || g === "stamp" || g === "daily" || g === "suitcase") : [],
+      ...(packed ? { packed } : {}),
+      ...(month ? { suitcase: month } : {}),
     }, answer.progress);
   }
   console.warn(`[claims] ${lane} ${board} refused: ${String(answer.reason)}`);

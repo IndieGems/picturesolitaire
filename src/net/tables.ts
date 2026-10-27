@@ -22,9 +22,14 @@ export interface Table {
   title: string;
   /** The PNG the config uploads as the item's icon (path from the project root). */
   icon?: string;
-  /** How it is earned: "onboarding" is granted when board `board` is verified for the first time. */
-  award: "onboarding";
-  board: string;
+  /**
+   * How it is earned: "onboarding" is granted when board `board` is verified for the first
+   * time; "suitcase" with month `month`'s full Daily Suitcase (src/net/suitcase.ts; its entry
+   * is written by tools/server/make-config.mts from Levels' suitcases.json).
+   */
+  award: "onboarding" | "suitcase";
+  board?: string;
+  month?: string;
   /**
    * The Coins paid with it, in the same step: for the onboarding keepsake, the
    * onboarding prize (the config pays this number; the finish card shows it up front).

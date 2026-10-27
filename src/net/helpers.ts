@@ -30,7 +30,7 @@ import { noAnswer, refusalOf } from "./no-answer";
 export type HelperKind = "hint" | "undo" | "shuffle";
 export type SpendAnswer = "spent" | "held" | "none";
 export type BuyAnswer = "ok" | "short" | "full" | "failed";
-export type Gift = "kit" | "hard" | "stamp" | "daily";
+export type Gift = "kit" | "hard" | "stamp" | "daily" | "suitcase";
 /** One helper, or a pack of 3. */
 export type Pack = 1 | 3;
 

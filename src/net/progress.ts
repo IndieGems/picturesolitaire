@@ -208,6 +208,7 @@ export function loadProgress(): void {
   void read();
   void import("./claims").then((m) => m.resumeClaims());
   void import("./helpers").then((m) => m.loadHelpers());
+  void import("./suitcase").then((m) => m.loadSuitcase());
   onOnline((up) => {
     if (up && !known) {
       tries = 0;

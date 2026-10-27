@@ -1,0 +1,9 @@
+{
+  "note": "THE DAILY SUITCASE's fixed ids and sizes (docs/daily-suitcase.md), read by src/net/suitcase.ts, functions/checker/build.rs and tools/server/make-config.mts. The months, their 10 items, their tables and each day's item are Levels' (src/content/levels/suitcases.json). Every other id is name-based (make-config's uuid5): an item 'suitcase:item:<item id>', a month's prize mark 'suitcase:prize:<YYYY-MM>', a month's table 'table:<slug>' (src/net/tables.json). An id never changes once uploaded. `event` is the Arcade's monthly challenge (its meter is the number of distinct items held this month); `prize` is the helpers a full suitcase pays with its table, clamped at the cap; `spares` is what one swap takes; `stack` is the most copies of one item kept; `shelf` the most closed months the game is told about; `builtInTable` is every player's own table, which is no item, so a month showing it (a stand-in) pays only the helpers.",
+  "event": { "id": "f9849a15-3e7b-454e-a177-d7d6396cc911", "slug": "suitcase" },
+  "prize": { "hint": 2, "undo": 2, "shuffle": 1 },
+  "spares": 3,
+  "stack": 31,
+  "shelf": 12,
+  "builtInTable": "table-winter-dusk"
+}

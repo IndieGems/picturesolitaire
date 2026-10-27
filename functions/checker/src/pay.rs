@@ -93,11 +93,11 @@ fn currency(kind: &str) -> &'static str {
     data()["helpers"]["kinds"][kind]["currency"].as_str().unwrap_or_default()
 }
 
-fn mark(id: &str, reason: String) -> Value {
+pub(crate) fn mark(id: &str, reason: String) -> Value {
     json!({ "type": "progression_max", "progression_definition_id": id, "value": 1, "reason": reason })
 }
 
-fn grant(kind: &str, amount: u64, reason: String) -> Value {
+pub(crate) fn grant(kind: &str, amount: u64, reason: String) -> Value {
     json!({ "type": "currency_grant", "currency_id": currency(kind), "amount": amount, "bucket": "earned", "overflow": "clamp", "reason": reason })
 }
 
@@ -111,13 +111,15 @@ pub struct Order {
 
 /// The order for a verified win. `progression`: the id it completes (a board's, or the
 /// daily's); `first`: its value read below 1, so this win completes it; `gift`: the board's
-/// gift (gift_of, daily_gift), paid only with that first completion; `kit`: the kit is due.
-/// None when there is nothing to write.
-pub fn order(progression: &str, what: &str, nonce: &str, first: bool, gift: Option<Gift>, kit: bool) -> Option<Order> {
+/// gift (gift_of, daily_gift), paid only with that first completion; `extra`: more operations
+/// that ride only with that first completion (the daily's: the day's suitcase item,
+/// suitcase.rs); `kit`: the kit is due. None when there is nothing to write.
+pub fn order(progression: &str, what: &str, nonce: &str, first: bool, gift: Option<Gift>, extra: Vec<Value>, kit: bool) -> Option<Order> {
     let mut o = Order::default();
     let mut paying: Vec<(&'static str, Value)> = Vec::new();
     if first {
         o.operations.push(mark(progression, format!("{what} verified win")));
+        o.operations.extend(extra);
         if let Some(g) = gift {
             paying.push(g);
         }
