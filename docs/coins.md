@@ -14,9 +14,9 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 
 ## The hourly maths (the standard: about 500 an hour of ordinary play)
 
-- Campaign: 90 boards, 3175 Coins in all (3075 without the onboarding prize).
+- Campaign: 120 boards, 4285 Coins in all (4185 without the onboarding prize).
   The design puts a relaxed board at 2 to 4 minutes. At 3 minutes a board, 35 a board
-  is about 691 Coins an hour; at 2 minutes 1037, at 4 minutes 518.
+  is about 703 Coins an hour; at 2 minutes 1055, at 4 minutes 528.
 - Challenge route: 20 boards, 540 Coins in all, 27 a board on average.
   At 4 minutes a board that is about 405 an hour; at 5 minutes 324.
 - Daily: 50 once a day, on top.
@@ -118,6 +118,36 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 | c88 | campaign 88 | 39 | 40 |
 | c89 | campaign 89 | 46 | 40 |
 | c90 | campaign 90 | 55 | 40 |
+| c91 | campaign 91 | 38 | 40 |
+| c92 | campaign 92 | 41 | 40 |
+| c93 | campaign 93 | 31 | 35 |
+| c94 | campaign 94 | 42 | 40 |
+| c95 | campaign 95 | 40 | 40 |
+| c96 | campaign 96 | 14 | 15 |
+| c97 | campaign 97 | 44 | 40 |
+| c98 | campaign 98 | 48 | 40 |
+| c99 | campaign 99 | 34 | 35 |
+| c100 | campaign 100 | 43 | 40 |
+| c101 | campaign 101 | 28 | 30 |
+| c102 | campaign 102 | 43 | 40 |
+| c103 | campaign 103 | 35 | 40 |
+| c104 | campaign 104 | 44 | 40 |
+| c105 | campaign 105 | 38 | 40 |
+| c106 | campaign 106 | 40 | 40 |
+| c107 | campaign 107 | 34 | 35 |
+| c108 | campaign 108 | 41 | 40 |
+| c109 | campaign 109 | 39 | 40 |
+| c110 | campaign 110 | 44 | 40 |
+| c111 | campaign 111 | 13 | 15 |
+| c112 | campaign 112 | 45 | 40 |
+| c113 | campaign 113 | 47 | 40 |
+| c114 | campaign 114 | 37 | 40 |
+| c115 | campaign 115 | 39 | 40 |
+| c116 | campaign 116 | 31 | 35 |
+| c117 | campaign 117 | 40 | 40 |
+| c118 | campaign 118 | 29 | 30 |
+| c119 | campaign 119 | 37 | 40 |
+| c120 | campaign 120 | 59 | 40 |
 | ch01 | challenge 1 | 19 | 20 |
 | ch02 | challenge 2 | 21 | 25 |
 | ch03 | challenge 3 | 19 | 20 |
