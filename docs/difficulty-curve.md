@@ -372,6 +372,102 @@ The Big Banana and the Harbour Bridge stay. Art found no image licence on
 either, and Australian law lets anyone picture a building. The bridge
 postcard shows no climbers and no Opera House.
 
+## Trips 9 and 10 (plan, the creator's choices, 2026-10-27)
+
+**Trip 9 is South Africa, boards 121–135. Trip 10 is the UK and Ireland,
+boards 136–150.** New Zealand stays in reserve.
+
+**The shape and the targets are trip 7's and trip 8's**, with the same
+rules: every unmarked board readable, and every marked board won by a
+careful player 1 in 4 or more. The big boards move to new slots:
+
+| In the trip | South Africa | UK and Ireland | Pictures | Careless target |
+|---|---|---|---|---|
+| x1 relief | 121 | 136 | 10 | 80–100% |
+| x2 build | 122 | 137 | 10 | 55–65% |
+| x3 build | 123 | 138 | 11 | 50–60% |
+| x4 build | 124 | 139 | 11 | 50–60% |
+| x5 hard | 125, 4×5, 12 pictures | 140, **5×5**, 13 pictures | | 25–35% |
+| x6 all long, 4×4 | 126 | 141 | 12 | 85–100% |
+| x7 build | 127 | 142 | 11 | 50–60% |
+| x8 build | 128 | 143 | 11 | 45–55% |
+| x9 build | 129 | 144 | 11 | 45–55% |
+| x10 hard | 130, **5×5**, 13 pictures | 145, 4×5, 12 pictures | | 20–30% |
+| x11 relief | 131 | 146 | 10 | 80–100% |
+| x12 build | 132 | 147 | 11 | 50–60% |
+| x13 build | 133 | 148 | 11 | 45–55% |
+| x14 build | 134 | 149 | 11 | 45–55% (UK and Ireland 40–50%) |
+| x15 super | 135, **5×5**, 14 pictures, 8–20% | 150, **6×6**, 19 pictures, 8–18% | | |
+
+Every square board not marked otherwise is 4×5.
+
+- **Big boards:** South Africa's x10 and finale, and the UK and Ireland's x5
+  and finale. Board 150 is 6×6, as every other finale is (30, 60, 90, 120,
+  150).
+
+**Half new pictures (the creator's choice).** On each board, half the
+everyday pictures (rounded down; the postcard aside) come back from boards
+1–60, which the player last saw 60 boards or more before. The rest are new.
+Over the 30 boards that is 151 pictures back and 162 new. The no-repeat
+rule holds among them as on every board: no picture back within 15 boards.
+
+- **Pictures that may come back** (`tools/levels/pictures-back.json`): the
+  426 on boards 1–60 that meet today's rules. They are calm, clear and
+  close, and none is a landmark. None comes from before the clear pictures.
+  The file freezes the list, so a later re-deal of an early board never
+  changes it.
+- **Struck from the list:** six that repeat a postcard's subject (the
+  pineapple, the puffin, both lambs, the ostrich, the baby elephant), and
+  any person that Art finds posed.
+- **New ones** include the 54 pictures from Art's recent batches that no
+  board has shown.
+
+**Art's work:**
+
+- 112 new everyday pictures: 100 squares, 6 tall and 6 wide.
+- 30 postcards:
+  - 4×5 for the square boards;
+  - 5×5 for 130, 135 and 140;
+  - 6×6 for 150;
+  - 4×4 with a wide window for 126 and a tall one for 141.
+- The stamps t9 and t10.
+
+A trial on stand-in pictures picked every board cleanly with 100 new
+squares, and also with 80. At 100, 30 of the new pictures appear twice,
+each time 15 boards or more apart; on trips 7 and 8 it was 83.
+
+**The places, by slot: a shortlist for Art to fact-check.** Each trip has
+8 famous places, 4 hidden gems and 3 silly ones.
+
+| Slot | South Africa | UK and Ireland |
+|---|---|---|
+| x1 | Bo-Kaap's painted houses, Cape Town (famous) | The Giant's Causeway (famous) |
+| x2 | The Storms River suspension bridge, Tsitsikamma (famous) | Arlington Row, Bibury (famous) |
+| x3 | Namaqualand's spring daisies (gem) | The Dark Hedges (gem) |
+| x4 | The ostriches of Oudtshoorn (silly) | A puffin on Skomer with a beakful of fish (silly) |
+| x5 | The Three Rondavels over the Blyde River Canyon (famous) | Glencoe's Buachaille Etive Mòr (famous, big) |
+| x6, long | The Drakensberg Amphitheatre (famous, wide) | The Old Man of Storr (famous, tall) |
+| x7 | Bourke's Luck Potholes (gem) | The Shambles, York (famous) |
+| x8 | Chapman's Peak Drive (famous) | Kynance Cove (gem) |
+| x9 | Warthogs grazing on their knees (silly) | Bath's Royal Crescent (famous) |
+| x10 | Elephants at a Kruger waterhole (famous, big) | Yr Wyddfa (Snowdon) over its lakes (famous) |
+| x11 | A hippo strolling St Lucia's main street (silly) | The Dunmore Pineapple (silly) |
+| x12 | Augrabies Falls (gem) | Wistman's Wood, Dartmoor (gem) |
+| x13 | Pretoria's jacaranda streets (famous) | A Connemara road jammed with sheep (silly) |
+| x14 | The Kgalagadi's red dunes, with a gemsbok (gem) | The Burren's limestone (gem) |
+| x15 | Table Mountain under its cloud (famous, big, the finale) | The Cliffs of Moher (famous, the 6×6 finale) |
+
+**Left out by the postcard rules, or too like an earlier trip's place:**
+
+- Stonehenge (sacred to some, and its keepers license its image).
+- Tower Bridge (a registered trade mark).
+- Eilean Donan and Portmeirion (their owners license their image).
+- Skellig Michael (landing by permit) and Robben Island (a memorial).
+- Boulders Beach's penguins (like Punta Tombo's), and the Hermanus whales
+  (like the Valdés whale).
+- St Michael's Mount (like Mont-Saint-Michel), and Durdle Door (like Étretat).
+- Glenfinnan's viaduct (like the Train to the Clouds).
+
 ## Watching real players (from config v28)
 
 Each campaign board sends `board_started`, `board_won`, `board_lost` (it

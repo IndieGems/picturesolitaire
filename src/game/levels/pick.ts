@@ -62,6 +62,12 @@ export interface PickSpec {
   old?: ReadonlySet<string>;
   oldMost?: number;
   /**
+   * At least `oldLeast` pictures from `old`: with `oldMost`, exactly so many (creator, 2026-10-27:
+   * about half of each board on trips 9 and 10 comes back from boards 1-60). The caller ranks the
+   * `old` pictures cheaper so the picker reaches the count; fits() holds it.
+   */
+  oldLeast?: number;
+  /**
    * Rank lookalike families by the MEAN use of their eligible pictures, not
    * the sum. The sum favours a family with few eligible pictures (the yellow
    * family has only two that are not 3x3), so over a long pool it comes up far
@@ -286,6 +292,7 @@ export function fits(catalogue: readonly CataloguePicture[], spec: PickSpec, pic
   const most = { 9: 1, ...spec.most };
   for (const [size, max] of Object.entries(most)) if (pictures.filter((p) => p.cols * p.rows === +size).length > max) return false;
   if (spec.bigMost !== undefined && pictures.filter(isBig).length > spec.bigMost) return false;
+  if (spec.old && spec.oldLeast !== undefined && pictures.filter((p) => spec.old!.has(p.id)).length < spec.oldLeast) return false;
   if (spec.vary || spec.busyMost !== undefined || spec.liveMost !== undefined || spec.oldMost !== undefined) {
     // the same limits, judged on the catalogue's entries (the board's pictures carry only id and shape)
     const full = pictures.map((p) => catalogue.find((c) => c.id === p.id) ?? { ...p, family: "" });

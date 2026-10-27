@@ -268,6 +268,43 @@ export const PLAN = [
   /* 118 */ { role: "build", destination: "dest-big-banana", drop: "pho", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
   /* 119 */ { role: "build", destination: "dest-cradle-mountain", drop: "gaillardia", board: [4, 5], ...sq(11), careless: [0.4, 0.5], chain: ANY, ...NEW_ONLY },
   /* 120 */ { role: "super", destination: "dest-heart-reef", drop: "hedgerow", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  // ---- trip 9, South Africa (the creator, 2026-10-27; docs/difficulty-curve.md "Trips 9 and 10"): trip 7's
+  // shape and targets; big boards in new slots, 130 and the finale 135 at 5x5 (125 is 4x5). HALF NEW: about
+  // half of each board's everyday pictures come back from boards 1-60 (BACK, set below), the rest are new
+  // (Art's batch after LAST_BEFORE_T9, and the spares no board has shown). Each row deals one new picture
+  // more than it shows: the drop, whose place the postcard takes once Art's postcards are in
+  /* 121 */ { role: "relief", destination: "dest-bo-kaap", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 122 */ { role: "build", destination: "dest-storms-river", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 123 */ { role: "build", destination: "dest-namaqualand", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 124 */ { role: "build", destination: "dest-oudtshoorn-ostriches", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 125 */ { role: "hard",  destination: "dest-three-rondavels", board: [4, 5], ...sq(12), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 126 */ { role: "pace",  destination: "dest-amphitheatre", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
+  /* 127 */ { role: "build", destination: "dest-bourkes-luck", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 128 */ { role: "build", destination: "dest-chapmans-peak", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 129 */ { role: "build", destination: "dest-kneeling-warthogs", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 130 */ { role: "hard",  destination: "dest-kruger-elephants", board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 131 */ { role: "relief", destination: "dest-st-lucia-hippo", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 132 */ { role: "build", destination: "dest-augrabies", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 133 */ { role: "build", destination: "dest-pretoria-jacarandas", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 134 */ { role: "build", destination: "dest-kgalagadi", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 135 */ { role: "super", destination: "dest-table-mountain", board: [5, 5], ...sq(14), careless: [0.08, 0.2], traps: [0, 4], chain: ANY },
+  // ---- trip 10, the UK and Ireland (the creator, 2026-10-27): trip 8's shape and targets; big boards 140 at
+  // 5x5 and the finale 150 at 6x6 (every other finale: 30, 60, 90, 120, 150); 145 is 4x5. Half new, as trip 9
+  /* 136 */ { role: "relief", destination: "dest-giants-causeway", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 137 */ { role: "build", destination: "dest-arlington-row", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 138 */ { role: "build", destination: "dest-dark-hedges", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 139 */ { role: "build", destination: "dest-skomer-puffins", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 140 */ { role: "hard",  destination: "dest-glencoe", board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 141 */ { role: "pace",  destination: "dest-old-man-of-storr", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
+  /* 142 */ { role: "build", destination: "dest-shambles", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 143 */ { role: "build", destination: "dest-kynance-cove", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 144 */ { role: "build", destination: "dest-royal-crescent", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 145 */ { role: "hard",  destination: "dest-yr-wyddfa", board: [4, 5], ...sq(12), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 146 */ { role: "relief", destination: "dest-dunmore-pineapple", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 147 */ { role: "build", destination: "dest-wistmans-wood", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 148 */ { role: "build", destination: "dest-connemara-sheep", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 149 */ { role: "build", destination: "dest-burren", board: [4, 5], ...sq(11), careless: [0.4, 0.5], chain: ANY },
+  /* 150 */ { role: "super", destination: "dest-cliffs-of-moher", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY },
 ];
 
 /**
@@ -314,7 +351,24 @@ export const MARKS = { hard: "hard", peak: "hard", super: "super" };
 // boards 91 on (trips 7 and 8): only from Art's batch for them (NEXT_BATCH: brugmansia on), and boards 61-90
 // never take from it
 export const NEXT_BATCH = "brugmansia";
-PLAN.forEach((row, i) => Object.assign(row, i < 30 ? { newTo: "foxgloves" } : i < 60 ? { newFrom: "marigolds", newTo: "foxgloves" } : i < 90 ? { newFrom: "foxgloves", newTo: NEXT_BATCH } : { newFrom: NEXT_BATCH }));
+// boards 121 on (trips 9 and 10): new pictures from Art's batch for them (every picture after
+// LAST_BEFORE_T9, the catalogue's last before it) and the spares no board has shown; boards 91-120 never
+// take from that batch
+export const LAST_BEFORE_T9 = "drone";
+PLAN.forEach((row, i) => Object.assign(row, i < 30 ? { newTo: "foxgloves" } : i < 60 ? { newFrom: "marigolds", newTo: "foxgloves" } : i < 90 ? { newFrom: "foxgloves", newTo: NEXT_BATCH } : i < 120 ? { newFrom: NEXT_BATCH, newThrough: LAST_BEFORE_T9 } : { newAfter: LAST_BEFORE_T9 }));
+// HALF NEW on boards 121-150 (the creator, 2026-10-27): of each board's everyday pictures (all but the
+// postcard) half, rounded down, come back from boards 1-60 (BACK: pictures-back.json, those that meet
+// today's rules), exactly so many (oldLeast with oldMost); the rest, and the drop the postcard replaces,
+// are new. The no-repeat rule (SPACING) holds among them as everywhere
+const BACK_FILE = JSON.parse(readFileSync(new URL("./pictures-back.json", import.meta.url), "utf8"));
+export const BACK = new Set(BACK_FILE.back.filter((id) => !(id in BACK_FILE.struck)));
+export const SPARES = new Set(BACK_FILE.spares);
+const ALSO = new Set([...BACK, ...SPARES]);
+PLAN.forEach((row, i) => {
+  if (i < 120) return;
+  const back = Math.floor((row.count - 1) / 2);
+  Object.assign(row, { old: BACK, oldMost: back, oldLeast: back, also: ALSO });
+});
 // every unmarked board is READABLE (creator, 2026-10-27, after "rigged"-feeling boards 18-19): a player who
 // draws by the face-up cards wins it 85% or more; hard and super hard boards may still hide the way. Where
 // no deal of a board's pictures is readable at its target (the 12-picture builds late in trips 3-6 above

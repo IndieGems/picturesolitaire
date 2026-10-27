@@ -196,7 +196,7 @@ export function remadeInPlace(b) {
 /** The boards in a boards file, [] if there is none. */
 export const readBoards = (file) => (existsSync(file) ? JSON.parse(readFileSync(file, "utf8")).levels : []);
 
-export const specOf = (row) => ({ count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, must: row.must, most: row.most, bigMost: row.bigMost, vary: row.vary, busyMost: row.busyMost, liveMost: row.liveMost, old: row.old, oldMost: row.oldMost, keep: keepOf(row) });
+export const specOf = (row) => ({ count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, must: row.must, most: row.most, bigMost: row.bigMost, vary: row.vary, busyMost: row.busyMost, liveMost: row.liveMost, old: row.old, oldMost: row.oldMost, oldLeast: row.oldLeast, keep: keepOf(row) });
 
 export const usesOf = (chosen) => {
   const u = new Map(catalogue.map((q) => [q.id, 0]));
@@ -268,24 +268,36 @@ const catalogueAt = new Map(catalogue.map((p, k) => [p.id, k]));
  * The pictures board i may take: the no-repeat rule's (bannedOn), and with the
  * row's `newFrom` (a catalogue id) only that picture and those after it in the
  * catalogue: a batch Art appended (lead, 2026-10-26: every picture on boards
- * 31-60 is from the creator's new batch, new to the player).
+ * 31-60 is from the creator's new batch, new to the player). `newAfter` is the
+ * same from the picture after it (a batch not in yet, whose first id is not
+ * known), `newThrough` the window's last picture. A row's `also` (a set of ids)
+ * adds pictures from outside the window: trips 9 and 10's pictures back from
+ * boards 1-60 and the spares no board has shown (campaign-plan.mts).
  */
 const poolOn = (chosen, i, rule, row?) => {
-  const from = row?.newFrom ? catalogueAt.get(row.newFrom) : undefined;
-  if (row?.newFrom && from === undefined) throw new Error(`board ${i + 1}: newFrom ${row.newFrom} is not in the catalogue`);
+  const at = (id, key) => {
+    const k = catalogueAt.get(id);
+    if (k === undefined) throw new Error(`board ${i + 1}: ${key} ${id} is not in the catalogue`);
+    return k;
+  };
+  const from = row?.newFrom ? at(row.newFrom, "newFrom") : row?.newAfter ? at(row.newAfter, "newAfter") + 1 : undefined;
   // newTo (the next batch's first id) not in the catalogue yet: that batch is not in, so nothing is cut
-  const to = row?.newTo ? catalogueAt.get(row.newTo) ?? Infinity : Infinity;
-  if (!rule && from === undefined) return usable;
+  const to = row?.newTo ? catalogueAt.get(row.newTo) ?? Infinity : row?.newThrough ? at(row.newThrough, "newThrough") + 1 : Infinity;
+  if (!rule && from === undefined && to === Infinity) return usable;
   const banned = rule ? bannedOn(chosen, i, rule) : new Set();
-  return usable.filter((p) => !banned.has(p.id) && (from === undefined || catalogueAt.get(p.id) >= from) && catalogueAt.get(p.id) < to);
+  const inWindow = (p) => (from === undefined || catalogueAt.get(p.id) >= from) && catalogueAt.get(p.id) < to;
+  return usable.filter((p) => !banned.has(p.id) && (inWindow(p) || !!row?.also?.has(p.id)));
 };
 
 /** Why a board under the rule found no pictures: how many of each size it may still take. */
 const shortText = (plan, chosen, i, rule) => {
   const pool = poolOn(chosen, i, rule, plan[i]);
   const by = (n) => pool.filter((p) => p.cols * p.rows === n).length;
-  return `board ${i + 1}: no pictures fit its plan row among those not on a board within ${rule.spacing}${i < rule.distinct ? ` or on boards 1-${rule.distinct}` : ""}${plan[i].newFrom ? ` and in the batch from ${plan[i].newFrom} on` : ""} (it may take ${plan[i].sizes.map((n) => `${by(n)} of ${n} cards`).join(", ")}); the library needs more pictures${flags.size ? " (flagged pictures are left out)" : ""}`;
+  return `board ${i + 1}: no pictures fit its plan row among those not on a board within ${rule.spacing}${i < rule.distinct ? ` or on boards 1-${rule.distinct}` : ""}${plan[i].newFrom ? ` and in the batch from ${plan[i].newFrom} on` : plan[i].newAfter ? ` and in the batch after ${plan[i].newAfter}${plan[i].also ? " or among the pictures back" : ""}` : ""} (it may take ${plan[i].sizes.map((n) => `${by(n)} of ${n} cards`).join(", ")}); the library needs more pictures${flags.size ? " (flagged pictures are left out)" : ""}`;
 };
+
+/** The picker's lean on a picture the row limits (`old`): last with `oldMost` alone, first with `oldLeast`. */
+const oldLean = (row, id) => (!row.old?.has(id) ? 0 : row.oldLeast ? -3 : row.oldMost ? 3 : 0);
 
 /** Where each picture was last before board i, from boards 0..i-1. */
 const lastSeen = (chosen, i) => {
@@ -371,8 +383,9 @@ export function pickFrom(plan, chosen, from, seedOf, spacing?, rule?) {
   for (let i = from; i < plan.length; i++) {
     const recent = new Set((chosen[i - 1] ?? []).map((q) => q.id));
     const base = spacing ? spacedCost(chosen, i, spacing) : onSchedule(uses, plan0, done / Math.max(1, slots));
-    // a picture the row limits (old) stands in only where the others run out; calm a little before busy
-    const cost = new Map([...base].map(([id, v]) => [id, v + (plan[i].old?.has(id) && plan[i].oldMost ? 3 : 0) + ((byId.get(id)?.busy ?? 0) >= 1 ? 0.5 : 0)]));
+    // a picture the row limits (old) stands in only where the others run out, but one the row needs so
+    // many of (oldLeast: the pictures back on trips 9 and 10) comes first; calm a little before busy
+    const cost = new Map([...base].map(([id, v]) => [id, v + oldLean(plan[i], id) + ((byId.get(id)?.busy ?? 0) >= 1 ? 0.5 : 0)]));
     // strong costs leave the picker little room; when no set fits, soften them before giving up
     let pictures = null;
     const pool = poolOn(chosen, i, rule, plan[i]);
@@ -735,7 +748,7 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
     // (with liveMost, a row's cap spreads the lively pictures: a strong lean against busy 1 would only
     // save them all for the last board, which then cannot be filled; busy 1 does not lean at all)
     const lean = (b) => (plan[i].liveMost !== undefined ? [0, 0, 4][b] : b * 2);
-    const cost = new Map(usable.map((p) => [p.id, base.get(p.id) + lean(p.busy ?? 0) + (plan[i].old?.has(p.id) ? 2 : 0)]));
+    const cost = new Map(usable.map((p) => [p.id, base.get(p.id) + lean(p.busy ?? 0) + (plan[i].oldLeast ? oldLean(plan[i], p.id) : plan[i].old?.has(p.id) ? 2 : 0)]));
     const recent = new Set([...(chosen[i - 1] ?? []), ...(chosen[i + 1] ?? [])].map((q) => q.id));
     const set = pick(poolOf ? poolOf(i) : usable, specOf(plan[i]), cost, recent, random(seedOf(i)));
     if (!set) throw new Error(rule ? shortText(plan, chosen, i, rule) : `${old[i].id}: no pictures fit the plan${flags.size ? " (flagged pictures are left out)" : ""}`);
