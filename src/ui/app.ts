@@ -1625,6 +1625,8 @@ export async function startApp(): Promise<void> {
       stuck: () => emit("board:stuck", { doomed: true } as never),
       /** The boards' player numbers sent so far (board-stats.ts), and the try in hand (tries.ts). */
       stats: () => ({ sent: recentStats.slice(), now: tries.current() }),
+      /** The board in hand, for a script that plays its proved line (board.dev.step) without the dev menu, so it is no practice. */
+      board: () => board,
     };
     // ?restored=id,id shows those pictures as restored in the albums (never saved)
     const fake = new URLSearchParams(location.search).get("restored");
