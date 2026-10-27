@@ -195,7 +195,7 @@ html.less-motion .home-note { animation: none; }
 }
 #settings-button :is(svg, .ico) { width: 28px; height: 28px; }
 
-/* ---------- home (home.ts): the title, the trip's ticket, Next stop, and the dock ---------- */
+/* ---------- home (home.ts): the title, the trip's itinerary, Next stop, and the dock ---------- */
 
 /* --k: home grows with a big column (a tablet), 1 on a phone up to 1.7 (home.ts sets it), so a
    tablet's home reads as a tablet screen, not a phone screen floating in the middle. --pin: a
@@ -213,8 +213,8 @@ html.less-motion .home-note { animation: none; }
 .home h1 { flex: none; margin: 0; line-height: 0; width: clamp(150px, calc((100dvh - 560px * var(--k)) * 2), calc(300px * var(--k))); max-width: 100%; }
 .home h1 picture, .home .wordmark { display: block; width: 100%; height: auto; }
 
-/* the ticket: frosted glass (information), a ticket's two notches at the tear under its head */
-.home .ticket {
+/* the itinerary: frosted glass (information), with a travel stub's two notches at the tear under its head */
+.home .itinerary {
   --tear: calc(58px * var(--k)); --notch: calc(10px * var(--k));
   flex: none; position: relative; width: min(100%, calc(380px * var(--k)));
   padding: 0 calc(12px * var(--k)) calc(10px * var(--k)); border-radius: calc(24px * var(--k));
@@ -223,16 +223,16 @@ html.less-motion .home-note { animation: none; }
   mask: radial-gradient(circle var(--notch) at 0 var(--tear), #0000 95%, #000) left / 51% 100% no-repeat,
     radial-gradient(circle var(--notch) at 100% var(--tear), #0000 95%, #000) right / 51% 100% no-repeat;
 }
-.home .ticket[hidden] { display: none; }
-.ticket-head {
+.home .itinerary[hidden] { display: none; }
+.itinerary-head {
   display: flex; align-items: center; gap: calc(11px * var(--k)); height: var(--tear); margin: 0 calc(6px * var(--k));
   padding: 0 calc(4px * var(--k)); border-bottom: 2px dashed rgba(85, 101, 124, 0.38);
 }
-.ticket-head .ico { width: calc(30px * var(--k)); height: calc(30px * var(--k)); color: var(--amber-lip); }
-.ticket-words { display: flex; flex-direction: column; gap: calc(3px * var(--k)); min-width: 0; }
-.ticket-trip { font: 600 calc(21px * var(--k))/1.1 var(--round); }
-.ticket-count { font: 500 calc(14px * var(--k))/1.2 var(--round); color: var(--ink-soft); }
-.ticket.waiting .ticket-words { visibility: hidden; }
+.itinerary-head .ico { width: calc(30px * var(--k)); height: calc(30px * var(--k)); color: var(--amber-lip); }
+.itinerary-words { display: flex; flex-direction: column; gap: calc(3px * var(--k)); min-width: 0; }
+.itinerary-trip { font: 600 calc(21px * var(--k))/1.1 var(--round); }
+.itinerary-count { font: 500 calc(14px * var(--k))/1.2 var(--round); color: var(--ink-soft); }
+.itinerary.waiting .itinerary-words { visibility: hidden; }
 
 /* the route: five stops to a row, snaking down, on a dotted path (walked in amber up to the next stop) */
 .tr-route { position: relative; margin-top: calc(12px * var(--k)); }
@@ -252,7 +252,7 @@ html.less-motion .home-note { animation: none; }
 .tr-stop.ahead .tr-pin { background: rgba(255, 255, 255, 0.5); border: 2px dashed rgba(85, 101, 124, 0.5); }
 .tr-stop.soon .tr-pin { background: rgba(255, 255, 255, 0.25); border: 2px dotted rgba(85, 101, 124, 0.3); }
 .tr-stop.soon .n { opacity: 0.6; }
-.ticket.waiting .tr-stop .tr-pin { background: rgba(255, 255, 255, 0.4); border: 2px dashed rgba(85, 101, 124, 0.35); box-shadow: none; }
+.itinerary.waiting .tr-stop .tr-pin { background: rgba(255, 255, 255, 0.4); border: 2px dashed rgba(85, 101, 124, 0.35); box-shadow: none; }
 /* the next stop: an amber ring and a pulse, its number and nothing else (its place is the board's reveal) */
 .tr-stop.next .tr-pin { background: var(--frost-hi); box-shadow: 0 0 0 calc(3px * var(--k)) var(--amber-lo); }
 .tr-stop.next .n { color: var(--ink); font-size: calc(16px * var(--k)); }

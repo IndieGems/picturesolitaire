@@ -2,7 +2,7 @@
 // to match the travel aspect more"):
 //
 //   the title     Art's drawn wordmark (wordmark.ts)
-//   the ticket    the trip the player is on, as a ticket: its name and "Stop 4 of 15",
+//   itinerary     the trip the player is on, as a travel card: its name and "Stop 4 of 15",
 //                 then its stops on a dotted path, five to a row, snaking down. A stop
 //                 visited shows its postcard (the trip's passport pack, src/packs.ts); the
 //                 next one pulses, with only its board number (its place is the board's
@@ -13,10 +13,10 @@
 //   the dock      Daily (daily.ts), the passport (a booklet, with its count of stamps) and
 //                 the challenge route, as three tiles
 //
-// Every board won: the ticket shows the trip of the board Play goes round to, every stop
+// Every board won: the itinerary shows the trip of the board Play goes round to, every stop
 // visited and the stamp earned, and the button says Play again.
 //
-// The ticket is information (flat frosted glass, no lip, no shadow); the stops are drawn
+// The itinerary is information (flat frosted glass, no lip, no shadow); the stops are drawn
 // on it and take no touch. Only the buttons are buttons (the two materials, style.css).
 //
 // HOME APPEARS WHOLE (the creator, 2026-10-26, as Untangled does): the first screen waits
@@ -115,14 +115,14 @@ export function createHome(nav: Nav, parts: Parts) {
   const title = el("h1");
   title.append(picture);
 
-  // ---- the ticket ----
-  const ticket = el("div", "ticket glass");
-  ticket.setAttribute("role", "group");
-  const head = el("div", "ticket-head");
+  // ---- the itinerary ----
+  const itinerary = el("div", "itinerary glass");
+  itinerary.setAttribute("role", "group");
+  const head = el("div", "itinerary-head");
   const plane = glyph(ICONS.plane);
-  const tripLine = el("b", "ticket-trip");
-  const countLine = el("span", "ticket-count");
-  const words = el("span", "ticket-words");
+  const tripLine = el("b", "itinerary-trip");
+  const countLine = el("span", "itinerary-count");
+  const words = el("span", "itinerary-words");
   words.append(tripLine, countLine);
   head.append(plane, words);
   const route = el("div", "tr-route");
@@ -131,7 +131,7 @@ export function createHome(nav: Nav, parts: Parts) {
   path.classList.add("tr-path");
   const stops = el("ol", "tr-stops");
   route.append(path, stops);
-  ticket.append(head, route);
+  itinerary.append(head, route);
 
   // ---- Next stop ----
   const playWords = el("b", "", t("home.nextStop"));
@@ -165,7 +165,7 @@ export function createHome(nav: Nav, parts: Parts) {
 
   const screen = el("section", "screen home");
   screen.setAttribute("aria-label", t("game.title"));
-  screen.append(parts.note, title, ticket, play, dock);
+  screen.append(parts.note, title, itinerary, play, dock);
 
   // a tablet's big column: home grows with it (style.css, --k), up to 1.7, never past what fits its height
   new ResizeObserver(() => {
@@ -277,13 +277,13 @@ export function createHome(nav: Nav, parts: Parts) {
     const waiting = awaitingRecord();
     const done = !waiting && allDone();
     const next = waiting ? null : nextBoard();
-    // the trip on the ticket: the one the player is on; every board won, the one Play goes round to
+    // the trip on the itinerary: the one the player is on; every board won, the one Play goes round to
     const tr = waiting ? currentTrip() : done ? (tripOf(next!) ?? trips[trips.length - 1]) : currentTrip();
     pictures = [];
     if (!tr) {
-      ticket.hidden = true;
+      itinerary.hidden = true;
     } else {
-      ticket.hidden = false;
+      itinerary.hidden = false;
       const places = placesOf(tr);
       const at = places.findIndex((p) => p.board === next);
       reached = waiting ? -1 : done ? places.length - 1 : at;
@@ -293,8 +293,8 @@ export function createHome(nav: Nav, parts: Parts) {
         : done
           ? t("home.allDone")
           : t("home.stop", { n: at + 1, all: places.length });
-      ticket.setAttribute("aria-label", waiting ? "" : `${tripLine.textContent}: ${countLine.textContent}`);
-      ticket.classList.toggle("waiting", waiting);
+      itinerary.setAttribute("aria-label", waiting ? "" : `${tripLine.textContent}: ${countLine.textContent}`);
+      itinerary.classList.toggle("waiting", waiting);
       stops.replaceChildren(...places.map((p, k) => stop(p, tr, k, k === places.length - 1, waiting ? null : next)));
       stops.style.gridTemplateRows = `repeat(${Math.ceil(places.length / PER_ROW)}, auto)`;
       requestAnimationFrame(drawPath);

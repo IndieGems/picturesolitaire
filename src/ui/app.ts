@@ -96,7 +96,7 @@ const app = h("div", { id: "app" });
 const homeNote = h("div", { class: "top-pill glass home-note", role: "status", hidden: "" });
 // the daily puzzle (daily.ts): its Home button shows today's state, and is hidden until the day's board is known
 const dailyUi = createDaily({ home: () => goHome(), show: () => show("daily"), play: (d) => openPlay({ kind: "daily", d }) });
-// home (home.ts): the trip as a ticket and its route, Next stop, and Daily, the passport and the challenges
+// home (home.ts): the trip as an itinerary and its route, Next stop, and Daily, the passport and the challenges
 const homeUi = createHome(
   {
     play: () => void playNext(),
