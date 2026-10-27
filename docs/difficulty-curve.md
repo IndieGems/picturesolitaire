@@ -412,14 +412,14 @@ Over the 30 boards that is 151 pictures back and 162 new. The no-repeat
 rule holds among them as on every board: no picture back within 15 boards.
 
 - **Pictures that may come back** (`tools/levels/pictures-back.json`): the
-  426 on boards 1–60 that meet today's rules. They are calm, clear and
+  414 on boards 1–60 that meet today's rules. They are calm, clear and
   close, and none is a landmark. None comes from before the clear pictures.
   The file freezes the list, so a later re-deal of an early board never
   changes it.
-- **Struck from the list:** six that repeat a postcard's subject (the
-  pineapple, the puffin, both lambs, the ostrich, the baby elephant), and
-  any person that Art finds posed.
-- **New ones** include the 54 pictures from Art's recent batches that no
+- **Struck from the list:** the 16 that look like a trip 9 or 10 postcard
+  (Art's look-alikes, among them the ostrich, the standing stones, the
+  yellow door and the Highland cow), and any person that Art finds posed.
+- **New ones** include the 50 pictures from Art's recent batches that no
   board has shown.
 
 **Art's work:**
@@ -433,40 +433,32 @@ rule holds among them as on every board: no picture back within 15 boards.
 - The stamps t9 and t10.
 
 A trial on stand-in pictures picked every board cleanly with 100 new
-squares, and also with 80. At 100, 30 of the new pictures appear twice,
+squares, and also with 80. At 100, 33 of the new pictures appear twice,
 each time 15 boards or more apart; on trips 7 and 8 it was 83.
 
-**The places, by slot: a shortlist for Art to fact-check.** Each trip has
-8 famous places, 4 hidden gems and 3 silly ones.
+**The places, by slot.** Art fact-checked them and set them on the boards
+(`docs/destinations-south-africa.md`, `docs/destinations-uk-ireland.md`, with
+the rights rules and what was left out). Each trip has 8 famous places, 4
+hidden gems and 3 silly ones. South Africa opens on Table Mountain, as a
+traveller arriving in Cape Town would.
 
 | Slot | South Africa | UK and Ireland |
 |---|---|---|
-| x1 | Bo-Kaap's painted houses, Cape Town (famous) | The Giant's Causeway (famous) |
-| x2 | The Storms River suspension bridge, Tsitsikamma (famous) | Arlington Row, Bibury (famous) |
-| x3 | Namaqualand's spring daisies (gem) | The Dark Hedges (gem) |
-| x4 | The ostriches of Oudtshoorn (silly) | A puffin on Skomer with a beakful of fish (silly) |
-| x5 | The Three Rondavels over the Blyde River Canyon (famous) | Glencoe's Buachaille Etive Mòr (famous, big) |
-| x6, long | The Drakensberg Amphitheatre (famous, wide) | The Old Man of Storr (famous, tall) |
-| x7 | Bourke's Luck Potholes (gem) | The Shambles, York (famous) |
-| x8 | Chapman's Peak Drive (famous) | Kynance Cove (gem) |
-| x9 | Warthogs grazing on their knees (silly) | Bath's Royal Crescent (famous) |
-| x10 | Elephants at a Kruger waterhole (famous, big) | Yr Wyddfa (Snowdon) over its lakes (famous) |
-| x11 | A hippo strolling St Lucia's main street (silly) | The Dunmore Pineapple (silly) |
-| x12 | Augrabies Falls (gem) | Wistman's Wood, Dartmoor (gem) |
-| x13 | Pretoria's jacaranda streets (famous) | A Connemara road jammed with sheep (silly) |
-| x14 | The Kgalagadi's red dunes, with a gemsbok (gem) | The Burren's limestone (gem) |
-| x15 | Table Mountain under its cloud (famous, big, the finale) | The Cliffs of Moher (famous, the 6×6 finale) |
-
-**Left out by the postcard rules, or too like an earlier trip's place:**
-
-- Stonehenge (sacred to some, and its keepers license its image).
-- Tower Bridge (a registered trade mark).
-- Eilean Donan and Portmeirion (their owners license their image).
-- Skellig Michael (landing by permit) and Robben Island (a memorial).
-- Boulders Beach's penguins (like Punta Tombo's), and the Hermanus whales
-  (like the Valdés whale).
-- St Michael's Mount (like Mont-Saint-Michel), and Durdle Door (like Étretat).
-- Glenfinnan's viaduct (like the Train to the Clouds).
+| x1 | Table Mountain (famous) | The Palace of Westminster (famous) |
+| x2 | The Bo-Kaap (famous) | The Royal Crescent, Bath (famous) |
+| x3 | Oudtshoorn's ostriches (silly) | Stonehenge (famous) |
+| x4 | The Cape Winelands (famous) | Durdle Door (famous) |
+| x5 | Cape Point (famous) | The Pontcysyllte Aqueduct (gem, 5×5) |
+| x6, long | The Drakensberg Amphitheatre (famous, wide) | The Dark Hedges (gem, tall) |
+| x7 | The Wolfberg Arch (gem) | The Giant's Causeway (famous) |
+| x8 | Kalahari meerkats (silly) | Connemara's painted sheep (silly) |
+| x9 | Augrabies Falls (gem) | The Cliffs of Moher (famous) |
+| x10 | Namaqualand in flower (famous, 5×5) | The doors of Dublin (famous) |
+| x11 | Bourke's Luck Potholes (gem) | A Highland cow (silly) |
+| x12 | Kruger's elephants (famous) | The Fairy Pools, Skye (gem) |
+| x13 | Sani Pass (gem) | Keem Bay, Achill Island (gem) |
+| x14 | St Lucia's town hippos (silly) | Loch Ness and Urquhart Castle (silly) |
+| x15 | The Three Rondavels (famous, 5×5, the finale) | Edinburgh Castle (famous, the 6×6 finale) |
 
 ## Watching real players (from config v28)
 

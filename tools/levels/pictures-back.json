@@ -1,5 +1,5 @@
 {
-  "//": "Trips 9 and 10 (boards 121-150; the creator, 2026-10-27: half new pictures). back: the pictures that may come back, each on boards 1-60 only (60 boards and more before), square or long, calm (busy 0), no landmark, none flagged, none from before the clear pictures (CURRENT); struck: those Art took out by eye (posed, AI-looking people; not clear and close), with why. spares: pictures from Art batches since 2026-10-26 that no board has shown, so new to the player. Frozen here so re-dealing an earlier board never changes what boards 121-150 may take; campaign-plan.mts reads it.",
+  "//": "Trips 9 and 10 (boards 121-150; the creator, 2026-10-27: half new pictures). back: the pictures that may come back, each on boards 1-60 only (60 boards and more before), square or long, calm (busy 0), no landmark, none flagged, none from before the clear pictures (CURRENT); struck: taken out of both lists, with why: those like a trip 9 or 10 postcard, and those Art takes out by eye (posed, AI-looking people; not clear and close). spares: pictures from Art batches since 2026-10-26 that no board has shown, so new to the player. Frozen here so re-dealing an earlier board never changes what boards 121-150 may take; campaign-plan.mts reads it.",
   "back": [
     "vintage-camera", "red-scooter", "sailboat", "cactus-bloom", "cliff-lighthouse", "pink-lotus",
     "ice-cream", "paper-balloon", "ginger-cat", "golden-puppy", "chestnut-horse", "orchid",
@@ -65,12 +65,22 @@
     "skipping", "moped"
   ],
   "struck": {
-    "pineapple": "the subject of a trip 9 or 10 postcard (Levels): the Dunmore Pineapple",
-    "puffin": "the subject of a trip 9 or 10 postcard (Levels): Skomer puffins",
-    "lamb": "the subject of a trip 9 or 10 postcard (Levels): Connemara sheep",
-    "shepherd-lambs": "the subject of a trip 9 or 10 postcard (Levels): Connemara sheep",
-    "ostrich": "the subject of a trip 9 or 10 postcard (Levels): Oudtshoorn ostriches",
-    "baby-elephant": "the subject of a trip 9 or 10 postcard (Levels): Kruger elephants"
+    "ostrich": "looks like a trip 9 or 10 postcard, Oudtshoorn's ostriches (Art gives the postcard its family; Levels keeps it off boards 121-150)",
+    "cliff-lighthouse": "looks like a trip 9 or 10 postcard, Cape Point (Art gives the postcard its family; Levels keeps it off boards 121-150)",
+    "sandstone-arch": "looks like a trip 9 or 10 postcard, the Wolfberg Arch (Art gives the postcard its family; Levels keeps it off boards 121-150)",
+    "meerkat": "looks like a trip 9 or 10 postcard, Kalahari meerkats (Art gives the postcard its family; Levels keeps it off boards 121-150)",
+    "wildflower-meadow": "looks like a trip 9 or 10 postcard, Namaqualand in flower (Art gives the postcard its family; Levels keeps it off boards 121-150)",
+    "desert-bloom": "looks like a trip 9 or 10 postcard, Namaqualand in flower, wildflower-meadow's family (Art gives the postcard its family; Levels keeps it off boards 121-150)",
+    "baby-elephant": "looks like a trip 9 or 10 postcard, Kruger's elephants (Art gives the postcard its family; Levels keeps it off boards 121-150)",
+    "standing-stones": "looks like a trip 9 or 10 postcard, Stonehenge (Art gives the postcard its family; Levels keeps it off boards 121-150)",
+    "sea-stack": "looks like a trip 9 or 10 postcard, Durdle Door (Art gives the postcard its family; Levels keeps it off boards 121-150)",
+    "viaduct": "looks like a trip 9 or 10 postcard, the Pontcysyllte Aqueduct (Art gives the postcard its family; Levels keeps it off boards 121-150)",
+    "beech-woods": "looks like a trip 9 or 10 postcard, the Dark Hedges (Art gives the postcard its family; Levels keeps it off boards 121-150)",
+    "basalt-columns": "looks like a trip 9 or 10 postcard, the Giant's Causeway (Art gives the postcard its family; Levels keeps it off boards 121-150)",
+    "lamb": "looks like a trip 9 or 10 postcard, Connemara's painted sheep (Art gives the postcard its family; Levels keeps it off boards 121-150)",
+    "shepherd-lambs": "looks like a trip 9 or 10 postcard, Connemara's painted sheep (Art gives the postcard its family; Levels keeps it off boards 121-150)",
+    "yellow-door": "looks like a trip 9 or 10 postcard, the doors of Dublin (Art gives the postcard its family; Levels keeps it off boards 121-150)",
+    "highland-cow": "looks like a trip 9 or 10 postcard, a Highland cow (Art gives the postcard its family; Levels keeps it off boards 121-150)"
   },
   "spares": [
     "marigolds", "air-plant", "edelweiss", "crocus", "chocolate-truffles", "baguette-sandwich",

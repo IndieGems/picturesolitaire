@@ -268,43 +268,45 @@ export const PLAN = [
   /* 118 */ { role: "build", destination: "dest-big-banana", drop: "pho", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
   /* 119 */ { role: "build", destination: "dest-cradle-mountain", drop: "gaillardia", board: [4, 5], ...sq(11), careless: [0.4, 0.5], chain: ANY, ...NEW_ONLY },
   /* 120 */ { role: "super", destination: "dest-heart-reef", drop: "hedgerow", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY, ...NEW_ONLY },
-  // ---- trip 9, South Africa (the creator, 2026-10-27; docs/difficulty-curve.md "Trips 9 and 10"): trip 7's
+  // ---- trip 9, South Africa (the creator, 2026-10-27; docs/difficulty-curve.md "Trips 9 and 10"; the places
+  // and their order Art's, docs/destinations-south-africa.md): trip 7's
   // shape and targets; big boards in new slots, 130 and the finale 135 at 5x5 (125 is 4x5). HALF NEW: about
   // half of each board's everyday pictures come back from boards 1-60 (BACK, set below), the rest are new
   // (Art's batch after LAST_BEFORE_T9, and the spares no board has shown). Each row deals one new picture
   // more than it shows: the drop, whose place the postcard takes once Art's postcards are in
-  /* 121 */ { role: "relief", destination: "dest-bo-kaap", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
-  /* 122 */ { role: "build", destination: "dest-storms-river", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
-  /* 123 */ { role: "build", destination: "dest-namaqualand", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 124 */ { role: "build", destination: "dest-oudtshoorn-ostriches", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 125 */ { role: "hard",  destination: "dest-three-rondavels", board: [4, 5], ...sq(12), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 121 */ { role: "relief", destination: "dest-table-mountain", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 122 */ { role: "build", destination: "dest-bo-kaap", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 123 */ { role: "build", destination: "dest-oudtshoorn-ostriches", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 124 */ { role: "build", destination: "dest-cape-winelands", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 125 */ { role: "hard",  destination: "dest-cape-point", board: [4, 5], ...sq(12), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
   /* 126 */ { role: "pace",  destination: "dest-amphitheatre", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
-  /* 127 */ { role: "build", destination: "dest-bourkes-luck", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 128 */ { role: "build", destination: "dest-chapmans-peak", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 129 */ { role: "build", destination: "dest-kneeling-warthogs", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 130 */ { role: "hard",  destination: "dest-kruger-elephants", board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
-  /* 131 */ { role: "relief", destination: "dest-st-lucia-hippo", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
-  /* 132 */ { role: "build", destination: "dest-augrabies", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 133 */ { role: "build", destination: "dest-pretoria-jacarandas", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 134 */ { role: "build", destination: "dest-kgalagadi", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 135 */ { role: "super", destination: "dest-table-mountain", board: [5, 5], ...sq(14), careless: [0.08, 0.2], traps: [0, 4], chain: ANY },
-  // ---- trip 10, the UK and Ireland (the creator, 2026-10-27): trip 8's shape and targets; big boards 140 at
+  /* 127 */ { role: "build", destination: "dest-wolfberg-arch", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 128 */ { role: "build", destination: "dest-kalahari-meerkats", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 129 */ { role: "build", destination: "dest-augrabies", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 130 */ { role: "hard",  destination: "dest-namaqualand", board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 131 */ { role: "relief", destination: "dest-bourkes-luck", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 132 */ { role: "build", destination: "dest-kruger-elephants", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 133 */ { role: "build", destination: "dest-sani-pass", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 134 */ { role: "build", destination: "dest-st-lucia-hippos", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 135 */ { role: "super", destination: "dest-three-rondavels", board: [5, 5], ...sq(14), careless: [0.08, 0.2], traps: [0, 4], chain: ANY },
+  // ---- trip 10, the UK and Ireland (the creator, 2026-10-27; Art's places, docs/destinations-uk-ireland.md):
+  // trip 8's shape and targets; big boards 140 at
   // 5x5 and the finale 150 at 6x6 (every other finale: 30, 60, 90, 120, 150); 145 is 4x5. Half new, as trip 9
-  /* 136 */ { role: "relief", destination: "dest-giants-causeway", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
-  /* 137 */ { role: "build", destination: "dest-arlington-row", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
-  /* 138 */ { role: "build", destination: "dest-dark-hedges", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 139 */ { role: "build", destination: "dest-skomer-puffins", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 140 */ { role: "hard",  destination: "dest-glencoe", board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
-  /* 141 */ { role: "pace",  destination: "dest-old-man-of-storr", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
-  /* 142 */ { role: "build", destination: "dest-shambles", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 143 */ { role: "build", destination: "dest-kynance-cove", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 144 */ { role: "build", destination: "dest-royal-crescent", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 145 */ { role: "hard",  destination: "dest-yr-wyddfa", board: [4, 5], ...sq(12), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
-  /* 146 */ { role: "relief", destination: "dest-dunmore-pineapple", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
-  /* 147 */ { role: "build", destination: "dest-wistmans-wood", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 148 */ { role: "build", destination: "dest-connemara-sheep", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 149 */ { role: "build", destination: "dest-burren", board: [4, 5], ...sq(11), careless: [0.4, 0.5], chain: ANY },
-  /* 150 */ { role: "super", destination: "dest-cliffs-of-moher", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY },
+  /* 136 */ { role: "relief", destination: "dest-westminster", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 137 */ { role: "build", destination: "dest-royal-crescent", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 138 */ { role: "build", destination: "dest-stonehenge", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 139 */ { role: "build", destination: "dest-durdle-door", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 140 */ { role: "hard",  destination: "dest-pontcysyllte", board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 141 */ { role: "pace",  destination: "dest-dark-hedges", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
+  /* 142 */ { role: "build", destination: "dest-giants-causeway", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 143 */ { role: "build", destination: "dest-connemara-sheep", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 144 */ { role: "build", destination: "dest-cliffs-of-moher", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 145 */ { role: "hard",  destination: "dest-dublin-doors", board: [4, 5], ...sq(12), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 146 */ { role: "relief", destination: "dest-highland-cow", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 147 */ { role: "build", destination: "dest-fairy-pools", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 148 */ { role: "build", destination: "dest-keem-bay", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 149 */ { role: "build", destination: "dest-loch-ness", board: [4, 5], ...sq(11), careless: [0.4, 0.5], chain: ANY },
+  /* 150 */ { role: "super", destination: "dest-edinburgh-castle", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY },
 ];
 
 /**
@@ -362,7 +364,7 @@ PLAN.forEach((row, i) => Object.assign(row, i < 30 ? { newTo: "foxgloves" } : i 
 // are new. The no-repeat rule (SPACING) holds among them as everywhere
 const BACK_FILE = JSON.parse(readFileSync(new URL("./pictures-back.json", import.meta.url), "utf8"));
 export const BACK = new Set(BACK_FILE.back.filter((id) => !(id in BACK_FILE.struck)));
-export const SPARES = new Set(BACK_FILE.spares);
+export const SPARES = new Set(BACK_FILE.spares.filter((id) => !(id in BACK_FILE.struck)));
 const ALSO = new Set([...BACK, ...SPARES]);
 PLAN.forEach((row, i) => {
   if (i < 120) return;
