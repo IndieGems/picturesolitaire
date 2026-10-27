@@ -43,7 +43,6 @@ config:
   # does). One JSON text the board reads before its first deal; a key left out
   # keeps its default. Sizes are fractions of a card's width (the stacks' row and
   # the lift: of its height); times are milliseconds.
-  #   helpers        Undo, Hint and Shuffle at the start of every board
   #   cardAspect     a card's width / height: 0.75 is the 3:4 portrait card (1 = square)
   #   gutter         the gap between cards
   #   frame          the pale frame round every picture, as a share of a card (thin: 0.025),
@@ -75,7 +74,6 @@ config:
   #   shuffleMs      Shuffle's cards trading places; hintMs the Hint's ghost flight
   board: |
     {
-      "helpers": { "undo": 3, "hint": 3, "shuffle": 3 },
       "cardAspect": 0.75,
       "gutter": 0.08,
       "frame": 0.025,

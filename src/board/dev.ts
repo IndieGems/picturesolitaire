@@ -33,10 +33,9 @@ export interface BoardDev {
    */
   step(): Promise<DevStep>;
   /**
-   * Endless helpers: while on, Undo, Hint and Shuffle never run down.
-   * Switching it on tops this board's back to the starting counts (3 each),
-   * and board:changed keeps reporting those. Global: it holds for every board
-   * until switched off.
+   * Endless helpers: the screens' switch (they count and spend the stock):
+   * while on, they spend nothing. The board keeps no count, so it changes
+   * nothing there. Global: it holds for every board until switched off.
    */
   setEndless(on: boolean): void;
   endless(): boolean;
@@ -95,7 +94,7 @@ export interface DevBoard {
   ghost(m: Move): void;
   /** Hold the player's hand off the board (true) or give it back. */
   hold(on: boolean): void;
-  /** Endless helpers: the board's own switch, and its top-up. */
+  /** Endless helpers: the switch, held by the board for the screens. */
   setEndless(on: boolean): void;
   endless(): boolean;
   hintMs(): number;

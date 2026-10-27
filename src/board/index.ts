@@ -23,8 +23,8 @@ import { level as levelOf, levelCount, type Level } from "../game/levels.ts";
 import { Game, OutOfBudget, nextMove } from "../game/solver/index.ts";
 import { rescue } from "../game/shuffle.ts";
 import {
-  EMPTY, clampTarget, isDeadEnd, isWon, move, pieceAt, pieces, picOf, start,
-  type Action, type Card, type Move, type Picture, type State, type Step,
+  EMPTY, arrange, clampTarget, isDeadEnd, isWon, move, pieceAt, pieces, picOf, sameBoard, start,
+  type Action, type Card, type Move, type Picture, type Shuffle, type State, type Step,
 } from "../game/rules.ts";
 import { ease, realMs, setBatterySaver, setPaused, stopAll, tween, wait, run } from "./pace.ts";
 import { makeDev, type BoardDev } from "./dev.ts";
@@ -54,20 +54,34 @@ export interface BoardPicture {
 
 /** What the screens hold of an open board (agreed with the UI member). */
 export interface BoardHandle {
-  undo(): void;
-  hint(): void;
-  shuffle(): void;
+  /**
+   * The helpers (the creator, 2026-10-27: the player's own stock, which the
+   * screens count and spend). Each acts at once whenever it can and returns
+   * true, sending helper:undo / helper:hint / helper:shuffle { lesson } as it
+   * does; false when it did nothing (busy, won, mid-drag, nothing to take
+   * back, or helper:refused: no line or mix it could prove). The board keeps
+   * no count. `lesson` true: the screens spend nothing for this use.
+   */
+  undo(): boolean;
+  hint(): boolean;
+  shuffle(): boolean;
+  /**
+   * The next use of helper `k` is a lesson's (board 2's Undo, the Shuffle
+   * lesson): its event says lesson: true. One use, then it clears; null clears
+   * any. The guide's Hint (guide on) is always a lesson's.
+   */
+  lesson(k: keyof HelperCounts | null): void;
   /** Deal the same board again, at once (the screens confirm first). */
   restart(): void;
-  helpers(): HelperCounts;
   canUndo(): boolean;
   /**
    * The tutorial's guide (agreed with the UI member). "line": a ring
    * (.guide-lit) round the piece of the next move of the level's line (the
    * solver's, off the line), then round where it goes (.guide-target) once it
    * is lifted; only that move is taken, by drag or tap-tap, and any other
-   * press nudges the lit piece. "hold": the board takes no moves. null:
-   * normal play. While a guide is on, Hint costs nothing.
+   * press nudges the lit piece. "hold": the board takes no moves (the
+   * helpers still act). null: normal play. While a guide is on, a Hint is a
+   * lesson's (helper:hint says lesson: true).
    */
   guide(mode: "line" | "hold" | null): void;
   pictures(): BoardPicture[];
@@ -92,8 +106,13 @@ onPlayerPrefs((prefs) => {
 onArcadePause((p) => setPaused(p));
 document.addEventListener("visibilitychange", () => setPaused(document.visibilityState === "hidden"));
 
-/** The dev menu's endless helpers: Undo, Hint and Shuffle never run down while on (every board). */
+/**
+ * The dev menu's endless helpers, held here for the screens (dev.endless()):
+ * while on, they spend nothing. The board itself keeps no count.
+ */
 let endlessHelpers = false;
+/** board:changed's old `helpers` field, fixed, until the screens stop reading it (they count the stock now). */
+const DEPRECATED_HELPERS = { undo: 3, hint: 3, shuffle: 3 } as const;
 
 // The game config's `kv.board` may retune the board without a build; read once.
 let tuned: Promise<void> | null = null;
@@ -291,8 +310,13 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
    * one that proved each shuffle, from just after it. Hint follows the newest
    * while the player's moves since it match it.
    */
-  let plans: { at: number; line: Move[] }[] = [{ at: 0, line: lvl.line }];
-  let helpers: HelperCounts = { ...TUNING.helpers };
+  // a lesson's line wins from after its stored shuffle, not from the opening (which is stuck)
+  const freshPlans = (): { at: number; line: Move[] }[] => (lvl.shuffle ? [] : [{ at: 0, line: lvl.line }]);
+  let plans = freshPlans();
+  /** Helpers whose next use is a lesson's (lesson()). */
+  const lessonNext = new Set<keyof HelperCounts>();
+  /** The opening position, which a lesson's stored shuffle is for. */
+  const openingState = lvl.shuffle ? start(deal).state : null;
   let busy = 0;
   /** The dev menu is playing the board: the player's hand is held off it. */
   let driven = false;
@@ -1214,13 +1238,14 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
 
   // ---------------------------------------------------------------- playing
 
-  /** A helper used: one fewer, unless the dev menu's endless helpers are on. */
-  function spend(k: keyof HelperCounts): void {
-    if (!endlessHelpers) helpers = { ...helpers, [k]: helpers[k] - 1 };
+  /** Helper `k` acted: whether this use was a lesson's (lesson(), or the guide's Hint), which spends nothing. */
+  function lessonUse(k: keyof HelperCounts): boolean {
+    const armed = lessonNext.delete(k);
+    return armed || (k === "hint" && !!guideMode);
   }
 
   function changed(): void {
-    emit("board:changed", { canUndo: history.length > 0 && !won, helpers: { ...helpers }, moves: state.moves });
+    emit("board:changed", { canUndo: history.length > 0 && !won, helpers: { ...DEPRECATED_HELPERS }, moves: state.moves });
   }
 
   async function settled(): Promise<void> {
@@ -1255,6 +1280,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   function setStuck(now: boolean, doomed = true): void {
     if (now === stuck) return;
     stuck = now;
+    // a lesson's board opens stuck on purpose: nothing is said over the lesson
+    if (lvl.lesson) return;
     if (now) emit("board:stuck", { doomed });
     else emit("board:unstuck", {});
   }
@@ -1363,8 +1390,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     try {
       history = [];
       actions = [];
-      plans = [{ at: 0, line: lvl.line }];
-      helpers = { ...TUNING.helpers };
+      plans = freshPlans();
       won = false;
       solved = null;
       activeMs = 0;
@@ -1395,7 +1421,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   // ---------------------------------------------------------------- helpers
 
   function onLine(): Move | null {
-    const plan = plans[plans.length - 1]!;
+    const plan = plans[plans.length - 1];
+    if (!plan) return null;
     const done = actions.length - plan.at;
     if (done < 0 || done >= plan.line.length) return null;
     for (let i = 0; i < done; i++) {
@@ -1403,6 +1430,21 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       if ("shuffle" in a || a.from !== plan.line[i]!.from || a.to !== plan.line[i]!.to) return null;
     }
     return plan.line[done]!;
+  }
+
+  /**
+   * A lesson's stored Shuffle, while the board is still at its opening (the
+   * rescue mix otherwise): played as stored, so a change to the helper's
+   * tuning never changes the lesson; its line wins from just after it.
+   */
+  function lessonMix(): { state: State; steps: Step[]; action: Shuffle; line: Move[] } | null {
+    if (!lvl.shuffle || !openingState || !sameBoard(state, openingState)) return null;
+    const out = arrange(state, lvl.shuffle);
+    if (!out) {
+      console.error("[board] the lesson's stored shuffle does not fit its opening");
+      return null;
+    }
+    return { ...out, action: lvl.shuffle, line: lvl.line };
   }
 
   // ---------------------------------------------------------------- the guide (tutorial)
@@ -1642,7 +1684,6 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       if (!destroyed) setArt(i, f.file);
     }))).then(() => {});
     await Promise.all([Promise.race([ready, new Promise<void>((r) => setTimeout(r, 2500))]), tuning]);
-    helpers = { ...TUNING.helpers };
     changed();
     // hidden again while its pictures came (the player went home): deal once it is back
     if (!host.clientWidth || !host.clientHeight) await new Promise<void>((r) => (sized = r));
@@ -1680,21 +1721,22 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   return {
     undo() {
       stopHint();
-      if (busy || won || drag || !history.length || helpers.undo <= 0) return;
+      if (busy || won || drag || !history.length) return false;
       if (selected) {
         settleBack(selected.v);
         selected = null;
       }
-      spend("undo");
       const prev = history.pop()!;
       actions.pop();
-      while (plans.length > 1 && plans[plans.length - 1]!.at > actions.length) plans.pop();
+      // back past a shuffle: that shuffle's line goes (a lesson keeps none from before its shuffle)
+      while (plans.length > (lvl.shuffle ? 0 : 1) && plans[plans.length - 1]!.at > actions.length) plans.pop();
       state = prev;
-      emit("helper:undo", { left: helpers.undo });
+      emit("helper:undo", { lesson: lessonUse("undo") });
       void run2(() => morph(prev));
+      return true;
     },
     hint() {
-      if (busy || won || drag || helpers.hint <= 0) return;
+      if (busy || won || drag) return false;
       // only moves of a line the real rules win from here (the solver's); never a guess
       let m = onLine();
       if (!m) {
@@ -1702,44 +1744,48 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
         if ("doomed" in next) {
           // certain: the solver's "doomed" is checked against the real rules (said already, as a rule)
           setStuck(true);
-          return;
+          return false;
         }
         if (!("move" in next)) {
           // no line within the budget proves nothing either way: no hint, nothing spent
           emit("helper:refused", { helper: "hint" });
-          return;
+          return false;
         }
         m = next.move;
         // later hints follow this line, without a search, while the player does
         const first = next.line[0];
         if (first && first.from === m.from && first.to === m.to) plans.push({ at: actions.length, line: next.line });
       }
-      // the tutorial's hints are free
-      if (!guideMode) spend("hint");
-      emit("helper:hint", { left: helpers.hint });
+      // the tutorial's hints are a lesson's: the screens spend nothing for them
+      emit("helper:hint", { lesson: lessonUse("hint") });
       changed();
       showHint(m);
+      return true;
     },
     shuffle() {
       stopHint();
-      if (busy || won || drag || helpers.shuffle <= 0) return;
-      const out = rescue(state);
+      if (busy || won || drag) return false;
+      const out = lessonMix() ?? rescue(state);
       if (!out) {
         emit("helper:refused", { helper: "shuffle" });
-        return;
+        return false;
       }
       if (selected) {
         settleBack(selected.v);
         selected = null;
       }
-      spend("shuffle");
       history.push(state);
       actions.push(out.action);
       plans.push({ at: actions.length, line: out.line });
       state = out.state;
       announceIfSolved();
-      emit("helper:shuffle", { left: helpers.shuffle });
+      emit("helper:shuffle", { lesson: lessonUse("shuffle") });
       void run2(() => show(out.steps));
+      return true;
+    },
+    lesson(k) {
+      if (k) lessonNext.add(k);
+      else lessonNext.clear();
     },
     restart() {
       stopHint();
@@ -1757,7 +1803,6 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       }
       void doRestart();
     },
-    helpers: () => ({ ...helpers }),
     canUndo: () => history.length > 0 && !won,
     guide(mode) {
       guideMode = mode;
@@ -1829,8 +1874,6 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       },
       setEndless(on) {
         endlessHelpers = on;
-        if (on) helpers = { ...TUNING.helpers };
-        changed();
       },
       endless: () => endlessHelpers,
       hintMs: () => TUNING.hintMs,

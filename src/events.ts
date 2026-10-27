@@ -45,10 +45,15 @@ export interface GameEvents {
   "stack:deal": { col: number; left: number };
   /** A press on a stack (its top card or its edges): it shakes "no", nothing is picked up. Once a press. */
   "stack:nope": { col: number };
-  /** Helpers. `left` is how many remain on this board. */
-  "helper:undo": { left: number };
-  "helper:hint": { left: number };
-  "helper:shuffle": { left: number };
+  /**
+   * A helper acted (sent inside the board's undo() / hint() / shuffle() call).
+   * The player's stock is the screens' to count and spend (creator,
+   * 2026-10-27): they spend one here unless `lesson` is true (board.lesson()'s
+   * next use, or the guide's Hint), which spends nothing.
+   */
+  "helper:undo": { lesson: boolean };
+  "helper:hint": { lesson: boolean };
+  "helper:shuffle": { lesson: boolean };
   /**
    * A helper was pressed and could do nothing, so none was spent. Shuffle: no
    * loose card to mix, or no mix the solver could prove winnable. Hint: the
@@ -60,8 +65,10 @@ export interface GameEvents {
   "board:restart": Record<string, never>;
   /**
    * The board settled after a move, undo, shuffle or restart (and once at
-   * start): what the helper buttons should show now, and `moves` made so far
-   * (Undo takes one back; a shuffle is not a move).
+   * start): whether Undo has a move to take back, and `moves` made so far
+   * (Undo takes one back; a shuffle is not a move). `helpers` is deprecated,
+   * a fixed 3 each: the screens count the player's stock; it goes once they
+   * no longer read it.
    */
   "board:changed": { canUndo: boolean; helpers: { undo: number; hint: number; shuffle: number }; moves: number };
   /**

@@ -8,7 +8,7 @@
 // menu's board info shows them.
 
 import CAMPAIGN from "../content/levels/campaign.json";
-import type { Deal, Move, Picture } from "./rules.ts";
+import type { Deal, Move, Picture, Shuffle } from "./rules.ts";
 import { dailyFor } from "./levels/daily.ts";
 
 export interface Level {
@@ -31,6 +31,18 @@ export interface Level {
    * opens the postcard over the board (src/board/reveal.ts).
    */
   destination?: Destination;
+  /**
+   * A lesson's staged board (lessonLevel): it opens stuck on purpose, so the
+   * board says nothing of being stuck on it, and the screens play it as
+   * practice (no claim, no Coins).
+   */
+  lesson?: LessonKind;
+  /**
+   * The Shuffle the board plays from the untouched opening, in place of the
+   * rescue mix (a lesson's, stored so a change to the helper's tuning never
+   * changes the lesson). `line` then wins from just after it.
+   */
+  shuffle?: Shuffle;
 }
 
 export interface Destination {
@@ -116,6 +128,37 @@ export async function loadDaily(date: string): Promise<Daily | null> {
   const b = pool && dailyFor(pool, date);
   if (!b) return null;
   return { ...toLevel(b, pool.levels.indexOf(b) + 1), par: b.par, date: b.date };
+}
+
+// ---------------------------------------------------------------- lessons
+
+/** What a staged lesson board teaches. */
+export type LessonKind = "shuffle";
+/** A staged lesson board (src/content/levels/lessons.json, the levels member's). */
+export type Lesson = Level & { lesson: LessonKind; name: string };
+type StoredLesson = Stored & { lesson: string; name?: string; shuffle?: { board: number[]; stacks: number[][] } };
+
+let lessons: Promise<Lesson[]> | null = null;
+/**
+ * The staged board that teaches `kind` (the Shuffle lesson, after board 3's
+ * win card), or null when there is none or it cannot be loaded. Fetched apart
+ * from the boot, on the first ask, then kept.
+ */
+export async function lessonLevel(kind: LessonKind): Promise<Lesson | null> {
+  lessons ??= (async () => {
+    const stored = ((await import("../content/levels/lessons.json")).default as unknown as { levels: StoredLesson[] }).levels;
+    return stored.map((l, i): Lesson => ({
+      ...toLevel(l, i + 1),
+      lesson: l.lesson as LessonKind,
+      name: l.name ?? l.id,
+      ...(l.shuffle ? { shuffle: { shuffle: true as const, board: [...l.shuffle.board], stacks: l.shuffle.stacks.map((st) => [...st]) } } : {}),
+    }));
+  })().catch((err: unknown) => {
+    console.warn("[levels] the lessons did not load", err);
+    lessons = null; // ask again next time
+    return [];
+  });
+  return (await lessons).find((l) => l.lesson === kind) ?? null;
 }
 
 /** How many boards the campaign has. */

@@ -6,8 +6,7 @@
 // milliseconds.
 
 export const TUNING = {
-  /** Helpers at the start of every board (creator's ruling: 3 of each, not saved). */
-  helpers: { undo: 3, hint: 3, shuffle: 3 },
+  // (the helpers are the player's own stock now, counted by the screens: no per-board numbers here)
 
   // --- layout (tools/art/chrome-spec.md)
   /**
@@ -167,7 +166,10 @@ export const TUNING = {
 
 type Tuning = typeof TUNING;
 
-/** Lay numbers from the game config over the defaults: only known keys, only numbers and booleans. */
+/**
+ * Lay numbers from the game config over the defaults: only known keys, only
+ * numbers and booleans (an old key, like the per-board `helpers`, is ignored).
+ */
 export function applyTuning(patch: unknown): void {
   // the config's key-value section holds text: the numbers arrive as JSON
   if (typeof patch === "string") {
@@ -182,12 +184,7 @@ export function applyTuning(patch: unknown): void {
   const into = TUNING as unknown as Record<string, unknown>;
   for (const [k, v] of Object.entries(patch as Record<string, unknown>)) {
     const was = into[k];
-    if (k === "helpers" && v && typeof v === "object") {
-      for (const h of ["undo", "hint", "shuffle"] as const) {
-        const n = (v as Record<string, unknown>)[h];
-        if (typeof n === "number" && n >= 0 && n <= 99) TUNING.helpers[h] = Math.floor(n);
-      }
-    } else if (typeof was === "number" && typeof v === "number" && Number.isFinite(v)) into[k] = v;
+    if (typeof was === "number" && typeof v === "number" && Number.isFinite(v)) into[k] = v;
     else if (typeof was === "boolean" && typeof v === "boolean") into[k] = v;
   }
 }
