@@ -1,5 +1,7 @@
 // Re-proves every shipped board. Run: node tools/levels/check.mts [file ...]
 // (default: every .json in src/content/levels). Exit code 0 = every board passes.
+// A NEW level file (a lane) also goes in tools/art/packs.mjs LANES, or its
+// pictures are never packed for the board (Art, cf9973b: lessons.json).
 // trips.json is no boards file: it must be campaign-plan.mts TRIPS, one trip
 // after another from board 1, covering every campaign board (trips may run
 // past the boards made so far: a trip is planned before its boards are dealt).
