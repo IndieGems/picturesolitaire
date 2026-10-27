@@ -283,7 +283,8 @@ export function createSuitcase(nav: Nav) {
     if (!viewing) {
       const d = nav.daily();
       if (d) {
-        const b = el("button", `btn ${d.done ? "" : "amber "}case-daily`);
+        // the screen's one amber button: the swap's, while one is picked, else today's daily
+        const b = el("button", `btn ${d.done || picked ? "" : "amber "}case-daily`);
         b.type = "button";
         b.dataset.press = d.done ? "case.results" : "case.play";
         b.textContent = d.done ? t("case.results") : t("case.play");

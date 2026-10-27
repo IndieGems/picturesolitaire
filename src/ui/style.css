@@ -1205,9 +1205,10 @@ html.less-motion .case-slots .slot.arrived .item-pic { animation: none; }
 .shelf-case small { font: 600 12px/1.1 var(--round); color: var(--ink-soft); }
 .shelf-case.full small { color: #2e7d5a; }
 
-/* the board: the day's item found, one line under the top row, taking no touch */
+/* the board: the day's item found, one line over the helper row (where the stuck notice sits, so the
+   stacks above stay in view), taking no touch */
 .board-toast {
-  position: absolute; z-index: 6; left: 50%; top: calc(var(--row-bottom) + 6px); transform: translateX(-50%);
+  position: absolute; z-index: 6; left: 50%; bottom: calc(var(--foot) + 6px + 60px + 18px); transform: translateX(-50%);
   width: max-content; max-width: min(320px, calc(100% - 32px)); padding: 9px 16px; border-radius: 18px; pointer-events: none;
   font: 600 15px/1.3 var(--round); text-align: center; background: rgba(240, 245, 251, 0.95); animation: veil-in 0.3s ease both;
 }
