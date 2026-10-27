@@ -307,8 +307,8 @@ def items(p):
     lib = {e["id"]: e for e in p["pictures"]}
     out = []
     for e in items_plan()["items"]:
-        rel = f"pictures/items/{e['id']}.webp"
-        src = e if (PUBLIC / rel).exists() else lib.get(e.get("standin"))
+        real = (PUBLIC / f"pictures/items/{e['id']}.webp").exists()
+        src = (e | {"album": "items"}) if real else lib.get(e.get("standin"))
         if src is None:
             continue
         rel = f"pictures/{src['album']}/{src['id']}.webp"
@@ -319,13 +319,14 @@ def items(p):
         x = {
             "id": e["id"], "month": e["month"], "slot": e["slot"], "album": "items", "title": e["title"],
             "medium": src["medium"], "file": rel, "board": board_rel(src), "cols": 2, "rows": 2,
-            "px": px, "boardPx": board_px, "palette": src.get("palette") or p["families"][src.get("family") or src["id"]]["palette"],
+            "px": px, "boardPx": board_px,
+            "palette": (e.get("palette") or []) if real else (src.get("palette") or p["families"][src.get("family") or src["id"]]["palette"]),
             "subjects": e.get("subjects") or src["subjects"], "family": e.get("family") or e["id"], "busy": src["busy"],
         }
         cut = f"pictures/items/{e['id']}-cutout.webp"
-        if src is e and (PUBLIC / cut).exists():
+        if real and (PUBLIC / cut).exists():
             x["cutout"] = cut
-        if src is not e:
+        if not real:
             x["standin"] = True
         out.append(x)
     return out

@@ -37159,75 +37159,8 @@
       "album": "items",
       "title": "Ski goggles",
       "medium": "photo",
-      "file": "pictures/food/vintage-camera.webp",
-      "board": "pictures/food/vintage-camera-board.webp",
-      "cols": 2,
-      "rows": 2,
-      "px": [
-        768,
-        1024
-      ],
-      "boardPx": [
-        480,
-        640
-      ],
-      "palette": [
-        "silver",
-        "black",
-        "emerald"
-      ],
-      "subjects": [
-        "camera",
-        "lens",
-        "leather strap"
-      ],
-      "family": "item-2026-11-01",
-      "busy": 0,
-      "standin": true
-    },
-    {
-      "id": "item-2026-11-02",
-      "month": "2026-11",
-      "slot": 2,
-      "album": "items",
-      "title": "Bobble hat",
-      "medium": "photo",
-      "file": "pictures/animals/ginger-cat.webp",
-      "board": "pictures/animals/ginger-cat-board.webp",
-      "cols": 2,
-      "rows": 2,
-      "px": [
-        768,
-        1024
-      ],
-      "boardPx": [
-        480,
-        640
-      ],
-      "palette": [
-        "ginger",
-        "orange",
-        "green",
-        "plum"
-      ],
-      "subjects": [
-        "cat",
-        "whiskers",
-        "velvet"
-      ],
-      "family": "item-2026-11-02",
-      "busy": 0,
-      "standin": true
-    },
-    {
-      "id": "item-2026-11-03",
-      "month": "2026-11",
-      "slot": 3,
-      "album": "items",
-      "title": "Mittens",
-      "medium": "retro",
-      "file": "pictures/flowers/bird-of-paradise.webp",
-      "board": "pictures/flowers/bird-of-paradise-board.webp",
+      "file": "pictures/items/item-2026-11-01.webp",
+      "board": "pictures/items/item-2026-11-01-board.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -37241,16 +37174,75 @@
       "palette": [
         "orange",
         "blue",
-        "green",
-        "mustard"
+        "black"
       ],
       "subjects": [
-        "bird of paradise flower",
-        "paddle leaves"
+        "ski goggles"
+      ],
+      "family": "item-2026-11-01",
+      "busy": 0,
+      "cutout": "pictures/items/item-2026-11-01-cutout.webp"
+    },
+    {
+      "id": "item-2026-11-02",
+      "month": "2026-11",
+      "slot": 2,
+      "album": "items",
+      "title": "Bobble hat",
+      "medium": "watercolour",
+      "file": "pictures/items/item-2026-11-02.webp",
+      "board": "pictures/items/item-2026-11-02-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "red",
+        "white"
+      ],
+      "subjects": [
+        "bobble hat"
+      ],
+      "family": "item-2026-11-02",
+      "busy": 0,
+      "cutout": "pictures/items/item-2026-11-02-cutout.webp"
+    },
+    {
+      "id": "item-2026-11-03",
+      "month": "2026-11",
+      "slot": 3,
+      "album": "items",
+      "title": "Mittens",
+      "medium": "render",
+      "file": "pictures/items/item-2026-11-03.webp",
+      "board": "pictures/items/item-2026-11-03-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "mustard",
+        "teal",
+        "cream"
+      ],
+      "subjects": [
+        "mittens"
       ],
       "family": "item-2026-11-03",
       "busy": 0,
-      "standin": true
+      "cutout": "pictures/items/item-2026-11-03-cutout.webp"
     },
     {
       "id": "item-2026-11-04",
@@ -37258,9 +37250,9 @@
       "slot": 4,
       "album": "items",
       "title": "Ski boots",
-      "medium": "painting",
-      "file": "pictures/food/delft-teapot.webp",
-      "board": "pictures/food/delft-teapot-board.webp",
+      "medium": "low-poly",
+      "file": "pictures/items/item-2026-11-04.webp",
+      "board": "pictures/items/item-2026-11-04-board.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -37272,18 +37264,15 @@
         640
       ],
       "palette": [
-        "cobalt blue",
-        "white",
-        "umber",
-        "gold"
+        "red",
+        "silver"
       ],
       "subjects": [
-        "teapot",
-        "porcelain cup"
+        "ski boots"
       ],
       "family": "item-2026-11-04",
       "busy": 0,
-      "standin": true
+      "cutout": "pictures/items/item-2026-11-04-cutout.webp"
     },
     {
       "id": "item-2026-11-05",
@@ -37291,9 +37280,9 @@
       "slot": 5,
       "album": "items",
       "title": "Nordic jumper",
-      "medium": "low-poly",
-      "file": "pictures/travel/steam-train.webp",
-      "board": "pictures/travel/steam-train-board.webp",
+      "medium": "flat",
+      "file": "pictures/items/item-2026-11-05.webp",
+      "board": "pictures/items/item-2026-11-05-board.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -37305,18 +37294,15 @@
         640
       ],
       "palette": [
-        "red",
-        "black",
-        "white",
-        "lilac"
+        "navy",
+        "white"
       ],
       "subjects": [
-        "steam locomotive",
-        "steam"
+        "nordic jumper"
       ],
       "family": "item-2026-11-05",
       "busy": 0,
-      "standin": true
+      "cutout": "pictures/items/item-2026-11-05-cutout.webp"
     },
     {
       "id": "item-2026-11-06",
@@ -37324,9 +37310,9 @@
       "slot": 6,
       "album": "items",
       "title": "Striped scarf",
-      "medium": "print",
-      "file": "pictures/architecture/red-barn.webp",
-      "board": "pictures/architecture/red-barn-board.webp",
+      "medium": "photo",
+      "file": "pictures/items/item-2026-11-06.webp",
+      "board": "pictures/items/item-2026-11-06-board.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -37339,17 +37325,15 @@
       ],
       "palette": [
         "red",
-        "white",
-        "green",
-        "cream"
+        "cream",
+        "green"
       ],
       "subjects": [
-        "barn",
-        "weathervane"
+        "striped scarf"
       ],
       "family": "item-2026-11-06",
       "busy": 0,
-      "standin": true
+      "cutout": "pictures/items/item-2026-11-06-cutout.webp"
     },
     {
       "id": "item-2026-11-07",
@@ -37357,9 +37341,9 @@
       "slot": 7,
       "album": "items",
       "title": "Earmuffs",
-      "medium": "photo",
-      "file": "pictures/flowers/passion-flower.webp",
-      "board": "pictures/flowers/passion-flower-board.webp",
+      "medium": "pop",
+      "file": "pictures/items/item-2026-11-07.webp",
+      "board": "pictures/items/item-2026-11-07-board.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -37371,18 +37355,15 @@
         640
       ],
       "palette": [
-        "purple",
-        "white",
-        "green",
-        "dark green"
+        "pink",
+        "white"
       ],
       "subjects": [
-        "passion flower",
-        "tendrils"
+        "earmuffs"
       ],
       "family": "item-2026-11-07",
       "busy": 0,
-      "standin": true
+      "cutout": "pictures/items/item-2026-11-07-cutout.webp"
     },
     {
       "id": "item-2026-11-08",
@@ -37390,9 +37371,9 @@
       "slot": 8,
       "album": "items",
       "title": "Ice skates",
-      "medium": "papercut",
-      "file": "pictures/flowers/allium.webp",
-      "board": "pictures/flowers/allium-board.webp",
+      "medium": "photo",
+      "file": "pictures/items/item-2026-11-08.webp",
+      "board": "pictures/items/item-2026-11-08-board.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -37404,16 +37385,15 @@
         640
       ],
       "palette": [
-        "purple",
-        "green",
-        "yellow"
+        "white",
+        "silver"
       ],
       "subjects": [
-        "allium"
+        "ice skates"
       ],
       "family": "item-2026-11-08",
       "busy": 0,
-      "standin": true
+      "cutout": "pictures/items/item-2026-11-08-cutout.webp"
     },
     {
       "id": "item-2026-11-09",
@@ -37421,9 +37401,9 @@
       "slot": 9,
       "album": "items",
       "title": "Fondue pot",
-      "medium": "painting",
-      "file": "pictures/flowers/amaryllis.webp",
-      "board": "pictures/flowers/amaryllis-board.webp",
+      "medium": "render",
+      "file": "pictures/items/item-2026-11-09.webp",
+      "board": "pictures/items/item-2026-11-09-board.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -37436,16 +37416,15 @@
       ],
       "palette": [
         "red",
-        "green",
-        "black",
-        "stone"
+        "yellow",
+        "black"
       ],
       "subjects": [
-        "amaryllis"
+        "fondue pot"
       ],
       "family": "item-2026-11-09",
       "busy": 0,
-      "standin": true
+      "cutout": "pictures/items/item-2026-11-09-cutout.webp"
     },
     {
       "id": "item-2026-11-10",
@@ -37453,9 +37432,9 @@
       "slot": 10,
       "album": "items",
       "title": "Hot-water bottle",
-      "medium": "pop",
-      "file": "pictures/food/egg-cup.webp",
-      "board": "pictures/food/egg-cup-board.webp",
+      "medium": "pixel",
+      "file": "pictures/items/item-2026-11-10.webp",
+      "board": "pictures/items/item-2026-11-10-board.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -37467,19 +37446,15 @@
         640
       ],
       "palette": [
-        "yellow",
-        "red",
-        "white",
-        "blue"
+        "grey",
+        "red"
       ],
       "subjects": [
-        "boiled egg",
-        "egg cup",
-        "toast soldiers"
+        "hot-water bottle"
       ],
       "family": "item-2026-11-10",
       "busy": 0,
-      "standin": true
+      "cutout": "pictures/items/item-2026-11-10-cutout.webp"
     },
     {
       "id": "item-2026-12-01",

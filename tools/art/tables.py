@@ -47,8 +47,12 @@ TABLES = {
     "autumn-study": {"title": "Autumn Study", "particles": "leaves"},
     "summer-terrace": {"title": "Summer Terrace", "particles": "petals"},
     "spring-greenhouse": {"title": "Spring Greenhouse", "particles": "petals"},
+    # The Daily Suitcase's prizes, one a month (docs/daily-suitcase.md); "snow" shares the winter
+    # dusk's snow strip instead of a particles file of its own.
+    "ski-lodge": {"title": "Ski Lodge", "particles": "snow", "share": "winter-dusk"},
+    "winter-market": {"title": "Winter Market", "particles": "snow", "share": "winter-dusk"},
 }
-SHIPPED = ["winter-dusk", "autumn-study"]  # the first is the default
+SHIPPED = ["winter-dusk", "autumn-study", "ski-lodge"]  # the first is the default
 
 
 def ingest(raw):
@@ -129,9 +133,13 @@ def build():
             table = Image.open(MASTERS / f"{tid}.webp").convert("RGB")
             table.resize((1080, 1920), Image.LANCZOS).save(d / f"{tid}-table.webp", "WEBP", quality=72, method=6)
             stack_back(MASTERS / f"{tid}-back.webp", d / f"{tid}-stack-back.webp")
-            frames, frame = particles(MASTERS / f"{tid}-particles.webp", d / f"{tid}-particles.png"), FRAME
             files = {k: f"art/tables/{tid}/{tid}-{v}" for k, v in
                      (("table", "table.webp"), ("stackBack", "stack-back.webp"), ("particles", "particles.png"))}
+            if "share" in t:  # another table's particles, as they are
+                other = TABLES[t["share"]]
+                files["particles"], frames, frame = other["files"]["particles"], 4, other["frame"]
+            else:
+                frames, frame = particles(MASTERS / f"{tid}-particles.webp", d / f"{tid}-particles.png"), FRAME
         thumb(table, d / f"{tid}-thumb.webp")
         files["thumb"] = f"art/tables/{tid}/{tid}-thumb.webp"
         manifest["tables"].append({
@@ -162,10 +170,13 @@ def icon(name, pid):
             b.alpha_composite(Image.composite(shade, Image.new("RGBA", b.size, (0, 0, 0, 0)), b.getchannel("A")))
         im.alpha_composite(b, (150, 250 + k * 16))
     cat = json.loads((ROOT / "src/content/pictures.json").read_text(encoding="utf-8"))
-    p = next(x for x in cat["pictures"] if x["id"] == pid)
+    p = next(x for x in cat["pictures"] + cat.get("items", []) if x["id"] == pid)
     pic = Image.open(PUBLIC / p["file"]).convert("RGB")
     u = pic.width // p["cols"]
-    cell = pic.crop((0, u, u, 2 * u)) if p["rows"] > 1 else pic.crop((0, 0, u, u))
+    if p.get("month"):  # a suitcase item: its object whole, in the middle square
+        cell = pic.crop((0, (pic.height - pic.width) // 2, pic.width, (pic.height + pic.width) // 2))
+    else:
+        cell = pic.crop((0, u, u, 2 * u)) if p["rows"] > 1 else pic.crop((0, 0, u, u))
     layer = Image.new("RGBA", im.size, (0, 0, 0, 0))
     card(layer, 455, 440, 400, 400, 400, cell)
     im.alpha_composite(layer.rotate(-8, resample=Image.BICUBIC, center=(655, 640)))

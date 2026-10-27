@@ -24,6 +24,18 @@
       "particleFrame": 64,
       "particleFrames": 4,
       "base": "#1d130f"
+    },
+    {
+      "id": "table-ski-lodge",
+      "title": "Ski Lodge",
+      "table": "art/tables/ski-lodge/ski-lodge-table.webp",
+      "stackBack": "art/tables/ski-lodge/ski-lodge-stack-back.webp",
+      "particles": "art/snow.png",
+      "thumb": "art/tables/ski-lodge/ski-lodge-thumb.webp",
+      "particleKind": "snow",
+      "particleFrame": 32,
+      "particleFrames": 4,
+      "base": "#20140f"
     }
   ]
 }

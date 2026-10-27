@@ -6,70 +6,164 @@
    "month": "2026-11",
    "slot": 1,
    "title": "Ski goggles",
-   "standin": "vintage-camera"
+   "medium": "photo",
+   "subjects": [
+    "ski goggles"
+   ],
+   "busy": 0,
+   "palette": [
+    "orange",
+    "blue",
+    "black"
+   ],
+   "prompt": "A professional studio product photograph, crisp and true to life: a pair of ski goggles with a mirrored orange-to-blue lens and a striped elastic strap. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-11-02",
    "month": "2026-11",
    "slot": 2,
    "title": "Bobble hat",
-   "standin": "ginger-cat"
+   "medium": "watercolour",
+   "subjects": [
+    "bobble hat"
+   ],
+   "busy": 0,
+   "palette": [
+    "red",
+    "white"
+   ],
+   "prompt": "A loose, fresh watercolour painting with crisp edges: a knitted red and white bobble hat with a big fluffy white bobble on top. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-11-03",
    "month": "2026-11",
    "slot": 3,
    "title": "Mittens",
-   "standin": "bird-of-paradise"
+   "medium": "render",
+   "subjects": [
+    "mittens"
+   ],
+   "busy": 0,
+   "palette": [
+    "mustard",
+    "teal",
+    "cream"
+   ],
+   "prompt": "A soft clay 3D render, like a handmade stop-motion model: a pair of knitted mittens in mustard yellow and teal with a little snowflake pattern, joined by a string. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-11-04",
    "month": "2026-11",
    "slot": 4,
    "title": "Ski boots",
-   "standin": "delft-teapot"
+   "medium": "low-poly",
+   "subjects": [
+    "ski boots"
+   ],
+   "busy": 0,
+   "palette": [
+    "red",
+    "silver"
+   ],
+   "prompt": "A low-poly 3D illustration built from flat-shaded triangular facets: a pair of bright red ski boots with silver buckles, standing side by side. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-11-05",
    "month": "2026-11",
    "slot": 5,
    "title": "Nordic jumper",
-   "standin": "steam-train"
+   "medium": "flat",
+   "subjects": [
+    "nordic jumper"
+   ],
+   "busy": 0,
+   "palette": [
+    "navy",
+    "white"
+   ],
+   "prompt": "A flat vector illustration with bold shapes, no outlines and a light grain: a cosy Nordic knitted jumper laid flat, navy blue with a white snowflake pattern around the neck. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-11-06",
    "month": "2026-11",
    "slot": 6,
    "title": "Striped scarf",
-   "standin": "red-barn"
+   "medium": "photo",
+   "subjects": [
+    "striped scarf"
+   ],
+   "busy": 0,
+   "palette": [
+    "red",
+    "cream",
+    "green"
+   ],
+   "prompt": "A professional studio product photograph, crisp and true to life: a long woolly scarf with wide stripes in red, cream and forest green, loosely coiled. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-11-07",
    "month": "2026-11",
    "slot": 7,
    "title": "Earmuffs",
-   "standin": "passion-flower"
+   "medium": "pop",
+   "subjects": [
+    "earmuffs"
+   ],
+   "busy": 0,
+   "palette": [
+    "pink",
+    "white"
+   ],
+   "prompt": "A 1960s pop-art comic illustration with bold black outlines and halftone dots on the object: a pair of fluffy pink earmuffs on a curved white headband. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-11-08",
    "month": "2026-11",
    "slot": 8,
    "title": "Ice skates",
-   "standin": "allium"
+   "medium": "photo",
+   "subjects": [
+    "ice skates"
+   ],
+   "busy": 0,
+   "palette": [
+    "white",
+    "silver"
+   ],
+   "prompt": "A professional studio product photograph, crisp and true to life: a pair of white figure skates with silver blades, tied together by their laces. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-11-09",
    "month": "2026-11",
    "slot": 9,
    "title": "Fondue pot",
-   "standin": "amaryllis"
+   "medium": "render",
+   "subjects": [
+    "fondue pot"
+   ],
+   "busy": 0,
+   "palette": [
+    "red",
+    "yellow",
+    "black"
+   ],
+   "prompt": "A glossy 3D render, like a still from a polished animated film: a red enamel cheese fondue pot on a little stand with a flame, two long forks dipping cubes of bread into the melted cheese. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-11-10",
    "month": "2026-11",
    "slot": 10,
    "title": "Hot-water bottle",
-   "standin": "egg-cup"
+   "medium": "pixel",
+   "subjects": [
+    "hot-water bottle"
+   ],
+   "busy": 0,
+   "palette": [
+    "grey",
+    "red"
+   ],
+   "prompt": "Clean pixel art with big square pixels and a small palette, no dithering: a red rubber hot-water bottle in a cosy knitted grey cover. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-12-01",
