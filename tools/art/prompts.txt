@@ -49,3 +49,6 @@ passport-booklet (home's Passport button, 2026-10-26; --from design/concepts/gam
 
 stamp-t5 (France, 2026-10-26): ... in deep plum-violet ink, a ring of small lavender sprigs between the two rings, and in the centre a simple bold pictogram of the Eiffel Tower with a small round sun beside it. COMMON
 stamp-t6 (Canada, 2026-10-26): ... in deep teal ink, a ring of small maple leaves between the two rings, and in the centre a simple bold pictogram of a moose's head with wide flat antlers in front of two pointed mountain peaks. COMMON
+
+stamp-t7 (Argentina, 2026-10-27): ... in cerulean sky-blue ink, a ring of small diamonds between the two rings, and in the centre a simple bold pictogram of the jagged granite spires of Mount Fitz Roy with a condor flying above them. COMMON
+stamp-t8 (Australia, 2026-10-27): ... in golden ochre ink, a ring of small round wattle blossoms between the two rings, and in the centre a simple bold pictogram of a kangaroo leaping in front of a round setting sun. COMMON
