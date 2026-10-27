@@ -66,12 +66,14 @@ import { coinIcon, priceTag } from "./coin";
 import { createTries } from "./tries";
 import { createMercyNote } from "./mercy-note";
 import { recentStats } from "./board-stats";
+import { createSuitcase, packedOnCard } from "./suitcase";
+import { held as heldOf, suitcases, type SuitItem } from "./suitcase-data";
 import { createLessons, type LessonName } from "./lessons";
 import { createHintNudge } from "./hint-nudge";
 import { createDestinationBanner, type Destination } from "./destination";
 import { createPassport, type AfterStamp } from "./passport";
 import { tripById, tripEndingAt, tripName } from "./trips";
-import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy } from "./catalogue";
+import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy, suitcaseItem } from "./catalogue";
 import { ensure, resident } from "../packs";
 import { mountParticles } from "./particles";
 import { boardFiles, levelCount, openBoard, type BoardHandle, type BoardPicture } from "./board-api";
@@ -104,7 +106,19 @@ const app = h("div", { id: "app" });
 // top row (information, never a button), its Coins flown to the Arcade's total once
 const homeNote = h("div", { class: "top-pill glass home-note", role: "status", hidden: "" });
 // the daily puzzle (daily.ts): its Home button shows today's state, and is hidden until the day's board is known
-const dailyUi = createDaily({ home: () => goHome(), show: () => show("daily"), play: (d) => openPlay({ kind: "daily", d }) });
+const dailyUi = createDaily({
+  home: () => goHome(),
+  show: () => show("daily"),
+  play: (d) => openPlay({ kind: "daily", d }),
+  // the Daily tile opens the month's suitcase while there is one (its Play and results buttons go on from there)
+  tile: () => {
+    if (!suitcases.current()) return false;
+    suitcaseUi.open();
+    return true;
+  },
+});
+// the Daily Suitcase (suitcase.ts): the month's event the daily fills, its banner on home, its screen and shelf
+const suitcaseUi = createSuitcase({ home: () => goHome(), show: () => show("suitcase"), daily: () => dailyUi.state() });
 // home (home.ts): the trip as an itinerary and its route, Next stop, and Daily, the passport and the challenges
 const homeUi = createHome(
   {
@@ -115,7 +129,7 @@ const homeUi = createHome(
   },
   // the challenge tile shows once the challenge boards exist: nothing promises a screen with nothing on it;
   // the Shop once the first board is done (its travel kit is how a player first meets the helpers)
-  { note: homeNote, daily: dailyUi.homeButton, challengesShown: () => routeUi.exists(), shopShown: () => guideDone() },
+  { note: homeNote, event: suitcaseUi.banner, daily: dailyUi.homeButton, challengesShown: () => routeUi.exists(), shopShown: () => guideDone() },
 );
 const home = homeUi.screen;
 
@@ -187,11 +201,11 @@ const runOut = createRunOut(stock, (k) => pressHelper(k));
 // home's shop (home-shop.ts): the helpers, one or a pack of 3, bought ahead
 const homeShop = createHomeShop(stock);
 
-app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, runOut.element, homeShop.element, offlineVeil);
+app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, suitcaseUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, runOut.element, homeShop.element, offlineVeil);
 
 // ---------- state ----------
 
-type Screen = "home" | "board" | "albums" | "album" | "passport" | "challenges" | "daily";
+type Screen = "home" | "board" | "albums" | "album" | "passport" | "challenges" | "daily" | "suitcase";
 /**
  * A board to play: one of the campaign's, one on the challenge route, the day's, or one of the
  * dev menu's experiment boards (practice always).
@@ -318,6 +332,8 @@ function show(next: Screen): void {
   if (next !== "passport") passportUi.leave();
   routeUi.screen.hidden = next !== "challenges";
   dailyUi.screen.hidden = next !== "daily";
+  suitcaseUi.screen.hidden = next !== "suitcase";
+  if (next !== "suitcase") suitcaseUi.leave();
   if (next === "home") drawHomeNote();
   else homeNote.hidden = true;
   if (next !== "album") albumsUi.closeViewer();
@@ -337,6 +353,7 @@ function show(next: Screen): void {
 
 function drawHome(): void {
   homeUi.draw();
+  suitcaseUi.redraw();
   // the board Next stop opens, its pictures fetched ahead while home is up
   if (!awaitingRecord()) prefetch(campaignLevel(nextBoard()));
 }
@@ -368,6 +385,7 @@ onVerdict((v) => {
   lastWins.push(v);
   if (screen === "home") drawHomeNote();
 });
+let homeNoteTimer = 0;
 /** "Your last win counted: +25 Coins", once, when home is up; nothing for a win that paid nothing. */
 function drawHomeNote(): void {
   if (!lastWins.length) return;
@@ -376,6 +394,9 @@ function drawHomeNote(): void {
   homeNote.replaceChildren(coin, h("span", {}, t("home.lastWin", { count: paid.reduce((sum, v) => sum + (v.status === "paid" ? v.coins : 0), 0) })));
   homeNote.hidden = false;
   for (const v of paid) cueCoins(v, coin);
+  // it says its piece, then goes: the month's banner shares the top row (style.css hides it under the note)
+  clearTimeout(homeNoteTimer);
+  homeNoteTimer = window.setTimeout(() => (homeNote.hidden = true), 7000);
 }
 
 // ---------- the board ----------
@@ -967,7 +988,10 @@ on("board:solved", ({ moves, ms, line }) => {
     if (lastWin === win && !winVeil.hidden) {
       drawCoins(win);
       const line = winVeil.querySelector(".daily-line");
-      if (win.kind === "daily" && line) line.replaceChildren(dailyLine(win));
+      if (win.kind === "daily" && line) {
+        line.replaceChildren(dailyLine(win));
+        packedMoment(v, line as HTMLElement);
+      }
     }
   });
 });
@@ -976,6 +1000,43 @@ on("board:solved", ({ moves, ms, line }) => {
 on("board:won", () => {
   if (screen === "board" && boardWon && lastWin && winVeil.hidden) showWin();
 });
+
+// THE DAY'S ITEM (the Daily Suitcase, suitcase.ts): the board says when the day's item picture is finished
+// (suitcase:item, Gameplay's); on the day's first daily that is a line on the board, and once the checker's
+// verdict says the item was packed, its picture flies into a small suitcase on the win card.
+/** The day's item as the board drew it: its id and the board's copy of its picture, for the card's flight. */
+let dayItem: { id: string; url: string } | null = null;
+const boardToast = h("div", { class: "board-toast glass", role: "status", hidden: "" });
+boardScreen.append(boardToast);
+let toastTimer = 0;
+on("suitcase:item", (e) => {
+  if (!play || play.kind !== "daily" || isPractice(play) || e.again) return;
+  dayItem = { id: e.id, url: e.url };
+  // a replay of the day, or a finish after the first, packs nothing: nothing said
+  if (dailyResult(play.d.date)) return;
+  const it = suitcases.current()?.items.find((x) => x.id === e.id);
+  boardToast.textContent = t("case.found", { item: it?.title ?? suitcaseItem(e.id)?.title ?? t("case.today") });
+  boardToast.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => (boardToast.hidden = true), 4200);
+});
+/** Verdicts whose item has flown already (the card may hear one twice: open, then landed). */
+const flownItems = new WeakSet<Verdict>();
+/** The checker packed the day's item (its verdict's `packed`, Server's): the card's line says so and the item flies in. */
+function packedMoment(v: Verdict, line: HTMLElement): void {
+  const p = (v as { packed?: { item: string; count: number } }).packed;
+  if (v.status !== "paid" || !p || flownItems.has(v)) return;
+  flownItems.add(v);
+  const s = suitcases.current();
+  const it: SuitItem = s?.items.find((x) => x.id === p.item) ?? { id: p.item, title: suitcaseItem(p.item)?.title ?? t("case.today") };
+  // the suitcase's own counts may not have the new copy yet
+  const before = s ? heldOf(s) : 0;
+  const had = !!s && (s.counts[p.item] ?? 0) > 0;
+  const packed = had || p.count > 1 ? before : before + 1;
+  // the 10th: the prize came with this claim (the verdict's gifts say "suitcase", Server's)
+  const full = (v as { gifts?: string[] }).gifts?.includes("suitcase") ? (s?.month ?? "") : null;
+  packedOnCard(line, it, dayItem?.id === p.item ? dayItem.url : "", p.count, packed, s?.items.length ?? 10, full);
+}
 
 /** The daily card's plain line: the checker's word on the day wins over the device's (a day closed, or another finish first). */
 function dailyLine(w: Extract<Win, { kind: "daily" }>): string {
@@ -1246,6 +1307,9 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement):
   );
   showCard(winVeil, toHome);
   drawCoins(w);
+  // the verdict landed before the card: the day's item flies now
+  const dl = winVeil.querySelector<HTMLElement>(".daily-line");
+  if (w.verdict && dl && !isPractice(w)) packedMoment(w.verdict, dl);
 }
 
 /** The Shuffle lesson's card: done, then on to board 4 (no claim, no Coins, no break: it is still the lesson). */
@@ -1382,13 +1446,14 @@ function galleryPicture(p: BoardPicture, i: number, drawn: { u: number; aspect: 
   const style = `--c:${p.cols};--r:${p.rows};--i:${i}`;
   const known = cataloguePicture(p.id);
   // a stand-in the catalogue does not know (a board in the making) is only shown
-  if (!known) return h("figure", { class: "pic", style }, h("img", { src: p.src, alt: "", draggable: "false" }));
+  // data-pic: the picture's id (the day's item flies from its own picture, suitcase.ts)
+  if (!known) return h("figure", { class: "pic", style, "data-pic": p.id }, h("img", { src: p.src, alt: "", draggable: "false" }));
   const sharp = sharpCopy(known, drawn.u * p.cols * drawn.aspect, drawn.u * p.rows);
   const held = known.copies.find((c) => c.file !== known.file && copyUrl(c) === p.src);
   const src = held && held.w >= sharp.copy.w ? p.src : sharp.url;
   const img = h("img", { src, alt: "", draggable: "false" });
   if (src !== p.src) img.addEventListener("error", () => (img.src = p.src), { once: true });
-  const b = h("button", { type: "button", class: "pic", style, "data-press": "win.picture", "aria-label": pictureTitle(known) }, img);
+  const b = h("button", { type: "button", class: "pic", style, "data-press": "win.picture", "data-pic": p.id, "aria-label": pictureTitle(known) }, img);
   // seen big from the copy already on screen, the full picture swapped in once it lands (viewer.ts)
   b.addEventListener("click", () => winViewer.open(known, img.currentSrc || img.src, play ? levelOfPlay(play).id : undefined));
   return b;
@@ -1627,6 +1692,17 @@ export async function startApp(): Promise<void> {
       stats: () => ({ sent: recentStats.slice(), now: tries.current() }),
       /** The board in hand, for a script that plays its proved line (board.dev.step) without the dev menu, so it is no practice. */
       board: () => board,
+      /** The Daily Suitcase as if the platform said so ("default": the stand-in months; null: its own word), for this page only. */
+      suitcase(p?: Parameters<typeof suitcases.pretend>[0]) {
+        suitcases.pretend(p === undefined ? "default" : p);
+        if (screen === "home") drawHome();
+      },
+      openSuitcase: (month?: string) => suitcaseUi.open(month ?? null),
+      /** The daily card up now as if the checker had packed `item` (its count after): the flight, nothing sent. */
+      packed(item: string, count: number) {
+        const line = winVeil.querySelector<HTMLElement>(".daily-line");
+        if (line) packedMoment({ status: "paid", lane: "daily", board: "dev", moves: 0, coins: 0, packed: { item, count } } as unknown as Verdict, line);
+      },
     };
     // ?restored=id,id shows those pictures as restored in the albums (never saved)
     const fake = new URLSearchParams(location.search).get("restored");

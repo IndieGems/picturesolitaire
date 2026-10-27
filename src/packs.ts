@@ -3,7 +3,8 @@
 // build) puts every board's board copies in one file, its full pictures in another, and
 // each trip's passport copies in a third, and takes the single files out of dist:
 //
-//   packs/index.json       { boards: { <board id>: { b, f } }, trips: { <trip id>: <pack> } }
+//   packs/index.json       { boards: { <board id>: { b, f } }, trips: { <trip id>: <pack> },
+//                          suitcases: { <YYYY-MM>: <pack> } } (each month's suitcase items)
 //   packs/<name>.bin       a uint32 little-endian JSON length, then {"files":[{path, offset,
 //                          length, type}]} (path as the catalogue names it, offset from the
 //                          end of the JSON), then the bytes
@@ -375,6 +376,31 @@ export async function ensureTrip(trip: string): Promise<void> {
       keep([...head.files.values()], head, bytes, 0);
       remember(owner, [...head.files.keys()]);
       tripsIn.add(trip);
+    })();
+    loading.set(owner, job);
+    void job.catch(() => undefined).finally(() => loading.delete(owner));
+  }
+  return job;
+}
+
+const suitcasesIn = new Set<string>();
+
+/** A month's suitcase items (their cut-outs, or board copies while Art's are stand-ins: its own pack, whole), read once. */
+export async function ensureSuitcase(month: string): Promise<void> {
+  if (suitcasesIn.has(month)) return;
+  const idx = await loadIndex();
+  const name = (idx as (Index & { suitcases?: Record<string, string> }) | null)?.suitcases?.[month];
+  if (!name) return;
+  const owner = `suitcase:${month}`;
+  let job = loading.get(owner);
+  if (!job) {
+    job = (async () => {
+      const bytes = await readWhole(packUrl(name));
+      const head = headFrom(bytes);
+      if (!head) throw new Error(`${name}: no index`);
+      keep([...head.files.values()], head, bytes, 0);
+      remember(owner, [...head.files.keys()]);
+      suitcasesIn.add(month);
     })();
     loading.set(owner, job);
     void job.catch(() => undefined).finally(() => loading.delete(owner));

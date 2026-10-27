@@ -60,6 +60,8 @@ type Nav = {
 type Parts = {
   /** home's note of a win from last time (app.ts), in the top row */
   note: HTMLElement;
+  /** the month's event banner (suitcase.ts), in the top row too: glass, a tap opens the suitcase */
+  event: HTMLElement;
   /** the day's board's button (daily.ts), hidden until the day's board is known */
   daily: HTMLElement;
   /** Is the challenge route there to open? */
@@ -180,7 +182,7 @@ export function createHome(nav: Nav, parts: Parts) {
 
   const screen = el("section", "screen home");
   screen.setAttribute("aria-label", t("game.title"));
-  screen.append(parts.note, title, itinerary, play, dock);
+  screen.append(parts.note, parts.event, title, itinerary, play, dock);
 
   // a tablet's big column: home grows with it (style.css, --k), up to 1.7, never past what fits its height
   new ResizeObserver(() => {
@@ -325,7 +327,6 @@ export function createHome(nav: Nav, parts: Parts) {
     passport.setAttribute("aria-label", `${t("home.passport")}: ${stampsLine.textContent}`);
     challenges.hidden = !parts.challengesShown();
     shop.hidden = !parts.shopShown();
-    dock.classList.toggle("four", [...dock.children].filter((c) => !(c as HTMLElement).hidden).length > 3);
   }
 
   /** The press is answered at once while the board's pictures come ("Opening…"), and put back after. */

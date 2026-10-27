@@ -32,6 +32,8 @@ type Nav = {
   show(): void;
   /** Play the day's board. */
   play(d: Daily): void;
+  /** Home's Daily tile was pressed: true when something else took it (the month's suitcase opens instead, suitcase.ts). */
+  tile?(): boolean;
 };
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", words = ""): HTMLElementTagNameMap[K] {
@@ -103,10 +105,16 @@ export function createDaily(nav: Nav) {
     homeButton.setAttribute("aria-label", `${t("home.daily")}: ${homeStatus.textContent}`);
   }
 
-  homeButton.addEventListener("click", () => {
+  /** Today's daily: play it, or its results once the day's first finish is in. */
+  function go(): void {
     if (!day || !board) return;
     if (dailyResult(day.date)) void openResults();
     else nav.play(board);
+  }
+  homeButton.addEventListener("click", () => {
+    if (!day || !board) return;
+    if (nav.tile?.()) return;
+    go();
   });
 
   function drawRows(st: DailyStandings): void {
@@ -175,6 +183,8 @@ export function createDaily(nav: Nav) {
     /** The save changed: redraw Home's state. */
     redraw: drawHome,
     openResults,
+    /** Today's daily, for the suitcase's button: done already (results) or not (play); null while the day's board is unknown. */
+    state: (): { done: boolean; go(): void } | null => (day && board ? { done: !!dailyResult(day.date), go } : null),
     /** The day's first finish was sent to the checker. */
     claimed(p: Promise<Verdict>): void {
       pending = p;

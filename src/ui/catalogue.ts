@@ -110,6 +110,35 @@ export function destination(id: string): Destination | undefined {
   return destById.get(id);
 }
 
+/**
+ * A Daily Suitcase item (the catalogue's `items`, Art's): its title, the board copy the daily board
+ * draws, and its cut-out (the object alone on transparency, for the suitcase's slot and, darkened, a
+ * missing slot's outline) once Art has made one. A stand-in has no cut-out.
+ */
+export interface SuitcaseItemArt {
+  id: string;
+  month: string;
+  title: string;
+  /** The board copy (the 2x2 picture), or the full file. */
+  picture: string;
+  cutout: string | null;
+}
+type ItemEntry = { id: string; month?: string; title?: string; file: string; board?: string; cutout?: string };
+const itemById = new Map(
+  ((CATALOGUE as { items?: ItemEntry[] }).items ?? []).map((i): [string, SuitcaseItemArt] => [
+    i.id,
+    { id: i.id, month: i.month ?? i.id.slice(5, 12), title: i.title ?? i.id, picture: i.board ?? i.file, cutout: i.cutout ?? null },
+  ]),
+);
+/** A month's items as Art lists them, in slot order (for the dev server's stand-in suitcase). */
+export function suitcaseItemsOf(month: string): SuitcaseItemArt[] {
+  return [...itemById.values()].filter((i) => i.month === month).sort((a, b) => a.id.localeCompare(b.id));
+}
+/** The suitcase item `id` ("item-2026-11-04"), or undefined while Art has not listed it. */
+export function suitcaseItem(id: string): SuitcaseItemArt | undefined {
+  return itemById.get(id);
+}
+
 /** Every album, in the catalogue's order, that has at least one picture. */
 export function albums(): Album[] {
   return albumList.filter((a) => pictureList.some((p) => p.album === a.id));
