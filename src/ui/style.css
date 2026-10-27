@@ -1026,3 +1026,32 @@ html.less-motion .card .gift { animation: none; }
 
 /* the Shuffle lesson's little card on the way to board 4 */
 .card.lesson-done p { margin-bottom: 16px; }
+
+/* ---------- the Hint nudge on a hard board (hint-nudge.ts) ---------- */
+
+/* a pause with no move: Hint glows, a few gentle pulses, then rests (less motion: a steady ring a moment) */
+.btn.helper.nudge::after {
+  content: ""; position: absolute; inset: -8px; border-radius: 50%; pointer-events: none;
+  border: 3px solid rgba(246, 194, 122, 0.95); box-shadow: 0 0 18px rgba(246, 194, 122, 0.65);
+  animation: hint-nudge 1.15s ease-in-out 3 both;
+}
+@keyframes hint-nudge {
+  0% { opacity: 0; transform: scale(0.92); }
+  45% { opacity: 1; transform: scale(1.06); }
+  100% { opacity: 0; transform: scale(1.12); }
+}
+.btn.helper.nudge.steady::after { animation: none; opacity: 1; }
+/* the first time: one line by Hint, its arrow on the button; information, taking no touch */
+.hint-tip {
+  position: absolute; z-index: 5; right: 12px; max-width: min(300px, calc(100% - 24px));
+  padding: 9px 16px; border-radius: 18px; text-align: center; pointer-events: none;
+  font: 600 15px/1.3 var(--round); background: rgba(240, 245, 251, 0.95);
+  animation: veil-in 0.3s ease both;
+}
+.hint-tip[hidden] { display: none; }
+.hint-tip.leaving { animation: dest-fade-out 0.25s ease both; }
+.hint-tip::after {
+  content: ""; position: absolute; left: var(--arrow-x, 50%); bottom: -8px; width: 16px; height: 16px; margin-left: -8px;
+  transform: rotate(45deg); background: inherit; border-right: 1.5px solid var(--glass-line); border-bottom: 1.5px solid var(--glass-line);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}

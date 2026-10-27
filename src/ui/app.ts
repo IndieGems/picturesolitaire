@@ -62,6 +62,7 @@ import { allDone, awaitingRecord, createHome, nextBoard } from "./home";
 import { KINDS, KIT, stock, type HelperKind } from "./stock";
 import { createRunOut } from "./helper-shop";
 import { createLessons, type LessonName } from "./lessons";
+import { createHintNudge } from "./hint-nudge";
 import { createDestinationBanner, type Destination } from "./destination";
 import { createPassport, type AfterStamp } from "./passport";
 import { tripById, tripEndingAt, tripName } from "./trips";
@@ -252,6 +253,24 @@ const lessons = createLessons({
   stillHere: (name) =>
     screen === "board" && !boardWon && (name === "undo" ? play?.kind === "campaign" && play.level === 2 : play?.kind === "lesson"),
 });
+// on a hard board, a pause with no move makes Hint glow, the first time with a line on what it sees (hint-nudge.ts)
+const hintNudge = createHintNudge({
+  hint: helperBtns.hint.btn,
+  layer: boardScreen,
+  allowed: () =>
+    screen === "board" &&
+    !boardWon &&
+    !stuck &&
+    play?.kind === "campaign" &&
+    !isPractice(play) &&
+    markOf(campaignLevel(play.level)) !== null &&
+    !guide.active() &&
+    !lessons.active() &&
+    winVeil.hidden &&
+    restartVeil.hidden &&
+    offlineVeil.hidden &&
+    !runOut.isOpen(),
+});
 /** The board's lesson call (the gameplay member's): the next use of that helper is free. */
 type LessonBoard = BoardHandle & { lesson?: (k: LessonName | null) => void };
 /** The Shuffle lesson's staged board (the level designer's, loaded by the gameplay member), once loaded. */
@@ -281,6 +300,7 @@ function show(next: Screen): void {
   if (next !== "board") {
     runOut.close();
     lessons.cancel();
+    hintNudge.reset();
   }
   winViewer.close();
   screenChanged();
@@ -414,6 +434,7 @@ function openLoaded(next: Play): void {
     guide.cancel();
     lessons.cancel();
     runOut.close();
+    hintNudge.reset();
     board = openBoard(host, next.kind === "campaign" ? next.level : next.kind === "challenge" ? next.c.level : next.kind === "daily" ? next.d : next.x);
     // the player's own stock on the buttons (the board reports undo through board:changed)
     drawHelpers();

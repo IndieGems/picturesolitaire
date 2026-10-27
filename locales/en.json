@@ -10,6 +10,7 @@
   "board.helperLeft_other": "{{count}} left",
   "board.helperNone": "none left",
   "board.hint": "Hint",
+  "board.hintTip": "Can't tell where to match? Hint can see what's coming.",
   "board.level": "Level {{level}}",
   "board.noHint": "No hint found here. Try Undo or Restart.",
   "board.noMix": "No better mix right now.",
