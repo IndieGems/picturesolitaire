@@ -412,13 +412,15 @@ Over the 30 boards that is 151 pictures back and 162 new. The no-repeat
 rule holds among them as on every board: no picture back within 15 boards.
 
 - **Pictures that may come back** (`tools/levels/pictures-back.json`): the
-  414 on boards 1–60 that meet today's rules. They are calm, clear and
+  413 on boards 1–60 that meet today's rules. They are calm, clear and
   close, and none is a landmark. None comes from before the clear pictures.
   The file freezes the list, so a later re-deal of an early board never
   changes it.
-- **Struck from the list:** the 16 that look like a trip 9 or 10 postcard
+- **Struck from the list:** the 17 that look like a trip 9 or 10 postcard
   (Art's look-alikes, among them the ostrich, the standing stones, the
-  yellow door and the Highland cow), and any person that Art finds posed.
+  yellow door, the Highland cow and the zigzag road). Art checked the 61
+  people pictures and the rest by eye and struck none: each person is
+  candid, and none is busy or unclear.
 - **New ones** include the 50 pictures from Art's recent batches that no
   board has shown.
 
