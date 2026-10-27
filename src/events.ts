@@ -43,6 +43,8 @@ export interface GameEvents {
   "cards:fall": { cards: number; ms?: number };
   /** A stack dealt a card into its column. `left` is what the stack still holds. */
   "stack:deal": { col: number; left: number };
+  /** A press on a stack (its top card or its edges): it shakes "no", nothing is picked up. Once a press. */
+  "stack:nope": { col: number };
   /** Helpers. `left` is how many remain on this board. */
   "helper:undo": { left: number };
   "helper:hint": { left: number };

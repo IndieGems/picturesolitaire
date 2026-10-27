@@ -728,6 +728,54 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     const cy = -geo.gridY + geo.faceTop + geo.faceH / 2;
     return { x: cx - geo.s / 2 - m, y: cy - geo.sh / 2 - m, kx: geo.face / geo.s, ky: geo.faceH / geo.sh };
   }
+  /**
+   * The stack drawn under grid point (x, y), its top card or its edges with a
+   * little slop round them; -1 for none, or for an empty stack (nothing to reach for).
+   */
+  function stackAt(x: number, y: number): number {
+    const slop = Math.max(4, geo.g);
+    const top = -geo.gridY + geo.faceTop - edgesOf(geo, 99) * geo.edge - slop;
+    if (y < top || y > -geo.gridY + geo.faceTop + geo.faceH + slop) return -1;
+    const col = Math.floor((x + geo.g / 2) / (geo.s + geo.g));
+    if (col < 0 || col >= geo.cols || !shown.stacks[col]?.length) return -1;
+    const x0 = col * (geo.s + geo.g) + (geo.s - geo.face) / 2;
+    if (x < x0 - slop || x > x0 + geo.face + slop) return -1;
+    // only as high as this stack's own edges reach
+    return y < -geo.gridY + geo.faceTop - edgesOf(geo, shown.stacks[col]!.length) * geo.edge - slop ? -1 : col;
+  }
+
+  /** Each stack's "no" in progress (nope): its stop. */
+  const noping: ((() => void) | undefined)[] = [];
+  /**
+   * A press on a stack (the creator: "I keep wanting to drag from the deck"):
+   * a short sideways "no" shake, nothing lifted (reduced motion: a brief dim).
+   * Once a press, never held: a press again starts it over. stack:nope for the
+   * sound. Its own `translate` (and opacity), apart from the settle's transform.
+   */
+  function nope(col: number): void {
+    const el = stacks[col]?.el;
+    if (!el) return;
+    noping[col]?.();
+    emit("stack:nope", { col });
+    const ms = TUNING.nopeMs;
+    const calm = lessMotion();
+    const amp = Math.max(2, geo.s * TUNING.nopeShake);
+    let t = 0;
+    const at = (p: number) => {
+      const done = p >= 1;
+      if (calm) el.style.opacity = done ? "" : (1 - 0.45 * Math.sin(Math.PI * p)).toFixed(3);
+      else el.style.translate = done ? "" : `${(amp * Math.sin(p * Math.PI * 2 * TUNING.nopeShakes) * (1 - p)).toFixed(2)}px 0`;
+    };
+    if (ms <= 0) return at(1);
+    noping[col] = run((dt) => {
+      t += dt;
+      const p = Math.min(1, t / ms);
+      at(p);
+      if (p >= 1) noping[col] = undefined;
+      return p < 1;
+    });
+  }
+
   /** A piece placed with a scale of its own across and down (to and from a stack's face). */
   const placeXY = (v: PieceView, kx: number, ky: number) => {
     v.el.style.transform = `translate3d(${v.x.toFixed(2)}px, ${v.y.toFixed(2)}px, 0) scale(${kx.toFixed(4)}, ${ky.toFixed(4)})`;
@@ -1017,9 +1065,12 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     if (reveal) return void reveal.skip();
     if (driven) return;
     if (!destroyed && guideMode !== "hold") stopHint();
-    if (press || drag || busy || won || destroyed || guideMode === "hold") return;
     if (e.pointerType === "mouse" && e.button !== 0) return;
     const g = toGrid(e.clientX, e.clientY);
+    // a reach for a stack: it says "no" (cards only ever come off it by the deal)
+    const reach = won || destroyed ? -1 : stackAt(g.x, g.y);
+    if (reach >= 0) nope(reach);
+    if (press || drag || busy || won || destroyed || guideMode === "hold") return;
     const cell = cellAt(geo, g.x, g.y);
     press = { id: e.pointerId, x: e.clientX, y: e.clientY, gx: g.x, gy: g.y, cell, touch: e.pointerType !== "mouse" };
     try {

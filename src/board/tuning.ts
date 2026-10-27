@@ -45,6 +45,14 @@ export const TUNING = {
   stackEdges: 12,
   stackSettleMs: 120,
   /**
+   * A press on a stack (cards only come off it by the deal): a sideways "no"
+   * shake over nopeMs, nopeShakes swings each way, the first nopeShake of a
+   * card's width, dying away (reduced motion: a brief dim instead).
+   */
+  nopeMs: 250,
+  nopeShake: 0.06,
+  nopeShakes: 3,
+  /**
    * The next card on each stack face up again (a trial, the creator,
    * 2026-10-25, after boards 9 and 10: to feel the difficulty with it): every
    * board shows at least its stacks' next card face up on top of its pile;
