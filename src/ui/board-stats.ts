@@ -8,9 +8,11 @@
 //   board_lost     board, mercy         attempt, pictures_left, helpers
 //   board_quit     board                attempt, pictures_left, helpers
 //
-// A string is a dimension and a number a measure, as the config declares them, and every
-// dimension must be sent, or the platform refuses the event. `board` is the campaign number
-// (1-1000); `mercy` says whether the try started with free Hints; the helpers counted are
+// The SDK files every string as a dimension and every number as a measure (its track() splits
+// them by type, whatever the config says), so a dimension always goes as a string: `board` is
+// the campaign number written out ("7", 1-1000), never the number 7, which would go as a
+// measure and the event be refused for a missing dimension (QA, 2026-10-27). Every dimension
+// must be sent. `mercy` says whether the try started with free Hints; the helpers counted are
 // only those taken from the player's stock (a mercy Hint or a lesson's use is not). Levels
 // reads tries per win as started over won, and quits by board.
 //
@@ -26,9 +28,11 @@ export type Spent = Record<HelperKind, number>;
 /** The last events, for the dev server's checks (never in a build). */
 export const recentStats: { name: string; props: Record<string, string | number> }[] = [];
 
-function send(name: string, props: Record<string, string | number>): void {
-  const board = Math.round(Number(props.board));
+function send(name: string, n: number, props: Record<string, string | number>): void {
+  const board = Math.round(n);
   if (!(board >= 1 && board <= 1000)) return; // outside the declared range: refused anyway
+  // a dimension, so a string (see above)
+  props = { board: String(board), ...props };
   gem.analytics.track(name, props);
   if (import.meta.env.DEV) {
     recentStats.push({ name, props });
@@ -41,16 +45,16 @@ const yesNo = (b: boolean): string => (b ? "yes" : "no");
 
 export const boardStats = {
   started(board: number, attempt: number): void {
-    send("board_started", { board, attempt });
+    send("board_started", board, { attempt });
   },
   won(board: number, mercy: boolean, attempt: number, spent: Spent): void {
-    send("board_won", { board, mercy: yesNo(mercy), attempt, hints: spent.hint, undos: spent.undo, shuffles: spent.shuffle });
+    send("board_won", board, { mercy: yesNo(mercy), attempt, hints: spent.hint, undos: spent.undo, shuffles: spent.shuffle });
   },
   lost(board: number, mercy: boolean, attempt: number, picturesLeft: number, spent: Spent): void {
-    send("board_lost", { board, mercy: yesNo(mercy), attempt, pictures_left: picturesLeft, helpers: all(spent) });
+    send("board_lost", board, { mercy: yesNo(mercy), attempt, pictures_left: picturesLeft, helpers: all(spent) });
   },
   quit(board: number, attempt: number, picturesLeft: number, spent: Spent): void {
-    send("board_quit", { board, attempt, pictures_left: picturesLeft, helpers: all(spent) });
+    send("board_quit", board, { attempt, pictures_left: picturesLeft, helpers: all(spent) });
   },
   /** The page is going: send what is queued now. */
   flush(): void {
