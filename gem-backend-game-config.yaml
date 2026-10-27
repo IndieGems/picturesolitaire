@@ -134,6 +134,90 @@ catalogs:
           - { type: currency_grant, currency_slug: shuffles, amount: 1, overflow: fail }
         platform_prices:
           - { currency: ARCADE_TICKETS, price: 250 }
+      # Packs of 3, about 10% under three singles (the creator, 2026-10-27, after
+      # Match3Mahjong): refused before charging when 3 more would pass the cap.
+      - id: 70474853-f503-4ad6-aef9-e7792cd6d333
+        slug: buy-hints-3
+        recipe_type: purchase
+        display_name: 3 Hints
+        grants:
+          - { type: currency_grant, currency_slug: hints, amount: 3, overflow: fail }
+        platform_prices:
+          - { currency: ARCADE_TICKETS, price: 400 }
+      - id: ab91e4a5-f7a5-4749-a09a-8cd1a8836d62
+        slug: buy-undos-3
+        recipe_type: purchase
+        display_name: 3 Undos
+        grants:
+          - { type: currency_grant, currency_slug: undos, amount: 3, overflow: fail }
+        platform_prices:
+          - { currency: ARCADE_TICKETS, price: 270 }
+      - id: 319f145c-70ae-4170-b1c3-ede7675dcb7e
+        slug: buy-shuffles-3
+        recipe_type: purchase
+        display_name: 3 Shuffles
+        grants:
+          - { type: currency_grant, currency_slug: shuffles, amount: 3, overflow: fail }
+        platform_prices:
+          - { currency: ARCADE_TICKETS, price: 675 }
+
+# PER-BOARD PLAYER NUMBERS (the creator, 2026-10-27): what players do on each
+# campaign board, sent by the game (src/ui/board-stats.ts) and read with
+# `gemctl analytics event <id> --by board --channel release`. Levels reads tries
+# per win (board_started over board_won) and quits per board. Campaign boards
+# only; never practice, lessons or the dev menu. Each try sends board_started,
+# then exactly one of won, lost or quit when it ends. Every dimension must be
+# sent; measures are optional. `board` is the campaign number; `attempt` the
+# player's try at it since their last win of it; helpers count only uses taken
+# from the stock (mercy's free Hint and the lessons are 0).
+# Once live, an id, a dimension or a value is permanent: a rename starts over.
+analytics_events:
+  - id: board_started
+    description: "A campaign board dealt and ready to play (a restart sends another, attempt + 1)."
+    sources: [client]
+    dimensions:
+      board: { range: { min: 1, max: 1000 } }
+    measures: { attempt: int }
+  - id: board_won
+    description: "A campaign board's last picture finished: the try it took and the helpers spent on it."
+    sources: [client]
+    dimensions:
+      board: { range: { min: 1, max: 1000 } }
+      mercy: { values: ["no", "yes"] }
+    measures: { attempt: int, hints: int, undos: int, shuffles: int }
+  - id: board_lost
+    description: "A campaign board's try ended while stuck (Restart, Home or Back with no move left; a stuck try rescued and won is a win): pictures left and helpers spent."
+    sources: [client]
+    dimensions:
+      board: { range: { min: 1, max: 1000 } }
+      mercy: { values: ["no", "yes"] }
+    measures: { attempt: int, pictures_left: int, helpers: int }
+  - id: board_quit
+    description: "A campaign board's try ended unfinished and not stuck (Home, Back, Restart, or the game closed; a tab switch is not one)."
+    sources: [client]
+    dimensions:
+      board: { range: { min: 1, max: 1000 } }
+    measures: { attempt: int, pictures_left: int, helpers: int }
+
+analytics_funnels:
+  # How far players get: from opening the game to each milestone board won.
+  - id: campaign_reach
+    steps:
+      - gem_session_start
+      - { event: board_started, where: { board: 1 } }
+      - { event: board_won, where: { board: 1 } }
+      - { event: board_won, where: { board: 2 } }
+      - { event: board_won, where: { board: 3 } }
+      - { event: board_won, where: { board: 5 } }
+      - { event: board_won, where: { board: 10 } }
+      - { event: board_won, where: { board: 15 } }
+      - { event: board_won, where: { board: 30 } }
+      - { event: board_won, where: { board: 60 } }
+      - { event: board_won, where: { board: 90 } }
+      - { event: board_won, where: { board: 120 } }
+  # A try that ends in a win.
+  - id: board_try
+    steps: [board_started, board_won]
 
 config:
   # The board's tuning (src/board/tuning.ts has the defaults, and what each one

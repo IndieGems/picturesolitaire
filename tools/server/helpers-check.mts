@@ -36,7 +36,13 @@ for (const [kind, k] of Object.entries(IDS.kinds)) {
   const buy = entry(k.buy);
   check(`${kind}: buy-${kind} grants 1 ${k.slug}, refused at the cap`, buy.includes(`slug: buy-${kind}\n`) && buy.includes(`currency_grant, currency_slug: ${k.slug}, amount: 1, overflow: fail }`));
   check(`${kind}: buy-${kind} has a Coins price`, /currency: ARCADE_TICKETS, price: \d+ \}/.test(buy));
+  // the pack of 3: refused at the cap, cheaper than three singles, never under 100 Coins
+  const pack = entry(k.buy3);
+  const price = (e) => Number(/currency: ARCADE_TICKETS, price: (\d+) \}/.exec(e)?.[1]);
+  check(`${kind}: the pack grants 3 ${k.slug}, refused at the cap`, pack.includes(`currency_grant, currency_slug: ${k.slug}, amount: 3, overflow: fail }`));
+  check(`${kind}: the pack saves on three singles, and costs at least 100`, price(pack) < 3 * price(buy) && price(pack) >= 100);
 }
+check("the daily helper rotation names a helper for each weekday", IDS.daily.length === 7 && IDS.daily.every((k) => k in IDS.kinds));
 check("the helpers catalog is declared", yaml.includes(`- id: ${IDS.catalog}\n    slug: helpers\n`));
 check("the kit's progression is declared", yaml.includes(`- id: ${IDS.kit.progression}\n    slug: ${IDS.kit.slug}\n`));
 check("the spends slot is declared", /- key: spends\n/.test(yaml));

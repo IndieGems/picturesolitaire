@@ -4,6 +4,9 @@
 //!   - its GIFT of helpers on that same first win (creator, 2026-10-27): a hard or
 //!     super campaign board 1 Hint and 1 Undo, a trip's last board (the passport
 //!     stamp) 1 of each instead;
+//!   - the DAILY HELPER: the daily puzzle's first win of the player's own day pays one
+//!     helper, by weekday (helper-ids.json `daily`, Saturday a Shuffle; the creator,
+//!     2026-10-27, after Match3Mahjong), with the day's mark in the same order;
 //!   - the KIT, 3 of each, once ever: at the end of board 1, or on the next win of a
 //!     player already past it. Its own progression ("helpers_kit") is set in the
 //!     same order, so it lands with the kit or not at all.
@@ -46,21 +49,44 @@ pub fn kit_mark() -> (&'static str, &'static str) {
     (k["progression"].as_str().unwrap_or_default(), k["slug"].as_str().unwrap_or_default())
 }
 
+/// A gift: its name (as the verdict lists it) and how many of each helper it pays.
+pub type Gift = (&'static str, Value);
+
 /// The gift a board's first win gives: "hard", "stamp", or none (only campaign boards give one).
-pub fn gift_of(lane: Lane, board: &str) -> Option<&'static str> {
+pub fn gift_of(lane: Lane, board: &str) -> Option<Gift> {
     if lane != Lane::Campaign {
         return None;
     }
-    data()["gifts"][board].as_str()
+    let name = data()["gifts"][board].as_str()?;
+    Some((name, data()["helpers"][name].clone()))
 }
 
-fn sizes(gift: &str) -> &'static Value {
-    let h = &data()["helpers"];
-    if gift == "kit" {
-        &h["kit"]["gift"]
-    } else {
-        &h[gift]
+/// The daily puzzle's gift for a date (the player's own, "YYYY-MM-DD"): one helper by weekday.
+pub fn daily_gift(date: &str) -> Option<Gift> {
+    let kind = data()["helpers"]["daily"][weekday(date)? as usize].as_str()?;
+    let mut sizes = none();
+    sizes[kind] = json!(1);
+    Some(("daily", sizes))
+}
+
+/// The weekday of a "YYYY-MM-DD" date, Sunday 0 (days from the civil date, H. Hinnant's method).
+pub fn weekday(date: &str) -> Option<u32> {
+    let mut parts = date.split('-').map(|p| p.parse::<i64>().ok());
+    let (y, m, d) = (parts.next()??, parts.next()??, parts.next()??);
+    if !(1..=12).contains(&m) || !(1..=31).contains(&d) {
+        return None;
     }
+    let y = if m <= 2 { y - 1 } else { y };
+    let era = y.div_euclid(400);
+    let yoe = y - era * 400;
+    let doy = (153 * (if m > 2 { m - 3 } else { m + 9 }) + 2) / 5 + d - 1;
+    let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+    let days = era * 146_097 + doe - 719_468; // 1970-01-01 is day 0, a Thursday
+    Some((days + 4).rem_euclid(7) as u32)
+}
+
+fn kit_sizes() -> &'static Value {
+    &data()["helpers"]["kit"]["gift"]
 }
 
 fn currency(kind: &str) -> &'static str {
@@ -85,24 +111,27 @@ pub struct Order {
 
 /// The order for a verified win. `progression`: the id it completes (a board's, or the
 /// daily's); `first`: its value read below 1, so this win completes it; `gift`: the board's
-/// gift (gift_of); `kit`: the kit is due. None when there is nothing to write.
-pub fn order(progression: &str, what: &str, nonce: &str, first: bool, gift: Option<&'static str>, kit: bool) -> Option<Order> {
+/// gift (gift_of, daily_gift), paid only with that first completion; `kit`: the kit is due.
+/// None when there is nothing to write.
+pub fn order(progression: &str, what: &str, nonce: &str, first: bool, gift: Option<Gift>, kit: bool) -> Option<Order> {
     let mut o = Order::default();
+    let mut paying: Vec<(&'static str, Value)> = Vec::new();
     if first {
         o.operations.push(mark(progression, format!("{what} verified win")));
         if let Some(g) = gift {
-            o.gifts.push(g);
+            paying.push(g);
         }
     }
     if kit {
-        o.gifts.push("kit");
+        paying.push(("kit", kit_sizes().clone()));
         o.operations.push(mark(kit_mark().0, "the helper kit".into()));
     }
-    for g in o.gifts.clone() {
+    for (name, sizes) in &paying {
+        o.gifts.push(name);
         for kind in KINDS {
-            let n = sizes(g)[kind].as_u64().unwrap_or(0);
+            let n = sizes[kind].as_u64().unwrap_or(0);
             if n > 0 {
-                o.operations.push(grant(kind, n, format!("{what}: {g} gift")));
+                o.operations.push(grant(kind, n, format!("{what}: {name} gift")));
             }
         }
     }

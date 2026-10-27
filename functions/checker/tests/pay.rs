@@ -21,14 +21,14 @@ fn a_line_may_hold_a_full_pouch_of_shuffles_and_more_bought_mid_board() {
 
 #[test]
 fn hard_boards_give_the_hard_gift_and_a_trips_last_board_the_stamp_gift() {
-    assert_eq!(pay::gift_of(Lane::Campaign, "c01"), None);
-    assert_eq!(pay::gift_of(Lane::Campaign, "c07"), Some("hard"));
-    assert_eq!(pay::gift_of(Lane::Campaign, "c15"), Some("stamp")); // hard, and the end of trip 1: the stamp wins
-    assert_eq!(pay::gift_of(Lane::Campaign, "c20"), Some("hard")); // super, mid-trip
-    assert_eq!(pay::gift_of(Lane::Campaign, "c30"), Some("stamp"));
-    assert_eq!(pay::gift_of(Lane::Campaign, "c90"), Some("stamp"));
-    assert_eq!(pay::gift_of(Lane::Campaign, "c02"), None);
-    assert_eq!(pay::gift_of(Lane::Challenge, "ch01"), None);
+    assert_eq!(pay::gift_of(Lane::Campaign, "c01").map(|g| g.0), None);
+    assert_eq!(pay::gift_of(Lane::Campaign, "c07").map(|g| g.0), Some("hard"));
+    assert_eq!(pay::gift_of(Lane::Campaign, "c15").map(|g| g.0), Some("stamp")); // hard, and the end of trip 1: the stamp wins
+    assert_eq!(pay::gift_of(Lane::Campaign, "c20").map(|g| g.0), Some("hard")); // super, mid-trip
+    assert_eq!(pay::gift_of(Lane::Campaign, "c30").map(|g| g.0), Some("stamp"));
+    assert_eq!(pay::gift_of(Lane::Campaign, "c90").map(|g| g.0), Some("stamp"));
+    assert_eq!(pay::gift_of(Lane::Campaign, "c02").map(|g| g.0), None);
+    assert_eq!(pay::gift_of(Lane::Challenge, "ch01").map(|g| g.0), None);
 }
 
 #[test]
@@ -49,7 +49,7 @@ fn every_board_progression_id_is_the_configs() {
 
 #[test]
 fn a_first_win_of_a_hard_board_marks_it_and_pays_its_gift_in_one_order() {
-    let o = pay::order("p-c07", "campaign c07", "first:campaign:c07", true, Some("hard"), false).unwrap();
+    let o = pay::order("p-c07", "campaign c07", "first:campaign:c07", true, pay::gift_of(Lane::Campaign, "c07"), false).unwrap();
     assert_eq!(o.nonce, "first:campaign:c07");
     assert_eq!(o.gifts, vec!["hard"]);
     let k = ids();
@@ -61,7 +61,7 @@ fn a_first_win_of_a_hard_board_marks_it_and_pays_its_gift_in_one_order() {
 
 #[test]
 fn a_replay_pays_nothing_and_writes_nothing() {
-    assert_eq!(pay::order("p-c07", "campaign c07", "first:campaign:c07", false, Some("hard"), false), None);
+    assert_eq!(pay::order("p-c07", "campaign c07", "first:campaign:c07", false, pay::gift_of(Lane::Campaign, "c07"), false), None);
 }
 
 #[test]
@@ -82,7 +82,7 @@ fn the_kit_comes_with_its_mark_on_board_1_and_on_its_own_after() {
 
 #[test]
 fn a_trips_last_board_with_the_kit_due_pays_both() {
-    let o = pay::order("p-c15", "campaign c15", "first:campaign:c15", true, Some("stamp"), true).unwrap();
+    let o = pay::order("p-c15", "campaign c15", "first:campaign:c15", true, pay::gift_of(Lane::Campaign, "c15"), true).unwrap();
     assert_eq!(o.gifts, vec!["stamp", "kit"]);
     // mark, kit mark, stamp 1/1/1, kit 3/3/3
     assert_eq!(o.operations.len(), 8);
@@ -99,4 +99,31 @@ fn what_landed_is_read_from_the_receipt_after_the_clamp() {
     ];
     assert_eq!(pay::landed(&changes), json!({ "hint": 1, "undo": 0, "shuffle": 0 }));
     assert_eq!(pay::none(), json!({ "hint": 0, "undo": 0, "shuffle": 0 }));
+}
+
+#[test]
+fn weekdays_are_counted_from_the_date_itself() {
+    assert_eq!(pay::weekday("1970-01-01"), Some(4)); // a Thursday
+    assert_eq!(pay::weekday("2026-10-27"), Some(2)); // Tuesday
+    assert_eq!(pay::weekday("2026-10-31"), Some(6)); // Saturday
+    assert_eq!(pay::weekday("2026-11-01"), Some(0)); // Sunday
+    assert_eq!(pay::weekday("2028-02-29"), Some(2)); // a leap day, Tuesday
+    assert_eq!(pay::weekday("2026-13-01"), None);
+    assert_eq!(pay::weekday("today"), None);
+}
+
+#[test]
+fn the_daily_first_win_pays_the_days_helper_with_the_days_mark() {
+    let k = ids();
+    let sat = pay::daily_gift("2026-10-31").unwrap();
+    assert_eq!(sat, ("daily", json!({ "hint": 0, "undo": 0, "shuffle": 1 })));
+    assert_eq!(pay::daily_gift("2026-10-27").unwrap().1, json!({ "hint": 1, "undo": 0, "shuffle": 0 })); // Tuesday: a Hint
+    let o = pay::order("p-daily", "daily 2026-10-31", "daily:2026-10-31", true, Some(sat.clone()), false).unwrap();
+    assert_eq!(o.nonce, "daily:2026-10-31");
+    assert_eq!(o.gifts, vec!["daily"]);
+    assert_eq!(o.operations.len(), 2);
+    assert_eq!(o.operations[1]["currency_id"], k["kinds"]["shuffle"]["currency"]);
+    assert_eq!(o.operations[1]["amount"], 1);
+    // a second daily win the same day: nothing
+    assert_eq!(pay::order("p-daily", "daily 2026-10-31", "daily:2026-10-31", false, Some(sat), false), None);
 }

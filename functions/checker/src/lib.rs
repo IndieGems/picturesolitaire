@@ -159,7 +159,7 @@ mod function {
     /// Pay a verified win in ONE order (pay.rs): `progression` to 1 if this is its first
     /// completion (which pays its Coins and rewards), the board's gift with it, and the kit
     /// if due. Ok(what landed now) or Err(verdict).
-    fn pay_win(player: &str, progression: &str, what: &str, nonce: &str, gift: Option<&'static str>, kit: bool) -> Result<Granted, Value> {
+    fn pay_win(player: &str, progression: &str, what: &str, nonce: &str, gift: Option<pay::Gift>, kit: bool) -> Result<Granted, Value> {
         let first = value_of(player, progression)? < 1.0;
         let Some(order) = pay::order(progression, what, nonce, first, gift, kit) else {
             return Ok(Granted::nothing());
@@ -337,7 +337,8 @@ mod function {
             });
         }
         // the date is the platform's (the player's own day), so the nonce keys one daily a day
-        match pay_win(player, crate::DAILY_ID, &format!("daily {date}"), &format!("daily:{date}"), None, kit) {
+        // the day's first win pays the day's helper (pay::daily_gift), with the day's mark
+        match pay_win(player, crate::DAILY_ID, &format!("daily {date}"), &format!("daily:{date}"), pay::daily_gift(&date), kit) {
             Ok(g) => json!({
                 "v": 1, "status": g.status(), "lane": "daily", "board": win.board, "date": date,
                 "moves": win.moves, "ms": win.ms, "coins": g.coins, "items": g.items, "recorded": recorded, "first": first,

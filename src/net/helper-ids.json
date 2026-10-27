@@ -1,13 +1,14 @@
 {
-  "note": "The helper stock's ids and gifts: one copy, read by src/net/helpers.ts, the win checker (functions/checker/build.rs) and tools/server/make-config.mts, and held to gem-backend-game-config.yaml by tools/server/helpers-check.mts. Prices are the config's alone.",
+  "note": "The helper stock's ids and gifts: one copy, read by src/net/helpers.ts, the win checker (functions/checker/build.rs) and tools/server/make-config.mts, and held to gem-backend-game-config.yaml by tools/server/helpers-check.mts. Prices are the config's alone. `daily`: the helper the daily puzzle's first win of the player's day pays, by weekday, Sunday first.",
   "cap": 10,
   "catalog": "330c9600-3e06-4829-bdfe-e26b6e6889f2",
   "kinds": {
-    "hint": { "currency": "cb0abfc5-ef5e-4342-9943-241b126afd54", "slug": "hints", "use": "39de65a1-e48c-4267-8117-9fb505ca803d", "buy": "fad7c2dc-ea26-4ddc-ad8e-119bc60525d1" },
-    "undo": { "currency": "f05a54c9-1920-4a36-889d-c03244e8291c", "slug": "undos", "use": "acb411f6-085a-4974-b1c5-db7afe170ad0", "buy": "e092faaf-a8e4-4ae9-b43b-bb36d88fd455" },
-    "shuffle": { "currency": "3b52bc66-7b5e-4c8b-a280-0df1f829694f", "slug": "shuffles", "use": "5f8077cf-eafe-4cb1-b915-1dfc445e7f85", "buy": "973ad69a-2bf2-4286-a587-762f6c1cada1" }
+    "hint": { "currency": "cb0abfc5-ef5e-4342-9943-241b126afd54", "slug": "hints", "use": "39de65a1-e48c-4267-8117-9fb505ca803d", "buy": "fad7c2dc-ea26-4ddc-ad8e-119bc60525d1", "buy3": "70474853-f503-4ad6-aef9-e7792cd6d333" },
+    "undo": { "currency": "f05a54c9-1920-4a36-889d-c03244e8291c", "slug": "undos", "use": "acb411f6-085a-4974-b1c5-db7afe170ad0", "buy": "e092faaf-a8e4-4ae9-b43b-bb36d88fd455", "buy3": "ab91e4a5-f7a5-4749-a09a-8cd1a8836d62" },
+    "shuffle": { "currency": "3b52bc66-7b5e-4c8b-a280-0df1f829694f", "slug": "shuffles", "use": "5f8077cf-eafe-4cb1-b915-1dfc445e7f85", "buy": "973ad69a-2bf2-4286-a587-762f6c1cada1", "buy3": "319f145c-70ae-4170-b1c3-ede7675dcb7e" }
   },
   "kit": { "progression": "a99673df-c47a-4837-b77a-d8420cdf74e3", "slug": "helpers_kit", "gift": { "hint": 3, "undo": 3, "shuffle": 3 } },
   "hard": { "hint": 1, "undo": 1, "shuffle": 0 },
-  "stamp": { "hint": 1, "undo": 1, "shuffle": 1 }
+  "stamp": { "hint": 1, "undo": 1, "shuffle": 1 },
+  "daily": ["hint", "undo", "hint", "undo", "hint", "undo", "shuffle"]
 }

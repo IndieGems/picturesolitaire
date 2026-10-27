@@ -11,9 +11,10 @@
 //                                  "spends" slot after a restart too), never dropped. "none":
 //                                  the platform had none left (spent on another device); the
 //                                  count is read again and the act stands.
-//   buy(k)                         one for Coins, the platform's direct purchase (no sheet:
-//                                  call it from the press). At the cap it is refused before
-//                                  anything is charged. Never retried by itself.
+//   buy(k, pack)                   one, or a pack of 3, for Coins: the platform's direct
+//                                  purchase (no sheet: call it from the press). One that would
+//                                  pass the cap is refused before anything is charged (fits).
+//                                  Never retried by itself.
 //   price(k), affordable(k)        the price is the config's alone. The player's Coins are
 //                                  read only to grey a button: the Arcade's wallet is the one
 //                                  place they are shown ("No counter", platform rules).
@@ -29,7 +30,9 @@ import { noAnswer, refusalOf } from "./no-answer";
 export type HelperKind = "hint" | "undo" | "shuffle";
 export type SpendAnswer = "spent" | "held" | "none";
 export type BuyAnswer = "ok" | "short" | "full" | "failed";
-export type Gift = "kit" | "hard" | "stamp";
+export type Gift = "kit" | "hard" | "stamp" | "daily";
+/** One helper, or a pack of 3. */
+export type Pack = 1 | 3;
 
 const KINDS: readonly HelperKind[] = ["hint", "undo", "shuffle"];
 /** The most of one helper a player can hold (each currency's max_balance). */
@@ -40,6 +43,12 @@ export const KIT: Readonly<Record<HelperKind, number>> = IDS.kit.gift;
 export const HARD_GIFT: Readonly<Record<HelperKind, number>> = IDS.hard;
 /** A trip's last board (the passport stamp), instead of the hard gift. */
 export const STAMP_GIFT: Readonly<Record<HelperKind, number>> = IDS.stamp;
+/** The helper the daily puzzle's first win pays on a date ("YYYY-MM-DD", the player's own: src/net/daily.ts), by weekday; the checker pays the same. */
+export function dailyHelper(date: string): HelperKind {
+  const [y, m, d] = date.split("-").map(Number);
+  const weekday = new Date(Date.UTC(y!, (m ?? 1) - 1, d ?? 1)).getUTCDay();
+  return IDS.daily[Number.isFinite(weekday) ? weekday : 0] as HelperKind;
+}
 
 const COINS = "ARCADE_TICKETS";
 const SLOT = "spends";
@@ -60,7 +69,8 @@ const stock: Record<HelperKind, number> = framed ? zero() : { hint: 3, undo: 3, 
 const owed: HelperKind[] = [];
 /** Each owed use's caller, answered once it settles (or "held" at its first failure). */
 const waiting: { kind: HelperKind; answer: (a: SpendAnswer) => void }[] = [];
-const prices: Record<HelperKind, number | null> = { hint: null, undo: null, shuffle: null };
+/** Coins prices, of one and of a pack of 3. */
+const prices: Record<Pack, Record<HelperKind, number | null>> = { 1: { hint: null, undo: null, shuffle: null }, 3: { hint: null, undo: null, shuffle: null } };
 let coins: number | null = null;
 let coinsKnown = false;
 let known = !framed;
@@ -96,8 +106,9 @@ async function readPrices(): Promise<void> {
     const config = await gem.gameConfig.load();
     const recipes = config?.catalogs.find((c) => c.id === IDS.catalog)?.recipes ?? [];
     for (const k of KINDS) {
-      const r = recipes.find((x) => x.id === IDS.kinds[k].buy);
-      prices[k] = r?.platform_prices?.[0]?.price ?? null;
+      for (const [pack, id] of [[1, IDS.kinds[k].buy], [3, IDS.kinds[k].buy3]] as const) {
+        prices[pack][k] = recipes.find((x) => x.id === id)?.platform_prices?.[0]?.price ?? null;
+      }
     }
   } catch (err) {
     console.warn(`[helpers] the prices could not be read: ${refusalOf(err)}`);
@@ -220,6 +231,8 @@ export const helpers = {
   /** The first read has landed this session. */
   known: (): boolean => known,
   full: (k: HelperKind): boolean => count(k) >= HELPER_CAP,
+  /** One, or a pack, would still fit under the cap. */
+  fits: (k: HelperKind, pack: Pack = 1): boolean => count(k) + pack <= HELPER_CAP,
   /** Call AFTER the act (the screens check count(k) > 0 first). The count drops at once. */
   spend(k: HelperKind): Promise<SpendAnswer> {
     if (!framed) {
@@ -233,18 +246,22 @@ export const helpers = {
     void pump();
     return p;
   },
-  /** The Coins price, from the game config; null until read. */
-  price: (k: HelperKind): number | null => prices[k],
+  /** The Coins price of one or a pack of 3, from the game config; null until read (or no such pack). */
+  price: (k: HelperKind, pack: Pack = 1): number | null => prices[pack][k],
   /** True when the player cannot buy here: a guest (no Coins), or a plain tab. */
   guest: (): boolean => !framed || (coinsKnown && coins === null),
   /** The player's Coins cover the price; null while unknown. For greying a button only. */
-  affordable: (k: HelperKind): boolean | null => (coins === null || prices[k] === null ? null : coins >= prices[k]!),
-  /** Buy one for Coins (call from the Buy press). The stock is read again before it answers. */
-  async buy(k: HelperKind): Promise<BuyAnswer> {
+  affordable: (k: HelperKind, pack: Pack = 1): boolean | null => {
+    const p = prices[pack][k];
+    return coins === null || p === null ? null : coins >= p;
+  },
+  /** Buy one or a pack of 3 for Coins (call from the Buy press). The stock is read again before it answers. */
+  async buy(k: HelperKind, pack: Pack = 1): Promise<BuyAnswer> {
     if (!framed) return "failed";
-    if (helpers.full(k)) return "full";
+    if (!helpers.fits(k, pack)) return "full";
     try {
-      await gem.me.mutations.purchase({ kind: "recipe", catalogId: IDS.catalog, targetId: IDS.kinds[k].buy, quantity: 1, payment: { kind: "platform_currency", currencySlug: COINS } });
+      const recipe = pack === 3 ? IDS.kinds[k].buy3 : IDS.kinds[k].buy;
+      await gem.me.mutations.purchase({ kind: "recipe", catalogId: IDS.catalog, targetId: recipe, quantity: 1, payment: { kind: "platform_currency", currencySlug: COINS } });
       await refresh();
       return "ok";
     } catch (err) {
@@ -252,7 +269,7 @@ export const helpers = {
       console.warn(`[helpers] buying a ${k} answered: ${refusalOf(err)}`);
       await refresh();
       if (code === "insufficient_funds") return "short";
-      if (!noAnswer(err) && helpers.full(k)) return "full";
+      if (!noAnswer(err) && !helpers.fits(k, pack)) return "full";
       return "failed";
     }
   },

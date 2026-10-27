@@ -77,7 +77,7 @@ interface Answered {
   items?: string[];
   /** Helpers that LANDED now, after the cap's clamp (src/net/helpers.ts): 0s when none were given. */
   helpers?: Record<HelperKind, number>;
-  /** What they were given for: the kit (board 1's end, or the next win of a player past it), a hard board's first win, a trip's last board. */
+  /** What they were given for: the kit (board 1's end, or the next win of a player past it), a hard board's first win, a trip's last board, the daily puzzle's first win of the day. */
   gifts?: Gift[];
   /** Daily only: the date, the time the board shows, whether the result is on the day's board, whether it is this player's first of the day. */
   date?: string;
@@ -272,7 +272,7 @@ async function send(h: Held): Promise<void> {
       ...(typeof answer.recorded === "boolean" ? { recorded: answer.recorded } : {}),
       ...(typeof answer.first === "boolean" ? { first: answer.first } : {}),
       helpers: landedOf(answer.helpers),
-      gifts: Array.isArray(answer.gifts) ? answer.gifts.filter((g): g is Gift => g === "kit" || g === "hard" || g === "stamp") : [],
+      gifts: Array.isArray(answer.gifts) ? answer.gifts.filter((g): g is Gift => g === "kit" || g === "hard" || g === "stamp" || g === "daily") : [],
     }, answer.progress);
   }
   console.warn(`[claims] ${lane} ${board} refused: ${String(answer.reason)}`);
