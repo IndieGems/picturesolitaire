@@ -36,6 +36,18 @@
       "particleFrame": 32,
       "particleFrames": 4,
       "base": "#20140f"
+    },
+    {
+      "id": "table-winter-market",
+      "title": "Winter Market",
+      "table": "art/tables/winter-market/winter-market-table.webp",
+      "stackBack": "art/tables/winter-market/winter-market-stack-back.webp",
+      "particles": "art/snow.png",
+      "thumb": "art/tables/winter-market/winter-market-thumb.webp",
+      "particleKind": "snow",
+      "particleFrame": 32,
+      "particleFrames": 4,
+      "base": "#1c1a1c"
     }
   ]
 }

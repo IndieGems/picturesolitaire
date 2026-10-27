@@ -52,7 +52,7 @@ TABLES = {
     "ski-lodge": {"title": "Ski Lodge", "particles": "snow", "share": "winter-dusk"},
     "winter-market": {"title": "Winter Market", "particles": "snow", "share": "winter-dusk"},
 }
-SHIPPED = ["winter-dusk", "autumn-study", "ski-lodge"]  # the first is the default
+SHIPPED = ["winter-dusk", "autumn-study", "ski-lodge", "winter-market"]  # the first is the default
 
 
 def ingest(raw):

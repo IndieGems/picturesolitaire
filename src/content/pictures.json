@@ -37462,9 +37462,9 @@
       "slot": 1,
       "album": "items",
       "title": "Glass bauble",
-      "medium": "toy",
-      "file": "pictures/food/tin-robot.webp",
-      "board": "pictures/food/tin-robot-board.webp",
+      "medium": "photo",
+      "file": "pictures/items/item-2026-12-01.webp",
+      "board": "pictures/items/item-2026-12-01-board.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -37477,16 +37477,14 @@
       ],
       "palette": [
         "red",
-        "silver",
-        "yellow",
-        "blue"
+        "gold"
       ],
       "subjects": [
-        "tin robot"
+        "glass bauble"
       ],
       "family": "item-2026-12-01",
       "busy": 0,
-      "standin": true
+      "cutout": "pictures/items/item-2026-12-01-cutout.webp"
     },
     {
       "id": "item-2026-12-02",
@@ -37494,9 +37492,9 @@
       "slot": 2,
       "album": "items",
       "title": "Wooden nutcracker",
-      "medium": "photo",
-      "file": "pictures/landscapes/pebble-cairn.webp",
-      "board": "pictures/landscapes/pebble-cairn-board.webp",
+      "medium": "toy",
+      "file": "pictures/items/item-2026-12-02.webp",
+      "board": "pictures/items/item-2026-12-02-board.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -37508,17 +37506,16 @@
         640
       ],
       "palette": [
-        "grey",
-        "white",
+        "red",
         "blue",
-        "sand"
+        "black"
       ],
       "subjects": [
-        "pebble cairn"
+        "wooden nutcracker"
       ],
       "family": "item-2026-12-02",
       "busy": 0,
-      "standin": true
+      "cutout": "pictures/items/item-2026-12-02-cutout.webp"
     },
     {
       "id": "item-2026-12-03",
@@ -37526,9 +37523,9 @@
       "slot": 3,
       "album": "items",
       "title": "Roasted chestnuts",
-      "medium": "watercolour",
-      "file": "pictures/landscapes/rope-bridge.webp",
-      "board": "pictures/landscapes/rope-bridge-board.webp",
+      "medium": "photo",
+      "file": "pictures/items/item-2026-12-03.webp",
+      "board": "pictures/items/item-2026-12-03-board.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -37540,18 +37537,15 @@
         640
       ],
       "palette": [
-        "green",
         "brown",
-        "white",
-        "grey"
+        "cream"
       ],
       "subjects": [
-        "rope bridge",
-        "gorge"
+        "roasted chestnuts"
       ],
       "family": "item-2026-12-03",
       "busy": 0,
-      "standin": true
+      "cutout": "pictures/items/item-2026-12-03-cutout.webp"
     },
     {
       "id": "item-2026-12-04",
@@ -37559,9 +37553,9 @@
       "slot": 4,
       "album": "items",
       "title": "Hot cider",
-      "medium": "photo",
-      "file": "pictures/travel/campfire.webp",
-      "board": "pictures/travel/campfire-board.webp",
+      "medium": "watercolour",
+      "file": "pictures/items/item-2026-12-04.webp",
+      "board": "pictures/items/item-2026-12-04-board.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -37573,18 +37567,16 @@
         640
       ],
       "palette": [
+        "amber",
         "orange",
-        "blue",
-        "black",
         "brown"
       ],
       "subjects": [
-        "campfire",
-        "enamel kettle"
+        "hot cider"
       ],
       "family": "item-2026-12-04",
       "busy": 0,
-      "standin": true
+      "cutout": "pictures/items/item-2026-12-04-cutout.webp"
     },
     {
       "id": "item-2026-12-05",
@@ -37592,9 +37584,9 @@
       "slot": 5,
       "album": "items",
       "title": "Paper star lantern",
-      "medium": "photo",
-      "file": "pictures/travel/binoculars.webp",
-      "board": "pictures/travel/binoculars-board.webp",
+      "medium": "papercut",
+      "file": "pictures/items/item-2026-12-05.webp",
+      "board": "pictures/items/item-2026-12-05-board.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -37606,17 +37598,15 @@
         640
       ],
       "palette": [
-        "black",
-        "brass",
-        "green",
-        "cream"
+        "red",
+        "gold"
       ],
       "subjects": [
-        "binoculars"
+        "paper star lantern"
       ],
       "family": "item-2026-12-05",
       "busy": 0,
-      "standin": true
+      "cutout": "pictures/items/item-2026-12-05-cutout.webp"
     },
     {
       "id": "item-2026-12-06",
@@ -37624,9 +37614,9 @@
       "slot": 6,
       "album": "items",
       "title": "Carved reindeer",
-      "medium": "photo",
-      "file": "pictures/architecture/covered-bridge.webp",
-      "board": "pictures/architecture/covered-bridge-board.webp",
+      "medium": "render",
+      "file": "pictures/items/item-2026-12-06.webp",
+      "board": "pictures/items/item-2026-12-06-board.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -37638,17 +37628,15 @@
         640
       ],
       "palette": [
-        "red",
-        "white",
-        "green",
-        "blue"
+        "tan",
+        "brown"
       ],
       "subjects": [
-        "covered bridge"
+        "carved reindeer"
       ],
       "family": "item-2026-12-06",
       "busy": 0,
-      "standin": true
+      "cutout": "pictures/items/item-2026-12-06-cutout.webp"
     },
     {
       "id": "item-2026-12-07",
@@ -37656,9 +37644,9 @@
       "slot": 7,
       "album": "items",
       "title": "Gift box",
-      "medium": "papercut",
-      "file": "pictures/architecture/bandstand.webp",
-      "board": "pictures/architecture/bandstand-board.webp",
+      "medium": "flat",
+      "file": "pictures/items/item-2026-12-07.webp",
+      "board": "pictures/items/item-2026-12-07-board.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -37671,16 +37659,14 @@
       ],
       "palette": [
         "green",
-        "white",
-        "red",
-        "yellow"
+        "red"
       ],
       "subjects": [
-        "bandstand"
+        "gift box"
       ],
       "family": "item-2026-12-07",
       "busy": 0,
-      "standin": true
+      "cutout": "pictures/items/item-2026-12-07-cutout.webp"
     },
     {
       "id": "item-2026-12-08",
@@ -37688,9 +37674,9 @@
       "slot": 8,
       "album": "items",
       "title": "Candle arch",
-      "medium": "painting",
-      "file": "pictures/animals/koala.webp",
-      "board": "pictures/animals/koala-board.webp",
+      "medium": "photo",
+      "file": "pictures/items/item-2026-12-08.webp",
+      "board": "pictures/items/item-2026-12-08-board.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -37702,18 +37688,16 @@
         640
       ],
       "palette": [
-        "grey",
-        "green",
-        "cream",
-        "blue"
+        "brown",
+        "gold",
+        "white"
       ],
       "subjects": [
-        "koala",
-        "eucalyptus"
+        "candle arch"
       ],
       "family": "item-2026-12-08",
       "busy": 0,
-      "standin": true
+      "cutout": "pictures/items/item-2026-12-08-cutout.webp"
     },
     {
       "id": "item-2026-12-09",
@@ -37721,9 +37705,9 @@
       "slot": 9,
       "album": "items",
       "title": "Knitted stocking",
-      "medium": "print",
-      "file": "pictures/flowers/snowdrops.webp",
-      "board": "pictures/flowers/snowdrops-board.webp",
+      "medium": "pastel",
+      "file": "pictures/items/item-2026-12-09.webp",
+      "board": "pictures/items/item-2026-12-09-board.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -37735,16 +37719,15 @@
         640
       ],
       "palette": [
-        "white",
-        "green",
-        "navy"
+        "red",
+        "white"
       ],
       "subjects": [
-        "snowdrop flowers"
+        "knitted stocking"
       ],
       "family": "item-2026-12-09",
       "busy": 0,
-      "standin": true
+      "cutout": "pictures/items/item-2026-12-09-cutout.webp"
     },
     {
       "id": "item-2026-12-10",
@@ -37752,9 +37735,9 @@
       "slot": 10,
       "album": "items",
       "title": "Pine wreath",
-      "medium": "photo",
-      "file": "pictures/flowers/frangipani.webp",
-      "board": "pictures/flowers/frangipani-board.webp",
+      "medium": "retro",
+      "file": "pictures/items/item-2026-12-10.webp",
+      "board": "pictures/items/item-2026-12-10-board.webp",
       "cols": 2,
       "rows": 2,
       "px": [
@@ -37766,17 +37749,16 @@
         640
       ],
       "palette": [
-        "white",
-        "yellow",
         "green",
-        "dark green"
+        "red",
+        "brown"
       ],
       "subjects": [
-        "frangipani"
+        "pine wreath"
       ],
       "family": "item-2026-12-10",
       "busy": 0,
-      "standin": true
+      "cutout": "pictures/items/item-2026-12-10-cutout.webp"
     },
     {
       "id": "item-2027-01-01",

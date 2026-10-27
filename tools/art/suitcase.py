@@ -75,7 +75,7 @@ ITEMS = {
     "item-2026-12-05": ("papercut", "a glowing red paper star lantern with cut-out patterns, hanging from a short string", ("#27324f", "#171f36"), "papercut"),
     "item-2026-12-06": ("clay", "a small carved wooden reindeer figure with branching antlers", ("#dbe5d3", "#b9cbaa"), "render"),
     "item-2026-12-07": ("flat", "a gift box wrapped in green paper with a big red ribbon bow on top", ("#f6d9de", "#ebb6c0"), "flat"),
-    "item-2026-12-08": ("photo", "a wooden candle arch with seven small lit candles on top and a cut-out snowy village and fir trees inside the arch", ("#24304a", "#151d30"), "photo"),
+    "item-2026-12-08": ("photo", "a wooden candle arch with seven small lit candles on top and, inside the arch, a cut-out of little snowy cottages and fir trees, with no church, no tower and no steeple", ("#24304a", "#151d30"), "photo"),
     "item-2026-12-09": ("pastel", "a knitted red and white holiday stocking with a snowflake pattern and a little loop to hang it", ("#f1e8d8", "#ddcfb6"), "pastel"),
     "item-2026-12-10": ("retro", "a round pine wreath with pine cones, red berries and a red bow at the bottom", ("#f4e6c9", "#e4cc9c"), "retro"),
 }

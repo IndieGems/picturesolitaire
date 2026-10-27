@@ -170,70 +170,164 @@
    "month": "2026-12",
    "slot": 1,
    "title": "Glass bauble",
-   "standin": "tin-robot"
+   "medium": "photo",
+   "subjects": [
+    "glass bauble"
+   ],
+   "busy": 0,
+   "palette": [
+    "red",
+    "gold"
+   ],
+   "prompt": "A close macro photograph, crisp, with true colours: a shiny deep red glass bauble with a gold cap and a loop of gold ribbon, warm lights reflected in it. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-12-02",
    "month": "2026-12",
    "slot": 2,
    "title": "Wooden nutcracker",
-   "standin": "pebble-cairn"
+   "medium": "toy",
+   "subjects": [
+    "wooden nutcracker"
+   ],
+   "busy": 0,
+   "palette": [
+    "red",
+    "blue",
+    "black"
+   ],
+   "prompt": "Toy photography, a small handmade toy photographed close: a traditional painted wooden nutcracker soldier figure in red and blue with a tall black hat and a white beard. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-12-03",
    "month": "2026-12",
    "slot": 3,
    "title": "Roasted chestnuts",
-   "standin": "rope-bridge"
+   "medium": "photo",
+   "subjects": [
+    "roasted chestnuts"
+   ],
+   "busy": 0,
+   "palette": [
+    "brown",
+    "cream"
+   ],
+   "prompt": "A professional studio product photograph, crisp and true to life: a paper cone full of roasted chestnuts, some split open, a little steam rising. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-12-04",
    "month": "2026-12",
    "slot": 4,
    "title": "Hot cider",
-   "standin": "campfire"
+   "medium": "watercolour",
+   "subjects": [
+    "hot cider"
+   ],
+   "busy": 0,
+   "palette": [
+    "amber",
+    "orange",
+    "brown"
+   ],
+   "prompt": "A loose, fresh watercolour painting with crisp edges: a glass mug of hot spiced apple cider with a cinnamon stick, an orange slice and a star anise. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-12-05",
    "month": "2026-12",
    "slot": 5,
    "title": "Paper star lantern",
-   "standin": "binoculars"
+   "medium": "papercut",
+   "subjects": [
+    "paper star lantern"
+   ],
+   "busy": 0,
+   "palette": [
+    "red",
+    "gold"
+   ],
+   "prompt": "A layered paper-cut craft object with soft shadows between the paper layers: a glowing red paper star lantern with cut-out patterns, hanging from a short string. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-12-06",
    "month": "2026-12",
    "slot": 6,
    "title": "Carved reindeer",
-   "standin": "covered-bridge"
+   "medium": "render",
+   "subjects": [
+    "carved reindeer"
+   ],
+   "busy": 0,
+   "palette": [
+    "tan",
+    "brown"
+   ],
+   "prompt": "A soft clay 3D render, like a handmade stop-motion model: a small carved wooden reindeer figure with branching antlers. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-12-07",
    "month": "2026-12",
    "slot": 7,
    "title": "Gift box",
-   "standin": "bandstand"
+   "medium": "flat",
+   "subjects": [
+    "gift box"
+   ],
+   "busy": 0,
+   "palette": [
+    "green",
+    "red"
+   ],
+   "prompt": "A flat vector illustration with bold shapes, no outlines and a light grain: a gift box wrapped in green paper with a big red ribbon bow on top. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-12-08",
    "month": "2026-12",
    "slot": 8,
    "title": "Candle arch",
-   "standin": "koala"
+   "medium": "photo",
+   "subjects": [
+    "candle arch"
+   ],
+   "busy": 0,
+   "palette": [
+    "brown",
+    "gold",
+    "white"
+   ],
+   "prompt": "A professional studio product photograph, crisp and true to life: a wooden candle arch with seven small lit candles on top and, inside the arch, a cut-out of little snowy cottages and fir trees, with no church, no tower and no steeple. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-12-09",
    "month": "2026-12",
    "slot": 9,
    "title": "Knitted stocking",
-   "standin": "snowdrops"
+   "medium": "pastel",
+   "subjects": [
+    "knitted stocking"
+   ],
+   "busy": 0,
+   "palette": [
+    "red",
+    "white"
+   ],
+   "prompt": "A soft pastel and chalk drawing: a knitted red and white holiday stocking with a snowflake pattern and a little loop to hang it. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-12-10",
    "month": "2026-12",
    "slot": 10,
    "title": "Pine wreath",
-   "standin": "frangipani"
+   "medium": "retro",
+   "subjects": [
+    "pine wreath"
+   ],
+   "busy": 0,
+   "palette": [
+    "green",
+    "red",
+    "brown"
+   ],
+   "prompt": "A mid-century travel-poster illustration with flat colour shapes and a gentle print texture: a round pine wreath with pine cones, red berries and a red bow at the bottom. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-01-01",
