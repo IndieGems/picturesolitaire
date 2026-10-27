@@ -83,7 +83,7 @@
         ]
       },
       {
-        "id": "difficultylab",
+        "id": "difficultytool",
         "command": [
           "node",
           "tools/difficulty/server.mjs"
@@ -126,7 +126,7 @@
       "id": "difficulty",
       "label": "Difficulty",
       "kind": "web",
-      "url": "http://127.0.0.1:{difficultylab.port}/"
+      "url": "http://127.0.0.1:{difficultytool.port}/"
     }
   ]
 }
