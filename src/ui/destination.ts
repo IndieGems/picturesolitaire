@@ -21,8 +21,12 @@
 //
 // Its words are the player's to read in their language: destination.<id>.name and
 // destination.<id>.place in the locale files once a translation has them, else the English
-// the event carries. A long name ("World's Largest Ball of Twine") wraps to two balanced
-// lines, then steps down in size, never under 12 px and never cut off.
+// the event carries. The banner stays SLIM, so it covers as little of the postcard as it
+// can (a place whose subject is near the top was hidden behind a two-line name: Gameplay,
+// 2026-10-27): the name keeps one line, stepping down in size to fit ("Palais Idéal du
+// Facteur Cheval" at 360 px wide), never under ONE_LINE_PX; only a name too long even
+// then wraps to two balanced lines, stepping down further, never under 12 px and never
+// cut off. The place is its own small line under it.
 
 import { destinationName, destinationPlace } from "./catalogue";
 
@@ -63,7 +67,8 @@ const TWINKLES: readonly { x: number; y: number; s: number; at: number }[] = [
 const LEAVE_MS = 260;
 /** A done this soon after its reveal was the player tapping through: gone at once, never seen. */
 const SAME_MOMENT_MS = 120;
-/** The biggest the name is drawn, and the smallest it may step down to. */
+/** The smallest the name steps down to on one line, before it may wrap; and the smallest at all. */
+const ONE_LINE_PX = 16;
 const MIN_PX = 12;
 
 export function createDestinationBanner(): DestinationBanner {
@@ -106,12 +111,20 @@ export function createDestinationBanner(): DestinationBanner {
     fitName();
   }
 
-  /** Two lines at most at the name's own size, else smaller, never under MIN_PX or cut off. */
+  /** One line, stepping down to ONE_LINE_PX; only then two balanced lines, down to MIN_PX, never cut off. */
   function fitName(): void {
     name.style.removeProperty("font-size");
+    name.classList.remove("wrap");
     let size = parseFloat(getComputedStyle(name).fontSize);
+    const wide = () => name.scrollWidth > name.clientWidth + 1;
+    while (wide() && size > ONE_LINE_PX) {
+      size = Math.max(ONE_LINE_PX, size - 1);
+      name.style.fontSize = `${size}px`;
+    }
+    if (!wide()) return;
+    name.classList.add("wrap");
     const lineH = () => parseFloat(getComputedStyle(name).lineHeight) || size * 1.1;
-    const fits = () => name.scrollWidth <= name.clientWidth + 1 && name.offsetHeight <= lineH() * 2 + 2;
+    const fits = () => !wide() && name.offsetHeight <= lineH() * 2 + 2;
     while (!fits() && size > MIN_PX) {
       size = Math.max(MIN_PX, size - 1);
       name.style.fontSize = `${size}px`;
