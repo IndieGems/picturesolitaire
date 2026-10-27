@@ -343,13 +343,13 @@ all-long board, and the most famous as the finale.
 | x4 | Capybaras of the Iberá wetlands (gem) | Cape Hillsborough's beach kangaroos at sunrise (silly) |
 | x5, big | Mount Fitz Roy at sunrise (famous) | Whitehaven Beach's swirling sands (famous) |
 | x6, long | Les Éclaireurs lighthouse, Ushuaia (famous, tall) | Sydney Harbour Bridge (famous, wide) |
-| x7 | The End of the World Post Office, Ushuaia (silly) | The Bay of Fires' orange rocks (gem) |
+| x7 | La Trochita, the Old Patagonian Express (silly) | The Bay of Fires' orange rocks (gem) |
 | x8 | Salinas Grandes salt flats (famous) | The Pinnacles Desert (famous) |
 | x9 | The Train to the Clouds' La Polvorilla viaduct (gem) | A Rottnest Island quokka (silly) |
 | x10 | A southern right whale off the Valdés Peninsula (famous, big) | Remarkable Rocks, Kangaroo Island (famous) |
 | x11 | Punta Tombo's penguins crossing the path (silly) | Cape Tribulation, where the rainforest meets the reef (famous) |
-| x12 | The Hornocal, the "fourteen colours" hills (gem) | Karijini's gorges (gem) |
-| x13 | Tandil's balancing stone, Piedra Movediza (silly) | The Big Banana, Coffs Harbour (silly) |
+| x12 | The Arrayanes forest (gem) | Karijini's gorges (gem) |
+| x13 | Ischigualasto's Mushroom rock (silly) | The Big Banana, Coffs Harbour (silly) |
 | x14 | La Payunia's black lava fields (gem) | Cradle Mountain over Dove Lake (gem) |
 | x15 | Perito Moreno Glacier (famous, the finale) | The Great Barrier Reef's Heart Reef (famous, the 6×6 finale) |
 
@@ -359,13 +359,18 @@ all-long board, and the most famous as the finale.
 - The Sydney Opera House (its owners license its image).
 - The Three Sisters (a Dreamtime story site).
 
-**For Art to confirm:**
+**Art's fact-check** (2026-10-27) swapped three places on the rules:
 
-- the Big Banana's owners, else the Big Pineapple or another of the "Big
-  Things";
-- the Harbour Bridge without BridgeClimb's branding;
-- Ischigualasto, held back as a reserve in case its guided-only entry counts
-  as a permit.
+- **The End of the World Post Office** became La Trochita: the post
+  office's sign is the whole point of it.
+- **The Hornocal** became the Arrayanes forest: it is too like Purmamarca.
+- **Tandil's balancing stone** became Ischigualasto's Mushroom rock: today's
+  stone is a 2007 replica, and Argentina gives artworks no freedom of
+  panorama.
+
+The Big Banana and the Harbour Bridge stay. Art found no image licence on
+either, and Australian law lets anyone picture a building. The bridge
+postcard shows no climbers and no Opera House.
 
 ## Sources
 

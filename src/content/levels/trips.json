@@ -4,5 +4,7 @@
 {"id":"t3","name":"Italy","from":31,"to":45},
 {"id":"t4","name":"American West","from":46,"to":60},
 {"id":"t5","name":"France","from":61,"to":75},
-{"id":"t6","name":"Canada","from":76,"to":90}
+{"id":"t6","name":"Canada","from":76,"to":90},
+{"id":"t7","name":"Argentina","from":91,"to":105},
+{"id":"t8","name":"Australia","from":106,"to":120}
 ]}

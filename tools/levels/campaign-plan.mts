@@ -235,38 +235,38 @@ export const PLAN = [
   // (metrics.ts READABLE, CAREFUL; set below), which caps the builds at 10-11 pictures (12 on 4x5 is not
   // readable at a build's target). Big boards: 95 and 100 at 5x5; the finale 105 stays 4x5 (the 6x6
   // finales are every other one: 90, then 120). Postcards come from Art's batch; rows take them when it lands
-  /* 91 */ { role: "relief", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
-  /* 92 */ { role: "build",  board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
-  /* 93 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
-  /* 94 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
-  /* 95 */ { role: "hard",   board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY, ...NEW_ONLY },
-  /* 96 */ { role: "pace",   count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
-  /* 97 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
-  /* 98 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
-  /* 99 */ { role: "build",  board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
-  /* 100 */ { role: "hard",  board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY, ...NEW_ONLY },
-  /* 101 */ { role: "relief", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
-  /* 102 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
-  /* 103 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
-  /* 104 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
-  /* 105 */ { role: "super", board: [4, 5], ...sq(12), careless: [0.08, 0.2], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  /* 91 */ { role: "relief", destination: "dest-iguazu", drop: "fruit-bat", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
+  /* 92 */ { role: "build",  destination: "dest-caminito", drop: "oculus", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
+  /* 93 */ { role: "build",  destination: "dest-purmamarca", drop: "bricklayer", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 94 */ { role: "build",  destination: "dest-ibera-capybaras", drop: "ammonite", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 95 */ { role: "hard",   destination: "dest-fitz-roy", drop: "rainwater-tank", board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  /* 96 */ { role: "pace",   destination: "dest-eclaireurs", drop: "brugmansia", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
+  /* 97 */ { role: "build",  destination: "dest-trochita", drop: "tapir", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 98 */ { role: "build",  destination: "dest-salinas-grandes", drop: "fudge", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 99 */ { role: "build",  destination: "dest-polvorilla", drop: "malachite", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 100 */ { role: "hard",  destination: "dest-valdes-whale", drop: "pho", board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  /* 101 */ { role: "relief", destination: "dest-punta-tombo", drop: "birdwatcher", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
+  /* 102 */ { role: "build", destination: "dest-arrayanes", drop: "metro-station", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 103 */ { role: "build", destination: "dest-ischigualasto", drop: "camping-stove", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 104 */ { role: "build", destination: "dest-payunia", drop: "budgies", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 105 */ { role: "super", destination: "dest-perito-moreno", drop: "glazier", board: [4, 5], ...sq(12), careless: [0.08, 0.2], traps: [0, 4], chain: ANY, ...NEW_ONLY },
   // ---- trip 8, Australia (New Zealand in reserve, the creator, 2026-10-27): the same shape; big boards
   // 110 at 5x5 and the finale 120 at 6x6
-  /* 106 */ { role: "relief", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
-  /* 107 */ { role: "build", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
-  /* 108 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
-  /* 109 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
-  /* 110 */ { role: "hard",  board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY, ...NEW_ONLY },
-  /* 111 */ { role: "pace",  count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
-  /* 112 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
-  /* 113 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
-  /* 114 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
-  /* 115 */ { role: "hard",  board: [4, 5], ...sq(12), careless: [0.2, 0.3], traps: [0, 4], chain: ANY, ...NEW_ONLY },
-  /* 116 */ { role: "relief", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
-  /* 117 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
-  /* 118 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
-  /* 119 */ { role: "build", board: [4, 5], ...sq(11), careless: [0.4, 0.5], chain: ANY, ...NEW_ONLY },
-  /* 120 */ { role: "super", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  /* 106 */ { role: "relief", destination: "dest-twelve-apostles", drop: "rollerskater", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
+  /* 107 */ { role: "build", destination: "dest-brighton-boxes", drop: "beech-woods", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY, ...NEW_ONLY },
+  /* 108 */ { role: "build", destination: "dest-hutt-lagoon", drop: "hula-hoop", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 109 */ { role: "build", destination: "dest-hillsborough-kangaroos", drop: "hermit-crab", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 110 */ { role: "hard",  destination: "dest-whitehaven", drop: "kayak", board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  /* 111 */ { role: "pace",  destination: "dest-harbour-bridge", drop: "shophouses", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY, ...NEW_ONLY },
+  /* 112 */ { role: "build", destination: "dest-bay-of-fires", drop: "clover", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 113 */ { role: "build", destination: "dest-pinnacles", drop: "bluebonnets", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 114 */ { role: "build", destination: "dest-rottnest-quokka", drop: "goldenrod", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 115 */ { role: "hard",  destination: "dest-remarkable-rocks", drop: "grape-picker", board: [4, 5], ...sq(12), careless: [0.2, 0.3], traps: [0, 4], chain: ANY, ...NEW_ONLY },
+  /* 116 */ { role: "relief", destination: "dest-cape-tribulation", drop: "digger", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY, ...NEW_ONLY },
+  /* 117 */ { role: "build", destination: "dest-karijini", drop: "date-palms", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY, ...NEW_ONLY },
+  /* 118 */ { role: "build", destination: "dest-big-banana", drop: "pho", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY, ...NEW_ONLY },
+  /* 119 */ { role: "build", destination: "dest-cradle-mountain", drop: "gaillardia", board: [4, 5], ...sq(11), careless: [0.4, 0.5], chain: ANY, ...NEW_ONLY },
+  /* 120 */ { role: "super", destination: "dest-heart-reef", drop: "hedgerow", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY, ...NEW_ONLY },
 ];
 
 /**
@@ -287,6 +287,9 @@ export const TRIPS = [
   // the creator's choice (lead, 2026-10-26)
   { id: "t5", name: "France", from: 61, to: 75 },
   { id: "t6", name: "Canada", from: 76, to: 90 },
+  // the creator's choices (2026-10-27): Argentina, and Australia (New Zealand in reserve)
+  { id: "t7", name: "Argentina", from: 91, to: 105 },
+  { id: "t8", name: "Australia", from: 106, to: 120 },
 ];
 
 /** Roles that may trap from the first move; every other board starts safe (check.mts). */
@@ -307,9 +310,9 @@ export const MARKS = { hard: "hard", peak: "hard", super: "super" };
 // catalogue entries from marigolds on), so all of them are new to the player
 // boards 61 on: every picture from the next batch (lead, 2026-10-26; Art: foxgloves on), new to the player again;
 // 1-60 never take from it (newTo), so a re-dealt board there cannot show one early
-// boards 91 on (trips 7 and 8): only from the batch Art makes for them (NEXT_BATCH, its first id once it
-// lands), and boards 61-90 never take from it
-export const NEXT_BATCH = "next-batch";
+// boards 91 on (trips 7 and 8): only from Art's batch for them (NEXT_BATCH: brugmansia on), and boards 61-90
+// never take from it
+export const NEXT_BATCH = "brugmansia";
 PLAN.forEach((row, i) => Object.assign(row, i < 30 ? { newTo: "foxgloves" } : i < 60 ? { newFrom: "marigolds", newTo: "foxgloves" } : i < 90 ? { newFrom: "foxgloves", newTo: NEXT_BATCH } : { newFrom: NEXT_BATCH }));
 // every unmarked board is READABLE (creator, 2026-10-27, after "rigged"-feeling boards 18-19): a player who
 // draws by the face-up cards wins it 85% or more; hard and super hard boards may still hide the way. Where
