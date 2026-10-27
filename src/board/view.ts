@@ -105,8 +105,17 @@ export function layout(w: number, h: number, cols: number, rows: number, _peek =
   const roomy = fit({ ...ROOMY, row: TUNING.stackRow, gap: TUNING.stackGap });
   const compact = fit({ ...COMPACT, row: TUNING.stackRow * (COMPACT.row / ROOMY.row) });
   // the roomy stacks, unless the box is so short that cards would come out small
-  const st = size(roomy) < COMPACT_BELOW && size(compact) > size(roomy) ? compact : roomy;
-  const s = Math.max(24, size(st));
+  let st = size(roomy) < COMPACT_BELOW && size(compact) > size(roomy) ? compact : roomy;
+  let s = Math.max(24, size(st));
+  // small cards (a 6x6 board on a short phone): the edges' least width, not their share
+  // of a card, sets their room, so the row grows by those few px to keep every edge
+  const least = most * Math.max(1, TUNING.stackEdgeMin) + 1;
+  for (let pass = 0; pass < 3; pass++) {
+    const h0 = Math.round(s / A);
+    if ((st.row - st.face - FACE_FLOOR) * h0 >= least) break;
+    st = { ...st, row: st.face + FACE_FLOOR + (least + 1) / h0 };
+    s = Math.max(24, size(st));
+  }
   const sh = Math.round(s / A);
   const g = Math.max(3, Math.round(s * G));
   const width = cols * s + (cols - 1) * g;
