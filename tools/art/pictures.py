@@ -50,6 +50,7 @@ GEN_SIZE = {
     (1, 2): (576, 1536), (2, 1): (1536, 1024),
     (4, 4): (1536, 2048), (4, 5): (1536, 2560),  # destination postcards, a whole board
     (5, 5): (1536, 2048),  # a 5x5 hard or finale board's postcard (creator, 2026-10-27), 3:4 like 4x4
+    (6, 6): (1536, 2048),  # a 6x6 finale's postcard (30, 60, 90; creator, 2026-10-27), 3:4 too
 }
 SHAPE_WORDS = {
     (2, 2): "Composition: a portrait picture, 3:4.",
@@ -61,6 +62,7 @@ SHAPE_WORDS = {
     (4, 4): "Composition: a portrait picture, 3:4.",
     (4, 5): "Composition: a tall portrait picture, 3:5.",
     (5, 5): "Composition: a portrait picture, 3:4.",
+    (6, 6): "Composition: a portrait picture, 3:4.",
 }
 
 
