@@ -32,6 +32,35 @@ export const destinations = [...(CATALOGUE.destinations ?? []), ...CATALOGUE.pic
 export const destById = new Map(destinations.map((d) => [d.id, d]));
 export const catalogue = CATALOGUE.pictures.filter((p) => !p.destination);
 export const byId = new Map(catalogue.map((p) => [p.id, p]));
+/**
+ * THE DAILY SUITCASE (creator, 2026-10-27; docs/daily-suitcase.md; suitcase.mts): Art's `items`, each
+ * month's ten item pictures (2x2, with `month`, `slot` and `title`), are never dealt as library
+ * pictures: make-daily.mts places the day's item on its board. `suitcases` holds each month's theme
+ * and table.
+ */
+export const items = CATALOGUE.items ?? [];
+export const itemById = new Map(items.map((p) => [p.id, p]));
+export const themeOf = new Map((CATALOGUE.suitcases ?? []).map((t) => [t.month, t]));
+/** A picture's words, for the item clash rule: its subjects and id (an item's subjects and title), lower case, 3 letters or more. */
+const wordsOf = (p) => [...(p.subjects ?? []), p.month ? (p.title ?? "") : p.id].flatMap((s) => String(s).toLowerCase().split(/[^a-z]+/)).filter((w) => w.length >= 3);
+/** One word is the other, give or take a plural or a short ending (ski, skier; skate, skates; pot, pots). */
+const sameWord = (a, b) => {
+  const [s, l] = a.length <= b.length ? [a, b] : [b, a];
+  return l.startsWith(s) && l.length - s.length <= 2;
+};
+/**
+ * Why picture `p` may not share a daily board with item `it` (Art, 2026-10-27: "ski" matches skier and
+ * ski-tracks, "pot" lobster-pot), or null: the item's lookalike family, the library picture a stand-in
+ * item borrows its file from, or a word of theirs in common. make-daily.mts keeps such a picture off the
+ * item's board (swapping it out in place on a day already made) and check.mts holds it.
+ */
+export function itemClash(it, p) {
+  if (p.family === it.family) return `family ${it.family}`;
+  if (p.file && p.file === it.file) return `the same file (${it.id} is a stand-in for ${p.id})`;
+  const words = wordsOf(it);
+  const w = wordsOf(p).find((x) => words.some((y) => sameWord(x, y)));
+  return w ? `the word "${w}"` : null;
+}
 
 /**
  * A board's destination record: {"id", "crop": [col, row]}, the crop window's
@@ -54,7 +83,7 @@ export function destPicture(id) {
   return { id, cols, rows };
 }
 /** A picture's lookalike family, a postcard's included (Art gives a postcard its lookalike's). */
-export const familyOf = (id) => (byId.get(id) ?? destById.get(id))?.family ?? id;
+export const familyOf = (id) => (byId.get(id) ?? destById.get(id) ?? itemById.get(id))?.family ?? id;
 
 /**
  * A kept board given its row's destination IN PLACE (lead, 2026-10-25): the

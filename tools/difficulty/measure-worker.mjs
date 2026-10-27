@@ -42,8 +42,8 @@ const ops = {
       const { PLAN } = await plan("tools/levels/challenge-plan.mts");
       return levels.map((_, i) => PLAN[i]?.careless ?? null);
     }
-    const { WEEK } = await plan("tools/levels/daily-plan.mts");
-    return levels.map((l) => WEEK.find((r) => r.role === l.axes?.role)?.careless ?? null);
+    const { WEEK, SUITCASE_WEEK = [] } = await plan("tools/levels/daily-plan.mts");
+    return levels.map((l) => [...WEEK, ...SUITCASE_WEEK].find((r) => r.role === l.axes?.role)?.careless ?? null);
   },
 };
 

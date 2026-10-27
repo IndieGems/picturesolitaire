@@ -30,9 +30,11 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { random } from "../../src/game/rules.ts";
 import { hashId } from "../../src/game/levels/generate.ts";
-import { pick } from "../../src/game/levels/pick.ts";
-import { catchUp, dealBoard, flaggedOn, onSchedule, REMAKES, remadeInPlace, root, swapSets, tallyText, usable, usesOf, writeBoards } from "./lib.mts";
-import { WEEK } from "./daily-plan.mts";
+import { fits, pick } from "../../src/game/levels/pick.ts";
+import { byId, catalogue, catchUp, clearOrder, dealBoard, flaggedOn, itemById, itemClash, onSchedule, REMAKES, remadeInPlace, reserveLandmarks, root, swapSets, tallyText, usable, usesOf, writeBoards } from "./lib.mts";
+import { rowOn, SUITCASE_FROM, SUITCASE_WEEK, WEEK } from "./daily-plan.mts";
+import { CURRENT, LAST_BEFORE_T9, SPARES } from "./campaign-plan.mts";
+import { schedule } from "./suitcase.mts";
 
 const FILE = join(root, "src/content/levels/daily.json");
 const BOARD = { cols: 4, rows: 5 };
@@ -49,6 +51,27 @@ const parse = (d) => {
 const fmt = (t) => new Date(t).toISOString().slice(0, 10);
 
 const t0 = performance.now();
+// landmarks wait for their trips' destinations (lib.mts): none on a day made from SUITCASE_FROM
+reserveLandmarks();
+/**
+ * The pictures a day from SUITCASE_FROM may take (daily-plan.mts): squares of today's rules (none from
+ * before the clear pictures, no landmark: usable after reserveLandmarks), none of trips 9 and 10's new
+ * pictures or of the spares they show first (campaign-plan.mts), so those stay new to the campaign.
+ */
+const at = new Map(catalogue.map((p, k) => [p.id, k]));
+const lastKept = at.get(LAST_BEFORE_T9);
+const CURRENT_SQUARES = usable.filter((p) => p.cols === 2 && p.rows === 2 && !CURRENT.has(p.id) && !SPARES.has(p.id) && at.get(p.id) <= lastKept);
+/** The day's item (suitcase.mts schedule), from SUITCASE_FROM. */
+const itemOn = (date) => {
+  if (date < SUITCASE_FROM) return null;
+  const id = schedule(date.slice(0, 7))[Number(date.slice(8)) - 1];
+  const it = itemById.get(id);
+  if (!it) throw new Error(`${date}: the day's item ${id} is not in the catalogue's items (Art: pictures.json items)`);
+  if (it.cols !== 2 || it.rows !== 2) throw new Error(`${date}: item ${id} is ${it.cols}x${it.rows}, an item is 2x2`);
+  return it;
+};
+/** A picture the day's item rules out (lib.mts itemClash): its lookalike, the picture a stand-in borrows, a word in common. */
+const clashes = (it, p) => itemClash(it, p) !== null;
 const shipped = existsSync(FILE) ? JSON.parse(readFileSync(FILE, "utf8")).levels : [];
 const redealFrom = arg("--redeal-from");
 if (redealFrom) {
@@ -58,7 +81,7 @@ if (redealFrom) {
 }
 // peek is no part of the deal (dealFor), so a kept day takes its weekday's peek with its deal and line unchanged
 const withPeek = (l) => {
-  const peek = WEEK[new Date(parse(l.date)).getUTCDay()].peek;
+  const peek = rowOn(l.date).peek;
   return l.peek === peek ? l : { ...l, peek, ...(l.axes ? { axes: { ...l.axes, peek } } : {}) };
 };
 const pool = (redealFrom ? shipped.filter((l) => l.date < redealFrom) : shipped).map(withPeek);
@@ -78,7 +101,8 @@ const around = (k) => new Set([k - 2, k - 1, k + 1, k + 2].flatMap((j) => levels
  */
 function makeDay(k, date, sets, weigh) {
   const id = `d${date}`;
-  const row = WEEK[new Date(parse(date)).getUTCDay()];
+  const row = rowOn(date);
+  if (date >= SUITCASE_FROM) return makeSuitcaseDay(k, date, row, weigh);
   const recent = around(k);
   const opts = { id, date, ...BOARD, par: true, tries: 3000 };
   for (const [n, set] of sets.entries()) {
@@ -101,6 +125,52 @@ function makeDay(k, date, sets, weigh) {
   throw new Error(`${id}: no deal meets the day's type; loosen it`);
 }
 
+/**
+ * A day from SUITCASE_FROM (daily-plan.mts SUITCASE_WEEK): the day's item and count - 1 pictures picked
+ * from CURRENT_SQUARES, a deal on the row's targets with a safe start, whose stored line finishes the item
+ * neither first nor last (the next seed otherwise). The board records the item right after its size.
+ */
+function makeSuitcaseDay(k, date, row, weigh) {
+  const id = `d${date}`;
+  const it = itemOn(date);
+  const recent = around(k);
+  const pool = CURRENT_SQUARES.filter((p) => !clashes(it, p));
+  const spec = { count: row.count - 1, alike: [], cards: [(row.count - 1) * 4, (row.count - 1) * 4], sizes: [4], vary: true, busyMost: row.busyMost, liveMost: row.liveMost, meanFamilies: true };
+  const failed = new Map();
+  for (let attempt = 0; attempt < 12; attempt++) {
+    const avoid = new Map([...weigh()].map(([q, v]) => [q, v + (failed.get(q) ?? 0)]));
+    for (const p of recent) avoid.set(p, (avoid.get(p) ?? 0) + 1000);
+    const picked = pick(pool, spec, avoid, recent, random((hashId(id) + attempt * 104729) >>> 0));
+    if (!picked) throw new Error(`${id}: no pictures fit the day's type beside item ${it.id}`);
+    const pictures = [...picked, { id: it.id, cols: 2, rows: 2 }];
+    // seeds on from 1, stepping past a deal whose line finishes the item first or last
+    let from = 1;
+    for (let tries = 0; tries < 40; tries++) {
+      const { board, tally } = dealBoard(row, pictures, { id, date, ...BOARD, par: true, tries: 3000, safeFirstMove: true, from });
+      if (!board) {
+        console.log(`${id}: pictures set ${attempt} found no deal (${tallyText(tally)})`);
+        break;
+      }
+      const order = clearOrder(board);
+      const atClear = order.indexOf(board.pictures.findIndex((p) => p.id === it.id));
+      if (atClear > 0 && atClear < order.length - 1) return withItem(board, it.id);
+      from = board.seed + 1;
+    }
+    for (const p of picked) failed.set(p.id, (failed.get(p.id) ?? 0) + 2);
+  }
+  throw new Error(`${id}: no deal meets the day's type with its item mid-line; loosen it`);
+}
+/** The board with its item record right after its size (as a campaign board's destination). */
+function withItem(board, itemId) {
+  const out = {};
+  for (const [key, v] of Object.entries(board)) {
+    if (key === "item") continue;
+    out[key] = v;
+    if (key === "rows") out.item = { id: itemId };
+  }
+  return out;
+}
+
 // 1. kept days that use a flagged picture: its remake in its place, else as few pictures changed as can be
 levels.forEach((l, k) => {
   const bad = flaggedOn(l.pictures);
@@ -116,17 +186,46 @@ levels.forEach((l, k) => {
   }
   console.log(`${l.id}: uses flagged ${bad.join(", ")}; re-dealing it`);
   for (const p of l.pictures) uses.set(p.id, uses.get(p.id) - 1);
-  const row = WEEK[new Date(parse(l.date)).getUTCDay()];
+  const row = rowOn(l.date);
   const recent = around(k);
   const sets = swapSets({ count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, vary: row.vary, busyMost: row.busyMost }, l.pictures, uses, (id) => (recent.has(id) ? 1000 : 0));
   levels[k] = makeDay(k, l.date, sets, () => uses);
   for (const p of levels[k].pictures) uses.set(p.id, uses.get(p.id) + 1);
 });
 
+// 1b. kept suitcase days whose item now clashes with one of their pictures (Art's real item, with its
+// own words, replacing a stand-in after the day was made): that picture gives way IN PLACE to another
+// square of today's rules that clashes with nothing, the least used first. A board of squares deals
+// the same from any square pictures (dealFor reads shapes only), so the deal, line and measures stay
+// as they were; check.mts re-proves the day
+levels.forEach((l, k) => {
+  if (!l.item) return;
+  const it = itemById.get(l.item.id);
+  if (!it) throw new Error(`${l.id}: item ${l.item.id} is not in the catalogue's items`);
+  const row = rowOn(l.date);
+  const spec = { count: row.count - 1, alike: [], cards: [(row.count - 1) * 4, (row.count - 1) * 4], sizes: [4], vary: true, busyMost: row.busyMost, liveMost: row.liveMost };
+  let pictures = l.pictures;
+  for (const [j, p] of l.pictures.entries()) {
+    if (p.id === it.id || !itemClash(it, byId.get(p.id) ?? p)) continue;
+    // a day some player may have reached never changes (as --redeal-from): Art's item must fit it instead
+    if (l.date <= fmt(Date.now() + 14 * 3600_000)) throw new Error(`${l.id}: ${p.id} clashes with item ${it.id} (${itemClash(it, byId.get(p.id) ?? p)}), and the day may be played already; change the item, not the day`);
+    const near = around(k);
+    const others = pictures.filter((q) => q.id !== it.id && q.id !== p.id);
+    const swap = CURRENT_SQUARES.filter((c) => !clashes(it, c) && !near.has(c.id) && !pictures.some((q) => q.id === c.id) && fits(catalogue, spec, [...others, { id: c.id, cols: 2, rows: 2 }]))
+      .sort((a, b) => (uses.get(a.id) ?? 0) - (uses.get(b.id) ?? 0) || (a.id < b.id ? -1 : 1))[0];
+    if (!swap) throw new Error(`${l.id}: ${p.id} clashes with item ${it.id} (${itemClash(it, byId.get(p.id) ?? p)}) and no square can take its place`);
+    console.log(`${l.id}: ${p.id} -> ${swap.id} in place (${itemClash(it, byId.get(p.id) ?? p)} in common with item ${it.id}, ${it.title}); the deal and line unchanged`);
+    pictures = pictures.map((q, i) => (i === j ? { id: swap.id, cols: 2, rows: 2 } : q));
+    uses.set(p.id, uses.get(p.id) - 1);
+    uses.set(swap.id, (uses.get(swap.id) ?? 0) + 1);
+  }
+  if (pictures !== l.pictures) levels[k] = { ...l, pictures, ...(l.axes?.families ? { axes: { ...l.axes, families: pictures.map((q) => (byId.get(q.id) ?? itemById.get(q.id))?.family ?? q.id) } } : {}) };
+});
+
 // 2. new days, the least-used pictures caught up over all of them
 const days = [];
 for (let t = next; t <= to; t += DAY) days.push(fmt(t));
-const slots = days.reduce((n, d) => n + WEEK[new Date(parse(d)).getUTCDay()].count, 0);
+const slots = days.reduce((n, d) => n + rowOn(d).count, 0);
 const plan0 = catchUp(uses, slots);
 let done = 0;
 for (const date of days) {
@@ -136,7 +235,7 @@ for (const date of days) {
   done += board.pictures.length;
 }
 if (!days.length && levels.every((l, k) => l === shipped[k]) && levels.length === shipped.length) {
-  console.log(`the pool runs to ${shipped.at(-1)?.date ?? "-"} and uses no flagged picture; nothing to do (--to adds days)`);
+  console.log(`the pool runs to ${shipped.at(-1)?.date ?? "-"}, uses no flagged picture and no item clashes; nothing to do (--to adds days)`);
   process.exit(0);
 }
 writeBoards(arg("--out") ?? FILE, "daily pool: one board per date, the same for every player; made by tools/levels/make-daily.mts (it keeps every day it has, re-dealing only a day with a flagged picture), checked by tools/levels/check.mts; par = moves in the stored line", levels);
@@ -144,11 +243,16 @@ writeBoards(arg("--out") ?? FILE, "daily pool: one board per date, the same for 
 if (arg("--out")) process.exit(0);
 // ---------------------------------------------------------------- docs/daily.md
 const counts = usable.map((p) => levels.filter((l) => l.pictures.some((q) => q.id === p.id)).length);
-const byRole = WEEK.map((w, d) => {
-  const ls = levels.filter((l) => l.axes.role === w.role);
-  const avg = (f) => (ls.reduce((n, l) => n + f(l), 0) / Math.max(1, ls.length)).toFixed(1);
-  return `| ${["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][d]} | ${w.count} | ${w.alike.join(" + ") || "none"} | ${w.sizes.join(" ")} | ${w.cards.join("-")} | ${w.peek} | ${w.chain.join("-")} | ${w.careless.map((x) => Math.round(x * 100) + "%").join("-")} | ${avg((l) => l.par)} |`;
-});
+const NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const tableOf = (week) =>
+  week.map((w, d) => {
+    const ls = levels.filter((l) => l.axes.role === w.role);
+    const avg = (f) => (ls.reduce((n, l) => n + f(l), 0) / Math.max(1, ls.length)).toFixed(1);
+    const careless = ls.length ? `${Math.round(Math.min(...ls.map((l) => l.axes.careless)) * 100)}-${Math.round(Math.max(...ls.map((l) => l.axes.careless)) * 100)}%` : "-";
+    return `| ${NAMES[d]} | ${w.count} | ${w.alike.join(" + ") || "none"} | ${w.sizes.join(" ")} | ${w.cards.join("-")} | ${w.peek} | ${w.chain[1] >= 99 ? "any" : w.chain.join("-")} | ${w.careless.map((x) => Math.round(x * 100) + "%").join("-")} | ${careless} | ${avg((l) => l.par)} |`;
+  });
+const head = "| weekday | pictures | lookalikes | cards per picture | cards | shown | chain | careless win, target | careless win, dealt | mean par |\n|---|---|---|---|---|---|---|---|---|---|";
+const firstSuitcase = levels.find((l) => l.date >= SUITCASE_FROM);
 const md = `# The daily puzzle
 
 One board per calendar date, the same deal for every player on that date
@@ -159,17 +263,41 @@ days. Every board is re-proved by
 \`node tools/levels/check.mts\`. Do not edit by hand.
 
 The pool starts on 1 August 2026 so that an archive of this month and the two
-before it has a board for every day it can show.
+before it has a board for every day it can show. Every day has a weekly rhythm,
+so that days next to each other feel different. The weekday is the date's own,
+the same for everyone. Each board's par is the fewest moves the solver found.
 
-Every day is mid-campaign difficulty (about campaign boards 11 to 19), with a
-weekly rhythm so that days next to each other feel different. The weekday is
-the date's own, the same for everyone. Each board's par is the fewest moves the
-solver found.
+## Until ${fmt(parse(SUITCASE_FROM) - DAY)}
 
-| weekday | pictures | lookalikes | cards per picture | cards | shown | chain | careless win | mean par |
-|---|---|---|---|---|---|---|---|---|
-${byRole.join("\n")}
+Mid-campaign difficulty (about campaign boards 11 to 19), pictures of mixed sizes.
 
+${head}
+${tableOf(WEEK).join("\n")}
+${firstSuitcase ? `
+## From ${SUITCASE_FROM}: the Daily Suitcase
+
+Each board hides the day's item (\`src/content/levels/suitcases.json\`;
+[daily-suitcase.md](daily-suitcase.md)) as one of its squares, finished like
+any picture; the stored line finishes it neither first nor last. Made under
+today's rules: a 4x5 board of squares only, readable (a player who draws by the
+face-up cards wins 85% or more), a safe start, current pictures only (no
+landmark, none from before the clear pictures, none of trips 9 and 10's new
+ones), no lookalikes, nothing busy 2 and at most one busy picture. The
+pictures count includes the item. A survey of 4x5 square deals (2026-10-27,
+200 seeds each): 8 or 9 squares at these targets are nearly always readable,
+10 almost never.
+
+The data (agreed with Gameplay, UI, Server and Art): a day's board carries
+\`"item": { "id": "item-YYYY-MM-NN" }\` right after its size, the id one of its
+own 2x2 pictures, whose files are in pictures.json \`items\`. The month's theme,
+table, ten items and the item of each day are in \`suitcases.json\`
+(\`node tools/levels/make-suitcases.mts\`, run before this maker). Each item comes
+up 2 to 4 times a month, none has all its days within a week, and none comes
+back within 3 days (\`tools/levels/suitcase.mts\`, seeded by the month alone).
+
+${head}
+${tableOf(SUITCASE_WEEK).join("\n")}
+` : ""}
 Every picture's appearances in the pool: ${Math.min(...counts)} to ${Math.max(...counts)} (mean ${(counts.reduce((a, b) => a + b, 0) / counts.length).toFixed(1)}); no picture is on two boards within three days.
 `;
 writeFileSync(join(root, "docs/daily.md"), md);

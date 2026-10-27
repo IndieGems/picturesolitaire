@@ -48,6 +48,19 @@
 //   - a lesson board (lessons.json; make-lessons.mts), which opens stuck on
 //     purpose: its own proof instead of "not a dead end" and "the solver can
 //     win the deal" (checkLesson), and its line replays after its shuffle.
+//   - THE DAILY SUITCASE (creator, 2026-10-27; docs/daily-suitcase.md): a daily
+//     from daily-plan.mts SUITCASE_FROM carries its day's item (suitcases.json
+//     `days`), an item picture of that month (Art's `items`) in its pictures
+//     exactly once, 2x2 on a board of squares, with nothing beside it of its
+//     family or sharing a word with it (lib.mts itemClash), and
+//     its stored line finishes the item neither first nor last; that day is
+//     also readable, starts safe, and holds no landmark and no picture from
+//     before the clear ones. An item plays only as its day's item. And
+//     suitcases.json is exactly what make-suitcases.mts writes (each month's
+//     schedule seeded by the month alone; suitcase.mts scheduleProblem holds:
+//     each item 2-4 times, none with all its days in one week, none back
+//     within GAP days), month after month from FIRST_MONTH to the daily
+//     pool's last month.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
 import { existsSync, readdirSync, readFileSync } from "node:fs";
@@ -57,15 +70,23 @@ import { arrange, cardsOf, isDeadEnd, isWon, joinCount, replay, start } from "..
 import { Game } from "../../src/game/solver/index.ts";
 import { along, CAREFUL, careless, chain, orderTraps, READABLE, reader, traps, unavoidable, wait } from "../../src/game/solver/metrics.ts";
 import { BIG, dealFor, deadFirstMoves, doomingFirstClears } from "../../src/game/levels/generate.ts";
-import { byId, destById, flags, LESSON_MOVES } from "./lib.mts";
-import { DISTINCT, MARKS, MAY_TRAP, TRIPS } from "./campaign-plan.mts";
+import { byId, clearOrder, destById, flags, itemById, itemClash, LESSON_MOVES } from "./lib.mts";
+import { CURRENT, DISTINCT, MARKS, MAY_TRAP, TRIPS } from "./campaign-plan.mts";
+import { SUITCASE_FROM } from "./daily-plan.mts";
+import { monthOf, monthsTo } from "./make-suitcases.mts";
+import { scheduleProblem } from "./suitcase.mts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 // the library pictures and the destination postcards (lib.mts; PICTURES=<file> checks a trial catalogue)
 const catalogue = byId;
 const files = process.argv.slice(2);
 const dir = join(root, "src/content/levels");
-if (!files.length) for (const f of readdirSync(dir).sort()) if (f.endsWith(".json") && f !== "trips.json") files.push(join(dir, f));
+// trips.json and suitcases.json are no boards files (each is checked on its own below)
+if (!files.length) for (const f of readdirSync(dir).sort()) if (f.endsWith(".json") && f !== "trips.json" && f !== "suitcases.json") files.push(join(dir, f));
+// the Daily Suitcase's months (make-suitcases.mts): the day's item of each date
+const suitcasesFile = join(dir, "suitcases.json");
+const SUITCASES = existsSync(suitcasesFile) ? JSON.parse(readFileSync(suitcasesFile, "utf8")).months : [];
+const itemOfDay = new Map(SUITCASES.flatMap((m) => Object.entries(m.days)));
 
 // the campaign's first trip, for the lessons (a lesson's pictures are none of its boards')
 const campaignFile = join(dir, "campaign.json");
@@ -141,11 +162,43 @@ for (const file of files) {
         if (twin) fail(`destination ${id} looks like ${twin.id} (family ${fam}), on the same board`);
         if (d?.crop && JSON.stringify(d.crop) !== JSON.stringify(crop)) fail(`destination ${id}: crop ${JSON.stringify(crop)}, the catalogue's is ${JSON.stringify(d.crop)} (re-run the maker)`);
       }
+      // the Daily Suitcase: a daily from SUITCASE_FROM hides its day's item (daily-plan.mts, make-daily.mts)
+      const suitcaseDay = l.date !== undefined && l.date >= SUITCASE_FROM;
+      if (l.item !== undefined && !suitcaseDay) fail(`an item on a board that is no daily from ${SUITCASE_FROM}`);
+      if (suitcaseDay) {
+        const want = itemOfDay.get(l.date);
+        const id = l.item?.id;
+        if (!want) fail(`no item for ${l.date} in suitcases.json (node tools/levels/make-suitcases.mts)`);
+        else if (id !== want) fail(`item ${id ?? "none"}, the day's item is ${want} (suitcases.json)`);
+        const it = id && itemById.get(id);
+        if (id && !it) fail(`item ${id} is not in the catalogue's items`);
+        if (it && it.month !== l.date.slice(0, 7)) fail(`item ${id} is ${it.month}'s, the day is ${l.date}`);
+        const times = l.pictures.filter((p) => p.id === id).length;
+        if (times !== 1) fail(`item ${id} is in the pictures ${times} times, not once`);
+        if (l.pictures.some((p) => p.cols !== 2 || p.rows !== 2)) fail("a suitcase day is a board of squares only (AGENTS.md: all 2x2 or all long; the item is a 2x2)");
+        // nothing beside the item looks like it or shares a word with it (lib.mts itemClash; make-daily.mts swaps one out in place)
+        if (it) for (const p of l.pictures) if (p.id !== id && itemClash(it, catalogue.get(p.id) ?? p)) fail(`${p.id} clashes with item ${id} (${itemClash(it, catalogue.get(p.id) ?? p)}): run make-daily.mts, which swaps it out in place`);
+        for (const p of l.pictures) {
+          if (catalogue.get(p.id)?.landmark) fail(`${p.id} is a landmark`);
+          if (CURRENT.has(p.id)) fail(`${p.id} is from before the clear pictures (campaign-plan.mts CURRENT)`);
+        }
+        if (times === 1) {
+          const order = clearOrder(l);
+          const at = order.indexOf(l.pictures.findIndex((p) => p.id === id));
+          if (!(at > 0 && at < order.length - 1)) fail(`the stored line finishes item ${id} ${at === 0 ? "first" : at < 0 ? "never" : "last"}; it opens mid-board`);
+        }
+      }
       for (const p of l.pictures) {
         if (flags.has(p.id)) {
           const note = flags.get(p.id).note;
           fail(`uses flagged picture ${p.id}`);
           flaggedUses.push({ board: l.id, line: `board ${l.id} uses flagged picture ${p.id}${note ? ` ("${note}")` : ""}` });
+        }
+        // a suitcase item plays only as its daily's item (checked above)
+        if (itemById.has(p.id)) {
+          if (l.item?.id !== p.id) fail(`item ${p.id} is dealt as an ordinary picture, not as the day's item`);
+          if (p.cols !== 2 || p.rows !== 2) fail(`item ${p.id} plays as ${p.cols}x${p.rows}, an item is 2x2`);
+          continue;
         }
         // a postcard plays only as its board's destination (its size is checked above)
         if (destById.has(p.id)) {
@@ -177,7 +230,7 @@ for (const file of files) {
           if (k >= 0) fail(`${p.id} is on board ${data.levels[k].id} too (no picture is on two of boards 1-${DISTINCT})`);
         }
       }
-      if ((file.endsWith("campaign.json") && !MAY_TRAP.has(l.axes?.role)) || file.endsWith("experiments.json")) {
+      if ((file.endsWith("campaign.json") && !MAY_TRAP.has(l.axes?.role)) || file.endsWith("experiments.json") || suitcaseDay) {
         const dead = deadFirstMoves(deal);
         if (dead.length) fail(`${dead.length} first move(s) leave the board stuck, e.g. ${dead[0].from} to ${dead[0].to}`);
         const g0 = new Game(s);
@@ -198,7 +251,7 @@ for (const file of files) {
       // readable (creator, 2026-10-27): an unmarked campaign board is one a player who draws by the
       // face-up cards wins READABLE or more of the time (metrics.ts READER; it assumes the next card
       // face up). The challenge route and the daily are not held to it (docs/difficulty-curve.md)
-      if (file.endsWith("campaign.json") && !MAY_TRAP.has(l.axes?.role)) {
+      if ((file.endsWith("campaign.json") && !MAY_TRAP.has(l.axes?.role)) || suitcaseDay) {
         const rd = reader(game);
         if (rd < READABLE) fail(`not readable: a player who draws by the face-up cards wins ${Math.round(rd * 100)}%, under ${READABLE * 100}% (make-campaign.mts --reseat ${data.levels.indexOf(l) + 1})`);
       }
@@ -239,6 +292,24 @@ if (flaggedUses.length)
     `\nPictures flagged "don't use" are on ${new Set(flaggedUses.map((u) => u.board)).size} board(s):\n  ${flaggedUses.map((u) => u.line).join("\n  ")}\n` +
       `Re-deal them, keeping every other board as it is: node tools/levels/redeal.mts\n`,
   );
+// the Daily Suitcase's months: exactly what make-suitcases.mts writes, from FIRST_MONTH to the pool's last month
+const dailyFile = join(dir, "daily.json");
+if (!process.argv.slice(2).length && existsSync(dailyFile)) {
+  const pool = JSON.parse(readFileSync(dailyFile, "utf8")).levels;
+  const bad = [];
+  const last = pool.at(-1)?.date.slice(0, 7);
+  const want = last && last >= SUITCASE_FROM.slice(0, 7) ? monthsTo(last) : [];
+  if (JSON.stringify(SUITCASES.map((m) => m.month)) !== JSON.stringify(want)) bad.push(`its months are ${SUITCASES.map((m) => m.month).join(", ") || "none"}, the daily pool needs ${want.join(", ") || "none"}`);
+  for (const m of SUITCASES) {
+    const problem = scheduleProblem(m.month, Object.values(m.days));
+    if (problem) bad.push(`${m.month}: ${problem}`);
+    if (JSON.stringify(m) !== JSON.stringify(monthOf(m.month))) bad.push(`${m.month} is not what make-suitcases.mts writes (re-run it: Art's themes, titles or the schedule changed)`);
+  }
+  if (bad.length) {
+    failed++;
+    console.error(`FAIL suitcases.json: ${bad.join("; ")}`);
+  } else if (SUITCASES.length) console.log(`suitcases: ${SUITCASES.length} months, ${SUITCASES[0].month} to ${SUITCASES.at(-1).month}${SUITCASES.some((m) => m.standIn) ? ` (stand-ins: ${SUITCASES.filter((m) => m.standIn).map((m) => m.month).join(", ")})` : ""}`);
+}
 // the trips: the plan's list, back to back from board 1, every campaign board in one
 const tripsFile = join(dir, "trips.json");
 if (!process.argv.slice(2).length && existsSync(tripsFile)) {
