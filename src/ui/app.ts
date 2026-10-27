@@ -47,7 +47,7 @@ import { createChallenges } from "./challenges";
 import { createGuide, type GuideMode } from "./guide";
 import { fireworks } from "./fireworks";
 import type { Challenge } from "./challenge-data";
-import { level as campaignLevel, type Daily, type Level } from "../game/levels";
+import { lessonLevel, level as campaignLevel, type Daily, type Level } from "../game/levels";
 import { createDaily } from "./daily";
 import { clock, shortDate } from "./format";
 import { claimWin, cueCoins, onVerdict, type Verdict } from "../net/claims";
@@ -59,13 +59,16 @@ import { createViewer } from "./viewer";
 import { closed, cornerKey, opened } from "./dialogs";
 import { markOf, markTag, markWords, pretendMarks, type Mark } from "./marks";
 import { allDone, awaitingRecord, createHome, nextBoard } from "./home";
+import { KINDS, KIT, stock, type HelperKind } from "./stock";
+import { createRunOut } from "./helper-shop";
+import { createLessons, type LessonName } from "./lessons";
 import { createDestinationBanner, type Destination } from "./destination";
 import { createPassport, type AfterStamp } from "./passport";
 import { tripById, tripEndingAt, tripName } from "./trips";
 import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy } from "./catalogue";
 import { ensure, resident } from "../packs";
 import { mountParticles } from "./particles";
-import { boardFiles, levelCount, openBoard, type BoardHandle, type BoardPicture, type HelperCounts } from "./board-api";
+import { boardFiles, levelCount, openBoard, type BoardHandle, type BoardPicture } from "./board-api";
 import type { DevMenu } from "./dev-menu";
 
 // ---------- a little DOM ----------
@@ -117,7 +120,7 @@ back.setAttribute("aria-label", t("board.back"));
 const host = h("div", { class: "board-host" });
 const restartBtn = button("restart", "board.restart", icon("restart"), t("board.restart"));
 
-type HelperKey = keyof HelperCounts;
+type HelperKey = HelperKind;
 const helperBtns = {} as Record<HelperKey, { btn: HTMLButtonElement; badge: HTMLElement }>;
 function helper(key: HelperKey, name: IconName, label: string): HTMLButtonElement {
   const badge = h("span", { class: "badge", "aria-hidden": "true" });
@@ -171,7 +174,10 @@ const passportUi = createPassport({ home: () => goHome(), show: () => show("pass
 // the challenge route (challenges.ts)
 const routeUi = createChallenges({ home: () => goHome(), show: () => show("challenges"), play: (c) => openPlay({ kind: "challenge", c }) });
 
-app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, offlineVeil);
+// RUN-OUT (helper-shop.ts): a helper with none left, tapped; bought, it is used at once
+const runOut = createRunOut(stock, (k) => pressHelper(k));
+
+app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, runOut.element, offlineVeil);
 
 // ---------- state ----------
 
@@ -186,6 +192,7 @@ export type Play = (
   | { kind: "challenge"; c: Challenge }
   | { kind: "daily"; d: Daily }
   | { kind: "experiment"; x: Experiment }
+  | { kind: "lesson"; x: Level }
 ) & {
   practice?: boolean;
   guide?: boolean;
@@ -200,7 +207,7 @@ const samePlay = (a: Play | null, b: Play): boolean => {
   if (!a || a.kind !== b.kind || isPractice(a) !== isPractice(b) || (isPractice(a) && !!a.guide !== !!b.guide)) return false;
   if (a.kind === "campaign") return a.level === (b as typeof a).level;
   if (a.kind === "challenge") return a.c.id === (b as typeof a).c.id;
-  if (a.kind === "experiment") return a.x.id === (b as typeof a).x.id;
+  if (a.kind === "experiment" || a.kind === "lesson") return a.x.id === (b as typeof a).x.id;
   return a.d.id === (b as typeof a).d.id;
 };
 
@@ -232,6 +239,24 @@ const guide = createGuide({
   stillHere: () => screen === "board" && play?.kind === "campaign" && play.level === 1 && !boardWon,
 });
 
+// the two lessons after the guide (lessons.ts): Undo on board 2, Shuffle on a practice board before board 4
+const lessons = createLessons({
+  app,
+  button: (name) => helperBtns[name].btn,
+  others: () =>
+    [back, restartBtn, helperBtns.undo.btn, helperBtns.hint.btn, helperBtns.shuffle.btn, document.getElementById("settings-button")].filter(
+      (el): el is HTMLElement => !!el,
+    ),
+  setBoard: (mode) => (board as GuidedBoard | null)?.guide?.(mode),
+  free: (name) => (board as LessonBoard | null)?.lesson?.(name),
+  stillHere: (name) =>
+    screen === "board" && !boardWon && (name === "undo" ? play?.kind === "campaign" && play.level === 2 : play?.kind === "lesson"),
+});
+/** The board's lesson call (the gameplay member's): the next use of that helper is free. */
+type LessonBoard = BoardHandle & { lesson?: (k: LessonName | null) => void };
+/** The Shuffle lesson's staged board (the level designer's, loaded by the gameplay member), once loaded. */
+let shuffleBoard: Level | null = null;
+
 const levels = () => levelCount();
 /** A campaign position as the board's own number (the campaign goes round past the last board). */
 const boardNumber = (n: number) => ((n - 1) % levels()) + 1;
@@ -253,6 +278,10 @@ function show(next: Screen): void {
   if (next === "home") drawHomeNote();
   else homeNote.hidden = true;
   if (next !== "album") albumsUi.closeViewer();
+  if (next !== "board") {
+    runOut.close();
+    lessons.cancel();
+  }
   winViewer.close();
   screenChanged();
   drawOffline();
@@ -333,6 +362,9 @@ let packWait = 0;
 function openPlay(next: Play): void {
   // the dev menu's endless helpers are on: a win helped along never pays, so every board is practice
   if (import.meta.env.MODE !== "release" && dev?.practiceOnly() && !next.practice) next = { ...next, practice: true };
+  // the first way to board 4 goes through the Shuffle lesson (lessons.ts), once per player
+  if (next.kind === "campaign" && next.level === 4 && !isPractice(next) && campaignNext() <= 4 && shuffleBoard && lessons.shuffleOwed())
+    next = { kind: "lesson", x: shuffleBoard };
   if (!online()) {
     waiting = next;
     drawOffline();
@@ -378,10 +410,13 @@ function openLoaded(next: Play): void {
     movesSoFar = null;
     unstick();
     drawPill();
-    // the board reports its helpers and undo through board:changed, once at start too
-    drawHelpers({ undo: 3, hint: 3, shuffle: 3 }, false);
+    canUndoNow = false;
     guide.cancel();
+    lessons.cancel();
+    runOut.close();
     board = openBoard(host, next.kind === "campaign" ? next.level : next.kind === "challenge" ? next.c.level : next.kind === "daily" ? next.d : next.x);
+    // the player's own stock on the buttons (the board reports undo through board:changed)
+    drawHelpers();
     showMarkBanner(next.kind === "campaign" ? markOf(campaignLevel(next.level)) : null);
     if (import.meta.env.MODE !== "release") dev?.opened(board);
     // the first board teaches the game, once the save says the player has not learnt it yet;
@@ -390,6 +425,9 @@ function openLoaded(next: Play): void {
       if (!isPractice(next)) void guide.offer();
       else if (next.guide) void guide.practise();
     }
+    // board 2, not won before: the Undo lesson, after the first move; the lesson board: Shuffle's
+    if (next.kind === "campaign" && next.level === 2 && !isPractice(next) && campaignNext() <= 2) void lessons.offerUndo();
+    if (next.kind === "lesson") lessons.startShuffle();
   }
   show("board");
 }
@@ -436,6 +474,10 @@ function drawPill(): void {
     levelPill.replaceChildren(dev?.label(play) ?? play.x.id, ...(tag ? [tag] : []));
     return;
   }
+  if (play.kind === "lesson") {
+    levelPill.replaceChildren(h("span", { class: "level-name" }, t("lesson.pill")));
+    return;
+  }
   const par = play.kind === "challenge" ? play.c.par : play.d.par;
   pillName.textContent = play.kind === "challenge" ? t("board.challenge", { n: play.c.n }) : t("board.daily", { date: shortDate(play.d.date) });
   if (tag) pillName.append(tag);
@@ -476,6 +518,11 @@ function inGuidedStart(): boolean {
   return play?.kind === "campaign" && play.level === 1 && !guideDone();
 }
 
+/** A lesson under way (lessons.ts): its board in play, or the lesson board's card. */
+function inLesson(): boolean {
+  return lessons.active() || play?.kind === "lesson" || (lastWin?.kind === "lesson" && boardWon);
+}
+
 /**
  * A press that leaves a break (the game standard, "Ads are each game's choice": break
  * ads; the SDK's platform-moments.md). The Arcade alone decides whether anything of its
@@ -484,8 +531,8 @@ function inGuidedStart(): boolean {
  * Resolves when the Arcade has answered (it never rejects).
  */
 function signalBreak(kind: "level_end" | "menu_return", placement: string): Promise<void> {
-  // nothing of the Arcade's over the guided start, nor over the creator's practice
-  if (inGuidedStart() || isPractice(play)) return Promise.resolve();
+  // nothing of the Arcade's over the guided start, inside a lesson, nor over the creator's practice
+  if (inGuidedStart() || inLesson() || isPractice(play)) return Promise.resolve();
   return gem.moments.signal({ kind, placement }).then(
     () => undefined,
     () => undefined,
@@ -523,26 +570,74 @@ function toRoute(): void {
   void routeUi.openRoute();
 }
 
-function drawHelpers(counts: HelperCounts, canUndo: boolean): void {
-  for (const key of ["undo", "hint", "shuffle"] as const) {
+// THE HELPERS are the player's own stock (the creator, 2026-10-27): Hints, Undos and Shuffles held by
+// the Arcade, carried from board to board, at most 10 of each (stock.ts, over Server's helpers.ts).
+// A press with some left acts at once (an Undo never waits on the network), and one is spent only once
+// the board says it acted and it was not free; a press with none left opens the run-out panel. Free:
+// the guided first board (before the travel kit comes), a lesson's lit button and its board, and the
+// creator's practice.
+/** Every helper on this board costs nothing. */
+function freeHelpers(): boolean {
+  return inGuidedStart() || play?.kind === "lesson" || isPractice(play);
+}
+/** The counts last drawn, so a count that grew (the kit, a gift, a purchase) gives its badge a pop. */
+const shown: Partial<Record<HelperKey, number>> = {};
+function drawHelpers(): void {
+  const free = freeHelpers();
+  const guest = stock.guest();
+  for (const key of KINDS) {
     const { btn, badge } = helperBtns[key];
-    const left = counts[key];
-    badge.textContent = String(left);
-    btn.classList.toggle("spent", left <= 0);
-    btn.classList.toggle("resting", left <= 0 || (key === "undo" && !canUndo));
-    btn.setAttribute("aria-label", `${t(`board.${key}`)}, ${t("board.helperLeft", { count: left })}`);
+    const left = stock.count(key);
+    const out = !free && left <= 0;
+    // none left: "+" (more to be had; a guest's says 0), and a tap opens the run-out panel
+    badge.textContent = out ? (guest ? "0" : "+") : String(left);
+    btn.classList.toggle("free", free);
+    btn.classList.toggle("out", out);
+    btn.classList.toggle("guest", guest);
+    btn.classList.toggle("resting", key === "undo" && !out && !canUndoNow);
+    if ((shown[key] ?? left) < left) {
+      btn.classList.remove("grew");
+      void btn.offsetWidth;
+      btn.classList.add("grew");
+    }
+    shown[key] = left;
+    btn.setAttribute(
+      "aria-label",
+      free ? t(`board.${key}`) : out ? `${t(`board.${key}`)}, ${t("board.helperNone")}` : `${t(`board.${key}`)}, ${t("board.helperLeft", { count: left })}`,
+    );
   }
 }
 
-helperBtns.undo.btn.addEventListener("click", () => board?.undo());
-helperBtns.hint.btn.addEventListener("click", () => board?.hint());
-helperBtns.shuffle.btn.addEventListener("click", () => board?.shuffle());
+/** A helper pressed (or just bought): it acts, or, with none left and nothing free, the run-out panel opens. */
+function pressHelper(k: HelperKey): void {
+  if (!board || boardWon) return;
+  if (!freeHelpers() && lessons.lit() !== k && stock.count(k) <= 0) return void runOut.open(k);
+  if (k === "undo") board.undo();
+  else if (k === "hint") board.hint();
+  else board.shuffle();
+}
+for (const k of KINDS) helperBtns[k].btn.addEventListener("click", () => pressHelper(k));
+
+// the board acted: one spent, unless it was free (a lesson's, the guide's Hint: `lesson`), or the board
+// costs nothing; a spend that got no answer is Server's to send again, and "none" (another device used
+// the last) is read again, the act standing
+const spendOn = (k: HelperKey) => (e: { lesson?: boolean }) => {
+  if (e.lesson || freeHelpers()) return;
+  void stock.spend(k);
+  drawHelpers();
+};
+on("helper:undo", spendOn("undo"));
+on("helper:hint", spendOn("hint"));
+on("helper:shuffle", spendOn("shuffle"));
+stock.onChange(() => {
+  drawHelpers();
+  drawStuck();
+  runOut.redraw();
+});
 
 on("board:changed", (e) => {
-  drawHelpers(e.helpers, e.canUndo);
-  shufflesLeft = e.helpers.shuffle;
-  undosLeft = e.helpers.undo;
   canUndoNow = e.canUndo;
+  drawHelpers();
   // stuck still: the way out may have changed (an Undo spent, the last Shuffle gone)
   drawStuck();
   // the moves so far, where the board reports them: a challenge's top row counts against par
@@ -562,22 +657,49 @@ on("board:changed", (e) => {
 // built for this), else Undo while one is left and there is a move to take back, else Restart
 // (always free). Only ever said when proved: a solver out of budget proves nothing.
 let stuck = false;
-/** What the board has left (board:changed), and whether a Shuffle just found no better mix. */
-let shufflesLeft = 0;
-let undosLeft = 0;
+/** Whether there is a move to take back (board:changed), and whether a Shuffle just found no better mix. */
 let canUndoNow = false;
 let shuffleRefused = false;
 type WayOut = "shuffle" | "undo" | "restart";
+/** The player has this helper to use now (their stock, or free here). */
+const toHand = (k: HelperKey): boolean => freeHelpers() || stock.count(k) > 0;
+/** The way out lit: one the player holds (Shuffle, else Undo with a move to take back), else Restart, always free. */
 function wayOut(): WayOut {
-  if (shufflesLeft > 0 && !shuffleRefused) return "shuffle";
-  if (undosLeft > 0 && canUndoNow) return "undo";
+  if (toHand("shuffle") && !shuffleRefused) return "shuffle";
+  if (toHand("undo") && canUndoNow) return "undo";
   return "restart";
+}
+/**
+ * One of the notice's three ways out, as a chip: its glyph and what it costs here: how many are
+ * left, its price where none are (a guest's: none left), or free (Restart, always).
+ */
+function wayChip(w: WayOut, lit: boolean): HTMLElement {
+  const cls = `w${lit ? " lit" : ""}`;
+  if (w === "restart") return h("span", { class: cls }, icon("restart"), h("span", {}, t("board.wayFree")));
+  const name = t(`board.${w}`);
+  const left = stock.count(w);
+  const price = stock.price(w);
+  if (freeHelpers()) return h("span", { class: cls, "aria-label": `${name}: ${t("board.wayFree")}` }, icon(w), h("span", {}, t("board.wayFree")));
+  if (left > 0) return h("span", { class: cls, "aria-label": `${name}: ${t("board.helperLeft", { count: left })}` }, icon(w), h("span", {}, t("board.helperLeft", { count: left })));
+  if (stock.guest() || price === null) return h("span", { class: cls, "aria-label": `${name}: ${t("board.helperNone")}` }, icon(w), h("span", {}, t("board.wayNone")));
+  return h(
+    "span",
+    { class: cls, "aria-label": `${name}: ${t("board.wayPrice", { price })}` },
+    icon(w),
+    h("span", {}, String(price)),
+    h("span", { class: "coin", "aria-hidden": "true" }),
+  );
 }
 const wayButton = (w: WayOut): HTMLElement => (w === "restart" ? restartBtn : helperBtns[w].btn);
 function drawStuck(): void {
-  if (!stuck || refusing) return;
+  // the Shuffle lesson's board opens stuck on purpose: the lesson says it instead
+  if (!stuck || refusing || lessons.lit()) return;
   const way = wayOut();
-  stuckNote.replaceChildren(h("b", { class: "why" }, t("board.stuckWhy")), h("span", { class: "way" }, t(`board.way.${way}`)));
+  stuckNote.replaceChildren(
+    h("b", { class: "why" }, t("board.stuckWhy")),
+    h("span", { class: "way" }, t(`board.way.${way}`)),
+    h("span", { class: "ways" }, ...(["shuffle", "undo", "restart"] as const).map((w) => wayChip(w, w === way))),
+  );
   stuckNote.hidden = false;
   host.classList.add("stuck");
   for (const w of ["shuffle", "undo", "restart"] as const) wayButton(w).classList.toggle("beckon", w === way);
@@ -670,11 +792,14 @@ type Win = (
   | { kind: "challenge"; c: Challenge; moves: number; ms: number; first: boolean; better: boolean }
   | { kind: "daily"; d: Daily; moves: number; ms: number; first: boolean }
   | { kind: "experiment"; x: Experiment; moves: number; ms: number }
+  | { kind: "lesson"; moves: number; ms: number }
 ) & {
   /** The win checker's word, once it lands (it may take a while offline). */
   verdict?: Verdict;
   /** Its Coins have flown to the Arcade's wallet (once, ever, per win). */
   cued?: boolean;
+  /** The helpers it paid have flown to their buttons (once per win). */
+  flown?: boolean;
   /** A practice board's win (the dev menu): nothing was sent, and its card says so. */
   practice?: boolean;
 };
@@ -691,6 +816,11 @@ on("board:solved", ({ moves, ms, line }) => {
   // the dev menu's experiment boards: practice always (no checker lane knows them)
   if (play.kind === "experiment") {
     lastWin = { kind: "experiment", x: play.x, moves, ms, practice: true };
+    return;
+  }
+  // the Shuffle lesson's board: nothing to claim, pay or record; its card goes on to board 4
+  if (play.kind === "lesson") {
+    lastWin = { kind: "lesson", moves, ms };
     return;
   }
   let win: Win;
@@ -770,18 +900,90 @@ function drawCoins(win: Win): void {
     if (card && dev && !card.querySelector(".coins-chip")) card.append(dev.chip());
     return;
   }
-  if (!v || v.status !== "paid" || v.coins <= 0 || !card) return;
-  // the guide's finish card already says its prize: the Coins fly from its coin, and nothing on it changes
+  if (!v || v.status !== "paid" || !card) return;
+  const tools = landedTools(v);
+  // the guide's finish card already says its prize and the travel kit: the Coins fly from its coin,
+  // each tool that landed is ringed and flies to its button, and nothing on it moves
   const promised = card.querySelector<HTMLElement>(".prize .coin");
-  if (promised) {
-    if (!win.cued) win.cued = cueCoins(v, promised) || true;
+  const kit = card.querySelector<HTMLElement>(".kit");
+  if (promised || kit) {
+    if (promised && v.coins > 0 && !win.cued) win.cued = cueCoins(v, promised) || true;
+    for (const k of KINDS) {
+      const tool = kit?.querySelector<HTMLElement>(`.tool.${k}`);
+      if (!tool || !tools[k]) continue;
+      tool.classList.add("landed");
+      if (!win.flown) flyTool(k, tool.querySelector(".ico") ?? tool, 0);
+    }
+    win.flown = true;
     return;
   }
-  // any other win card: a chip on its top edge, so nothing on the card moves
+  if (v.coins <= 0 && !KINDS.some((k) => tools[k])) return;
+  // any other win card: one chip on its top edge (so nothing on the card moves): the Coins, then each
+  // helper that landed (the travel kit, a hard board's gift, a trip's stamp), which flies to its button
+  const chip = h("div", { class: "coins-chip glass", role: "status" });
   const coin = h("span", { class: "coin", "aria-hidden": "true" });
+  if (v.coins > 0) chip.append(coin, h("span", {}, t("win.coins", { count: v.coins })));
+  const glyphs: Array<[HelperKey, Element]> = [];
+  for (const k of KINDS) {
+    const n = tools[k];
+    if (!n) continue;
+    const g = icon(k) as Element;
+    glyphs.push([k, g]);
+    chip.append(h("span", { class: "gift-tool", "aria-label": t(`win.gift.${k}`, { count: n }) }, g, h("span", { "aria-hidden": "true" }, `+${n}`)));
+  }
+  // the kit on a later board's card (a player past board 1 without it): said in words too
+  if ((v as { gifts?: string[] }).gifts?.includes("kit") && glyphs.length) chip.setAttribute("aria-label", t("win.kitLanded"));
   card.querySelector(".coins-chip")?.remove();
-  card.append(h("div", { class: "coins-chip glass", role: "status" }, coin, h("span", {}, t("win.coins", { count: v.coins }))));
-  if (!win.cued) win.cued = cueCoins(v, coin) || true;
+  card.append(chip);
+  if (v.coins > 0 && !win.cued) win.cued = cueCoins(v, coin) || true;
+  if (!win.flown) glyphs.forEach(([k, g], i) => flyTool(k, g, 250 + i * 120));
+  win.flown = true;
+}
+
+/** The helpers a verdict says LANDED (after the cap's clamp), by kind; nothing where none did. */
+function landedTools(v: Verdict): Partial<Record<HelperKey, number>> {
+  const got = (v as { helpers?: Partial<Record<string, unknown>> }).helpers;
+  const out: Partial<Record<HelperKey, number>> = {};
+  for (const k of KINDS) {
+    const n = got?.[k];
+    if (typeof n === "number" && n > 0) out[k] = Math.floor(n);
+  }
+  return out;
+}
+
+/**
+ * A helper that landed flies from where the card shows it to its own button at the foot of the board
+ * (under the card's veil): a glance at where it went, never in the way (it takes no touch). Less motion:
+ * no flight, the badge alone says so.
+ */
+function flyTool(k: HelperKey, from: Element, delay: number): void {
+  if (document.documentElement.classList.contains("less-motion") || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const a = from.getBoundingClientRect();
+  const b = helperBtns[k].btn.getBoundingClientRect();
+  if (!a.width || !b.width) return;
+  const ghost = h("div", { class: "tool-flight", "aria-hidden": "true" }, icon(k));
+  const size = 34;
+  ghost.style.left = `${a.left + a.width / 2 - size / 2}px`;
+  ghost.style.top = `${a.top + a.height / 2 - size / 2}px`;
+  document.body.append(ghost);
+  const dx = b.left + b.width / 2 - (a.left + a.width / 2);
+  const dy = b.top + b.height / 2 - (a.top + a.height / 2);
+  const anim = ghost.animate(
+    [
+      { transform: "translate(0, 0) scale(0.6)", opacity: 0 },
+      { transform: "translate(0, -14px) scale(1.1)", opacity: 1, offset: 0.2 },
+      { transform: `translate(${dx}px, ${dy}px) scale(0.8)`, opacity: 1, offset: 0.92 },
+      { transform: `translate(${dx}px, ${dy}px) scale(0.5)`, opacity: 0 },
+    ],
+    { duration: 800, delay, easing: "cubic-bezier(0.45, 0, 0.3, 1)", fill: "both" },
+  );
+  anim.onfinish = anim.oncancel = () => {
+    ghost.remove();
+    const { btn } = helperBtns[k];
+    btn.classList.remove("grew");
+    void btn.offsetWidth;
+    btn.classList.add("grew");
+  };
 }
 
 function showWin(): void {
@@ -790,10 +992,12 @@ function showWin(): void {
   if (lastWin.kind === "campaign") prefetch(campaignLevel(lastWin.level + 1));
   else if (lastWin.kind === "challenge") prefetch(routeUi.after(lastWin.c)?.level);
   syncCardAspect();
-  const gallery = layoutGallery(board.pictures());
+  // board 1's finish card says more (the prize, the travel kit): its pictures take less of the height
+  const gallery = layoutGallery(board.pictures(), lastWin.kind === "campaign" && lastWin.milestone ? 0.2 : 0.34);
   if (lastWin.kind === "challenge") return void showChallengeWin(lastWin, gallery);
   if (lastWin.kind === "daily") return void showDailyWin(lastWin, gallery);
   if (lastWin.kind === "experiment") return void (import.meta.env.MODE !== "release" && showExperimentWin(lastWin, gallery));
+  if (lastWin.kind === "lesson") return void showLessonWin(gallery);
   if (lastWin.milestone) return void showMilestone(gallery);
   const { level, moves, ms } = lastWin;
   const practice = isPractice(lastWin);
@@ -866,6 +1070,18 @@ function guidePrize(): HTMLElement | null {
  */
 function showMilestone(gallery: HTMLElement): void {
   const prize = guidePrize();
+  // the travel kit, said up front (the checker grants it with this win: one copy of its size, Server's
+  // helpers.ts); each tool is ringed as it lands, and flies to its button
+  const kit = h(
+    "div",
+    { class: "kit" },
+    h("span", { class: "kit-head" }, t("guide.kit")),
+    h(
+      "div",
+      { class: "kit-row" },
+      ...KINDS.map((k) => h("span", { class: `tool ${k} glass`, "aria-label": t(`win.gift.${k}`, { count: KIT[k] }) }, icon(k), h("span", { "aria-hidden": "true" }, `×${KIT[k]}`))),
+    ),
+  );
   const card = h(
     "div",
     { class: "card milestone" },
@@ -873,6 +1089,7 @@ function showMilestone(gallery: HTMLElement): void {
     h("p", {}, t("guide.doneWhy")),
     gallery,
     prize,
+    kit,
     withClick(button("amber next", "win.next", t("win.next"), icon("next")), () =>
       openPlay({ kind: "campaign", level: 2, ...(isPractice(lastWin) ? { practice: true } : {}) }),
     ),
@@ -926,6 +1143,23 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement):
   );
   showCard(winVeil, toHome);
   drawCoins(w);
+}
+
+/** The Shuffle lesson's card: done, then on to board 4 (no claim, no Coins, no break: it is still the lesson). */
+function showLessonWin(gallery: HTMLElement): void {
+  const toHome = () => goHome();
+  winVeil.replaceChildren(
+    h(
+      "div",
+      { class: "card lesson-done" },
+      cornerKey("home", t("win.home"), "win.home", toHome),
+      h("h2", {}, t("lesson.doneTitle")),
+      gallery,
+      h("p", {}, t("lesson.doneWhy")),
+      withClick(button("amber next", "win.next", t("win.next"), icon("next")), () => openPlay({ kind: "campaign", level: 4 })),
+    ),
+  );
+  showCard(winVeil, toHome);
 }
 
 /** An experiment board's card (the dev menu's, practice): the campaign's card, with the next experiment for Next. */
@@ -1005,11 +1239,11 @@ function showChallengeWin(w: Extract<Win, { kind: "challenge" }>, gallery: HTMLE
 const GAP = 10;
 const TAP = 36;
 const STRIP_U = 60;
-function layoutGallery(pics: BoardPicture[]): HTMLElement {
+function layoutGallery(pics: BoardPicture[], share = 0.34): HTMLElement {
   // the gallery has the card's width and a third of the height (a phone held sideways is asked to
   // turn upright, style.css: the game is laid out upright only)
   const width = Math.min(360, app.clientWidth - 32) - 44 - 4;
-  const height = Math.max(120, Math.min(300, app.clientHeight * 0.34));
+  const height = Math.max(110, Math.min(300, app.clientHeight * share));
   const aspect = cardAspect();
   let best: { u: number; rows: BoardPicture[][] } = { u: 0, rows: [pics] };
   for (let n = 1; n <= Math.min(3, pics.length); n++) {
@@ -1162,6 +1396,11 @@ export async function startApp(): Promise<void> {
   await Promise.race([Promise.all([fonts, homeUi.whole()]), new Promise((r) => setTimeout(r, Math.max(0, by - performance.now())))]);
 
   onProgress(drawHome);
+  // the Shuffle lesson's board, ready for the way to board 4 (lessons.ts)
+  void lessonLevel("shuffle").then(
+    (l) => (shuffleBoard = l),
+    () => undefined,
+  );
   onProgress(albumsUi.redraw);
   onProgress(passportUi.redraw);
   onProgress(routeUi.redraw);
@@ -1259,11 +1498,25 @@ export async function startApp(): Promise<void> {
         if (screen === "home") drawHomeNote();
       },
       /** The card up now shows what a paid verdict of `coins` looks like (no Coins move: the checker alone pays); `items` as granted. */
-      paid(coins: number, items?: string[]) {
+      paid(coins: number, items?: string[], helpers?: Partial<Record<HelperKey, number>>, gifts?: string[]) {
         if (!lastWin) return;
-        lastWin.verdict = { status: "paid", lane: "campaign", board: "dev", moves: lastWin.moves, coins, ...(items ? { items } : {}) };
+        // the card as a real player's would be (a "Win now" win is practice, which shows nothing paid)
+        lastWin.practice = false;
+        winVeil.querySelector(".coins-chip")?.remove();
+        lastWin.verdict = { status: "paid", lane: "campaign", board: "dev", moves: lastWin.moves, coins, ...(items ? { items } : {}), ...(helpers ? { helpers, gifts } : {}) } as Verdict;
         drawCoins(lastWin);
       },
+      /** The helper stock as if the platform said so (null: its own word again), for this page only. */
+      stock: (p: Parameters<typeof stock.pretend>[0]) => stock.pretend(p),
+      /** Board 1's finish card over the board in hand, as after its guided win (nothing is sent). */
+      milestone() {
+        if (!board || !play) return;
+        boardWon = true;
+        lastWin = { kind: "campaign", level: 1, moves: 12, ms: 64_000, milestone: true };
+        showWin();
+      },
+      /** A pretend board:stuck, to see the notice (the board's own word clears it). */
+      stuck: () => emit("board:stuck", { doomed: true } as never),
     };
     // ?restored=id,id shows those pictures as restored in the albums (never saved)
     const fake = new URLSearchParams(location.search).get("restored");

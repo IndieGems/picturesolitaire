@@ -1,5 +1,7 @@
 // What only the screens remember: how far the first board's guide got (which
-// step the player has seen, and whether its finish card has shown). Kept in the
+// step the player has seen, and whether its finish card has shown), and which of
+// the later lessons (lessons.ts: Undo on board 2, Shuffle before board 4) the
+// player has done. Kept in the
 // player's "campaign" save slot (declared in the game config), never in browser
 // storage.
 //
@@ -21,8 +23,8 @@ import { onOnline, suspect } from "./online";
 
 const SLOT = "campaign";
 
-/** The slot as stored: the guide's step, and anything an older build left in it (kept as it is). */
-type Stored = { v: 1; guide: number; [older: string]: unknown };
+/** The slot as stored: the guide's step, the lessons done, and anything an older build left in it (kept as it is). */
+type Stored = { v: 1; guide: number; lessons?: string[]; [older: string]: unknown };
 
 let state: Stored = { v: 1, guide: 0 };
 let read = false;
@@ -42,6 +44,19 @@ const count = (n: unknown): number => (typeof n === "number" && Number.isFinite(
 
 /** Steps of the first board's guide done (guide.ts). */
 export const guideStep = (): number => state.guide;
+
+const names = (x: unknown): string[] => (Array.isArray(x) ? x.filter((n): n is string => typeof n === "string") : []);
+
+/** Has the player done this lesson (lessons.ts)? */
+export const lessonSeen = (name: string): boolean => names(state.lessons).includes(name);
+
+/** A lesson done: never shown again, on any device; saved now. */
+export function learnt(name: string): void {
+  if (lessonSeen(name)) return;
+  state = { ...state, lessons: [...names(state.lessons), name] };
+  changed();
+  schedulePush();
+}
 
 /** Hear when the guide's step changes (the account's copy landed). Returns the unsubscribe. */
 export function onGuideSave(fn: () => void): () => void {
@@ -66,7 +81,11 @@ async function readCloud(): Promise<void> {
     await gem.awaitIdentity(10_000);
     const got = await gem.me.saves.get<Record<string, unknown>>(SLOT, { timeoutMs: 10_000 });
     // everything an older build left stays as it was; the guide only moves forward
-    if (got && typeof got === "object") state = { ...got, v: 1, guide: Math.max(state.guide, count(got.guide)) };
+    // lessons only add up too: this device's done this session, and the account's
+    if (got && typeof got === "object") {
+      const lessons = [...new Set([...names(got.lessons), ...names(state.lessons)])];
+      state = { ...got, v: 1, guide: Math.max(state.guide, count(got.guide)), ...(lessons.length ? { lessons } : {}) };
+    }
     finishRead();
   } catch (err) {
     if (refusal(err)) {
