@@ -46,14 +46,23 @@ export interface GameEvents {
   /** A press on a stack (its top card or its edges): it shakes "no", nothing is picked up. Once a press. */
   "stack:nope": { col: number };
   /**
+   * After a finished picture's clear, a column's cards have all landed (those
+   * that fell and those its stack dealt), sent once per column where any did,
+   * as its last one touches down, so in landing order (the refill's, left to
+   * right). `cards`: how many landed in it. Never for a move's own drop, a
+   * shuffle, the opening deal, Undo or Restart.
+   */
+  "column:land": { col: number; cards: number };
+  /**
    * A helper acted (sent inside the board's undo() / hint() / shuffle() call).
    * The player's stock is the screens' to count and spend (creator,
    * 2026-10-27): they spend one here unless `lesson` is true (board.lesson()'s
-   * next use, or the guide's Hint), which spends nothing.
+   * next use, or the guide's Hint) or `free` is (a use board.grantFree() gave
+   * this try: mercy help), which spend nothing.
    */
-  "helper:undo": { lesson: boolean };
-  "helper:hint": { lesson: boolean };
-  "helper:shuffle": { lesson: boolean };
+  "helper:undo": { lesson: boolean; free: boolean };
+  "helper:hint": { lesson: boolean; free: boolean };
+  "helper:shuffle": { lesson: boolean; free: boolean };
   /**
    * A helper was pressed and could do nothing, so none was spent. Shuffle: no
    * loose card to mix, or no mix the solver could prove winnable. Hint: the

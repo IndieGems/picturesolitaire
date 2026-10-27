@@ -105,6 +105,15 @@ export const TUNING = {
   dragScale: 1.03,
   /** A piece picked up by a tap: its swell (it also rises a little, 0.06 of a card). */
   liftScale: 1.06,
+  /**
+   * A touch while the board is still playing a move out (cards falling, the
+   * stacks refilling) is kept (the creator, 2026-10-27): the card under the
+   * finger is picked up the moment the board settles, still held for a drag,
+   * or as a tap's pick-up when the finger lifted meanwhile. A tap that lifted
+   * longer than keepTapMs before the board settled is let go. Only the first
+   * touch of one wait is kept.
+   */
+  keepTapMs: 1500,
 
   // --- motion
   /** A dropped piece settling on its cells. */
@@ -117,6 +126,24 @@ export const TUNING = {
   dealStagger: 55,
   /** One dealt card's drop from its stack into its cell. */
   dealMs: 280,
+  /**
+   * A falling or dealt card lands at full speed and rebounds landBounce of a
+   * card's height, hangs a moment and settles back over landMs (the creator,
+   * 2026-10-27, after Candy Crush's, measured in Match3Mahjong's docs/falls.md:
+   * a twentieth of a cell, 100-120 ms). The bounce plays on under what comes
+   * next; picking the card up ends it. 0: it stops dead. Reduced motion: none.
+   */
+  landBounce: 0.05,
+  landMs: 110,
+  /**
+   * The cards above a finished picture start to fall this long before its
+   * shrink ends (the creator, 2026-10-27: Candy Crush's and Royal Match's fall
+   * starts about 60 ms after the matched pieces are gone; ours waited out the
+   * whole exit). At most completeLeaveMs; 0 waits it out. Up to about 110
+   * the falling cards never reach the shrinking picture (it shrinks faster
+   * than they come); reduced motion and a destination's postcard wait it out.
+   */
+  fallLeadMs: 110,
   /** The small scale pop when correct neighbours join. */
   mergePop: 1.07,
   mergePopMs: 260,

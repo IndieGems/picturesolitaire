@@ -250,14 +250,20 @@ config:
   #   tapSlop        px within which a press that stays on its own cell is still a tap
   #   liftTouch      how far a dragged piece rises above the finger (liftMouse: the pointer); 0 = none
   #   dragScale      a dragged piece's slight swell, about the finger; liftScale a tapped one's
+  #   keepTapMs      a touch while cards still fall or deal is kept and picks its card up as the
+  #                  board settles; a tap that lifted longer ago than this is let go
   #   dropMs         a dropped piece settling; slideMs covered cards going back
   #   fallMs         a fall of one row
   #   dealStagger    THE refill stagger: from one dealt card to the next, left to right
   #   dealMs         one dealt card's drop from its stack
+  #   landBounce     a fallen or dealt card rebounds this much of a card's height as it lands,
+  #                  settling over landMs (Candy Crush's: 0.05, 110); 0 = it stops dead
   #   mergePop       the pop when neighbours join (1.07 = 7% bigger), for mergePopMs
   #   completeGrow   a finished picture swells this much over completeGrowMs, twinkling,
   #                  holds completeHoldMs, then shrinks to nothing over completeLeaveMs;
   #                  completeStaggerMs between two finished at once; twinkles how many
+  #   fallLeadMs     the cards above a finished picture start falling this long before its
+  #                  shrink ends (0 = after it; up to ~110 they never reach the shrinking picture)
   #   shuffleMs      Shuffle's cards trading places; hintMs the Hint's ghost flight
   board: |
     {
@@ -282,17 +288,21 @@ config:
       "liftMouse": 0,
       "dragScale": 1.03,
       "liftScale": 1.06,
+      "keepTapMs": 1500,
       "dropMs": 150,
       "slideMs": 240,
       "fallMs": 150,
       "dealStagger": 55,
       "dealMs": 280,
+      "landBounce": 0.05,
+      "landMs": 110,
       "mergePop": 1.07,
       "mergePopMs": 260,
       "completeGrow": 1.06,
       "completeGrowMs": 140,
       "completeHoldMs": 90,
       "completeLeaveMs": 220,
+      "fallLeadMs": 110,
       "completeStaggerMs": 60,
       "twinkles": 16,
       "shuffleMs": 460,

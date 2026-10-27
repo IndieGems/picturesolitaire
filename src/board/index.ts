@@ -71,6 +71,14 @@ export interface BoardHandle {
    * any. The guide's Hint (guide on) is always a lesson's.
    */
   lesson(k: keyof HelperCounts | null): void;
+  /**
+   * Mercy help (the creator, 2026-10-27; agreed with the UI member): `n`
+   * (default 1) uses of helper `k` this try pays for, not the player's stock.
+   * Calls add up. Each such use's event says free: true; a use only goes
+   * when the helper acts. A Restart ends them (cleared just before
+   * board:restart, so grant the next try's from there), as a new board does.
+   */
+  grantFree(k: keyof HelperCounts, n?: number): void;
   /** Deal the same board again, at once (the screens confirm first). */
   restart(): void;
   canUndo(): boolean;
@@ -313,6 +321,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   let plans = freshPlans();
   /** Helpers whose next use is a lesson's (lesson()). */
   const lessonNext = new Set<keyof HelperCounts>();
+  /** This try's free uses of each helper (grantFree), gone with a restart. */
+  const freeLeft = new Map<keyof HelperCounts, number>();
   /** The opening position, which a lesson's stored shuffle is for. */
   const openingState = lvl.shuffle ? start(deal).state : null;
   let busy = 0;
@@ -505,6 +515,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     from: State, dest: Map<Card, number>,
     timing: (dc: number, dr: number) => { ms: number; ease?: (t: number) => number; arc?: boolean },
     lifted?: PieceView | null,
+    /** Each moving part as it arrives, with the cells it has come to (a fall's landing). */
+    land?: (v: PieceView, cells: number[]) => void,
   ): { done: Promise<void>; firstMs: number; liftedMs: number } {
     const ps = pieces(from);
     const jobs: Promise<void>[] = [];
@@ -560,6 +572,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
         const dr = Math.floor(to[0]! / from.cols) - Math.floor(part[0]! / from.cols);
         const tx = v.ox + dc * p;
         const ty = v.oy + dr * ph;
+        endBounce(v);
         const x0 = v.x, y0 = v.y, k0 = v.k;
         let tm = timing(dc, dr);
         if (v === lifted) {
@@ -577,7 +590,10 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
               v.y = y0 + (ty - y0) * t;
               v.k = k0 + (1 - k0) * t + (tm.arc ? Math.sin(Math.PI * t) * 0.08 : 0);
               place(v);
-            }, { ease: tm.ease }).then(() => v.el.classList.remove("moving", "lifted")),
+            }, { ease: tm.ease }).then(() => {
+              v.el.classList.remove("moving", "lifted");
+              land?.(v, to);
+            }),
           );
         }
         v.ox = tx;
@@ -589,11 +605,90 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     return { done: Promise.all(jobs).then(() => {}), firstMs: Number.isFinite(firstMs) ? firstMs : 0, liftedMs };
   }
 
+  /**
+   * A card has come to rest after falling or being dealt: it rebounds
+   * landBounce of a card and settles back over landMs, Candy Crush's (the
+   * creator, 2026-10-27). Plays on under whatever comes next; a slide or a
+   * pick-up of the same piece ends it (endBounce).
+   */
+  const bouncing = new Map<PieceView, () => void>();
+  function bounce(v: PieceView): void {
+    const h = TUNING.landBounce * geo.sh;
+    const ms = TUNING.landMs;
+    endBounce(v);
+    if (!(h > 0) || !(ms > 0) || lessMotion() || destroyed) return;
+    let t = 0;
+    const stop = run((dt) => {
+      if (!bouncing.has(v)) return false;
+      t += dt;
+      const p = Math.min(1, t / ms);
+      // up fast, a hang, back down (Match3Mahjong's landed(), from Candy Crush's footage)
+      const up = p < 0.35 ? ease.out(p / 0.35) : p < 0.6 ? 1 : 1 - ease.inOut((p - 0.6) / 0.4);
+      v.y = v.oy - h * up;
+      place(v);
+      if (p >= 1) bouncing.delete(v);
+      return p < 1;
+    });
+    bouncing.set(v, () => {
+      stop();
+      bouncing.delete(v);
+      v.y = v.oy;
+      place(v);
+    });
+  }
+  function endBounce(v: PieceView): void {
+    bouncing.get(v)?.();
+  }
+
+  /**
+   * column:land, after a clear: each column's cards still to land in this
+   * wave (the fall and the refill that follow one clear), and how many in all.
+   * Set by show() at a clear step, from the steps after it.
+   */
+  let wave: Map<number, { cards: number; left: number }> | null = null;
+  function waveFrom(steps: Step[], at: number): Map<number, { cards: number; left: number }> {
+    const w = new Map<number, { cards: number; left: number }>();
+    const add = (cell: number) => {
+      const col = cell % geo.cols;
+      const e = w.get(col) ?? { cards: 0, left: 0 };
+      e.cards++;
+      e.left++;
+      w.set(col, e);
+    };
+    for (let j = at + 1; j < steps.length; j++) {
+      const s = steps[j]!;
+      if (s.kind === "fall") for (const x of s.slides) add(x.to);
+      else if (s.kind === "deal") for (const d of s.deals) add(d.to);
+      else break;
+    }
+    return w;
+  }
+  /** Cards of this wave have landed in `cells`: a column whose last card it was says so. */
+  function waveLand(cells: number[]): void {
+    if (!wave) return;
+    for (const cell of cells) {
+      const col = cell % geo.cols;
+      const e = wave.get(col);
+      if (!e || e.left <= 0) continue;
+      if (--e.left === 0) emit("column:land", { col, cards: e.cards });
+    }
+  }
+
   /** Show `steps`, from what is on screen to `target`. */
   async function show(steps: Step[], lifted?: PieceView | null): Promise<void> {
-    for (const step of steps) {
+    wave = null;
+    try {
+      await showSteps(steps, lifted);
+    } finally {
+      wave = null;
+    }
+  }
+  async function showSteps(steps: Step[], lifted?: PieceView | null): Promise<void> {
+    for (const [i, step] of steps.entries()) {
       if (destroyed) return;
       const next = after(shown, step);
+      if (step.kind === "clear") wave = waveFrom(steps, i);
+      else if (step.kind !== "fall" && step.kind !== "deal") wave = null;
       if (step.kind === "move") {
         const dest = new Map<Card, number>();
         for (const x of [...step.moved, ...step.displaced]) dest.set(x.card, x.to);
@@ -606,7 +701,10 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
         lifted = null;
       } else if (step.kind === "fall") {
         const dest = new Map(step.slides.map((x) => [x.card, x.to] as [Card, number]));
-        const slid = slideCards(shown, dest, (_dc, dr) => ({ ms: Math.round(TUNING.fallMs * Math.sqrt(Math.max(1, dr))), ease: ease.fall }));
+        const slid = slideCards(shown, dest, (_dc, dr) => ({ ms: Math.round(TUNING.fallMs * Math.sqrt(Math.max(1, dr))), ease: ease.fall }), null, (v, cells) => {
+          bounce(v);
+          waveLand(cells);
+        });
         emit("cards:fall", { cards: step.slides.length, ms: realMs(slid.firstMs) });
         await slid.done;
       } else if (step.kind === "shuffle") {
@@ -696,7 +794,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       glow.style.opacity = "1";
       await wait(holdMs);
       emit("picture:clear", { pictureId: id });
-      await tween(leaveMs, (t) => {
+      const leaving = tween(leaveMs, (t) => {
         // to nothing, faster as it goes (reduced motion: a soft fade where it stands)
         v.k = calm ? 1 - 0.08 * t : top * (1 - t);
         v.el.style.opacity = String(calm ? 1 - t : t < 0.6 ? 1 : 1 - (t - 0.6) / 0.4);
@@ -704,10 +802,21 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
         scaleGlow(Math.max(0.001, v.k));
         place(v);
       }, { ease: calm ? ease.linear : ease.in });
-      await Promise.all(twinkles);
-      glow.remove();
-      for (const el of els) el.remove();
-      dropView(v);
+      const gone = Promise.all([leaving, ...twinkles]).then(() => {
+        glow.remove();
+        for (const el of els) el.remove();
+      });
+      // the cards above fall for the last part of the shrink (fallLeadMs; reduced motion waits it out)
+      const lead = calm ? 0 : Math.max(0, Math.min(TUNING.fallLeadMs, leaveMs));
+      if (lead <= 0) {
+        await gone;
+        dropView(v);
+        return;
+      }
+      await wait(leaveMs - lead);
+      // it leaves the board's pieces now (the next step's views never see it) and shrinks away on its own
+      live = live.filter((x) => x !== v);
+      void gone.then(() => v.el.remove());
     }));
   }
 
@@ -841,6 +950,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       }, { ease: ease.fall }).then(() => {
         v.el.classList.remove("moving");
         place(v);
+        bounce(v);
+        waveLand([cell]);
       });
     });
   }
@@ -953,6 +1064,48 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   } | null = null;
   let selected: { v: PieceView; from: number } | null = null;
   let previewed: PieceView[] = [];
+  /**
+   * A touch that came while the board was still playing a move out (the
+   * creator, 2026-10-27, after Match3Mahjong's study of Royal Match, where a
+   * player may move while tiles fall): kept, and taken as the board settles
+   * (takeKept). The rules still settle each move whole; only the touch waits.
+   * Where it went down, where the pointer is now, and when it lifted (null:
+   * still down).
+   */
+  let kept: { id: number; x: number; y: number; cx: number; cy: number; touch: boolean; up: number | null } | null = null;
+  const keptStale = () => !!kept && kept.up !== null && performance.now() - kept.up > TUNING.keepTapMs;
+
+  /** A touch while the board is busy: kept for when it settles. Only the first of one wait. */
+  function keepTouch(e: PointerEvent): void {
+    if (kept && !keptStale()) return;
+    kept = { id: e.pointerId, x: e.clientX, y: e.clientY, cx: e.clientX, cy: e.clientY, touch: e.pointerType !== "mouse", up: null };
+    try {
+      stage.setPointerCapture(e.pointerId);
+    } catch {
+      // a pointer that is already gone
+    }
+  }
+
+  /**
+   * The board has settled: the kept touch becomes the press it would have
+   * been on the card now under where it went down. Still down: a press (a
+   * drag at once, if the finger has gone on past dragSlop). Lifted meanwhile:
+   * a tap, which picks the card up, unless it lifted longer ago than
+   * keepTapMs.
+   */
+  function takeKept(): void {
+    const k = kept;
+    const stale = keptStale();
+    kept = null;
+    if (!k || stale || busy || won || destroyed || driven || press || drag || reveal || guideMode === "hold") return;
+    const g = toGrid(k.x, k.y);
+    const cell = cellAt(geo, g.x, g.y);
+    if (k.up !== null) return tap(cell);
+    press = { id: k.id, x: k.x, y: k.y, gx: g.x, gy: g.y, cell, touch: k.touch };
+    if (Math.hypot(k.cx - k.x, k.cy - k.y) >= TUNING.dragSlop) {
+      onMove(new PointerEvent("pointermove", { pointerId: k.id, clientX: k.cx, clientY: k.cy, pointerType: k.touch ? "touch" : "mouse", buttons: 1 }));
+    }
+  }
 
   /** A screen point in grid px (through the tilt, when it is on). */
   function toGrid(clientX: number, clientY: number): { x: number; y: number } {
@@ -977,6 +1130,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   const centre = (cell: number) => ({ x: (cell % geo.cols) * (geo.s + geo.g) + geo.s / 2, y: Math.floor(cell / geo.cols) * (geo.sh + geo.g) + geo.sh / 2 });
 
   function lift(v: PieceView): void {
+    endBounce(v);
     v.el.classList.add("lifted");
     cardsEl.append(v.el); // on top of the others
   }
@@ -1092,7 +1246,13 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     // a reach for a stack: it says "no" (cards only ever come off it by the deal)
     const reach = won || destroyed ? -1 : stackAt(g.x, g.y);
     if (reach >= 0) nope(reach);
-    if (press || drag || busy || won || destroyed || guideMode === "hold") return;
+    if (press || drag || won || destroyed || guideMode === "hold") return;
+    // the board is still playing the last move out: the touch waits for it (a reach for a stack is only a "no")
+    if (busy) {
+      if (reach < 0) keepTouch(e);
+      return;
+    }
+    kept = null;
     const cell = cellAt(geo, g.x, g.y);
     press = { id: e.pointerId, x: e.clientX, y: e.clientY, gx: g.x, gy: g.y, cell, touch: e.pointerType !== "mouse" };
     try {
@@ -1103,6 +1263,15 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   }
 
   function onMove(e: PointerEvent): void {
+    // a kept touch (the board busy): only where it has got to, or a mouse let go outside the frame
+    if (kept && e.pointerId === kept.id && kept.up === null) {
+      if (e.pointerType === "mouse" && e.buttons === 0) kept.up = performance.now();
+      else {
+        kept.cx = e.clientX;
+        kept.cy = e.clientY;
+      }
+      return;
+    }
     // a mouse let go outside the frame: no pointerup ever came, so this is the drop
     if (e.pointerType === "mouse" && e.buttons === 0 && (drag?.id === e.pointerId || press?.id === e.pointerId)) {
       onUp(e);
@@ -1128,6 +1297,11 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   }
 
   function onUp(e: PointerEvent): void {
+    // a kept touch lifted before the board settled: a tap, taken then
+    if (kept && e.pointerId === kept.id && kept.up === null) {
+      kept.up = performance.now();
+      return;
+    }
     if (drag && e.pointerId === drag.id) {
       const d = drag;
       drag = null;
@@ -1165,6 +1339,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   }
 
   function onCancel(e: PointerEvent): void {
+    // a kept touch the browser took away while still down (lostpointercapture after a lift keeps the tap)
+    if (kept && e.pointerId === kept.id && kept.up === null) kept = null;
     if (drag && e.pointerId === drag.id) {
       const d = drag;
       drag = null;
@@ -1231,6 +1407,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   const onBlur = () => {
     if (drag) onCancel(new PointerEvent("pointercancel", { pointerId: drag.id }));
     press = null;
+    kept = null;
   };
   addEventListener("blur", onBlur);
 
@@ -1240,6 +1417,18 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   function lessonUse(k: keyof HelperCounts): boolean {
     const armed = lessonNext.delete(k);
     return armed || (k === "hint" && !!guideMode);
+  }
+  /**
+   * Helper `k` acted: whose use it was, for its event. A lesson's first; else
+   * one of this try's free uses (grantFree: mercy help), if any is left; else
+   * the player's own, which the screens spend.
+   */
+  function used(k: keyof HelperCounts): { lesson: boolean; free: boolean } {
+    const lesson = lessonUse(k);
+    const left = freeLeft.get(k) ?? 0;
+    const free = !lesson && left > 0;
+    if (free) freeLeft.set(k, left - 1);
+    return { lesson, free };
   }
 
   function changed(): void {
@@ -1261,6 +1450,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     if (resizePending) relayout();
     if (artPending) refreshArt();
     if (guideMode) relight();
+    takeKept();
   }
 
   /**
@@ -1396,6 +1586,8 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       selected = null;
       const out = live.map((v) => tween(220, (t) => (v.el.style.opacity = String(1 - t))));
       await Promise.all(out);
+      // a try's free helpers were for that try (the screens grant the next one's on board:restart)
+      freeLeft.clear();
       emit("board:restart", {});
       await opening();
       if (onScreenNow()) clockOn();
@@ -1403,6 +1595,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       busy--;
     }
     changed();
+    takeKept();
   }
 
   /** The opening deal: the stacks fill the board, left to right. */
@@ -1729,7 +1922,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       // back past a shuffle: that shuffle's line goes (a lesson keeps none from before its shuffle)
       while (plans.length > (lvl.shuffle ? 0 : 1) && plans[plans.length - 1]!.at > actions.length) plans.pop();
       state = prev;
-      emit("helper:undo", { lesson: lessonUse("undo") });
+      emit("helper:undo", used("undo"));
       void run2(() => morph(prev));
       return true;
     },
@@ -1755,7 +1948,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
         if (first && first.from === m.from && first.to === m.to) plans.push({ at: actions.length, line: next.line });
       }
       // the tutorial's hints are a lesson's: the screens spend nothing for them
-      emit("helper:hint", { lesson: lessonUse("hint") });
+      emit("helper:hint", used("hint"));
       changed();
       showHint(m);
       return true;
@@ -1777,13 +1970,17 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       plans.push({ at: actions.length, line: out.line });
       state = out.state;
       announceIfSolved();
-      emit("helper:shuffle", { lesson: lessonUse("shuffle") });
+      emit("helper:shuffle", used("shuffle"));
       void run2(() => show(out.steps));
       return true;
     },
     lesson(k) {
       if (k) lessonNext.add(k);
       else lessonNext.clear();
+    },
+    grantFree(k, n = 1) {
+      const add = Math.max(0, Math.floor(n));
+      if (add) freeLeft.set(k, (freeLeft.get(k) ?? 0) + add);
     },
     restart() {
       stopHint();
