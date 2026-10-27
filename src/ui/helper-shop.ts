@@ -1,12 +1,13 @@
 // RUN-OUT: a helper tapped with none left opens this small panel over the board (the
 // creator, 2026-10-27, after the mahjong-solitaire game's "none left" panel):
 //
-//   signed in   "Out of Hints", the helper's glyph, its price as the big button
-//               ("1 Hint · 150 Coins"), greyed when the player's Coins do not cover it,
-//               and one line on earning more; the corner key closes it. The player's
-//               Coins themselves are never drawn here: the Arcade's wallet is the one
-//               place they show (the platform's "No counter" rule).
-//   a guest     no price (a guest cannot buy): only "Earn more on hard boards and trips."
+//   "Out of Hints", the helper's glyph, its price as the big button ("1 Hint · 150
+//   Coins"), greyed when the player's Coins do not cover it, and one line: "Hard boards
+//   and trips also give free tools.", led by "You need 150 Coins." when they fall short.
+//   The corner key closes it. The player's Coins themselves are never drawn here: the
+//   Arcade's wallet is the one place they show (the platform's "No counter" rule). One
+//   wording for everyone: the game cannot tell a guest from a player with no Coins (a
+//   guest reads as 0 Coins), so a guest sees the same panel, greyed (the lead, 2026-10-27).
 //
 // The price is the game config's (Server's helpers.ts reads it), one price everywhere,
 // never written here. Buying goes through the platform: the button says "Buying…", then
@@ -33,8 +34,6 @@ export interface Shop {
   price(k: HelperKind): number | null;
   /** Do the player's Coins cover the price? null while unknown (only for greying the button). */
   affordable(k: HelperKind): boolean | null;
-  /** A guest cannot buy: no price is shown. */
-  guest(): boolean;
   /** The most of one helper a player can carry. */
   cap: number;
   /** Buy one; the stock is read again before it answers. */
@@ -58,6 +57,8 @@ export function createRunOut(shop: Shop, bought: (k: HelperKind) => void) {
 
   let kind: HelperKind = "hint";
   let busy = false;
+  /** The last purchase answered "not enough Coins" (the line says so even before the Coins are read again). */
+  let wasShort = false;
 
   function close(): void {
     if (veil.hidden) return;
@@ -76,21 +77,17 @@ export function createRunOut(shop: Shop, bought: (k: HelperKind) => void) {
     glyph.setAttribute("aria-hidden", "true");
     const card = el("div", "card shop-card");
     card.append(cornerKey("close", t("shop.close"), "shop.close", close), head, glyph);
-    if (shop.guest()) {
-      // a guest cannot buy: where more come from, and nothing else
-      card.append(el("p", "shop-earn", t("shop.earn")));
-    } else {
-      const price = shop.price(kind);
-      const buy = el("button", "btn amber next shop-buy");
-      buy.type = "button";
-      buy.dataset.press = `shop.buy.${kind}`;
-      buy.append(el("span", "", price === null ? t(`shop.buyWait.${kind}`) : t(`shop.buy.${kind}`, { price })));
-      buy.disabled = price === null;
-      // greyed when the Coins do not cover it, still pressable: the answer then says so plainly
-      buy.classList.toggle("short", shop.affordable(kind) === false);
-      buy.addEventListener("click", () => void press(buy));
-      card.append(buy, el("p", "shop-earn small", t("shop.earnToo")));
-    }
+    const price = shop.price(kind);
+    const buy = el("button", "btn amber next shop-buy");
+    buy.type = "button";
+    buy.dataset.press = `shop.buy.${kind}`;
+    buy.append(el("span", "", price === null ? t(`shop.buyWait.${kind}`) : t(`shop.buy.${kind}`, { price })));
+    buy.disabled = price === null;
+    // greyed when the Coins do not cover it, still pressable (the answer then says so)
+    const short = price !== null && (wasShort || shop.affordable(kind) === false);
+    buy.classList.toggle("short", short);
+    buy.addEventListener("click", () => void press(buy));
+    card.append(buy, el("p", "shop-earn", short ? `${t("shop.need", { price })} ${t("shop.earn")}` : t("shop.earn")));
     say.textContent = "";
     card.append(say);
     veil.replaceChildren(card);
@@ -114,13 +111,10 @@ export function createRunOut(shop: Shop, bought: (k: HelperKind) => void) {
       return;
     }
     // refused or unanswered: said plainly, the panel redrawn with what is true now
+    // not enough Coins: the line under the button says so; at the cap, or no answer: said under it
+    wasShort = answer === "short";
     draw();
-    say.textContent =
-      answer === "short"
-        ? t("shop.short")
-        : answer === "full"
-          ? t(`shop.full.${kind}`, { cap: shop.cap })
-          : t("shop.failed");
+    say.textContent = answer === "full" ? t(`shop.full.${kind}`, { cap: shop.cap }) : answer === "failed" ? t("shop.failed") : "";
     if (label && answer === "failed") label.textContent = was;
   }
 
@@ -130,6 +124,7 @@ export function createRunOut(shop: Shop, bought: (k: HelperKind) => void) {
     open(k: HelperKind): void {
       kind = k;
       busy = false;
+      wasShort = false;
       draw();
       veil.hidden = false;
       opened(veil, close);

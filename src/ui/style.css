@@ -970,9 +970,8 @@ html.less-motion .viewer { animation: none; }
 
 /* ---------- the helper stock: the player's own Hints, Undos and Shuffles (app.ts, helper-shop.ts) ---------- */
 
-/* none left: the badge says "+" (more to be had), and a tap opens the run-out panel; a guest's says 0 */
+/* none left: the badge says "+" (more to be had), and a tap opens the run-out panel */
 .helper.out .badge { font-size: 20px; }
-.helper.out.guest .badge { background: linear-gradient(180deg, #b9c4d2, #93a0b2); text-shadow: none; font-size: 15px; }
 /* the guided first board, a lesson's lit button: free, so no count */
 .helper.free .badge { display: none; }
 /* a count that grew (the travel kit, a gift, a purchase): a little pop */
@@ -988,8 +987,7 @@ html.less-motion .helper.grew .badge { animation: none; }
 .shop-glyph :is(svg, .ico) { width: 38px; height: 38px; }
 .btn.shop-buy { min-width: 230px; min-height: 58px; padding: 0 22px; font-size: 20px; }
 .btn.amber.shop-buy.short { filter: grayscale(0.85); opacity: 0.8; }
-.card p.shop-earn { margin: 0; font-size: 16px; color: var(--ink); }
-.card p.shop-earn.small { font-size: 14px; color: var(--ink-soft); }
+.card p.shop-earn { margin: 0; font-size: 15px; color: var(--ink-soft); }
 .card p.shop-say { margin: 0; font: 600 15px/1.3 var(--round); color: rgb(var(--mark-hard)); }
 .card p.shop-say:empty { display: none; }
 

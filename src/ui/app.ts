@@ -584,16 +584,14 @@ function freeHelpers(): boolean {
 const shown: Partial<Record<HelperKey, number>> = {};
 function drawHelpers(): void {
   const free = freeHelpers();
-  const guest = stock.guest();
   for (const key of KINDS) {
     const { btn, badge } = helperBtns[key];
     const left = stock.count(key);
     const out = !free && left <= 0;
-    // none left: "+" (more to be had; a guest's says 0), and a tap opens the run-out panel
-    badge.textContent = out ? (guest ? "0" : "+") : String(left);
+    // none left: "+" (more to be had), and a tap opens the run-out panel
+    badge.textContent = out ? "+" : String(left);
     btn.classList.toggle("free", free);
     btn.classList.toggle("out", out);
-    btn.classList.toggle("guest", guest);
     btn.classList.toggle("resting", key === "undo" && !out && !canUndoNow);
     if ((shown[key] ?? left) < left) {
       btn.classList.remove("grew");
@@ -681,7 +679,7 @@ function wayChip(w: WayOut, lit: boolean): HTMLElement {
   const price = stock.price(w);
   if (freeHelpers()) return h("span", { class: cls, "aria-label": `${name}: ${t("board.wayFree")}` }, icon(w), h("span", {}, t("board.wayFree")));
   if (left > 0) return h("span", { class: cls, "aria-label": `${name}: ${t("board.helperLeft", { count: left })}` }, icon(w), h("span", {}, t("board.helperLeft", { count: left })));
-  if (stock.guest() || price === null) return h("span", { class: cls, "aria-label": `${name}: ${t("board.helperNone")}` }, icon(w), h("span", {}, t("board.wayNone")));
+  if (price === null) return h("span", { class: cls, "aria-label": `${name}: ${t("board.helperNone")}` }, icon(w), h("span", {}, t("board.wayNone")));
   return h(
     "span",
     { class: cls, "aria-label": `${name}: ${t("board.wayPrice", { price })}` },
