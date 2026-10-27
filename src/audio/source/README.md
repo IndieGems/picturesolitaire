@@ -19,7 +19,7 @@ original holds.
 | split.wav | merged piece comes apart | 1.71-1.85 s | |
 | complete.wav | a picture is whole (the flourish) | 0.3-4.4 s | rising harp, fade out; starts on its first clear note to fit the quick exit |
 | fall.wav | cards fall into gaps | 1.13-2.10 s | three taps |
-| deal.wav | a stack deals one card (tick) | 0.87-0.96 s | file ends mid-tail: fade 10 ms |
+| deal.wav | a stack deals one card (tick); also "nope" | 0.87-0.96 s | file ends mid-tail: fade 10 ms; nope (BUILT) is this tick twice, lower, softened |
 | undo.wav | undo | 0.75-1.27 s | swish into a tap |
 | hint.wav | hint | 0.03-1.2 s | glass chime |
 | shuffle.wav | shuffle | 2.6-3.8 s | quiet riffle |

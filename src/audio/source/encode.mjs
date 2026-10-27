@@ -75,6 +75,15 @@ const MUSIC = [
 const B3 = 2 ** (-3 / 12); // a minor third down
 const P4 = 2 ** (-5 / 12); // a fourth down
 const BUILT = [
+  // A press on a stack, which can't be picked up: the deal tick twice, lower
+  // and softened ("tk-tk"), the second quieter, under the stack's 250 ms
+  // sideways shake. Players repeat it, so it stays small.
+  {
+    name: "nope", len: 0.22, fade: 0.05, parts: [
+      { src: "deal.wav", start: 0.865, end: 0.96, at: 0, rate: 0.8, lowpass: 3500 },
+      { src: "deal.wav", start: 0.865, end: 0.96, at: 0.085, rate: 0.75, db: -4, lowpass: 3500 },
+    ],
+  },
   // A hard board's banner: a playful "uh-oh", one marimba note (C4) then the
   // same note a minor third lower, from the take's first note (to 0.29, before
   // its second) and its last, cleanest one (0.695 on). The take played C, B, C.

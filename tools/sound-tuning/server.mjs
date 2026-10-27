@@ -55,6 +55,7 @@ const SOUNDS = [
   { name: "fanfare", label: "Destination fanfare", moment: "A board's destination picture is finished and unfolds into its postcard: plays under the place's name. Nothing on a repeat after Undo or a restart." },
   { name: "fall", label: "Cards fall", moment: "Cards drop into a gap after a picture clears." },
   { name: "deal", label: "Stack deals", moment: "A stack deals a card into its column. Plays here as a refill rippling across five stacks, left to right." },
+  { name: "nope", label: "Stack says no", moment: "A press on a stack, which can't be picked up: the stack gives a little sideways shake. Players repeat it, so it stays quiet." },
   { name: "undo", label: "Undo", moment: "The Undo helper." },
   { name: "hint", label: "Hint", moment: "The Hint helper." },
   { name: "shuffle", label: "Shuffle", moment: "The Shuffle helper." },

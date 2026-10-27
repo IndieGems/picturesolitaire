@@ -166,6 +166,11 @@ function listen(): void {
   on("destination:done", revealDone);
   on("cards:fall", (p) => play("fall", { delay: landsIn(p, FALL_LANDS), gain: Math.min(1.2, 0.7 + p.cards * 0.05) }));
   on("stack:deal", ({ col }) => dealTick(col));
+  // A press on a stack: its little "no", placed under the stack like a deal tick.
+  on("stack:nope", ({ col }) => {
+    widestCol = Math.max(widestCol, col);
+    play("nope", { pan: ((widestCol > 0 ? col / widestCol : 0.5) - 0.5) * 1.1 });
+  });
   on("helper:undo", () => play("undo"));
   on("helper:hint", () => play("hint"));
   on("helper:shuffle", () => play("shuffle"));

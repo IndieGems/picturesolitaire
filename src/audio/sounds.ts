@@ -25,7 +25,8 @@ export type EffectName =
   | "hardmark"
   | "supermark"
   | "stamp"
-  | "fanfare";
+  | "fanfare"
+  | "nope";
 
 export type EffectDef = {
   /** The file in public/audio/, when it is not the effect's own name. */
@@ -53,6 +54,9 @@ export const EFFECTS: Record<EffectName, EffectDef> = {
   fall: { gain: 0.42, jitter: 0.04, minGap: 0.08 },
   // One soft tick per card dealt; src/audio/index.ts ripples them across the stacks.
   deal: { gain: 0.26, jitter: 0, minGap: 0 },
+  // A press on a stack (it can't be picked up): a soft "tk-tk" of the deal
+  // tick, lower, under the stack's sideways shake. Often repeated: never scolds.
+  nope: { gain: 0.24, jitter: 0.04, minGap: 0.1 },
   undo: { gain: 0.45, jitter: 0.03, minGap: 0.1 },
   hint: { gain: 0.42, jitter: 0, minGap: 0.3 },
   shuffle: { gain: 0.5, jitter: 0.02, minGap: 0.3 },
@@ -85,7 +89,7 @@ export const EFFECTS: Record<EffectName, EffectDef> = {
 
 /** The order effects load in: what a first move needs comes first. */
 export const LOAD_ORDER: EffectName[] = [
-  "ui", "lift", "land", "slide", "merge", "split", "deal", "fall",
+  "ui", "lift", "land", "slide", "merge", "split", "deal", "nope", "fall",
   "complete", "undo", "hint", "shuffle", "restart", "won", "fanfare", "hardmark", "supermark", "stamp",
 ];
 // Not loaded up front: milestone.
