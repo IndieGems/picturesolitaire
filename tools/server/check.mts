@@ -12,6 +12,7 @@
 // files, or functions/checker/src. Needs Rust (cargo) for this machine.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
+import "./gentle.mts";
 import { spawnSync } from "node:child_process";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";

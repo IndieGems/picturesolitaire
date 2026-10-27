@@ -14,6 +14,7 @@
 // carries them: a board the function does not know answers "retry".
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
+import "./gentle.mts";
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
