@@ -9,7 +9,7 @@
 
 ## The travelogue (2026-10-25)
 
-- **Trip 7 and on.** Six trips ship (America, Japan, Italy, American West, France, Canada: boards 1–90). The creator picks where. A trip of all-new pictures costs about $5.50 of art (15 postcards, about 120 pictures); Art's cap is $27, with $26.16 spent. A 4×5 board already holds the most pictures it can (12), so later trips rise only by traps and busier relief boards (Levels).
+- **Trip 9 and on.** Eight trips ship (America, Japan, Italy, American West, France, Canada, Argentina, Australia: boards 1–120); New Zealand is in reserve. The creator picks where. A trip of all-new pictures costs about $5.50 of art (15 postcards, about 120 pictures); Art's cap is $40, with $38.39 spent. Later trips grow through 5×5 and 6×6 boards, within the readable and careful-player rules (`docs/difficulty-curve.md`).
 - **The challenge route and daily** still deal some landmark pictures (`"landmark": true`). Swap them out when those are redone under the new picture rules.
 - **The old albums' code** is unreachable from home; remove it, and the albums' catalogue fields, when the passport has settled.
 - **At release:** a travel key art for the store page (the current one is the old winter table), and a new preview video showing a postcard unfolding.
