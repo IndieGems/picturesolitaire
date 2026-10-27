@@ -66,11 +66,10 @@ export interface GameEvents {
   /**
    * The board settled after a move, undo, shuffle or restart (and once at
    * start): whether Undo has a move to take back, and `moves` made so far
-   * (Undo takes one back; a shuffle is not a move). `helpers` is deprecated,
-   * a fixed 3 each: the screens count the player's stock; it goes once they
-   * no longer read it.
+   * (Undo takes one back; a shuffle is not a move). The helpers' counts are
+   * the screens' own (the player's stock), never the board's.
    */
-  "board:changed": { canUndo: boolean; helpers: { undo: number; hint: number; shuffle: number }; moves: number };
+  "board:changed": { canUndo: boolean; moves: number };
   /**
    * The board can no longer be won, PROVED (never on a guess), sent once the
    * moment it becomes so (after the settle of the move that lost it): `doomed`

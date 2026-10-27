@@ -111,8 +111,6 @@ document.addEventListener("visibilitychange", () => setPaused(document.visibilit
  * while on, they spend nothing. The board itself keeps no count.
  */
 let endlessHelpers = false;
-/** board:changed's old `helpers` field, fixed, until the screens stop reading it (they count the stock now). */
-const DEPRECATED_HELPERS = { undo: 3, hint: 3, shuffle: 3 } as const;
 
 // The game config's `kv.board` may retune the board without a build; read once.
 let tuned: Promise<void> | null = null;
@@ -1245,7 +1243,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   }
 
   function changed(): void {
-    emit("board:changed", { canUndo: history.length > 0 && !won, helpers: { ...DEPRECATED_HELPERS }, moves: state.moves });
+    emit("board:changed", { canUndo: history.length > 0 && !won, moves: state.moves });
   }
 
   async function settled(): Promise<void> {
