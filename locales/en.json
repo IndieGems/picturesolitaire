@@ -4,6 +4,7 @@
   "albums.title": "Albums",
   "board.back": "Back to home",
   "board.bigger": "A bigger board!",
+  "board.biggest": "The biggest board yet!",
   "board.challenge": "Challenge {{n}}",
   "board.daily": "Daily · {{date}}",
   "board.helperLeft_one": "{{count}} left",

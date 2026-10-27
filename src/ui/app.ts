@@ -463,15 +463,20 @@ type Banner = { cls: string; text: string; shown?: () => void };
 /**
  * The banners a board opens with: a hard board's (marks.ts); then, the first time a player opens
  * a 5x5 campaign board, "A bigger board!" (the creator, 2026-10-27: the hard and finale boards from
- * board 10), once per player, remembered beside the lessons (guide-save.ts). Never in practice.
+ * board 10), and the first time a 6x6 one, "The biggest board yet!" (the lead: board 30 would come
+ * with nothing). Each once per player, remembered beside the lessons (guide-save.ts). Never in practice.
  */
+const SIZE_BANNERS: Record<number, { seen: string; words: string }> = {
+  5: { seen: "big", words: "board.bigger" },
+  6: { seen: "biggest", words: "board.biggest" },
+};
 function bannersFor(p: Play): Banner[] {
   if (p.kind !== "campaign") return [];
   const lvl = campaignLevel(p.level);
   const m = markOf(lvl);
   const out: Banner[] = m ? [{ cls: m, text: markWords(m), shown: () => emit("board:mark", { mark: m }) }] : [];
-  if (!isPractice(p) && lvl.deal.cols >= 5 && lvl.deal.rows >= 5 && !lessonSeen("big"))
-    out.push({ cls: "big", text: t("board.bigger"), shown: () => learnt("big") });
+  const size = lvl.deal.cols === lvl.deal.rows ? SIZE_BANNERS[lvl.deal.cols] : undefined;
+  if (size && !isPractice(p) && !lessonSeen(size.seen)) out.push({ cls: "big", text: t(size.words), shown: () => learnt(size.seen) });
   return out;
 }
 

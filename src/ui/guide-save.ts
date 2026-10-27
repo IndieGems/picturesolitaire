@@ -1,8 +1,8 @@
 // What only the screens remember: how far the first board's guide got (which
 // step the player has seen, and whether its finish card has shown), and which of
 // the later lessons (lessons.ts: Undo on board 2, Shuffle before board 4) the
-// player has done, and the one-time notes ("big": the first 5x5 board's banner,
-// app.ts). Kept in the
+// player has done, and the one-time notes ("big" and "biggest": the first 5x5 and
+// 6x6 boards' banners, app.ts; "hintTip": hint-nudge.ts). Kept in the
 // player's "campaign" save slot (declared in the game config), never in browser
 // storage.
 //
