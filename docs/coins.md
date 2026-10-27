@@ -14,9 +14,9 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 
 ## The hourly maths (the standard: about 500 an hour of ordinary play)
 
-- Campaign: 120 boards, 4285 Coins in all (4185 without the onboarding prize).
-  The design puts a relaxed board at 2 to 4 minutes. At 3 minutes a board, 35 a board
-  is about 703 Coins an hour; at 2 minutes 1055, at 4 minutes 528.
+- Campaign: 150 boards, 5405 Coins in all (5305 without the onboarding prize).
+  The design puts a relaxed board at 2 to 4 minutes. At 3 minutes a board, 36 a board
+  is about 712 Coins an hour; at 2 minutes 1068, at 4 minutes 534.
 - Challenge route: 20 boards, 540 Coins in all, 27 a board on average.
   At 4 minutes a board that is about 405 an hour; at 5 minutes 324.
 - Daily: 50 once a day, on top.
@@ -148,6 +148,36 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 | c118 | campaign 118 | 29 | 30 |
 | c119 | campaign 119 | 37 | 40 |
 | c120 | campaign 120 | 59 | 40 |
+| c121 | campaign 121 | 34 | 35 |
+| c122 | campaign 122 | 43 | 40 |
+| c123 | campaign 123 | 36 | 40 |
+| c124 | campaign 124 | 41 | 40 |
+| c125 | campaign 125 | 37 | 40 |
+| c126 | campaign 126 | 13 | 15 |
+| c127 | campaign 127 | 46 | 40 |
+| c128 | campaign 128 | 51 | 40 |
+| c129 | campaign 129 | 34 | 35 |
+| c130 | campaign 130 | 45 | 40 |
+| c131 | campaign 131 | 29 | 30 |
+| c132 | campaign 132 | 37 | 40 |
+| c133 | campaign 133 | 45 | 40 |
+| c134 | campaign 134 | 41 | 40 |
+| c135 | campaign 135 | 51 | 40 |
+| c136 | campaign 136 | 27 | 30 |
+| c137 | campaign 137 | 42 | 40 |
+| c138 | campaign 138 | 42 | 40 |
+| c139 | campaign 139 | 45 | 40 |
+| c140 | campaign 140 | 52 | 40 |
+| c141 | campaign 141 | 14 | 15 |
+| c142 | campaign 142 | 37 | 40 |
+| c143 | campaign 143 | 36 | 40 |
+| c144 | campaign 144 | 45 | 40 |
+| c145 | campaign 145 | 49 | 40 |
+| c146 | campaign 146 | 39 | 40 |
+| c147 | campaign 147 | 44 | 40 |
+| c148 | campaign 148 | 41 | 40 |
+| c149 | campaign 149 | 41 | 40 |
+| c150 | campaign 150 | 75 | 40 |
 | ch01 | challenge 1 | 19 | 20 |
 | ch02 | challenge 2 | 21 | 25 |
 | ch03 | challenge 3 | 19 | 20 |

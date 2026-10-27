@@ -1545,6 +1545,306 @@ progressions:
         - mode: on_complete
           amount: 40
           target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 337232ab-5ae1-56dd-aace-307b62bb4db7
+    slug: board_c121
+    display_name: "Campaign board 121"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: ce6e520c-e2af-51ef-811c-d2710cf18e0b
+    slug: board_c122
+    display_name: "Campaign board 122"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 14858fa6-6d64-5c26-960f-f3e508ac4c09
+    slug: board_c123
+    display_name: "Campaign board 123"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: fd4821e4-cb6d-54f4-b7cb-e2bec11cff43
+    slug: board_c124
+    display_name: "Campaign board 124"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 9c60ea71-fcce-5e99-9516-63b90a5b9d3b
+    slug: board_c125
+    display_name: "Campaign board 125"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: fbde02c4-6bbd-5f43-a335-799ffb5e1f5a
+    slug: board_c126
+    display_name: "Campaign board 126"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 15
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: e1640d53-7824-51e1-96fa-491efbad9765
+    slug: board_c127
+    display_name: "Campaign board 127"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 58c3ce40-281b-5505-8361-f11e13d64739
+    slug: board_c128
+    display_name: "Campaign board 128"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 1ed57764-5950-5cd0-b6ec-61054e34af43
+    slug: board_c129
+    display_name: "Campaign board 129"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 241d3813-e99f-5453-91e4-0027f071af30
+    slug: board_c130
+    display_name: "Campaign board 130"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 53652065-a013-5792-8634-a2036593f12b
+    slug: board_c131
+    display_name: "Campaign board 131"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: a2eb93e6-8f45-5b6b-881e-99ab6f3edfe6
+    slug: board_c132
+    display_name: "Campaign board 132"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 73742efa-303f-536f-b42b-23bf22e2e8a9
+    slug: board_c133
+    display_name: "Campaign board 133"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: e7a7c6d7-3e5b-5634-8aa5-cee3a1ffb009
+    slug: board_c134
+    display_name: "Campaign board 134"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 42f8573b-ce8e-5b36-a5c3-d24422b158f8
+    slug: board_c135
+    display_name: "Campaign board 135"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: eed8f9ac-21f1-5205-ae32-e86d5fda9810
+    slug: board_c136
+    display_name: "Campaign board 136"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: f14538b6-c687-52fa-9cbc-74010feca49d
+    slug: board_c137
+    display_name: "Campaign board 137"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: dd085dc3-d58e-5079-9cac-37622ebcb45c
+    slug: board_c138
+    display_name: "Campaign board 138"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: eef649d6-527e-5774-b958-a2d6fc8c46cb
+    slug: board_c139
+    display_name: "Campaign board 139"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: c4921548-0da2-531a-b848-fa01bdce209a
+    slug: board_c140
+    display_name: "Campaign board 140"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 0ea2ce71-0dba-5b3c-ab76-019694dd4bb7
+    slug: board_c141
+    display_name: "Campaign board 141"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 15
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 49b777bf-7bf7-5d06-a784-2456bccdecd8
+    slug: board_c142
+    display_name: "Campaign board 142"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 138d8d7c-d9e1-556f-ad02-52f170eb055e
+    slug: board_c143
+    display_name: "Campaign board 143"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 805c9cc6-cc68-5973-9168-2ad69446d628
+    slug: board_c144
+    display_name: "Campaign board 144"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 934ebcbe-4f98-56e8-b0e0-e65691e728ad
+    slug: board_c145
+    display_name: "Campaign board 145"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: d60ede3e-cd78-54f1-a17c-630e0d2736a8
+    slug: board_c146
+    display_name: "Campaign board 146"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: bb5eeaaa-8588-58ac-ab1f-a36d86cd35fd
+    slug: board_c147
+    display_name: "Campaign board 147"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: a27ab6c7-57a8-5964-8d43-dcaa86cff7f2
+    slug: board_c148
+    display_name: "Campaign board 148"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 0173f2ce-67f2-546f-bc5b-1faa0f0b762e
+    slug: board_c149
+    display_name: "Campaign board 149"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 9b546c22-09de-57d6-b8d4-b607dd839c6c
+    slug: board_c150
+    display_name: "Campaign board 150"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 414b94aa-f943-5cf1-a063-a6d0062b83a7
     slug: board_ch01
     display_name: "Challenge board 1"
