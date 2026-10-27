@@ -33,7 +33,8 @@ if (!dist) {
 const read = (p) => JSON.parse(readFileSync(p, "utf8"));
 const catalogue = read("src/content/pictures.json");
 const byId = new Map([...catalogue.pictures, ...(catalogue.destinations ?? [])].map((p) => [p.id, p]));
-const LANES = ["campaign", "challenge", "daily", "experiments"];
+// lessons: the staged lesson boards, such as the Shuffle lesson after board 3 (Levels, 2026-10-27).
+const LANES = ["campaign", "challenge", "daily", "experiments", "lessons"];
 // The daily packs per month (lead, 2026-10-26): a day's board fetches its month's pack once.
 // The daily's and the challenge route's full pictures are one pack each (lead, 2026-10-26: the
 // enlarged view reads one picture by Range anyway, and per-board copies of the same ~40 pictures
