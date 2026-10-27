@@ -49,6 +49,7 @@ GEN_SIZE = {
     (2, 3): (768, 1536), (3, 2): (1728, 1536),
     (1, 2): (576, 1536), (2, 1): (1536, 1024),
     (4, 4): (1536, 2048), (4, 5): (1536, 2560),  # destination postcards, a whole board
+    (5, 5): (1536, 2048),  # a 5x5 hard or finale board's postcard (creator, 2026-10-27), 3:4 like 4x4
 }
 SHAPE_WORDS = {
     (2, 2): "Composition: a portrait picture, 3:4.",
@@ -59,6 +60,7 @@ SHAPE_WORDS = {
     (2, 1): "Composition: a landscape picture, 3:2.",
     (4, 4): "Composition: a portrait picture, 3:4.",
     (4, 5): "Composition: a tall portrait picture, 3:5.",
+    (5, 5): "Composition: a portrait picture, 3:4.",
 }
 
 
@@ -130,7 +132,12 @@ def framed(e):
 def export(e):
     out = PUBLIC / "pictures" / e["album"] / f"{e['id']}.webp"
     out.parent.mkdir(parents=True, exist_ok=True)
-    framed(e).resize(size_of(e), Image.LANCZOS).save(out, "WEBP", quality=80, method=6)
+    im, size = framed(e), size_of(e)
+    # Never enlarge: a 4x5 postcard recut for a 5x5 board (2026-10-27) has 1536 px across, not
+    # 5 x 384, and enlarging adds bytes, not detail. The catalogue's px is read from the file.
+    if im.width < size[0]:
+        size = im.size
+    im.resize(size, Image.LANCZOS).save(out, "WEBP", quality=80, method=6)
     if "window" in e:  # a destination: the passport's copy
         make_dest_thumb(e)
     # Library pictures ship no thumb (2026-10-26): the Albums screen that drew them is gone, the win
