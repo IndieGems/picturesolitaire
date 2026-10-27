@@ -82,6 +82,7 @@
 //   traps     (optional) the winning line's steps where another choice loses the board
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
+import { readFileSync } from "node:fs";
 import { CAREFUL, READABLE } from "../../src/game/solver/metrics.ts";
 
 /**
@@ -326,4 +327,17 @@ for (const row of PLAN) if (!MAY_TRAP.has(row.role)) row.reader = [READABLE, 1];
 // wins it 1 in 4 or more. The 6x6 finales 60 and 90, re-dealt for it, stay the game's hardest: 25-40%
 for (const row of PLAN) if (MAY_TRAP.has(row.role)) row.reader = [CAREFUL, 1];
 PLAN[59].reader = PLAN[89].reader = [CAREFUL, 0.4];
+
+/**
+ * The creator's re-deal requests from the Difficulty editor (redeals.json): each "easier" one moves its
+ * board's careless target up a step (10 points, never past 100%), whether dealt yet or not, so the plan
+ * always describes the board as it is or is about to be. "same" changes nothing here (make-campaign.mts
+ * --redeals deals them on the next seed).
+ */
+export const REDEALS = JSON.parse(readFileSync(new URL("./redeals.json", import.meta.url), "utf8")).requests;
+for (const r of REDEALS) {
+  const row = PLAN[r.board - 1];
+  if (r.kind !== "easier" || !row?.careless || r.cancelled) continue;
+  row.careless = row.careless.map((v) => Math.min(1, Math.round((v + 0.1) * 100) / 100));
+}
 for (const row of PLAN) Object.assign(row, { peek: 0, vary: true, busyMost: row.busyMost ?? 0, liveMost: row.liveMost ?? (row.role === "pace" ? undefined : row.count >= 8 ? 2 : 1) });

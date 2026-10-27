@@ -1,0 +1,4 @@
+{
+  "//": "Boards the creator asked to have re-dealt from the Difficulty editor (tools/difficulty; creator, 2026-10-27, after Match3Mahjong's Level lab). kind: same (another deal of the same pictures and postcard on the same targets) or easier (the same, one step easier: careless target up 10 points). The plan applies every easier request (campaign-plan.mts); node tools/levels/make-campaign.mts --redeals deals the pending ones and records `dealt` (or `failed`). Then check.mts, a commit, and Server's checker rebuild.",
+  "requests": []
+}

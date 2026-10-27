@@ -21,10 +21,13 @@
 //   GET /                     the page (index.html, app.js, style.css beside this file)
 //   GET /api/lane?lane=L      every board of lane L (campaign | challenge | daily), with its numbers
 //   GET /api/board?lane=L&id= one board: its numbers, its pictures and its opening (cards and stacks)
+//   POST /api/redeal          { id, kind: "same" | "easier" } queues a campaign board for a re-deal, or
+//                             { id, cancel: true } takes a pending request back (tools/levels/redeals.json;
+//                             Levels deals them with make-campaign.mts --redeals). The one thing this tool writes.
 //   GET /pictures/<path>      the game's picture files (public/pictures/)
 //   GET /fonts/<file>         the game's fonts (public/fonts/)
 //
-// Where it reads:
+// Where it reads (and, for re-deal requests only, writes tools/levels/redeals.json):
 //   src/content/levels/{campaign,challenge,daily}.json   the boards (proved data: tools/levels)
 //   src/content/levels/trips.json                         the campaign's trips
 //   src/content/pictures.json                             picture and postcard files and names
@@ -194,7 +197,48 @@ async function board(name, id) {
     return { id: p.id, title: c?.title ?? p.id, cols: p.cols, rows: p.rows, img: c?.board ?? c?.file ?? null, grid: [p.cols, p.rows], at: [0, 0], busy: c?.busy ?? 0, medium: c?.medium ?? null };
   });
   const d = l.destination ? dests.get(l.destination.id) : null;
-  return { ...all.find((b) => b.id === id), destination: d ? { id: d.id, name: d.name, place: d.place ?? null } : null, picturesOn: pictures, opening: await call("opening", l) };
+  const n = levels.indexOf(l) + 1;
+  return { ...all.find((b) => b.id === id), destination: d ? { id: d.id, name: d.name, place: d.place ?? null } : null, picturesOn: pictures, opening: await call("opening", l), redeal: name === "campaign" ? await redealOf(n) : null };
+}
+
+// ------------------------------------------------------------------ re-deal requests
+
+const REDEALS = "tools/levels/redeals.json";
+/** This board's latest request that was not taken back, or null. */
+async function redealOf(n) {
+  const doc = await readJson(REDEALS).catch(() => ({ requests: [] }));
+  return [...doc.requests].reverse().find((r) => r.board === n && !r.cancelled) ?? null;
+}
+
+async function body(req) {
+  let s = "";
+  for await (const chunk of req) {
+    s += chunk;
+    if (s.length > 4096) throw new Error("too long");
+  }
+  return JSON.parse(s || "{}");
+}
+
+async function redeal(req) {
+  const { id, kind, cancel } = await body(req);
+  const levels = (await readJson("src/content/levels/campaign.json")).levels;
+  const n = levels.findIndex((l) => l.id === id) + 1;
+  if (!n) return { status: 400, out: { error: "no such campaign board" } };
+  const file = path.join(root, REDEALS);
+  const doc = JSON.parse(await fs.readFile(file, "utf8"));
+  const open = doc.requests.find((r) => r.board === n && !r.dealt && !r.failed && !r.cancelled);
+  if (cancel) {
+    if (!open) return { status: 400, out: { error: "nothing pending for this board" } };
+    open.cancelled = new Date().toISOString().slice(0, 16) + "Z";
+  } else {
+    if (kind !== "same" && kind !== "easier") return { status: 400, out: { error: "kind is same or easier" } };
+    if (open) return { status: 409, out: { error: "this board already has a request waiting" } };
+    doc.requests.push({ board: n, id, kind, at: new Date().toISOString().slice(0, 16) + "Z" });
+  }
+  // written whole, through a temporary file, so the maker never reads half of it
+  await fs.writeFile(file + ".tmp", `${JSON.stringify(doc, null, 2)}\n`);
+  await fs.rename(file + ".tmp", file);
+  return { status: 200, out: { redeal: await redealOf(n) } };
 }
 
 async function file(res, abs, base) {
@@ -218,6 +262,10 @@ const server = createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", "http://127.0.0.1");
   try {
     if (PAGE[url.pathname]) return await file(res, path.join(here, PAGE[url.pathname]), here);
+    if (url.pathname === "/api/redeal" && req.method === "POST") {
+      const { status, out } = await redeal(req);
+      return send(res, status, JSON.stringify(out), "application/json; charset=utf-8");
+    }
     if (url.pathname === "/api/lane" || url.pathname === "/api/board") {
       const name = url.searchParams.get("lane") ?? "campaign";
       if (!LANES[name]) return send(res, 400, "no such lane");

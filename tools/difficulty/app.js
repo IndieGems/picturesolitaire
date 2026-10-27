@@ -213,7 +213,42 @@ async function open(id) {
         <p>A green dot: that card's picture is already on the board.</p>
         <p>Finishing a square brings down two cards in each of its columns: the face-up one and the one behind it.</p>
       </div>
-    </div>`;
+    </div>
+    ${state.lane === "campaign" ? `<div class="redeal" id="redeal">${redealHtml(b.redeal)}</div>` : ""}`;
+  if (state.lane === "campaign") wireRedeal(b.id);
+}
+
+// ------------------------------------------------------------------ re-deal requests (campaign)
+const KIND = { same: "another deal, the same difficulty", easier: "another deal, a little easier" };
+const pendingOf = (r) => r && !r.dealt && !r.failed && !r.cancelled;
+
+function redealHtml(r) {
+  const status = !r
+    ? ""
+    : pendingOf(r)
+      ? `<p class="status">Asked for ${KIND[r.kind]} on ${esc(r.at.slice(0, 10))}. Levels deals it with the same pictures and postcard and proves it; it reaches the game once the win check is updated.</p>`
+      : r.dealt
+        ? `<p class="status">Re-dealt (${KIND[r.kind]}) on ${esc(r.dealt.at.slice(0, 10))}.</p>`
+        : r.failed
+          ? `<p class="status">The last request (${KIND[r.kind]}) found no deal: ${esc(r.failed.why)}</p>`
+          : "";
+  const buttons = pendingOf(r)
+    ? `<button data-act="cancel">Take the request back</button>`
+    : `<button data-act="same">Re-deal: same difficulty</button><button data-act="easier">Re-deal: a little easier</button>`;
+  return `<h3>Re-deal this board</h3>${status}<div class="actions">${buttons}</div><p class="note">Same pictures and postcard, a new deal. "A little easier" moves its careless target up 10 points; a marked board stays marked.</p>`;
+}
+
+function wireRedeal(id) {
+  for (const btn of document.querySelectorAll("#redeal button")) {
+    btn.addEventListener("click", async () => {
+      const act = btn.dataset.act;
+      for (const b of document.querySelectorAll("#redeal button")) b.disabled = true;
+      const res = await fetch("/api/redeal", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(act === "cancel" ? { id, cancel: true } : { id, kind: act }) });
+      const out = await res.json().catch(() => ({ error: "no answer" }));
+      document.getElementById("redeal").innerHTML = out.error ? redealHtml(null).replace("<h3>", `<p class="status">${esc(out.error)}</p><h3>`) : redealHtml(out.redeal);
+      wireRedeal(id);
+    });
+  }
 }
 
 function table() {

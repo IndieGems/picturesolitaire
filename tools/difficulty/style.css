@@ -142,6 +142,23 @@ main { padding: 12px 16px 40px; max-width: 1400px; }
 .opening .key { font-size: 13px; color: var(--soft); max-width: 36ch; }
 .opening .key p { margin: 0 0 6px; }
 
+.redeal { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--grid); }
+.redeal h3 { margin: 0 0 6px; font-size: 15px; font-weight: 600; }
+.redeal .status { margin: 0 0 8px; }
+.redeal .note { margin: 8px 0 0; font-size: 12px; color: var(--muted); max-width: 70ch; }
+.redeal .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.redeal button {
+  font: inherit;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--axis);
+  border-radius: 999px;
+  padding: 6px 16px;
+  min-height: 36px;
+  cursor: pointer;
+}
+.redeal button:disabled { opacity: 0.5; cursor: default; }
+
 .table { margin-top: 14px; }
 .table summary { cursor: pointer; color: var(--soft); }
 .table table { border-collapse: collapse; font-size: 13px; margin-top: 8px; }

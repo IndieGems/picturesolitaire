@@ -372,6 +372,23 @@ The Big Banana and the Harbour Bridge stay. Art found no image licence on
 either, and Australian law lets anyone picture a building. The bridge
 postcard shows no climbers and no Opera House.
 
+## Re-dealing a board from the Difficulty editor (the creator, 2026-10-27)
+
+This comes from Match3Mahjong's Level lab. In the Difficulty editor, a
+campaign board's details have two buttons:
+
+- **Re-deal: same difficulty**: another deal of the same pictures and
+  postcard, on the same targets.
+- **Re-deal: a little easier**: the same, with the careless target 10 points
+  higher. A marked board stays marked.
+
+A press queues the board in `tools/levels/redeals.json`; it can be taken
+back while it waits. An "easier" request moves the plan's target at once.
+Levels then runs `make-campaign.mts --redeals`. That re-deals every waiting
+board past its current seed, so the deal is a new one, and records `dealt`
+or `failed`. Then come `check.mts`, a commit, and Server's checker rebuild,
+and only after that does the board change in the game.
+
 ## Sources
 
 - [Bugnet: difficulty curves, how to get them right](https://bugnet.io/blog/difficulty-curves-how-to-get-them-right)
