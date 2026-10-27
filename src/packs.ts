@@ -1,17 +1,19 @@
 // PICTURE PACKS: where a built game finds its picture files (the lead, 2026-10-26: the
 // upload takes at most 2,000 files). Art's packer (tools/art/packs.mjs, run after vite
-// build) puts every board's board copies in one file, its full pictures in another, and
+// build) puts every board's board copies in one file (the daily's, a week's in one), every
+// full picture ONCE in ~2 MB chunks (Art, 2026-10-27: they were stored once per board), and
 // each trip's passport copies in a third, and takes the single files out of dist:
 //
-//   packs/index.json       { boards: { <board id>: { b, f } }, trips: { <trip id>: <pack> },
-//                          suitcases: { <YYYY-MM>: <pack> } } (each month's suitcase items)
+//   packs/index.json       { boards: { <board id>: { b } }, full: { <chunk>: [<path>...] },
+//                          trips: { <trip id>: <pack> }, suitcases: { <YYYY-MM>: <pack> } }
+//                          (a board's `f`, an older build's per-board full pack, is still read)
 //   packs/<name>.bin       a uint32 little-endian JSON length, then {"files":[{path, offset,
 //                          length, type}]} (path as the catalogue names it, offset from the
 //                          end of the JSON), then the bytes
 //
 // A board's board copies come in one request before the board shows (the screens ask
 // first, and fetch the next board's while the win card is up); a pack several boards share
-// (the daily's month, the shared full pictures) is read by HTTP Range, its index first,
+// (the daily's week, the full-picture chunks) is read by HTTP Range, its index first,
 // then only the span that holds the files wanted. A host that ignores Range answers 200:
 // the stream is read only as far as the last byte wanted, then dropped. Which one the host
 // did is logged once outside a release build, for QA. Every file becomes a blob URL, kept
@@ -32,7 +34,11 @@ const base = import.meta.env.BASE_URL;
 type Entry = { path: string; offset: number; length: number; type?: string };
 /** A pack's own index: where its data starts, and each file in it. */
 type Head = { start: number; files: Map<string, Entry> };
-type Index = { boards: Record<string, { b?: string; f?: string }>; trips: Record<string, string> };
+/**
+ * boards: each board's board-copy pack (f: an older build's per-board full pack).
+ * full: the full-picture chunks, each full picture in one of them (Art, 2026-10-27: stored once).
+ */
+type Index = { boards: Record<string, { b?: string; f?: string }>; full?: Record<string, string[]>; trips: Record<string, string> };
 
 /** Built games read packs; the dev loop never does (import.meta.env.PROD is false there). */
 const BUILT = import.meta.env.PROD;
@@ -289,7 +295,7 @@ async function fromPack(name: string, paths: string[], whole: boolean): Promise<
 
 /**
  * Fetch pack `name` whole? Only a board's own board-copy pack: the board wants all of it.
- * A pack several boards share (the daily's month), and every full-picture pack (one picture
+ * A pack several boards share (the daily's week), and every full-picture pack (one picture
  * is wanted at a time), is read by Range.
  */
 function wholePack(idx: Index, name: string): boolean {
@@ -300,6 +306,16 @@ function wholePack(idx: Index, name: string): boolean {
     if (packs.f === name) other++;
   }
   return b === 1 && other === 0;
+}
+
+/** Which full chunk holds each full picture: index.full turned round, once. */
+let fullOf: Map<string, string> | null = null;
+function chunkOf(idx: Index, path: string): string | undefined {
+  if (!fullOf) {
+    fullOf = new Map();
+    for (const [name, paths] of Object.entries(idx.full ?? {})) for (const p of paths) fullOf.set(p, name);
+  }
+  return fullOf.get(path);
 }
 
 function remember(owner: string, paths: string[]): void {
@@ -346,7 +362,21 @@ export async function ensure(paths: string[], board: string): Promise<void> {
       let left = want;
       for (const name of [packs.b, packs.f]) {
         if (!name || !left.length) continue;
+        // a pack whose index is known to hold none of them is not fetched again (the enlarged
+        // view's full picture is never in the board's own pack)
+        const known = heads.has(name) ? await heads.get(name)!.catch(() => null) : null;
+        if (known && !left.some((p) => known.files.has(p))) continue;
         left = await fromPack(name, left, wholePack(idx, name));
+      }
+      // full pictures: each in one shared chunk (index.full), read by Range like any shared pack
+      if (left.length) {
+        const by = new Map<string, string[]>();
+        for (const p of left) {
+          const name = chunkOf(idx, p);
+          if (name) by.set(name, [...(by.get(name) ?? []), p]);
+        }
+        const rest = await Promise.all([...by].map(([name, ps]) => fromPack(name, ps, false)));
+        left = [...left.filter((p) => !chunkOf(idx, p)), ...rest.flat()];
       }
       if (left.length) throw new Error(`packs: board ${board} has no ${left.join(", ")}`);
     })();
