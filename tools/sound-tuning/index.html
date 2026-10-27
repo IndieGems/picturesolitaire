@@ -141,6 +141,12 @@ async function playEffect(name, take = takeOf(name)) {
       const across = col / 4;
       voice(buf, level, { rate: rate * (0.94 + across * 0.14), pan: (across - 0.5) * 1.1, when: col * 0.055 });
     }
+  } else if (name === "settle") {
+    // Five columns landing one after another, as the game plays them.
+    for (let col = 0; col < 5; col++) {
+      const across = col / 4;
+      voice(buf, level, { rate: rate * (0.95 + across * 0.2), pan: (across - 0.5) * 1.1, when: col * 0.11 });
+    }
   } else voice(buf, level, { rate });
 }
 

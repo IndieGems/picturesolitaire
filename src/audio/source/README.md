@@ -12,7 +12,7 @@ original holds.
 
 | file | for | main event (trim to) | notes |
 | --- | --- | --- | --- |
-| land.wav | a move lands | 0.48-0.66 s | quiet (peak -23 dB) |
+| land.wav | a move lands; also a column landing (settle) | 0.48-0.66 s | quiet (peak -23 dB); settle is its first knock alone (0.485-0.57 s), low-passed at 3 kHz |
 | lift.wav | card/piece picked up | 1.26-1.40 s | |
 | slide.wav | displaced cards slide back | 0.62-0.85 s | weak (peak -30 dB) |
 | merge.wav | correct neighbours join | 0.71-0.80 s | weak (peak -33 dB) |

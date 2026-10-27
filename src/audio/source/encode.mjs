@@ -50,6 +50,10 @@ const EFFECTS = [
   // The passport stamp: the rubber hit and its body 70 ms later, its clack
   // rolled off above 5 kHz so it thumps rather than snaps.
   { name: "stamp", src: "stamp.wav", start: 0.525, end: 0.82, fade: 0.1, lowpass: 5000 },
+  // A column's cards touch down after a clear (one per column, left to right):
+  // the put-down tap's first knock alone, rolled off above 3 kHz into a soft
+  // "tok" that sits under the brighter deal ticks. It repeats a lot.
+  { name: "settle", src: "land.wav", start: 0.485, end: 0.57, fade: 0.04, lowpass: 3000 },
 ];
 const MUSIC = [
   // The win cue, whole.

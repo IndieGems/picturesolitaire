@@ -63,19 +63,40 @@ function dealTick(col: number): void {
   });
 }
 
+// --- Columns landing after a clear -----------------------------------------------
+//
+// Each column whose cards moved after a clear ticks once as its last card
+// touches down (column:land arrives in landing order: left to right for the
+// refill), a little higher further right, so the refill has a beat. The deal
+// ticks mark cards leaving the stacks, these their arrival. Columns that land
+// together (a fall with nothing to deal) are spread 40 ms apart as they come.
+
+const SETTLE_SPACING = 0.04;
+let nextSettleAt = 0;
+
+function settleTick(col: number): void {
+  widestCol = Math.max(widestCol, col);
+  const across = widestCol > 0 ? col / widestCol : 0.5; // 0 left .. 1 right
+  const now = performance.now() / 1000;
+  const at = Math.max(now, nextSettleAt);
+  nextSettleAt = at + SETTLE_SPACING;
+  play("settle", { pan: (across - 0.5) * 1.1, rate: 0.95 + across * 0.2, delay: Math.min(at - now, 0.3) });
+}
+
 // --- When a card touches down ----------------------------------------------------
 //
 // The board emits piece:move and cards:fall as their animations START, so the
 // tap waits for the card to arrive. When the board says how long that takes
-// (`ms`), the tap lands at 85% of it (its ease-out reads as arrived by then);
-// until it does, these are its usual times (src/board/tuning.ts: a drop
-// settles in about 170 ms, a one-row fall in 150 ms).
+// (`ms`), a move's tap lands at 85% of it (its ease-out reads as arrived by
+// then), a fall's at the end (falling cards land at full speed and bounce,
+// since 2026-10-27); until it does, these are its usual times
+// (src/board/tuning.ts: a drop settles in about 170 ms, a one-row fall in 150 ms).
 const MOVE_LANDS = 0.13;
-const FALL_LANDS = 0.13;
+const FALL_LANDS = 0.15;
 
-function landsIn(payload: object, fallback: number): number {
+function landsIn(payload: object, fallback: number, at = 0.85): number {
   const ms = (payload as { ms?: unknown }).ms;
-  return typeof ms === "number" && ms >= 0 ? Math.min(ms * 0.85, 600) / 1000 : fallback;
+  return typeof ms === "number" && ms >= 0 ? Math.min(ms * at, 600) / 1000 : fallback;
 }
 
 /** The flourish still ringing, cut short if the win cue starts over it. */
@@ -164,8 +185,9 @@ function listen(): void {
   });
   on("destination:reveal", reveal);
   on("destination:done", revealDone);
-  on("cards:fall", (p) => play("fall", { delay: landsIn(p, FALL_LANDS), gain: Math.min(1.2, 0.7 + p.cards * 0.05) }));
+  on("cards:fall", (p) => play("fall", { delay: landsIn(p, FALL_LANDS, 1), gain: Math.min(1.2, 0.7 + p.cards * 0.05) }));
   on("stack:deal", ({ col }) => dealTick(col));
+  on("column:land", ({ col }) => settleTick(col));
   // A press on a stack: its little "no", placed under the stack like a deal tick.
   on("stack:nope", ({ col }) => {
     widestCol = Math.max(widestCol, col);
