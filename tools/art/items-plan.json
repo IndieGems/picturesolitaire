@@ -5,603 +5,611 @@
    "id": "item-2026-11-01",
    "month": "2026-11",
    "slot": 1,
-   "title": "Item 1",
+   "title": "Ski goggles",
    "standin": "vintage-camera"
   },
   {
    "id": "item-2026-11-02",
    "month": "2026-11",
    "slot": 2,
-   "title": "Item 2",
+   "title": "Bobble hat",
    "standin": "ginger-cat"
   },
   {
    "id": "item-2026-11-03",
    "month": "2026-11",
    "slot": 3,
-   "title": "Item 3",
+   "title": "Mittens",
    "standin": "bird-of-paradise"
   },
   {
    "id": "item-2026-11-04",
    "month": "2026-11",
    "slot": 4,
-   "title": "Item 4",
+   "title": "Ski boots",
    "standin": "delft-teapot"
   },
   {
    "id": "item-2026-11-05",
    "month": "2026-11",
    "slot": 5,
-   "title": "Item 5",
+   "title": "Nordic jumper",
    "standin": "steam-train"
   },
   {
    "id": "item-2026-11-06",
    "month": "2026-11",
    "slot": 6,
-   "title": "Item 6",
+   "title": "Striped scarf",
    "standin": "red-barn"
   },
   {
    "id": "item-2026-11-07",
    "month": "2026-11",
    "slot": 7,
-   "title": "Item 7",
+   "title": "Earmuffs",
    "standin": "passion-flower"
   },
   {
    "id": "item-2026-11-08",
    "month": "2026-11",
    "slot": 8,
-   "title": "Item 8",
+   "title": "Ice skates",
    "standin": "allium"
   },
   {
    "id": "item-2026-11-09",
    "month": "2026-11",
    "slot": 9,
-   "title": "Item 9",
+   "title": "Fondue pot",
    "standin": "amaryllis"
   },
   {
    "id": "item-2026-11-10",
    "month": "2026-11",
    "slot": 10,
-   "title": "Item 10",
+   "title": "Hot-water bottle",
    "standin": "egg-cup"
   },
   {
    "id": "item-2026-12-01",
    "month": "2026-12",
    "slot": 1,
-   "title": "Item 1",
+   "title": "Glass bauble",
    "standin": "tin-robot"
   },
   {
    "id": "item-2026-12-02",
    "month": "2026-12",
    "slot": 2,
-   "title": "Item 2",
+   "title": "Wooden nutcracker",
    "standin": "pebble-cairn"
   },
   {
    "id": "item-2026-12-03",
    "month": "2026-12",
    "slot": 3,
-   "title": "Item 3",
+   "title": "Roasted chestnuts",
    "standin": "rope-bridge"
   },
   {
    "id": "item-2026-12-04",
    "month": "2026-12",
    "slot": 4,
-   "title": "Item 4",
+   "title": "Hot cider",
    "standin": "campfire"
   },
   {
    "id": "item-2026-12-05",
    "month": "2026-12",
    "slot": 5,
-   "title": "Item 5",
+   "title": "Paper star lantern",
    "standin": "binoculars"
   },
   {
    "id": "item-2026-12-06",
    "month": "2026-12",
    "slot": 6,
-   "title": "Item 6",
+   "title": "Carved reindeer",
    "standin": "covered-bridge"
   },
   {
    "id": "item-2026-12-07",
    "month": "2026-12",
    "slot": 7,
-   "title": "Item 7",
+   "title": "Gift box",
    "standin": "bandstand"
   },
   {
    "id": "item-2026-12-08",
    "month": "2026-12",
    "slot": 8,
-   "title": "Item 8",
+   "title": "Candle arch",
    "standin": "koala"
   },
   {
    "id": "item-2026-12-09",
    "month": "2026-12",
    "slot": 9,
-   "title": "Item 9",
+   "title": "Knitted stocking",
    "standin": "snowdrops"
   },
   {
    "id": "item-2026-12-10",
    "month": "2026-12",
    "slot": 10,
-   "title": "Item 10",
+   "title": "Pine wreath",
    "standin": "frangipani"
   },
   {
    "id": "item-2027-01-01",
    "month": "2027-01",
    "slot": 1,
-   "title": "Item 1",
+   "title": "Headlamp",
    "standin": "prickly-pear"
   },
   {
    "id": "item-2027-01-02",
    "month": "2027-01",
    "slot": 2,
-   "title": "Item 2",
+   "title": "Trapper hat",
    "standin": "sea-holly"
   },
   {
    "id": "item-2027-01-03",
    "month": "2027-01",
    "slot": 3,
-   "title": "Item 3",
+   "title": "Wool socks",
    "standin": "peaches"
   },
   {
    "id": "item-2027-01-04",
    "month": "2027-01",
    "slot": 4,
-   "title": "Item 4",
+   "title": "Camera tripod",
    "standin": "bananas"
   },
   {
    "id": "item-2027-01-05",
    "month": "2027-01",
    "slot": 5,
-   "title": "Item 5",
+   "title": "Kuksa cup",
    "standin": "lychees"
   },
   {
    "id": "item-2027-01-06",
    "month": "2027-01",
    "slot": 6,
-   "title": "Item 6",
+   "title": "Cinnamon bun",
    "standin": "music-box"
   },
   {
    "id": "item-2027-01-07",
    "month": "2027-01",
    "slot": 7,
-   "title": "Item 7",
+   "title": "Kick-sled",
    "standin": "oasis"
   },
   {
    "id": "item-2027-01-08",
    "month": "2027-01",
    "slot": 8,
-   "title": "Item 8",
+   "title": "Felt slippers",
    "standin": "black-sand-beach"
   },
   {
    "id": "item-2027-01-09",
    "month": "2027-01",
    "slot": 9,
-   "title": "Item 9",
+   "title": "Pocket telescope",
    "standin": "larch-forest"
   },
   {
    "id": "item-2027-01-10",
    "month": "2027-01",
    "slot": 10,
-   "title": "Item 10",
+   "title": "Ice lantern",
    "standin": "rowboat-lake"
   },
   {
    "id": "item-2027-02-01",
    "month": "2027-02",
    "slot": 1,
-   "title": "Item 1",
+   "title": "Venetian mask",
    "standin": "kick-scooter"
   },
   {
    "id": "item-2027-02-02",
    "month": "2027-02",
    "slot": 2,
-   "title": "Item 2",
+   "title": "Feather fan",
    "standin": "deck-chair"
   },
   {
    "id": "item-2027-02-03",
    "month": "2027-02",
    "slot": 3,
-   "title": "Item 3",
+   "title": "Tambourine",
    "standin": "ice-cream-van"
   },
   {
    "id": "item-2027-02-04",
    "month": "2027-02",
    "slot": 4,
-   "title": "Item 4",
+   "title": "Maracas",
    "standin": "propeller-plane"
   },
   {
    "id": "item-2027-02-05",
    "month": "2027-02",
    "slot": 5,
-   "title": "Item 5",
+   "title": "Jester hat",
    "standin": "viaduct"
   },
   {
    "id": "item-2027-02-06",
    "month": "2027-02",
    "slot": 6,
-   "title": "Item 6",
+   "title": "Party popper",
    "standin": "palace-window"
   },
   {
    "id": "item-2027-02-07",
    "month": "2027-02",
    "slot": 7,
-   "title": "Item 7",
+   "title": "Sequinned shoes",
    "standin": "red-cabin"
   },
   {
    "id": "item-2027-02-08",
    "month": "2027-02",
    "slot": 8,
-   "title": "Item 8",
+   "title": "Bead necklaces",
    "standin": "polar-bear"
   },
   {
    "id": "item-2027-02-09",
    "month": "2027-02",
    "slot": 9,
-   "title": "Item 9",
+   "title": "Party horn",
    "standin": "snail"
   },
   {
    "id": "item-2027-02-10",
    "month": "2027-02",
    "slot": 10,
-   "title": "Item 10",
+   "title": "Plumed tiara",
    "standin": "kingfisher"
   },
   {
    "id": "item-2027-03-01",
    "month": "2027-03",
    "slot": 1,
-   "title": "Item 1",
+   "title": "Wooden clogs",
    "standin": "dalmatian"
   },
   {
    "id": "item-2027-03-02",
    "month": "2027-03",
    "slot": 2,
-   "title": "Item 2",
+   "title": "Tulip bulbs",
    "standin": "freesias"
   },
   {
    "id": "item-2027-03-03",
    "month": "2027-03",
    "slot": 3,
-   "title": "Item 3",
+   "title": "Bicycle basket",
    "standin": "bottlebrush"
   },
   {
    "id": "item-2027-03-04",
    "month": "2027-03",
    "slot": 4,
-   "title": "Item 4",
+   "title": "Garden trowel",
    "standin": "lantana"
   },
   {
    "id": "item-2027-03-05",
    "month": "2027-03",
    "slot": 5,
-   "title": "Item 5",
+   "title": "Flower bucket",
    "standin": "cinnamon-rolls"
   },
   {
    "id": "item-2027-03-06",
    "month": "2027-03",
    "slot": 6,
-   "title": "Item 6",
+   "title": "Stroopwafel",
    "standin": "mochi"
   },
   {
    "id": "item-2027-03-07",
    "month": "2027-03",
    "slot": 7,
-   "title": "Item 7",
+   "title": "Watering can",
    "standin": "cocoa-pod"
   },
   {
    "id": "item-2027-03-08",
    "month": "2027-03",
    "slot": 8,
-   "title": "Item 8",
+   "title": "Pinwheel",
    "standin": "snow-globe"
   },
   {
    "id": "item-2027-03-09",
    "month": "2027-03",
    "slot": 9,
-   "title": "Item 9",
+   "title": "Wellies",
    "standin": "cypress-swamp"
   },
   {
    "id": "item-2027-03-10",
    "month": "2027-03",
    "slot": 10,
-   "title": "Item 10",
+   "title": "Cheese wheel",
    "standin": "rain-window"
   },
   {
    "id": "item-2027-04-01",
    "month": "2027-04",
    "slot": 1,
-   "title": "Item 1",
+   "title": "Furoshiki bundle",
    "standin": "orange-grove"
   },
   {
    "id": "item-2027-04-02",
    "month": "2027-04",
    "slot": 2,
-   "title": "Item 2",
+   "title": "Sakura mochi",
    "standin": "gazebo"
   },
   {
    "id": "item-2027-04-03",
    "month": "2027-04",
    "slot": 3,
-   "title": "Item 3",
+   "title": "Kokeshi doll",
    "standin": "horreo"
   },
   {
    "id": "item-2027-04-04",
    "month": "2027-04",
    "slot": 4,
-   "title": "Item 4",
+   "title": "Sakura tea",
    "standin": "courtyard"
   },
   {
    "id": "item-2027-04-05",
    "month": "2027-04",
    "slot": 5,
-   "title": "Item 5",
+   "title": "Geta sandals",
    "standin": "lattice-window"
   },
   {
    "id": "item-2027-04-06",
    "month": "2027-04",
    "slot": 6,
-   "title": "Item 6",
+   "title": "Wind chime",
    "standin": "walrus"
   },
   {
    "id": "item-2027-04-07",
    "month": "2027-04",
    "slot": 7,
-   "title": "Item 7",
+   "title": "Marble soda",
    "standin": "quokka"
   },
   {
    "id": "item-2027-04-08",
    "month": "2027-04",
    "slot": 8,
-   "title": "Item 8",
+   "title": "Carp streamer",
    "standin": "mountain-goat"
   },
   {
    "id": "item-2027-04-09",
    "month": "2027-04",
    "slot": 9,
-   "title": "Item 9",
+   "title": "Kendama",
    "standin": "glider"
   },
   {
    "id": "item-2027-04-10",
    "month": "2027-04",
    "slot": 10,
-   "title": "Item 10",
+   "title": "Taiyaki",
    "standin": "flip-flops"
   },
   {
    "id": "item-2027-05-01",
    "month": "2027-05",
    "slot": 1,
-   "title": "Item 1",
+   "title": "Folded map",
    "standin": "beach-buggy"
   },
   {
    "id": "item-2027-05-02",
    "month": "2027-05",
    "slot": 2,
-   "title": "Item 2",
+   "title": "Aviator sunglasses",
    "standin": "sleigh"
   },
   {
    "id": "item-2027-05-03",
    "month": "2027-05",
    "slot": 3,
-   "title": "Item 3",
+   "title": "Cool box",
    "standin": "abacus"
   },
   {
    "id": "item-2027-05-04",
    "month": "2027-05",
    "slot": 4,
-   "title": "Item 4",
+   "title": "Fuzzy dice",
    "standin": "dormouse"
   },
   {
    "id": "item-2027-05-05",
    "month": "2027-05",
    "slot": 5,
-   "title": "Item 5",
+   "title": "Cassette tape",
    "standin": "eclairs"
   },
   {
    "id": "item-2027-05-06",
    "month": "2027-05",
    "slot": 6,
-   "title": "Item 6",
+   "title": "Jerry can",
    "standin": "stag-beetle"
   },
   {
    "id": "item-2027-05-07",
    "month": "2027-05",
    "slot": 7,
-   "title": "Item 7",
+   "title": "Dashboard dog",
    "standin": "canna"
   },
   {
    "id": "item-2027-05-08",
    "month": "2027-05",
    "slot": 8,
-   "title": "Item 8",
+   "title": "Travel pillow",
    "standin": "cymbidium"
   },
   {
    "id": "item-2027-05-09",
    "month": "2027-05",
    "slot": 9,
-   "title": "Item 9",
+   "title": "Car keys",
    "standin": "jasmine"
   },
   {
    "id": "item-2027-05-10",
    "month": "2027-05",
    "slot": 10,
-   "title": "Item 10",
+   "title": "Takeaway coffee",
    "standin": "aloe-bloom"
   },
   {
    "id": "item-2027-06-01",
    "month": "2027-06",
    "slot": 1,
-   "title": "Item 1",
+   "title": "Straw tote",
    "standin": "lamingtons"
   },
   {
    "id": "item-2027-06-02",
    "month": "2027-06",
    "slot": 2,
-   "title": "Item 2",
+   "title": "Espadrilles",
    "standin": "pho"
   },
   {
    "id": "item-2027-06-03",
    "month": "2027-06",
    "slot": 3,
-   "title": "Item 3",
+   "title": "Worry beads",
    "standin": "gooseberries"
   },
   {
    "id": "item-2027-06-04",
    "month": "2027-06",
    "slot": 4,
-   "title": "Item 4",
+   "title": "Olive-oil bottle",
    "standin": "shooting-stars"
   },
   {
    "id": "item-2027-06-05",
    "month": "2027-06",
    "slot": 5,
-   "title": "Item 5",
+   "title": "Sea sponge",
    "standin": "pampas-grass"
   },
   {
    "id": "item-2027-06-06",
    "month": "2027-06",
    "slot": 6,
-   "title": "Item 6",
+   "title": "Fisherman's cap",
    "standin": "malachite"
   },
   {
    "id": "item-2027-06-07",
    "month": "2027-06",
    "slot": 7,
-   "title": "Item 7",
+   "title": "Painted plate",
    "standin": "mirage"
   },
   {
    "id": "item-2027-06-08",
    "month": "2027-06",
    "slot": 8,
-   "title": "Item 8",
+   "title": "Leather sandals",
    "standin": "rotunda"
   },
   {
    "id": "item-2027-06-09",
    "month": "2027-06",
    "slot": 9,
-   "title": "Item 9",
+   "title": "Beach towel",
    "standin": "oculus"
   },
   {
    "id": "item-2027-06-10",
    "month": "2027-06",
    "slot": 10,
-   "title": "Item 10",
+   "title": "Shell necklace",
    "standin": "hacienda"
   }
  ],
  "suitcases": [
   {
    "month": "2026-11",
-   "theme": "Stand-in",
-   "table": "table-winter-dusk"
+   "theme": "Ski Trip",
+   "table": "table-ski-lodge",
+   "tableTitle": "Ski Lodge"
   },
   {
    "month": "2026-12",
-   "theme": "Stand-in",
-   "table": "table-winter-dusk"
+   "theme": "Winter Market",
+   "table": "table-winter-market",
+   "tableTitle": "Winter Market"
   },
   {
    "month": "2027-01",
-   "theme": "Stand-in",
-   "table": "table-winter-dusk"
+   "theme": "Northern Lights",
+   "table": "table-arctic-cabin",
+   "tableTitle": "Arctic Cabin"
   },
   {
    "month": "2027-02",
-   "theme": "Stand-in",
-   "table": "table-winter-dusk"
+   "theme": "Carnival",
+   "table": "table-carnival",
+   "tableTitle": "Carnival"
   },
   {
    "month": "2027-03",
-   "theme": "Stand-in",
-   "table": "table-winter-dusk"
+   "theme": "Tulip Time",
+   "table": "table-flower-market",
+   "tableTitle": "Flower Market"
   },
   {
    "month": "2027-04",
-   "theme": "Stand-in",
-   "table": "table-winter-dusk"
+   "theme": "Cherry Blossom",
+   "table": "table-blossom-picnic",
+   "tableTitle": "Blossom Picnic"
   },
   {
    "month": "2027-05",
-   "theme": "Stand-in",
-   "table": "table-winter-dusk"
+   "theme": "Road Trip",
+   "table": "table-roadside-diner",
+   "tableTitle": "Roadside Diner"
   },
   {
    "month": "2027-06",
-   "theme": "Stand-in",
-   "table": "table-winter-dusk"
+   "theme": "Island Hopping",
+   "table": "table-island-terrace",
+   "tableTitle": "Island Terrace"
   }
  ]
 }

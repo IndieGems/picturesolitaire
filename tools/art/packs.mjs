@@ -20,7 +20,8 @@
 // A pack (UI's format, src/packs.ts reads it): a little-endian uint32 JSON length, the JSON
 // {"files":[{"path","offset","length","type"}]} (path as the catalogue names it, offset counted
 // from the end of the JSON), then the files end to end, byte for byte as in public/.
-// <dist>/packs/index.json: {"boards":{<board id>:{"b":<pack>,"f":<pack>}},"trips":{<trip id>:<pack>}}.
+// <dist>/packs/index.json: {"boards":{<board id>:{"b":<pack>,"f":<pack>}},"trips":{<trip id>:<pack>},
+//   "suitcases":{<YYYY-MM>:<pack>}} (each month's item cut-outs, for the suitcase screen).
 import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -32,7 +33,8 @@ if (!dist) {
 }
 const read = (p) => JSON.parse(readFileSync(p, "utf8"));
 const catalogue = read("src/content/pictures.json");
-const byId = new Map([...catalogue.pictures, ...(catalogue.destinations ?? [])].map((p) => [p.id, p]));
+// The Daily Suitcase's items (docs/daily-suitcase.md) are dealt on daily boards like any picture.
+const byId = new Map([...catalogue.pictures, ...(catalogue.destinations ?? []), ...(catalogue.items ?? [])].map((p) => [p.id, p]));
 // lessons: the staged lesson boards, such as the Shuffle lesson after board 3 (Levels, 2026-10-27).
 const LANES = ["campaign", "challenge", "daily", "experiments", "lessons"];
 // The daily packs per month (lead, 2026-10-26): a day's board fetches its month's pack once.
@@ -45,7 +47,7 @@ const packKey = (lane, id) => (lane === "daily" ? `daily-${/^d(\d{4}-\d{2})/.exe
 const problems = [];
 const packs = new Map(); // name -> ordered catalogue paths (duplicates dropped on write)
 const add = (name, rel) => (packs.get(name) ?? packs.set(name, []).get(name)).push(rel);
-const index = { boards: {}, trips: {} };
+const index = { boards: {}, trips: {}, suitcases: {} };
 for (const lane of LANES) {
   const file = `src/content/levels/${lane}.json`;
   if (!existsSync(file)) continue;
@@ -79,6 +81,15 @@ for (const t of trips) {
     if (d?.thumb) add(name, d.thumb);
   }
   index.trips[t.id] = name;
+}
+
+// A month's suitcase screen shows all 10 of its items at once: one pack a month, s-YYYY-MM, of
+// each item's cut-out (the object on transparency, for its slot and its silhouette), or its board
+// copy while it is still a stand-in.
+for (const it of catalogue.items ?? []) {
+  const name = `s-${it.month}`;
+  add(name, it.cutout ?? it.board ?? it.file);
+  index.suitcases[it.month] = name;
 }
 
 const TYPES = { ".webp": "image/webp", ".png": "image/png", ".jpg": "image/jpeg" };

@@ -56,3 +56,25 @@ event.
 
 Days are the player's own (the platform's date, never the device's). Nothing about the suitcase
 lives in browser storage.
+
+## The twelve themes (approved by the creator, 2026-10-27)
+
+Each month's 10 items are single travel objects, with no brands, logos or writing, and none repeats a
+library picture. Item ids are `item-YYYY-MM-NN`, NN being the slot below (01-10), and never change;
+`tools/art/items-plan.json` plans them and `pictures.json` lists them under `items`. Each table is
+the month's prize, `table-<name>` in `public/art/tables/tables.json`, drawn in the look of the others.
+
+| Month | Theme | Items, slots 01-10 | Table |
+| --- | --- | --- | --- |
+| 2026-11 | Ski Trip | Ski goggles, Bobble hat, Mittens, Ski boots, Nordic jumper, Striped scarf, Earmuffs, Ice skates, Fondue pot, Hot-water bottle | `table-ski-lodge`: an alpine chalet's pine table by the fire, a frosty window corner, a tartan blanket |
+| 2026-12 | Winter Market | Glass bauble, Wooden nutcracker, Roasted chestnuts, Hot cider, Paper star lantern, Carved reindeer, Gift box, Candle arch, Knitted stocking, Pine wreath | `table-winter-market`: a market stall's wooden counter under warm string lights, a pine garland |
+| 2027-01 | Northern Lights | Headlamp, Trapper hat, Wool socks, Camera tripod, Kuksa cup, Cinnamon bun, Kick-sled, Felt slippers, Pocket telescope, Ice lantern | `table-arctic-cabin`: an Arctic cabin's windowsill, the green aurora glowing through |
+| 2027-02 | Carnival | Venetian mask, Feather fan, Tambourine, Maracas, Jester hat, Party popper, Sequinned shoes, Bead necklaces, Party horn, Plumed tiara | `table-carnival`: deep velvet and gold, confetti at the edges |
+| 2027-03 | Tulip Time | Wooden clogs, Tulip bulbs, Bicycle basket, Garden trowel, Flower bucket, Stroopwafel, Watering can, Pinwheel, Wellies, Cheese wheel | `table-flower-market`: a Dutch flower market's crates, tulips at the corners |
+| 2027-04 | Cherry Blossom | Furoshiki bundle, Sakura mochi, Kokeshi doll, Sakura tea, Geta sandals, Wind chime, Marble soda, Carp streamer, Kendama, Taiyaki | `table-blossom-picnic`: a picnic mat under falling blossom |
+| 2027-05 | Road Trip | Folded map, Aviator sunglasses, Cool box, Fuzzy dice, Cassette tape, Jerry can, Dashboard dog, Travel pillow, Car keys, Takeaway coffee | `table-roadside-diner`: a roadside diner's chrome-edged counter, a desert sunset at the corners |
+| 2027-06 | Island Hopping | Straw tote, Espadrilles, Worry beads, Olive-oil bottle, Sea sponge, Fisherman's cap, Painted plate, Leather sandals, Beach towel, Shell necklace | `table-island-terrace`: a whitewashed terrace, blue shutters, bougainvillea |
+| 2027-07 | Safari | Bush hat, Canvas water bottle, Field journal, Long-lens camera, Rooibos mug, Bandana, Duffel bag, Safari jacket, Torch, Folding stool | `table-safari-camp`: a canvas camp table at sunset, acacia shade |
+| 2027-08 | Under the Stars | Enamel mug, Toasted marshmallows, S'mores, Firewood bundle, Canoe paddle, Camp chair, Walkie-talkie, Rope and carabiner, Wool blanket, Cast-iron pan | `table-campfire`: a picnic bench by a campfire under the Milky Way |
+| 2027-09 | Grand Train Journey | Pocket watch, Travel clock, Hat box, Porcelain teacup, Fountain pen, Opera glasses, Luggage tag, Ticket punch, Silver cloche, Bowler hat | `table-dining-car`: a wood-panelled dining-car table, a brass lamp |
+| 2027-10 | Castle Tour | Iron key, Candelabra, Knight's helmet, Quill, Wax seal, Goblet, Plain shield, Scroll map, Gauntlet, Spinning wheel | `table-castle-hall`: a stone hall's oak table by candlelight, a little spooky |
