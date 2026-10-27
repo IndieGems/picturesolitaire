@@ -357,26 +357,26 @@ export async function ensure(paths: string[], board: string): Promise<void> {
   let job = loading.get(key);
   if (!job) {
     job = (async () => {
+      // full pictures go straight to their chunk (index.full): a board's own pack never holds one,
+      // so the enlarged view of a board not opened this session does not fetch that board's pack
+      const chunked = want.filter((p) => chunkOf(idx, p));
+      let left = want.filter((p) => !chunkOf(idx, p));
       const packs = idx.boards[board];
-      if (!packs) throw new Error(`packs: no board ${board}`);
-      let left = want;
-      for (const name of [packs.b, packs.f]) {
+      if (left.length && !packs) throw new Error(`packs: no board ${board}`);
+      for (const name of [packs?.b, packs?.f]) {
         if (!name || !left.length) continue;
-        // a pack whose index is known to hold none of them is not fetched again (the enlarged
-        // view's full picture is never in the board's own pack)
+        // a pack whose index is known to hold none of them is not fetched again
         const known = heads.has(name) ? await heads.get(name)!.catch(() => null) : null;
         if (known && !left.some((p) => known.files.has(p))) continue;
         left = await fromPack(name, left, wholePack(idx, name));
       }
-      // full pictures: each in one shared chunk (index.full), read by Range like any shared pack
-      if (left.length) {
+      // full pictures: each in one shared chunk, read by Range like any shared pack (a host that
+      // ignores Range: one stream per chunk, read only as far as the pictures wanted)
+      if (chunked.length) {
         const by = new Map<string, string[]>();
-        for (const p of left) {
-          const name = chunkOf(idx, p);
-          if (name) by.set(name, [...(by.get(name) ?? []), p]);
-        }
+        for (const p of chunked) by.set(chunkOf(idx, p)!, [...(by.get(chunkOf(idx, p)!) ?? []), p]);
         const rest = await Promise.all([...by].map(([name, ps]) => fromPack(name, ps, false)));
-        left = [...left.filter((p) => !chunkOf(idx, p)), ...rest.flat()];
+        left = [...left, ...rest.flat()];
       }
       if (left.length) throw new Error(`packs: board ${board} has no ${left.join(", ")}`);
     })();
