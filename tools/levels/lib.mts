@@ -463,8 +463,8 @@ export function swapSets(spec, pictures, uses, near, max = 6) {
 export function dealBoard(row, pictures, { id, date, cols, rows, par, tries = 3000, extra, safeFirstMove = false, from = 1 }) {
   // the deal is shuffled from the pictures in a fixed order, so it does not hang on how they were picked
   pictures = [...pictures].sort((a, b) => (a.id < b.id ? -1 : 1));
-  const targets = { chain: row.chain, careless: row.careless, traps: row.traps, bigWait: row.bigWait, orderTraps: row.orderTraps };
-  const spec = { id, cols, rows, pictures, targets, par, safeFirstMove };
+  const targets = { chain: row.chain, careless: row.careless, reader: row.reader, traps: row.traps, bigWait: row.bigWait, orderTraps: row.orderTraps };
+  const spec = { id, cols, rows, pictures, targets, par, safeFirstMove, measureAll: !!extra };
   const tally = new Map();
   const made = generate(spec, from, tries, tally);
   if (!made) return { board: null, tally };
@@ -536,16 +536,80 @@ export function makeBoard(plan, i, chosen, uses, opts) {
   throw new Error(`${id}: no deal meets the plan; loosen its row`);
 }
 
+/** The most cards a stack may hold after the opening deal: the board counts them exactly up to here (Gameplay, ea99946). */
+export const STACK_SHOWN = 13;
+
+/**
+ * Why a re-dealt board must take the next seed, or null when it may stay: its postcard opens
+ * mid-board on the proved line (never the first or last clear), and no stack holds more than
+ * STACK_SHOWN cards after the opening.
+ */
+function seatProblem(board, dest) {
+  const deep = Math.max(...board.stacks.map((st) => st.length - board.rows));
+  if (deep > STACK_SHOWN) return `a stack holds ${deep} cards after the opening`;
+  if (!dest) return null;
+  const order = clearOrder(board), at = order.indexOf(board.pictures.findIndex((p) => p.id === dest.id));
+  return at > 0 && at < order.length - 1 ? null : `the postcard is the ${at ? "last" : "first"} clear`;
+}
+
+/**
+ * Re-deal board b with EXACTLY its pictures and destination: a new deal on its
+ * row's targets (creator, 2026-10-27: unmarked boards made readable, metrics.ts
+ * READER; nothing else about the board changes). Its postcard still opens
+ * mid-board on the proved line, never as the first or last clear.
+ */
+function reseatBoard(row, b, opts) {
+  const dest = row.destination ? destinationOf(row.destination, row.crop) : null;
+  if ((dest?.id ?? null) !== (b.destination?.id ?? null)) throw new Error(`${b.id}: its destination is not its row's; re-deal it with --redeal`);
+  // readable deals in a build's careless range are a few in a thousand: search further than a new board does
+  const TRIES = 80000;
+  const deal = (pictures) => {
+    let { board, tally } = dealBoard(row, pictures, { ...opts, tries: TRIES });
+    for (let again = 0; board && again < 30; again++) {
+      const why = seatProblem(board, dest);
+      if (!why) break;
+      console.log(`${b.id}: ${why} on seed ${board.seed}; the next seed`);
+      ({ board, tally } = dealBoard(row, pictures, { ...opts, from: board.seed + 1, tries: TRIES - board.seed }));
+    }
+    return { board, tally };
+  };
+  // the row may take one picture fewer than the board has (made readable): drop the one whose going
+  // finds a deal, trying busy pictures first, then those of the postcard's medium, then the rest
+  const extra = b.pictures.length - row.count;
+  if (extra < 0 || extra > 1) throw new Error(`${b.id}: has ${b.pictures.length} pictures, its row ${row.count}; --reseat keeps them or drops one`);
+  if (!extra) {
+    console.log(`${b.id}: re-dealing it with its own ${b.pictures.length} pictures${dest ? ` and ${dest.id}` : ""}`);
+    const { board, tally } = deal(b.pictures);
+    if (!board) throw new Error(`${b.id}: no deal of its own pictures meets its row (${tallyText(tally)}); loosen the row`);
+    return dest ? withDestination(board, dest) : board;
+  }
+  const medium = dest ? destById.get(dest.id)?.medium : undefined;
+  const rank = (p) => -2 * (byId.get(p.id)?.busy ?? 0) - (byId.get(p.id)?.medium === medium ? 1 : 0);
+  const candidates = b.pictures.filter((p) => p.id !== dest?.id).sort((p, q) => rank(p) - rank(q) || (p.id < q.id ? -1 : 1));
+  const tallies = [];
+  // the deal hangs on the pictures' shapes, not on which pictures (dealFor): one try for each shape dropped
+  const tried = new Set();
+  for (const out of candidates) {
+    if (tried.has(shapeOf(out))) continue;
+    tried.add(shapeOf(out));
+    console.log(`${b.id}: re-dealing it without ${out.id}${dest ? `, keeping ${dest.id}` : ""}`);
+    const { board, tally } = deal(b.pictures.filter((p) => p !== out));
+    if (board) return dest ? withDestination(board, dest) : board;
+    tallies.push(`${out.id}: ${tallyText(tally)}`);
+  }
+  throw new Error(`${b.id}: no picture's going finds a deal on its row (${tallies.join("; ")}); loosen the row`);
+}
+
 /**
  * Re-deal board i, which has a destination (lead, 2026-10-27: hard boards and
  * finales grown to 5x5): it KEEPS its library pictures and its destination,
  * whose window joins the deal as an ordinary picture (no drop: the window is
  * dealt from the start, at the catalogue's crop), and takes the row's count
- * with new pictures, only from catalogue id `row.addFrom` on (a batch nobody
- * has met) and only those the no-repeat rule allows. A set that finds no deal
+ * with new pictures, only from catalogue id `row.addFrom` on, and only ones on
+ * no other board at all (nobody has met them). A set that finds no deal
  * on the row's targets gives way to other new pictures; the kept ones stay.
  */
-function redealDestined(plan, i, b, chosen, uses, rule, opts, seed) {
+function redealDestined(plan, i, b, chosen, uses, rule, opts, seed, held = new Set()) {
   const row = plan[i];
   const dest = destinationOf(row.destination, row.crop);
   const w = destPicture(dest.id);
@@ -553,7 +617,10 @@ function redealDestined(plan, i, b, chosen, uses, rule, opts, seed) {
   if (!row.addFrom) throw new Error(`${b.id}: re-dealing a board with a destination needs the row's addFrom (the batch its new pictures come from)`);
   // never a lookalike of the postcard (check.mts): Art gives a postcard its lookalike's family
   const fam = destById.get(dest.id)?.family ?? dest.id;
-  const fresh = poolOn(chosen, i, rule, { newFrom: row.addFrom }).filter((p) => (p.family ?? p.id) !== fam);
+  // and unseen: on no other board at all, however far away (the no-repeat rule alone allows 15 boards on)
+  // (`held`: the pictures every board being re-dealt keeps, which are not in `chosen` while they wait)
+  const onAny = new Set([...held, ...chosen.flatMap((set, k) => (k === i || !set ? [] : set.map((q) => q.id)))]);
+  const fresh = poolOn(chosen, i, rule, { newFrom: row.addFrom }).filter((p) => (p.family ?? p.id) !== fam && !onAny.has(p.id));
   const pool = [...keep.map((id) => byId.get(id)), ...fresh.filter((p) => !keep.includes(p.id))];
   const n = row.count - 1;
   const spec = { ...specOf(row), count: n, cards: [n * 4, n * 4], keep };
@@ -570,9 +637,9 @@ function redealDestined(plan, i, b, chosen, uses, rule, opts, seed) {
     // or last clear): a deal that clears it first or last gives way to the next seed
     let { board, tally } = dealBoard(row, pictures, opts);
     for (let again = 0; board && again < 20; again++) {
-      const order = clearOrder(board), at = order.indexOf(board.pictures.findIndex((p) => p.id === dest.id));
-      if (at > 0 && at < order.length - 1) break;
-      console.log(`${b.id}: the postcard is the ${at ? "last" : "first"} clear on seed ${board.seed}'s line; the next seed`);
+      const why = seatProblem(board, dest);
+      if (!why) break;
+      console.log(`${b.id}: ${why} on seed ${board.seed}; the next seed`);
       ({ board, tally } = dealBoard(row, pictures, { ...opts, from: board.seed + 1, tries: 3000 - board.seed }));
     }
     if (board) {
@@ -592,7 +659,7 @@ function redealDestined(plan, i, b, chosen, uses, rule, opts, seed) {
  * changed as can be), and make the plan's rows past the end. `optsOf(i)` gives
  * makeBoard's options for board i; `seedOf(i)` seeds a new board's pick.
  */
-export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repairOnly = false, redeal = new Set(), landmarks = false }) {
+export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repairOnly = false, redeal = new Set(), reseat = new Set(), landmarks = false }) {
   if (old.length > plan.length) throw new Error(`the file has ${old.length} boards, the plan ${plan.length}`);
   const chosen = old.map((b) => b.pictures);
   // peek is no part of the deal (dealFor), so a kept board takes its row's peek with its deal and line
@@ -655,7 +722,8 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
   }
   for (const i of again) {
     if (plan[i].destination) {
-      levels[i] = redealDestined(plan, i, old[i], chosen, uses, rule, optsOf(i), seedOf(i));
+      const held = new Set(again.filter((k) => k !== i).flatMap((k) => old[k].pictures.map((q) => q.id)));
+      levels[i] = redealDestined(plan, i, old[i], chosen, uses, rule, optsOf(i), seedOf(i), held);
       continue;
     }
     console.log(`${old[i].id}: re-dealing it from the plan`);
@@ -670,6 +738,16 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
     const set = pick(poolOf ? poolOf(i) : usable, specOf(plan[i]), cost, recent, random(seedOf(i)));
     if (!set) throw new Error(rule ? shortText(plan, chosen, i, rule) : `${old[i].id}: no pictures fit the plan${flags.size ? " (flagged pictures are left out)" : ""}`);
     levels[i] = makeBoard(plan, i, chosen, uses, { ...optsOf(i), seenOf: spacing ? () => cost : undefined, poolOf, first: [set] });
+  }
+  // boards re-dealt with exactly their pictures and destination (a new seed on the row's targets)
+  for (const i of [...reseat].sort((a, b) => a - b)) {
+    if (!old[i]) throw new Error(`board ${i + 1} is not in the file`);
+    // one that finds no deal stays as it was, and says so (check.mts then names what it misses)
+    try {
+      levels[i] = reseatBoard(plan[i], levels[i], optsOf(i));
+    } catch (e) {
+      console.log(`!! ${levels[i].id}: kept as it was: ${e.message}`);
+    }
   }
   if (plan.length > old.length && !repairOnly) {
     // a row's kept pictures (keep) are its own from the start, so no board before it takes them

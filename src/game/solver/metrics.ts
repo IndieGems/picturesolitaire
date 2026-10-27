@@ -5,6 +5,18 @@
 //   each position they clear some finished picture if there is one (any, at any
 //   place), else draw from any stack, each choice equally likely. Exact, not
 //   sampled. 1 means nothing can go wrong; 0.3 means most careless games die.
+// - READER (creator, 2026-10-27: "make them readable"): the chance of a
+//   player who reads the stacks' face-up card. Like the careless player it
+//   finishes a picture whenever it can (any one), but when it must draw it
+//   takes the column whose face-up card is of the picture furthest along on
+//   the board (ties: a coin toss). Rarely below CARELESS. Where the two are
+//   close, looking does not help: what decides the board is the hidden cards
+//   behind, which come down when a picture is finished. An unmarked campaign
+//   board must be READABLE: the reader wins 85% or more (READABLE; check.mts).
+//   It assumes the next card face up (board tuning showNext); with card backs
+//   it would need measuring again. (Choosing WHICH picture to finish by the
+//   face-up cards was tried too: a fixed rule there is wrong every time on
+//   some boards, 0% on board 13, which says more about the rule than the deal.)
 // - TRAPS: along the stored winning line, how many of its steps had another
 //   choice that dooms the board. Relief boards have few.
 // - CHAIN: the longest run of clears that depend on one another that the
@@ -27,7 +39,7 @@
 //   of the deal whichever way the player goes.
 
 import { move, start, type Deal, type Move } from "../rules.ts";
-import type { Game, Node, Step } from "./abstract.ts";
+import type { Game, Node, Option, Step } from "./abstract.ts";
 
 /** The careless player's chance of winning from the root. */
 export function careless(game: Game): number {
@@ -41,6 +53,52 @@ export function careless(game: Game): number {
       const opts = game.options(n);
       const clears = opts.filter((o) => o.step.kind === "clear");
       const pool = clears.length ? clears : opts;
+      v = pool.length ? pool.reduce((sum, o) => sum + f(o.next, o.key), 0) / pool.length : 0;
+    }
+    memo.set(key, v);
+    return v;
+  };
+  const r = game.root;
+  return f(r, game.key(r));
+}
+
+/** An unmarked board's reader must win at least this often (creator, 2026-10-27). */
+export const READABLE = 0.85;
+
+/** The reader's chance of winning from the root: the careless player, drawing by the face-up cards. */
+export function reader(game: Game): number {
+  const memo = new Map<number, number>();
+  /** Cards of each picture on the board at n (-1: cleared). */
+  const onOf = (n: Node): number[] => {
+    const on = [...game.on0];
+    n.ptr.forEach((k, c) => {
+      for (let j = 0; j < k; j++) on[game.stackPic[c]![j]!]!++;
+    });
+    for (let p = 0; p < game.nP; p++) if (n.mask & (1 << p)) on[p] = -1;
+    return on;
+  };
+  const f = (n: Node, key: number): number => {
+    const known = memo.get(key);
+    if (known !== undefined) return known;
+    let v: number;
+    if (game.isWon(n)) v = 1;
+    else {
+      const opts = game.options(n);
+      const clears = opts.filter((o) => o.step.kind === "clear");
+      let pool = clears.length ? clears : opts;
+      if (!clears.length && pool.length > 1) {
+        const on = onOf(n);
+        // the face-up card a draw brings down, by how far along its picture is on the board
+        const score = (o: Option): number => {
+          const c = (o.step as { col: number }).col;
+          const at = n.ptr[c]!;
+          if (at >= game.len[c]!) return 0;
+          const p = game.stackPic[c]![at]!;
+          return on[p]! > 0 ? (on[p]! + 1) / game.size[p]! : 0;
+        };
+        const best = Math.max(...pool.map(score));
+        pool = pool.filter((o) => score(o) === best);
+      }
       v = pool.length ? pool.reduce((sum, o) => sum + f(o.next, o.key), 0) / pool.length : 0;
     }
     memo.set(key, v);

@@ -70,6 +70,12 @@ square-only deals that can be won, careless win by picture count (Levels,
 
 (5×5 surveyed 2026-10-27; at 15 pictures the median is 2% and most deals cannot be won.)
 
+6×6, surveyed 2026-10-27 (winnable deals; median, middle half in brackets):
+
+| 6×6 | 15 | 16 | 17 | 18 | 19 |
+|---|---|---|---|---|---|
+| careless win | 100% (89–100) | 80% (49–99) | 56% (32–79) | 31% (9–56) | 12% (4–30) |
+
 - A 4×4 board of long pictures (tall and wide mixed) is won carelessly
   every time, from 7 pictures to 12: a change of pace, never a bite.
 - Past about 9 pictures on 4×4 (11 on 4×5, 13 on 5×5), most deals cannot be won at all,
@@ -171,31 +177,87 @@ only, and Art's entry would say which way it runs.
 - The challenge route and the daily stay library-only, with no destinations,
   unless the creator wants them.
 
-## 5×5 boards (creator, 2026-10-27)
+## 5×5 and 6×6 boards (creator, 2026-10-27)
 
 After Jigsaw Drop's level 18, the creator asked for 5×5 boards as a frequent
 variation on hard boards and finales, never a rule. About 65% of the marked
-boards from board 10 are 5×5: 11 of 17. Board 10 is first, then two a trip
-from trip 2, in different slots each trip. The bigger board is the change of
-feel, not an extra spike: each keeps its role, mark and careless-win target.
+boards from board 10 are big: 12 of 17. Board 10 is first, then two a trip
+from trip 2, in different slots each trip; every other finale (30, 60, 90)
+is 6×6. The bigger board is the change of feel, not an extra spike: each
+keeps its role, mark and careless-win target.
 
-| Trip | 5×5 boards (slot in the trip) |
+| Trip | Big boards (slot in the trip) |
 |---|---|
-| 1, Travel America | 10 (the peak, at trip 1's gentler target) |
-| 2, Japan | 20 (x5, super hard), 30 (x15, the finale) |
-| 3, Italy | 40 (x10), 45 (x15, the finale) |
-| 4, American West | 50 (x5), 55 (x10) |
-| 5, France | 65 (x5), 75 (x15, the finale) |
-| 6, Canada | 85 (x10), 90 (x15, the finale) |
+| 1, Travel America | 10, 5×5 (the peak, at trip 1's gentler target) |
+| 2, Japan | 20, 5×5 (x5, super hard); 30, **6×6** (x15, the finale) |
+| 3, Italy | 40, 5×5 (x10); 45, 5×5 (x15, the finale) |
+| 4, American West | 50, 5×5 (x5); 55, 5×5 (x10); 60, **6×6** (x15, the finale) |
+| 5, France | 65, 5×5 (x5); 75, 5×5 (x15, the finale) |
+| 6, Canada | 85, 5×5 (x10); 90, **6×6** (x15, the finale) |
 
-- **Hard and finale boards that stay 4×5 or 4×4:** 15, 25, 35, 60, 70 and 80.
-- **How they were made:** each board was re-dealt at 5×5. It keeps all its
-  pictures and its destination, and Art's new pictures, met nowhere else,
-  bring it up to the row's count.
-- **Counts:** board 10 takes 11 pictures. The hard boards take 13. The
-  finales take 13, or 14 where four traps are allowed (75 and 90).
-- **The postcard:** it is a 5×5 postcard with a 2×2 window. It opens
-  mid-board on the proved line, never as the first or last clear.
+- **Hard and finale boards that stay 4×5 or 4×4:** 15, 25, 35, 70 and 80.
+- **How they were made:** each board was re-dealt at its new size. It keeps
+  all its pictures and its destination, and Art's new pictures, met nowhere
+  else, bring it up to the row's count.
+- **Counts:** board 10 takes 11 pictures. The 5×5 hard boards take 13, and
+  the 5×5 finales 13, or 14 where four traps are allowed (75). On 6×6,
+  board 30 takes 18 and boards 60 and 90 take 19.
+- **The postcard:** a postcard the board's size (3:4) with a 2×2 window. It
+  opens mid-board on the proved line, never as the first or last clear.
+- **Stacks:** no stack holds more than 13 cards after the opening, so the
+  board's count of cards left is exact all the way (Gameplay).
+
+## Readable boards (creator, 2026-10-27)
+
+On boards 18 and 19 the creator felt the dealing was rigged: "I could see at
+the top how the images were going to come in… I was going to be stuck unless
+somehow I got lucky on the two cards behind". The measures agreed. Finishing
+a square brings down two cards in each of its columns, the face-up one and
+the hidden one behind it, and on those boards the hidden cards decided the
+game: a player who read the face-up cards won no more often than a careless
+one.
+
+**The reader.** Like the careless player it finishes a picture whenever it
+can, but when it must draw it takes the column whose face-up card is of the
+picture furthest along on the board (`reader` in
+`src/game/solver/metrics.ts`). Where its line and the careless line meet in
+the Difficulty editor, looking at the cards does not help.
+
+**The rule (the creator's choice).** Every unmarked campaign board is
+readable: the reader wins it 85% or more, and careless play keeps the board's
+target. Hard and super hard boards may still hide the way, since they are
+marked. `tools/levels/check.mts` fails an unmarked board that is not.
+
+- **43 of the 72 unmarked boards failed it**, and were re-dealt with their
+  own pictures and postcards on a new seed: 3, 13, 18, 19, 22, 24, 27, 28,
+  29, 33, 34, 38, 39, 42, 43, 44, 47, 48, 49, 52, 53, 54, 57, 58, 59, 62,
+  63, 64, 67, 68, 69, 72, 73, 74, 77, 78, 79, 82, 83, 84, 87, 88 and 89.
+- **One picture fewer, on 18 of them:** 34, 39, 54, 57, 58, 59, 64, 68, 69,
+  72, 73, 74, 82, 83, 84, 87, 88 and 89. No deal of their pictures was
+  readable at their target; most are the 12-picture builds late in trips
+  3–6. Each kept its postcard, and the picture it dropped is back in the
+  library.
+- **Eased one step, on seven of those:** 54, 58, 59, 69, 74 and 89, each its
+  trip's hardest unmarked build, and 88 under the same rule. They were still
+  unreadable with one picture fewer.
+
+| Board | Target before | Target now |
+|---|---|---|
+| 54 | 35–45% | 45–55% |
+| 58 | 40–50% | 50–60% |
+| 59 | 35–45% | 45–55% |
+| 69 | 35–45% | 45–55% |
+| 74 | 35–45% | 45–55% |
+| 88 | 35–45% | 45–55% |
+| 89 | 30–40% | 40–50% |
+
+- **Only the campaign is held to it.** The challenge route keeps its
+  character: it is demanding throughout, and all 20 of its boards would fail.
+  The daily is left as it is (58 of its 184 boards would fail, mostly at
+  67–75%).
+- **It assumes the next card is face up**, the creator's trial (board tuning
+  `showNext`). If the stacks go back to card backs, the reader sees nothing,
+  and readability must be measured again.
 
 ## Sources
 

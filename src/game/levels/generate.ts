@@ -20,8 +20,8 @@
 // a fresh deal from the same pair (tools/levels/check.mts).
 
 import { allMoves, cardsOf, isDeadEnd, joinCount, move, random, start, type Deal, type Move, type Picture } from "../rules.ts";
-import { Game, solveDeal, type Step } from "../solver/index.ts";
-import { along, careless, chain, chainOf, orderTraps, traps, unavoidable, wait } from "../solver/metrics.ts";
+import { Game, OutOfBudget, solveDeal, type Step } from "../solver/index.ts";
+import { along, careless, chain, chainOf, orderTraps, reader, traps, unavoidable, wait } from "../solver/metrics.ts";
 import { parLine, type ParOptions } from "../solver/par.ts";
 
 export type Range = [min: number, max: number];
@@ -31,6 +31,8 @@ export interface Targets {
   chain?: Range;
   /** The careless player's chance of winning, 0..1. */
   careless?: Range;
+  /** The chance of a player who draws by the face-up cards (metrics.ts READER), 0..1: readable boards. */
+  reader?: Range;
   /** Steps of the winning line with a choice that dooms the board. */
   traps?: Range;
   /** Positions where a ready clear dooms the board that every winning line passes ("clear order matters"). */
@@ -59,6 +61,8 @@ export interface Spec {
    * end. Traps later in a board are fine.
    */
   safeFirstMove?: boolean;
+  /** Take the challenge route's measures (wait, order traps) even where no target asks for them. */
+  measureAll?: boolean;
 }
 
 /**
@@ -81,16 +85,18 @@ export function deadFirstMoves(deal: Deal): Move[] {
 export interface Measures {
   chain: number;
   careless: number;
+  /** The reader's chance (metrics.ts): measured only when the spec targets it. */
+  reader?: number;
   traps: number;
   /** The chain of the stored line itself (>= chain); null for a par line. */
   lineChain: number | null;
-  /** Positions with a dooming clear that every winning line passes. */
-  orderTraps: number;
+  /** Positions with a dooming clear that every winning line passes (only when targeted or measureAll). */
+  orderTraps?: number;
   /** The same, counted along the stored line. */
-  lineOrderTraps: number;
-  /** Per picture, the fewest clears before it in any winning line. */
-  wait: number[];
-  bigWait: number;
+  lineOrderTraps?: number;
+  /** Per picture, the fewest clears before it in any winning line (only when targeted or measureAll). */
+  wait?: number[];
+  bigWait?: number;
   /** Cards waiting in the stacks when the board opens. */
   waiting: number;
   /** Cards in each stack, opening included. */
@@ -133,10 +139,22 @@ export function dealFor(spec: Spec, seed: number): Deal {
 const inside = (v: number, r?: Range) => !r || (v >= r[0] - 1e-9 && v <= r[1] + 1e-9);
 
 /** Why a deal was turned down, for the generator's tally. */
-export type Verdict = "joined" | "dead" | "lost" | "careless" | "chain" | "wait" | "opening" | "unproven" | "traps" | "order" | "kept";
+export type Verdict = "joined" | "dead" | "lost" | "careless" | "chain" | "wait" | "opening" | "unproven" | "traps" | "order" | "reader" | "kept";
 
-/** Measure one deal and keep it if it meets the spec; else say why not. */
+/**
+ * Measure one deal and keep it if it meets the spec; else say why not. A measure that runs out of the
+ * abstract search's budget (big boards: 6x6 finales) proves nothing, so the deal is passed over.
+ */
 export function judge(spec: Spec, deal: Deal): Made | Verdict {
+  try {
+    return measureDeal(spec, deal);
+  } catch (err) {
+    if (err instanceof OutOfBudget) return "unproven";
+    throw err;
+  }
+}
+
+function measureDeal(spec: Spec, deal: Deal): Made | Verdict {
   const s = start(deal).state;
   if (s.cleared.length || joinCount(s) > 0) return "joined";
   if (isDeadEnd(s)) return "dead";
@@ -144,13 +162,20 @@ export function judge(spec: Spec, deal: Deal): Made | Verdict {
   if (!game.wins(game.root)) return "lost";
   const cl = careless(game);
   if (!inside(cl, spec.targets.careless)) return "careless";
+  const rd = spec.targets.reader ? reader(game) : undefined;
+  if (rd !== undefined && !inside(rd, spec.targets.reader)) return "reader";
   const ch = chain(game);
   if (ch === null || !inside(ch, spec.targets.chain)) return "chain";
-  const w = wait(game);
-  const bw = Math.max(0, ...spec.pictures.map((p, i) => (p.cols * p.rows >= BIG ? w[i]! : 0)));
-  if (!inside(bw, spec.targets.bigWait)) return "wait";
-  const ot = unavoidable(game, "clear");
-  if (!inside(ot, spec.targets.orderTraps)) return "order";
+  // the challenge route's measures (wait, order traps) only where a row targets them or asks for them:
+  // on a 6x6 board each takes tens of seconds, and no other row uses them (a row without the target
+  // accepts any value, so the deals chosen are the same either way)
+  const needWait = spec.measureAll || spec.targets.bigWait !== undefined;
+  const w = needWait ? wait(game) : undefined;
+  const bw = w ? Math.max(0, ...spec.pictures.map((p, i) => (p.cols * p.rows >= BIG ? w[i]! : 0))) : undefined;
+  if (bw !== undefined && !inside(bw, spec.targets.bigWait)) return "wait";
+  const needOrder = spec.measureAll || spec.targets.orderTraps !== undefined;
+  const ot = needOrder ? unavoidable(game, "clear") : undefined;
+  if (ot !== undefined && !inside(ot, spec.targets.orderTraps)) return "order";
   if (spec.safeFirstMove && (doomingFirstClears(game).length || deadFirstMoves(deal).length)) return "opening";
   const a = solveDeal(deal);
   if (!("win" in a)) return "unproven";
@@ -171,9 +196,10 @@ export function judge(spec: Spec, deal: Deal): Made | Verdict {
     measures: {
       chain: ch,
       careless: cl,
+      ...(rd !== undefined ? { reader: rd } : {}),
       traps: tr,
       orderTraps: ot,
-      lineOrderTraps: orderTraps(game, nodes),
+      lineOrderTraps: needOrder ? orderTraps(game, nodes) : undefined,
       wait: w,
       bigWait: bw,
       lineChain: spec.par ? null : chainOf(game, a.win.steps),

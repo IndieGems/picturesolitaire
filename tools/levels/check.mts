@@ -41,6 +41,9 @@
 //     (AGENTS.md): every picture finishable from the opening can be finished
 //     first without dooming the board, and no single move from the opening
 //     leaves it stuck.
+//   - READABLE (creator, 2026-10-27): an unmarked campaign board is won 85%
+//     or more by a player who draws by the face-up cards (metrics.ts READER);
+//     hard and super hard boards may still hide the way;
 //   - a lesson board (lessons.json; make-lessons.mts), which opens stuck on
 //     purpose: its own proof instead of "not a dead end" and "the solver can
 //     win the deal" (checkLesson), and its line replays after its shuffle.
@@ -51,7 +54,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { arrange, cardsOf, isDeadEnd, isWon, joinCount, replay, start } from "../../src/game/rules.ts";
 import { Game } from "../../src/game/solver/index.ts";
-import { along, careless, chain, orderTraps, traps, unavoidable, wait } from "../../src/game/solver/metrics.ts";
+import { along, careless, chain, orderTraps, READABLE, reader, traps, unavoidable, wait } from "../../src/game/solver/metrics.ts";
 import { BIG, dealFor, deadFirstMoves, doomingFirstClears } from "../../src/game/levels/generate.ts";
 import { byId, destById, flags, LESSON_MOVES } from "./lib.mts";
 import { DISTINCT, MARKS, MAY_TRAP, TRIPS } from "./campaign-plan.mts";
@@ -191,6 +194,13 @@ for (const file of files) {
       if (!won) fail("the line does not win");
       const game = new Game(s);
       if (l.lesson === undefined && !game.wins(game.root)) fail("the solver says the deal cannot be won");
+      // readable (creator, 2026-10-27): an unmarked campaign board is one a player who draws by the
+      // face-up cards wins READABLE or more of the time (metrics.ts READER; it assumes the next card
+      // face up). The challenge route and the daily are not held to it (docs/difficulty-curve.md)
+      if (file.endsWith("campaign.json") && !MAY_TRAP.has(l.axes?.role)) {
+        const rd = reader(game);
+        if (rd < READABLE) fail(`not readable: a player who draws by the face-up cards wins ${Math.round(rd * 100)}%, under ${READABLE * 100}% (make-campaign.mts --reseat ${data.levels.indexOf(l) + 1})`);
+      }
       if (l.axes && won) {
         const a = l.axes;
         const ch = chain(game);

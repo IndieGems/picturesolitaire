@@ -23,6 +23,10 @@ const LEDE = {
 function marker(parent, b, x, y, color) {
   const ring = { stroke: "var(--ring)", "stroke-width": 2 };
   if (b.long) return el("circle", { cx: x, cy: y, r: 4.5, fill: "var(--surface)", stroke: color, "stroke-width": 2 }, parent);
+  if (b.cols >= 6) {
+    const pts = Array.from({ length: 6 }, (_, k) => `${x + 7 * Math.cos((Math.PI / 3) * k)},${y + 7 * Math.sin((Math.PI / 3) * k)}`).join(" ");
+    return el("polygon", { points: pts, fill: color, ...ring }, parent);
+  }
   if (b.cols === 5) return el("path", { d: `M${x} ${y - 6.5}L${x + 6.5} ${y}L${x} ${y + 6.5}L${x - 6.5} ${y}Z`, fill: color, ...ring }, parent);
   if (b.rows === 5 || b.cols * b.rows > 16) return el("rect", { x: x - 5, y: y - 5, width: 10, height: 10, rx: 2, fill: color, ...ring }, parent);
   return el("circle", { cx: x, cy: y, r: 5, fill: color, ...ring }, parent);
@@ -44,6 +48,7 @@ function legend(lane) {
     [swatch((s) => marker(s, { cols: 4, rows: 4 }, 11, 7, "var(--soft)")), "4×4"],
     [swatch((s) => marker(s, { cols: 4, rows: 5 }, 11, 7, "var(--soft)")), "4×5"],
     [swatch((s) => marker(s, { cols: 5, rows: 5 }, 11, 7, "var(--soft)")), "5×5"],
+    [swatch((s) => marker(s, { cols: 6, rows: 6 }, 11, 7, "var(--soft)")), "6×6"],
     [swatch((s) => marker(s, { long: true }, 11, 7, "var(--soft)")), "all long pictures"],
   ];
   if (lane === "campaign") items.push([swatch((s) => { el("path", { d: "M5 12L11 2L17 12Z", fill: "var(--soft)" }, s); }), "hard"], [swatch((s) => { el("path", { d: "M3 13L11 0L19 13Z", fill: "var(--text)" }, s); }), "super hard"], ["<span style='font-size:15px'>★</span>", "passport stamp"]);
@@ -71,6 +76,11 @@ function chart() {
   const yl = el("text", { x: 12, y: M.t + h / 2, "text-anchor": "middle", "font-size": 11, fill: "var(--muted)", transform: `rotate(-90 12 ${M.t + h / 2})` }, svg);
   yl.textContent = "games lost (harder ↑)";
 
+  // the readable bar (campaign): on an unmarked board the orange line stays at or under it
+  if (state.lane === "campaign") {
+    el("line", { x1: M.l, x2: W - M.r, y1: y(15), y2: y(15), stroke: "var(--reader)", "stroke-width": 1, "stroke-dasharray": "1 4", opacity: 0.8 }, svg);
+    el("text", { x: W - M.r - 2, y: y(15) - 4, "text-anchor": "end", "font-size": 10, fill: "var(--muted)" }, svg).textContent = "readable: orange at or under this, unmarked boards";
+  }
   // targets: the band each board was dealt to (as games lost)
   boards.forEach((b, i) => {
     if (!b.target) return;
@@ -184,6 +194,7 @@ async function open(id) {
     ["Winning line", `${b.moves} moves`],
     ...(b.par != null ? [["Par", b.par]] : []),
     ["Starts safe", b.safe ? "yes" : "no: a first move can lose it"],
+    ...(state.lane === "campaign" ? [["Readable (85%+ drawing by the face-up cards)", b.mark ? "not required: marked" : b.reader >= 85 ? "yes" : "no"]] : []),
     ["Board", sizeOf(b)],
   ];
   $("detail").innerHTML = `

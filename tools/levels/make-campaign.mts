@@ -13,6 +13,8 @@
 //   --repair-only  re-deal flagged boards only; add no plan rows (redeal.mts)
 //   --redeal 1,2,3 re-deal these boards afresh from the plan; keep every other
 //                  board (and add no plan rows)
+//   --reseat 1,2,3 re-deal these boards with exactly their own pictures and
+//                  destination, on their rows' targets (e.g. made readable)
 //   --rows N       make the plan's first N rows only (e.g. while the library
 //                  cannot fill the rest yet)
 //   --out FILE     write the boards there instead, and no docs (for trials)
@@ -49,7 +51,9 @@ const shipped = readBoards(SHIPPED);
 const fileTag = existsSync(FILE) ? JSON.parse(readFileSync(FILE, "utf8")).plan : undefined;
 const redealAt = process.argv.indexOf("--redeal");
 const redeal = new Set(redealAt > 0 ? process.argv[redealAt + 1].split(",").map((n) => Number(n) - 1) : []);
-const adding = PLAN.length > old.length && !has("--repair-only") && !redeal.size;
+const reseatAt = process.argv.indexOf("--reseat");
+const reseat = new Set(reseatAt > 0 ? process.argv[reseatAt + 1].split(",").map((n) => Number(n) - 1) : []);
+const adding = PLAN.length > old.length && !has("--repair-only") && !redeal.size && !reseat.size;
 if (adding && old.length && fileTag !== PLAN_TAG && keepAt < 0) {
   console.error(`campaign.json was made from another plan (${fileTag ?? "before plans were named"}), not ${PLAN_TAG}: remake it with --fresh, or re-deal flagged boards only with --repair-only`);
   process.exit(1);
@@ -59,8 +63,9 @@ const tag = adding || !old.length ? PLAN_TAG : fileTag;
 const made = route(PLAN, old, {
   spacing: SPACING,
   distinct: DISTINCT,
-  repairOnly: has("--repair-only") || redeal.size > 0,
+  repairOnly: has("--repair-only") || redeal.size > 0 || reseat.size > 0,
   redeal,
+  reseat,
   landmarks: true,
   seedOf: (i) => 0xc0ffee + i * 7919,
   optsOf: (i) => ({

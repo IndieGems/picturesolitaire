@@ -22,7 +22,7 @@ daily puzzle in [daily.md](daily.md).
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | Statue of Liberty | intro | 3 | none | 4 4 4 | 2x2 | 4x4 | 12 (0) | 0 | 1 | 100% | 0 | 7 |
 | 2 | Niagara Falls | intro | 4 | none | 4 4 4 4 | 2x2 | 4x4 | 16 (0) | 0 | 1 | 100% | 0 | 11 |
-| 3 | Letchworth State Park | bite | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 3 | 59% | 0 | 26 |
+| 3 | Letchworth State Park | bite | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 3 | 56% | 1 | 22 |
 | 4 | Lucy the Elephant | relief | 5 | none | 4 4 4 4 4 | 2x2 | 4x4 | 20 (4) | 0 | 2 | 100% | 0 | 18 |
 | 5 | Mabry Mill | build | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 3 | 72% | 1 | 25 |
 | 6 | Castillo de San Marcos | build | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 4 | 70% | 0 | 23 |
@@ -32,86 +32,86 @@ daily puzzle in [daily.md](daily.md).
 | 10 | Pictured Rocks | peak (marked hard) | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 5x5 | 44 (19) | 0 | 4 | 45% | 2 | 37 |
 | 11 | Grand Prismatic Spring | pace | 10 | none | 2 2 2 2 2 2 2 2 2 2 | 1x2 2x1 | 4x4 | 20 (4) | 0 | 2 | 100% | 0 | 13 |
 | 12 | Delicate Arch | build | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 4 | 78% | 0 | 22 |
-| 13 | Grand Canyon | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 3 | 70% | 0 | 25 |
+| 13 | Grand Canyon | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 4 | 73% | 0 | 32 |
 | 14 | Yosemite Valley | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 4 | 69% | 1 | 27 |
 | 15 | Nā Pali Coast | hard (marked hard) | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 36 (20) | 0 | 4 | 47% | 1 | 24 |
 | 16 | Mount Fuji | relief | 7 | none | 4 4 4 4 4 4 4 | 2x2 | 4x4 | 28 (12) | 0 | 2 | 100% | 0 | 20 |
 | 17 | Lucky Cat Temple | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 3 | 61% | 2 | 27 |
-| 18 | Great Buddha of Kamakura | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 3 | 56% | 1 | 21 |
-| 19 | Snow Monkey Park | build | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 36 (20) | 0 | 4 | 56% | 2 | 30 |
+| 18 | Great Buddha of Kamakura | build | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 32 (16) | 0 | 4 | 59% | 1 | 36 |
+| 19 | Snow Monkey Park | build | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x4 | 36 (20) | 0 | 5 | 51% | 0 | 31 |
 | 20 | Shirakawa-gō | super (marked super) | 13 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 5x5 | 52 (27) | 0 | 4 | 22% | 2 | 41 |
 | 21 | Golden Pavilion | pace | 12 | none | 2 2 2 2 2 2 2 2 2 2 2 2 | 1x2 2x1 | 4x4 | 24 (8) | 0 | 2 | 100% | 0 | 13 |
-| 22 | Fushimi Inari Shrine | build | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 36 (16) | 0 | 3 | 78% | 0 | 28 |
+| 22 | Fushimi Inari Shrine | build | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 36 (16) | 0 | 4 | 77% | 1 | 27 |
 | 23 | Kiyomizu-dera | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 5 | 72% | 1 | 30 |
-| 24 | Nachi Falls | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 5 | 65% | 1 | 26 |
+| 24 | Nachi Falls | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 5 | 62% | 0 | 29 |
 | 25 | Himeji Castle | hard (marked hard) | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 6 | 41% | 2 | 32 |
 | 26 | Rabbit Island | relief | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 32 (12) | 0 | 3 | 100% | 0 | 32 |
-| 27 | Itsukushima Shrine | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 4 | 61% | 0 | 29 |
-| 28 | Kintai Bridge | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 5 | 58% | 1 | 29 |
-| 29 | Takachiho Gorge | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 49% | 2 | 39 |
-| 30 | Taketomi Island | super (marked super) | 13 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 5x5 | 52 (27) | 0 | 4 | 23% | 1 | 40 |
+| 27 | Itsukushima Shrine | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 5 | 63% | 1 | 33 |
+| 28 | Kintai Bridge | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 3 | 59% | 1 | 36 |
+| 29 | Takachiho Gorge | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 54% | 1 | 41 |
+| 30 | Taketomi Island | super (marked super) | 18 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 6x6 | 72 (36) | 0 | 4 | 25% | 1 | 64 |
 | 31 | Tre Cime di Lavaredo | relief | 8 | none | 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 32 (12) | 0 | 3 | 100% | 0 | 22 |
 | 32 | Seceda | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 3 | 60% | 0 | 37 |
-| 33 | Lake Como | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 4 | 60% | 0 | 31 |
-| 34 | Isola Bella | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 3 | 55% | 1 | 33 |
+| 33 | Lake Como | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 4 | 61% | 0 | 39 |
+| 34 | Isola Bella | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 4 | 55% | 1 | 36 |
 | 35 | Venice | hard (marked hard) | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 33% | 2 | 34 |
 | 36 | Cinque Terre | pace | 12 | none | 2 2 2 2 2 2 2 2 2 2 2 2 | 1x2 2x1 | 4x4 | 24 (8) | 0 | 2 | 100% | 0 | 14 |
 | 37 | Burano | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 4 | 56% | 0 | 33 |
-| 38 | The Cheese Cathedral | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 60% | 1 | 45 |
-| 39 | Val d'Orcia | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 47% | 1 | 33 |
+| 38 | The Cheese Cathedral | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 56% | 0 | 37 |
+| 39 | Val d'Orcia | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 4 | 52% | 0 | 40 |
 | 40 | Civita di Bagnoregio | hard (marked hard) | 13 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 5x5 | 52 (27) | 0 | 4 | 33% | 2 | 42 |
 | 41 | Monster Park | relief | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 36 (16) | 0 | 4 | 100% | 0 | 28 |
-| 42 | Positano | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 58% | 1 | 38 |
-| 43 | The Faraglioni | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 48% | 2 | 43 |
-| 44 | Matera | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 49% | 3 | 35 |
+| 42 | Positano | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 52% | 0 | 31 |
+| 43 | The Faraglioni | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 52% | 2 | 42 |
+| 44 | Matera | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 41% | 0 | 48 |
 | 45 | Alberobello | super (marked super) | 13 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 5x5 | 52 (27) | 0 | 4 | 20% | 3 | 49 |
 | 46 | Bixby Bridge | relief | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 36 (16) | 0 | 3 | 100% | 0 | 28 |
-| 47 | Emerald Bay | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 4 | 63% | 0 | 33 |
-| 48 | Mono Lake | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 55% | 2 | 40 |
-| 49 | Joshua Tree | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 53% | 1 | 35 |
+| 47 | Emerald Bay | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 4 | 56% | 2 | 37 |
+| 48 | Mono Lake | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 57% | 1 | 37 |
+| 49 | Joshua Tree | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 45% | 4 | 40 |
 | 50 | Oatman's Burros | hard (marked hard) | 13 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 5x5 | 52 (27) | 0 | 5 | 28% | 1 | 44 |
 | 51 | Horseshoe Bend | pace | 12 | none | 2 2 2 2 2 2 2 2 2 2 2 2 | 1x2 2x1 | 4x4 | 24 (8) | 0 | 2 | 100% | 0 | 13 |
-| 52 | Zion Narrows | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 56% | 0 | 42 |
-| 53 | Bryce Canyon | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 47% | 1 | 44 |
-| 54 | Valley of Fire | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 45% | 3 | 44 |
+| 52 | Zion Narrows | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 53% | 4 | 44 |
+| 53 | Bryce Canyon | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 53% | 3 | 43 |
+| 54 | Valley of Fire | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 52% | 4 | 42 |
 | 55 | Grand Teton | hard (marked hard) | 13 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 5x5 | 52 (27) | 0 | 4 | 31% | 1 | 38 |
 | 56 | Palouse Falls | relief | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 36 (16) | 0 | 4 | 100% | 0 | 28 |
-| 57 | Teapot Dome Station | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 49% | 0 | 32 |
-| 58 | Painted Hills | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 4 | 45% | 1 | 41 |
-| 59 | Dog Bark Park Inn | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 41% | 2 | 32 |
-| 60 | Crater Lake | super (marked super) | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 6 | 17% | 2 | 41 |
+| 57 | Teapot Dome Station | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 4 | 54% | 1 | 36 |
+| 58 | Painted Hills | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 52% | 2 | 48 |
+| 59 | Dog Bark Park Inn | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 54% | 1 | 35 |
+| 60 | Crater Lake | super (marked super) | 19 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 6x6 | 76 (40) | 0 | 5 | 9% | 4 | 54 |
 | 61 | The cliffs of Étretat | relief | 9 | none | 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 36 (16) | 0 | 3 | 100% | 0 | 36 |
-| 62 | Mont-Saint-Michel | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 58% | 2 | 39 |
-| 63 | The pink granite coast | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 56% | 2 | 41 |
-| 64 | The chapel oak of Allouville | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 47% | 2 | 38 |
+| 62 | Mont-Saint-Michel | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 62% | 3 | 44 |
+| 63 | The pink granite coast | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 56% | 2 | 43 |
+| 64 | The chapel oak of Allouville | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 4 | 46% | 1 | 33 |
 | 65 | Château de Chenonceau | hard (marked hard) | 13 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 5x5 | 52 (27) | 0 | 4 | 25% | 2 | 47 |
 | 66 | The Eiffel Tower | pace | 12 | none | 2 2 2 2 2 2 2 2 2 2 2 2 | 1x2 2x1 | 4x4 | 24 (8) | 0 | 2 | 100% | 0 | 14 |
-| 67 | Colmar's Little Venice | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 54% | 1 | 35 |
-| 68 | Mont Blanc from Lac Blanc | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 7 | 47% | 3 | 42 |
-| 69 | Palais Idéal du Facteur Cheval | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 6 | 39% | 3 | 41 |
+| 67 | Colmar's Little Venice | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 59% | 3 | 35 |
+| 68 | Mont Blanc from Lac Blanc | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 48% | 1 | 44 |
+| 69 | Palais Idéal du Facteur Cheval | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 53% | 2 | 40 |
 | 70 | The lavender of Valensole | hard (marked hard) | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 34% | 2 | 35 |
 | 71 | The Gorges du Verdon | relief | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 3 | 100% | 0 | 30 |
-| 72 | The flamingos of the Camargue | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 47% | 0 | 40 |
-| 73 | Carcassonne | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 4 | 41% | 3 | 40 |
-| 74 | Bonifacio | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 4 | 37% | 0 | 35 |
+| 72 | The flamingos of the Camargue | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 51% | 2 | 35 |
+| 73 | Carcassonne | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 44% | 3 | 46 |
+| 74 | Bonifacio | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 50% | 0 | 43 |
 | 75 | The Dune du Pilat | super (marked super) | 14 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 5x5 | 56 (31) | 0 | 4 | 15% | 3 | 41 |
 | 76 | Moraine Lake | relief | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 4 | 87% | 1 | 38 |
-| 77 | Abraham Lake's frozen bubbles | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 56% | 2 | 34 |
-| 78 | The giant pysanka | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 60% | 2 | 32 |
-| 79 | Mac the Moose | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 51% | 2 | 52 |
+| 77 | Abraham Lake's frozen bubbles | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 60% | 0 | 48 |
+| 78 | The giant pysanka | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 60% | 0 | 42 |
+| 79 | Mac the Moose | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 52% | 1 | 41 |
 | 80 | The northern lights | hard (marked hard) | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 30% | 3 | 39 |
 | 81 | Parliament Hill | pace | 12 | none | 2 2 2 2 2 2 2 2 2 2 2 2 | 1x2 2x1 | 4x4 | 24 (8) | 0 | 2 | 100% | 0 | 13 |
-| 82 | The polar bears of Churchill | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 46% | 1 | 40 |
-| 83 | Old Quebec in winter | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 49% | 2 | 45 |
-| 84 | Percé Rock | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 4 | 45% | 5 | 39 |
+| 82 | The polar bears of Churchill | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 54% | 1 | 47 |
+| 83 | Old Quebec in winter | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 48% | 1 | 42 |
+| 84 | Percé Rock | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 39% | 0 | 43 |
 | 85 | The gannets of Bonaventure | hard (marked hard) | 13 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 5x5 | 52 (27) | 0 | 4 | 24% | 1 | 53 |
 | 86 | The Hopewell Rocks | relief | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 4 | 96% | 0 | 34 |
-| 87 | Peggy's Cove lighthouse | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 4 | 48% | 4 | 41 |
-| 88 | Lunenburg | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 37% | 4 | 40 |
-| 89 | The Cabot Trail in autumn | build | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 6 | 37% | 3 | 47 |
-| 90 | The icebergs of Twillingate | super (marked super) | 14 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 5x5 | 56 (31) | 0 | 4 | 15% | 2 | 47 |
+| 87 | Peggy's Cove lighthouse | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 41% | 1 | 42 |
+| 88 | Lunenburg | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 49% | 0 | 39 |
+| 89 | The Cabot Trail in autumn | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 43% | 1 | 46 |
+| 90 | The icebergs of Twillingate | super (marked super) | 19 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 6x6 | 76 (40) | 0 | 4 | 15% | 1 | 67 |
 
-Every picture's appearances across the 90 boards: 0 to 2 (mean 1.1). A picture comes back 15 boards later at the soonest (median 18). Every board made since 2026-10-25 keeps the rule: no picture on two of boards 1-13, none back within 15 boards; 0 of 185 returns are sooner than 15, on boards kept from before it.
+Every picture's appearances across the 90 boards: 0 to 2 (mean 1.1). A picture comes back 15 boards later at the soonest (median 18). Every board made since 2026-10-25 keeps the rule: no picture on two of boards 1-13, none back within 15 boards; 0 of 178 returns are sooner than 15, on boards kept from before it.
 
 | picture | boards |
 |---|---|
@@ -416,7 +416,7 @@ Every picture's appearances across the 90 boards: 0 to 2 (mean 1.1). A picture c
 | zinnia (2x2, zinnia) | 46 |
 | cosmos (2x2, cosmos) | 37, 53 |
 | morning-glory (2x2, morning glory) | 40, 58 |
-| air-plant (2x2, air plant) | 34 |
+| air-plant (2x2, air plant) |  |
 | frangipani (2x2, frangipani) | 50 |
 | edelweiss (2x2, edelweiss) |  |
 | crocus (2x2, crocus) |  |
@@ -454,7 +454,7 @@ Every picture's appearances across the 90 boards: 0 to 2 (mean 1.1). A picture c
 | apple-pie (2x2, apple pie) | 35 |
 | bananas (2x2, bananas) | 35 |
 | mango (2x2, mango) | 44 |
-| coconut (2x2, coconut) | 39, 57 |
+| coconut (2x2, coconut) | 57 |
 | dragon-fruit (2x2, dragon fruit) | 45 |
 | artichokes (2x2, artichokes) | 48 |
 | chanterelles (2x2, chanterelles) | 33 |
@@ -464,7 +464,7 @@ Every picture's appearances across the 90 boards: 0 to 2 (mean 1.1). A picture c
 | bubble-tea (2x2, bubble tea) | 47 |
 | matcha (2x2, matcha) | 52 |
 | lollipops (2x2, lollipops) | 34 |
-| chocolate-truffles (2x2, chocolate truffles) | 59 |
+| chocolate-truffles (2x2, chocolate truffles) |  |
 | hourglass (2x2, hourglass) | 40, 55 |
 | vintage-radio (2x2, vintage radio) | 39, 56 |
 | rotary-phone (2x2, rotary phone) | 45 |
@@ -499,7 +499,7 @@ Every picture's appearances across the 90 boards: 0 to 2 (mean 1.1). A picture c
 | larch-forest (2x2, larch forest) | 37 |
 | heather-moor (2x2, heather moor) | 47 |
 | snowflake (2x2, snowflake) | 35, 56 |
-| cranberry-bog (2x2, cranberry bog) | 54 |
+| cranberry-bog (2x2, cranberry bog) |  |
 | pine-cone (2x2, pine cone) | 57 |
 | shipwreck (2x2, shipwreck) | 42, 59 |
 | frozen-bubble (2x2, frozen bubble) | 33, 56 |
@@ -618,7 +618,7 @@ Every picture's appearances across the 90 boards: 0 to 2 (mean 1.1). A picture c
 | polar-bear (2x2, polar bear) | 45 |
 | hummingbird (2x2, hummingbird) | 31 |
 | octopus (2x2, octopus) | 42 |
-| axolotl (2x2, axolotl) | 38, 57 |
+| axolotl (2x2, axolotl) | 38 |
 | tree-frog (2x2, tree frog) | 33, 53 |
 | ladybird (2x2, ladybird) | 50 |
 | bumblebee (2x2, bumblebee) | 45 |
@@ -627,7 +627,7 @@ Every picture's appearances across the 90 boards: 0 to 2 (mean 1.1). A picture c
 | goldfish (2x2, goldfish) | 35 |
 | sea-turtle (2x2, sea turtle) | 45 |
 | lamb (2x2, lamb) | 48 |
-| alpaca (2x2, alpaca) | 40, 58 |
+| alpaca (2x2, alpaca) | 40 |
 | highland-cow (2x2, highland cow) | 57 |
 | piglet (2x2, piglet) | 44 |
 | ducklings (2x2, ducklings) | 43 |
@@ -656,14 +656,14 @@ Every picture's appearances across the 90 boards: 0 to 2 (mean 1.1). A picture c
 | gardenia (2x2, gardenia) | 65 |
 | freesias (2x2, freesias) | 69 |
 | tiger-lily (2x2, tiger lily) | 68, 83 |
-| love-in-a-mist (2x2, love in a mist) | 74, 89 |
+| love-in-a-mist (2x2, love in a mist) | 74 |
 | scabious (2x2, scabious) | 77 |
 | sweet-violets (2x2, sweet violets) | 64, 87 |
 | petunias (2x2, petunias) | 63, 80 |
 | begonias (2x2, begonias) | 68 |
 | bromeliad (2x2, bromeliad) | 63, 84 |
 | bottlebrush (2x2, bottlebrush) | 77 |
-| cockscomb (2x2, cockscomb) | 69 |
+| cockscomb (2x2, cockscomb) |  |
 | crown-imperial (2x2, crown imperial) | 83 |
 | chamomile (2x2, chamomile) | 73, 90 |
 | borage (2x2, borage) | 69, 87 |
@@ -695,9 +695,9 @@ Every picture's appearances across the 90 boards: 0 to 2 (mean 1.1). A picture c
 | blood-oranges (2x2, blood oranges) | 72, 89 |
 | pears (2x2, pears) | 76 |
 | starfruit (2x2, starfruit) | 78 |
-| beetroot (2x2, beetroot) | 73, 88 |
+| beetroot (2x2, beetroot) | 88 |
 | radishes (2x2, radishes) | 75 |
-| pumpkins (2x2, pumpkins) | 88 |
+| pumpkins (2x2, pumpkins) |  |
 | pea-pod (2x2, pea pod) | 70, 89 |
 | cocoa-pod (2x2, cocoa pod) |  |
 | coffee-beans (2x2, coffee beans) | 69, 84 |
@@ -728,8 +728,8 @@ Every picture's appearances across the 90 boards: 0 to 2 (mean 1.1). A picture c
 | termite-mound (2x2, termite mound) | 73 |
 | saturn (2x2, space) | 68, 83 |
 | nebula (2x2, space) | 79 |
-| desert-bloom (2x2, wildflowers) | 84 |
-| wildflower-meadow (2x2, wildflowers) | 83 |
+| desert-bloom (2x2, wildflowers) |  |
+| wildflower-meadow (2x2, wildflowers) |  |
 | rain-window (2x2, rain window) | 76 |
 | sunset-clouds (2x2, clouds) | 79 |
 | limestone-cave (2x2, limestone cave) | 77 |
@@ -763,7 +763,7 @@ Every picture's appearances across the 90 boards: 0 to 2 (mean 1.1). A picture c
 | horreo (2x2, horreo) | 73 |
 | oast-house (2x2, oast house) | 70, 88 |
 | zigzag-bridge (2x2, zigzag bridge) | 76 |
-| door-knocker (2x2, door knocker) | 64, 83 |
+| door-knocker (2x2, door knocker) | 83 |
 | weathervane (2x2, weathervane) | 73, 90 |
 | blue-shutters (2x2, blue shutters) | 70 |
 | iron-gate (2x2, iron gate) | 68 |
@@ -772,7 +772,7 @@ Every picture's appearances across the 90 boards: 0 to 2 (mean 1.1). A picture c
 | stone-well (2x2, stone well) | 71, 89 |
 | courtyard (2x2, courtyard) | 76 |
 | gingerbread-house (2x2, gingerbread house) | 79 |
-| dollhouse (2x2, dollhouse) | 87 |
+| dollhouse (2x2, dollhouse) |  |
 | kasbah (2x2, kasbah) | 72 |
 | glass-cabin (2x2, glass cabin) | 65, 80 |
 | glass-dome (2x2, glass dome) | 65, 87 |
@@ -780,7 +780,7 @@ Every picture's appearances across the 90 boards: 0 to 2 (mean 1.1). A picture c
 | town-square (2x2, town square) | 79 |
 | painted-facade (2x2, painted facade) | 78 |
 | tiled-fountain (2x2, tiled fountain) | 75 |
-| lattice-window (2x2, lattice window) | 74 |
+| lattice-window (2x2, lattice window) |  |
 | jellyfish (1x2, jellyfish) | 66 |
 | red-crowned-crane (1x2, red crowned crane) | 66 |
 | dolphin (2x1, dolphin) | 81 |
@@ -843,13 +843,13 @@ Every picture's appearances across the 90 boards: 0 to 2 (mean 1.1). A picture c
 | cabinetmaker (2x2, cabinetmaker) | 72 |
 | stonemason (2x2, stonemason) | 69, 86 |
 | thatcher (2x2, thatcher) | 68, 87 |
-| fishmonger (2x2, fishmonger) | 82 |
+| fishmonger (2x2, fishmonger) |  |
 | noodle-maker (2x2, noodle maker) | 65, 89 |
 | falconer (2x2, falconer) | 62 |
 | microscope (2x2, microscope) | 63, 80 |
 | quilter (2x2, quilter) | 67, 84 |
 | puppeteer (2x2, puppeteer) | 70, 90 |
-| welder (2x2, welder) | 68, 83 |
+| welder (2x2, welder) | 83 |
 | helter-skelter (1x2, helter skelter) | 66 |
 | rocket (1x2, rocket) | 66 |
 | plane-window (2x1, plane window) | 81 |
@@ -878,7 +878,7 @@ Every picture's appearances across the 90 boards: 0 to 2 (mean 1.1). A picture c
 | tuk-tuk (2x2, tuk tuk) | 71 |
 | parachute (2x2, parachute) | 76 |
 | surfboards (2x2, surfboards) | 69, 85 |
-| beach-ball (2x2, beach ball) | 72 |
+| beach-ball (2x2, beach ball) |  |
 | thermos (2x2, thermos) | 77 |
 | rack-railway (2x2, red railcar) | 74 |
 | pedal-car (2x2, pedal car) | 70, 85 |
@@ -887,15 +887,15 @@ Every picture's appearances across the 90 boards: 0 to 2 (mean 1.1). A picture c
 | land-yacht (2x2, land yacht) | 61 |
 | sweet-william (2x2, sweet william) | 20 |
 | flame-lily (2x2, flame lily) | 75 |
-| agapanthus (2x2, agapanthus) |  |
+| agapanthus (2x2, agapanthus) | 90 |
 | brioche (2x2, brioche) | 10 |
 | pistachios (2x2, pistachios) | 20 |
 | kumquats (2x2, kumquats) | 75 |
-| abacus (2x2, abacus) |  |
+| abacus (2x2, abacus) | 90 |
 | foxtails (2x2, golden wheat) | 50 |
 | switchbacks (2x2, switchbacks) | 40 |
 | river-meander (2x2, river meander) | 20 |
-| carved-door (2x2, carved door) |  |
+| carved-door (2x2, carved door) | 90 |
 | window-seat (2x2, window seat) | 20 |
 | dormer-roof (2x2, dormer roof) | 45 |
 | pufferfish (2x2, pufferfish) | 90 |
@@ -903,7 +903,23 @@ Every picture's appearances across the 90 boards: 0 to 2 (mean 1.1). A picture c
 | tamarin (2x2, tamarin) | 65 |
 | farrier (2x2, farrier) | 85 |
 | hairdresser (2x2, hairdresser) | 55 |
-| seedlings (2x2, seedlings) |  |
+| seedlings (2x2, seedlings) | 60 |
 | luggage-trolley (2x2, luggage trolley) | 30 |
 | beach-hat (2x2, beach hat) | 90 |
 | satchel (2x2, satchel) | 10 |
+| fritillary (2x2, fritillary) | 60 |
+| nerine (2x2, nerine) | 60 |
+| rhubarb (2x2, rhubarb) |  |
+| eclairs (2x2, eclairs) |  |
+| hazelnuts (2x2, hazelnuts) | 30 |
+| sextant (2x2, sextant) | 60 |
+| juniper (2x2, juniper) | 90 |
+| flax-field (2x2, flax field) | 30 |
+| stile (2x2, stile) | 60 |
+| clay-oven (2x2, clay oven) | 90 |
+| frilled-lizard (2x2, frilled lizard) | 30 |
+| stag-beetle (2x2, stag beetle) |  |
+| wren (2x2, wren) | 60 |
+| cooper (2x2, cooper) | 30 |
+| skipping (2x2, skipping) | 60 |
+| moped (2x2, moped) | 30 |
