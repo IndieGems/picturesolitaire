@@ -50,6 +50,11 @@
       "flagged": true,
       "note": "retired: the bridge district licenses its image for commercial use (lead, 2026-10-25); board 10 has Pictured Rocks in its place",
       "date": "2026-10-25"
+    },
+    "moai": {
+      "flagged": true,
+      "note": "retired: the moai are sacred to the Rapa Nui (creator, 2026-10-28); remade as eagle-figurehead",
+      "date": "2026-10-28"
     }
   }
 }

@@ -293,7 +293,8 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | tree-house (2x2, tree house) |  |
 | yellow-door (2x2, yellow door) | 6, 28 |
 | red-barn (2x2, red barn) | 3, 29 |
-| moai (2x2, moai) |  |
+| moai (2x2, moai) FLAGGED: don't use |  |
+| eagle-figurehead (2x2, eagle figurehead) |  |
 | palm-island (2x2, palm island) | 9 |
 | sandstone-arch (2x2, sandstone arch) | 8, 29 |
 | iceberg (2x2, iceberg) | 12, 30 |

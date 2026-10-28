@@ -193,6 +193,7 @@ export const REMAKES = new Map([
   ["greenhouse", "carrot-harvest"],
   ["canal-bicycle", "towpath-cyclist"],
   ["blue-headscarf", "book-reader"],
+  ["moai", "eagle-figurehead"],
 ]);
 /** A row's kept pictures, a flagged one's remake in its place (none flagged: the row's own list). */
 export const keepOf = (row) => row.keep?.map((id) => (flags.has(id) && REMAKES.has(id) ? REMAKES.get(id) : id));
