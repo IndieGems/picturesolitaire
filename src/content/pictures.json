@@ -48525,6 +48525,366 @@
         "harmonica"
       ],
       "bg": "lime"
+    },
+    {
+      "id": "sv-t5-cypresses",
+      "souvenir": "t5",
+      "album": "souvenirs",
+      "title": "Cypresses",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t5-cypresses.webp",
+      "board": "pictures/souvenirs/sv-t5-cypresses-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "cypresses"
+      ],
+      "credit": {
+        "artist": "Vincent van Gogh",
+        "title": "Cypresses",
+        "date": "1889",
+        "museum": "The Metropolitan Museum of Art",
+        "licence": "CC0 (The Metropolitan Museum of Art Open Access)",
+        "page": "https://www.metmuseum.org/art/collection/search/437980"
+      }
+    },
+    {
+      "id": "sv-t5-parasol",
+      "souvenir": "t5",
+      "album": "souvenirs",
+      "title": "Woman with a Parasol",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t5-parasol.webp",
+      "board": "pictures/souvenirs/sv-t5-parasol-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "parasol"
+      ],
+      "credit": {
+        "artist": "Claude Monet",
+        "title": "Woman with a Parasol - Madame Monet and Her Son",
+        "date": "1875",
+        "museum": "National Gallery of Art, Washington",
+        "licence": "CC0 (National Gallery of Art, Washington, Open Access)",
+        "page": "https://www.nga.gov/collection/art-object-page.61379.html"
+      }
+    },
+    {
+      "id": "sv-t5-watering-can",
+      "souvenir": "t5",
+      "album": "souvenirs",
+      "title": "A Girl with a Watering Can",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t5-watering-can.webp",
+      "board": "pictures/souvenirs/sv-t5-watering-can-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "watering can"
+      ],
+      "credit": {
+        "artist": "Auguste Renoir",
+        "title": "A Girl with a Watering Can",
+        "date": "1876",
+        "museum": "National Gallery of Art, Washington",
+        "licence": "CC0 (National Gallery of Art, Washington, Open Access)",
+        "page": "https://www.nga.gov/collection/art-object-page.46681.html"
+      }
+    },
+    {
+      "id": "sv-t5-rainy-day",
+      "souvenir": "t5",
+      "album": "souvenirs",
+      "title": "Paris Street; Rainy Day",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t5-rainy-day.webp",
+      "board": "pictures/souvenirs/sv-t5-rainy-day-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "rainy day"
+      ],
+      "credit": {
+        "artist": "Gustave Caillebotte",
+        "title": "Paris Street; Rainy Day",
+        "date": "1877",
+        "museum": "Art Institute of Chicago",
+        "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+        "page": "https://www.artic.edu/artworks/20684"
+      }
+    },
+    {
+      "id": "sv-t5-seashore",
+      "souvenir": "t5",
+      "album": "souvenirs",
+      "title": "By the Seashore",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t5-seashore.webp",
+      "board": "pictures/souvenirs/sv-t5-seashore-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "seashore"
+      ],
+      "credit": {
+        "artist": "Auguste Renoir",
+        "title": "By the Seashore",
+        "date": "1883",
+        "museum": "The Metropolitan Museum of Art",
+        "licence": "CC0 (The Metropolitan Museum of Art Open Access)",
+        "page": "https://www.metmuseum.org/art/collection/search/437430"
+      }
+    },
+    {
+      "id": "sv-t5-childs-bath",
+      "souvenir": "t5",
+      "album": "souvenirs",
+      "title": "The Child's Bath",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t5-childs-bath.webp",
+      "board": "pictures/souvenirs/sv-t5-childs-bath-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "childs bath"
+      ],
+      "credit": {
+        "artist": "Mary Cassatt",
+        "title": "The Child's Bath",
+        "date": "1893",
+        "museum": "Art Institute of Chicago",
+        "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+        "page": "https://www.artic.edu/artworks/111442"
+      }
+    },
+    {
+      "id": "sv-t5-grande-jatte",
+      "souvenir": "t5",
+      "album": "souvenirs",
+      "title": "A Sunday on La Grande Jatte",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t5-grande-jatte.webp",
+      "board": "pictures/souvenirs/sv-t5-grande-jatte-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "grande jatte"
+      ],
+      "credit": {
+        "artist": "Georges Seurat",
+        "title": "A Sunday on La Grande Jatte — 1884",
+        "date": "1884–86, border added 1888–89",
+        "museum": "Art Institute of Chicago",
+        "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+        "page": "https://www.artic.edu/artworks/27992"
+      }
+    },
+    {
+      "id": "sv-t5-gare-saint-lazare",
+      "souvenir": "t5",
+      "album": "souvenirs",
+      "title": "Arrival of the Normandy Train",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t5-gare-saint-lazare.webp",
+      "board": "pictures/souvenirs/sv-t5-gare-saint-lazare-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "gare saint lazare"
+      ],
+      "credit": {
+        "artist": "Claude Monet",
+        "title": "Arrival of the Normandy Train, Gare Saint-Lazare",
+        "date": "1877",
+        "museum": "Art Institute of Chicago",
+        "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+        "page": "https://www.artic.edu/artworks/16571"
+      }
+    },
+    {
+      "id": "sv-t5-cliff-walk",
+      "souvenir": "t5",
+      "album": "souvenirs",
+      "title": "Cliff Walk at Pourville",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t5-cliff-walk.webp",
+      "board": "pictures/souvenirs/sv-t5-cliff-walk-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "cliff walk"
+      ],
+      "credit": {
+        "artist": "Claude Monet",
+        "title": "Cliff Walk at Pourville",
+        "date": "1882",
+        "museum": "Art Institute of Chicago",
+        "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+        "page": "https://www.artic.edu/artworks/14620"
+      }
+    },
+    {
+      "id": "sv-t5-stacks-of-wheat",
+      "souvenir": "t5",
+      "album": "souvenirs",
+      "title": "Stacks of Wheat (End of Summer)",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t5-stacks-of-wheat.webp",
+      "board": "pictures/souvenirs/sv-t5-stacks-of-wheat-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "stacks of wheat"
+      ],
+      "credit": {
+        "artist": "Claude Monet",
+        "title": "Stacks of Wheat (End of Summer)",
+        "date": "1890–91",
+        "museum": "Art Institute of Chicago",
+        "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+        "page": "https://www.artic.edu/artworks/64818"
+      }
+    },
+    {
+      "id": "sv-t5-dance-class",
+      "souvenir": "t5",
+      "album": "souvenirs",
+      "title": "The Dance Class",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t5-dance-class.webp",
+      "board": "pictures/souvenirs/sv-t5-dance-class-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "dance class"
+      ],
+      "credit": {
+        "artist": "Edgar Degas",
+        "title": "The Dance Class",
+        "date": "1874",
+        "museum": "The Metropolitan Museum of Art",
+        "licence": "CC0 (The Metropolitan Museum of Art Open Access)",
+        "page": "https://www.metmuseum.org/art/collection/search/438817"
+      }
+    },
+    {
+      "id": "sv-t5-boulevard-montmartre",
+      "souvenir": "t5",
+      "album": "souvenirs",
+      "title": "The Boulevard Montmartre on a Winter Morning",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t5-boulevard-montmartre.webp",
+      "board": "pictures/souvenirs/sv-t5-boulevard-montmartre-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "boulevard montmartre"
+      ],
+      "credit": {
+        "artist": "Camille Pissarro",
+        "title": "The Boulevard Montmartre on a Winter Morning",
+        "date": "1897",
+        "museum": "The Metropolitan Museum of Art",
+        "licence": "CC0 (The Metropolitan Museum of Art Open Access)",
+        "page": "https://www.metmuseum.org/art/collection/search/437310"
+      }
     }
   ],
   "souvenirs": [
@@ -48555,6 +48915,13 @@
       "table": "table-souvenir-west",
       "tableTitle": "Ranch Table",
       "sticker": "pictures/souvenirs/sv-t4-sticker.webp"
+    },
+    {
+      "trip": "t5",
+      "theme": "Impressionist paintings",
+      "table": "table-souvenir-france",
+      "tableTitle": "Painter's Table",
+      "sticker": "pictures/souvenirs/sv-t5-sticker.webp"
     }
   ]
 }
