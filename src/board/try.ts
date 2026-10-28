@@ -4,6 +4,7 @@ import { openBoard } from "./index.ts";
 import { on, type GameEvents } from "../events";
 import { lessonLevel, loadChallenges, loadExperiments, loadLevel, loadSouvenir, type Level } from "../game/levels.ts";
 import { TUNING } from "./tuning.ts";
+import { library } from "virtual:ps-content";
 
 const q = new URLSearchParams(location.search);
 const host = document.getElementById("host")!;
@@ -30,6 +31,7 @@ if (souvenir) level = (await loadSouvenir(souvenir)) ?? undefined;
 // ?dest=dest-grand-canyon&crop=2,2: the board's first 2x2 picture made that destination's window
 const dest = q.get("dest");
 if (dest) {
+  await library(); // any destination's postcard, not only the board's own trip's
   const base = level ?? (await loadLevel(Number(q.get("level") ?? 1)));
   const k = base.deal.pictures.findIndex((p) => p.cols === 2 && p.rows === 2);
   const [c, r] = (q.get("crop") ?? "0,0").split(",").map(Number);

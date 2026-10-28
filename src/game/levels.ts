@@ -6,9 +6,16 @@
 // is on it. Other fields there (axes: how hard the board is, and why) are the
 // level designer's notes: the board plays without them, and only the dev
 // menu's board info shows them.
+//
+// The game never imports those files whole (the first-load trim, UI's,
+// 2026-10-28): the build splits them (tools/content-split.mjs, virtual:ps-content),
+// so each trip, each week of dailies and each other list (challenge, Souvenirs,
+// lessons, experiments) is a chunk of its own, fetched on the first ask, and a
+// chunk has registered its boards' pictures (src/content.ts) by the time it
+// resolves. The source files, the level tools and the server's checker are
+// unchanged by it.
 
-import CAMPAIGN from "../content/levels/campaign.json";
-import TRIPS from "../content/levels/trips.json";
+import { campaign, challenge, daily, experiments as experimentLane, lessons as lessonLane, souvenirs as souvenirLane } from "virtual:ps-content";
 import type { Deal, Move, Picture, Shuffle } from "./rules.ts";
 import { dailyFor } from "./levels/daily.ts";
 
@@ -89,17 +96,20 @@ export function toLevel(l: Stored, number: number): Level {
   };
 }
 
-const LEVELS: Level[] = (CAMPAIGN.levels as Stored[]).map((l, i) => toLevel(l, i + 1));
-
 // ---------------------------------------------------------------- the campaign, a trip at a time
 //
 // The screens load a board's trip before they open it (loadLevel), and level(n)
-// then answers at once. (The first-load trim, UI's, 2026-10-28: each trip will
-// come as a chunk of its own; until the split lands, every trip is already here.)
+// then answers at once. What home and the itinerary read without a deal (a
+// board's id, trip, size, destination and mark) is the split's skeleton,
+// campaign.boards, always here.
+
+/** The campaign's boards so far, by place (from 0): each trip's fill in as it loads. */
+const LEVELS: (Level | undefined)[] = new Array<Level | undefined>(campaign.count);
 
 /** Board `n`'s place in the campaign, from 0; past the end, the campaign goes round again. */
 function placeOf(n: number): number {
-  return (((Math.floor(n) - 1) % LEVELS.length) + LEVELS.length) % LEVELS.length;
+  const count = Math.max(1, campaign.count);
+  return (((Math.floor(n) - 1) % count) + count) % count;
 }
 
 const tripLoads = new Map<string, Promise<Level[]>>();
@@ -111,9 +121,16 @@ const tripLoads = new Map<string, Promise<Level[]>>();
 export function loadTrip(id: string): Promise<Level[]> {
   let p = tripLoads.get(id);
   if (!p) {
-    const t = TRIPS.trips.find((t) => t.id === id);
-    p = t ? Promise.resolve(LEVELS.slice(t.from - 1, t.to)) : Promise.reject(new Error(`[levels] no trip "${id}"`));
-    p.catch(() => tripLoads.delete(id));
+    const load = campaign.trips[id];
+    p = load
+      ? load().then(({ levels, from }) =>
+          (levels as unknown as Stored[]).map((l, k) => (LEVELS[from - 1 + k] ??= toLevel(l, from + k))),
+        )
+      : Promise.reject(new Error(`[levels] no trip "${id}"`));
+    p.catch((err: unknown) => {
+      console.warn(`[levels] trip ${id} did not load`, err);
+      tripLoads.delete(id); // ask again next time
+    });
     tripLoads.set(id, p);
   }
   return p;
@@ -121,7 +138,15 @@ export function loadTrip(id: string): Promise<Level[]> {
 
 /** Board `n` (from 1, going round past the end), its trip loaded first. Rejects as loadTrip does. */
 export async function loadLevel(n: number): Promise<Level> {
-  return LEVELS[placeOf(n)]!;
+  const i = placeOf(n);
+  const have = LEVELS[i];
+  if (have) return have;
+  const trip = campaign.boards[i]?.trip;
+  if (!trip) throw new Error(`[levels] no board ${i + 1}`);
+  await loadTrip(trip);
+  const l = LEVELS[i];
+  if (!l) throw new Error(`[levels] board ${i + 1} is not in trip ${trip}`);
+  return l;
 }
 
 // ---------------------------------------------------------------- challenge route and daily
@@ -142,8 +167,8 @@ let challenges: Promise<Challenge[]> | null = null;
  * be loaded.
  */
 export function loadChallenges(): Promise<Challenge[]> {
-  challenges ??= import("../content/levels/challenge.json")
-    .then((m) => (m.default.levels as StoredPar[]).map((l, i) => ({ ...toLevel(l, i + 1), par: l.par })))
+  challenges ??= challenge()
+    .then((m) => (m.levels as unknown as StoredPar[]).map((l, i) => ({ ...toLevel(l, i + 1), par: l.par })))
     .catch((err: unknown) => {
       console.warn("[levels] the challenge route did not load", err);
       challenges = null; // ask again next time
@@ -152,25 +177,46 @@ export function loadChallenges(): Promise<Challenge[]> {
   return challenges;
 }
 
-let dailyPool: Promise<{ levels: StoredDaily[] } | null> | null = null;
+type DailyWeek = { levels: StoredDaily[]; start: number };
+const weekLoads = new Map<string, Promise<DailyWeek>>();
+/** UTC days since 1970 of a "YYYY-MM-DD" date (NaN for anything else). */
+const dayOf = (d: string): number => Date.parse(`${d}T00:00:00Z`) / 86_400_000;
+/** A date's week, by its Monday ("YYYY-MM-DD", UTC), as the split and Art's daily packs name it. */
+function mondayOf(date: string): string | null {
+  const t = Date.parse(`${date}T00:00:00Z`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(t)) return null;
+  const d = new Date(t);
+  d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
+  return d.toISOString().slice(0, 10);
+}
 /**
  * The daily board for `date`, or null when the pool has none for it (before
- * its first day, after its last). The pool (src/content/levels/daily.json) is
- * fetched apart from the boot, on the first ask; which board is a date's is
- * the levels member's rule (dailyFor), which the server's win checker mirrors.
+ * its first day, after its last). Rejects when its week cannot be loaded
+ * (offline), and the next ask tries again. Only that date's week of the pool (src/content/levels/daily.json)
+ * is fetched, on the first ask, then kept. Which board is a date's is the
+ * levels member's rule (dailyFor), which the server's win checker mirrors on
+ * the whole pool: the week's answer counts only where it is the pool's too.
  */
 export async function loadDaily(date: string): Promise<Daily | null> {
-  dailyPool ??= import("../content/levels/daily.json")
-    .then((m) => m.default as unknown as { levels: StoredDaily[] })
-    .catch((err: unknown) => {
-      console.warn("[levels] the daily boards did not load", err);
-      dailyPool = null;
-      return null;
+  const monday = mondayOf(date);
+  const load = monday ? daily.weeks[monday] : undefined;
+  if (!monday || !load || !daily.first) return null;
+  let p = weekLoads.get(monday);
+  if (!p) {
+    p = load().then((m) => m as unknown as DailyWeek);
+    p.catch((err: unknown) => {
+      console.warn(`[levels] the dailies of the week of ${monday} did not load`, err);
+      weekLoads.delete(monday); // ask again next time
     });
-  const pool = await dailyPool;
-  const b = pool && dailyFor(pool, date);
+    weekLoads.set(monday, p);
+  }
+  const week = await p;
+  const b = dailyFor(week, date);
   if (!b) return null;
-  return { ...toLevel(b, pool.levels.indexOf(b) + 1), par: b.par, date: b.date };
+  const at = week.start + week.levels.indexOf(b);
+  // the whole pool's index for the date (dailyFor's rule): the same board, or none
+  if (at !== dayOf(date) - dayOf(daily.first)) return null;
+  return { ...toLevel(b, at + 1), par: b.par, date: b.date };
 }
 
 // ---------------------------------------------------------------- souvenirs
@@ -189,9 +235,9 @@ let souvenirs: Promise<Souvenir[]> | null = null;
  * souvenirPictures, its table is the screens' to set, and board:won says its id.
  */
 export function loadSouvenirs(): Promise<Souvenir[]> {
-  souvenirs ??= import("../content/levels/souvenirs.json")
+  souvenirs ??= souvenirLane()
     .then((m) =>
-      (m.default.levels as unknown as StoredSouvenir[])
+      (m.levels as unknown as StoredSouvenir[])
         .filter((l) => typeof l.trip === "string")
         .map((l, i) => ({ ...toLevel(l, i + 1), trip: l.trip })),
     )
@@ -224,7 +270,7 @@ let lessons: Promise<Lesson[]> | null = null;
  */
 export async function lessonLevel(kind: LessonKind): Promise<Lesson | null> {
   lessons ??= (async () => {
-    const stored = ((await import("../content/levels/lessons.json")).default as unknown as { levels: StoredLesson[] }).levels;
+    const stored = (await lessonLane()).levels as unknown as StoredLesson[];
     return stored.map((l, i): Lesson => ({
       ...toLevel(l, i + 1),
       lesson: l.lesson as LessonKind,
@@ -242,8 +288,8 @@ export async function lessonLevel(kind: LessonKind): Promise<Lesson | null> {
 let experiments: Promise<Level[]> | null = null;
 /** The dev menu's experiment boards (src/content/levels/experiments.json), in order; [] if they cannot be loaded. */
 export function loadExperiments(): Promise<Level[]> {
-  experiments ??= import("../content/levels/experiments.json")
-    .then((m) => (m.default.levels as unknown as Stored[]).map((l, i) => toLevel(l, i + 1)))
+  experiments ??= experimentLane()
+    .then((m) => (m.levels as unknown as Stored[]).map((l, i) => toLevel(l, i + 1)))
     .catch((err: unknown) => {
       console.warn("[levels] the experiment boards did not load", err);
       experiments = null; // ask again next time
@@ -254,7 +300,7 @@ export function loadExperiments(): Promise<Level[]> {
 
 /** How many boards the campaign has. */
 export function levelCount(): number {
-  return LEVELS.length;
+  return campaign.count;
 }
 
 /**

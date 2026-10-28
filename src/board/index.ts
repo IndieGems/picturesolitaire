@@ -15,7 +15,7 @@
 // when the board is still.
 
 import "./board.css";
-import CATALOGUE from "../content/pictures.json";
+import { catalogueEntry } from "../content.ts";
 import { emit, type GameEvents } from "../events";
 import { gem, onArcadePause, onPlayerPrefs } from "../gem";
 import { ensure, fileUrl, resident } from "../packs";
@@ -147,20 +147,15 @@ function loadTuning(): void {
  * the full). A destination's postcard is in the catalogue's own `destinations` list, with the
  * place's name; a daily's suitcase item in its `items` list (Levels' ids, item-YYYY-MM-NN); a
  * Souvenir board's pictures in `souvenirPictures` (docs/souvenirs.md). None of those three is
- * the library's: each is dealt only on its own boards.
+ * the library's: each is dealt only on its own boards. The board reads them by id from the
+ * catalogue as far as it has loaded (src/content.ts): a board's level chunk registers its
+ * pictures before the board is opened, so they are all there by then.
  */
 type PictureFiles = {
   id: string; file: string; board?: string; boardPx?: number[]; px?: number[];
   name?: string; title?: string; place?: string;
 };
-const catalogue = CATALOGUE as unknown as {
-  pictures: PictureFiles[]; destinations?: PictureFiles[]; items?: PictureFiles[]; souvenirPictures?: PictureFiles[];
-};
-const pictureFiles = new Map(
-  [
-    ...catalogue.pictures, ...(catalogue.destinations ?? []), ...(catalogue.items ?? []), ...(catalogue.souvenirPictures ?? []),
-  ].map((p) => [p.id, p]),
-);
+const pictureFiles = { get: (id: string) => catalogueEntry(id) as PictureFiles | undefined };
 /** A picture's file is drawn over this many cells: a destination's postcard over the whole board. */
 function drawnSize(l: Level, p: Picture): { cols: number; rows: number } {
   return l.destination?.id === p.id ? { cols: l.deal.cols, rows: l.deal.rows } : { cols: p.cols, rows: p.rows };
