@@ -21,7 +21,9 @@
 //                          route, the dailies by date, the dev menu's experiments). Only the
 //                          enlarged view reads them, one picture at a time by Range, so a host that
 //                          ignores Range streams one chunk at most.
-//   p-<trip id>.bin        per trip (src/content/levels/trips.json): its postcards' passport copies.
+//   p-<trip id>.bin        per trip (src/content/levels/trips.json): its postcards' passport copies,
+//                          and its Souvenir's sticker (docs/souvenirs.md).
+//   b-s<n>.bin             a Souvenir board's copies (src/content/levels/souvenirs.json), like any board.
 //   s-<yyyy-mm>.bin        per month: the Daily Suitcase's 10 item cut-outs, for its screen.
 // A picture on no board is not shipped. public/ and the dev server are untouched: they serve the
 // separate files, and the play-test tool, the Picture Library and Trips & Cases keep using them.
@@ -46,10 +48,12 @@ if (!dist) {
 const read = (p) => JSON.parse(readFileSync(p, "utf8"));
 const catalogue = read("src/content/pictures.json");
 // The Daily Suitcase's items (docs/daily-suitcase.md) are dealt on daily boards like any picture.
-const byId = new Map([...catalogue.pictures, ...(catalogue.destinations ?? []), ...(catalogue.items ?? [])].map((p) => [p.id, p]));
+// Souvenir pictures (docs/souvenirs.md) are dealt only on their trip's Souvenir board.
+const byId = new Map([...catalogue.pictures, ...(catalogue.destinations ?? []), ...(catalogue.items ?? []), ...(catalogue.souvenirPictures ?? [])].map((p) => [p.id, p]));
 // In the order players meet them, which is the order full pictures fill their chunks.
 // lessons: the staged lesson boards, such as the Shuffle lesson after board 3 (Levels, 2026-10-27).
-const LANES = ["campaign", "lessons", "challenge", "daily", "experiments"];
+// souvenirs: each trip's Souvenir board, s1..s10, played after its stamp (Gameplay, 2026-10-28).
+const LANES = ["campaign", "lessons", "souvenirs", "challenge", "daily", "experiments"];
 /** A full chunk closes before it would pass this (the biggest full picture is ~1 MB). */
 const CHUNK = 2 * 1024 * 1024;
 
@@ -109,6 +113,10 @@ for (const t of trips) {
     if (d?.thumb) add(name, d.thumb);
   }
   index.trips[t.id] = name;
+}
+// Each trip's Souvenir sticker shows on its passport page, so it rides in the trip's pack.
+for (const sv of catalogue.souvenirs ?? []) {
+  if (sv.sticker && index.trips[sv.trip]) add(index.trips[sv.trip], sv.sticker);
 }
 
 // A month's suitcase screen shows all 10 of its items at once: one pack a month, s-YYYY-MM, of
