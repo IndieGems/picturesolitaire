@@ -48885,6 +48885,282 @@
         "licence": "CC0 (The Metropolitan Museum of Art Open Access)",
         "page": "https://www.metmuseum.org/art/collection/search/437310"
       }
+    },
+    {
+      "id": "sv-t6-orca",
+      "souvenir": "t6",
+      "album": "souvenirs",
+      "title": "Orca",
+      "medium": "papercut",
+      "file": "pictures/souvenirs/sv-t6-orca.webp",
+      "board": "pictures/souvenirs/sv-t6-orca-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "orca"
+      ],
+      "bg": "sky"
+    },
+    {
+      "id": "sv-t6-eagle",
+      "souvenir": "t6",
+      "album": "souvenirs",
+      "title": "Bald Eagle",
+      "medium": "papercut",
+      "file": "pictures/souvenirs/sv-t6-eagle.webp",
+      "board": "pictures/souvenirs/sv-t6-eagle-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "bald eagle"
+      ],
+      "bg": "teal"
+    },
+    {
+      "id": "sv-t6-polar-bear",
+      "souvenir": "t6",
+      "album": "souvenirs",
+      "title": "Polar Bear",
+      "medium": "papercut",
+      "file": "pictures/souvenirs/sv-t6-polar-bear.webp",
+      "board": "pictures/souvenirs/sv-t6-polar-bear-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "polar bear standing"
+      ],
+      "bg": "navy"
+    },
+    {
+      "id": "sv-t6-snowy-owl",
+      "souvenir": "t6",
+      "album": "souvenirs",
+      "title": "Snowy Owl",
+      "medium": "papercut",
+      "file": "pictures/souvenirs/sv-t6-snowy-owl.webp",
+      "board": "pictures/souvenirs/sv-t6-snowy-owl-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "snowy owl"
+      ],
+      "bg": "purple"
+    },
+    {
+      "id": "sv-t6-lynx",
+      "souvenir": "t6",
+      "album": "souvenirs",
+      "title": "Lynx",
+      "medium": "papercut",
+      "file": "pictures/souvenirs/sv-t6-lynx.webp",
+      "board": "pictures/souvenirs/sv-t6-lynx-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "lynx"
+      ],
+      "bg": "orange"
+    },
+    {
+      "id": "sv-t6-puffin",
+      "souvenir": "t6",
+      "album": "souvenirs",
+      "title": "Puffin",
+      "medium": "papercut",
+      "file": "pictures/souvenirs/sv-t6-puffin.webp",
+      "board": "pictures/souvenirs/sv-t6-puffin-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "puffin"
+      ],
+      "bg": "lime"
+    },
+    {
+      "id": "sv-t6-moose",
+      "souvenir": "t6",
+      "album": "souvenirs",
+      "title": "Moose",
+      "medium": "papercut",
+      "file": "pictures/souvenirs/sv-t6-moose.webp",
+      "board": "pictures/souvenirs/sv-t6-moose-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "moose"
+      ],
+      "bg": "yellow"
+    },
+    {
+      "id": "sv-t6-beaver",
+      "souvenir": "t6",
+      "album": "souvenirs",
+      "title": "Beaver",
+      "medium": "papercut",
+      "file": "pictures/souvenirs/sv-t6-beaver.webp",
+      "board": "pictures/souvenirs/sv-t6-beaver-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "beaver"
+      ],
+      "bg": "pink"
+    },
+    {
+      "id": "sv-t6-loon",
+      "souvenir": "t6",
+      "album": "souvenirs",
+      "title": "Loon",
+      "medium": "papercut",
+      "file": "pictures/souvenirs/sv-t6-loon.webp",
+      "board": "pictures/souvenirs/sv-t6-loon-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "loon"
+      ],
+      "bg": "red"
+    },
+    {
+      "id": "sv-t6-caribou",
+      "souvenir": "t6",
+      "album": "souvenirs",
+      "title": "Caribou",
+      "medium": "papercut",
+      "file": "pictures/souvenirs/sv-t6-caribou.webp",
+      "board": "pictures/souvenirs/sv-t6-caribou-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "caribou"
+      ],
+      "bg": "green"
+    },
+    {
+      "id": "sv-t6-bison",
+      "souvenir": "t6",
+      "album": "souvenirs",
+      "title": "Bison",
+      "medium": "papercut",
+      "file": "pictures/souvenirs/sv-t6-bison.webp",
+      "board": "pictures/souvenirs/sv-t6-bison-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "bison"
+      ],
+      "bg": "blue"
+    },
+    {
+      "id": "sv-t6-goose",
+      "souvenir": "t6",
+      "album": "souvenirs",
+      "title": "Canada Goose",
+      "medium": "papercut",
+      "file": "pictures/souvenirs/sv-t6-goose.webp",
+      "board": "pictures/souvenirs/sv-t6-goose-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "canada goose"
+      ],
+      "bg": "magenta"
     }
   ],
   "souvenirs": [
@@ -48922,6 +49198,13 @@
       "table": "table-souvenir-france",
       "tableTitle": "Painter's Table",
       "sticker": "pictures/souvenirs/sv-t5-sticker.webp"
+    },
+    {
+      "trip": "t6",
+      "theme": "Wildlife",
+      "table": "table-souvenir-canada",
+      "tableTitle": "Lake Lodge",
+      "sticker": "pictures/souvenirs/sv-t6-sticker.webp"
     }
   ]
 }
