@@ -19,7 +19,7 @@ import CATALOGUE from "../content/pictures.json";
 import { emit, type GameEvents } from "../events";
 import { gem, onArcadePause, onPlayerPrefs } from "../gem";
 import { ensure, fileUrl, resident } from "../packs";
-import { level as levelOf, levelCount, type Level } from "../game/levels.ts";
+import { level as levelOf, levelCount, loadLevel, type Level } from "../game/levels.ts";
 import { Game, OutOfBudget, nextMove } from "../game/solver/index.ts";
 import { rescue } from "../game/shuffle.ts";
 import {
@@ -1933,10 +1933,14 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     if (onScreenNow()) clockOn();
     // the next board's pictures, quietly, once this one is dealt
     if (typeof which === "number" && which < levelCount()) {
-      // at the card size the next board will have in this box
-      const next = levelOf(which + 1);
-      const files = boardFiles(next, host);
-      void ensure(files, next.id).catch(() => {}).then(() => preload(files.filter((rel) => resident(rel)).map((rel) => fileUrl(rel)), 10_000, true));
+      // its trip first (the next trip's, after a trip's last board), then at the card size the next board will have in this box
+      void loadLevel(which + 1)
+        .then((next) => {
+          if (destroyed) return;
+          const files = boardFiles(next, host);
+          return ensure(files, next.id).catch(() => {}).then(() => preload(files.filter((rel) => resident(rel)).map((rel) => fileUrl(rel)), 10_000, true));
+        })
+        .catch(() => {}); // offline: the screens load it again when it is opened
     }
   })();
 

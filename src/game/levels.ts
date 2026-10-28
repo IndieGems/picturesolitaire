@@ -8,6 +8,7 @@
 // menu's board info shows them.
 
 import CAMPAIGN from "../content/levels/campaign.json";
+import TRIPS from "../content/levels/trips.json";
 import type { Deal, Move, Picture, Shuffle } from "./rules.ts";
 import { dailyFor } from "./levels/daily.ts";
 
@@ -89,6 +90,39 @@ export function toLevel(l: Stored, number: number): Level {
 }
 
 const LEVELS: Level[] = (CAMPAIGN.levels as Stored[]).map((l, i) => toLevel(l, i + 1));
+
+// ---------------------------------------------------------------- the campaign, a trip at a time
+//
+// The screens load a board's trip before they open it (loadLevel), and level(n)
+// then answers at once. (The first-load trim, UI's, 2026-10-28: each trip will
+// come as a chunk of its own; until the split lands, every trip is already here.)
+
+/** Board `n`'s place in the campaign, from 0; past the end, the campaign goes round again. */
+function placeOf(n: number): number {
+  return (((Math.floor(n) - 1) % LEVELS.length) + LEVELS.length) % LEVELS.length;
+}
+
+const tripLoads = new Map<string, Promise<Level[]>>();
+/**
+ * Trip `id`'s boards ("t1", src/content/levels/trips.json), in order, loaded
+ * once and kept. Rejects when the trip cannot be loaded (an unknown id, or
+ * offline), and the next ask tries again.
+ */
+export function loadTrip(id: string): Promise<Level[]> {
+  let p = tripLoads.get(id);
+  if (!p) {
+    const t = TRIPS.trips.find((t) => t.id === id);
+    p = t ? Promise.resolve(LEVELS.slice(t.from - 1, t.to)) : Promise.reject(new Error(`[levels] no trip "${id}"`));
+    p.catch(() => tripLoads.delete(id));
+    tripLoads.set(id, p);
+  }
+  return p;
+}
+
+/** Board `n` (from 1, going round past the end), its trip loaded first. Rejects as loadTrip does. */
+export async function loadLevel(n: number): Promise<Level> {
+  return LEVELS[placeOf(n)]!;
+}
 
 // ---------------------------------------------------------------- challenge route and daily
 
@@ -205,13 +239,31 @@ export async function lessonLevel(kind: LessonKind): Promise<Lesson | null> {
   return (await lessons).find((l) => l.lesson === kind) ?? null;
 }
 
+let experiments: Promise<Level[]> | null = null;
+/** The dev menu's experiment boards (src/content/levels/experiments.json), in order; [] if they cannot be loaded. */
+export function loadExperiments(): Promise<Level[]> {
+  experiments ??= import("../content/levels/experiments.json")
+    .then((m) => (m.default.levels as unknown as Stored[]).map((l, i) => toLevel(l, i + 1)))
+    .catch((err: unknown) => {
+      console.warn("[levels] the experiment boards did not load", err);
+      experiments = null; // ask again next time
+      return [];
+    });
+  return experiments;
+}
+
 /** How many boards the campaign has. */
 export function levelCount(): number {
   return LEVELS.length;
 }
 
-/** Board `n` (from 1); past the end, the campaign goes round again. */
+/**
+ * Board `n` (from 1; past the end, the campaign goes round again), once its
+ * trip is loaded (loadLevel or loadTrip first); it throws for a board not
+ * loaded yet.
+ */
 export function level(n: number): Level {
-  const i = (((Math.floor(n) - 1) % LEVELS.length) + LEVELS.length) % LEVELS.length;
-  return LEVELS[i]!;
+  const l = LEVELS[placeOf(n)];
+  if (!l) throw new Error(`[levels] board ${placeOf(n) + 1} is not loaded yet: await loadLevel(${n}) first`);
+  return l;
 }
