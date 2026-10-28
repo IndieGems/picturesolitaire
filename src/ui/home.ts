@@ -114,6 +114,15 @@ function warm(url: string): Promise<void> {
   return p;
 }
 
+/**
+ * Ask for trip `tr`'s stamp now (home's last stop draws it, and home waits for it): the boot knows the
+ * trip from the record before the trip's boards arrive, so the two come together (QA, 0.49.0: asked
+ * for only once they had, it held home ~0.2 s on 4G).
+ */
+export function warmTripStamp(tr: Trip): void {
+  void warm(new URL(stampUrl(tr), location.href).href);
+}
+
 export function createHome(nav: Nav, parts: Parts) {
   // ---- the title ----
   const wordmark = el("img", "wordmark");

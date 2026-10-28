@@ -74,7 +74,7 @@ import { cardAspect, syncCardAspect } from "./cards";
 import { createViewer } from "./viewer";
 import { closed, cornerKey, opened } from "./dialogs";
 import { markAt, markOf, markTag, markWords, pretendMarks, type Mark } from "./marks";
-import { allDone, awaitingRecord, createHome, nextBoard } from "./home";
+import { allDone, awaitingRecord, createHome, nextBoard, warmTripStamp } from "./home";
 import { KINDS, KIT, stock, type HelperKind } from "./stock";
 import { createRunOut } from "./helper-shop";
 import { createHomeShop } from "./home-shop";
@@ -1940,8 +1940,12 @@ function layoutGallery(pics: BoardPicture[], share = 0.34): HTMLElement {
   return gallery;
 }
 
-/** The mosaic's gap: tighter than the rows', so more fits at a tappable size. */
-const MOSAIC_GAP = 6;
+/**
+ * The mosaic's gap: tighter than the rows', so more fits at a tappable size, and twice the 4px a
+ * picture reaches past its edges to the touch (button.pic::before, style.css), so neighbours' hit
+ * areas meet without overlapping: a 36px-wide picture is 44px under a thumb, all of it its own.
+ */
+const MOSAIC_GAP = 8;
 /**
  * The win card's pictures as a MOSAIC: a grid of k columns, each one card wide (u x the card's
  * aspect), rows u tall, every picture spanning its own cols x rows and placed, biggest first, at the
@@ -2110,6 +2114,7 @@ export async function startApp(): Promise<void> {
   // stamp (home's tile); everything else once home is whole, below
   const until = () => new Promise((r) => setTimeout(r, Math.max(0, by - performance.now())));
   const trip = currentTrip();
+  if (trip) warmTripStamp(trip);
   if (trip) await Promise.race([loadTripOf(trip), until()]);
   const stamped = trips.some(tripDone);
   if (stamped) void loadSouvenirList();
