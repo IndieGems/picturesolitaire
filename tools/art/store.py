@@ -1,29 +1,29 @@
 """Store page art, written into the store-page bundle (.gemarcade/), from the game's own art only.
 
-    python tools/art/store.py <wide-desk.png>              build everything
-    python tools/art/store.py <wide-desk.png> <out.png>    also a contact sheet of it all
+    python tools/art/store.py masters <raw-dir>    the generated scenes and logo -> masters
+    python tools/art/store.py build [<sheet.png>]  masters -> the bundle (and a contact sheet)
 
-The travel set (lead, 2026-10-27, after the game became Picture Passport). It is made of the
-game's art and nothing else:
-- the traveller's desk from home, made wide (generated from the home-desk master and game-l.png;
-  the prompt is in tools/art/prompts.txt);
-- REAL destination postcards from the trips, cut into 3:4 cards in frames drawn to
-  tools/art/chrome-spec.md (the numbers the board uses);
-- the passport as the game draws it (src/ui/style.css .pp-*), with a trip's stamp;
-- the wordmark.
+The suitcase set (creator, 2026-10-28: the old dark slate desk read "a little dark and depressing"
+beside the bright tiles of the catalogue; picked from three directions and three logos). An open
+vintage suitcase on a sunny sky-blue ground, with REAL destination postcards spilling out of it:
+- the scene (wide, square and the PC/TV side border) is generated with game-l.png as the
+  rendering reference and holds props only: no postcards, no text (prompts in
+  tools/art/prompts.txt). The generator writes made-up lettering on camera lenses, so `masters`
+  wipes each lens ring (LENS below; found by eye on these raws);
+- Burano is being pieced together inside the suitcase, in the board's own card frames
+  (tools/art/chrome-spec.md), its last card lifted; other trips' postcards lie loose in white
+  borders, and the passport lies open with its stamps (src/ui/style.css .pp-*);
+- the logo is the travel-poster title: the stacked one (sun above) on the store, the wide 2:1 one
+  (tools/art/wordmark.py, home's title) on the square tile, where it must read small.
 There is no fake interface: no buttons, counters or text other than the title.
-
-The scene is postcards being pieced together. Mont-Saint-Michel sits in the middle, its last
-card lifted over its empty cell and another lying loose. Iguazú is nearly done beside it, and
-the passport lies open at Australia's page, the Harbour Bridge among its postcards.
 
 Writes (paths are the bundle's; storepage.yaml names them under media):
   hero/key_art.jpg            2560x1440, no text      media.hero.key_art_clean
   hero/capsule_landscape.jpg  1920x1080, with title   media.capsules.landscape
   hero/capsule_square.jpg     1024x1024, with title   media.capsules.square
-  hero/logo.png               the wordmark, alpha     media.hero.logo
+  hero/logo.png               the logo, alpha         media.hero.logo
   hero/share_card.jpg         1200x630, with title    media.share_card
-  borders/travel-desk.jpg     2560x1440, opaque       media.portrait_borders[0]
+  borders/suitcase-sky.jpg    2560x1440, opaque       media.portrait_borders[0]
 Opaque art is JPEG q92: the Arcade re-encodes every image anyway, and this keeps the
 bundle (which is committed) small.
 """
@@ -49,7 +49,8 @@ MASTERS = ROOT / "tools/art/masters/chrome"
 SS = 3  # supersampling for smooth rounded edges
 GUTTER = 0.08  # between cells, fraction of the cell width (chrome-spec.md)
 ASPECT = 4 / 3  # a card is a 3:4 portrait cell (AGENTS.md)
-HERO, SIDE = "dest-mont-saint-michel", "dest-iguazu"
+HERO = "dest-burano"
+LOOSE = ["dest-fuji-chureito", "dest-eiffel", "dest-positano", "dest-harbour-bridge"]
 PAGE_STAMP, PAGE = "stamp-t8", ["dest-harbour-bridge", "dest-twelve-apostles", "dest-heart-reef", None]
 
 
@@ -294,92 +295,157 @@ def passport(width, angle=0.0):
     return book.rotate(angle, resample=Image.BICUBIC, expand=True) if angle else book
 
 
-def wordmark(width):
-    im = Image.open(MASTERS / "wordmark.webp").convert("RGBA")
-    return im.resize((round(width), round(im.height * width / im.width)), Image.LANCZOS)
+def card(pid, width, angle):
+    """A loose postcard in its white border, tilted, on its soft shadow."""
+    c = shadowed(white_card(pid, round(width)), width * 0.035, width * 0.03, alpha=110, colour=(40, 30, 20))
+    return c.rotate(angle, resample=Image.BICUBIC, expand=True)
 
 
-def glow(canvas, box, strength=110):
-    """A soft dark pool behind the title so it reads on any part of the table."""
-    m = Image.new("L", canvas.size, 0)
-    ImageDraw.Draw(m).ellipse(box, fill=strength)
-    m = m.filter(ImageFilter.GaussianBlur((box[2] - box[0]) * 0.12))
-    canvas.alpha_composite(Image.composite(Image.new("RGBA", canvas.size, (16, 22, 32, 255)),
-                                           Image.new("RGBA", canvas.size, (0, 0, 0, 0)), m))
+def put(canvas, layer, at):
+    canvas.alpha_composite(layer, (round(at[0] - layer.width / 2), round(at[1] - layer.height / 2)))
 
 
-def save(im, rel, out):
-    im.convert("RGB").save(BUNDLE / rel, "JPEG", quality=92, optimize=True, progressive=True, subsampling=0)
+def logo(name, width, height):
+    """A logo master fitted into width x height, on a soft shadow."""
+    im = Image.open(MASTERS / f"{name}.webp").convert("RGBA")
+    k = min(width / im.width, height / im.height)
+    im = im.resize((round(im.width * k), round(im.height * k)), Image.LANCZOS)
+    return shadowed(im, im.width * 0.011, im.width * 0.007, alpha=90, colour=(30, 25, 40))
+
+
+# --- masters -----------------------------------------------------------------------------
+
+WIDE, SQUARE, BORDER = "store-suitcase-wide", "store-suitcase-square", "store-suitcase-border"
+RAW = {WIDE: "bg-suitcase.png", SQUARE: "bg-suitcase-square.png", BORDER: "bg-suitcase-border.png"}
+# Each camera lens ring with made-up lettering, on these raws: (centre x, y, inner and outer radius).
+LENS = {WIDE: [(1227.5, 165, 29, 47)], SQUARE: [(1483, 635, 29, 46)], BORDER: [(2102.5, 302.5, 31, 49)]}
+DABS = {BORDER: [(2169, 267, 7)]}  # a stray glyph on the border camera's top plate: (x, y, radius)
+
+
+def smooth_ring(im, cx, cy, r0, r1, window=24, pct=35):
+    """Wipe made-up lettering off a lens ring: unwrap the ring between radii r0 and r1 around
+    (cx, cy), take a low percentile along the circle over `window` degrees, and wrap it back
+    with soft edges. The rings and their shading stay; the letters go."""
+    import numpy as np
+    a = np.asarray(im.convert("RGB")).astype(np.float32)
+    rs = np.arange(r0 - 2, r1 + 2.01, 0.5)
+    ts = np.deg2rad(np.arange(0, 360, 0.5))
+    R, T = np.meshgrid(rs, ts, indexing="ij")
+    X, Y = cx + R * np.cos(T), cy + R * np.sin(T)
+    x0, y0 = np.floor(X).astype(int), np.floor(Y).astype(int)
+    fx, fy = (X - x0)[..., None], (Y - y0)[..., None]
+    P = (a[y0, x0] * (1 - fx) * (1 - fy) + a[y0, x0 + 1] * fx * (1 - fy)
+         + a[y0 + 1, x0] * (1 - fx) * fy + a[y0 + 1, x0 + 1] * fx * fy)
+    w = int(window / 0.5)
+    pad = np.concatenate([P[:, -w // 2:], P, P[:, :w // 2]], axis=1)
+    Q = np.percentile(np.lib.stride_tricks.sliding_window_view(pad, w, axis=1)[:, :P.shape[1]], pct, axis=-1)
+    m = int(r1) + 3
+    ys, xs = np.mgrid[int(cy) - m:int(cy) + m + 1, int(cx) - m:int(cx) + m + 1]
+    r = np.hypot(xs - cx, ys - cy)
+    t = np.mod(np.rad2deg(np.arctan2(ys - cy, xs - cx)), 360)
+    ri = np.clip(np.round((r - (r0 - 2)) / 0.5).astype(int), 0, len(rs) - 1)
+    ti = np.round(t / 0.5).astype(int) % len(ts)
+    blend = np.clip(np.minimum(r - r0 + 1, r1 + 1 - r) / 2.0, 0, 1)[..., None]
+    out = a.copy()
+    out[ys, xs] = a[ys, xs] * (1 - blend) + Q[ri, ti] * blend
+    return Image.fromarray(np.clip(out, 0, 255).astype(np.uint8))
+
+
+def dab(im, x, y, r):
+    """Soften a small mark into its surroundings."""
+    box = (x - 3 * r, y - 3 * r, x + 3 * r, y + 3 * r)
+    patch = im.crop(box).filter(ImageFilter.GaussianBlur(r * 0.8))
+    m = Image.new("L", patch.size, 0)
+    ImageDraw.Draw(m).ellipse([2 * r, 2 * r, 4 * r, 4 * r], fill=255)
+    im.paste(patch, box[:2], m.filter(ImageFilter.GaussianBlur(r * 0.4)))
+    return im
+
+
+def masters(raw_dir):
+    raw_dir = Path(raw_dir)
+    for name, f in RAW.items():
+        im = Image.open(raw_dir / f).convert("RGB")
+        for ring in LENS.get(name, []):
+            im = smooth_ring(im, *ring)
+        for d in DABS.get(name, []):
+            im = dab(im, *d)
+        im.save(MASTERS / f"{name}.webp", "WEBP", quality=92, method=6)
+        print(f"tools/art/masters/chrome/{name}.webp", im.size)
+    from wordmark import crop
+    lg = crop(raw_dir / "logo-poster.png")
+    lg.save(MASTERS / "logo-poster.webp", "WEBP", lossless=True, method=6)
+    print("tools/art/masters/chrome/logo-poster.webp", lg.size)
+
+
+# --- the set -----------------------------------------------------------------------------
+
+# Burano's lifted card and two loose ones (col, row, dx, dy in card widths, tilt).
+HERO_CARDS = dict(lift=(1, 1, 0.34, -0.30, -6), loose=[(2, 2, 1.95, -0.55, 9), (0, 4, -1.15, 0.30, -12)])
+# Where things sit on the wide scene, in 1920 x 1080 units: Burano inside the suitcase, postcards
+# spilling out of it to the right, the passport open beside them. The upper right is the title's.
+WIDE_LOOSE = [(LOOSE[0], 170, -14, (1010, 640)), (LOOSE[1], 175, 9, (1160, 800)),
+              (LOOSE[2], 165, -6, (1350, 900)), (LOOSE[3], 170, 15, (1010, 905))]
+TITLE = (1455, 315, 900, 560)  # centre x, y and the box the stacked logo fits in
+
+
+def wide_scene(k):
+    """The wide scene with its postcards, no title, on a canvas k times 1920 x 1080."""
+    c = Image.open(MASTERS / f"{WIDE}.webp").convert("RGB")
+    c = c.resize((round(1920 * k), round(1080 * k)), Image.LANCZOS).convert("RGBA")
+    hero, ctr = pieced(HERO, 74 * k, **HERO_CARDS)
+    place(c, hero, ctr, (720 * k, 545 * k))
+    for pid, w, a, (x, y) in WIDE_LOOSE:
+        put(c, card(pid, w * k, a), (x * k, y * k))
+    put(c, passport(round(380 * k), angle=-8), (1640 * k, 800 * k))
+    return c
+
+
+def titled(c, box):
+    put(c, logo("logo-poster", box[2], box[3]), box[:2])
+    return c
+
+
+def square_tile():
+    """The phone tile: the suitcase low, Burano inside it, two postcards spilling over its edge,
+    the wide title across the clear sky at the top."""
+    c = Image.open(MASTERS / f"{SQUARE}.webp").convert("RGB").resize((1024, 1024), Image.LANCZOS).convert("RGBA")
+    hero, ctr = pieced(HERO, 64, **HERO_CARDS)
+    place(c, hero, ctr, (676, 650))
+    put(c, card(LOOSE[3], 128, -9), (762, 925))
+    put(c, card(LOOSE[1], 132, 11), (905, 872))
+    put(c, logo("wordmark", 830, 415), (512, 205))
+    return c
+
+
+def border():
+    """PC/TV side art: the game's 9:16 box covers the calm middle third; postcards in the suitcase
+    on the left, one beside the props on the right."""
+    c = Image.open(MASTERS / f"{BORDER}.webp").convert("RGBA")
+    for pid, w, a, at in [(LOOSE[0], 200, -10, (235, 930)), (LOOSE[1], 205, 6, (440, 905)),
+                          (LOOSE[3], 200, 12, (630, 950)), (LOOSE[2], 190, -8, (1850, 660))]:
+        put(c, card(pid, w, a), at)
+    return c
+
+
+def save(im, rel, out, q=92):
+    im.convert("RGB").save(BUNDLE / rel, "JPEG", quality=q, optimize=True, progressive=True, subsampling=0)
     out[rel] = im
 
 
-# Mont-Saint-Michel: the abbey's card lifted over its gap, the walls' card and a card of the
-# sands lying loose. Iguazú: a card of the falls lying loose below it.
-HERO_CARDS = dict(lift=(1, 1, 0.34, -0.30, -6), loose=[(2, 2, 1.95, -0.55, 9), (0, 4, -1.15, 0.30, -12)])
-SIDE_CARDS = dict(loose=[(2, 2, -1.3, 4.1, 12)])
-
-
-def scene(canvas, k):
-    """The key art's scene on a canvas k times 2560 x 1440: the hero postcard in the middle,
-    Iguazú to its left, the passport open to its right."""
-    side, c = pieced(SIDE, 90 * k, angle=-6, **SIDE_CARDS)
-    place(canvas, side, c, (650 * k, 640 * k))
-    book = passport(round(560 * k), angle=8)
-    canvas.alpha_composite(book, (round(1885 * k - book.width / 2), round(930 * k - book.height / 2)))
-    hero, c = pieced(HERO, 148 * k, **HERO_CARDS)
-    place(canvas, hero, c, (1250 * k, 735 * k))
-
-
-def build(wide_path):
+def build():
     out = {}
-    desk = Image.open(wide_path).convert("RGB").resize((2560, 1440), Image.LANCZOS)
-    desk.save(MASTERS / "travel-desk-wide.webp", "WEBP", quality=92, method=6)
     (BUNDLE / "hero").mkdir(parents=True, exist_ok=True)
     (BUNDLE / "borders").mkdir(parents=True, exist_ok=True)
-
-    # PC/TV side art: the wide desk as it is; the game covers its calm middle.
-    desk.save(BUNDLE / "borders/travel-desk.jpg", "JPEG", quality=90, optimize=True, progressive=True)
-    out["borders/travel-desk.jpg"] = desk
-
-    # Key art, no text.
-    key = desk.convert("RGBA")
-    scene(key, 1.0)
-    save(key, "hero/key_art.jpg", out)
-
-    # Desktop tile, 16:9: the hero postcard left, the title right. The tile's name bar covers
-    # the foot on hover and badges sit top-left, so the title stays in the upper middle.
-    cap = desk.convert("RGBA").resize((1920, 1080), Image.LANCZOS)
-    hero, c = pieced(HERO, 104, **HERO_CARDS)
-    place(cap, hero, c, (600, 545))
-    book = passport(400, angle=7)
-    cap.alpha_composite(book, (round(1400 - book.width / 2), round(745 - book.height / 2)))
-    wm = wordmark(760)
-    tx, ty = 1400 - wm.width // 2, 300 - wm.height // 2
-    glow(cap, (tx - 60, ty - 40, tx + wm.width + 60, ty + wm.height + 40), 120)
-    cap.alpha_composite(wm, (tx, ty))
-    save(cap, "hero/capsule_landscape.jpg", out)
-
-    # Share card 1.91:1, from the desktop tile.
-    share = cap.resize((1200, 675), Image.LANCZOS).crop((0, 22, 1200, 652))
-    save(share, "hero/share_card.jpg", out)
-
-    # Phone tile, square: the top of home's desk (a lantern in the corner), the title at the
-    # top, the hero postcard below it.
-    t = Image.open(MASTERS / "home-desk.webp").convert("RGB")
-    sq = t.crop((0, 0, t.width, t.width)).resize((1024, 1024), Image.LANCZOS).convert("RGBA")
-    hero, c = pieced(HERO, 80, **HERO_CARDS)
-    place(sq, hero, c, (500, 668))
-    wm = wordmark(800)
-    tx, ty = 512 - wm.width // 2, 175 - wm.height // 2
-    glow(sq, (tx - 40, ty - 30, tx + wm.width + 40, ty + wm.height + 30), 90)
-    sq.alpha_composite(wm, (tx, ty))
-    save(sq, "hero/capsule_square.jpg", out)
-
-    # The logo on its own, transparent.
-    logo = Image.open(MASTERS / "wordmark.webp").convert("RGBA")
-    logo.save(BUNDLE / "hero/logo.png", optimize=True)
-    out["hero/logo.png"] = logo
-
+    save(wide_scene(4 / 3), "hero/key_art.jpg", out)
+    save(titled(wide_scene(1.0), TITLE), "hero/capsule_landscape.jpg", out)
+    # Share card, 1.91:1: the tile's scene with the title a little lower, cut to 1920 x 1008.
+    share = titled(wide_scene(1.0), (TITLE[0], TITLE[1] + 22, TITLE[2], TITLE[3] - 30)).crop((0, 36, 1920, 1044))
+    save(share.resize((1200, 630), Image.LANCZOS), "hero/share_card.jpg", out)
+    save(square_tile(), "hero/capsule_square.jpg", out)
+    save(border(), "borders/suitcase-sky.jpg", out, q=90)
+    lg = Image.open(MASTERS / "logo-poster.webp").convert("RGBA")
+    lg.save(BUNDLE / "hero/logo.png", optimize=True)
+    out["hero/logo.png"] = lg
     for rel in out:
         f = BUNDLE / rel
         print(f".gemarcade/{rel}", Image.open(f).size, f"{f.stat().st_size // 1024} KB")
@@ -387,17 +453,12 @@ def build(wide_path):
 
 
 def sheet(out, path):
-    """Everything at the sizes players meet it: tiles small, borders around a game box."""
-    bg = (30, 37, 46)
-    W = 1900
-    canvas = Image.new("RGB", (W, 1500), bg)
+    """Everything at the sizes players meet it: tiles small, the border around a game box."""
+    canvas = Image.new("RGB", (1900, 1500), (0xE6, 0xCC, 0xEC))  # the catalogue's lilac
     y = 30
-    key = out["hero/key_art.jpg"].convert("RGB").resize((900, 506), Image.LANCZOS)
-    cap = out["hero/capsule_landscape.jpg"].convert("RGB").resize((768, 432), Image.LANCZOS)
-    canvas.paste(key, (30, y))
-    canvas.paste(cap, (960, y))
-    small = out["hero/capsule_landscape.jpg"].convert("RGB").resize((300, 169), Image.LANCZOS)
-    canvas.paste(small, (960, y + 450))
+    canvas.paste(out["hero/key_art.jpg"].convert("RGB").resize((900, 506), Image.LANCZOS), (30, y))
+    canvas.paste(out["hero/capsule_landscape.jpg"].convert("RGB").resize((768, 432), Image.LANCZOS), (960, y))
+    canvas.paste(out["hero/capsule_landscape.jpg"].convert("RGB").resize((274, 154), Image.LANCZOS), (960, y + 450))
     y2 = y + 540
     sq = out["hero/capsule_square.jpg"].convert("RGB")
     canvas.paste(sq.resize((512, 512), Image.LANCZOS), (30, y2))
@@ -405,7 +466,7 @@ def sheet(out, path):
     canvas.paste(sq.resize((96, 96), Image.LANCZOS), (560, y2 + 220))
     canvas.paste(out["hero/share_card.jpg"].convert("RGB").resize((600, 315), Image.LANCZOS), (1280, y + 450))
     # The border as a 16:9 PC screen: the game's 9:16 box drawn in the middle.
-    b = out["borders/travel-desk.jpg"].resize((1040, 585), Image.LANCZOS)
+    b = out["borders/suitcase-sky.jpg"].convert("RGB").resize((1040, 585), Image.LANCZOS)
     gw = round(585 * 9 / 16)
     game = Image.open(ROOT / "public/art/home-desk.webp").convert("RGB").resize((gw, 585), Image.LANCZOS)
     b.paste(game, ((1040 - gw) // 2, 0))
@@ -415,8 +476,11 @@ def sheet(out, path):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 2 or sys.argv[1] not in ("masters", "build"):
         sys.exit(__doc__)
-    built = build(sys.argv[1])
-    if len(sys.argv) > 2:
-        sheet(built, sys.argv[2])
+    if sys.argv[1] == "masters":
+        masters(sys.argv[2])
+    else:
+        built = build()
+        if len(sys.argv) > 2:
+            sheet(built, sys.argv[2])

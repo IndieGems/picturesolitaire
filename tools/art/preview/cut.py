@@ -8,9 +8,10 @@ with the place's name on its banner, and the postcard going again. Times are sec
 <start move>'s drag begins; the last half second dissolves into the frames before the start, so
 the end flows into the start. Pick them from a contact sheet of the take.
 
-The whole board sits in the middle over the travel desk (the PC/TV side art), with the game's
-own snow drifting at the edges and a slow push-in and back out (the tile's checks want motion
-in every frame). The bench (src/board/try.html) has no screens, so the name banner is drawn
+The whole board sits in the middle over the store's PC/TV side art (the sunny suitcase,
+tools/art/store.py), with a slow push-in and back out (the tile's checks want motion in every
+frame). The last cut (2026-10-28): record.mjs <scratch> 62 44 810 1440, then
+cut.py <scratch>/take-62 <frames> dest-mont-saint-michel 23 6.8 3.0 4.9. The bench (src/board/try.html) has no screens, so the name banner is drawn
 here as the game draws it (src/ui/style.css .dest-banner: flat frosted glass, Fredoka, the
 name over its place), at the top of the board, for the time the postcard is open.
 
@@ -24,7 +25,6 @@ import bisect
 import ctypes
 import json
 import math
-import random
 import sys
 from pathlib import Path
 
@@ -44,7 +44,7 @@ S = at[str(m_start)]
 FPS, XF = 30, 0.5
 n_body = round(L * FPS)
 W, H = 1280, 720
-bg = Image.open(ROOT / ".gemarcade/borders/travel-desk.jpg").convert("RGB").resize((W, H), Image.LANCZOS)
+bg = Image.open(ROOT / ".gemarcade/borders/suitcase-sky.jpg").convert("RGB")  # 16:9, drawn at W x H per frame
 FW, FH = d["size"]
 cells = d["cells"]
 ys = sorted({round(c["y"]) for c in cells})
@@ -58,34 +58,6 @@ for i in range(fw):
     v = round(255 * (i / fw) ** 1.5)
     for xx in (i, cw - 1 - i):
         feather.paste(v, (xx, 0, xx + 1, H))
-
-# The game's own snow (public/art/snow.png), drifting at the edges as the real screen does;
-# every flake's path repeats once per loop, so the loop has no seam.
-random.seed(7)
-strip = Image.open(ROOT / "public/art/snow.png").convert("RGBA")
-FL = [strip.crop((i * 32, 0, i * 32 + 32, 32)) for i in range(4)]
-flakes = []
-for i in range(40):
-    side = i % 2
-    fx = random.uniform(8, x - 24) if side == 0 else random.uniform(x + cw + 4, W - 20)
-    kind = random.choices([0, 1, 2, 3], [6, 2, 3, 1])[0]
-    size = {0: random.uniform(9, 15), 1: random.uniform(22, 30), 2: random.uniform(10, 16), 3: random.uniform(14, 20)}[kind]
-    flakes.append(dict(x=fx, y=random.uniform(-40, H), fall=random.uniform(70, 140), sway=random.uniform(4, 10),
-                       ph=random.random(), sw=random.random(), a=random.uniform(0.45, 0.9) * (0.5 if kind == 1 else 1),
-                       img=FL[kind].resize((round(size), round(size)), Image.LANCZOS), rot=random.uniform(-40, 40) if kind == 3 else 0))
-
-
-def snow(o, k):
-    for f in flakes:
-        u = (k / n_body + f["ph"]) % 1.0
-        env = math.sin(math.pi * u)  # fades in and out over its life
-        fy = f["y"] + f["fall"] * u
-        fx = f["x"] + f["sway"] * math.sin(2 * math.pi * (k / n_body + f["sw"]))
-        im = f["img"].rotate(f["rot"] * u, resample=Image.BICUBIC) if f["rot"] else f["img"]
-        a = im.getchannel("A").point(lambda v, m=f["a"] * env: round(v * m))
-        o.paste(im.convert("RGB"), (round(fx), round(fy)), a)
-    return o
-
 
 # The name banner, as the game draws it.
 cat = json.loads((ROOT / "src/content/pictures.json").read_text(encoding="utf-8"))
@@ -126,6 +98,7 @@ def with_banner(o, t):
 
 
 ZOOM = 0.02  # a slow push-in and back out over the loop (periodic, so no seam)
+BG_ZOOM = 0.03  # the side art drifts in and out too, so every frame moves (no snow on the sunny set)
 
 
 def frame_at(t, k=0):
@@ -135,7 +108,9 @@ def frame_at(t, k=0):
     cx, cy = FW / 2, (y0 + y1) / 2
     im = Image.open(Path(take, frames[i]["f"])).convert("RGB").resize(
         (cw, H), Image.LANCZOS, box=(cx - bw_ / 2, cy - bh_ / 2, cx + bw_ / 2, cy + bh_ / 2))
-    o = bg.copy()
+    zb = 1 + BG_ZOOM * (1 - math.cos(2 * math.pi * (k % n_body) / n_body)) / 2
+    bx, by = bg.width / 2, bg.height / 2
+    o = bg.resize((W, H), Image.LANCZOS, box=(bx - bx / zb, by - by / zb, bx + bx / zb, by + by / zb))
     o.paste(im, (x, 0), feather)
     return with_banner(o, t - S), i
 
@@ -152,7 +127,6 @@ for k in range(n_body):
         a = (k - (n_body - nx) + 1) / (nx + 1)
         h, _ = frame_at(S + (k - n_body) / FPS, k)
         o = Image.blend(o, h, a)
-    snow(o, k)
     o.save(out_dir / f"{k:04d}.png")
     used.append(i)
 print(f"start {S - ts[0]:.2f}s, loop {L:.2f}s, {n_body} frames, {len(set(used))} distinct source frames")

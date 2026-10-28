@@ -94,13 +94,14 @@ media:
     logo: hero/logo.png
   share_card:
     src: hero/share_card.jpg
-    alt: "Picture Passport: a postcard of a famous place being pieced together from its cards"
+    alt: "Picture Passport: an open suitcase on a sunny blue background, with a postcard of Burano's colourful houses being pieced together inside it and postcards of Mount Fuji, the Eiffel Tower, Positano and Sydney Harbour spilling out beside an open passport"
+  # The art is the suitcase set (creator, 2026-10-28; tools/art/store.py).
   portrait_borders:
-    - name: travel-desk
-      src: borders/travel-desk.jpg
+    - name: suitcase-sky
+      src: borders/suitcase-sky.jpg
   # The desktop tile's hover loop: board 62 played on its own winning line, Mont-Saint-Michel's
-  # picture finished and its postcard unfolding with the place's name (tools/art/preview/,
-  # re-record when the board's look changes).
+  # picture finished and its postcard unfolding with the place's name, over the sunny side art
+  # (tools/art/preview/; re-record when the board's look or the side art changes).
   preview: video/preview.mp4
   # The game at phone portrait, 1080x1920, from the play-test tool with progress set by the dev
   # hooks and each board played by its own proved line (the UI member, 2026-10-27).
