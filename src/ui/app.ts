@@ -23,6 +23,15 @@
 // Gem. The board itself, its rules and animations are the gameplay member's,
 // opened through board-api.ts and heard through src/events.ts.
 //
+// A ONE-OFF (friend challenges, the creator 2026-10-28; docs/friend-challenges.md): a friend's
+// board, opened by their challenge or a shared link (friend-cards.ts's challenge card), any campaign
+// board or dated daily, a sneak peek when the player has not reached it. It SHIPS (practice does
+// not), and sits outside progress: no claim, no save, no suitcase item, no Coins, no board numbers
+// (tries.ts counts campaign boards only); helpers spend from the stock as on any board, and its
+// break is signalled as for any board. Its card compares the two counts (friend_action says how it
+// went). After any trip board from 3 or a daily (not practice, not a one-off), the win card offers
+// Challenge a friend and Share (friend-cards.ts, socialRow).
+//
 // PRACTICE (the creator's dev menu, dev-menu.ts; never in a release build): a
 // board opened from the menu, or one a dev hand was put on, plays and finishes
 // as ever, its win card included, but sends no claim (no Coins, no progress, no
@@ -73,7 +82,10 @@ import { createLessons, type LessonName } from "./lessons";
 import { createHintNudge } from "./hint-nudge";
 import { createDestinationBanner, type Destination } from "./destination";
 import { createPassport, type AfterStamp } from "./passport";
-import { tripById, tripEndingAt, tripName } from "./trips";
+import { tripById, tripEndingAt, tripName, tripOf } from "./trips";
+import { challengeCard, comparePanel, createFriendCards, outcomeOf, type ChallengeView } from "./friend-cards";
+import { friendAction, launchLink, markAnswered, recentFriendActions, type Dare, type Launch } from "../net/friends";
+import { today as dailyToday } from "../net/daily";
 import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy, suitcaseItem } from "./catalogue";
 import { ensure, ensureSuitcase, fileUrl, resident } from "../packs";
 import { mountParticles } from "./particles";
@@ -178,6 +190,8 @@ const winVeil = h("div", { class: "veil win", hidden: "", role: "dialog", "aria-
 // a picture of the win card, big (the albums' view; a tap or Back returns to the card as it was)
 const winViewer = createViewer({ tapToClose: true });
 const restartVeil = h("div", { class: "veil restart", hidden: "", role: "dialog", "aria-modal": "true" });
+// a friend's challenge or a shared link, as the game opens on it (friend-cards.ts, challengeCard)
+const dareVeil = h("div", { class: "veil dare", hidden: "", role: "dialog", "aria-modal": "true" });
 const offlineVeil = h(
   "div",
   { class: "veil offline", hidden: "", role: "alertdialog", "aria-live": "assertive" },
@@ -206,7 +220,9 @@ const runOut = createRunOut(stock, (k) => pressHelper(k));
 // home's shop (home-shop.ts): the helpers, one or a pack of 3, bought ahead
 const homeShop = createHomeShop(stock);
 
-app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, suitcaseUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, runOut.element, homeShop.element, offlineVeil);
+app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, suitcaseUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, dareVeil, runOut.element, homeShop.element, offlineVeil);
+// the win card's Challenge a friend and Share, and the friends sheet over it (friend-cards.ts)
+const friendCards = createFriendCards(app);
 
 // ---------- state ----------
 
@@ -222,9 +238,28 @@ export type Play = (
   | { kind: "daily"; d: Daily }
   | { kind: "experiment"; x: Experiment }
   | { kind: "lesson"; x: Level }
+  | { kind: "oneoff"; o: OneOff }
 ) & {
   practice?: boolean;
   guide?: boolean;
+};
+/**
+ * A friend's board, played as a one-off (friend challenges): the dare (its board or date, the
+ * moves to beat), the board to open (a campaign board's number, or the daily), who sent it, and
+ * the challenge's id while it can be marked answered.
+ */
+export type OneOff = {
+  dare: Dare;
+  open: number | Daily;
+  level: Level;
+  from: string | null;
+  fromId: string | null;
+  id: string | null;
+  answered: boolean;
+  /** A board the player has not reached yet: a sneak peek. */
+  peek: boolean;
+  /** A campaign board's trip, as the player reads it ("France"). */
+  trip: string | null;
 };
 /** An experiment board (src/content/levels/experiments.json, loaded by the dev menu alone); `name` is its label there. */
 export type Experiment = Level & { name: string };
@@ -237,6 +272,7 @@ const samePlay = (a: Play | null, b: Play): boolean => {
   if (a.kind === "campaign") return a.level === (b as typeof a).level;
   if (a.kind === "challenge") return a.c.id === (b as typeof a).c.id;
   if (a.kind === "experiment" || a.kind === "lesson") return a.x.id === (b as typeof a).x.id;
+  if (a.kind === "oneoff") return a.o === (b as typeof a).o;
   return a.d.id === (b as typeof a).d.id;
 };
 
@@ -249,6 +285,8 @@ let boardWon = false;
 let waiting: Play | null = null;
 /** Moves so far on the board in hand, when the board says (board:changed). */
 let movesSoFar: number | null = null;
+/** Helpers used on this try at the board in hand, free ones too (a dare says how many: friend challenges). */
+let helpersUsed = 0;
 /** The creator's dev menu, once it has loaded (dev channel only); null in every release build. */
 let dev: DevMenu | null = null;
 
@@ -339,8 +377,12 @@ function show(next: Screen): void {
   dailyUi.screen.hidden = next !== "daily";
   suitcaseUi.screen.hidden = next !== "suitcase";
   if (next !== "suitcase") suitcaseUi.leave();
-  if (next === "home") drawHomeNote();
-  else homeNote.hidden = true;
+  if (next === "home") {
+    drawHomeNote();
+    // a friend's challenge waiting for home (offerLink): once this screen has settled
+    if (pendingLink) setTimeout(offerLink, 0);
+  } else homeNote.hidden = true;
+  if (next !== "home" && !dareVeil.hidden) hideCard(dareVeil);
   if (next !== "album") albumsUi.closeViewer();
   if (next !== "home") homeShop.close();
   if (next !== "board") {
@@ -412,7 +454,7 @@ function openLevel(level: number): void {
 
 /** The level a play opens (the campaign's by its number, which goes round). */
 function levelOfPlay(p: Play): Level {
-  return p.kind === "campaign" ? campaignLevel(p.level) : p.kind === "challenge" ? p.c.level : p.kind === "daily" ? p.d : p.x;
+  return p.kind === "campaign" ? campaignLevel(p.level) : p.kind === "challenge" ? p.c.level : p.kind === "daily" ? p.d : p.kind === "oneoff" ? p.o.level : p.x;
 }
 
 /**
@@ -491,7 +533,11 @@ function openLoaded(next: Play): void {
     lessons.cancel();
     runOut.close();
     hintNudge.reset();
-    board = openBoard(host, next.kind === "campaign" ? next.level : next.kind === "challenge" ? next.c.level : next.kind === "daily" ? next.d : next.x);
+    helpersUsed = 0;
+    board = openBoard(
+      host,
+      next.kind === "campaign" ? next.level : next.kind === "challenge" ? next.c.level : next.kind === "daily" ? next.d : next.kind === "oneoff" ? next.o.open : next.x,
+    );
     // the player's own stock on the buttons (the board reports undo through board:changed)
     drawHelpers();
     // a hard board's banner; the first 5x5 board a player opens says so after it, once (bannersFor)
@@ -565,7 +611,7 @@ function showBanners(list: Banner[]): void {
 /** The top row's information: the level; on a challenge or the daily, its name over the par and the moves so far. */
 function drawPill(): void {
   if (!play) return;
-  levelPill.classList.toggle("two", play.kind === "challenge" || play.kind === "daily");
+  levelPill.classList.toggle("two", play.kind === "challenge" || play.kind === "daily" || play.kind === "oneoff");
   levelPill.classList.remove("stacked");
   // a practice board says so beside its name (the dev menu's tag: information, never a button)
   const tag = isPractice(play) ? dev?.tag() : null;
@@ -584,6 +630,15 @@ function drawPill(): void {
   }
   if (play.kind === "lesson") {
     levelPill.replaceChildren(h("span", { class: "level-name" }, t("lesson.pill")));
+    return;
+  }
+  // a friend's board: which one, over the moves to beat and the player's so far
+  if (play.kind === "oneoff") {
+    const d = play.o.dare;
+    pillName.textContent = "board" in d ? t("home.board", { n: d.board }) : t("board.daily", { date: shortDate(d.date) });
+    if (tag) pillName.append(tag);
+    pillPar.textContent = movesSoFar === null ? t("oneoff.pill", { count: d.moves }) : t("oneoff.pillYou", { count: d.moves, moves: movesSoFar });
+    levelPill.replaceChildren(pillName, pillPar);
     return;
   }
   const par = play.kind === "challenge" ? play.c.par : play.d.par;
@@ -745,6 +800,8 @@ const spendOn = (k: HelperKey) => (e: { lesson?: boolean; free?: boolean }) => {
   tries.spent(k);
   drawHelpers();
 };
+for (const type of ["helper:undo", "helper:hint", "helper:shuffle"] as const) on(type, () => void helpersUsed++);
+on("board:restart", () => (helpersUsed = 0));
 on("helper:undo", spendOn("undo"));
 on("helper:hint", spendOn("hint"));
 on("helper:shuffle", spendOn("shuffle"));
@@ -762,7 +819,7 @@ on("board:changed", (e) => {
   drawStuck();
   // the moves so far, where the board reports them: a challenge's top row counts against par
   const moves = (e as { moves?: number }).moves;
-  if (typeof moves === "number" && (play?.kind === "challenge" || play?.kind === "daily")) {
+  if (typeof moves === "number" && (play?.kind === "challenge" || play?.kind === "daily" || play?.kind === "oneoff")) {
     movesSoFar = moves;
     drawPill();
   }
@@ -836,7 +893,10 @@ function pointAt(target: HTMLElement): void {
 }
 // a finished destination: its name over the postcard while it is open, gone with it (destination.ts)
 on("destination:reveal", (d) => {
-  if (screen === "board") destBanner.show(d, host);
+  if (screen !== "board") return;
+  // a sneak peek at a friend's board: a place the player has not been yet, and when they will be
+  const o = play?.kind === "oneoff" ? play.o : null;
+  destBanner.show(o?.peek && o.trip ? { ...d, note: t("oneoff.visit", { trip: o.trip }) } : d, host);
 });
 on("destination:done", () => destBanner.hide());
 on("board:stuck", () => {
@@ -918,7 +978,10 @@ type Win = (
   | { kind: "daily"; d: Daily; moves: number; ms: number; first: boolean }
   | { kind: "experiment"; x: Experiment; moves: number; ms: number }
   | { kind: "lesson"; moves: number; ms: number }
+  | { kind: "oneoff"; o: OneOff; moves: number; ms: number }
 ) & {
+  /** Helpers used on the winning try (a dare says how many). */
+  helpers?: number;
   /** The win checker's word, once it lands (it may take a while offline). */
   verdict?: Verdict;
   /** Its Coins have flown to the Arcade's wallet (once, ever, per win). */
@@ -951,6 +1014,21 @@ on("board:solved", ({ moves, ms, line }) => {
     lastWin = { kind: "lesson", moves, ms };
     return;
   }
+  // a friend's board (a one-off): nothing to claim, pay, save or pack; how it went against their
+  // count (friend_action), and the challenge marked answered, the player's own record of it
+  if (play.kind === "oneoff") {
+    const o = play.o;
+    lastWin = { kind: "oneoff", o, moves, ms, helpers: helpersUsed };
+    if (isPractice(play)) {
+      lastWin.practice = true;
+      return;
+    }
+    const r = outcomeOf(moves, o.dare);
+    friendAction(r === "won" ? "challenge_won" : r === "tied" ? "challenge_tied" : "challenge_lost", o.dare);
+    if (o.id) markAnswered(o.id);
+    o.answered = true;
+    return;
+  }
   let win: Win;
   // The player's progress is the server's record (src/net/progress.ts): the claim below
   // shows the win in it at once, and the checker's verdict then replaces it with its own
@@ -971,6 +1049,7 @@ on("board:solved", ({ moves, ms, line }) => {
     // only the day's first finish counts on the day's board
     win = { kind: "daily", d: play.d, moves, ms, first: !dailyResult(play.d.date) };
   }
+  win.helpers = helpersUsed;
   lastWin = win;
   // practice (the dev menu): the card shows as ever, and nothing goes out: no claim, no Coins,
   // no progress, no daily result
@@ -1179,10 +1258,14 @@ function showWin(): void {
   if (lastWin.kind === "campaign") prefetch(campaignLevel(lastWin.level + 1));
   else if (lastWin.kind === "challenge") prefetch(routeUi.after(lastWin.c)?.level);
   syncCardAspect();
-  // board 1's finish card says more (the prize, the travel kit): its pictures take less of the height
-  const gallery = layoutGallery(board.pictures(), lastWin.kind === "campaign" && lastWin.milestone ? 0.2 : 0.34);
+  // board 1's finish card says more (the prize, the travel kit): its pictures take less of the height;
+  // so does a card with the friends' row (Challenge a friend, Share)
+  const dare = dareOf(lastWin);
+  const share = lastWin.kind === "campaign" && lastWin.milestone ? 0.2 : dare || lastWin.kind === "oneoff" ? 0.28 : 0.34;
+  const gallery = layoutGallery(board.pictures(), share);
+  if (lastWin.kind === "oneoff") return void showOneOffWin(lastWin, gallery);
   if (lastWin.kind === "challenge") return void showChallengeWin(lastWin, gallery);
-  if (lastWin.kind === "daily") return void showDailyWin(lastWin, gallery);
+  if (lastWin.kind === "daily") return void showDailyWin(lastWin, gallery, dare);
   if (lastWin.kind === "experiment") return void (import.meta.env.MODE !== "release" && showExperimentWin(lastWin, gallery));
   if (lastWin.kind === "lesson") return void showLessonWin(gallery);
   if (lastWin.milestone) return void showMilestone(gallery);
@@ -1225,6 +1308,7 @@ function showWin(): void {
       ),
       ended ? h("p", { class: "trip-done" }, t("win.tripDone", { trip: tripName(ended) })) : null,
       last ? h("p", {}, t("win.allDone")) : null,
+      dare ? friendCards.socialRow(dare) : null,
       next,
     ),
   );
@@ -1290,8 +1374,9 @@ function showMilestone(gallery: HTMLElement): void {
     gallery,
     prize,
     kit,
+    // a friend's challenge opened the game for this new player: its card now, on home
     withClick(button("amber next", "win.next", t("win.next"), icon("next")), () =>
-      openPlay({ kind: "campaign", level: 2, ...(isPractice(lastWin) ? { practice: true } : {}) }),
+      pendingLink && !isPractice(lastWin) ? goHome() : openPlay({ kind: "campaign", level: 2, ...(isPractice(lastWin) ? { practice: true } : {}) }),
     ),
   );
   winVeil.replaceChildren(card);
@@ -1305,7 +1390,7 @@ function showMilestone(gallery: HTMLElement): void {
  * The daily's card: the pictures, the moves and the time (what the day's board ranks
  * by), and plainly whether this finish is the one that counts; then the day's results.
  */
-function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement): void {
+function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement, dare: Dare | null): void {
   const line = isPractice(w) && dev ? dev.dailyLine : dailyLine(w);
   // practice: Next is the day after (the dev menu's), in place of the day's results
   const p = play;
@@ -1351,6 +1436,7 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement):
         h("div", { class: "stat glass" }, h("b", {}, clock(w.ms)), h("span", {}, t("win.time"))),
       ),
       h("p", { class: "daily-line" }, line),
+      dare ? friendCards.socialRow(dare) : null,
       after,
     ),
   );
@@ -1448,6 +1534,129 @@ function showChallengeWin(w: Extract<Win, { kind: "challenge" }>, gallery: HTMLE
   );
   showCard(winVeil, back);
   drawCoins(w);
+}
+
+// ---------- friend challenges ----------
+
+/**
+ * The dare a win card offers a friend (Challenge a friend, Share): a trip board from board 3 (boards
+ * 1 and 2 are the guided start), or a daily; none for practice, a lesson or a one-off (its own card
+ * challenges back).
+ */
+function dareOf(w: Win): Dare | null {
+  if (isPractice(w)) return null;
+  const count = { moves: w.moves, helpers: w.helpers ?? 0 };
+  if (w.kind === "campaign" && !w.milestone && boardNumber(w.level) >= 3) return { board: boardNumber(w.level), ...count };
+  if (w.kind === "daily") return { date: w.d.date, ...count };
+  return null;
+}
+
+/**
+ * A friend's board won (the one-off): the two counts side by side, a line for a win, a tie or a loss;
+ * then Challenge back (to the sender, with the player's own count; Challenge a friend from a link)
+ * and Share. After a loss Try again leads. No Coins, nothing saved: Home is its corner key.
+ */
+function showOneOffWin(w: Extract<Win, { kind: "oneoff" }>, gallery: HTMLElement): void {
+  const { o, moves } = w;
+  const helpers = w.helpers ?? 0;
+  const outcome = outcomeOf(moves, o.dare);
+  const mine: Dare = "board" in o.dare ? { board: o.dare.board, moves, helpers } : { date: o.dare.date, moves, helpers };
+  const toHome = () => leaveTo("oneoff-home", goHome);
+  const again =
+    outcome === "lost"
+      ? withClick(button("amber next", "oneoff.tryAgain", icon("restart"), t("oneoff.tryAgain")), () => leaveInto("oneoff-again", () => openPlay({ kind: "oneoff", o })))
+      : null;
+  const card = h(
+    "div",
+    { class: "card oneoff" },
+    cornerKey("home", t("win.home"), "win.home", toHome),
+    h("h2", {}, t(`oneoff.${outcome}`)),
+    gallery,
+    ...comparePanel(moves, helpers, o.dare, { name: o.from }),
+    isPractice(w) ? null : friendCards.socialRow(mine, { ...(o.fromId ? { back: { id: o.fromId, name: o.from } } : {}), amber: outcome !== "lost" }),
+    again,
+  );
+  winVeil.replaceChildren(card);
+  showCard(winVeil, toHome);
+  if (outcome === "won") fireworks(card, 3, 2200);
+  drawCoins(w);
+}
+
+/** The challenge or link this launch carried, until its card has shown (once a launch: a relaunch brings it back). */
+let pendingLink: Launch | null = null;
+
+/** What the game was opened with (friends.ts), read once as the first screen is up. */
+async function greetLaunch(): Promise<void> {
+  const link = await launchLink();
+  if (!link) return;
+  friendAction(link.kind === "challenge" ? "opened_challenge" : "opened_share", link.dare);
+  pendingLink = link;
+  offerLink();
+}
+
+/** A card (or the settings) is over the screen now. */
+const cardUp = (): boolean => [...app.querySelectorAll<HTMLElement>(".veil")].some((v) => !v.hidden) || !!document.querySelector("dialog[open]");
+
+/**
+ * The challenge card, once home is up with nothing over it and the player's record has landed and
+ * says the guided first board is done: a brand-new player plays board 1 first, and its finish card's
+ * Next leads home to this card (docs/friend-challenges.md). Asked again as home shows and as the
+ * record lands.
+ */
+let offering = false;
+function offerLink(): void {
+  const link = pendingLink;
+  if (!link || offering || screen !== "home" || awaitingRecord() || !guideDone() || cardUp()) return;
+  offering = true;
+  void oneOffFor(link)
+    .then((got) => {
+      if (pendingLink !== link) return;
+      if (!got) {
+        pendingLink = null; // a board this build does not have, or no daily for that date: an ordinary start
+        return;
+      }
+      if (screen !== "home" || cardUp()) return; // the player moved on meanwhile: home asks again
+      pendingLink = null;
+      showDare(got.o, got.notYet);
+    })
+    .finally(() => (offering = false));
+}
+
+/** The one-off a challenge or link names: its board (the campaign's, or the dated daily) and who sent it. */
+async function oneOffFor(link: Launch): Promise<{ o: OneOff; notYet: string | null } | null> {
+  const dare = link.dare;
+  const sender = link.kind === "challenge" ? { from: link.from, fromId: link.fromId, id: link.id, answered: link.answered } : { from: null, fromId: null, id: null, answered: false };
+  if ("board" in dare) {
+    if (dare.board > levels()) return null;
+    const trip = tripOf(dare.board);
+    // not won yet, and not all done: a sneak peek (the campaign goes round past its last board)
+    const next = campaignNext();
+    const peek = next <= levels() && dare.board >= next;
+    return { o: { dare, ...sender, open: dare.board, level: campaignLevel(dare.board), peek, trip: trip ? tripName(trip) : null }, notYet: null };
+  }
+  // a daily: never one whose day has not come for this player (the sender may be a time zone ahead)
+  const [now, d] = await Promise.all([dailyToday(1500), loadDaily(dare.date)]);
+  if (!d) return null;
+  return { o: { dare, ...sender, open: d, level: d, peek: false, trip: null }, notYet: dare.date > now.date ? dare.date : null };
+}
+
+/** The challenge card over home: Play opens the one-off; its X leaves it (a relaunch brings it back). */
+function showDare(o: OneOff, notYet: string | null): void {
+  const d = o.dare;
+  const where = "board" in d ? (o.trip ? t("oneoff.where", { n: d.board, trip: o.trip }) : t("home.board", { n: d.board })) : t("oneoff.daily", { date: shortDate(d.date) });
+  const view: ChallengeView = { dare: d, who: { name: o.from }, where, peek: o.peek, answered: o.answered, notYet };
+  const close = () => hideCard(dareVeil);
+  dareVeil.replaceChildren(
+    challengeCard(
+      view,
+      () => {
+        hideCard(dareVeil);
+        openPlay({ kind: "oneoff", o });
+      },
+      close,
+    ),
+  );
+  showCard(dareVeil, close);
 }
 
 /**
@@ -1555,7 +1764,10 @@ function showCard(veil: HTMLElement, escape?: () => void): void {
   drawOffline();
 }
 function hideCard(veil: HTMLElement): void {
-  if (veil === winVeil) winViewer.close();
+  if (veil === winVeil) {
+    winViewer.close();
+    friendCards.closeSheet();
+  }
   veil.hidden = true;
   closed(veil);
 }
@@ -1641,6 +1853,9 @@ export async function startApp(): Promise<void> {
   show("home");
   // no tap brought this screen in: Play answers from the first moment it is drawn
   firstScreen();
+  // opened by a friend's challenge or a shared link: its card, once home and the record allow (offerLink)
+  onProgress(offerLink);
+  void greetLaunch();
   void startSound();
   // which day it is (the platform's word) and its board: Home's Daily button appears once they are known
   void dailyUi.refresh();
@@ -1767,6 +1982,13 @@ export async function startApp(): Promise<void> {
         if (screen === "home") drawHome();
       },
       openSuitcase: (month?: string) => suitcaseUi.open(month ?? null),
+      /** As if the game had been opened by this challenge or link (friends.ts's Launch): its card when home allows. */
+      launch(link: Launch) {
+        pendingLink = link;
+        offerLink();
+      },
+      /** The friend_action events sent so far (friends.ts). */
+      friendActions: () => recentFriendActions.slice(),
       /** The daily card up now as if the checker had packed `item` (its count after): the flight, nothing sent. */
       packed(item: string, count: number) {
         const line = winVeil.querySelector<HTMLElement>(".daily-line");

@@ -97,7 +97,7 @@ const WHY_NOT: Record<Extract<DevStep, { ok: false }>["reason"], string> = {
 };
 
 /** The lists of Play any board (the experiments have their own section). */
-type Kind = Exclude<Play["kind"], "experiment" | "lesson">;
+type Kind = Exclude<Play["kind"], "experiment" | "lesson" | "oneoff">;
 const KINDS: Kind[] = ["campaign", "challenge", "daily"];
 const KIND_NAMES: Record<Kind, string> = { campaign: "Campaign", challenge: "Challenge", daily: "Daily" };
 
@@ -192,8 +192,8 @@ export function mountDevMenu(host: DevHost): DevMenu {
       const x = experiments?.[p.x.number - 1 + step];
       return x ? { kind: "experiment", x } : null;
     }
-    // the Shuffle lesson's board stands alone
-    if (p.kind === "lesson") return null;
+    // the Shuffle lesson's board and a friend's one-off stand alone
+    if (p.kind === "lesson" || p.kind === "oneoff") return null;
     const date = addDays(p.d.date, step);
     if (pool && (date < pool.first || date > pool.last)) return null;
     const d = await loadDaily(date);
@@ -206,7 +206,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     }
     if (p.kind === "challenge") return !!route[p.c.n - 1 + step];
     if (p.kind === "experiment") return !!experiments?.[p.x.number - 1 + step];
-    if (p.kind === "lesson" || !pool) return false;
+    if (p.kind === "lesson" || p.kind === "oneoff" || !pool) return false;
     const date = addDays(p.d.date, step);
     return date >= pool.first && date <= pool.last;
   }
@@ -289,6 +289,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     if (p.kind === "challenge") return `Challenge ${p.c.n}`;
     if (p.kind === "experiment") return `Experiment ${p.x.number}: ${p.x.name}`;
     if (p.kind === "lesson") return "The Shuffle lesson";
+    if (p.kind === "oneoff") return "board" in p.o.dare ? `A friend's board ${p.o.dare.board} (one-off)` : `A friend's daily, ${shortDate(p.o.dare.date)} (one-off)`;
     return `Daily, ${shortDate(p.d.date)}`;
   }
 
@@ -589,7 +590,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     void drawBuild();
     drawBoard();
     const p = host.now().play;
-    if (host.now().screen === "board" && p && p.kind !== "experiment" && p.kind !== "lesson") tab = p.kind;
+    if (host.now().screen === "board" && p && p.kind !== "experiment" && p.kind !== "lesson" && p.kind !== "oneoff") tab = p.kind;
     endlessSwitch.checked = endless;
     picturesSwitch.checked = everyPicture;
     drawSpeed();

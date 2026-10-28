@@ -26,7 +26,8 @@
 // 2026-10-27): the name keeps one line, stepping down in size to fit ("Palais Idéal du
 // Facteur Cheval" at 360 px wide), never under ONE_LINE_PX; only a name too long even
 // then wraps to two balanced lines, stepping down further, never under 12 px and never
-// cut off. The place is its own small line under it.
+// cut off. The place is its own small line under it, and a sneak peek at a friend's board (app.ts,
+// a one-off) adds one more: "You'll visit here on your France trip".
 
 import { destinationName, destinationPlace } from "./catalogue";
 
@@ -36,6 +37,8 @@ export interface Destination {
   place: string;
   /** Finished before on this board: shown quietly, with no sparkles. */
   again?: boolean;
+  /** One more small line under the place (a sneak peek's "You'll visit here on your France trip"). */
+  note?: string;
 }
 
 export interface DestinationBanner {
@@ -84,7 +87,9 @@ export function createDestinationBanner(): DestinationBanner {
   name.className = "dest-name";
   const place = document.createElement("span");
   place.className = "dest-place";
-  glass.append(name, place);
+  const note = document.createElement("span");
+  note.className = "dest-note";
+  glass.append(name, place, note);
   element.append(glass);
   for (const w of TWINKLES) {
     const tw = document.createElement("i");
@@ -150,6 +155,8 @@ export function createDestinationBanner(): DestinationBanner {
       name.textContent = destinationName(d.id, d.name);
       place.textContent = destinationPlace(d.id, d.place);
       place.hidden = !place.textContent;
+      note.textContent = d.note ?? "";
+      note.hidden = !d.note;
       element.classList.toggle("again", d.again === true);
       shownAt = performance.now();
       element.hidden = false; // shown again, so its arrival and the sparkles start over

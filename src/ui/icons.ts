@@ -38,6 +38,8 @@ export const ICONS = {
   daily: art("daily"),
   plane: art("plane"),
   rotate: art("rotate"),
+  share: art("share"),
+  friends: art("friends"),
 } as const;
 
 export type IconName = keyof typeof ICONS;
