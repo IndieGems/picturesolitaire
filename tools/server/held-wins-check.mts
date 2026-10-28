@@ -123,6 +123,8 @@ check("a campaign win waits while an earlier one waits on a retry", pick(q(["cam
 check("other lanes are not held up by a waiting campaign win", pick(q(["campaign", "daily"], [5000])) === 1);
 check("nothing is sent before its retry time", pick(q(["challenge", "daily"], [5000, 5000])) === undefined);
 check("once due, the waiting campaign win goes", pick(q(["campaign", "campaign"], [5000]), 6000) === 0);
+check("a Souvenir waits behind a held campaign win (its trip's stamp)", pick(q(["campaign", "souvenir", "daily"], [5000])) === 2);
+check("a Souvenir goes when no campaign win is held", pick(q(["souvenir", "challenge"])) === 0);
 
 console.log(failed ? `\nheld wins: ${failed} FAILED` : "\nheld wins: all passed");
 process.exit(failed ? 1 : 0);

@@ -3,7 +3,8 @@
 //! The game calls it once per finished board (src/net/claims.ts). It replays the
 //! claimed line on a port of the rules (rules.rs) against the deal compiled in
 //! from the level files (claim.rs, build.rs), and only for a real win does it:
-//!   - campaign / challenge board: move that board's progression ("board_<id>",
+//!   - campaign / challenge board, or a Souvenir (the bonus board after a trip, docs/souvenirs.md,
+//!     accepted once its trip is stamped): move that board's progression ("board_<id>",
 //!     completion 1, never resets) to 1, which pays its Coins on completion,
 //!     so once per board, ever (the config says how many: gem-backend-game-config.yaml);
 //!   - daily: check the date is the player's own today (or yesterday, late),

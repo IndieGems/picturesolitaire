@@ -11,6 +11,8 @@
 //!     "challenge": { "ch01": 19 },          best (fewest) moves per cleared challenge board
 //!     "daily": { "2026-10-24": { "moves": 17, "ms": 150000 } },  the first verified result per date
 //!     "restored": ["apple-orchard", ...],   pictures of boards won, in the order first restored
+//!     "souvenir": { "s1": 13 },              best (fewest) moves per Souvenir won: its sticker on its
+//!                                             trip's passport page (UI, 2026-10-28); absent until the first
 //!     "imported": { "from": "campaign" },   set once, when an old device save was taken in
 //!     "seen": ["<claim id>", ...] }          the last claims applied, so a resent claim changes nothing
 
@@ -104,7 +106,8 @@ fn dedupe(list: Vec<Value>) -> Vec<Value> {
 /// Why a win cannot be applied yet.
 #[derive(Debug, PartialEq, Eq)]
 pub enum Wait {
-    /// A campaign win at a position past the next one: an earlier win is still on its way.
+    /// A campaign win at a position past the next one, or a Souvenir before its trip's stamp:
+    /// an earlier win is still on its way.
     Order,
 }
 
@@ -144,6 +147,20 @@ pub fn apply(doc: &mut Value, win: &Win, claim_id: Option<&str>, n: Option<u64>,
             let best = doc["challenge"][&win.board].as_u64();
             if best.map_or(true, |b| (win.moves as u64) < b) {
                 doc["challenge"][&win.board] = json!(win.moves);
+            }
+        }
+        Lane::Souvenir => {
+            // it opens with its trip's stamp: the trip's last board won (the next board is past it)
+            let next = doc["campaign"]["next"].as_u64().unwrap_or(1);
+            if next <= win.after.unwrap_or(u64::MAX) {
+                return Err(Wait::Order);
+            }
+            if !doc["souvenir"].is_object() {
+                doc["souvenir"] = json!({});
+            }
+            let best = doc["souvenir"][&win.board].as_u64();
+            if best.map_or(true, |b| (win.moves as u64) < b) {
+                doc["souvenir"][&win.board] = json!(win.moves);
             }
         }
         Lane::Daily => {

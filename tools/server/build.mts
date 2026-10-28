@@ -20,7 +20,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dealHash } from "../../src/net/deal-hash.ts";
-import { levelsDirty } from "./levels-hash.mts";
+import { LANES, fileOf, levelsDirty } from "./levels-hash.mts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const crate = join(root, "functions/checker");
@@ -45,8 +45,8 @@ const archive = existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : { de
 // older version still verifies (tools/server/vectors.mts); the function ignores it
 const byKey = new Map(archive.deals.map((d) => [`${d.lane}/${d.id}/${dealHash(d)}`, d]));
 let added = 0;
-for (const lane of ["campaign", "challenge", "daily"]) {
-  const f = join(root, "src/content/levels", `${lane}.json`);
+for (const lane of LANES) {
+  const f = join(root, "src/content/levels", `${fileOf(lane)}.json`);
   if (!existsSync(f)) continue;
   for (const l of JSON.parse(readFileSync(f, "utf8")).levels) {
     const d = { lane, id: l.id, cols: l.cols, rows: l.rows, seed: l.seed, pictures: l.pictures.map(({ id, cols, rows }) => ({ id, cols, rows })), stacks: l.stacks, ...(l.board ? { board: l.board } : {}) };

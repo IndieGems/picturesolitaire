@@ -7,7 +7,10 @@
 // placed, when a level has them).
 //
 // The lane is the file's name: campaign.json -> "campaign", challenge.json ->
-// "challenge", daily.json -> "daily". Other files are not lanes the checker pays.
+// "challenge", daily.json -> "daily", except souvenirs.json -> "souvenir" (the
+// optional bonus board after each trip, docs/souvenirs.md). Other files are not
+// lanes the checker pays. A Souvenir unlocks once its trip is stamped: deals.json's
+// "souvenirs" maps each to its trip's last campaign position (trips.json "to").
 //
 // It also fingerprints the level files (canon.rs, levels_hash) into
 // PICTURE_MEND_LEVELS, which the function reports and the game build checks
@@ -35,7 +38,8 @@ fn line_of(lane: &str, l: &Value) -> String {
     format!("{lane}/{}/{}", l["id"].as_str().unwrap_or_default(), fnv32(&text))
 }
 
-const LANES: [&str; 3] = ["campaign", "challenge", "daily"];
+/** (lane, its file in src/content/levels): tools/server/levels-hash.mts has the same list. */
+const LANES: [(&str, &str); 4] = [("campaign", "campaign"), ("challenge", "challenge"), ("daily", "daily"), ("souvenir", "souvenirs")];
 
 fn compact(lane: &str, l: &Value) -> Value {
     json!({
@@ -61,8 +65,19 @@ fn main() {
     let mut lines: Vec<String> = Vec::new();
     // the campaign's order (its file's order): position n plays board (n - 1) % len
     let mut campaign: Vec<Value> = Vec::new();
-    for lane in LANES {
-        let file = levels.join(format!("{lane}.json"));
+    // each Souvenir: the campaign position its trip ends at, which must be won first
+    let trips_file = levels.join("trips.json");
+    let trip_ends: std::collections::HashMap<String, u64> = fs::read_to_string(&trips_file)
+        .ok()
+        .and_then(|t| serde_json::from_str::<Value>(&t).ok())
+        .and_then(|v| v["trips"].as_array().cloned())
+        .unwrap_or_default()
+        .iter()
+        .filter_map(|t| Some((t["id"].as_str()?.to_string(), t["to"].as_u64()?)))
+        .collect();
+    let mut souvenirs = serde_json::Map::new();
+    for (lane, name) in LANES {
+        let file = levels.join(format!("{name}.json"));
         println!("cargo:rerun-if-changed={}", file.display());
         let Ok(text) = fs::read_to_string(&file) else { continue };
         let data: Value = serde_json::from_str(&text).unwrap_or_else(|e| panic!("{}: {e}", file.display()));
@@ -71,6 +86,12 @@ fn main() {
             lines.push(line_of(lane, l));
             if lane == "campaign" {
                 campaign.push(l["id"].clone());
+            }
+            if lane == "souvenir" {
+                let id = l["id"].as_str().expect("a souvenir has an id");
+                let trip = l["trip"].as_str().unwrap_or_else(|| panic!("souvenirs.json {id}: no trip"));
+                let end = trip_ends.get(trip).unwrap_or_else(|| panic!("souvenirs.json {id}: its trip {trip} is not in trips.json"));
+                souvenirs.insert(id.into(), json!(end));
             }
         }
     }
@@ -86,7 +107,7 @@ fn main() {
     let mut seen = std::collections::HashSet::new();
     deals.retain(|d| seen.insert(d.to_string()));
     let out = Path::new(&env::var("OUT_DIR").unwrap()).join("deals.json");
-    fs::write(out, json!({ "deals": deals, "campaign": campaign }).to_string()).unwrap();
+    fs::write(out, json!({ "deals": deals, "campaign": campaign, "souvenirs": souvenirs }).to_string()).unwrap();
 
     // which campaign board grants which table item (src/net/tables.json)
     let tables_file = Path::new(&here).join("../../src/net/tables.json");
@@ -113,8 +134,12 @@ fn main() {
     };
     let trips = read(&levels.join("trips.json"));
     let last: Vec<u64> = trips["trips"].as_array().into_iter().flatten().filter_map(|t| t["to"].as_u64()).collect();
-    for lane in ["campaign", "challenge"] {
-        let data = read(&levels.join(format!("{lane}.json")));
+    for (lane, name) in [("campaign", "campaign"), ("challenge", "challenge"), ("souvenir", "souvenirs")] {
+        let path = levels.join(format!("{name}.json"));
+        if lane == "souvenir" && !path.exists() {
+            continue;
+        }
+        let data = read(&path);
         for (i, l) in data["levels"].as_array().into_iter().flatten().enumerate() {
             let id = l["id"].as_str().expect("a level has an id");
             boards.insert(format!("board_{id}"), json!(uuid5(&format!("board:{lane}:{id}"))));

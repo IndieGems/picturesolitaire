@@ -2,7 +2,7 @@
 //! the vector check run exactly what the function runs.
 //!
 //! The claim is the game's word (src/net/claims.ts sends it):
-//!   { "v": 1, "lane": "campaign" | "challenge" | "daily", "board": "c05",
+//!   { "v": 1, "lane": "campaign" | "challenge" | "daily" | "souvenir", "board": "c05",
 //!     "deal": "<8 hex: dealHash of the deal the client played>",
 //!     "line": [ {"from": 3, "to": 7}, {"shuffle": true, "board": [...], "stacks": [[...]]}, ... ],
 //!     "ms": 95000, "date": "2026-10-24" (daily only) }
@@ -50,13 +50,16 @@ pub struct Data {
     pub known: Vec<Known>,
     /// Campaign board ids in play order: position n plays campaign[(n - 1) % len].
     pub campaign: Vec<String>,
+    /// Each Souvenir's id and the campaign position its trip ends at (its stamp), which unlocks it.
+    pub souvenirs: Vec<(String, u64)>,
 }
 
 pub fn data() -> Data {
     let text = include_str!(concat!(env!("OUT_DIR"), "/deals.json"));
     let data: Value = serde_json::from_str(text).expect("deals.json is the build's own output");
     let campaign = data["campaign"].as_array().into_iter().flatten().filter_map(|v| v.as_str().map(str::to_string)).collect();
-    Data { known: known_of(&data), campaign }
+    let souvenirs = data["souvenirs"].as_object().into_iter().flatten().filter_map(|(id, end)| Some((id.clone(), end.as_u64()?))).collect();
+    Data { known: known_of(&data), campaign, souvenirs }
 }
 
 /// Every deal compiled in.
@@ -154,6 +157,8 @@ pub enum Lane {
     Campaign,
     Challenge,
     Daily,
+    /// The optional bonus board after a trip (docs/souvenirs.md): paid once, its sticker in the record.
+    Souvenir,
 }
 
 impl Lane {
@@ -162,6 +167,7 @@ impl Lane {
             Lane::Campaign => "campaign",
             Lane::Challenge => "challenge",
             Lane::Daily => "daily",
+            Lane::Souvenir => "souvenir",
         }
     }
 }
@@ -183,6 +189,8 @@ pub struct Win {
     pub claim_id: Option<String>,
     /// Campaign only: the position it was played at (from 1; past the last board it goes round).
     pub n: Option<u64>,
+    /// Souvenir only: the campaign position that must be won first (its trip's last board, the stamp).
+    pub after: Option<u64>,
 }
 
 /// Why a claim is not a win, as the game reads it.
@@ -233,6 +241,7 @@ pub fn check(input: &[u8], data: &Data) -> Result<Win, Refusal> {
         Some("campaign") => Lane::Campaign,
         Some("challenge") => Lane::Challenge,
         Some("daily") => Lane::Daily,
+        Some("souvenir") => Lane::Souvenir,
         _ => return Err(bad("unknown lane")),
     };
     let board = c["board"].as_str().ok_or_else(|| bad("no board"))?.to_string();
@@ -276,6 +285,11 @@ pub fn check(input: &[u8], data: &Data) -> Result<Win, Refusal> {
     if versions.is_empty() {
         return Err(Refusal::UnknownBoard);
     }
+    // a Souvenir the level files no longer list (only an archived version left) has no trip to wait for
+    let after = match lane {
+        Lane::Souvenir => Some(data.souvenirs.iter().find(|(id, _)| *id == board).map(|(_, end)| *end).ok_or(Refusal::UnknownBoard)?),
+        _ => None,
+    };
     let deal = &versions.iter().find(|k| k.hash == hash).ok_or(Refusal::UnknownDeal)?.deal;
 
     let mut s = rules::start(deal).ok_or_else(|| bad("a deal the rules cannot start"))?;
@@ -291,5 +305,5 @@ pub fn check(input: &[u8], data: &Data) -> Result<Win, Refusal> {
     let claimed = c["ms"].as_u64().unwrap_or(0);
     let ms = claimed.max(s.moves as u64 * MIN_MS_PER_MOVE).min(MAX_MS);
     let pictures = deal.pictures.iter().map(|p| p.id.clone()).collect();
-    Ok(Win { lane, board, date, moves: s.moves, shuffles: s.shuffles, ms, pictures, claim_id, n })
+    Ok(Win { lane, board, date, moves: s.moves, shuffles: s.shuffles, ms, pictures, claim_id, n, after })
 }

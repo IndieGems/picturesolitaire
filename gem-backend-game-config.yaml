@@ -2076,6 +2076,16 @@ progressions:
         - mode: on_complete
           amount: 35
           target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 01055d80-52d9-5672-88f3-5a354b3b6f64
+    slug: board_s1
+    display_name: "Souvenir 1"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
   # THE HELPER KIT: 3 of each helper, once ever, at the end of board 1 (the guided start),
   # or on the next win of a player already past it. The win checker pays it into the
   # helper currencies and sets this to 1 in the same order, so it is paid once or not at all.

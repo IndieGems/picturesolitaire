@@ -9,6 +9,7 @@
 //   progress().campaign.won    verified wins in all, replays included
 //   progress().challenge[id]   best (fewest) moves on a cleared challenge board
 //   progress().daily[date]     the first verified result of that date { moves, ms }
+//   progress().souvenir[id]    best (fewest) moves on a Souvenir won ("s1"): its sticker (docs/souvenirs.md)
 //   progress().restored        pictures of boards won
 //   progress().known           false until the server's word has landed this session
 //
@@ -35,6 +36,8 @@ export interface Progress {
   campaign: { next: number; won: number };
   challenge: Record<string, number>;
   daily: Record<string, { moves: number; ms: number }>;
+  /** Souvenirs won, by id: best (fewest) moves. Won when present. */
+  souvenir: Record<string, number>;
   restored: string[];
   /** Set once, when the checker took in an old device save. */
   imported?: { from: string };
@@ -42,7 +45,7 @@ export interface Progress {
 
 /** What a won board would change, held until the checker answers. */
 export interface HeldWin {
-  lane: "campaign" | "challenge" | "daily";
+  lane: "campaign" | "challenge" | "daily" | "souvenir";
   board: string;
   /** Campaign position. */
   n?: number;
@@ -56,7 +59,7 @@ const SLOT = "progress";
 const LEGACY = "campaign";
 const framed = window.self !== window.top;
 
-const empty = (): Progress => ({ campaign: { next: 1, won: 0 }, challenge: {}, daily: {}, restored: [] });
+const empty = (): Progress => ({ campaign: { next: 1, won: 0 }, challenge: {}, daily: {}, souvenir: {}, restored: [] });
 
 let server: Progress = empty();
 let known = !framed;
@@ -90,6 +93,7 @@ function normal(x: unknown): Progress {
     campaign: { next: Number.isInteger(next) && next >= 1 ? Math.min(next, levelCount() + 1) : 1, won: Math.max(0, Number(d.campaign?.won) || 0) },
     challenge: d.challenge && typeof d.challenge === "object" ? { ...d.challenge } : {},
     daily: d.daily && typeof d.daily === "object" ? { ...d.daily } : {},
+    souvenir: d.souvenir && typeof d.souvenir === "object" ? { ...d.souvenir } : {},
     restored: Array.isArray(d.restored) ? d.restored.filter((p): p is string => typeof p === "string") : [],
     ...(d.imported ? { imported: d.imported } : {}),
   };
@@ -102,9 +106,9 @@ function applyWin(p: Progress, w: HeldWin): void {
     const n = Math.min(w.n ?? p.campaign.next, end); // past the last board: a replay
     if (n > p.campaign.next) return; // an earlier win is still on its way
     p.campaign = { next: Math.min(Math.max(p.campaign.next, n + 1), end), won: p.campaign.won + 1 };
-  } else if (w.lane === "challenge") {
-    const best = p.challenge[w.board];
-    if (best === undefined || w.moves < best) p.challenge[w.board] = w.moves;
+  } else if (w.lane === "challenge" || w.lane === "souvenir") {
+    const best = p[w.lane][w.board];
+    if (best === undefined || w.moves < best) p[w.lane][w.board] = w.moves;
   } else if (w.date && !p.daily[w.date]) {
     p.daily[w.date] = { moves: w.moves, ms: w.ms };
   }
@@ -130,6 +134,8 @@ export const challengeCleared = (id: string): boolean => progress().challenge[id
 export const isRestored = (pictureId: string): boolean => progress().restored.includes(pictureId);
 /** The guided start is done once campaign board 1 is won. */
 export const guideDone = (): boolean => progress().campaign.next > 1;
+/** A Souvenir is won (its sticker shows) once its id is in the record: its best moves, or undefined. */
+export const souvenirBest = (id: string): number | undefined => progress().souvenir[id];
 export const dailyResult = (date: string): { moves: number; ms: number } | undefined => progress().daily[date];
 
 // ---------------------------------------------------------------- held wins (src/net/claims.ts)

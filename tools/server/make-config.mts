@@ -55,7 +55,8 @@ const DAILY_RUN = "daily_result";
 const KEEP = TABLES_FILE().find((t) => t.award === "onboarding");
 const ONBOARDING = { board: KEEP?.board ?? "c01", coins: KEEP?.coins ?? 100 };
 const DAILY_COINS = 50;
-const LANES = { campaign: { label: "Campaign board", most: 40 }, challenge: { label: "Challenge board", most: 50 } };
+// souvenir: the bonus board after each trip, in souvenirs.json (docs/souvenirs.md); paid as its trip's relief board (below)
+const LANES = { campaign: { label: "Campaign board", most: 40 }, challenge: { label: "Challenge board", most: 50 }, souvenir: { label: "Souvenir", most: 40, file: "souvenirs" } };
 
 /** A board's Coins, from the moves of its stored winning line. */
 export const coinsFor = (moves, most) => Math.max(10, Math.min(most, Math.round((moves * 1.1) / 5) * 5));
@@ -114,13 +115,22 @@ const markSlug = (month) => `suitcase_prize_${month.replace("-", "_")}`;
 }
 
 const rows = [];
-for (const [lane, { label, most }] of Object.entries(LANES)) {
-  const file = join(root, "src/content/levels", `${lane}.json`);
+const TRIPS = JSON.parse(readFileSync(join(root, "src/content/levels/trips.json"), "utf8")).trips;
+const CAMPAIGN = JSON.parse(readFileSync(join(root, "src/content/levels/campaign.json"), "utf8")).levels;
+/** A Souvenir's Coins (the lead, 2026-10-28): what the better-paying of its trip's relief boards pays. */
+const souvenirCoins = (l, most) => {
+  const trip = TRIPS.find((t) => t.id === l.trip);
+  if (!trip) throw new Error(`make-config: souvenir ${l.id}: its trip ${l.trip} is not in trips.json`);
+  const relief = rows.filter((r) => r.lane === "campaign" && r.n >= trip.from && r.n <= trip.to && CAMPAIGN[r.n - 1]?.axes?.role === "relief");
+  return relief.length ? Math.max(...relief.map((r) => r.coins)) : coinsFor(l.line.length, most);
+};
+for (const [lane, { label, most, file: name }] of Object.entries(LANES)) {
+  const file = join(root, "src/content/levels", `${name ?? lane}.json`);
   if (!existsSync(file)) continue;
   JSON.parse(readFileSync(file, "utf8")).levels.forEach((l, i) => {
     const moves = l.line.length;
-    const coins = l.id === ONBOARDING.board ? ONBOARDING.coins : coinsFor(moves, most);
-    rows.push({ lane, id: l.id, n: i + 1, label: `${label} ${i + 1}`, moves, coins, onboarding: l.id === ONBOARDING.board });
+    const coins = l.id === ONBOARDING.board ? ONBOARDING.coins : lane === "souvenir" ? souvenirCoins(l, most) : coinsFor(moves, most);
+    rows.push({ lane, id: l.id, n: i + 1, label: `${label} ${i + 1}`, moves, coins, onboarding: l.id === ONBOARDING.board, ...(l.trip ? { trip: l.trip } : {}) });
   });
 }
 
@@ -312,7 +322,8 @@ if (ch.length) {
   md.push(`  At 4 minutes a board that is about ${Math.round((avg * 60) / 4)} an hour; at 5 minutes ${Math.round((avg * 60) / 5)}.`);
 }
 md.push(`- Daily: ${DAILY_COINS} once a day, on top.`);
-md.push("- Souvenirs: none dealt yet (Levels' src/content/levels/souvenirs.json, when Art's pictures land).");
+const sv = lane("souvenir");
+md.push(sv.length ? `- Souvenirs: ${sv.length} of ${TRIPS.length} trips dealt, ${sum(sv)} Coins in all, once each (${sv.map((r) => `${r.id} ${r.coins}`).join(", ")}).` : "- Souvenirs: none dealt yet (Levels' src/content/levels/souvenirs.json).");
 md.push("- One-time: the onboarding prize. Replays and campaign boards past the last pay nothing.");
 md.push("- **Still to measure**: real minutes per board once the creator has played some (the lead's");
 md.push("  note): if boards run much faster or slower than 2 to 4 minutes, change the rule here.");
@@ -324,4 +335,4 @@ md.push("|---|---|---|---|");
 for (const r of rows) md.push(`| ${r.id} | ${r.lane} ${r.n} | ${r.moves} | ${r.coins}${r.onboarding ? " (onboarding prize)" : ""} |`);
 md.push("");
 writeFileSync(join(root, "docs/coins.md"), md.join("\n"));
-console.log(`config: ${rows.length} board progressions (${camp.length} campaign, ${ch.length} challenge), the daily, its run type and board; docs/coins.md`);
+console.log(`config: ${rows.length} board progressions (${camp.length} campaign, ${ch.length} challenge, ${lane("souvenir").length} souvenir), the daily, its run type and board; docs/coins.md`);

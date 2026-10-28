@@ -22,7 +22,29 @@ fn win(lane: Lane, board: &str, moves: u32, pictures: &[&str]) -> Win {
         pictures: pictures.iter().map(|p| p.to_string()).collect(),
         claim_id: None,
         n: None,
+        after: None,
     }
+}
+
+#[test]
+fn a_souvenir_waits_for_its_trips_stamp_then_puts_its_sticker_in_the_record() {
+    let mut d = progress::empty();
+    d["campaign"] = json!({ "next": 15, "won": 14 }); // trip 1 (boards 1-15) one board short
+    let s1 = Win { after: Some(15), ..win(Lane::Souvenir, "s1", 13, &["sv-a"]) };
+    assert_eq!(apply(&mut d, &s1, Some("k1"), None), Err(Wait::Order));
+    assert!(d.get("souvenir").is_none(), "nothing changes while it waits");
+    d["campaign"] = json!({ "next": 16, "won": 15 }); // stamped
+    assert_eq!(apply(&mut d, &s1, Some("k1"), None), Ok(true));
+    assert_eq!(d["souvenir"], json!({ "s1": 13 }));
+    assert_eq!(d["campaign"], json!({ "next": 16, "won": 15 }), "a Souvenir moves no campaign position");
+    // a resend changes nothing; a replay keeps the fewer moves
+    assert_eq!(apply(&mut d, &s1, Some("k1"), None), Ok(false));
+    assert_eq!(apply(&mut d, &Win { moves: 20, ..s1.clone() }, Some("k2"), None), Ok(true));
+    assert_eq!(d["souvenir"], json!({ "s1": 13 }));
+    assert_eq!(apply(&mut d, &Win { moves: 11, ..s1.clone() }, Some("k3"), None), Ok(true));
+    assert_eq!(d["souvenir"], json!({ "s1": 11 }));
+    // a record with no Souvenir yet reads as before (normal adds no empty map)
+    assert!(progress::normal(Some(json!({ "v": 1 }))).get("souvenir").is_none());
 }
 
 #[test]

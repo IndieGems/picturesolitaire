@@ -49,11 +49,12 @@ import { answered, hold, type HeldWin } from "./progress";
 import { accept as acceptSuitcase, suitcase, type Suitcase } from "./suitcase";
 import { tableOf } from "./tables";
 
-export type Lane = "campaign" | "challenge" | "daily";
+/** "souvenir": the bonus board after a trip (docs/souvenirs.md), sent once its trip is stamped; no n, no date. */
+export type Lane = "campaign" | "challenge" | "daily" | "souvenir";
 
 export interface WinClaim {
   lane: Lane;
-  /** The board's id: "c05", "ch03", "d2026-10-24". */
+  /** The board's id: "c05", "ch03", "d2026-10-24", "s1". */
   board: string;
   /** The deal the board was played from (the level's), to tell the checker which version it was. */
   deal: Deal;

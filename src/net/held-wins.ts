@@ -1,7 +1,8 @@
 // HELD WINS (src/net/claims.ts): which one is sent next, and which the "claims" slot keeps for a
 // restart. Pure, so tools/server/held-wins-check.mts runs it in Node.
 //
-// Sent oldest first, and a campaign win waits while an earlier campaign win is held (nextToSend).
+// Sent oldest first, and a campaign win, or a Souvenir (it opens with its trip's stamp, a campaign
+// win), waits while an earlier campaign win is held (nextToSend).
 //
 // The slot holds every unanswered win up to KEEP_BYTES. Past that, the wins that strand least go
 // first, so that nothing kept can be stranded by one that went:
@@ -17,11 +18,11 @@
 // levels 75-86 that way on 2026-10-18, and with them every later level's pay
 // (yarn/docs/checker-outage-2026-10-18.md).
 
-/** The held win to send now: the oldest that is due, but never a campaign win behind an earlier held one. */
+/** The held win to send now: the oldest that is due, but never a campaign win or a Souvenir behind an earlier held campaign win. */
 export function nextToSend<T extends { lane: string; notBefore: number }>(queue: readonly T[], now: number): T | undefined {
   let campaignAhead = false;
   for (const h of queue) {
-    const behind = h.lane === "campaign" && campaignAhead;
+    const behind = (h.lane === "campaign" || h.lane === "souvenir") && campaignAhead;
     if (h.lane === "campaign") campaignAhead = true;
     if (!behind && h.notBefore <= now) return h;
   }

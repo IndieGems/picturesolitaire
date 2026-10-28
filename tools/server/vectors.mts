@@ -7,7 +7,7 @@
 //   node tools/server/vectors.mts <out.json> [--games N] [--seed S]
 //
 // Normally run by tools/server/check.mts, which then runs the Rust side.
-//   - every shipped board's stored line (src/content/levels/{campaign,challenge,daily}.json), as a game and as a claim;
+//   - every shipped board's stored line (src/content/levels/{campaign,challenge,daily,souvenirs}.json), as a game and as a claim;
 //   - N random games (default 2000) on random deals: random board sizes and
 //     picture shapes, some boards dealt part-full, mostly legal moves, some
 //     moves the rules refuse, and shuffles both legal and not;
@@ -23,7 +23,7 @@ import { fileURLToPath } from "node:url";
 import * as R from "../../src/game/rules.ts";
 import { dealHash } from "../../src/net/deal-hash.ts";
 import { arrangeRef } from "./arrange-ref.mts";
-import { LANES, levelsHash } from "./levels-hash.mts";
+import { LANES, fileOf, levelsHash } from "./levels-hash.mts";
 
 const { EMPTY, allMoves, isWon, move, pieces, random, start } = R;
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
@@ -69,11 +69,11 @@ function game(name, deal, actions) {
 // ---------------------------------------------------------------- shipped boards
 
 // Only the lanes the checker pays: other files there (experiments.json, the dev menu's practice boards) are no claim.
-const files = readdirSync(join(root, "src/content/levels")).filter((f) => LANES.includes(f.replace(/\.json$/, ""))).sort();
+const present = new Set(readdirSync(join(root, "src/content/levels")));
+const lanes = LANES.filter((lane) => present.has(`${fileOf(lane)}.json`)).sort((x, y) => (fileOf(x) < fileOf(y) ? -1 : 1));
 const boards = [];
-for (const f of files) {
-  const lane = f.replace(/\.json$/, "");
-  for (const l of JSON.parse(readFileSync(join(root, "src/content/levels", f), "utf8")).levels) {
+for (const lane of lanes) {
+  for (const l of JSON.parse(readFileSync(join(root, "src/content/levels", `${fileOf(lane)}.json`), "utf8")).levels) {
     const deal = { cols: l.cols, rows: l.rows, pictures: l.pictures, stacks: l.stacks, seed: l.seed, ...(l.board ? { board: l.board } : {}) };
     boards.push({ lane, id: l.id, deal, line: l.line.map(([from, to]) => ({ from, to })) });
   }
