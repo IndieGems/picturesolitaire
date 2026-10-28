@@ -100,6 +100,23 @@ Mostly photographic, with some painted or travel-poster postcards, and never the
 The plan's `suffix.postcard` is the prompt ending. `docs/destinations-america.md` has the
 first trip's candidates and the rights rules.
 
+## Shipped files
+
+Each picture ships at the size it is drawn, in three files, all WebP made from the picture's master
+(`tools/art/masters/`, WebP q90). Never re-compress a shipped file: always re-export from the master.
+- **Full picture** (only the enlarged view; 384 x 512 px a card): q74. **Board copy** (240 x 320 px a
+  card): it starts at q70 and steps down 4 at a time to fit 28 KB a card (q84 for flat, smooth media,
+  which ring). A postcard's board copy uses 8 KB a card, down to q50. **Passport thumb** (postcards
+  only): 300 px wide, from q76.
+- Why q74 and q70 (the creator, 2026-10-28, from 100% crops of q80, q74, q70 and AVIF): they look
+  the same as q80 and q74 and are about 21% and 11% lighter (`FULL_Q` and `BOARD_Q` in `pictures.py`).
+  AVIF was no smaller at equal quality: by a structure measure (SSIM) over 60 pictures it came out
+  6% bigger. Where it was smaller (q55), it visibly softened fur and bronze. It also decodes more
+  slowly on phones and needs iOS 16+.
+- No metadata and no filters. Every script ends each file with `tools/art/images.py`'s squeeze
+  (lossless only), and the build fails on an image that carries EXIF, XMP or a colour profile.
+  `python tools/art/images.py audit` lists every group's size.
+
 ## Style menu (`medium`)
 
 | word | what it looks like |

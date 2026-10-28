@@ -15,6 +15,8 @@ any image under public/art or public/pictures carries metadata, however it was m
 Audit, 2026-10-28: no image carried metadata and every script already encoded at its highest
 effort (WebP method 6, PNG optimize), so the squeeze found nothing; the particle strips moved from
 PNG to lossless WebP (the same pixels, 46 KB -> 34 KB). The groups are group() below.
+The lossy settings (full pictures q74, board copies from q70) are pictures.py's FULL_Q and BOARD_Q;
+docs/picture-direction.md ("Shipped files") has the ruling.
 """
 import io
 import struct

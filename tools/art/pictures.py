@@ -15,7 +15,7 @@ says how a picture is made. Masters keep the generated pixels (WebP q90, at the
 picture's aspect) so a picture can be re-exported without paying to generate it again.
 
 Cards are PORTRAIT cells, 3:4 (creator, 2026-10-24), so a picture of cols x rows cards
-is (cols*3):(rows*4) and ships at exactly cols*384 x rows*512 px, WebP q80: that full picture
+is (cols*3):(rows*4) and ships at exactly cols*384 x rows*512 px, WebP q74 (FULL_Q): that full picture
 is only for the enlarged view. The board and the win card draw <id>-board.webp, 240 x 320 px a
 card (a phone draws a card about 90 CSS px wide); library pictures ship no thumb any more (the
 Albums screen is gone; 2026-10-26), only destinations have one, for the passport
@@ -45,6 +45,9 @@ PUBLIC = ROOT / "public"
 CATALOGUE = ROOT / "src/content/pictures.json"
 
 CELL = (384, 512)  # one card, w x h px
+# The full picture's WebP quality (creator, 2026-10-28, from 100% crops of q80/q74/q70/AVIF): q74 looks
+# the same as q80 and is ~21% lighter; AVIF won nothing at equal quality. docs/picture-direction.md.
+FULL_Q = 74
 
 # Generation size per shape: the picture's aspect, edges multiples of 16, long edge 1536+.
 GEN_SIZE = {
@@ -142,7 +145,7 @@ def export(e):
     # 5 x 384, and enlarging adds bytes, not detail. The catalogue's px is read from the file.
     if im.width < size[0]:
         size = im.size
-    im.resize(size, Image.LANCZOS).save(out, "WEBP", quality=80, method=6)
+    im.resize(size, Image.LANCZOS).save(out, "WEBP", quality=FULL_Q, method=6)
     squeeze(out)
     if "window" in e:  # a destination: the passport's copy
         make_dest_thumb(e)
@@ -203,7 +206,9 @@ def make_thumb(e):
 
 BOARD_CELL = (240, 320)  # the board's copy, per card: ~2.7x a phone's ~90 CSS px card
 # Smooth flat colour rings at low quality, and is small anyway: it keeps q84. Photos and
-# painted texture look the same at q74 and are a third lighter (Untangled's docs/mobile.md).
+# painted texture step down from q70 (BOARD_Q; creator, 2026-10-28: it looks the same as q74 at
+# card size, ~11% lighter).
+BOARD_Q = 70
 SMOOTH_MEDIA = {"flat", "low-poly", "deco", "stained-glass", "papercut", "render"}
 BOARD_BUDGET = 28 * 1024  # per card; tools/art/check-copies.mjs holds the build to it
 # A destination postcard's copy is a whole board of cards in one file: lighter per card, down to
@@ -226,7 +231,7 @@ def make_board(e):
     out.parent.mkdir(parents=True, exist_ok=True)
     dest = "window" in e
     budget = (DEST_BOARD_BUDGET if dest else BOARD_BUDGET) * e["cols"] * e["rows"]
-    for q in range(84 if e["medium"] in SMOOTH_MEDIA else 74, 49 if dest else 55, -4):
+    for q in range(84 if e["medium"] in SMOOTH_MEDIA else BOARD_Q, 49 if dest else 55, -4):
         im.save(out, "WEBP", quality=q, method=6)
         if out.stat().st_size <= budget:
             break
