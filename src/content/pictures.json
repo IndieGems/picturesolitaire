@@ -49161,6 +49161,282 @@
         "canada goose"
       ],
       "bg": "magenta"
+    },
+    {
+      "id": "sv-t7-tango",
+      "souvenir": "t7",
+      "album": "souvenirs",
+      "title": "Tango",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t7-tango.webp",
+      "board": "pictures/souvenirs/sv-t7-tango-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "tango couple"
+      ],
+      "bg": "red"
+    },
+    {
+      "id": "sv-t7-gaucho",
+      "souvenir": "t7",
+      "album": "souvenirs",
+      "title": "Gaucho",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t7-gaucho.webp",
+      "board": "pictures/souvenirs/sv-t7-gaucho-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "gaucho"
+      ],
+      "bg": "sky"
+    },
+    {
+      "id": "sv-t7-mate",
+      "souvenir": "t7",
+      "album": "souvenirs",
+      "title": "Mate",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t7-mate.webp",
+      "board": "pictures/souvenirs/sv-t7-mate-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "mate gourd"
+      ],
+      "bg": "magenta"
+    },
+    {
+      "id": "sv-t7-dulce-de-leche",
+      "souvenir": "t7",
+      "album": "souvenirs",
+      "title": "Dulce de Leche",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t7-dulce-de-leche.webp",
+      "board": "pictures/souvenirs/sv-t7-dulce-de-leche-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "dulce de leche"
+      ],
+      "bg": "teal"
+    },
+    {
+      "id": "sv-t7-alfajores",
+      "souvenir": "t7",
+      "album": "souvenirs",
+      "title": "Alfajores",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t7-alfajores.webp",
+      "board": "pictures/souvenirs/sv-t7-alfajores-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "alfajores"
+      ],
+      "bg": "purple"
+    },
+    {
+      "id": "sv-t7-condor",
+      "souvenir": "t7",
+      "album": "souvenirs",
+      "title": "Condor",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t7-condor.webp",
+      "board": "pictures/souvenirs/sv-t7-condor-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "andean condor"
+      ],
+      "bg": "yellow"
+    },
+    {
+      "id": "sv-t7-bandoneon",
+      "souvenir": "t7",
+      "album": "souvenirs",
+      "title": "Bandoneón",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t7-bandoneon.webp",
+      "board": "pictures/souvenirs/sv-t7-bandoneon-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "bandoneon"
+      ],
+      "bg": "green"
+    },
+    {
+      "id": "sv-t7-asado",
+      "souvenir": "t7",
+      "album": "souvenirs",
+      "title": "Asado",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t7-asado.webp",
+      "board": "pictures/souvenirs/sv-t7-asado-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "asado grill"
+      ],
+      "bg": "navy"
+    },
+    {
+      "id": "sv-t7-bus",
+      "souvenir": "t7",
+      "album": "souvenirs",
+      "title": "Colectivo",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t7-bus.webp",
+      "board": "pictures/souvenirs/sv-t7-bus-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "colectivo bus"
+      ],
+      "bg": "pink"
+    },
+    {
+      "id": "sv-t7-empanadas",
+      "souvenir": "t7",
+      "album": "souvenirs",
+      "title": "Empanadas",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t7-empanadas.webp",
+      "board": "pictures/souvenirs/sv-t7-empanadas-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "empanadas"
+      ],
+      "bg": "blue"
+    },
+    {
+      "id": "sv-t7-horse",
+      "souvenir": "t7",
+      "album": "souvenirs",
+      "title": "Criollo Horse",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t7-horse.webp",
+      "board": "pictures/souvenirs/sv-t7-horse-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "criollo horse"
+      ],
+      "bg": "orange"
+    },
+    {
+      "id": "sv-t7-shoes",
+      "souvenir": "t7",
+      "album": "souvenirs",
+      "title": "Tango Shoes",
+      "medium": "painting",
+      "file": "pictures/souvenirs/sv-t7-shoes.webp",
+      "board": "pictures/souvenirs/sv-t7-shoes-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "tango shoes"
+      ],
+      "bg": "lime"
     }
   ],
   "souvenirs": [
@@ -49205,6 +49481,13 @@
       "table": "table-souvenir-canada",
       "tableTitle": "Lake Lodge",
       "sticker": "pictures/souvenirs/sv-t6-sticker.webp"
+    },
+    {
+      "trip": "t7",
+      "theme": "Tango, gauchos and mate",
+      "table": "table-souvenir-argentina",
+      "tableTitle": "Buenos Aires Café",
+      "sticker": "pictures/souvenirs/sv-t7-sticker.webp"
     }
   ]
 }
