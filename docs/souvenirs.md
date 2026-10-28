@@ -74,7 +74,7 @@ levels in one art style, all long pictures).
   - the "Souvenir" heading.
 - **Audio:** a short souvenir sting if the stamp's doesn't fit.
 
-## The ten Souvenirs (proposed)
+## The ten Souvenirs (approved by the creator, 2026-10-28)
 
 Art's proposal (2026-10-28) for the creator to approve. Each Souvenir has 12 long pictures (6 tall
 1×2 and 6 wide 2×1, agreed with Levels for its 4×4 board), one style, its own table and a sticker.

@@ -332,6 +332,71 @@ def items(p):
     return out
 
 
+SOUVENIRS_PLAN = ROOT / "tools/art/souvenirs-plan.json"
+
+
+def souvenirs_plan():
+    return json.loads(SOUVENIRS_PLAN.read_text(encoding="utf-8")) if SOUVENIRS_PLAN.exists() else {"pictures": [], "souvenirs": []}
+
+
+def complete_souvenirs(sp):
+    """The trips whose Souvenir is whole: every planned picture shipped, the table and its back mastered,
+    the sticker made. Only these reach the catalogue, so a board never meets half a Souvenir."""
+    done = set()
+    for s in sp["souvenirs"]:
+        ps = [e for e in sp["pictures"] if e["trip"] == s["trip"]]
+        tables = ROOT / "tools/art/masters/tables"
+        if ps and all((PUBLIC / f"pictures/souvenirs/{e['id']}.webp").exists() for e in ps)                 and (tables / f"{s['table']}.webp").exists() and (tables / f"{s['table']}-back.webp").exists()                 and (PUBLIC / f"pictures/souvenirs/sv-{s['trip']}-sticker.webp").exists():
+            done.add(s["trip"])
+    return done
+
+
+def souvenir_pictures():
+    """Each trip's Souvenir board pictures (docs/souvenirs.md; tools/art/souvenirs.py makes them): long,
+    one style a trip, kept out of `pictures` so no ordinary board deals one. `bg` names a generated
+    picture's background colour (never two alike in a Souvenir; Levels' check holds it); `credit` is a
+    museum work's source and licence (also docs/credits.md)."""
+    sp = souvenirs_plan()
+    out = []
+    done = complete_souvenirs(sp)
+    for e in sp["pictures"]:
+        if e["trip"] not in done:
+            continue
+        e = e | {"album": "souvenirs"}
+        rel = f"pictures/souvenirs/{e['id']}.webp"
+        if not (PUBLIC / rel).exists():
+            continue
+        with Image.open(PUBLIC / rel) as im:
+            px = list(im.size)
+        with Image.open(PUBLIC / board_rel(e)) as im:
+            board_px = list(im.size)
+        x = {"id": e["id"], "souvenir": e["trip"], "album": "souvenirs", "title": e["title"], "medium": e["medium"],
+             "file": rel, "board": board_rel(e), "cols": e["cols"], "rows": e["rows"], "px": px, "boardPx": board_px,
+             "subjects": e["subjects"]}
+        if "bg" in e:
+            x["bg"] = e["bg"]
+        m = e.get("museum") or {}
+        if m.get("licence"):
+            x["credit"] = {k: m[k] for k in ("artist", "title", "date", "museum", "licence", "page") if m.get(k)}
+        out.append(x)
+    return out
+
+
+def souvenir_records(pics):
+    """A trip's Souvenir, once its pictures exist: its theme, its table (tables.json id) and its passport sticker."""
+    have = {x["souvenir"] for x in pics}
+    out = []
+    for s in souvenirs_plan()["souvenirs"]:
+        if s["trip"] not in have:
+            continue
+        r = {"trip": s["trip"], "theme": s["theme"], "table": f"table-{s['table']}", "tableTitle": s["tableTitle"]}
+        sticker = f"pictures/souvenirs/sv-{s['trip']}-sticker.webp"
+        if (PUBLIC / sticker).exists():
+            r["sticker"] = sticker
+        out.append(r)
+    return out
+
+
 def cmd_catalogue():
     """Every planned picture that has a shipped file. `family` groups look-alikes (a board
     takes at most one per family); a picture with none is its own family. `busy` is 0 calm,
@@ -365,6 +430,8 @@ def cmd_catalogue():
     used ={x["album"] for x in pictures}
     out = {"albums": [a for a in p["albums"] if a["id"] in used], "pictures": pictures,
            "destinations": destinations(p), "items": items(p), "suitcases": items_plan()["suitcases"]}
+    out["souvenirPictures"] = souvenir_pictures()
+    out["souvenirs"] = souvenir_records(out["souvenirPictures"])
     CATALOGUE.parent.mkdir(parents=True, exist_ok=True)
     CATALOGUE.write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     total = sum((PUBLIC / x["file"]).stat().st_size for x in pictures)

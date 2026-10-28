@@ -53,6 +53,14 @@ TABLES = {
     "winter-market": {"title": "Winter Market", "particles": "snow", "share": "winter-dusk"},
 }
 SHIPPED = ["winter-dusk", "autumn-study", "ski-lodge", "winter-market"]  # the first is the default
+# Each trip's Souvenir board has a table of its own (docs/souvenirs.md; tools/art/souvenirs.py makes it):
+# named in tools/art/souvenirs-plan.json, no particles, and marked "souvenir" in the manifest, so a picker
+# or a shop can tell it apart from a table a player owns. It ships once its table and back masters exist.
+_SV = ROOT / "tools/art/souvenirs-plan.json"
+for _s in (json.loads(_SV.read_text(encoding="utf-8"))["souvenirs"] if _SV.exists() else []):
+    TABLES[_s["table"]] = {"title": _s["tableTitle"], "souvenir": _s["trip"]}
+    if (MASTERS / f"{_s['table']}.webp").exists() and (MASTERS / f"{_s['table']}-back.webp").exists():
+        SHIPPED.append(_s["table"])
 
 
 def ingest(raw):
@@ -138,15 +146,20 @@ def build():
             if "share" in t:  # another table's particles, as they are
                 other = TABLES[t["share"]]
                 files["particles"], frames, frame = other["files"]["particles"], 4, other["frame"]
-            else:
+            elif t.get("particles"):
                 frames, frame = particles(MASTERS / f"{tid}-particles.webp", d / f"{tid}-particles.png"), FRAME
+            else:  # no weather (a Souvenir's table): particles.ts draws none without a strip
+                files.pop("particles")
+                frames = frame = None
         thumb(table, d / f"{tid}-thumb.webp")
         files["thumb"] = f"art/tables/{tid}/{tid}-thumb.webp"
-        manifest["tables"].append({
-            "id": f"table-{tid}", "title": t["title"], **files,
-            "particleKind": t["particles"], "particleFrame": frame, "particleFrames": frames,
-            "base": t.get("base") or base_colour(table),
-        })
+        rec = {"id": f"table-{tid}", "title": t["title"], **files}
+        if "particles" in files:
+            rec |= {"particleKind": t["particles"], "particleFrame": frame, "particleFrames": frames}
+        rec["base"] = t.get("base") or base_colour(table)
+        if t.get("souvenir"):
+            rec["souvenir"] = t["souvenir"]
+        manifest["tables"].append(rec)
         sizes = ", ".join(f"{k} {(PUBLIC / v).stat().st_size // 1024} KB" for k, v in files.items())
         print(tid, sizes)
     (OUT / "tables.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")

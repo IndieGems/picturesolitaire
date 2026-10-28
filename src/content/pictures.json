@@ -47336,5 +47336,292 @@
       "table": "table-island-terrace",
       "tableTitle": "Island Terrace"
     }
+  ],
+  "souvenirPictures": [
+    {
+      "id": "sv-t1-pancakes",
+      "souvenir": "t1",
+      "album": "souvenirs",
+      "title": "Pancake Stack",
+      "medium": "render",
+      "file": "pictures/souvenirs/sv-t1-pancakes.webp",
+      "board": "pictures/souvenirs/sv-t1-pancakes-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "pancake stack"
+      ],
+      "bg": "blue"
+    },
+    {
+      "id": "sv-t1-milkshake",
+      "souvenir": "t1",
+      "album": "souvenirs",
+      "title": "Milkshake",
+      "medium": "render",
+      "file": "pictures/souvenirs/sv-t1-milkshake.webp",
+      "board": "pictures/souvenirs/sv-t1-milkshake-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "milkshake"
+      ],
+      "bg": "teal"
+    },
+    {
+      "id": "sv-t1-corn-dog",
+      "souvenir": "t1",
+      "album": "souvenirs",
+      "title": "Corn Dog",
+      "medium": "render",
+      "file": "pictures/souvenirs/sv-t1-corn-dog.webp",
+      "board": "pictures/souvenirs/sv-t1-corn-dog-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "corn dog"
+      ],
+      "bg": "purple"
+    },
+    {
+      "id": "sv-t1-soft-serve",
+      "souvenir": "t1",
+      "album": "souvenirs",
+      "title": "Soft-Serve Cone",
+      "medium": "render",
+      "file": "pictures/souvenirs/sv-t1-soft-serve.webp",
+      "board": "pictures/souvenirs/sv-t1-soft-serve-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "soft-serve cone"
+      ],
+      "bg": "magenta"
+    },
+    {
+      "id": "sv-t1-popcorn",
+      "souvenir": "t1",
+      "album": "souvenirs",
+      "title": "Popcorn",
+      "medium": "render",
+      "file": "pictures/souvenirs/sv-t1-popcorn.webp",
+      "board": "pictures/souvenirs/sv-t1-popcorn-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "popcorn box"
+      ],
+      "bg": "orange"
+    },
+    {
+      "id": "sv-t1-candy-apple",
+      "souvenir": "t1",
+      "album": "souvenirs",
+      "title": "Candy Apple",
+      "medium": "render",
+      "file": "pictures/souvenirs/sv-t1-candy-apple.webp",
+      "board": "pictures/souvenirs/sv-t1-candy-apple-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "candy apple"
+      ],
+      "bg": "lime"
+    },
+    {
+      "id": "sv-t1-hot-dog",
+      "souvenir": "t1",
+      "album": "souvenirs",
+      "title": "Hot Dog",
+      "medium": "render",
+      "file": "pictures/souvenirs/sv-t1-hot-dog.webp",
+      "board": "pictures/souvenirs/sv-t1-hot-dog-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "hot dog"
+      ],
+      "bg": "sky"
+    },
+    {
+      "id": "sv-t1-ribs",
+      "souvenir": "t1",
+      "album": "souvenirs",
+      "title": "BBQ Ribs",
+      "medium": "render",
+      "file": "pictures/souvenirs/sv-t1-ribs.webp",
+      "board": "pictures/souvenirs/sv-t1-ribs-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "barbecue ribs"
+      ],
+      "bg": "yellow"
+    },
+    {
+      "id": "sv-t1-banana-split",
+      "souvenir": "t1",
+      "album": "souvenirs",
+      "title": "Banana Split",
+      "medium": "render",
+      "file": "pictures/souvenirs/sv-t1-banana-split.webp",
+      "board": "pictures/souvenirs/sv-t1-banana-split-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "banana split"
+      ],
+      "bg": "green"
+    },
+    {
+      "id": "sv-t1-pizza-slice",
+      "souvenir": "t1",
+      "album": "souvenirs",
+      "title": "Pizza Slice",
+      "medium": "render",
+      "file": "pictures/souvenirs/sv-t1-pizza-slice.webp",
+      "board": "pictures/souvenirs/sv-t1-pizza-slice-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "pizza slice"
+      ],
+      "bg": "pink"
+    },
+    {
+      "id": "sv-t1-apple-pie",
+      "souvenir": "t1",
+      "album": "souvenirs",
+      "title": "Apple Pie",
+      "medium": "render",
+      "file": "pictures/souvenirs/sv-t1-apple-pie.webp",
+      "board": "pictures/souvenirs/sv-t1-apple-pie-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "apple pie"
+      ],
+      "bg": "navy"
+    },
+    {
+      "id": "sv-t1-corn-cob",
+      "souvenir": "t1",
+      "album": "souvenirs",
+      "title": "Corn on the Cob",
+      "medium": "render",
+      "file": "pictures/souvenirs/sv-t1-corn-cob.webp",
+      "board": "pictures/souvenirs/sv-t1-corn-cob-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "corn on the cob"
+      ],
+      "bg": "red"
+    }
+  ],
+  "souvenirs": [
+    {
+      "trip": "t1",
+      "theme": "Street and diner food",
+      "table": "table-souvenir-america",
+      "tableTitle": "Diner Counter",
+      "sticker": "pictures/souvenirs/sv-t1-sticker.webp"
+    }
   ]
 }

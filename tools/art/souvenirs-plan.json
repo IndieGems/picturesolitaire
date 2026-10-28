@@ -1,0 +1,1978 @@
+{
+ "//": "Souvenir boards (docs/souvenirs.md, approved by the creator 2026-10-28): 12 long pictures a trip, each generated one on its own bold colour (bg, never two alike in a Souvenir), museum works as themselves (CC0, credited). tools/art/souvenirs.py builds them; tools/art/pictures.py writes them to the catalogue's souvenirPictures and souvenirs.",
+ "colours": {
+  "red": "#d62839",
+  "orange": "#f77f00",
+  "yellow": "#fcbf49",
+  "lime": "#9ccc3c",
+  "green": "#2a9d4f",
+  "teal": "#0f9d94",
+  "sky": "#48c4f0",
+  "blue": "#2459d6",
+  "navy": "#1f2f72",
+  "purple": "#7b2cbf",
+  "magenta": "#c2187a",
+  "pink": "#ff8fb0"
+ },
+ "styles": {
+  "t1": {
+   "medium": "render",
+   "prefix": "A glossy 3D render, like a still from a polished animated film, with soft studio light:",
+   "on": "on a plain, flat, bold {word} background ({hex})"
+  },
+  "t3": {
+   "medium": "photo",
+   "prefix": "A museum photograph of an ancient Roman piece in marble or bronze, softly lit like a museum catalogue shot, a generic piece and not a copy of any famous statue, any figure clothed or draped:",
+   "on": "standing in front of a plain, seamless, bold {word} studio backdrop ({hex})"
+  },
+  "t4": {
+   "medium": "print",
+   "prefix": "A linocut print: bold carved black lines, the subject filled with flat cream and warm tan inks, the slightly uneven texture of a hand-pulled print:",
+   "on": "printed on a plain, flat, bold {word} ground ({hex})"
+  },
+  "t6": {
+   "medium": "papercut",
+   "prefix": "A layered papercut illustration in matte coloured paper, with soft shadows between the paper layers:",
+   "on": "on a plain, flat, bold {word} paper background ({hex})"
+  },
+  "t7": {
+   "medium": "painting",
+   "prefix": "A painting in the Buenos Aires fileteado style: bright saturated colours, crisp black outlines, glossy shading, curling acanthus scrolls and flourishes framing the subject, no lettering:",
+   "on": "on a plain, flat, bold {word} background ({hex})"
+  },
+  "t8": {
+   "medium": "illustration",
+   "prefix": "A hand-coloured 19th-century natural-history lithograph, like a plate from a zoology book, with fine engraved lines and soft watercolour tints:",
+   "on": "on a plain, flat, bold {word} background ({hex}), not paper"
+  },
+  "t9": {
+   "medium": "photo",
+   "prefix": "A professional studio food photograph, crisp and appetising, with soft light:",
+   "on": "on a plain, seamless, bold {word} backdrop ({hex})"
+  },
+  "t10": {
+   "medium": "toy",
+   "prefix": "Toy photography: a die-cast metal toy model with glossy painted metal, photographed close with a shallow depth of field:",
+   "on": "on a plain, seamless, bold {word} backdrop ({hex})"
+  }
+ },
+ "suffix": "The subject is large, centred and whole, filling most of the frame along its length, so each half of the picture shows a different, recognisable part of it. The background is one plain, flat colour from edge to edge: no texture, pattern, scenery, floor, props, shadow or vignette. Nothing written anywhere: no text, letters, numbers, logos, brand names, labels, signature, watermark, border or frame.",
+ "tableLook": "Match exactly the look of the references: the same soft painterly-realistic rendering, the same lighting mood of a warm light low from above against cool shadow, deep focus, the same camera seen from above at the same slight angle, and exactly the same layout as the reference table: detail only along the left, right and bottom edges and in the two top corners, where a warm light source sits partly cut by the frame; the whole middle, from just below the top corners to just above the bottom edge and across most of the width, is a calm, smooth, DARKER, completely empty surface with only a very faint texture and a soft vignette, darker than the edges, because bright picture cards will sit there.",
+ "tableEnd": "Draw ONLY the empty table as a portrait background for a mobile game, portrait 9:16. No cards, no card stacks, no buttons, no bar, no UI, no text, no people.",
+ "souvenirs": [
+  {
+   "trip": "t1",
+   "theme": "Street and diner food",
+   "table": "souvenir-america",
+   "tableTitle": "Diner Counter",
+   "tablePrompt": "The new setting: a 1950s AMERICAN DINER COUNTER at dusk. The table is a speckled teal-grey Formica counter top with a slim chrome edge. In the top-left and top-right corners, warm glowing pendant lamps with amber glass shades, partly cut by the frame, casting soft pools of warm light onto the counter below them. Along the edges: a chrome napkin dispenser and a glass sugar pourer at the left, a small chrome jukebox selector box at the right, red and yellow squeeze bottles with no labels, a striped paper straw, and a coffee cup on a saucer at the bottom edge partly cut. The middle is calm, deep dark teal-grey Formica, darker than the lit edges, empty.",
+   "backPrompt": "The SAME single card back as the first reference, with exactly the same look: the same portrait 3:4 shape filling the frame edge to edge, the same generously rounded chubby corners with the same corner radius, the same plump soft rendering, the same thin pale highlight along its top and left rim and slightly darker rim along the bottom and right, and the same one small round glowing warm amber dot (#e99645) exactly in the centre, perfectly round and the same size. Only change its face: a cherry-red (#8a2a30) glossy diner-booth vinyl with a very fine texture, like the booth seats of an old diner, with no pattern. Seen perfectly straight on from directly above, centred. No stack, no other cards, no shadow, no table, no text. Isolated on a transparent background.",
+   "stickerPrompt": "A glossy die-cut vinyl sticker of a hot dog with a wavy line of mustard, in a bright, simple, friendly cartoon style with bold shapes and clean outlines, with a thick white die-cut border following its outline and a subtle gloss highlight. No text, letters or numbers. Centred and filling most of the frame, isolated on a transparent background."
+  },
+  {
+   "trip": "t2",
+   "theme": "Woodblock prints",
+   "table": "souvenir-japan",
+   "tableTitle": "Printmaker's Table",
+   "tablePrompt": "The new setting: a JAPANESE PRINTMAKER'S LOW TABLE in the evening. The table is dark polished cherry wood with a soft grain. In the top-left and top-right corners, glowing paper floor lanterns with warm amber light, partly cut by the frame, casting soft light onto the wood below them. Along the edges: carved woodblocks, a round flat baren, wide brushes and small dishes of indigo and red pigment along the left edge, a stack of cream washi paper sheets at the right, slim carving knives on a cloth, and a sprig of red maple leaves at the bottom corner. The middle is calm, deep dark cherry wood, darker than the lit edges, empty.",
+   "backPrompt": "The SAME single card back as the first reference, with exactly the same look: the same portrait 3:4 shape filling the frame edge to edge, the same generously rounded chubby corners with the same corner radius, the same plump soft rendering, the same thin pale highlight along its top and left rim and slightly darker rim along the bottom and right, and the same one small round glowing warm amber dot (#e99645) exactly in the centre, perfectly round and the same size. Only change its face: a deep indigo (#2b3a67) handmade washi paper with fine visible fibres, with no pattern. Seen perfectly straight on from directly above, centred. No stack, no other cards, no shadow, no table, no text. Isolated on a transparent background.",
+   "stickerPrompt": "A glossy die-cut vinyl sticker of a curling blue and white ocean wave crest with foam, in a bright, simple, friendly cartoon style with bold shapes and clean outlines, with a thick white die-cut border following its outline and a subtle gloss highlight. No text, letters or numbers. Centred and filling most of the frame, isolated on a transparent background."
+  },
+  {
+   "trip": "t3",
+   "theme": "Ancient Rome",
+   "table": "souvenir-italy",
+   "tableTitle": "Sculptor's Bench",
+   "tablePrompt": "The new setting: a ROMAN SCULPTOR'S WORKSHOP at dusk. The table is a slab of pale warm travertine stone, in soft shade. In the top-left and top-right corners, small bronze oil lamps with warm flames, partly cut by the frame, casting soft warm light onto the stone below them. Along the edges: white marble chips and dust, iron chisels and a wooden mallet at the left, a small plaster cast of a hand and a sprig of laurel at the right, and a terracotta oil flask at the bottom edge partly cut. The middle is calm, deep shaded travertine, darker than the lit edges, empty.",
+   "backPrompt": "The SAME single card back as the first reference, with exactly the same look: the same portrait 3:4 shape filling the frame edge to edge, the same generously rounded chubby corners with the same corner radius, the same plump soft rendering, the same thin pale highlight along its top and left rim and slightly darker rim along the bottom and right, and the same one small round glowing warm amber dot (#e99645) exactly in the centre, perfectly round and the same size. Only change its face: a warm terracotta (#8a4a32) unglazed clay with a fine soft texture, with no pattern. Seen perfectly straight on from directly above, centred. No stack, no other cards, no shadow, no table, no text. Isolated on a transparent background.",
+   "stickerPrompt": "A glossy die-cut vinyl sticker of a white marble bust of a Roman man wearing a green laurel wreath, in a bright, simple, friendly cartoon style with bold shapes and clean outlines, with a thick white die-cut border following its outline and a subtle gloss highlight. No text, letters or numbers. Centred and filling most of the frame, isolated on a transparent background."
+  },
+  {
+   "trip": "t4",
+   "theme": "Ranch and trail",
+   "table": "souvenir-west",
+   "tableTitle": "Ranch Table",
+   "tablePrompt": "The new setting: a RANCH HOUSE TABLE at sundown in the American West. The table is weathered grey-brown barn-wood planks. In the top-left and top-right corners, old hurricane oil lanterns glowing amber, partly cut by the frame, casting warm light onto the wood below them. Along the edges: a coiled rope lasso at the left, a tin cup and an enamel coffee pot, the brim of a cowboy hat at the right, a leather glove and a few horseshoe nails at the bottom edge, and a sprig of sagebrush. The middle is calm, deep dark weathered wood, darker than the lit edges, empty.",
+   "backPrompt": "The SAME single card back as the first reference, with exactly the same look: the same portrait 3:4 shape filling the frame edge to edge, the same generously rounded chubby corners with the same corner radius, the same plump soft rendering, the same thin pale highlight along its top and left rim and slightly darker rim along the bottom and right, and the same one small round glowing warm amber dot (#e99645) exactly in the centre, perfectly round and the same size. Only change its face: a tan suede leather (#7a5636) with a fine grain and a neat stitched edge, with no pattern. Seen perfectly straight on from directly above, centred. No stack, no other cards, no shadow, no table, no text. Isolated on a transparent background.",
+   "stickerPrompt": "A glossy die-cut vinyl sticker of a brown cowboy boot with a silver spur, in a bright, simple, friendly cartoon style with bold shapes and clean outlines, with a thick white die-cut border following its outline and a subtle gloss highlight. No text, letters or numbers. Centred and filling most of the frame, isolated on a transparent background."
+  },
+  {
+   "trip": "t5",
+   "theme": "Impressionist paintings",
+   "table": "souvenir-france",
+   "tableTitle": "Painter's Table",
+   "tablePrompt": "The new setting: a PAINTER'S STUDIO TABLE in Provence at dusk. The table is a paint-spattered pale wooden worktable. In the top-left and top-right corners, a brass oil lamp and a candle in a holder glowing warm amber, partly cut by the frame, casting soft light onto the table below them. Along the edges: crumpled tubes of oil paint in bright colours, brushes standing in a glass jar at the left, a wooden palette with dabs of colour at the right, a paint rag, a sprig of lavender and a lemon at the bottom edge partly cut. The middle is calm, deep shaded wood, darker than the lit edges, empty.",
+   "backPrompt": "The SAME single card back as the first reference, with exactly the same look: the same portrait 3:4 shape filling the frame edge to edge, the same generously rounded chubby corners with the same corner radius, the same plump soft rendering, the same thin pale highlight along its top and left rim and slightly darker rim along the bottom and right, and the same one small round glowing warm amber dot (#e99645) exactly in the centre, perfectly round and the same size. Only change its face: a cobalt blue (#2c4a8a) linen canvas with a fine visible weave, with no pattern. Seen perfectly straight on from directly above, centred. No stack, no other cards, no shadow, no table, no text. Isolated on a transparent background.",
+   "stickerPrompt": "A glossy die-cut vinyl sticker of an artist's wooden palette with dabs of bright paint and a brush, in a bright, simple, friendly cartoon style with bold shapes and clean outlines, with a thick white die-cut border following its outline and a subtle gloss highlight. No text, letters or numbers. Centred and filling most of the frame, isolated on a transparent background."
+  },
+  {
+   "trip": "t6",
+   "theme": "Wildlife",
+   "table": "souvenir-canada",
+   "tableTitle": "Lake Lodge",
+   "tablePrompt": "The new setting: a NORTHERN LAKE LODGE on an autumn evening. The table is dark red cedar planks. In the top-left and top-right corners, brass camp lanterns glowing warm amber, partly cut by the frame, casting soft light onto the cedar below them. Along the edges: a red and black buffalo-check wool blanket along the left edge, a tin mug of hot cocoa, a few red maple leaves, the tip of a wooden canoe paddle at the right, a pine cone and a curl of birch bark at the bottom edge. The middle is calm, deep dark cedar, darker than the lit edges, empty.",
+   "backPrompt": "The SAME single card back as the first reference, with exactly the same look: the same portrait 3:4 shape filling the frame edge to edge, the same generously rounded chubby corners with the same corner radius, the same plump soft rendering, the same thin pale highlight along its top and left rim and slightly darker rim along the bottom and right, and the same one small round glowing warm amber dot (#e99645) exactly in the centre, perfectly round and the same size. Only change its face: a deep forest green (#2e4a35) brushed wool with a very fine woven texture, with no pattern. Seen perfectly straight on from directly above, centred. No stack, no other cards, no shadow, no table, no text. Isolated on a transparent background.",
+   "stickerPrompt": "A glossy die-cut vinyl sticker of a brown moose with broad antlers, in a bright, simple, friendly cartoon style with bold shapes and clean outlines, with a thick white die-cut border following its outline and a subtle gloss highlight. No text, letters or numbers. Centred and filling most of the frame, isolated on a transparent background."
+  },
+  {
+   "trip": "t7",
+   "theme": "Tango, gauchos and mate",
+   "table": "souvenir-argentina",
+   "tableTitle": "Buenos Aires Café",
+   "tablePrompt": "The new setting: a BUENOS AIRES CAFÉ at night. The table is dark polished walnut. In the top-left and top-right corners, art nouveau brass wall lamps with amber glass shades, partly cut by the frame, casting warm light onto the wood below them. Along the edges: a mate gourd with its silver straw at the left, a small painted tray decorated with bright curling fileteado scrolls and no lettering at the right, a cup of coffee on a saucer, and the corner of a bandoneón at the bottom edge partly cut. The middle is calm, deep dark walnut, darker than the lit edges, empty.",
+   "backPrompt": "The SAME single card back as the first reference, with exactly the same look: the same portrait 3:4 shape filling the frame edge to edge, the same generously rounded chubby corners with the same corner radius, the same plump soft rendering, the same thin pale highlight along its top and left rim and slightly darker rim along the bottom and right, and the same one small round glowing warm amber dot (#e99645) exactly in the centre, perfectly round and the same size. Only change its face: a deep wine-red (#6b2737) lacquered wood with a very fine texture, with no pattern. Seen perfectly straight on from directly above, centred. No stack, no other cards, no shadow, no table, no text. Isolated on a transparent background.",
+   "stickerPrompt": "A glossy die-cut vinyl sticker of a mate gourd decorated with silver, with a silver straw, in a bright, simple, friendly cartoon style with bold shapes and clean outlines, with a thick white die-cut border following its outline and a subtle gloss highlight. No text, letters or numbers. Centred and filling most of the frame, isolated on a transparent background."
+  },
+  {
+   "trip": "t8",
+   "theme": "Wildlife",
+   "table": "souvenir-australia",
+   "tableTitle": "Ranger's Desk",
+   "tablePrompt": "The new setting: a WILDLIFE RANGER'S FIELD DESK at dusk in the Australian bush. The table is sun-bleached hardwood planks. In the top-left and top-right corners, kerosene lamps glowing warm amber, partly cut by the frame, casting soft light onto the wood below them. Along the edges: an open field notebook with pencil sketches of birds and no writing at the left, a pair of binoculars, sprigs of eucalyptus leaves and gumnuts, the brim of a slouch hat at the right, and a metal water canteen at the bottom edge partly cut. The middle is calm, deep shaded hardwood, darker than the lit edges, empty.",
+   "backPrompt": "The SAME single card back as the first reference, with exactly the same look: the same portrait 3:4 shape filling the frame edge to edge, the same generously rounded chubby corners with the same corner radius, the same plump soft rendering, the same thin pale highlight along its top and left rim and slightly darker rim along the bottom and right, and the same one small round glowing warm amber dot (#e99645) exactly in the centre, perfectly round and the same size. Only change its face: a dusty ochre (#8a5a2c) canvas with a fine visible weave, with no pattern. Seen perfectly straight on from directly above, centred. No stack, no other cards, no shadow, no table, no text. Isolated on a transparent background.",
+   "stickerPrompt": "A glossy die-cut vinyl sticker of a red kangaroo, in a bright, simple, friendly cartoon style with bold shapes and clean outlines, with a thick white die-cut border following its outline and a subtle gloss highlight. No text, letters or numbers. Centred and filling most of the frame, isolated on a transparent background."
+  },
+  {
+   "trip": "t9",
+   "theme": "Street food",
+   "table": "souvenir-south-africa",
+   "tableTitle": "Braai Table",
+   "tablePrompt": "The new setting: a BRAAI-SIDE TABLE at sunset in South Africa. The table is dark wooden planks. In the top-left corner the warm orange glow of a braai fire, and in the top-right corner a hurricane lamp, both partly cut by the frame, casting warm light onto the wood below them. Along the edges: a wooden chopping board with red chillies at the left, a tin plate and braai tongs, a colourful woven cloth with bright stripes along the right edge, and a bowl of yellow mealies at the bottom edge partly cut. The middle is calm, deep dark wood, darker than the lit edges, empty.",
+   "backPrompt": "The SAME single card back as the first reference, with exactly the same look: the same portrait 3:4 shape filling the frame edge to edge, the same generously rounded chubby corners with the same corner radius, the same plump soft rendering, the same thin pale highlight along its top and left rim and slightly darker rim along the bottom and right, and the same one small round glowing warm amber dot (#e99645) exactly in the centre, perfectly round and the same size. Only change its face: a deep green (#2f5a46) woven cloth with a very fine texture, with no pattern. Seen perfectly straight on from directly above, centred. No stack, no other cards, no shadow, no table, no text. Isolated on a transparent background.",
+   "stickerPrompt": "A glossy die-cut vinyl sticker of a grilled boerewors sausage in a bread roll with relish, in a bright, simple, friendly cartoon style with bold shapes and clean outlines, with a thick white die-cut border following its outline and a subtle gloss highlight. No text, letters or numbers. Centred and filling most of the frame, isolated on a transparent background."
+  },
+  {
+   "trip": "t10",
+   "theme": "Transport",
+   "table": "souvenir-uk-ireland",
+   "tableTitle": "Railway Carriage",
+   "tablePrompt": "The new setting: a VINTAGE RAILWAY CARRIAGE TABLE at night. The table is polished mahogany. In the top-left and top-right corners, brass carriage lamps with frosted glass glowing warm amber, partly cut by the frame, casting soft light onto the wood below them. Along the edges: a red tartan travel rug along the left edge, a china teacup on a saucer, a pair of leather gloves and a brass carriage key at the right, and a small posy of heather at the bottom edge partly cut. The middle is calm, deep dark mahogany, darker than the lit edges, empty.",
+   "backPrompt": "The SAME single card back as the first reference, with exactly the same look: the same portrait 3:4 shape filling the frame edge to edge, the same generously rounded chubby corners with the same corner radius, the same plump soft rendering, the same thin pale highlight along its top and left rim and slightly darker rim along the bottom and right, and the same one small round glowing warm amber dot (#e99645) exactly in the centre, perfectly round and the same size. Only change its face: a deep racing green (#24433a) leather with a very fine grain, with no pattern. Seen perfectly straight on from directly above, centred. No stack, no other cards, no shadow, no table, no text. Isolated on a transparent background.",
+   "stickerPrompt": "A glossy die-cut vinyl sticker of a red double-decker bus, in a bright, simple, friendly cartoon style with bold shapes and clean outlines, with a thick white die-cut border following its outline and a subtle gloss highlight. No text, letters or numbers. Centred and filling most of the frame, isolated on a transparent background."
+  }
+ ],
+ "pictures": [
+  {
+   "id": "sv-t1-pancakes",
+   "trip": "t1",
+   "title": "Pancake Stack",
+   "medium": "render",
+   "cols": 1,
+   "rows": 2,
+   "bg": "blue",
+   "subjects": [
+    "pancake stack"
+   ],
+   "prompt": "a tall stack of fluffy golden pancakes with a pat of butter on top and maple syrup dripping down the sides, on a small plate"
+  },
+  {
+   "id": "sv-t1-milkshake",
+   "trip": "t1",
+   "title": "Milkshake",
+   "medium": "render",
+   "cols": 1,
+   "rows": 2,
+   "bg": "teal",
+   "subjects": [
+    "milkshake"
+   ],
+   "prompt": "a tall glass of pink strawberry milkshake topped with whipped cream, sprinkles and a red cherry, with a striped paper straw"
+  },
+  {
+   "id": "sv-t1-corn-dog",
+   "trip": "t1",
+   "title": "Corn Dog",
+   "medium": "render",
+   "cols": 1,
+   "rows": 2,
+   "bg": "purple",
+   "subjects": [
+    "corn dog"
+   ],
+   "prompt": "a golden corn dog on a wooden stick, held upright, with a zigzag of yellow mustard"
+  },
+  {
+   "id": "sv-t1-soft-serve",
+   "trip": "t1",
+   "title": "Soft-Serve Cone",
+   "medium": "render",
+   "cols": 1,
+   "rows": 2,
+   "bg": "magenta",
+   "subjects": [
+    "soft-serve cone"
+   ],
+   "prompt": "a crisp waffle cone with a tall swirl of vanilla soft-serve ice cream and rainbow sprinkles"
+  },
+  {
+   "id": "sv-t1-popcorn",
+   "trip": "t1",
+   "title": "Popcorn",
+   "medium": "render",
+   "cols": 1,
+   "rows": 2,
+   "bg": "orange",
+   "subjects": [
+    "popcorn box"
+   ],
+   "prompt": "a tall red-and-white striped paper popcorn box overflowing with buttery popcorn, with no writing on it"
+  },
+  {
+   "id": "sv-t1-candy-apple",
+   "trip": "t1",
+   "title": "Candy Apple",
+   "medium": "render",
+   "cols": 1,
+   "rows": 2,
+   "bg": "lime",
+   "subjects": [
+    "candy apple"
+   ],
+   "prompt": "a glossy red candy apple on a wooden stick, held upright with the stick pointing up"
+  },
+  {
+   "id": "sv-t1-hot-dog",
+   "trip": "t1",
+   "title": "Hot Dog",
+   "medium": "render",
+   "cols": 2,
+   "rows": 1,
+   "bg": "sky",
+   "subjects": [
+    "hot dog"
+   ],
+   "prompt": "a hot dog in a soft bun with a wavy line of yellow mustard and red ketchup, seen from the side"
+  },
+  {
+   "id": "sv-t1-ribs",
+   "trip": "t1",
+   "title": "BBQ Ribs",
+   "medium": "render",
+   "cols": 2,
+   "rows": 1,
+   "bg": "yellow",
+   "subjects": [
+    "barbecue ribs"
+   ],
+   "prompt": "a rack of glazed barbecue ribs with charred edges, seen from the side"
+  },
+  {
+   "id": "sv-t1-banana-split",
+   "trip": "t1",
+   "title": "Banana Split",
+   "medium": "render",
+   "cols": 2,
+   "rows": 1,
+   "bg": "green",
+   "subjects": [
+    "banana split"
+   ],
+   "prompt": "a long glass dish holding a banana split: a banana cut lengthways, three scoops of ice cream, chocolate sauce, whipped cream and cherries"
+  },
+  {
+   "id": "sv-t1-pizza-slice",
+   "trip": "t1",
+   "title": "Pizza Slice",
+   "medium": "render",
+   "cols": 2,
+   "rows": 1,
+   "bg": "pink",
+   "subjects": [
+    "pizza slice"
+   ],
+   "prompt": "a big folded slice of New York cheese pizza with pepperoni, seen from the side, a string of melted cheese hanging from it"
+  },
+  {
+   "id": "sv-t1-apple-pie",
+   "trip": "t1",
+   "title": "Apple Pie",
+   "medium": "render",
+   "cols": 2,
+   "rows": 1,
+   "bg": "navy",
+   "subjects": [
+    "apple pie"
+   ],
+   "prompt": "a slice of lattice-topped apple pie on a plate with a scoop of vanilla ice cream beside it"
+  },
+  {
+   "id": "sv-t1-corn-cob",
+   "trip": "t1",
+   "title": "Corn on the Cob",
+   "medium": "render",
+   "cols": 2,
+   "rows": 1,
+   "bg": "red",
+   "subjects": [
+    "corn on the cob"
+   ],
+   "prompt": "a grilled corn on the cob with a melting pat of butter, lying sideways"
+  },
+  {
+   "id": "sv-t2-sudden-shower",
+   "trip": "t2",
+   "title": "Sudden Shower over Shin-Ōhashi Bridge",
+   "medium": "print",
+   "cols": 1,
+   "rows": 2,
+   "subjects": [
+    "sudden shower"
+   ],
+   "museum": {
+    "source": "aic",
+    "id": 26545,
+    "museum": "Art Institute of Chicago",
+    "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+    "imageUrl": "https://www.artic.edu/iiif/2/cf4a7aa2-6f16-efcf-8702-3bdd663a63ba/full/!1600,1600/0/default.jpg",
+    "artist": "Utagawa Hiroshige",
+    "title": "Sudden Shower over Shin Ohashi Bridge and Atake (Ohashi Atake no yudachi), from the series \"One Hundred Famous Views of Edo (Meisho Edo hyakkei)\"",
+    "date": "1857",
+    "page": "https://www.artic.edu/artworks/26545"
+   },
+   "trim": 0.04
+  },
+  {
+   "id": "sv-t2-plum-garden",
+   "trip": "t2",
+   "title": "Plum Garden at Kameido",
+   "medium": "print",
+   "cols": 1,
+   "rows": 2,
+   "subjects": [
+    "plum garden"
+   ],
+   "museum": {
+    "source": "aic",
+    "id": 26577,
+    "museum": "Art Institute of Chicago",
+    "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+    "imageUrl": "https://www.artic.edu/iiif/2/89a2332f-be15-8e05-bc79-778738fdc1ef/full/!1600,1600/0/default.jpg",
+    "artist": "Utagawa Hiroshige",
+    "title": "Plum Garden at Kameido (Kameido Umeyashiki), from the series \"One Hundred Famous Views of Edo (Meisho Edo hyakkei)\"",
+    "date": "1857",
+    "page": "https://www.artic.edu/artworks/26577"
+   },
+   "trim": 0.04
+  },
+  {
+   "id": "sv-t2-eagle",
+   "trip": "t2",
+   "title": "Fukagawa Susaki and Jūmantsubo",
+   "medium": "print",
+   "cols": 1,
+   "rows": 2,
+   "subjects": [
+    "eagle"
+   ],
+   "museum": {
+    "source": "aic",
+    "id": 26605,
+    "museum": "Art Institute of Chicago",
+    "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+    "imageUrl": "https://www.artic.edu/iiif/2/5b88161b-254e-fdf2-5d69-b869fd506ac8/full/!1600,1600/0/default.jpg",
+    "artist": "Utagawa Hiroshige",
+    "title": "Fukagawa Susaki and Jumantsubo (Fukagawa Susaki Jumantsubo), from the series \"One Hundred Famous Views of Edo (Meisho Edo hyakkei)\"",
+    "date": "1857",
+    "page": "https://www.artic.edu/artworks/26605"
+   },
+   "trim": 0.04
+  },
+  {
+   "id": "sv-t2-fireworks",
+   "trip": "t2",
+   "title": "Fireworks at Ryōgoku",
+   "medium": "print",
+   "cols": 1,
+   "rows": 2,
+   "subjects": [
+    "fireworks"
+   ],
+   "museum": {
+    "source": "aic",
+    "id": 26522,
+    "museum": "Art Institute of Chicago",
+    "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+    "imageUrl": "https://www.artic.edu/iiif/2/90608dcf-a810-d557-39bc-cb3bc3bb551d/full/!1600,1600/0/default.jpg",
+    "artist": "Utagawa Hiroshige",
+    "title": "Fireworks at Ryōgoku  (Ryōgoku  hanabi), from the series One Hundred Famous Views of Edo (Meisho Edo hyakkei)",
+    "date": "1858",
+    "page": "https://www.artic.edu/artworks/26522"
+   },
+   "trim": 0.04
+  },
+  {
+   "id": "sv-t2-kirifuri-falls",
+   "trip": "t2",
+   "title": "Kirifuri Falls",
+   "medium": "print",
+   "cols": 1,
+   "rows": 2,
+   "subjects": [
+    "kirifuri falls"
+   ],
+   "museum": {
+    "source": "aic",
+    "id": 13263,
+    "museum": "Art Institute of Chicago",
+    "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+    "imageUrl": "https://www.artic.edu/iiif/2/c821c3af-d4c6-d8ca-15fd-b2d2e02c2ade/full/!1600,1600/0/default.jpg",
+    "artist": "Katsushika Hokusai",
+    "title": "Kirifuri Falls at Mount Kurokami in Shimotsuke Province (Shimotsuke Kurokamiyama Kirifuri no taki), from the series \"A Tour of Waterfalls in Various Provinces (Shokoku taki meguri)\"",
+    "date": "c. 1833",
+    "page": "https://www.artic.edu/artworks/13263"
+   },
+   "trim": 0.04
+  },
+  {
+   "id": "sv-t2-asakusa-cat",
+   "trip": "t2",
+   "title": "Asakusa Rice Fields",
+   "medium": "print",
+   "cols": 1,
+   "rows": 2,
+   "subjects": [
+    "window cat"
+   ],
+   "museum": {
+    "source": "aic",
+    "id": 26534,
+    "museum": "Art Institute of Chicago",
+    "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+    "imageUrl": "https://www.artic.edu/iiif/2/f8e070ee-282b-46e7-6400-6d6b23cd7c86/full/!1600,1600/0/default.jpg",
+    "artist": "Utagawa Hiroshige",
+    "title": "Asakusa Rice Fields and Torinomachi Festival (Asakusa tanbo Torinomachi mode), from the series \"One Hundred Famous Views of Edo (Meisho Edo hyakkei)\"",
+    "date": "1857",
+    "page": "https://www.artic.edu/artworks/26534"
+   },
+   "trim": 0.04
+  },
+  {
+   "id": "sv-t2-great-wave",
+   "trip": "t2",
+   "title": "Under the Wave off Kanagawa",
+   "medium": "print",
+   "cols": 2,
+   "rows": 1,
+   "subjects": [
+    "great wave"
+   ],
+   "museum": {
+    "source": "aic",
+    "id": 24645,
+    "museum": "Art Institute of Chicago",
+    "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+    "imageUrl": "https://www.artic.edu/iiif/2/b3974542-b9b4-7568-fc4b-966738f61d78/full/!1600,1600/0/default.jpg",
+    "artist": "Katsushika Hokusai",
+    "title": "Under the Wave off Kanagawa (Kanagawa oki nami ura), also known as The Great Wave, from the series \"Thirty-Six Views of Mount Fuji (Fugaku sanjūrokkei)\"",
+    "date": "1830/33",
+    "page": "https://www.artic.edu/artworks/24645"
+   },
+   "trim": 0.04
+  },
+  {
+   "id": "sv-t2-red-fuji",
+   "trip": "t2",
+   "title": "A Mild Breeze on a Fine Day",
+   "medium": "print",
+   "cols": 2,
+   "rows": 1,
+   "subjects": [
+    "red fuji"
+   ],
+   "museum": {
+    "source": "aic",
+    "id": 87005,
+    "museum": "Art Institute of Chicago",
+    "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+    "imageUrl": "https://www.artic.edu/iiif/2/38726da7-8122-dc49-9243-766a1eeba9ed/full/!1600,1600/0/default.jpg",
+    "artist": "Katsushika Hokusai",
+    "title": "A Mild Breeze on a Fine Day (Gaifu kaisei), from the series \"Thirty-six Views of Mount Fuji (Fugaku sanjurokkei)\"",
+    "date": "c. 1830/33",
+    "page": "https://www.artic.edu/artworks/87005"
+   },
+   "trim": 0.04
+  },
+  {
+   "id": "sv-t2-mishima-pass",
+   "trip": "t2",
+   "title": "Mishima Pass",
+   "medium": "print",
+   "cols": 2,
+   "rows": 1,
+   "subjects": [
+    "mishima pass"
+   ],
+   "museum": {
+    "source": "aic",
+    "id": 24786,
+    "museum": "Art Institute of Chicago",
+    "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+    "imageUrl": "https://www.artic.edu/iiif/2/f8d93165-9f15-b4d5-5e96-0607c308d6c2/full/!1600,1600/0/default.jpg",
+    "artist": "Katsushika Hokusai",
+    "title": "Mishima Pass in Kai Province (Koshu Mishimagoe), from the series \"Thirty-six Views of Mount Fuji (Fugaku sanjurokkei)\"",
+    "date": "c. 1830/33",
+    "page": "https://www.artic.edu/artworks/24786"
+   },
+   "trim": 0.04
+  },
+  {
+   "id": "sv-t2-kajikazawa",
+   "trip": "t2",
+   "title": "Kajikazawa",
+   "medium": "print",
+   "cols": 2,
+   "rows": 1,
+   "subjects": [
+    "kajikazawa"
+   ],
+   "museum": {
+    "source": "aic",
+    "id": 18969,
+    "museum": "Art Institute of Chicago",
+    "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+    "imageUrl": "https://www.artic.edu/iiif/2/81114385-3f62-e1ad-64d3-9dcc2b07b2b0/full/!1600,1600/0/default.jpg",
+    "artist": "Katsushika Hokusai",
+    "title": "Kajikazawa in Kai Province (Koshu Kajikazawa), from the series \"Thirty-six Views of Mount Fuji (Fugaku sanjurokkei)\"",
+    "date": "c. 1830/33",
+    "page": "https://www.artic.edu/artworks/18969"
+   },
+   "trim": 0.04
+  },
+  {
+   "id": "sv-t2-cloud-bridge",
+   "trip": "t2",
+   "title": "The Hanging-Cloud Bridge",
+   "medium": "print",
+   "cols": 2,
+   "rows": 1,
+   "subjects": [
+    "cloud bridge"
+   ],
+   "museum": {
+    "source": "aic",
+    "id": 149107,
+    "museum": "Art Institute of Chicago",
+    "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+    "imageUrl": "https://www.artic.edu/iiif/2/ae4f773f-a59b-fd6e-2265-39fcdff80b02/full/!1600,1600/0/default.jpg",
+    "artist": "Katsushika Hokusai",
+    "title": "The Hanging-Cloud Bridge at Mount Gyodo near Ashikaga (Ashikaga Gyodozan kumo no kakehashi), from the series \"Unusual Views of Famous Bridges in Various Provinces (Shokoku meikyo kiran)\"",
+    "date": "c. 1833/34",
+    "page": "https://www.artic.edu/artworks/149107"
+   },
+   "trim": 0.04
+  },
+  {
+   "id": "sv-t2-kanbara-snow",
+   "trip": "t2",
+   "title": "Evening Snow at Kanbara",
+   "medium": "print",
+   "cols": 2,
+   "rows": 1,
+   "subjects": [
+    "kanbara snow"
+   ],
+   "museum": {
+    "source": "aic",
+    "id": 25613,
+    "museum": "Art Institute of Chicago",
+    "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+    "imageUrl": "https://www.artic.edu/iiif/2/c287562e-816e-096c-022a-b05199ba4b8f/full/!1600,1600/0/default.jpg",
+    "artist": "Utagawa Hiroshige",
+    "title": "Kanbara: Evening Snow (Kanbara, yoru no yuki), from the series \"Fifty-three Stations of the Tokaido (Tokaido gojusan tsugi no uchi),\" also known as the Hoeido Tokaido",
+    "date": "c. 1833/34",
+    "page": "https://www.artic.edu/artworks/25613"
+   },
+   "trim": 0.04
+  },
+  {
+   "id": "sv-t3-orator",
+   "trip": "t3",
+   "title": "Roman Orator",
+   "medium": "photo",
+   "cols": 1,
+   "rows": 2,
+   "bg": "red",
+   "subjects": [
+    "orator statue"
+   ],
+   "prompt": "a white marble statue of a Roman orator in a draped toga, one arm raised as he speaks, on a low plinth, seen full length"
+  },
+  {
+   "id": "sv-t3-column",
+   "trip": "t3",
+   "title": "Corinthian Column",
+   "medium": "photo",
+   "cols": 1,
+   "rows": 2,
+   "bg": "blue",
+   "subjects": [
+    "corinthian column"
+   ],
+   "prompt": "a single white marble Roman column with a carved Corinthian capital of acanthus leaves, on a square base, seen whole"
+  },
+  {
+   "id": "sv-t3-amphora",
+   "trip": "t3",
+   "title": "Amphora",
+   "medium": "photo",
+   "cols": 1,
+   "rows": 2,
+   "bg": "teal",
+   "subjects": [
+    "amphora"
+   ],
+   "prompt": "a tall terracotta Roman amphora with two handles and a pointed foot, standing in a simple iron ring stand"
+  },
+  {
+   "id": "sv-t3-eagle-standard",
+   "trip": "t3",
+   "title": "Eagle Standard",
+   "medium": "photo",
+   "cols": 1,
+   "rows": 2,
+   "bg": "purple",
+   "subjects": [
+    "eagle standard"
+   ],
+   "prompt": "a Roman legion's bronze eagle standard: a gilded bronze eagle with spread wings on top of a tall pole hung with a small plain red banner"
+  },
+  {
+   "id": "sv-t3-bust",
+   "trip": "t3",
+   "title": "Marble Bust",
+   "medium": "photo",
+   "cols": 1,
+   "rows": 2,
+   "bg": "green",
+   "subjects": [
+    "marble bust"
+   ],
+   "prompt": "a white marble bust of a bearded Roman man wearing a laurel wreath, on a tall round pedestal"
+  },
+  {
+   "id": "sv-t3-lamp-stand",
+   "trip": "t3",
+   "title": "Bronze Lamp Stand",
+   "medium": "photo",
+   "cols": 1,
+   "rows": 2,
+   "bg": "sky",
+   "subjects": [
+    "lamp stand"
+   ],
+   "prompt": "a tall bronze Roman lamp stand with three lion's-paw feet and a small oil lamp on top"
+  },
+  {
+   "id": "sv-t3-chariot",
+   "trip": "t3",
+   "title": "Bronze Chariot",
+   "medium": "photo",
+   "cols": 2,
+   "rows": 1,
+   "bg": "magenta",
+   "subjects": [
+    "chariot"
+   ],
+   "prompt": "a bronze statue of a Roman two-horse chariot with its driver, the horses mid-stride, seen from the side"
+  },
+  {
+   "id": "sv-t3-river-god",
+   "trip": "t3",
+   "title": "River God",
+   "medium": "photo",
+   "cols": 2,
+   "rows": 1,
+   "bg": "orange",
+   "subjects": [
+    "river god"
+   ],
+   "prompt": "a white marble statue of a draped, bearded river god reclining on one elbow beside an overturned urn, seen from the front"
+  },
+  {
+   "id": "sv-t3-sarcophagus",
+   "trip": "t3",
+   "title": "Sarcophagus",
+   "medium": "photo",
+   "cols": 2,
+   "rows": 1,
+   "bg": "navy",
+   "subjects": [
+    "sarcophagus"
+   ],
+   "prompt": "a white marble Roman sarcophagus carved along its long side with a busy relief of figures, garlands and lion heads"
+  },
+  {
+   "id": "sv-t3-mosaic",
+   "trip": "t3",
+   "title": "Dolphin Mosaic",
+   "medium": "photo",
+   "cols": 2,
+   "rows": 1,
+   "bg": "yellow",
+   "subjects": [
+    "dolphin mosaic"
+   ],
+   "prompt": "a rectangular Roman floor mosaic panel of blue dolphins and colourful fish among waves, made of small stone tesserae, standing upright"
+  },
+  {
+   "id": "sv-t3-galley",
+   "trip": "t3",
+   "title": "Roman Galley",
+   "medium": "photo",
+   "cols": 2,
+   "rows": 1,
+   "bg": "lime",
+   "subjects": [
+    "galley"
+   ],
+   "prompt": "a wooden model of a Roman galley with a square red sail, a row of oars and a curved prow, seen from the side"
+  },
+  {
+   "id": "sv-t3-lion",
+   "trip": "t3",
+   "title": "Marble Lion",
+   "medium": "photo",
+   "cols": 2,
+   "rows": 1,
+   "bg": "pink",
+   "subjects": [
+    "marble lion"
+   ],
+   "prompt": "a recumbent white marble lion statue lying on a low plinth, its head turned, seen from the side"
+  },
+  {
+   "id": "sv-t4-boot",
+   "trip": "t4",
+   "title": "Cowboy Boot",
+   "medium": "print",
+   "cols": 1,
+   "rows": 2,
+   "bg": "red",
+   "subjects": [
+    "cowboy boot"
+   ],
+   "prompt": "a tall cowboy boot with stitched patterns and a spur, standing upright, seen from the side"
+  },
+  {
+   "id": "sv-t4-windpump",
+   "trip": "t4",
+   "title": "Windpump",
+   "medium": "print",
+   "cols": 1,
+   "rows": 2,
+   "bg": "sky",
+   "subjects": [
+    "windpump"
+   ],
+   "prompt": "an old farm windpump: a tall lattice tower topped by a wheel of blades and a tail vane"
+  },
+  {
+   "id": "sv-t4-lantern",
+   "trip": "t4",
+   "title": "Oil Lantern",
+   "medium": "print",
+   "cols": 1,
+   "rows": 2,
+   "bg": "navy",
+   "subjects": [
+    "oil lantern"
+   ],
+   "prompt": "an old oil lantern with a wire handle and a glowing flame inside its glass"
+  },
+  {
+   "id": "sv-t4-guitar",
+   "trip": "t4",
+   "title": "Guitar",
+   "medium": "print",
+   "cols": 1,
+   "rows": 2,
+   "bg": "teal",
+   "subjects": [
+    "guitar"
+   ],
+   "prompt": "an acoustic guitar standing upright, its long neck pointing up"
+  },
+  {
+   "id": "sv-t4-coffee-pot",
+   "trip": "t4",
+   "title": "Campfire Coffee",
+   "medium": "print",
+   "cols": 1,
+   "rows": 2,
+   "bg": "purple",
+   "subjects": [
+    "campfire coffee pot"
+   ],
+   "prompt": "an enamel coffee pot hanging from a tripod of sticks over a small campfire, steam rising"
+  },
+  {
+   "id": "sv-t4-saguaro",
+   "trip": "t4",
+   "title": "Saguaro",
+   "medium": "print",
+   "cols": 1,
+   "rows": 2,
+   "bg": "orange",
+   "subjects": [
+    "saguaro"
+   ],
+   "prompt": "a tall saguaro cactus with two raised arms, filled with flat green ink"
+  },
+  {
+   "id": "sv-t4-saddle",
+   "trip": "t4",
+   "title": "Saddle",
+   "medium": "print",
+   "cols": 2,
+   "rows": 1,
+   "bg": "yellow",
+   "subjects": [
+    "saddle"
+   ],
+   "prompt": "a tooled leather Western saddle with a horn and stirrups, seen from the side"
+  },
+  {
+   "id": "sv-t4-wagon",
+   "trip": "t4",
+   "title": "Covered Wagon",
+   "medium": "print",
+   "cols": 2,
+   "rows": 1,
+   "bg": "blue",
+   "subjects": [
+    "covered wagon"
+   ],
+   "prompt": "a covered wagon with a white canvas hood and big spoked wheels, seen from the side"
+  },
+  {
+   "id": "sv-t4-stagecoach",
+   "trip": "t4",
+   "title": "Stagecoach",
+   "medium": "print",
+   "cols": 2,
+   "rows": 1,
+   "bg": "green",
+   "subjects": [
+    "stagecoach"
+   ],
+   "prompt": "an old stagecoach pulled by two horses, seen from the side"
+  },
+  {
+   "id": "sv-t4-hat",
+   "trip": "t4",
+   "title": "Cowboy Hat",
+   "medium": "print",
+   "cols": 2,
+   "rows": 1,
+   "bg": "pink",
+   "subjects": [
+    "cowboy hat"
+   ],
+   "prompt": "a cowboy hat with a wide curled brim and a braided band, seen from the front at a slight angle"
+  },
+  {
+   "id": "sv-t4-longhorn",
+   "trip": "t4",
+   "title": "Longhorn",
+   "medium": "print",
+   "cols": 2,
+   "rows": 1,
+   "bg": "magenta",
+   "subjects": [
+    "longhorn steer"
+   ],
+   "prompt": "a longhorn steer with very long curving horns, standing, seen from the side"
+  },
+  {
+   "id": "sv-t4-harmonica",
+   "trip": "t4",
+   "title": "Harmonica",
+   "medium": "print",
+   "cols": 2,
+   "rows": 1,
+   "bg": "lime",
+   "subjects": [
+    "harmonica"
+   ],
+   "prompt": "a harmonica lying sideways, its row of square holes facing the viewer"
+  },
+  {
+   "id": "sv-t5-cypresses",
+   "trip": "t5",
+   "title": "Cypresses",
+   "medium": "painting",
+   "cols": 1,
+   "rows": 2,
+   "subjects": [
+    "cypresses"
+   ],
+   "museum": {
+    "source": "met",
+    "id": 437980,
+    "museum": "The Metropolitan Museum of Art",
+    "licence": "CC0 (The Metropolitan Museum of Art Open Access)",
+    "imageUrl": "https://images.metmuseum.org/CRDImages/ep/original/DP130999.jpg",
+    "artist": "Vincent van Gogh",
+    "title": "Cypresses",
+    "date": "1889",
+    "page": "https://www.metmuseum.org/art/collection/search/437980"
+   },
+   "trim": [
+    0.01,
+    0.03,
+    0.01,
+    0.02
+   ]
+  },
+  {
+   "id": "sv-t5-parasol",
+   "trip": "t5",
+   "title": "Woman with a Parasol",
+   "medium": "painting",
+   "cols": 1,
+   "rows": 2,
+   "subjects": [
+    "parasol"
+   ],
+   "museum": {
+    "source": "nga",
+    "id": 61379,
+    "image": "99758d9d-c10b-4d02-a198-7e49afb1f3a6",
+    "artist": "Claude Monet",
+    "title": "Woman with a Parasol - Madame Monet and Her Son",
+    "date": "1875",
+    "museum": "National Gallery of Art, Washington",
+    "licence": "CC0 (National Gallery of Art, Washington, Open Access)",
+    "imageUrl": "https://api.nga.gov/iiif/99758d9d-c10b-4d02-a198-7e49afb1f3a6/full/!1600,1600/0/default.jpg",
+    "page": "https://www.nga.gov/artworks/61379"
+   },
+   "trim": 0.01
+  },
+  {
+   "id": "sv-t5-watering-can",
+   "trip": "t5",
+   "title": "A Girl with a Watering Can",
+   "medium": "painting",
+   "cols": 1,
+   "rows": 2,
+   "subjects": [
+    "watering can"
+   ],
+   "museum": {
+    "source": "nga",
+    "id": 46681,
+    "image": "bcc517e0-84c3-4e21-8c08-c9a0181ced29",
+    "artist": "Auguste Renoir",
+    "title": "A Girl with a Watering Can",
+    "date": "1876",
+    "museum": "National Gallery of Art, Washington",
+    "licence": "CC0 (National Gallery of Art, Washington, Open Access)",
+    "imageUrl": "https://api.nga.gov/iiif/bcc517e0-84c3-4e21-8c08-c9a0181ced29/full/!1600,1600/0/default.jpg",
+    "page": "https://www.nga.gov/artworks/46681"
+   },
+   "trim": 0.01
+  },
+  {
+   "id": "sv-t5-rainy-day",
+   "trip": "t5",
+   "title": "Paris Street; Rainy Day",
+   "medium": "painting",
+   "cols": 1,
+   "rows": 2,
+   "subjects": [
+    "rainy day"
+   ],
+   "museum": {
+    "source": "aic",
+    "id": 20684,
+    "museum": "Art Institute of Chicago",
+    "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+    "imageUrl": "https://www.artic.edu/iiif/2/f8fd76e9-c396-5678-36ed-6a348c904d27/full/!1600,1600/0/default.jpg",
+    "artist": "Gustave Caillebotte",
+    "title": "Paris Street; Rainy Day",
+    "date": "1877",
+    "page": "https://www.artic.edu/artworks/20684"
+   },
+   "trim": 0.01
+  },
+  {
+   "id": "sv-t5-seashore",
+   "trip": "t5",
+   "title": "By the Seashore",
+   "medium": "painting",
+   "cols": 1,
+   "rows": 2,
+   "subjects": [
+    "seashore"
+   ],
+   "museum": {
+    "source": "met",
+    "id": 437430,
+    "museum": "The Metropolitan Museum of Art",
+    "licence": "CC0 (The Metropolitan Museum of Art Open Access)",
+    "imageUrl": "https://images.metmuseum.org/CRDImages/ep/original/DP-14936-039.jpg",
+    "artist": "Auguste Renoir",
+    "title": "By the Seashore",
+    "date": "1883",
+    "page": "https://www.metmuseum.org/art/collection/search/437430"
+   },
+   "trim": [
+    0.01,
+    0.035,
+    0.01,
+    0.035
+   ]
+  },
+  {
+   "id": "sv-t5-childs-bath",
+   "trip": "t5",
+   "title": "The Child's Bath",
+   "medium": "painting",
+   "cols": 1,
+   "rows": 2,
+   "subjects": [
+    "childs bath"
+   ],
+   "museum": {
+    "source": "aic",
+    "id": 111442,
+    "museum": "Art Institute of Chicago",
+    "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+    "imageUrl": "https://www.artic.edu/iiif/2/3b885ae0-4d46-5fe4-d70a-00474827f02c/full/!1600,1600/0/default.jpg",
+    "artist": "Mary Cassatt",
+    "title": "The Child's Bath",
+    "date": "1893",
+    "page": "https://www.artic.edu/artworks/111442"
+   },
+   "trim": 0.01
+  },
+  {
+   "id": "sv-t5-grande-jatte",
+   "trip": "t5",
+   "title": "A Sunday on La Grande Jatte",
+   "medium": "painting",
+   "cols": 2,
+   "rows": 1,
+   "subjects": [
+    "grande jatte"
+   ],
+   "museum": {
+    "source": "aic",
+    "id": 27992,
+    "museum": "Art Institute of Chicago",
+    "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+    "imageUrl": "https://www.artic.edu/iiif/2/2d484387-2509-5e8e-2c43-22f9981972eb/full/!1600,1600/0/default.jpg",
+    "artist": "Georges Seurat",
+    "title": "A Sunday on La Grande Jatte — 1884",
+    "date": "1884–86, border added 1888–89",
+    "page": "https://www.artic.edu/artworks/27992"
+   },
+   "trim": 0.025
+  },
+  {
+   "id": "sv-t5-gare-saint-lazare",
+   "trip": "t5",
+   "title": "Arrival of the Normandy Train",
+   "medium": "painting",
+   "cols": 2,
+   "rows": 1,
+   "subjects": [
+    "gare saint lazare"
+   ],
+   "museum": {
+    "source": "aic",
+    "id": 16571,
+    "museum": "Art Institute of Chicago",
+    "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+    "imageUrl": "https://www.artic.edu/iiif/2/0f1cc0e0-e42e-be16-3f71-2022da38cb93/full/!1600,1600/0/default.jpg",
+    "artist": "Claude Monet",
+    "title": "Arrival of the Normandy Train, Gare Saint-Lazare",
+    "date": "1877",
+    "page": "https://www.artic.edu/artworks/16571"
+   },
+   "trim": 0.01
+  },
+  {
+   "id": "sv-t5-cliff-walk",
+   "trip": "t5",
+   "title": "Cliff Walk at Pourville",
+   "medium": "painting",
+   "cols": 2,
+   "rows": 1,
+   "subjects": [
+    "cliff walk"
+   ],
+   "museum": {
+    "source": "aic",
+    "id": 14620,
+    "museum": "Art Institute of Chicago",
+    "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+    "imageUrl": "https://www.artic.edu/iiif/2/b0effb1c-ff23-bbaa-f809-9fd94e31c1a0/full/!1600,1600/0/default.jpg",
+    "artist": "Claude Monet",
+    "title": "Cliff Walk at Pourville",
+    "date": "1882",
+    "page": "https://www.artic.edu/artworks/14620"
+   },
+   "trim": 0.01
+  },
+  {
+   "id": "sv-t5-stacks-of-wheat",
+   "trip": "t5",
+   "title": "Stacks of Wheat (End of Summer)",
+   "medium": "painting",
+   "cols": 2,
+   "rows": 1,
+   "subjects": [
+    "stacks of wheat"
+   ],
+   "museum": {
+    "source": "aic",
+    "id": 64818,
+    "museum": "Art Institute of Chicago",
+    "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+    "imageUrl": "https://www.artic.edu/iiif/2/a38e2828-ec6f-ece1-a30f-70243449197b/full/!1600,1600/0/default.jpg",
+    "artist": "Claude Monet",
+    "title": "Stacks of Wheat (End of Summer)",
+    "date": "1890–91",
+    "page": "https://www.artic.edu/artworks/64818"
+   },
+   "trim": 0.01
+  },
+  {
+   "id": "sv-t5-dance-class",
+   "trip": "t5",
+   "title": "The Dance Class",
+   "medium": "painting",
+   "cols": 2,
+   "rows": 1,
+   "subjects": [
+    "dance class"
+   ],
+   "museum": {
+    "source": "met",
+    "id": 438817,
+    "museum": "The Metropolitan Museum of Art",
+    "licence": "CC0 (The Metropolitan Museum of Art Open Access)",
+    "imageUrl": "https://images.metmuseum.org/CRDImages/ep/original/DP-20101-001.jpg",
+    "artist": "Edgar Degas",
+    "title": "The Dance Class",
+    "date": "1874",
+    "page": "https://www.metmuseum.org/art/collection/search/438817"
+   },
+   "trim": [
+    0.01,
+    0.01,
+    0.035,
+    0.01
+   ]
+  },
+  {
+   "id": "sv-t5-boulevard-montmartre",
+   "trip": "t5",
+   "title": "The Boulevard Montmartre on a Winter Morning",
+   "medium": "painting",
+   "cols": 2,
+   "rows": 1,
+   "subjects": [
+    "boulevard montmartre"
+   ],
+   "museum": {
+    "source": "met",
+    "id": 437310,
+    "museum": "The Metropolitan Museum of Art",
+    "licence": "CC0 (The Metropolitan Museum of Art Open Access)",
+    "imageUrl": "https://images.metmuseum.org/CRDImages/ep/original/DP-21959-001.jpg",
+    "artist": "Camille Pissarro",
+    "title": "The Boulevard Montmartre on a Winter Morning",
+    "date": "1897",
+    "page": "https://www.metmuseum.org/art/collection/search/437310"
+   },
+   "trim": [
+    0.025,
+    0.01,
+    0.01,
+    0.01
+   ]
+  },
+  {
+   "id": "sv-t6-orca",
+   "trip": "t6",
+   "title": "Orca",
+   "medium": "papercut",
+   "cols": 1,
+   "rows": 2,
+   "bg": "sky",
+   "subjects": [
+    "orca"
+   ],
+   "prompt": "an orca leaping straight up out of the sea in a splash"
+  },
+  {
+   "id": "sv-t6-eagle",
+   "trip": "t6",
+   "title": "Bald Eagle",
+   "medium": "papercut",
+   "cols": 1,
+   "rows": 2,
+   "bg": "teal",
+   "subjects": [
+    "bald eagle"
+   ],
+   "prompt": "a bald eagle perched upright on a bare branch"
+  },
+  {
+   "id": "sv-t6-polar-bear",
+   "trip": "t6",
+   "title": "Polar Bear",
+   "medium": "papercut",
+   "cols": 1,
+   "rows": 2,
+   "bg": "navy",
+   "subjects": [
+    "polar bear standing"
+   ],
+   "prompt": "a polar bear standing up on its hind legs"
+  },
+  {
+   "id": "sv-t6-snowy-owl",
+   "trip": "t6",
+   "title": "Snowy Owl",
+   "medium": "papercut",
+   "cols": 1,
+   "rows": 2,
+   "bg": "purple",
+   "subjects": [
+    "snowy owl"
+   ],
+   "prompt": "a snowy owl perched on a stump"
+  },
+  {
+   "id": "sv-t6-lynx",
+   "trip": "t6",
+   "title": "Lynx",
+   "medium": "papercut",
+   "cols": 1,
+   "rows": 2,
+   "bg": "orange",
+   "subjects": [
+    "lynx"
+   ],
+   "prompt": "a lynx sitting upright, with tufted ears"
+  },
+  {
+   "id": "sv-t6-puffin",
+   "trip": "t6",
+   "title": "Puffin",
+   "medium": "papercut",
+   "cols": 1,
+   "rows": 2,
+   "bg": "lime",
+   "subjects": [
+    "puffin"
+   ],
+   "prompt": "a puffin standing on a rock with a few small fish in its colourful beak"
+  },
+  {
+   "id": "sv-t6-moose",
+   "trip": "t6",
+   "title": "Moose",
+   "medium": "papercut",
+   "cols": 2,
+   "rows": 1,
+   "bg": "yellow",
+   "subjects": [
+    "moose"
+   ],
+   "prompt": "a moose with broad antlers, standing, seen from the side"
+  },
+  {
+   "id": "sv-t6-beaver",
+   "trip": "t6",
+   "title": "Beaver",
+   "medium": "papercut",
+   "cols": 2,
+   "rows": 1,
+   "bg": "pink",
+   "subjects": [
+    "beaver"
+   ],
+   "prompt": "a beaver carrying a leafy branch in its mouth, seen from the side"
+  },
+  {
+   "id": "sv-t6-loon",
+   "trip": "t6",
+   "title": "Loon",
+   "medium": "papercut",
+   "cols": 2,
+   "rows": 1,
+   "bg": "red",
+   "subjects": [
+    "loon"
+   ],
+   "prompt": "a black-and-white common loon swimming, seen from the side, a few paper ripples under it"
+  },
+  {
+   "id": "sv-t6-caribou",
+   "trip": "t6",
+   "title": "Caribou",
+   "medium": "papercut",
+   "cols": 2,
+   "rows": 1,
+   "bg": "green",
+   "subjects": [
+    "caribou"
+   ],
+   "prompt": "a caribou with tall antlers, walking, seen from the side"
+  },
+  {
+   "id": "sv-t6-bison",
+   "trip": "t6",
+   "title": "Bison",
+   "medium": "papercut",
+   "cols": 2,
+   "rows": 1,
+   "bg": "blue",
+   "subjects": [
+    "bison"
+   ],
+   "prompt": "a bison with a shaggy hump, standing, seen from the side"
+  },
+  {
+   "id": "sv-t6-goose",
+   "trip": "t6",
+   "title": "Canada Goose",
+   "medium": "papercut",
+   "cols": 2,
+   "rows": 1,
+   "bg": "magenta",
+   "subjects": [
+    "canada goose"
+   ],
+   "prompt": "a Canada goose in flight with its wings spread, seen from the side"
+  },
+  {
+   "id": "sv-t7-tango",
+   "trip": "t7",
+   "title": "Tango",
+   "medium": "painting",
+   "cols": 1,
+   "rows": 2,
+   "bg": "red",
+   "subjects": [
+    "tango couple"
+   ],
+   "prompt": "a tango couple dancing, seen in profile and absorbed in the dance, the woman in a red dress and the man in a dark suit and hat, neither looking at the viewer"
+  },
+  {
+   "id": "sv-t7-gaucho",
+   "trip": "t7",
+   "title": "Gaucho",
+   "medium": "painting",
+   "cols": 1,
+   "rows": 2,
+   "bg": "sky",
+   "subjects": [
+    "gaucho"
+   ],
+   "prompt": "a gaucho standing, seen from the side, in a striped poncho, a wide hat and loose trousers tucked into boots, looking away into the distance"
+  },
+  {
+   "id": "sv-t7-mate",
+   "trip": "t7",
+   "title": "Mate",
+   "medium": "painting",
+   "cols": 1,
+   "rows": 2,
+   "bg": "magenta",
+   "subjects": [
+    "mate gourd"
+   ],
+   "prompt": "a mate gourd decorated with silver, with a silver drinking straw standing in it"
+  },
+  {
+   "id": "sv-t7-dulce-de-leche",
+   "trip": "t7",
+   "title": "Dulce de Leche",
+   "medium": "painting",
+   "cols": 1,
+   "rows": 2,
+   "bg": "teal",
+   "subjects": [
+    "dulce de leche"
+   ],
+   "prompt": "a tall glass jar of dulce de leche with a wooden spoon in it, with no label"
+  },
+  {
+   "id": "sv-t7-alfajores",
+   "trip": "t7",
+   "title": "Alfajores",
+   "medium": "painting",
+   "cols": 1,
+   "rows": 2,
+   "bg": "purple",
+   "subjects": [
+    "alfajores"
+   ],
+   "prompt": "a tall stack of alfajores, round cookies sandwiched with dulce de leche and rolled in coconut"
+  },
+  {
+   "id": "sv-t7-condor",
+   "trip": "t7",
+   "title": "Condor",
+   "medium": "painting",
+   "cols": 1,
+   "rows": 2,
+   "bg": "yellow",
+   "subjects": [
+    "andean condor"
+   ],
+   "prompt": "an Andean condor perched on a rock, its white ruff showing"
+  },
+  {
+   "id": "sv-t7-bandoneon",
+   "trip": "t7",
+   "title": "Bandoneón",
+   "medium": "painting",
+   "cols": 2,
+   "rows": 1,
+   "bg": "green",
+   "subjects": [
+    "bandoneon"
+   ],
+   "prompt": "a bandoneón, the button accordion, opened out with its pleated bellows, seen from the front"
+  },
+  {
+   "id": "sv-t7-asado",
+   "trip": "t7",
+   "title": "Asado",
+   "medium": "painting",
+   "cols": 2,
+   "rows": 1,
+   "bg": "navy",
+   "subjects": [
+    "asado grill"
+   ],
+   "prompt": "an asado grill with sausages and ribs over glowing coals, seen from the side"
+  },
+  {
+   "id": "sv-t7-bus",
+   "trip": "t7",
+   "title": "Colectivo",
+   "medium": "painting",
+   "cols": 2,
+   "rows": 1,
+   "bg": "pink",
+   "subjects": [
+    "colectivo bus"
+   ],
+   "prompt": "an old Buenos Aires city bus painted all over with colourful fileteado ornaments, seen from the side, with no lettering or numbers"
+  },
+  {
+   "id": "sv-t7-empanadas",
+   "trip": "t7",
+   "title": "Empanadas",
+   "medium": "painting",
+   "cols": 2,
+   "rows": 1,
+   "bg": "blue",
+   "subjects": [
+    "empanadas"
+   ],
+   "prompt": "a row of golden baked empanadas with braided edges on a wooden board"
+  },
+  {
+   "id": "sv-t7-horse",
+   "trip": "t7",
+   "title": "Criollo Horse",
+   "medium": "painting",
+   "cols": 2,
+   "rows": 1,
+   "bg": "orange",
+   "subjects": [
+    "criollo horse"
+   ],
+   "prompt": "a criollo horse with a sheepskin gaucho saddle, standing, seen from the side"
+  },
+  {
+   "id": "sv-t7-shoes",
+   "trip": "t7",
+   "title": "Tango Shoes",
+   "medium": "painting",
+   "cols": 2,
+   "rows": 1,
+   "bg": "lime",
+   "subjects": [
+    "tango shoes"
+   ],
+   "prompt": "a pair of red tango dancing shoes with ankle straps, side by side"
+  },
+  {
+   "id": "sv-t8-kangaroo",
+   "trip": "t8",
+   "title": "Kangaroo",
+   "medium": "illustration",
+   "cols": 1,
+   "rows": 2,
+   "bg": "teal",
+   "subjects": [
+    "kangaroo"
+   ],
+   "prompt": "a red kangaroo standing upright on its hind legs and tail"
+  },
+  {
+   "id": "sv-t8-emu",
+   "trip": "t8",
+   "title": "Emu",
+   "medium": "illustration",
+   "cols": 1,
+   "rows": 2,
+   "bg": "pink",
+   "subjects": [
+    "emu"
+   ],
+   "prompt": "an emu standing tall"
+  },
+  {
+   "id": "sv-t8-koala",
+   "trip": "t8",
+   "title": "Koala",
+   "medium": "illustration",
+   "cols": 1,
+   "rows": 2,
+   "bg": "orange",
+   "subjects": [
+    "koala"
+   ],
+   "prompt": "a koala clinging to an upright eucalyptus branch with leaves"
+  },
+  {
+   "id": "sv-t8-kookaburra",
+   "trip": "t8",
+   "title": "Kookaburra",
+   "medium": "illustration",
+   "cols": 1,
+   "rows": 2,
+   "bg": "purple",
+   "subjects": [
+    "kookaburra"
+   ],
+   "prompt": "a kookaburra perched on an upright branch"
+  },
+  {
+   "id": "sv-t8-cockatoo",
+   "trip": "t8",
+   "title": "Cockatoo",
+   "medium": "illustration",
+   "cols": 1,
+   "rows": 2,
+   "bg": "navy",
+   "subjects": [
+    "cockatoo"
+   ],
+   "prompt": "a sulphur-crested cockatoo perched upright with its yellow crest raised"
+  },
+  {
+   "id": "sv-t8-lyrebird",
+   "trip": "t8",
+   "title": "Lyrebird",
+   "medium": "illustration",
+   "cols": 1,
+   "rows": 2,
+   "bg": "lime",
+   "subjects": [
+    "lyrebird"
+   ],
+   "prompt": "a superb lyrebird with its long lyre-shaped tail raised high"
+  },
+  {
+   "id": "sv-t8-platypus",
+   "trip": "t8",
+   "title": "Platypus",
+   "medium": "illustration",
+   "cols": 2,
+   "rows": 1,
+   "bg": "yellow",
+   "subjects": [
+    "platypus"
+   ],
+   "prompt": "a platypus swimming, seen from the side"
+  },
+  {
+   "id": "sv-t8-wombat",
+   "trip": "t8",
+   "title": "Wombat",
+   "medium": "illustration",
+   "cols": 2,
+   "rows": 1,
+   "bg": "sky",
+   "subjects": [
+    "wombat"
+   ],
+   "prompt": "a wombat walking, seen from the side"
+  },
+  {
+   "id": "sv-t8-echidna",
+   "trip": "t8",
+   "title": "Echidna",
+   "medium": "illustration",
+   "cols": 2,
+   "rows": 1,
+   "bg": "magenta",
+   "subjects": [
+    "echidna"
+   ],
+   "prompt": "an echidna walking, seen from the side, its spines raised"
+  },
+  {
+   "id": "sv-t8-crocodile",
+   "trip": "t8",
+   "title": "Saltwater Crocodile",
+   "medium": "illustration",
+   "cols": 2,
+   "rows": 1,
+   "bg": "red",
+   "subjects": [
+    "saltwater crocodile"
+   ],
+   "prompt": "a saltwater crocodile lying with its long jaws slightly open, seen from the side"
+  },
+  {
+   "id": "sv-t8-devil",
+   "trip": "t8",
+   "title": "Tasmanian Devil",
+   "medium": "illustration",
+   "cols": 2,
+   "rows": 1,
+   "bg": "green",
+   "subjects": [
+    "tasmanian devil"
+   ],
+   "prompt": "a Tasmanian devil standing, seen from the side, its mouth open"
+  },
+  {
+   "id": "sv-t8-lizard",
+   "trip": "t8",
+   "title": "Frilled-neck Lizard",
+   "medium": "illustration",
+   "cols": 2,
+   "rows": 1,
+   "bg": "blue",
+   "subjects": [
+    "frilled-neck lizard"
+   ],
+   "prompt": "a frilled-neck lizard running on its hind legs with its frill spread, seen from the side"
+  },
+  {
+   "id": "sv-t9-biltong",
+   "trip": "t9",
+   "title": "Biltong",
+   "medium": "photo",
+   "cols": 1,
+   "rows": 2,
+   "bg": "lime",
+   "subjects": [
+    "biltong"
+   ],
+   "prompt": "long strips of biltong, dried spiced meat, hanging from a wooden rail on S-hooks"
+  },
+  {
+   "id": "sv-t9-koeksisters",
+   "trip": "t9",
+   "title": "Koeksisters",
+   "medium": "photo",
+   "cols": 1,
+   "rows": 2,
+   "bg": "blue",
+   "subjects": [
+    "koeksisters"
+   ],
+   "prompt": "a tall stack of golden, syrup-glazed plaited koeksisters"
+  },
+  {
+   "id": "sv-t9-sosatie",
+   "trip": "t9",
+   "title": "Sosatie",
+   "medium": "photo",
+   "cols": 1,
+   "rows": 2,
+   "bg": "yellow",
+   "subjects": [
+    "sosatie"
+   ],
+   "prompt": "a sosatie skewer held upright, threaded with grilled lamb, red pepper, onion and dried apricots"
+  },
+  {
+   "id": "sv-t9-bunny-chow",
+   "trip": "t9",
+   "title": "Bunny Chow",
+   "medium": "photo",
+   "cols": 1,
+   "rows": 2,
+   "bg": "teal",
+   "subjects": [
+    "bunny chow"
+   ],
+   "prompt": "a bunny chow: a tall quarter loaf of white bread hollowed out and filled with orange curry, standing upright"
+  },
+  {
+   "id": "sv-t9-ginger-beer",
+   "trip": "t9",
+   "title": "Ginger Beer",
+   "medium": "photo",
+   "cols": 1,
+   "rows": 2,
+   "bg": "purple",
+   "subjects": [
+    "ginger beer"
+   ],
+   "prompt": "a tall glass of homemade ginger beer with ice, a slice of lemon and a few raisins floating in it"
+  },
+  {
+   "id": "sv-t9-rusks",
+   "trip": "t9",
+   "title": "Rusks",
+   "medium": "photo",
+   "cols": 1,
+   "rows": 2,
+   "bg": "red",
+   "subjects": [
+    "rusks"
+   ],
+   "prompt": "a tall glass jar filled with rusks, with one rusk resting on top"
+  },
+  {
+   "id": "sv-t9-gatsby",
+   "trip": "t9",
+   "title": "Gatsby",
+   "medium": "photo",
+   "cols": 2,
+   "rows": 1,
+   "bg": "sky",
+   "subjects": [
+    "gatsby sandwich"
+   ],
+   "prompt": "a very long Gatsby sandwich roll stuffed with chips, sausage, lettuce and sauce, seen from the side"
+  },
+  {
+   "id": "sv-t9-boerewors",
+   "trip": "t9",
+   "title": "Boerewors Roll",
+   "medium": "photo",
+   "cols": 2,
+   "rows": 1,
+   "bg": "pink",
+   "subjects": [
+    "boerewors roll"
+   ],
+   "prompt": "a grilled boerewors sausage in a long bread roll with tomato and onion relish, seen from the side"
+  },
+  {
+   "id": "sv-t9-malva",
+   "trip": "t9",
+   "title": "Malva Pudding",
+   "medium": "photo",
+   "cols": 2,
+   "rows": 1,
+   "bg": "navy",
+   "subjects": [
+    "malva pudding"
+   ],
+   "prompt": "a square of malva pudding with custard poured over it, in a small dish, seen from the side"
+  },
+  {
+   "id": "sv-t9-melktert",
+   "trip": "t9",
+   "title": "Milk Tart",
+   "medium": "photo",
+   "cols": 2,
+   "rows": 1,
+   "bg": "magenta",
+   "subjects": [
+    "milk tart"
+   ],
+   "prompt": "a slice of milk tart dusted with cinnamon, seen from the side"
+  },
+  {
+   "id": "sv-t9-samoosas",
+   "trip": "t9",
+   "title": "Samoosas",
+   "medium": "photo",
+   "cols": 2,
+   "rows": 1,
+   "bg": "green",
+   "subjects": [
+    "samoosas"
+   ],
+   "prompt": "three golden triangular samoosas in a row"
+  },
+  {
+   "id": "sv-t9-pap",
+   "trip": "t9",
+   "title": "Pap and Chakalaka",
+   "medium": "photo",
+   "cols": 2,
+   "rows": 1,
+   "bg": "orange",
+   "subjects": [
+    "pap and chakalaka"
+   ],
+   "prompt": "a plate of white pap with a spoonful of red chakalaka relish beside it"
+  },
+  {
+   "id": "sv-t10-penny-farthing",
+   "trip": "t10",
+   "title": "Penny-farthing",
+   "medium": "toy",
+   "cols": 1,
+   "rows": 2,
+   "bg": "yellow",
+   "subjects": [
+    "penny-farthing"
+   ],
+   "prompt": "a penny-farthing bicycle with a huge front wheel and a tiny rear wheel, seen from the side"
+  },
+  {
+   "id": "sv-t10-clipper",
+   "trip": "t10",
+   "title": "Tea Clipper",
+   "medium": "toy",
+   "cols": 1,
+   "rows": 2,
+   "bg": "navy",
+   "subjects": [
+    "clipper ship"
+   ],
+   "prompt": "a tall three-masted clipper ship with all its white sails set, seen from the side"
+  },
+  {
+   "id": "sv-t10-balloon",
+   "trip": "t10",
+   "title": "Hot-air Balloon",
+   "medium": "toy",
+   "cols": 1,
+   "rows": 2,
+   "bg": "sky",
+   "subjects": [
+    "hot-air balloon"
+   ],
+   "prompt": "a hot-air balloon with colourful stripes and a wicker basket"
+  },
+  {
+   "id": "sv-t10-cliff-railway",
+   "trip": "t10",
+   "title": "Cliff Railway",
+   "medium": "toy",
+   "cols": 1,
+   "rows": 2,
+   "bg": "pink",
+   "subjects": [
+    "cliff railway"
+   ],
+   "prompt": "a little cliff railway car climbing a very steep track, the car stepped like a staircase"
+  },
+  {
+   "id": "sv-t10-bus",
+   "trip": "t10",
+   "title": "Double-decker",
+   "medium": "toy",
+   "cols": 2,
+   "rows": 1,
+   "bg": "teal",
+   "subjects": [
+    "double-decker bus"
+   ],
+   "prompt": "a red double-decker bus, a generic old-fashioned model, seen from the side, with no lettering, numbers or logos"
+  },
+  {
+   "id": "sv-t10-cab",
+   "trip": "t10",
+   "title": "Black Cab",
+   "medium": "toy",
+   "cols": 2,
+   "rows": 1,
+   "bg": "lime",
+   "subjects": [
+    "black cab"
+   ],
+   "prompt": "a black taxi cab, a generic rounded old-fashioned model, seen from the side, with no lettering, numbers or logos"
+  },
+  {
+   "id": "sv-t10-narrowboat",
+   "trip": "t10",
+   "title": "Narrowboat",
+   "medium": "toy",
+   "cols": 2,
+   "rows": 1,
+   "bg": "orange",
+   "subjects": [
+    "narrowboat"
+   ],
+   "prompt": "a narrowboat painted green and red with traditional roses-and-castles decoration and no lettering, seen from the side"
+  },
+  {
+   "id": "sv-t10-locomotive",
+   "trip": "t10",
+   "title": "Steam Locomotive",
+   "medium": "toy",
+   "cols": 2,
+   "rows": 1,
+   "bg": "red",
+   "subjects": [
+    "steam locomotive"
+   ],
+   "prompt": "a green steam locomotive with its tender, seen from the side, with no numbers or lettering"
+  },
+  {
+   "id": "sv-t10-currach",
+   "trip": "t10",
+   "title": "Currach",
+   "medium": "toy",
+   "cols": 2,
+   "rows": 1,
+   "bg": "blue",
+   "subjects": [
+    "currach"
+   ],
+   "prompt": "an Irish currach, a black tarred-canvas rowing boat with its oars, seen from the side"
+  },
+  {
+   "id": "sv-t10-jaunting-car",
+   "trip": "t10",
+   "title": "Jaunting Car",
+   "medium": "toy",
+   "cols": 2,
+   "rows": 1,
+   "bg": "purple",
+   "subjects": [
+    "jaunting car"
+   ],
+   "prompt": "an Irish jaunting car, a light two-wheeled horse-drawn cart with side seats, with its horse, seen from the side"
+  },
+  {
+   "id": "sv-t10-milk-float",
+   "trip": "t10",
+   "title": "Milk Float",
+   "medium": "toy",
+   "cols": 2,
+   "rows": 1,
+   "bg": "magenta",
+   "subjects": [
+    "milk float"
+   ],
+   "prompt": "an old electric milk float loaded with crates of milk bottles, seen from the side, with no lettering"
+  },
+  {
+   "id": "sv-t10-hovercraft",
+   "trip": "t10",
+   "title": "Hovercraft",
+   "medium": "toy",
+   "cols": 2,
+   "rows": 1,
+   "bg": "green",
+   "subjects": [
+    "hovercraft"
+   ],
+   "prompt": "a hovercraft with a black skirt and a big rear propeller, seen from the side, with no lettering"
+  }
+ ]
+}
