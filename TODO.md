@@ -34,6 +34,13 @@ Still owed:
   Fredoka for ą ę ż İ ğ ş and Cyrillic (Untangled's `FACES`) and a text-fit
   check per language; the store page rewritten (it still says 30 boards and
   look-alike pictures), new screenshots and hover loop.
+- **At release: a rights pass on the pictures** (creator, 2026-10-28; QA and Art, about half an hour):
+  - flag any generated picture with lettering or logo-like marks (team jerseys, signs, rinds);
+  - reverse-image-search the most iconic-looking pictures for near-copies of famous photos or characters;
+  - confirm the image tool's terms allow commercial use (ask the platform);
+  - check whether Gem Arcade asks for an AI-art disclosure on the store page;
+  - re-read the postcards' borderline notes (Japan's temples and shrines, Dog Bark Park, Paul Bunyan, the Big Banana's name) and the Souvenirs' museum credits (`docs/credits.md`).
+  Record the result in `docs/credits.md`.
 - **Effects on WebGL, the next time they are worked on** (the standard,
   2026-10-25; QA's second pass, 2026-10-26): the milestone fireworks (a 2D
   canvas on the page's thread, UI) and the finished picture's twinkles (page

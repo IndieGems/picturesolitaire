@@ -9,8 +9,10 @@ invites the friend to the game, here the friend plays the same board.
 - **On the win card**, after any trip board or daily (not boards 1–2's guided starts, not a
   replay of a challenge, not the dev menu's practice), there are two buttons:
   - **Challenge a friend** lists the player's Arcade friends. A tap asks the Arcade, which shows
-    its own Send sheet, and the friend gets a card in their Arcade inbox. It is hidden outside the
-    Arcade and for guests.
+    its own Send sheet, and the friend gets a card in their Arcade inbox. It shows only when the
+    player's friend list has at least one friend, which hides it outside the Arcade, for guests
+    (the SDK has no guest flag, and a test guest even holds Coins) and for a player with no
+    friends yet. They get Share alone.
   - **Share** gives a link for anyone: the Arcade's share where it offers one, else the phone's
     share sheet, else a copy. The link names the board and the moves, never a player. On the
     Arcade's website it opens only once the game is released.
