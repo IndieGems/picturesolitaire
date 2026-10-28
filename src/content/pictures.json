@@ -47973,6 +47973,282 @@
         "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
         "page": "https://www.artic.edu/artworks/25613"
       }
+    },
+    {
+      "id": "sv-t3-orator",
+      "souvenir": "t3",
+      "album": "souvenirs",
+      "title": "Roman Orator",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t3-orator.webp",
+      "board": "pictures/souvenirs/sv-t3-orator-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "orator statue"
+      ],
+      "bg": "red"
+    },
+    {
+      "id": "sv-t3-column",
+      "souvenir": "t3",
+      "album": "souvenirs",
+      "title": "Corinthian Column",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t3-column.webp",
+      "board": "pictures/souvenirs/sv-t3-column-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "corinthian column"
+      ],
+      "bg": "blue"
+    },
+    {
+      "id": "sv-t3-amphora",
+      "souvenir": "t3",
+      "album": "souvenirs",
+      "title": "Amphora",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t3-amphora.webp",
+      "board": "pictures/souvenirs/sv-t3-amphora-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "amphora"
+      ],
+      "bg": "teal"
+    },
+    {
+      "id": "sv-t3-eagle-standard",
+      "souvenir": "t3",
+      "album": "souvenirs",
+      "title": "Eagle Standard",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t3-eagle-standard.webp",
+      "board": "pictures/souvenirs/sv-t3-eagle-standard-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "eagle standard"
+      ],
+      "bg": "purple"
+    },
+    {
+      "id": "sv-t3-bust",
+      "souvenir": "t3",
+      "album": "souvenirs",
+      "title": "Marble Bust",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t3-bust.webp",
+      "board": "pictures/souvenirs/sv-t3-bust-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "marble bust"
+      ],
+      "bg": "green"
+    },
+    {
+      "id": "sv-t3-lamp-stand",
+      "souvenir": "t3",
+      "album": "souvenirs",
+      "title": "Bronze Lamp Stand",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t3-lamp-stand.webp",
+      "board": "pictures/souvenirs/sv-t3-lamp-stand-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "lamp stand"
+      ],
+      "bg": "sky"
+    },
+    {
+      "id": "sv-t3-chariot",
+      "souvenir": "t3",
+      "album": "souvenirs",
+      "title": "Bronze Chariot",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t3-chariot.webp",
+      "board": "pictures/souvenirs/sv-t3-chariot-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "chariot"
+      ],
+      "bg": "magenta"
+    },
+    {
+      "id": "sv-t3-river-god",
+      "souvenir": "t3",
+      "album": "souvenirs",
+      "title": "River God",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t3-river-god.webp",
+      "board": "pictures/souvenirs/sv-t3-river-god-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "river god"
+      ],
+      "bg": "orange"
+    },
+    {
+      "id": "sv-t3-sarcophagus",
+      "souvenir": "t3",
+      "album": "souvenirs",
+      "title": "Sarcophagus",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t3-sarcophagus.webp",
+      "board": "pictures/souvenirs/sv-t3-sarcophagus-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "sarcophagus"
+      ],
+      "bg": "navy"
+    },
+    {
+      "id": "sv-t3-mosaic",
+      "souvenir": "t3",
+      "album": "souvenirs",
+      "title": "Dolphin Mosaic",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t3-mosaic.webp",
+      "board": "pictures/souvenirs/sv-t3-mosaic-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "dolphin mosaic"
+      ],
+      "bg": "yellow"
+    },
+    {
+      "id": "sv-t3-galley",
+      "souvenir": "t3",
+      "album": "souvenirs",
+      "title": "Roman Galley",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t3-galley.webp",
+      "board": "pictures/souvenirs/sv-t3-galley-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "galley"
+      ],
+      "bg": "lime"
+    },
+    {
+      "id": "sv-t3-lion",
+      "souvenir": "t3",
+      "album": "souvenirs",
+      "title": "Marble Lion",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t3-lion.webp",
+      "board": "pictures/souvenirs/sv-t3-lion-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "marble lion"
+      ],
+      "bg": "pink"
     }
   ],
   "souvenirs": [
@@ -47989,6 +48265,13 @@
       "table": "table-souvenir-japan",
       "tableTitle": "Printmaker's Table",
       "sticker": "pictures/souvenirs/sv-t2-sticker.webp"
+    },
+    {
+      "trip": "t3",
+      "theme": "Ancient Rome",
+      "table": "table-souvenir-italy",
+      "tableTitle": "Sculptor's Bench",
+      "sticker": "pictures/souvenirs/sv-t3-sticker.webp"
     }
   ]
 }
