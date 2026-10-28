@@ -100,6 +100,25 @@
             "prefix": "DIFFICULTY_PORT "
           }
         ]
+      },
+      {
+        "id": "eventstool",
+        "command": [
+          "node",
+          "tools/events/server.mjs"
+        ],
+        "ports": [
+          {
+            "name": "port",
+            "env": "EVENTS_PORT"
+          }
+        ],
+        "ready": [
+          {
+            "name": "port",
+            "prefix": "EVENTS_PORT "
+          }
+        ]
       }
     ]
   },
@@ -127,6 +146,12 @@
       "label": "Difficulty",
       "kind": "web",
       "url": "http://127.0.0.1:{difficultytool.port}/"
+    },
+    {
+      "id": "events",
+      "label": "Events",
+      "kind": "web",
+      "url": "http://127.0.0.1:{eventstool.port}/"
     }
   ]
 }

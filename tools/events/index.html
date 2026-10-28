@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Events</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header class="bar">
+      <h1>Events</h1>
+      <nav id="jump" aria-label="Jump to a month"></nav>
+    </header>
+    <p id="today" class="today"></p>
+    <div id="notes" class="notes"></div>
+    <main id="main" aria-live="polite"><p class="loading">Loading…</p></main>
+    <dialog id="big" aria-label="The full picture">
+      <img id="big-img" alt="" />
+      <p id="big-cap"></p>
+      <form method="dialog"><button class="close">Close</button></form>
+    </dialog>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

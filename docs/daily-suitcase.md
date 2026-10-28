@@ -80,3 +80,11 @@ the month's prize, `table-<name>` in `public/art/tables/tables.json`, drawn in t
 | 2027-08 | Under the Stars | Enamel mug, Toasted marshmallows, S'mores, Firewood bundle, Canoe paddle, Camp chair, Walkie-talkie, Rope and carabiner, Wool blanket, Cast-iron pan | `table-campfire`: a picnic bench by a campfire under the Milky Way |
 | 2027-09 | Grand Train Journey | Pocket watch, Travel clock, Hat box, Porcelain teacup, Fountain pen, Opera glasses, Luggage tag, Ticket punch, Silver cloche, Bowler hat | `table-dining-car`: a wood-panelled dining-car table, a brass lamp |
 | 2027-10 | Castle Tour | Iron key, Candelabra, Knight's helmet, Quill, Wax seal, Goblet, Plain shield, Scroll map, Gauntlet, Spinning wheel | `table-castle-hall`: a stone hall's oak table by candlelight, a little spooky |
+
+## Seeing it all
+
+The Editor's **Events** tab (`tools/events/`, read-only) shows the twelve months in order, with the
+live and next ones marked: each month's ten pieces and their days, its art status against its due
+date (a month ahead), and its prize (the table, and the helpers read from `src/net/suitcase-ids.json`,
+the win checker's own source). Below them, every table and how a player gets it. It reads the files
+above on every load, so it follows Art's and Levels' changes; `?today=YYYY-MM-DD` previews another day.
