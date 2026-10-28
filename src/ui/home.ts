@@ -102,17 +102,25 @@ export function nextBoard(): number {
   return allDone() ? (progress().campaign.won % levelCount()) + 1 : campaignNext();
 }
 
-/** A picture asked for once, decoded; the same promise every time (a failure settles too). */
+/**
+ * A picture asked for once, decoded; the same promise every time (a failure settles too). `cors`: as
+ * a CSS mask asks for it (the stamp's outline, style.css .ghost), in CORS mode, which a plain image's
+ * copy does not serve, so the warm-up must ask the same way or the file comes twice (QA, 0.51.0).
+ */
 const warmed = new Map<string, Promise<void>>();
-function warm(url: string): Promise<void> {
-  let p = warmed.get(url);
+function warm(url: string, cors = false): Promise<void> {
+  const key = cors ? `cors ${url}` : url;
+  let p = warmed.get(key);
   if (!p) {
     const img = new Image();
+    if (cors) img.crossOrigin = "anonymous";
     img.src = url;
-    warmed.set(url, (p = img.decode().catch(() => undefined)));
+    warmed.set(key, (p = img.decode().catch(() => undefined)));
   }
   return p;
 }
+/** Trip `tr`'s stamp as its last stop draws it: Art's picture once earned (an <img>), else its outline (a CSS mask). */
+const warmStamp = (tr: Trip): Promise<void> => warm(new URL(stampUrl(tr), location.href).href, !tripDone(tr));
 
 /**
  * Ask for trip `tr`'s stamp now (home's last stop draws it, and home waits for it): the boot knows the
@@ -120,7 +128,7 @@ function warm(url: string): Promise<void> {
  * for only once they had, it held home ~0.2 s on 4G).
  */
 export function warmTripStamp(tr: Trip): void {
-  void warm(new URL(stampUrl(tr), location.href).href);
+  void warmStamp(tr);
 }
 
 export function createHome(nav: Nav, parts: Parts) {
@@ -247,7 +255,7 @@ export function createHome(nav: Nav, parts: Parts) {
     if (last && next !== null) {
       li.classList.add("last");
       // home appears with it (QA, 0.47.0: on 4G the outline came ~0.7 s after home)
-      pictures.push(warm(new URL(stampUrl(tr), location.href).href));
+      pictures.push(warmStamp(tr));
       if (tripDone(tr)) {
         const s = el("img", "stamp");
         Object.assign(s, { src: stampUrl(tr), alt: "", draggable: false });
