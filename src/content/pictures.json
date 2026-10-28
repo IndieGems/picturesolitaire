@@ -49713,6 +49713,282 @@
         "frilled-neck lizard"
       ],
       "bg": "blue"
+    },
+    {
+      "id": "sv-t9-biltong",
+      "souvenir": "t9",
+      "album": "souvenirs",
+      "title": "Biltong",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t9-biltong.webp",
+      "board": "pictures/souvenirs/sv-t9-biltong-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "biltong"
+      ],
+      "bg": "lime"
+    },
+    {
+      "id": "sv-t9-koeksisters",
+      "souvenir": "t9",
+      "album": "souvenirs",
+      "title": "Koeksisters",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t9-koeksisters.webp",
+      "board": "pictures/souvenirs/sv-t9-koeksisters-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "koeksisters"
+      ],
+      "bg": "blue"
+    },
+    {
+      "id": "sv-t9-sosatie",
+      "souvenir": "t9",
+      "album": "souvenirs",
+      "title": "Sosatie",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t9-sosatie.webp",
+      "board": "pictures/souvenirs/sv-t9-sosatie-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "sosatie"
+      ],
+      "bg": "yellow"
+    },
+    {
+      "id": "sv-t9-bunny-chow",
+      "souvenir": "t9",
+      "album": "souvenirs",
+      "title": "Bunny Chow",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t9-bunny-chow.webp",
+      "board": "pictures/souvenirs/sv-t9-bunny-chow-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "bunny chow"
+      ],
+      "bg": "teal"
+    },
+    {
+      "id": "sv-t9-ginger-beer",
+      "souvenir": "t9",
+      "album": "souvenirs",
+      "title": "Ginger Beer",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t9-ginger-beer.webp",
+      "board": "pictures/souvenirs/sv-t9-ginger-beer-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "ginger beer"
+      ],
+      "bg": "purple"
+    },
+    {
+      "id": "sv-t9-rusks",
+      "souvenir": "t9",
+      "album": "souvenirs",
+      "title": "Rusks",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t9-rusks.webp",
+      "board": "pictures/souvenirs/sv-t9-rusks-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "rusks"
+      ],
+      "bg": "red"
+    },
+    {
+      "id": "sv-t9-gatsby",
+      "souvenir": "t9",
+      "album": "souvenirs",
+      "title": "Gatsby",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t9-gatsby.webp",
+      "board": "pictures/souvenirs/sv-t9-gatsby-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "gatsby sandwich"
+      ],
+      "bg": "sky"
+    },
+    {
+      "id": "sv-t9-boerewors",
+      "souvenir": "t9",
+      "album": "souvenirs",
+      "title": "Boerewors Roll",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t9-boerewors.webp",
+      "board": "pictures/souvenirs/sv-t9-boerewors-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "boerewors roll"
+      ],
+      "bg": "pink"
+    },
+    {
+      "id": "sv-t9-malva",
+      "souvenir": "t9",
+      "album": "souvenirs",
+      "title": "Malva Pudding",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t9-malva.webp",
+      "board": "pictures/souvenirs/sv-t9-malva-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "malva pudding"
+      ],
+      "bg": "navy"
+    },
+    {
+      "id": "sv-t9-melktert",
+      "souvenir": "t9",
+      "album": "souvenirs",
+      "title": "Milk Tart",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t9-melktert.webp",
+      "board": "pictures/souvenirs/sv-t9-melktert-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "milk tart"
+      ],
+      "bg": "magenta"
+    },
+    {
+      "id": "sv-t9-samoosas",
+      "souvenir": "t9",
+      "album": "souvenirs",
+      "title": "Samoosas",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t9-samoosas.webp",
+      "board": "pictures/souvenirs/sv-t9-samoosas-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "samoosas"
+      ],
+      "bg": "green"
+    },
+    {
+      "id": "sv-t9-pap",
+      "souvenir": "t9",
+      "album": "souvenirs",
+      "title": "Pap and Chakalaka",
+      "medium": "photo",
+      "file": "pictures/souvenirs/sv-t9-pap.webp",
+      "board": "pictures/souvenirs/sv-t9-pap-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "pap and chakalaka"
+      ],
+      "bg": "orange"
     }
   ],
   "souvenirs": [
@@ -49771,6 +50047,13 @@
       "table": "table-souvenir-australia",
       "tableTitle": "Ranger's Desk",
       "sticker": "pictures/souvenirs/sv-t8-sticker.webp"
+    },
+    {
+      "trip": "t9",
+      "theme": "Street food",
+      "table": "table-souvenir-south-africa",
+      "tableTitle": "Braai Table",
+      "sticker": "pictures/souvenirs/sv-t9-sticker.webp"
     }
   ]
 }
