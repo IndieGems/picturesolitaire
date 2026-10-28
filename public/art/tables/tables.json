@@ -57,6 +57,87 @@
       "thumb": "art/tables/souvenir-america/souvenir-america-thumb.webp",
       "base": "#1b282b",
       "souvenir": "t1"
+    },
+    {
+      "id": "table-souvenir-japan",
+      "title": "Printmaker's Table",
+      "table": "art/tables/souvenir-japan/souvenir-japan-table.webp",
+      "stackBack": "art/tables/souvenir-japan/souvenir-japan-stack-back.webp",
+      "thumb": "art/tables/souvenir-japan/souvenir-japan-thumb.webp",
+      "base": "#1f0e0c",
+      "souvenir": "t2"
+    },
+    {
+      "id": "table-souvenir-italy",
+      "title": "Sculptor's Bench",
+      "table": "art/tables/souvenir-italy/souvenir-italy-table.webp",
+      "stackBack": "art/tables/souvenir-italy/souvenir-italy-stack-back.webp",
+      "thumb": "art/tables/souvenir-italy/souvenir-italy-thumb.webp",
+      "base": "#3e3533",
+      "souvenir": "t3"
+    },
+    {
+      "id": "table-souvenir-west",
+      "title": "Ranch Table",
+      "table": "art/tables/souvenir-west/souvenir-west-table.webp",
+      "stackBack": "art/tables/souvenir-west/souvenir-west-stack-back.webp",
+      "thumb": "art/tables/souvenir-west/souvenir-west-thumb.webp",
+      "base": "#1f1f21",
+      "souvenir": "t4"
+    },
+    {
+      "id": "table-souvenir-france",
+      "title": "Painter's Table",
+      "table": "art/tables/souvenir-france/souvenir-france-table.webp",
+      "stackBack": "art/tables/souvenir-france/souvenir-france-stack-back.webp",
+      "thumb": "art/tables/souvenir-france/souvenir-france-thumb.webp",
+      "base": "#222227",
+      "souvenir": "t5"
+    },
+    {
+      "id": "table-souvenir-canada",
+      "title": "Lake Lodge",
+      "table": "art/tables/souvenir-canada/souvenir-canada-table.webp",
+      "stackBack": "art/tables/souvenir-canada/souvenir-canada-stack-back.webp",
+      "thumb": "art/tables/souvenir-canada/souvenir-canada-thumb.webp",
+      "base": "#1b0f10",
+      "souvenir": "t6"
+    },
+    {
+      "id": "table-souvenir-argentina",
+      "title": "Buenos Aires Caf\u00e9",
+      "table": "art/tables/souvenir-argentina/souvenir-argentina-table.webp",
+      "stackBack": "art/tables/souvenir-argentina/souvenir-argentina-stack-back.webp",
+      "thumb": "art/tables/souvenir-argentina/souvenir-argentina-thumb.webp",
+      "base": "#140906",
+      "souvenir": "t7"
+    },
+    {
+      "id": "table-souvenir-australia",
+      "title": "Ranger's Desk",
+      "table": "art/tables/souvenir-australia/souvenir-australia-table.webp",
+      "stackBack": "art/tables/souvenir-australia/souvenir-australia-stack-back.webp",
+      "thumb": "art/tables/souvenir-australia/souvenir-australia-thumb.webp",
+      "base": "#221c1d",
+      "souvenir": "t8"
+    },
+    {
+      "id": "table-souvenir-south-africa",
+      "title": "Braai Table",
+      "table": "art/tables/souvenir-south-africa/souvenir-south-africa-table.webp",
+      "stackBack": "art/tables/souvenir-south-africa/souvenir-south-africa-stack-back.webp",
+      "thumb": "art/tables/souvenir-south-africa/souvenir-south-africa-thumb.webp",
+      "base": "#1e1c1e",
+      "souvenir": "t9"
+    },
+    {
+      "id": "table-souvenir-uk-ireland",
+      "title": "Railway Carriage",
+      "table": "art/tables/souvenir-uk-ireland/souvenir-uk-ireland-table.webp",
+      "stackBack": "art/tables/souvenir-uk-ireland/souvenir-uk-ireland-stack-back.webp",
+      "thumb": "art/tables/souvenir-uk-ireland/souvenir-uk-ireland-thumb.webp",
+      "base": "#200a07",
+      "souvenir": "t10"
     }
   ]
 }

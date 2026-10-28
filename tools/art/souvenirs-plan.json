@@ -944,7 +944,7 @@
     "museum": "National Gallery of Art, Washington",
     "licence": "CC0 (National Gallery of Art, Washington, Open Access)",
     "imageUrl": "https://api.nga.gov/iiif/99758d9d-c10b-4d02-a198-7e49afb1f3a6/full/!1600,1600/0/default.jpg",
-    "page": "https://www.nga.gov/artworks/61379"
+    "page": "https://www.nga.gov/collection/art-object-page.61379.html"
    },
    "trim": 0.01
   },
@@ -968,7 +968,7 @@
     "museum": "National Gallery of Art, Washington",
     "licence": "CC0 (National Gallery of Art, Washington, Open Access)",
     "imageUrl": "https://api.nga.gov/iiif/bcc517e0-84c3-4e21-8c08-c9a0181ced29/full/!1600,1600/0/default.jpg",
-    "page": "https://www.nga.gov/artworks/46681"
+    "page": "https://www.nga.gov/collection/art-object-page.46681.html"
    },
    "trim": 0.01
   },
@@ -1881,7 +1881,7 @@
    "subjects": [
     "double-decker bus"
    ],
-   "prompt": "a red double-decker bus, a generic old-fashioned model, seen from the side, with no lettering, numbers or logos"
+   "prompt": "a generic red double-decker bus with a flat front, a front entrance door and rounded corners, no open rear platform, not any real model, seen from the side, with no lettering, numbers or logos"
   },
   {
    "id": "sv-t10-cab",

@@ -1,0 +1,35 @@
+# Credits
+
+Works of art shown in the game, with their sources and licences.
+
+## Souvenir paintings and prints (docs/souvenirs.md)
+
+Each is a public-domain work whose image the museum releases for any use (CC0). It was downloaded from the
+museum's own open-access service and cropped to its card shape. The catalogue's `credit` field carries the same.
+
+| Picture | Work | Artist | Date | Museum | Licence |
+| --- | --- | --- | --- | --- | --- |
+| sv-t2-sudden-shower | [Sudden Shower over Shin Ohashi Bridge and Atake (Ohashi Atake no yudachi), from the series "One Hundred Famous Views of Edo (Meisho Edo hyakkei)"](https://www.artic.edu/artworks/26545) | Utagawa Hiroshige | 1857 | Art Institute of Chicago | CC0 Public Domain Designation (Art Institute of Chicago open access) |
+| sv-t2-plum-garden | [Plum Garden at Kameido (Kameido Umeyashiki), from the series "One Hundred Famous Views of Edo (Meisho Edo hyakkei)"](https://www.artic.edu/artworks/26577) | Utagawa Hiroshige | 1857 | Art Institute of Chicago | CC0 Public Domain Designation (Art Institute of Chicago open access) |
+| sv-t2-eagle | [Fukagawa Susaki and Jumantsubo (Fukagawa Susaki Jumantsubo), from the series "One Hundred Famous Views of Edo (Meisho Edo hyakkei)"](https://www.artic.edu/artworks/26605) | Utagawa Hiroshige | 1857 | Art Institute of Chicago | CC0 Public Domain Designation (Art Institute of Chicago open access) |
+| sv-t2-fireworks | [Fireworks at Ryōgoku  (Ryōgoku  hanabi), from the series One Hundred Famous Views of Edo (Meisho Edo hyakkei)](https://www.artic.edu/artworks/26522) | Utagawa Hiroshige | 1858 | Art Institute of Chicago | CC0 Public Domain Designation (Art Institute of Chicago open access) |
+| sv-t2-kirifuri-falls | [Kirifuri Falls at Mount Kurokami in Shimotsuke Province (Shimotsuke Kurokamiyama Kirifuri no taki), from the series "A Tour of Waterfalls in Various Provinces (Shokoku taki meguri)"](https://www.artic.edu/artworks/13263) | Katsushika Hokusai | c. 1833 | Art Institute of Chicago | CC0 Public Domain Designation (Art Institute of Chicago open access) |
+| sv-t2-asakusa-cat | [Asakusa Rice Fields and Torinomachi Festival (Asakusa tanbo Torinomachi mode), from the series "One Hundred Famous Views of Edo (Meisho Edo hyakkei)"](https://www.artic.edu/artworks/26534) | Utagawa Hiroshige | 1857 | Art Institute of Chicago | CC0 Public Domain Designation (Art Institute of Chicago open access) |
+| sv-t2-great-wave | [Under the Wave off Kanagawa (Kanagawa oki nami ura), also known as The Great Wave, from the series "Thirty-Six Views of Mount Fuji (Fugaku sanjūrokkei)"](https://www.artic.edu/artworks/24645) | Katsushika Hokusai | 1830/33 | Art Institute of Chicago | CC0 Public Domain Designation (Art Institute of Chicago open access) |
+| sv-t2-red-fuji | [A Mild Breeze on a Fine Day (Gaifu kaisei), from the series "Thirty-six Views of Mount Fuji (Fugaku sanjurokkei)"](https://www.artic.edu/artworks/87005) | Katsushika Hokusai | c. 1830/33 | Art Institute of Chicago | CC0 Public Domain Designation (Art Institute of Chicago open access) |
+| sv-t2-mishima-pass | [Mishima Pass in Kai Province (Koshu Mishimagoe), from the series "Thirty-six Views of Mount Fuji (Fugaku sanjurokkei)"](https://www.artic.edu/artworks/24786) | Katsushika Hokusai | c. 1830/33 | Art Institute of Chicago | CC0 Public Domain Designation (Art Institute of Chicago open access) |
+| sv-t2-kajikazawa | [Kajikazawa in Kai Province (Koshu Kajikazawa), from the series "Thirty-six Views of Mount Fuji (Fugaku sanjurokkei)"](https://www.artic.edu/artworks/18969) | Katsushika Hokusai | c. 1830/33 | Art Institute of Chicago | CC0 Public Domain Designation (Art Institute of Chicago open access) |
+| sv-t2-cloud-bridge | [The Hanging-Cloud Bridge at Mount Gyodo near Ashikaga (Ashikaga Gyodozan kumo no kakehashi), from the series "Unusual Views of Famous Bridges in Various Provinces (Shokoku meikyo kiran)"](https://www.artic.edu/artworks/149107) | Katsushika Hokusai | c. 1833/34 | Art Institute of Chicago | CC0 Public Domain Designation (Art Institute of Chicago open access) |
+| sv-t2-kanbara-snow | [Kanbara: Evening Snow (Kanbara, yoru no yuki), from the series "Fifty-three Stations of the Tokaido (Tokaido gojusan tsugi no uchi)," also known as the Hoeido Tokaido](https://www.artic.edu/artworks/25613) | Utagawa Hiroshige | c. 1833/34 | Art Institute of Chicago | CC0 Public Domain Designation (Art Institute of Chicago open access) |
+| sv-t5-cypresses | [Cypresses](https://www.metmuseum.org/art/collection/search/437980) | Vincent van Gogh | 1889 | The Metropolitan Museum of Art | CC0 (The Metropolitan Museum of Art Open Access) |
+| sv-t5-parasol | [Woman with a Parasol - Madame Monet and Her Son](https://www.nga.gov/collection/art-object-page.61379.html) | Claude Monet | 1875 | National Gallery of Art, Washington | CC0 (National Gallery of Art, Washington, Open Access) |
+| sv-t5-watering-can | [A Girl with a Watering Can](https://www.nga.gov/collection/art-object-page.46681.html) | Auguste Renoir | 1876 | National Gallery of Art, Washington | CC0 (National Gallery of Art, Washington, Open Access) |
+| sv-t5-rainy-day | [Paris Street; Rainy Day](https://www.artic.edu/artworks/20684) | Gustave Caillebotte | 1877 | Art Institute of Chicago | CC0 Public Domain Designation (Art Institute of Chicago open access) |
+| sv-t5-seashore | [By the Seashore](https://www.metmuseum.org/art/collection/search/437430) | Auguste Renoir | 1883 | The Metropolitan Museum of Art | CC0 (The Metropolitan Museum of Art Open Access) |
+| sv-t5-childs-bath | [The Child's Bath](https://www.artic.edu/artworks/111442) | Mary Cassatt | 1893 | Art Institute of Chicago | CC0 Public Domain Designation (Art Institute of Chicago open access) |
+| sv-t5-grande-jatte | [A Sunday on La Grande Jatte — 1884](https://www.artic.edu/artworks/27992) | Georges Seurat | 1884–86, border added 1888–89 | Art Institute of Chicago | CC0 Public Domain Designation (Art Institute of Chicago open access) |
+| sv-t5-gare-saint-lazare | [Arrival of the Normandy Train, Gare Saint-Lazare](https://www.artic.edu/artworks/16571) | Claude Monet | 1877 | Art Institute of Chicago | CC0 Public Domain Designation (Art Institute of Chicago open access) |
+| sv-t5-cliff-walk | [Cliff Walk at Pourville](https://www.artic.edu/artworks/14620) | Claude Monet | 1882 | Art Institute of Chicago | CC0 Public Domain Designation (Art Institute of Chicago open access) |
+| sv-t5-stacks-of-wheat | [Stacks of Wheat (End of Summer)](https://www.artic.edu/artworks/64818) | Claude Monet | 1890–91 | Art Institute of Chicago | CC0 Public Domain Designation (Art Institute of Chicago open access) |
+| sv-t5-dance-class | [The Dance Class](https://www.metmuseum.org/art/collection/search/438817) | Edgar Degas | 1874 | The Metropolitan Museum of Art | CC0 (The Metropolitan Museum of Art Open Access) |
+| sv-t5-boulevard-montmartre | [The Boulevard Montmartre on a Winter Morning](https://www.metmuseum.org/art/collection/search/437310) | Camille Pissarro | 1897 | The Metropolitan Museum of Art | CC0 (The Metropolitan Museum of Art Open Access) |

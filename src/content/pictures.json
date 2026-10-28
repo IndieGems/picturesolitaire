@@ -47613,6 +47613,366 @@
         "corn on the cob"
       ],
       "bg": "red"
+    },
+    {
+      "id": "sv-t2-sudden-shower",
+      "souvenir": "t2",
+      "album": "souvenirs",
+      "title": "Sudden Shower over Shin-Ōhashi Bridge",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t2-sudden-shower.webp",
+      "board": "pictures/souvenirs/sv-t2-sudden-shower-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "sudden shower"
+      ],
+      "credit": {
+        "artist": "Utagawa Hiroshige",
+        "title": "Sudden Shower over Shin Ohashi Bridge and Atake (Ohashi Atake no yudachi), from the series \"One Hundred Famous Views of Edo (Meisho Edo hyakkei)\"",
+        "date": "1857",
+        "museum": "Art Institute of Chicago",
+        "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+        "page": "https://www.artic.edu/artworks/26545"
+      }
+    },
+    {
+      "id": "sv-t2-plum-garden",
+      "souvenir": "t2",
+      "album": "souvenirs",
+      "title": "Plum Garden at Kameido",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t2-plum-garden.webp",
+      "board": "pictures/souvenirs/sv-t2-plum-garden-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "plum garden"
+      ],
+      "credit": {
+        "artist": "Utagawa Hiroshige",
+        "title": "Plum Garden at Kameido (Kameido Umeyashiki), from the series \"One Hundred Famous Views of Edo (Meisho Edo hyakkei)\"",
+        "date": "1857",
+        "museum": "Art Institute of Chicago",
+        "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+        "page": "https://www.artic.edu/artworks/26577"
+      }
+    },
+    {
+      "id": "sv-t2-eagle",
+      "souvenir": "t2",
+      "album": "souvenirs",
+      "title": "Fukagawa Susaki and Jūmantsubo",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t2-eagle.webp",
+      "board": "pictures/souvenirs/sv-t2-eagle-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "eagle"
+      ],
+      "credit": {
+        "artist": "Utagawa Hiroshige",
+        "title": "Fukagawa Susaki and Jumantsubo (Fukagawa Susaki Jumantsubo), from the series \"One Hundred Famous Views of Edo (Meisho Edo hyakkei)\"",
+        "date": "1857",
+        "museum": "Art Institute of Chicago",
+        "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+        "page": "https://www.artic.edu/artworks/26605"
+      }
+    },
+    {
+      "id": "sv-t2-fireworks",
+      "souvenir": "t2",
+      "album": "souvenirs",
+      "title": "Fireworks at Ryōgoku",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t2-fireworks.webp",
+      "board": "pictures/souvenirs/sv-t2-fireworks-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "fireworks"
+      ],
+      "credit": {
+        "artist": "Utagawa Hiroshige",
+        "title": "Fireworks at Ryōgoku  (Ryōgoku  hanabi), from the series One Hundred Famous Views of Edo (Meisho Edo hyakkei)",
+        "date": "1858",
+        "museum": "Art Institute of Chicago",
+        "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+        "page": "https://www.artic.edu/artworks/26522"
+      }
+    },
+    {
+      "id": "sv-t2-kirifuri-falls",
+      "souvenir": "t2",
+      "album": "souvenirs",
+      "title": "Kirifuri Falls",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t2-kirifuri-falls.webp",
+      "board": "pictures/souvenirs/sv-t2-kirifuri-falls-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "kirifuri falls"
+      ],
+      "credit": {
+        "artist": "Katsushika Hokusai",
+        "title": "Kirifuri Falls at Mount Kurokami in Shimotsuke Province (Shimotsuke Kurokamiyama Kirifuri no taki), from the series \"A Tour of Waterfalls in Various Provinces (Shokoku taki meguri)\"",
+        "date": "c. 1833",
+        "museum": "Art Institute of Chicago",
+        "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+        "page": "https://www.artic.edu/artworks/13263"
+      }
+    },
+    {
+      "id": "sv-t2-asakusa-cat",
+      "souvenir": "t2",
+      "album": "souvenirs",
+      "title": "Asakusa Rice Fields",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t2-asakusa-cat.webp",
+      "board": "pictures/souvenirs/sv-t2-asakusa-cat-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "window cat"
+      ],
+      "credit": {
+        "artist": "Utagawa Hiroshige",
+        "title": "Asakusa Rice Fields and Torinomachi Festival (Asakusa tanbo Torinomachi mode), from the series \"One Hundred Famous Views of Edo (Meisho Edo hyakkei)\"",
+        "date": "1857",
+        "museum": "Art Institute of Chicago",
+        "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+        "page": "https://www.artic.edu/artworks/26534"
+      }
+    },
+    {
+      "id": "sv-t2-great-wave",
+      "souvenir": "t2",
+      "album": "souvenirs",
+      "title": "Under the Wave off Kanagawa",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t2-great-wave.webp",
+      "board": "pictures/souvenirs/sv-t2-great-wave-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "great wave"
+      ],
+      "credit": {
+        "artist": "Katsushika Hokusai",
+        "title": "Under the Wave off Kanagawa (Kanagawa oki nami ura), also known as The Great Wave, from the series \"Thirty-Six Views of Mount Fuji (Fugaku sanjūrokkei)\"",
+        "date": "1830/33",
+        "museum": "Art Institute of Chicago",
+        "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+        "page": "https://www.artic.edu/artworks/24645"
+      }
+    },
+    {
+      "id": "sv-t2-red-fuji",
+      "souvenir": "t2",
+      "album": "souvenirs",
+      "title": "A Mild Breeze on a Fine Day",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t2-red-fuji.webp",
+      "board": "pictures/souvenirs/sv-t2-red-fuji-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "red fuji"
+      ],
+      "credit": {
+        "artist": "Katsushika Hokusai",
+        "title": "A Mild Breeze on a Fine Day (Gaifu kaisei), from the series \"Thirty-six Views of Mount Fuji (Fugaku sanjurokkei)\"",
+        "date": "c. 1830/33",
+        "museum": "Art Institute of Chicago",
+        "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+        "page": "https://www.artic.edu/artworks/87005"
+      }
+    },
+    {
+      "id": "sv-t2-mishima-pass",
+      "souvenir": "t2",
+      "album": "souvenirs",
+      "title": "Mishima Pass",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t2-mishima-pass.webp",
+      "board": "pictures/souvenirs/sv-t2-mishima-pass-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "mishima pass"
+      ],
+      "credit": {
+        "artist": "Katsushika Hokusai",
+        "title": "Mishima Pass in Kai Province (Koshu Mishimagoe), from the series \"Thirty-six Views of Mount Fuji (Fugaku sanjurokkei)\"",
+        "date": "c. 1830/33",
+        "museum": "Art Institute of Chicago",
+        "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+        "page": "https://www.artic.edu/artworks/24786"
+      }
+    },
+    {
+      "id": "sv-t2-kajikazawa",
+      "souvenir": "t2",
+      "album": "souvenirs",
+      "title": "Kajikazawa",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t2-kajikazawa.webp",
+      "board": "pictures/souvenirs/sv-t2-kajikazawa-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "kajikazawa"
+      ],
+      "credit": {
+        "artist": "Katsushika Hokusai",
+        "title": "Kajikazawa in Kai Province (Koshu Kajikazawa), from the series \"Thirty-six Views of Mount Fuji (Fugaku sanjurokkei)\"",
+        "date": "c. 1830/33",
+        "museum": "Art Institute of Chicago",
+        "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+        "page": "https://www.artic.edu/artworks/18969"
+      }
+    },
+    {
+      "id": "sv-t2-cloud-bridge",
+      "souvenir": "t2",
+      "album": "souvenirs",
+      "title": "The Hanging-Cloud Bridge",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t2-cloud-bridge.webp",
+      "board": "pictures/souvenirs/sv-t2-cloud-bridge-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "cloud bridge"
+      ],
+      "credit": {
+        "artist": "Katsushika Hokusai",
+        "title": "The Hanging-Cloud Bridge at Mount Gyodo near Ashikaga (Ashikaga Gyodozan kumo no kakehashi), from the series \"Unusual Views of Famous Bridges in Various Provinces (Shokoku meikyo kiran)\"",
+        "date": "c. 1833/34",
+        "museum": "Art Institute of Chicago",
+        "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+        "page": "https://www.artic.edu/artworks/149107"
+      }
+    },
+    {
+      "id": "sv-t2-kanbara-snow",
+      "souvenir": "t2",
+      "album": "souvenirs",
+      "title": "Evening Snow at Kanbara",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t2-kanbara-snow.webp",
+      "board": "pictures/souvenirs/sv-t2-kanbara-snow-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "kanbara snow"
+      ],
+      "credit": {
+        "artist": "Utagawa Hiroshige",
+        "title": "Kanbara: Evening Snow (Kanbara, yoru no yuki), from the series \"Fifty-three Stations of the Tokaido (Tokaido gojusan tsugi no uchi),\" also known as the Hoeido Tokaido",
+        "date": "c. 1833/34",
+        "museum": "Art Institute of Chicago",
+        "licence": "CC0 Public Domain Designation (Art Institute of Chicago open access)",
+        "page": "https://www.artic.edu/artworks/25613"
+      }
     }
   ],
   "souvenirs": [
@@ -47622,6 +47982,13 @@
       "table": "table-souvenir-america",
       "tableTitle": "Diner Counter",
       "sticker": "pictures/souvenirs/sv-t1-sticker.webp"
+    },
+    {
+      "trip": "t2",
+      "theme": "Woodblock prints",
+      "table": "table-souvenir-japan",
+      "tableTitle": "Printmaker's Table",
+      "sticker": "pictures/souvenirs/sv-t2-sticker.webp"
     }
   ]
 }

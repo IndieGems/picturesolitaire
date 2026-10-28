@@ -102,8 +102,9 @@ Tall (T) and wide (W) subjects, each a clearly different shape:
    popcorn box, candy apple. W: hot dog, rack of BBQ ribs, banana split, folded New York pizza
    slice, apple pie slice with ice cream, corn on the cob.
 2. **Japan:** T: Hiroshige, *Sudden Shower over Shin-Ōhashi Bridge and Atake*; *Plum Park in
-   Kameido*; *Fukagawa Susaki and Jūmantsubo* (the eagle); *Fireworks at Ryōgoku*; one tall
-   bird-and-flower print (tanzaku). Hokusai, *Kirifuri Waterfall at Kurokami Mountain*.
+   Kameido*; *Fukagawa Susaki and Jūmantsubo* (the eagle); *Fireworks at Ryōgoku*; *Asakusa Rice
+   Fields and Torinomachi Festival* (the cat at the window; it replaced a tall bird-and-flower print
+   whose poem filled half the card). Hokusai, *Kirifuri Waterfall at Kurokami Mountain*.
    W: Hokusai, *Under the Wave off Kanagawa*; *Fine Wind, Clear Morning*; *Mishima Pass in Kai
    Province*; *Kajikazawa in Kai Province*; *The Hanging-cloud Bridge at Mount Gyōdō*. Hiroshige,
    *Evening Snow at Kanbara*.
@@ -117,7 +118,7 @@ Tall (T) and wide (W) subjects, each a clearly different shape:
    Girl with a Watering Can* (NGA); Caillebotte, *Paris Street; Rainy Day* (AIC, the lamp post and
    umbrellas); Renoir, *By the Seashore* (Met); Cassatt, *The Child's Bath* (AIC). W: Seurat, *A
    Sunday on La Grande Jatte* (AIC); Monet, *Arrival of the Normandy Train, Gare Saint-Lazare*
-   (AIC); Monet, *Garden at Sainte-Adresse* (Met); Monet, *Stacks of Wheat (End of Summer)* (AIC);
+   (AIC); Monet, *Cliff Walk at Pourville* (AIC; the Met does not release *Garden at Sainte-Adresse* as open access); Monet, *Stacks of Wheat (End of Summer)* (AIC);
    Degas, *The Dance Class* (Met); Pissarro, *Boulevard Montmartre on a Winter Morning* (Met).
 6. **Canada:** T: breaching orca, bald eagle on a branch, standing polar bear, snowy owl, lynx
    sitting, puffin. W: moose, beaver with a branch, loon on a lake, caribou, bison, Canada goose

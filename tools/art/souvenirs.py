@@ -203,7 +203,7 @@ def museum(raw, targets):
             # image openaccess=1; the uuid in the plan is that row's.
             ok, img = True, f"https://api.nga.gov/iiif/{m['image']}/full/!1600,1600/0/default.jpg"
             credit = {"artist": m.get("artist", ""), "title": m.get("title", e["title"]), "date": m.get("date", ""),
-                      "page": f"https://www.nga.gov/artworks/{oid}"}
+                      "page": f"https://www.nga.gov/collection/art-object-page.{oid}.html"}
         else:
             sys.exit(f"{pid}: unknown museum {src}")
         if not ok:

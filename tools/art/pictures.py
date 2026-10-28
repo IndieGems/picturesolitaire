@@ -29,6 +29,7 @@ is a picture the size of a whole board, 4 x 4 or 4 x 5 cards, with a full pictur
 copy and a 300 px wide thumb for the passport; docs/destinations-america.md is the first trip's list.
 """
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -348,7 +349,8 @@ def complete_souvenirs(sp):
         tables = ROOT / "tools/art/masters/tables"
         if ps and all((PUBLIC / f"pictures/souvenirs/{e['id']}.webp").exists() for e in ps)                 and (tables / f"{s['table']}.webp").exists() and (tables / f"{s['table']}-back.webp").exists()                 and (PUBLIC / f"pictures/souvenirs/sv-{s['trip']}-sticker.webp").exists():
             done.add(s["trip"])
-    return done
+    only = os.environ.get("SOUVENIR_TRIPS")  # commit trip by trip: "t1,t2" lists only those
+    return done & set(only.split(",")) if only else done
 
 
 def souvenir_pictures():
