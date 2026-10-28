@@ -72,7 +72,6 @@ const waiting: { kind: HelperKind; answer: (a: SpendAnswer) => void }[] = [];
 /** Coins prices, of one and of a pack of 3. */
 const prices: Record<Pack, Record<HelperKind, number | null>> = { 1: { hint: null, undo: null, shuffle: null }, 3: { hint: null, undo: null, shuffle: null } };
 let coins: number | null = null;
-let coinsKnown = false;
 let known = !framed;
 let sending = false;
 let tries = 0;
@@ -119,12 +118,11 @@ async function readCoins(): Promise<void> {
   try {
     const all = await gem.platform.currencies.get();
     const c = all.find((x) => x.slug === COINS);
-    // a guest holds no Coins: the currency is absent for them
+    // null: the wallet listed no Coins, which says nothing about who the player is. A guest can
+    // hold Coins (QA, 0.41.0: a test guest did), though a win pays a guest none (pay.rs).
     coins = c ? c.balance : null;
-    coinsKnown = true;
   } catch (err) {
     coins = null;
-    coinsKnown = true;
     console.warn(`[helpers] the Coins could not be read: ${refusalOf(err)}`);
   }
 }
@@ -248,8 +246,6 @@ export const helpers = {
   },
   /** The Coins price of one or a pack of 3, from the game config; null until read (or no such pack). */
   price: (k: HelperKind, pack: Pack = 1): number | null => prices[pack][k],
-  /** True when the player cannot buy here: a guest (no Coins), or a plain tab. */
-  guest: (): boolean => !framed || (coinsKnown && coins === null),
   /** The player's Coins cover the price; null while unknown. For greying a button only. */
   affordable: (k: HelperKind, pack: Pack = 1): boolean | null => {
     const p = prices[pack][k];
