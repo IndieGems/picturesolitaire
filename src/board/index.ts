@@ -197,7 +197,8 @@ function aspectOf(id: string, cols: number, rows: number): number {
   return px?.length === 2 && px[0]! > 0 && px[1]! > 0 ? px[0]! / px[1]! : cols / rows;
 }
 const base = import.meta.env.BASE_URL;
-const backUrl = `${base}art/stack-back.webp`;
+// the default table's card back (Sunny Day, the creator's pick, 2026-10-28), until the screens set --stack-back
+const backUrl = `${base}art/tables/sunny-day/sunny-day-stack-back.webp`;
 /** Board copies (catalogue paths) that would not load: their full picture stands in from then on. */
 const brokenCopies = new Set<string>();
 /** The screen's pixel density (a phone's 2 or 3), read when a picture is chosen. */
