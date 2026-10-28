@@ -25,6 +25,10 @@
 // passport.ts). Their two lines, "Grand Canyon" / "Arizona, USA", are "name" and "place";
 // a locale may carry "destination.<id>.name" and ".place". A destination's thumb is sized
 // for the passport's postcards, so it lists its own size (thumbPx).
+//
+// The SOUVENIRS (docs/souvenirs.md, 2026-10-28): each trip's bonus board has pictures of its own
+// (`souvenirPictures`, never in an album, known by id like any picture), and a record per trip
+// (`souvenirs`: its theme, its table, its sticker).
 
 import CATALOGUE from "../content/pictures.json";
 import { t } from "./i18n";
@@ -83,7 +87,38 @@ const pictureList: Picture[] = (CATALOGUE.pictures as Entry[]).map((p) => ({
   cols: p.cols,
   rows: p.rows,
 }));
-const byId = new Map(pictureList.map((p) => [p.id, p]));
+// a Souvenir's pictures (docs/souvenirs.md): their own list, kept out of the albums, known by id (the win card)
+type SouvenirEntry = Sizes & { id: string; title: string; cols: number; rows: number };
+const souvenirPictureList: Picture[] = ((CATALOGUE as unknown as { souvenirPictures?: SouvenirEntry[] }).souvenirPictures ?? []).map((p) => ({
+  id: p.id,
+  album: "",
+  title: p.title,
+  file: p.file,
+  thumb: p.thumb ?? p.file,
+  board: p.board && p.boardPx?.length === 2 ? p.board : null,
+  copies: copiesOf(p),
+  cols: p.cols,
+  rows: p.rows,
+}));
+const byId = new Map([...pictureList, ...souvenirPictureList].map((p) => [p.id, p]));
+
+/**
+ * A trip's Souvenir as Art lists it (pictures.json `souvenirs`): its theme in words, the table its
+ * board wears, and the sticker its first win puts on the trip's passport page (a catalogue path,
+ * in the trip's passport pack). A locale may carry "souvenir.<trip>.theme".
+ */
+export interface SouvenirArt {
+  trip: string;
+  theme: string;
+  table: string;
+  tableTitle: string;
+  sticker: string;
+}
+const souvenirByTrip = new Map(((CATALOGUE as unknown as { souvenirs?: SouvenirArt[] }).souvenirs ?? []).map((s) => [s.trip, s]));
+/** Trip `trip`'s Souvenir ("t1"), or undefined while Art has not made it. */
+export function souvenirArt(trip: string): SouvenirArt | undefined {
+  return souvenirByTrip.get(trip);
+}
 
 /** A destination: a picture (the whole postcard, cols x rows of the board) with the place's two lines. */
 export interface Destination extends Picture {
@@ -195,3 +230,5 @@ export const pictureTitle = (p: Picture): string =>
 /** A destination's two lines in the player's language: its name, and where it is. */
 export const destinationName = (id: string, english: string): string => localized(`destination.${id}.name`, english);
 export const destinationPlace = (id: string, english: string): string => localized(`destination.${id}.place`, english);
+/** A Souvenir's theme in the player's language: "Street and diner food". */
+export const souvenirTheme = (s: SouvenirArt): string => localized(`souvenir.${s.trip}.theme`, s.theme);

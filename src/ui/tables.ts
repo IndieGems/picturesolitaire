@@ -108,17 +108,46 @@ export function onTableChange(fn: () => void): () => void {
   return () => void listeners.delete(fn);
 }
 
-/** Lay the table's art on the screens, once its picture is ready to show (never a blank moment). */
-async function apply(a: TableArt): Promise<void> {
+/** The table on the screen now: the player's own, or a board's that wears one of its own (a Souvenir's). */
+let shown = "table-winter-dusk";
+/** A board's own table, worn while it is up (wearTable); null: the player's own shows. */
+let worn: string | null = null;
+/** Counts each change of what shows, so only the last one asked for is laid down. */
+let painting = 0;
+export const shownTable = (): string => shown;
+
+/** Lay a table's art on the screens, once its picture is ready to show (never a blank moment). */
+async function paint(a: TableArt): Promise<void> {
+  const at = ++painting;
   const img = new Image();
   img.src = url(a.table);
   await img.decode().catch(() => undefined);
+  if (at !== painting) return;
   const root = document.documentElement.style;
   root.setProperty("--table-img", `url("${url(a.table)}")`);
   root.setProperty("--table-base", a.base);
   root.setProperty("--stack-back", `url("${url(a.stackBack)}")`);
-  chosen = a.id;
+  shown = a.id;
   for (const fn of [...listeners]) fn();
+}
+
+/** The player's own table is now `a`: shown, unless a board wears its own (then it shows after). */
+async function apply(a: TableArt): Promise<void> {
+  chosen = a.id;
+  if (worn) return void [...listeners].forEach((fn) => fn());
+  await paint(a);
+}
+
+/**
+ * A board with a table of its own (a Souvenir's, docs/souvenirs.md): `id` shows while it is up,
+ * and null puts the player's own back. Never saved, never the player's choice (the picker still
+ * marks theirs).
+ */
+export async function wearTable(id: string | null): Promise<void> {
+  if (id === worn) return;
+  worn = id;
+  const a = await tableArt(id ?? chosen);
+  if (a && worn === id) await paint(a);
 }
 
 /**
@@ -148,6 +177,8 @@ export async function chooseTable(id: string): Promise<void> {
   touched = true;
   const a = (await ownedTableArts()).find((x) => x.id === id);
   if (!a || a.id === chosen) return;
+  // chosen on a board that wears its own (the settings over a Souvenir): theirs from now on, there too
+  worn = null;
   await apply(a);
   if (!framed || pretendAll()) return;
   try {

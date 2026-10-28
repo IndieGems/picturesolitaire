@@ -1321,3 +1321,52 @@ html.less-motion .case-slots .slot.arrived .item-pic { animation: none; }
 .win .stats.compare .stat.lit { border-color: var(--amber-hi); box-shadow: inset 0 0 0 2px var(--amber-hi); }
 .win .card p.compare-line { margin: 0 0 14px; font: 600 17px/1.3 var(--round); color: var(--ink); overflow-wrap: anywhere; }
 .win .card p.compare-line.won { color: var(--amber-lip); }
+
+/* ---------- Souvenirs (souvenirs.ts, passport.ts; app.ts, the board and its card) ---------- */
+
+/* a sticker drawn anywhere: Art's die-cut sticker on transparency, faded in once it has loaded */
+img.sv-sticker { flex: none; object-fit: contain; opacity: 0; transition: opacity 0.25s ease; }
+img.sv-sticker.in, img.sv-sticker[src] { opacity: 1; }
+img.sv-sticker:not([src]) { visibility: hidden; }
+
+/* home: a stamped trip's Souvenir still to play, at the itinerary's head (a button on the information) */
+.btn.souvenir-tile {
+  margin-left: auto; flex: none; gap: calc(6px * var(--k)); min-height: calc(48px * var(--k)); max-width: 52%;
+  padding: calc(4px * var(--k)) calc(14px * var(--k)) calc(4px * var(--k)) calc(6px * var(--k)); border-radius: calc(18px * var(--k));
+}
+.souvenir-tile img.sv-sticker { width: calc(38px * var(--k)); height: calc(38px * var(--k)); transform: rotate(-8deg); }
+.souvenir-tile .words { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; }
+.souvenir-tile .words b { font: 600 calc(15px * var(--k))/1.05 var(--round); }
+.souvenir-tile .words small { font: 500 calc(12px * var(--k))/1.15 var(--round); color: var(--ink-soft); text-align: left; overflow-wrap: anywhere; }
+
+/* the board: its banner as it opens, warm amber */
+.mark-banner.souvenir { background: rgb(214 128 46 / 0.94); }
+
+/* its card: the trip and theme under the title; the sticker ready for the passport, before Add the sticker */
+.win .card p.souvenir-theme { margin: -2px 0 0; font: 600 15px/1.3 var(--round); color: var(--ink-soft); }
+.win .card p.souvenir-line { display: flex; align-items: center; justify-content: center; gap: 10px; margin: -4px 0 16px; font: 600 16px/1.3 var(--round); color: var(--ink); text-align: left; }
+.win .card p.souvenir-line img.sv-sticker { width: 48px; height: 48px; transform: rotate(-8deg); }
+
+/* the passport: Play the Souvenir under a stamped trip's name, until it is won */
+.btn.pp-souvenir { align-self: flex-start; margin-top: 6px; min-height: 44px; padding: 4px 14px 4px 6px; gap: 6px; font-size: 15px; }
+.pp-souvenir img.sv-sticker, .pp-on-souvenir img.sv-sticker { width: 32px; height: 32px; transform: rotate(-8deg); }
+/* then its sticker, stuck on the page against the stamp's lower left */
+.pp-sticker { position: absolute; z-index: 2; left: -40px; bottom: -18px; width: 66px; height: 66px; transform: rotate(-10deg); pointer-events: none; }
+.pp-sticker img { display: block; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 2px 2px rgba(40, 30, 20, 0.35)); }
+.pp-sticker.sticking { animation: pp-sticker-press 0.3s cubic-bezier(0.55, 0, 0.8, 0.3) both, pp-sticker-settle 0.25s ease-out 0.3s both; }
+@keyframes pp-sticker-press {
+  0% { opacity: 0; transform: translateY(-18px) scale(1.5) rotate(-22deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(-10deg); }
+}
+@keyframes pp-sticker-settle {
+  0% { transform: scale(1) rotate(-10deg); }
+  40% { transform: scale(0.94, 1.05) rotate(-7deg); }
+  100% { transform: scale(1) rotate(-10deg); }
+}
+.pp-sticker.fading { animation: pp-stamp-fade 0.35s ease both; }
+/* the stamp moment's way on with a Souvenir to play: two side by side, Next trip (amber) the main one */
+.pp-foot.two { gap: 10px; }
+.pp-foot.two > .btn { flex: 1 1 0; min-width: 0; max-width: 220px; min-height: 60px; padding: 6px 12px; font-size: 18px; line-height: 1.1; white-space: normal; }
+.pp-foot.two > .pp-on { font-size: 20px; }
+html.less-motion .pp-sticker { animation: none; }
+@media (prefers-reduced-motion: reduce) { .pp-sticker.sticking { animation: none; } }

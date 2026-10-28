@@ -19,6 +19,14 @@
 // Then one amber button carries on (the next trip's first board, or home). Less motion:
 // the stamp fades in, with no thud and no sparkle.
 //
+// SOUVENIRS (docs/souvenirs.md, 2026-10-28): a stamped trip with a Souvenir (souvenirs.ts) shows it on
+// its page: "Play the Souvenir" under the trip's name until it is won, then its sticker, stuck on the
+// page by the stamp. The stamp moment's way on offers it too, beside Next trip (still the main
+// action). THE STICKER MOMENT: a Souvenir's first win ends its card on "Add the sticker" (app.ts),
+// which opens its trip's page; the sticker presses down onto it beside the stamp, and
+// `souvenir:sticker` goes out at the touch, for its sound (agreed with Audio: the page still for
+// 550 ms, then 300 ms down, the way on 650 ms after). Less motion: it fades in, the sound with it.
+//
 // Its top row is every screen's: the title on the left, Back then the gear at the right
 // end. A trip's stamp is Art's drawing, public/art/stamps/stamp-<trip id>.webp (300 px
 // square, drawn upright; the page tilts it); a trip with none yet, or one that does not
@@ -32,12 +40,15 @@ import { copyUrl, destinationName, destinationPlace, sharpCopy, type Copy, type 
 import { createViewer } from "./viewer";
 import { ensureTrip, resident } from "../packs";
 import { currentTrip, placesOf, tripById, tripCount, tripDone, tripName, trips, type Place, type Trip } from "./trips";
+import { souvenirOf, souvenirOpen, souvenirWon, souvenirWords, stickerReady, stickerUrl } from "./souvenirs";
 
 type Nav = {
   /** Back: to home. */
   home(): void;
   /** Show the passport's screen. */
   show(): void;
+  /** Play trip `trip`'s Souvenir (its page's button, or the stamp moment's). */
+  souvenir(trip: string): void;
 };
 
 /** What the stamp moment's button does once the stamp is down. */
@@ -48,6 +59,8 @@ export interface AfterStamp {
   trailing?: boolean;
   press: string;
   go(): void;
+  /** Also offer the trip's Souvenir beside it (the stamp moment), when it has one still to play. */
+  souvenir?: boolean;
 }
 
 /** When the stamp starts down after the page is up, and when it lands (style.css, pp-stamp-land). */
@@ -162,6 +175,8 @@ export function createPassport(nav: Nav) {
   let at = 0; // the page open: an index into trips
   /** The trip whose stamp is about to land: its page shows the empty ring until then. */
   let landing: string | null = null;
+  /** The trip whose Souvenir sticker is about to land: its page shows none until then. */
+  let sticking: string | null = null;
   let timers: number[] = [];
   const later = (ms: number, fn: () => void) => {
     const id = window.setTimeout(() => {
@@ -229,6 +244,23 @@ export function createPassport(nav: Nav) {
     titles.append(el("h2", "pp-trip", tripName(tr)), el("span", "pp-count", t("passport.count", { done, all })));
     const spot = el("div", "pp-spot");
     if (tripDone(tr) && landing !== tr.id) spot.append(stampOf(tr));
+    // its Souvenir, once the trip is stamped: the sticker when won (unless it is about to land), else the way to play it
+    const sv = landing !== tr.id && souvenirOpen(tr.id) ? souvenirOf(tr.id) : null;
+    if (sv && souvenirWon(sv.board.id)) {
+      if (sticking !== tr.id) spot.append(stickerOf(tr));
+    } else if (sv) {
+      const b = el("button", "btn pp-souvenir");
+      b.type = "button";
+      b.dataset.press = "passport.souvenir";
+      const img = el("img", "sv-sticker");
+      img.alt = "";
+      img.draggable = false;
+      void stickerReady(sv.art).then((src) => (img.src = src));
+      b.append(img, el("span", "", t("souvenir.play")));
+      b.setAttribute("aria-label", t("souvenir.playAria", { theme: souvenirWords(tr.id).theme }));
+      b.addEventListener("click", () => nav.souvenir(tr.id));
+      titles.append(b);
+    }
     head.append(titles, spot);
     const grid = el("div", "pp-grid");
     const places = placesOf(tr);
@@ -254,7 +286,7 @@ export function createPassport(nav: Nav) {
   }
 
   function turnTo(i: number): void {
-    if (i < 0 || i >= trips.length || i === at || landing) return;
+    if (i < 0 || i >= trips.length || i === at || landing || sticking) return;
     const forward = i > at;
     at = i;
     draw();
@@ -286,8 +318,9 @@ export function createPassport(nav: Nav) {
   function settle(): void {
     for (const id of timers) clearTimeout(id);
     timers = [];
-    const was = landing;
+    const was = landing ?? sticking;
     landing = null;
+    sticking = null;
     page.classList.remove("thud");
     if (was) draw();
   }
@@ -325,19 +358,80 @@ export function createPassport(nav: Nav) {
       later(400, () => page.classList.remove("thud"));
     });
     later((calm ? 0 : LAND_MS) + CARRY_ON_MS, () => {
-      const b = el("button", "btn amber pp-on");
-      b.type = "button";
-      b.dataset.press = after.press;
-      const words = el("span", "", after.label);
-      if (after.trailing) b.append(words, after.icon);
-      else b.append(after.icon, words);
-      b.addEventListener("click", () => {
-        foot.hidden = true;
-        after.go();
-      });
-      foot.replaceChildren(b);
-      foot.hidden = false;
+      const sv = after.souvenir && souvenirOpen(tr.id) ? souvenirOf(tr.id) : null;
+      wayOn(after, sv && !souvenirWon(sv.board.id) ? tr.id : null);
     });
+  }
+
+  /** The moment's way on, under the book: one amber button; with a Souvenir to play, "Play the Souvenir" before it. */
+  function wayOn(after: AfterStamp, souvenir: string | null): void {
+    const b = el("button", "btn amber pp-on");
+    b.type = "button";
+    b.dataset.press = after.press;
+    const words = el("span", "", after.label);
+    if (after.trailing) b.append(words, after.icon);
+    else b.append(after.icon, words);
+    b.addEventListener("click", () => {
+      foot.hidden = true;
+      after.go();
+    });
+    const kids: HTMLElement[] = [b];
+    const art = souvenir ? souvenirOf(souvenir)?.art : undefined;
+    if (souvenir && art) {
+      const sv = el("button", "btn pp-on-souvenir");
+      sv.type = "button";
+      sv.dataset.press = "passport.souvenirAfterStamp";
+      const img = el("img", "sv-sticker");
+      img.alt = "";
+      img.draggable = false;
+      void stickerReady(art).then((src) => (img.src = src));
+      sv.append(img, el("span", "", t("souvenir.play")));
+      sv.setAttribute("aria-label", t("souvenir.playAria", { theme: souvenirWords(souvenir).theme }));
+      sv.addEventListener("click", () => {
+        foot.hidden = true;
+        nav.souvenir(souvenir);
+      });
+      kids.unshift(sv);
+    }
+    foot.classList.toggle("two", kids.length > 1);
+    foot.replaceChildren(...kids);
+    foot.hidden = false;
+  }
+
+  /** A trip's Souvenir sticker, stuck on its page by the stamp. */
+  function stickerOf(tr: Trip): HTMLElement {
+    const sv = souvenirOf(tr.id);
+    const box = el("div", "pp-sticker");
+    box.setAttribute("role", "img");
+    box.setAttribute("aria-label", t("souvenir.stickerAria", { theme: souvenirWords(tr.id).theme }));
+    const img = el("img");
+    img.alt = "";
+    img.draggable = false;
+    if (sv) {
+      img.src = stickerUrl(sv.art);
+      void stickerReady(sv.art).then((src) => {
+        if (img.src !== src) img.src = src;
+      });
+    }
+    box.append(img);
+    return box;
+  }
+
+  /** The sticker presses down onto the open page: its sound at the touch, a twinkle, then the way on. */
+  function stick(tr: Trip, after: AfterStamp): void {
+    sticking = null;
+    const spot = page.querySelector(".pp-spot");
+    if (!spot) return;
+    const sticker = stickerOf(tr);
+    const calm = lessMotion();
+    sticker.classList.add(calm ? "fading" : "sticking");
+    spot.append(sticker);
+    later(calm ? 0 : LAND_MS, () => {
+      emit("souvenir:sticker", { trip: tr.id }); // Audio's press and sparkle under it
+      if (calm) return;
+      spot.append(...sparkles());
+    });
+    later((calm ? 0 : LAND_MS) + CARRY_ON_MS, () => wayOn(after, null));
   }
 
   return {
@@ -363,9 +457,34 @@ export function createPassport(nav: Nav) {
       const ready = Promise.race([stampReady(tr), new Promise<void>((r) => setTimeout(r, STAMP_WAIT_MS))]);
       later(STAMP_AT_MS, () => void ready.then(() => landing === tr.id && land(tr, after)));
     },
-    /** The record changed (a board won, the account's copy landed): redraw the page up, unless a stamp is landing on it. */
+    /**
+     * The sticker moment: open at `tripId`'s page and press its Souvenir's sticker on, once. `after`
+     * is the button that carries on once it is down.
+     */
+    sticker(tripId: string, after: AfterStamp): void {
+      const tr = tripById(tripId);
+      const sv = souvenirOf(tripId);
+      if (!tr || !sv) return void after.go();
+      settle();
+      sticking = tr.id;
+      foot.hidden = true;
+      at = trips.indexOf(tr);
+      draw();
+      scroll.scrollTop = 0;
+      nav.show();
+      const ready = Promise.race([
+        stickerReady(sv.art).then((src) => {
+          const img = new Image();
+          img.src = src;
+          return img.decode().catch(() => undefined);
+        }),
+        new Promise<void>((r) => setTimeout(r, STAMP_WAIT_MS)),
+      ]);
+      later(STAMP_AT_MS, () => void ready.then(() => sticking === tr.id && stick(tr, after)));
+    },
+    /** The record changed (a board won, the account's copy landed): redraw the page up, unless a stamp or sticker is landing on it. */
     redraw(): void {
-      if (!screen.hidden && !landing && !timers.length) draw();
+      if (!screen.hidden && !landing && !sticking && !timers.length) draw();
     },
     /** Leaving the passport some other way (the board, the Arcade): any stamp moment ends where it is. */
     leave(): void {

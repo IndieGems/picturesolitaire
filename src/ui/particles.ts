@@ -15,7 +15,7 @@
 // time it is opened.
 
 import { onPlayerPrefs } from "../gem";
-import { chosenTable, onTableChange, tableArt, type TableArt } from "./tables";
+import { shownTable, onTableChange, tableArt, type TableArt } from "./tables";
 
 type Sprite = TableArt;
 
@@ -80,7 +80,7 @@ export function mountParticles(app: HTMLElement): void {
   let drawing = 0;
   const draw = async () => {
     const token = ++drawing;
-    const a = (await tableArt(chosenTable())) as Sprite | undefined;
+    const a = (await tableArt(shownTable())) as Sprite | undefined;
     if (token === drawing) layer.replaceChildren(...(a ? flakes(a) : []));
   };
   onTableChange(() => void draw());

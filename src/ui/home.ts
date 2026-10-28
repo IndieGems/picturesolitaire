@@ -9,6 +9,8 @@
 //                 reveal, never shown ahead); a hard or super hard board carries its tag
 //                 (marks.ts); the last stop holds the trip's stamp, a faint outline until
 //                 the trip is done
+//                 A stamped trip's Souvenir still to play (souvenirs.ts) sits at the head's right
+//                 end, its sticker and "Souvenir": a button on the information (docs/souvenirs.md)
 //   Next stop     the amber button, with the board number under it
 //   the dock      Daily (daily.ts), the passport (a booklet, with its count of stamps), the month's
 //                 event (suitcase.ts: the Daily Suitcase, or the next one before it starts; in the
@@ -65,6 +67,8 @@ type Parts = {
   event: HTMLElement;
   /** the day's board's button (daily.ts), hidden until the day's board is known */
   daily: HTMLElement;
+  /** a stamped trip's Souvenir still to play (souvenirs.ts), in the itinerary's head; hidden while there is none */
+  souvenir: HTMLElement;
   /** Is the Shop on home (the first board done, so the helpers are known)? */
   shopShown(): boolean;
 };
@@ -131,7 +135,7 @@ export function createHome(nav: Nav, parts: Parts) {
   const countLine = el("span", "itinerary-count");
   const words = el("span", "itinerary-words");
   words.append(tripLine, countLine);
-  head.append(plane, words);
+  head.append(plane, words, parts.souvenir);
   const route = el("div", "tr-route");
   route.setAttribute("aria-hidden", "true");
   const path = document.createElementNS("http://www.w3.org/2000/svg", "svg");

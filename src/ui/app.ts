@@ -32,6 +32,12 @@
 // went). After any trip board from 3 or a daily (not practice, not a one-off), the win card offers
 // Challenge a friend and Share (friend-cards.ts, socialRow).
 //
+// A SOUVENIR (the creator, 2026-10-28; docs/souvenirs.md): a stamped trip's optional bonus board
+// (souvenirs.ts), opened from the stamp moment, home's tile or the trip's passport page. It wears a
+// table of its own while it is up (tables.ts, wearTable), its top row says "Souvenir" over its theme,
+// and it claims like any board (lane "souvenir": its Coins paid once). Its first win ends on "Add the
+// sticker", the sticker moment on its trip's passport page (passport.ts); a replay goes on to Next stop.
+//
 // PRACTICE (the creator's dev menu, dev-menu.ts; never in a release build): a
 // board opened from the menu, or one a dev hand was put on, plays and finishes
 // as ever, its win card included, but sends no claim (no Coins, no progress, no
@@ -50,18 +56,19 @@ import { ICONS, keepIcons, type IconName } from "./icons";
 import { firstScreen, screenChanged } from "./browser";
 import { online, onOnline, pretend, suspect } from "./online";
 import { learnt, lessonSeen, loadGuideSave } from "./guide-save";
-import { campaignNext, challengeBest, dailyResult, guideDone, hold, loadProgress, onProgress, progress, waitForProgress } from "../net/progress";
+import { campaignNext, challengeBest, dailyResult, guideDone, hold, loadProgress, onProgress, progress, souvenirBest, waitForProgress } from "../net/progress";
 import { createAlbums } from "./albums";
 import { createChallenges } from "./challenges";
 import { createGuide, type GuideMode } from "./guide";
 import { fireworks } from "./fireworks";
 import type { Challenge } from "./challenge-data";
-import { lessonLevel, level as campaignLevel, loadDaily, type Daily, type Level } from "../game/levels";
+import { lessonLevel, level as campaignLevel, loadDaily, type Daily, type Level, type Souvenir } from "../game/levels";
+import { createSouvenirTile, loadSouvenirList, onSouvenirs, souvenirOf, souvenirWords, stickerReady } from "./souvenirs";
 import { createDaily } from "./daily";
 import { clock, shortDate } from "./format";
 import { claimWin, cueCoins, onVerdict, type Verdict } from "../net/claims";
 import { KEEPSAKE } from "../net/keepsake";
-import { knownTable, startTables, tableTitle, thumbOf } from "./tables";
+import { knownTable, startTables, tableTitle, thumbOf, wearTable } from "./tables";
 import { keepFitted } from "./fit";
 import { cardAspect, syncCardAspect } from "./cards";
 import { createViewer } from "./viewer";
@@ -139,6 +146,8 @@ async function playEventPuzzle(): Promise<void> {
 // home (home.ts): the trip as an itinerary and its route, Next stop, and Daily, the passport, the month's event
 // and the Shop. The challenge route is no longer on home (the creator, 2026-10-27: "Remove Challenges from the
 // home screen"): its screen and code stay (routeUi), reached from nowhere for now
+// a stamped trip's Souvenir still to play (souvenirs.ts): its tile in home's itinerary
+const souvenirTile = createSouvenirTile((trip) => playSouvenir(trip));
 const homeUi = createHome(
   {
     play: () => void playNext(),
@@ -146,7 +155,7 @@ const homeUi = createHome(
     shop: () => homeShop.open(),
   },
   // the Shop once the first board is done (its travel kit is how a player first meets the helpers)
-  { note: homeNote, event: suitcaseUi.tile, daily: dailyUi.homeButton, shopShown: () => guideDone() },
+  { note: homeNote, event: suitcaseUi.tile, daily: dailyUi.homeButton, souvenir: souvenirTile.tile, shopShown: () => guideDone() },
 );
 const home = homeUi.screen;
 
@@ -211,7 +220,7 @@ const upright = h("div", { class: "upright", role: "status" }, h("div", { class:
 // the albums (albums.ts): no longer on home (the passport took their place); kept, unreached, until they are tidied away
 const albumsUi = createAlbums({ home: () => goHome(), show: (which) => show(which) });
 // the passport (passport.ts): a page per trip, and the stamp moment
-const passportUi = createPassport({ home: () => goHome(), show: () => show("passport") });
+const passportUi = createPassport({ home: () => goHome(), show: () => show("passport"), souvenir: (trip) => playSouvenir(trip) });
 // the challenge route (challenges.ts)
 const routeUi = createChallenges({ home: () => goHome(), show: () => show("challenges"), play: (c) => openPlay({ kind: "challenge", c }) });
 
@@ -239,6 +248,7 @@ export type Play = (
   | { kind: "experiment"; x: Experiment }
   | { kind: "lesson"; x: Level }
   | { kind: "oneoff"; o: OneOff }
+  | { kind: "souvenir"; s: Souvenir }
 ) & {
   practice?: boolean;
   guide?: boolean;
@@ -273,6 +283,7 @@ const samePlay = (a: Play | null, b: Play): boolean => {
   if (a.kind === "challenge") return a.c.id === (b as typeof a).c.id;
   if (a.kind === "experiment" || a.kind === "lesson") return a.x.id === (b as typeof a).x.id;
   if (a.kind === "oneoff") return a.o === (b as typeof a).o;
+  if (a.kind === "souvenir") return a.s.id === (b as typeof a).s.id;
   return a.d.id === (b as typeof a).d.id;
 };
 
@@ -368,7 +379,10 @@ function show(next: Screen): void {
   syncCardAspect();
   home.hidden = next !== "home";
   boardScreen.hidden = next !== "board";
-  if (next !== "board") destBanner.clear();
+  if (next !== "board") {
+    destBanner.clear();
+    void wearTable(null);
+  }
   albumsUi.listScreen.hidden = next !== "albums";
   albumsUi.albumScreen.hidden = next !== "album";
   passportUi.screen.hidden = next !== "passport";
@@ -400,6 +414,7 @@ function show(next: Screen): void {
 
 function drawHome(): void {
   homeUi.draw();
+  souvenirTile.draw();
   suitcaseUi.redraw();
   // the board Next stop opens, its pictures fetched ahead while home is up
   if (!awaitingRecord()) prefetch(campaignLevel(nextBoard()));
@@ -454,7 +469,7 @@ function openLevel(level: number): void {
 
 /** The level a play opens (the campaign's by its number, which goes round). */
 function levelOfPlay(p: Play): Level {
-  return p.kind === "campaign" ? campaignLevel(p.level) : p.kind === "challenge" ? p.c.level : p.kind === "daily" ? p.d : p.kind === "oneoff" ? p.o.level : p.x;
+  return p.kind === "campaign" ? campaignLevel(p.level) : p.kind === "challenge" ? p.c.level : p.kind === "daily" ? p.d : p.kind === "oneoff" ? p.o.level : p.kind === "souvenir" ? p.s : p.x;
 }
 
 /**
@@ -536,8 +551,10 @@ function openLoaded(next: Play): void {
     helpersUsed = 0;
     board = openBoard(
       host,
-      next.kind === "campaign" ? next.level : next.kind === "challenge" ? next.c.level : next.kind === "daily" ? next.d : next.kind === "oneoff" ? next.o.open : next.x,
+      next.kind === "campaign" ? next.level : next.kind === "challenge" ? next.c.level : next.kind === "daily" ? next.d : next.kind === "oneoff" ? next.o.open : next.kind === "souvenir" ? next.s : next.x,
     );
+    // a Souvenir wears its own table while it is up; any other board, the player's own
+    void wearTable(next.kind === "souvenir" ? (souvenirOf(next.s.trip)?.art.table ?? null) : null);
     // the player's own stock on the buttons (the board reports undo through board:changed)
     drawHelpers();
     // a hard board's banner; the first 5x5 board a player opens says so after it, once (bannersFor)
@@ -575,6 +592,7 @@ const SIZE_BANNERS: Record<number, { seen: string; words: string }> = {
   6: { seen: "biggest", words: "board.biggest" },
 };
 function bannersFor(p: Play): Banner[] {
+  if (p.kind === "souvenir") return [{ cls: "souvenir", text: t("souvenir.banner") }];
   if (p.kind !== "campaign") return [];
   const lvl = campaignLevel(p.level);
   const m = markOf(lvl);
@@ -611,7 +629,7 @@ function showBanners(list: Banner[]): void {
 /** The top row's information: the level; on a challenge or the daily, its name over the par and the moves so far. */
 function drawPill(): void {
   if (!play) return;
-  levelPill.classList.toggle("two", play.kind === "challenge" || play.kind === "daily" || play.kind === "oneoff");
+  levelPill.classList.toggle("two", play.kind === "challenge" || play.kind === "daily" || play.kind === "oneoff" || play.kind === "souvenir");
   levelPill.classList.remove("stacked");
   // a practice board says so beside its name (the dev menu's tag: information, never a button)
   const tag = isPractice(play) ? dev?.tag() : null;
@@ -630,6 +648,14 @@ function drawPill(): void {
   }
   if (play.kind === "lesson") {
     levelPill.replaceChildren(h("span", { class: "level-name" }, t("lesson.pill")));
+    return;
+  }
+  // a Souvenir: its heading over its theme ("Souvenir" / "Street and diner food")
+  if (play.kind === "souvenir") {
+    pillName.textContent = t("souvenir.pill");
+    if (tag) pillName.append(tag);
+    pillPar.textContent = souvenirWords(play.s.trip).theme;
+    levelPill.replaceChildren(pillName, pillPar);
     return;
   }
   // a friend's board: which one, over the moves to beat and the player's so far
@@ -979,6 +1005,7 @@ type Win = (
   | { kind: "experiment"; x: Experiment; moves: number; ms: number }
   | { kind: "lesson"; moves: number; ms: number }
   | { kind: "oneoff"; o: OneOff; moves: number; ms: number }
+  | { kind: "souvenir"; s: Souvenir; moves: number; ms: number; first: boolean }
 ) & {
   /** Helpers used on the winning try (a dare says how many). */
   helpers?: number;
@@ -1041,6 +1068,9 @@ on("board:solved", ({ moves, ms, line }) => {
     const ending = tripEndingAt(play.level);
     const stamp = ending && !isPractice(play) && play.level >= campaignNext() ? ending.id : undefined;
     win = { kind: "campaign", level: play.level, moves, ms, milestone, ...(stamp ? { stamp } : {}) };
+  } else if (play.kind === "souvenir") {
+    // a Souvenir's first win puts its sticker in the passport (the record, read before this win's claim)
+    win = { kind: "souvenir", s: play.s, moves, ms, first: souvenirBest(play.s.id) === undefined };
   } else if (play.kind === "challenge") {
     // any win clears a challenge board, over par too; the record keeps the fewer moves
     const before = challengeBest(play.c.id);
@@ -1058,7 +1088,7 @@ on("board:solved", ({ moves, ms, line }) => {
     return;
   }
   // the win checker judges, records and pays (src/net/claims.ts); the card never waits for it
-  const lvl = play.kind === "campaign" ? campaignLevel(play.level) : play.kind === "challenge" ? play.c.level : play.d;
+  const lvl = play.kind === "campaign" ? campaignLevel(play.level) : play.kind === "challenge" ? play.c.level : play.kind === "souvenir" ? play.s : play.d;
   const verdict = claimWin({
     lane: play.kind,
     board: lvl.id,
@@ -1264,6 +1294,7 @@ function showWin(): void {
   const share = lastWin.kind === "campaign" && lastWin.milestone ? 0.2 : dare || lastWin.kind === "oneoff" ? 0.28 : 0.34;
   const gallery = layoutGallery(board.pictures(), share);
   if (lastWin.kind === "oneoff") return void showOneOffWin(lastWin, gallery);
+  if (lastWin.kind === "souvenir") return void showSouvenirWin(lastWin, gallery);
   if (lastWin.kind === "challenge") return void showChallengeWin(lastWin, gallery);
   if (lastWin.kind === "daily") return void showDailyWin(lastWin, gallery, dare);
   if (lastWin.kind === "experiment") return void (import.meta.env.MODE !== "release" && showExperimentWin(lastWin, gallery));
@@ -1280,6 +1311,8 @@ function showWin(): void {
   const after: AfterStamp = last
     ? { label: t("passport.home"), icon: icon("home"), press: "passport.home", go: goHome }
     : { label: t("passport.nextTrip"), icon: icon("next"), trailing: true, press: "passport.nextTrip", go: () => openPlay({ kind: "campaign", level: level + 1 }) };
+  // the trip's Souvenir beside it, once there is one (docs/souvenirs.md): Next trip stays the main action
+  after.souvenir = true;
   // Next goes on, round to board 1 after the last (boardNumber); Home is the card's corner key
   const next = ended
     ? withClick(button("amber next", "win.stamp", icon("passport"), t("win.stamp")), () =>
@@ -1533,6 +1566,61 @@ function showChallengeWin(w: Extract<Win, { kind: "challenge" }>, gallery: HTMLE
     ),
   );
   showCard(winVeil, back);
+  drawCoins(w);
+}
+
+// ---------- souvenirs ----------
+
+/** Play trip `trip`'s Souvenir (home's tile, its passport page, the stamp moment), once its trip is stamped. */
+function playSouvenir(trip: string): void {
+  const sv = souvenirOf(trip);
+  if (sv) openPlay({ kind: "souvenir", s: sv.board });
+}
+
+/**
+ * A Souvenir's card: its pictures, the moves and the time, and its Coins once the checker pays them
+ * (the first win only). The first win's card shows its sticker and ends on "Add the sticker", the
+ * sticker moment on the trip's passport page, then Next stop; a replay (or practice) goes on to Next stop.
+ */
+function showSouvenirWin(w: Extract<Win, { kind: "souvenir" }>, gallery: HTMLElement): void {
+  const trip = w.s.trip;
+  const sv = souvenirOf(trip);
+  const fresh = w.first && !isPractice(w) && !!sv;
+  const nextStop = () => openPlay({ kind: "campaign", level: nextBoard() });
+  const toHome = () => leaveTo("souvenir-home", goHome);
+  let line: HTMLElement | null = null;
+  if (fresh && sv) {
+    const img = h("img", { class: "sv-sticker", alt: "", draggable: "false" });
+    void stickerReady(sv.art).then((src) => (img.src = src));
+    line = h("p", { class: "souvenir-line" }, img, h("span", {}, t("souvenir.stickerReady")));
+  }
+  const go = fresh
+    ? withClick(button("amber next", "souvenir.addSticker", icon("passport"), t("souvenir.addSticker")), () =>
+        leaveTo("souvenir-sticker", () => {
+          hideCard(winVeil);
+          passportUi.sticker(trip, { label: t("home.nextStop"), icon: icon("next"), trailing: true, press: "passport.nextStop", go: nextStop });
+        }),
+      )
+    : withClick(button("amber next", "win.next", t("home.nextStop"), icon("next")), () => leaveInto("souvenir-next", nextStop));
+  winVeil.replaceChildren(
+    h(
+      "div",
+      { class: "card souvenir" },
+      cornerKey("home", t("win.home"), "win.home", toHome),
+      h("h2", {}, t("souvenir.wonTitle")),
+      h("p", { class: "souvenir-theme" }, t("souvenir.wonTheme", { theme: souvenirWords(trip).theme, trip: souvenirWords(trip).trip })),
+      gallery,
+      h(
+        "div",
+        { class: "stats" },
+        h("div", { class: "stat glass" }, h("b", {}, String(w.moves)), h("span", {}, t("win.moves"))),
+        h("div", { class: "stat glass" }, h("b", {}, clock(w.ms)), h("span", {}, t("win.time"))),
+      ),
+      line,
+      go,
+    ),
+  );
+  showCard(winVeil, toHome);
   drawCoins(w);
 }
 
@@ -1842,6 +1930,12 @@ export async function startApp(): Promise<void> {
     (l) => (shuffleBoard = l),
     () => undefined,
   );
+  // the Souvenir boards (souvenirs.ts): home's tile and the passport's pages once they are in
+  onSouvenirs(() => {
+    if (screen === "home") drawHome();
+    passportUi.redraw();
+  });
+  void loadSouvenirList();
   onProgress(albumsUi.redraw);
   onProgress(passportUi.redraw);
   onProgress(routeUi.redraw);
@@ -1938,7 +2032,7 @@ export async function startApp(): Promise<void> {
       passport: (id?: string) => passportUi.open(id ? tripById(id) : undefined),
       /** The stamp moment for trip `id`, as after its last board's win card (nothing is won or sent). */
       stamp(id: string) {
-        passportUi.stamp(id, { label: t("passport.nextTrip"), icon: icon("next"), trailing: true, press: "passport.nextTrip", go: goHome });
+        passportUi.stamp(id, { label: t("passport.nextTrip"), icon: icon("next"), trailing: true, press: "passport.nextTrip", go: goHome, souvenir: true });
       },
       /** Show a challenge board as cleared in `moves`, for this page only (a win held, never sent). */
       cleared(id: string, moves: number) {
@@ -1987,6 +2081,10 @@ export async function startApp(): Promise<void> {
         pendingLink = link;
         offerLink();
       },
+      /** Trip `trip`'s Souvenir board ("t1"), as from home's tile (it claims as ever, unframed for this page only). */
+      souvenir: (trip: string) => playSouvenir(trip),
+      /** The sticker moment for trip `trip`, as after its Souvenir's first win (nothing is won or sent). */
+      sticker: (trip: string) => passportUi.sticker(trip, { label: t("home.nextStop"), icon: icon("next"), trailing: true, press: "passport.nextStop", go: goHome }),
       /** The friend_action events sent so far (friends.ts). */
       friendActions: () => recentFriendActions.slice(),
       /** The daily card up now as if the checker had packed `item` (its count after): the flight, nothing sent. */
