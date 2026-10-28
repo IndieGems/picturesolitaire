@@ -2,11 +2,24 @@
   "default": "table-winter-dusk",
   "tables": [
     {
+      "id": "table-sunny-day",
+      "title": "Sunny Day",
+      "table": "art/tables/sunny-day/sunny-day-table.webp",
+      "stackBack": "art/tables/sunny-day/sunny-day-stack-back.webp",
+      "particles": "art/tables/sunny-day/sunny-day-particles.png",
+      "thumb": "art/tables/sunny-day/sunny-day-thumb.webp",
+      "particleKind": "leaves",
+      "particleFrame": 64,
+      "particleFrames": 4,
+      "base": "#59bef6"
+    },
+    {
       "id": "table-winter-dusk",
       "title": "Winter Dusk",
       "table": "art/table.webp",
       "stackBack": "art/stack-back.webp",
       "particles": "art/snow.png",
+      "desk": "art/home-desk.webp",
       "thumb": "art/tables/winter-dusk/winter-dusk-thumb.webp",
       "particleKind": "snow",
       "particleFrame": 32,

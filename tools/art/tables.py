@@ -1,4 +1,4 @@
-"""The tables a player can play on: the winter dusk (default) and the ones won or bought later.
+"""The tables a player can play on: the sunny day (everyone's, creator 2026-10-28) and the ones won or bought later.
 
     python tools/art/tables.py ingest <raw-dir>    raw generations -> tools/art/masters/tables/
     python tools/art/tables.py build               masters -> public/art/tables/ + tables.json
@@ -15,9 +15,11 @@ buttons are drawn by the game and do not change per table. What changes per tabl
 Every file name carries the table's name: the platform refuses a build in which two
 files share a name, whatever their folders (tools/unique-names.mjs checks it).
 
-The winter dusk keeps its original files (public/art/table.webp, stack-back.webp,
-snow.png); only its thumb lives under public/art/tables/winter-dusk/ (winter-dusk-thumb.webp). The manifest
-public/art/tables/tables.json lists every SHIPPED table with its paths.
+The winter dusk (the game's first table, December 2026's suitcase prize since the default turned
+sunny) keeps its original files (public/art/table.webp, stack-back.webp, snow.png) and its own home
+backdrop ("desk": art/home-desk.webp; a table without one shows on home too); only its thumb lives
+under public/art/tables/winter-dusk/ (winter-dusk-thumb.webp). The manifest
+public/art/tables/tables.json lists every SHIPPED table with its paths, the built-in one first.
 
 A table's id is "table-" + its folder name ("table-autumn-study"): the same slug is the
 platform item the server grants, so the game, the server and the art agree on one name.
@@ -40,9 +42,12 @@ OUT = PUBLIC / "art/tables"
 FRAME = 64  # particle frame, px
 
 TABLES = {
+    # The sunny day: the store's sky-blue suitcase carried in (creator, 2026-10-28, picked from three).
+    # Its petals drift like leaves (particleKind "leaves", the weather layer's kind for a falling sprite).
+    "sunny-day": {"title": "Sunny Day", "particles": "leaves"},
     "winter-dusk": {"title": "Winter Dusk", "particles": "snow",
                     "files": {"table": "art/table.webp", "stackBack": "art/stack-back.webp",
-                              "particles": "art/snow.png"}, "frame": 32, "base": "#2c3746",
+                              "particles": "art/snow.png", "desk": "art/home-desk.webp"}, "frame": 32, "base": "#2c3746",
                     "master": ROOT / "tools/art/masters/chrome/table.webp"},
     "autumn-study": {"title": "Autumn Study", "particles": "leaves"},
     "summer-terrace": {"title": "Summer Terrace", "particles": "petals"},
@@ -52,7 +57,12 @@ TABLES = {
     "ski-lodge": {"title": "Ski Lodge", "particles": "snow", "share": "winter-dusk"},
     "winter-market": {"title": "Winter Market", "particles": "snow", "share": "winter-dusk"},
 }
-SHIPPED = ["winter-dusk", "autumn-study", "ski-lodge", "winter-market"]  # the first is the default
+SHIPPED = ["sunny-day", "winter-dusk", "autumn-study", "ski-lodge", "winter-market"]  # the picker's order
+# Everyone's table. UI flips it to "sunny-day" in tables.json with the code that goes with it (the snowy
+# fallbacks, home following the table); this follows.
+DEFAULT = "winter-dusk"
+# Made-up marks the generator left on a table's props, softened at ingest: (x, y, radius) on the raw.
+CLEAN = {"sunny-day": [(268, 72, 8)]}  # a glyph on the camera's top plate
 # Each trip's Souvenir board has a table of its own (docs/souvenirs.md; tools/art/souvenirs.py makes it):
 # named in tools/art/souvenirs-plan.json, no particles, and marked "souvenir" in the manifest, so a picker
 # or a shop can tell it apart from a table a player owns. It ships once its table and back masters exist.
@@ -71,6 +81,13 @@ def ingest(raw):
         if base not in TABLES:
             continue
         im = Image.open(f)
+        if stem in CLEAN:
+            sys.dont_write_bytecode = True
+            sys.path.insert(0, str(Path(__file__).resolve().parent))
+            from store import dab  # noqa: E402
+            im = im.convert("RGB")
+            for mark in CLEAN[stem]:
+                im = dab(im, *mark)
         dst = MASTERS / f"{stem}.webp"
         if im.mode == "RGBA":
             im.save(dst, "WEBP", quality=92, alpha_quality=95, method=6)
@@ -128,7 +145,7 @@ def stack_back(master, out):
 
 def build():
     OUT.mkdir(parents=True, exist_ok=True)
-    manifest = {"default": f"table-{SHIPPED[0]}", "tables": []}
+    manifest = {"default": f"table-{DEFAULT}", "tables": []}
     for tid in SHIPPED:
         t = TABLES[tid]
         d = OUT / tid
