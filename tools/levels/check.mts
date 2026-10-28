@@ -1,5 +1,20 @@
-// Re-proves every shipped board. Run: node tools/levels/check.mts [file ...]
+// Re-proves every shipped board. Run: node tools/levels/check.mts [--full] [file ...]
 // (default: every .json in src/content/levels). Exit code 0 = every board passes.
+//
+// REMEMBERED PROOFS (lead, 2026-10-28: the solver's proofs were 30 s of a 43 s build). The checks
+// that run the solver (the deal can be won, the safe start, readable or careful, the axes it
+// measures, a lesson's own) are remembered by content hash in node_modules/.cache/levels-check/,
+// outside git and the build. The hash covers the board's own data (all of it: deal, stacks, line,
+// pictures, axes), which of those checks it takes, and the source of the code they run: this file,
+// src/game/rules.ts, src/game/solver/, src/game/levels/generate.ts and every file those import (by
+// relative path; PROOF_CODE). A changed board re-proves only itself; a change to any of that code
+// re-proves every board. Every other check (the pictures, spacing, flags, items, shares, the line
+// replayed on the rules, the deal re-dealt from its seed) runs on every build. A missing or broken
+// cache only means every board is proved again. --full proves every board afresh and remembers
+// nothing from before: `npm run build:release` passes it, so a release build (and the release
+// checklist, which builds one) never leans on a remembered proof. A check that runs the solver
+// reads only the board and that code (prove(), below): keep it so, or add what it reads to the key.
+// A long proving run drops to below-normal priority (AGENTS.md: the machine is shared).
 // A NEW level file (a lane) also goes in tools/art/packs.mjs LANES, or its
 // pictures are never packed for the board (Art, cf9973b: lessons.json).
 // trips.json is no boards file: it must be campaign-plan.mts TRIPS, one trip
@@ -63,8 +78,10 @@
 //     pool's last month.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
-import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { createHash } from "node:crypto";
+import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { constants as osConstants, setPriority } from "node:os";
+import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { arrange, cardsOf, isDeadEnd, isWon, joinCount, replay, start } from "../../src/game/rules.ts";
 import { Game } from "../../src/game/solver/index.ts";
@@ -83,10 +100,20 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const catalogue = byId;
 /** Each library picture's place in the catalogue (the pictures after LAST_BEFORE_T9 are trips 9 and 10's new ones). */
 const pictureOrder = new Map([...byId.keys()].map((id, k) => [id, k]));
-const files = process.argv.slice(2);
+const args = process.argv.slice(2);
+/** --full: prove every board afresh, remembering nothing (npm run build:release) */
+const FULL = args.includes("--full");
+const unknown = args.filter((a) => a.startsWith("--") && a !== "--full");
+if (unknown.length) {
+  console.error(`unknown option ${unknown.join(" ")} (check.mts [--full] [file ...])`);
+  process.exit(2);
+}
+const files = args.filter((a) => !a.startsWith("--"));
+/** No files named: every boards file, and the checks across files (suitcases, souvenirs, trips) */
+const ALL = !files.length;
 const dir = join(root, "src/content/levels");
 // trips.json and suitcases.json are no boards files (each is checked on its own below)
-if (!files.length) for (const f of readdirSync(dir).sort()) if (f.endsWith(".json") && f !== "trips.json" && f !== "suitcases.json") files.push(join(dir, f));
+if (ALL) for (const f of readdirSync(dir).sort()) if (f.endsWith(".json") && f !== "trips.json" && f !== "suitcases.json") files.push(join(dir, f));
 // the Daily Suitcase's months (make-suitcases.mts): the day's item of each date
 const suitcasesFile = join(dir, "suitcases.json");
 const SUITCASES = existsSync(suitcasesFile) ? JSON.parse(readFileSync(suitcasesFile, "utf8")).months : [];
@@ -98,22 +125,16 @@ const FIRST_TRIP = existsSync(campaignFile) ? JSON.parse(readFileSync(campaignFi
 /**
  * A lesson board's own proof (lead, 2026-10-27; make-lessons.mts). The Shuffle
  * lesson: the opening is a dead end (nothing can ever be finished) that the
- * solver calls lost, exactly; the stored shuffle is one the rules play on the
- * opening (arrange: only loose cards, at most MAX_SWAPS stack places); the
- * board after it is winnable, and the stored line (moves after the shuffle) is
- * a handful of moves; no picture of the first trip's boards, and no landmark.
+ * solver calls lost, exactly (proveLesson); the stored shuffle is one the rules
+ * play on the opening (arrange: only loose cards, at most MAX_SWAPS stack
+ * places); the board after it is winnable (proveLesson), and the stored line
+ * (moves after the shuffle) is a handful of moves; no picture of the first
+ * trip's boards, and no landmark.
  */
-function checkLesson(l, deal, s, fail) {
+function checkLesson(l, s, fail) {
   if (l.lesson !== "shuffle") return fail(`no proof for lesson ${l.lesson}`);
   if (!isDeadEnd(s)) fail("the Shuffle lesson must open stuck: a dead end");
-  const g = new Game(s);
-  if (g.wins(g.root)) fail("the solver can win the opening: the Shuffle lesson must open stuck");
-  const after = l.shuffle && arrange(s, l.shuffle);
-  if (!after) fail("its shuffle is no Shuffle the rules play on the opening (rules.ts arrange)");
-  else {
-    const g2 = new Game(after.state);
-    if (!g2.wins(g2.root)) fail("the solver cannot win the board after its shuffle");
-  }
+  if (!(l.shuffle && arrange(s, l.shuffle))) fail("its shuffle is no Shuffle the rules play on the opening (rules.ts arrange)");
   if (!(l.line.length >= 1 && l.line.length <= LESSON_MOVES)) fail(`${l.line.length} moves after the shuffle, the lesson takes 1-${LESSON_MOVES}`);
   for (const p of l.pictures) {
     const k = FIRST_TRIP.findIndex((b) => b.pictures.some((q) => q.id === p.id));
@@ -121,6 +142,121 @@ function checkLesson(l, deal, s, fail) {
     if (catalogue.get(p.id)?.landmark) fail(`${p.id} is a landmark`);
   }
 }
+/** The solver's half of a lesson's proof (remembered: prove). */
+function proveLesson(l, s, fail) {
+  if (l.lesson !== "shuffle") return;
+  const g = new Game(s);
+  if (g.wins(g.root)) fail("the solver can win the opening: the Shuffle lesson must open stuck");
+  const after = l.shuffle && arrange(s, l.shuffle);
+  if (after) {
+    const g2 = new Game(after.state);
+    if (!g2.wins(g2.root)) fail("the solver cannot win the board after its shuffle");
+  }
+}
+
+/**
+ * The checks that run the solver, the ones remembered (the header's REMEMBERED PROOFS). They read
+ * only the board `l` (`deal`, `s`, `line` and `won` are made from it; `n` is its number, for the
+ * message) and `takes` (which of them the board takes), through the code PROOF_CODE names, so the
+ * proof key covers everything they depend on. Keep it so.
+ */
+function prove(l, takes, deal, s, line, won, n, fail) {
+  if (l.lesson !== undefined) proveLesson(l, s, fail);
+  if (takes.safe) {
+    const dead = deadFirstMoves(deal);
+    if (dead.length) fail(`${dead.length} first move(s) leave the board stuck, e.g. ${dead[0].from} to ${dead[0].to}`);
+    const g0 = new Game(s);
+    const doom = doomingFirstClears(g0);
+    if (doom.length) fail(`finishing ${doom.map((st) => `${l.pictures[st.pic].id} at column ${st.col}`).join(", ")} first dooms the board`);
+  }
+  const game = new Game(s);
+  if (l.lesson === undefined && !game.wins(game.root)) fail("the solver says the deal cannot be won");
+  // readable (creator, 2026-10-27): an unmarked campaign board is one a player who draws by the
+  // face-up cards wins READABLE or more of the time (metrics.ts READER; it assumes the next card
+  // face up). The challenge route and the daily are not held to it (docs/difficulty-curve.md)
+  if (takes.readable) {
+    const rd = reader(game);
+    if (rd < READABLE) fail(`not readable: a player who draws by the face-up cards wins ${Math.round(rd * 100)}%, under ${READABLE * 100}% (make-campaign.mts --reseat ${n})`);
+  }
+  // and a marked campaign board does not wall a thinking player: that reader wins CAREFUL (1 in 4) or more
+  if (takes.careful) {
+    const rd = reader(game);
+    if (rd < CAREFUL) fail(`walls a careful player: a player who draws by the face-up cards wins ${Math.round(rd * 1000) / 10}%, under ${CAREFUL * 100}% (make-campaign.mts --reseat ${n})`);
+  }
+  if (l.axes && won) {
+    const a = l.axes;
+    const ch = chain(game);
+    const cl = Math.round(careless(game) * 1000) / 1000;
+    const tr = traps(game, along(game, deal, line));
+    if (a.chain !== ch) fail(`chain is ${ch}, the data says ${a.chain}`);
+    if (Math.abs(a.careless - cl) > 0.001) fail(`careless win is ${cl}, the data says ${a.careless}`);
+    if (a.traps !== tr) fail(`traps are ${tr}, the data says ${a.traps}`);
+    if (a.peek !== l.peek) fail("axes.peek differs from peek");
+    if (a.lineMoves !== l.line.length) fail("axes.lineMoves differs from the line");
+    if (a.bigWait !== undefined) {
+      const w = wait(game);
+      const bw = Math.max(0, ...l.pictures.map((p, i) => (p.cols * p.rows >= BIG ? w[i] : 0)));
+      if (a.bigWait !== bw) fail(`big wait is ${bw}, the data says ${a.bigWait}`);
+    }
+    if (a.orderTraps !== undefined && a.orderTraps !== unavoidable(game, "clear")) fail(`order traps are ${unavoidable(game, "clear")}, the data says ${a.orderTraps}`);
+    if (a.lineOrderTraps !== undefined && a.lineOrderTraps !== orderTraps(game, along(game, deal, line))) fail("line order traps differ");
+  }
+}
+
+// the remembered proofs (the header's REMEMBERED PROOFS)
+const CACHE = join(root, "node_modules/.cache/levels-check/proofs.json");
+/** At most this many kept: this run's, then the newest from before (another branch's boards, say). */
+const CACHE_KEEP = 4000;
+/** The code prove() runs: these, with this file and every file they import by a relative path. */
+const PROOF_CODE = ["src/game/rules.ts", "src/game/levels/generate.ts", ...readdirSync(join(root, "src/game/solver")).filter((f) => /\.[cm]?[jt]s$/.test(f)).map((f) => `src/game/solver/${f}`)];
+const IMPORTS = /\bfrom\s*["'](\.\.?\/[^"']+)["']|\bimport\s*\(?\s*["'](\.\.?\/[^"']+)["']/g;
+/** One hash of the source of the code prove() runs (this file's own imports are the other checks': not followed). */
+function codeHash() {
+  const self = resolve(fileURLToPath(import.meta.url));
+  const seen = new Set([self]);
+  const todo = PROOF_CODE.map((f) => resolve(root, f));
+  while (todo.length) {
+    const f = todo.pop();
+    if (seen.has(f)) continue;
+    seen.add(f);
+    if (!existsSync(f)) continue;
+    for (const m of readFileSync(f, "utf8").matchAll(IMPORTS)) todo.push(resolve(dirname(f), m[1] ?? m[2]));
+  }
+  const h = createHash("sha256");
+  for (const f of [...seen].sort()) h.update(`${relative(root, f).replaceAll("\\", "/")}\n`).update(existsSync(f) ? readFileSync(f) : "(missing)").update("\n");
+  return h.digest("hex");
+}
+const CODE = codeHash();
+/** The key of a board's proofs: the code, which proofs it takes and the board's own data. */
+const proofKey = (takes, l) => createHash("sha256").update(`${CODE}\n${JSON.stringify({ takes, board: l })}`).digest("hex").slice(0, 40);
+/** The proofs remembered from before; anything unreadable is nothing remembered. */
+function readCache() {
+  try {
+    const c = JSON.parse(readFileSync(CACHE, "utf8"));
+    if (c?.v === 1 && Array.isArray(c.proofs)) return new Set(c.proofs.filter((k) => typeof k === "string"));
+  } catch {
+    // missing or broken: prove everything
+  }
+  return new Set();
+}
+function writeCache(kept, earlier) {
+  const proofs = [...kept, ...[...earlier].filter((k) => !kept.has(k))].slice(0, CACHE_KEEP);
+  const tmp = `${CACHE}.${process.pid}.tmp`;
+  try {
+    mkdirSync(dirname(CACHE), { recursive: true });
+    writeFileSync(tmp, JSON.stringify({ v: 1, note: "boards proved by tools/levels/check.mts, by content hash; delete it to prove every board again", proofs }));
+    renameSync(tmp, CACHE);
+  } catch (err) {
+    rmSync(tmp, { force: true });
+    console.warn(`could not remember the proofs (${err.message}); the next run proves every board again`);
+  }
+}
+const earlier = readCache();
+const remembered = FULL ? new Set() : earlier;
+/** This run's passing proofs, remembered for the next. */
+const kept = new Set();
+let proved = 0;
+let recalled = 0;
 
 let boards = 0;
 let failed = 0;
@@ -255,7 +391,7 @@ for (const file of files) {
       if (s.cleared.length || joinCount(s) > 0) fail("something is joined or finished at the opening");
       // a lesson board (lessons.json) opens stuck on purpose and has a lesson's own proof (checkLesson)
       if (file.endsWith("lessons.json") !== (l.lesson !== undefined)) fail(l.lesson === undefined ? "a board in lessons.json with no lesson" : `a lesson board (${l.lesson}) outside lessons.json`);
-      if (l.lesson !== undefined) checkLesson(l, deal, s, fail);
+      if (l.lesson !== undefined) checkLesson(l, s, fail);
       else if (isDeadEnd(s)) fail("the opening is a dead end");
       // a landmark (Art's "landmark": true) waits for its trip's destination: none on a campaign board (lead, 2026-10-25)
       if (file.endsWith("campaign.json")) for (const p of l.pictures) if (catalogue.get(p.id)?.landmark) fail(`${p.id} is a landmark, saved for a future trip's destination (make-campaign.mts swaps it out in place)`);
@@ -283,13 +419,6 @@ for (const file of files) {
           if (on > MOST_BOARDS && data.levels.findIndex((e) => e.pictures.some((q) => q.id === p.id)) === i) fail(`atmospheric ${p.id} is on ${on} boards, at most ${MOST_BOARDS}`);
         }
       }
-      if ((file.endsWith("campaign.json") && !MAY_TRAP.has(l.axes?.role)) || file.endsWith("experiments.json") || rulesDay || souvenirBoard) {
-        const dead = deadFirstMoves(deal);
-        if (dead.length) fail(`${dead.length} first move(s) leave the board stuck, e.g. ${dead[0].from} to ${dead[0].to}`);
-        const g0 = new Game(s);
-        const doom = doomingFirstClears(g0);
-        if (doom.length) fail(`finishing ${doom.map((st) => `${l.pictures[st.pic].id} at column ${st.col}`).join(", ")} first dooms the board`);
-      }
       const line = l.line.map(([from, to]) => ({ from, to }));
       let won = false;
       try {
@@ -299,37 +428,30 @@ for (const file of files) {
         fail(`the line breaks: ${err.message}`);
       }
       if (!won) fail("the line does not win");
-      const game = new Game(s);
-      if (l.lesson === undefined && !game.wins(game.root)) fail("the solver says the deal cannot be won");
-      // readable (creator, 2026-10-27): an unmarked campaign board is one a player who draws by the
-      // face-up cards wins READABLE or more of the time (metrics.ts READER; it assumes the next card
-      // face up). The challenge route and the daily are not held to it (docs/difficulty-curve.md)
-      if ((file.endsWith("campaign.json") && !MAY_TRAP.has(l.axes?.role)) || rulesDay || souvenirBoard) {
-        const rd = reader(game);
-        if (rd < READABLE) fail(`not readable: a player who draws by the face-up cards wins ${Math.round(rd * 100)}%, under ${READABLE * 100}% (make-campaign.mts --reseat ${data.levels.indexOf(l) + 1})`);
-      }
-      // and a marked campaign board does not wall a thinking player: that reader wins CAREFUL (1 in 4) or more
-      if (file.endsWith("campaign.json") && MAY_TRAP.has(l.axes?.role)) {
-        const rd = reader(game);
-        if (rd < CAREFUL) fail(`walls a careful player: a player who draws by the face-up cards wins ${Math.round(rd * 1000) / 10}%, under ${CAREFUL * 100}% (make-campaign.mts --reseat ${data.levels.indexOf(l) + 1})`);
-      }
-      if (l.axes && won) {
-        const a = l.axes;
-        const ch = chain(game);
-        const cl = Math.round(careless(game) * 1000) / 1000;
-        const tr = traps(game, along(game, deal, line));
-        if (a.chain !== ch) fail(`chain is ${ch}, the data says ${a.chain}`);
-        if (Math.abs(a.careless - cl) > 0.001) fail(`careless win is ${cl}, the data says ${a.careless}`);
-        if (a.traps !== tr) fail(`traps are ${tr}, the data says ${a.traps}`);
-        if (a.peek !== l.peek) fail("axes.peek differs from peek");
-        if (a.lineMoves !== l.line.length) fail("axes.lineMoves differs from the line");
-        if (a.bigWait !== undefined) {
-          const w = wait(game);
-          const bw = Math.max(0, ...l.pictures.map((p, i) => (p.cols * p.rows >= BIG ? w[i] : 0)));
-          if (a.bigWait !== bw) fail(`big wait is ${bw}, the data says ${a.bigWait}`);
-        }
-        if (a.orderTraps !== undefined && a.orderTraps !== unavoidable(game, "clear")) fail(`order traps are ${unavoidable(game, "clear")}, the data says ${a.orderTraps}`);
-        if (a.lineOrderTraps !== undefined && a.lineOrderTraps !== orderTraps(game, along(game, deal, line))) fail("line order traps differ");
+      // the solver's checks (prove), remembered by content hash; which of them this board takes
+      const campaign = file.endsWith("campaign.json");
+      const mayTrap = campaign && MAY_TRAP.has(l.axes?.role);
+      const takes = {
+        // a safe start: the campaign's boards but its hard ones, the experiments, the dailies from RULES_FROM, the Souvenirs
+        safe: (campaign && !mayTrap) || file.endsWith("experiments.json") || rulesDay || souvenirBoard,
+        readable: (campaign && !mayTrap) || rulesDay || souvenirBoard,
+        careful: mayTrap,
+      };
+      const key = proofKey(takes, l);
+      if (remembered.has(key)) {
+        kept.add(key);
+        recalled++;
+      } else {
+        // a long run of proofs is a long search: below-normal priority from the 20th (AGENTS.md: a shared machine)
+        if (++proved === 20)
+          try {
+            setPriority(osConstants.priority.PRIORITY_BELOW_NORMAL);
+          } catch {
+            // not allowed here: carry on at the priority it has
+          }
+        const before = problems.length;
+        prove(l, takes, deal, s, line, won, data.levels.indexOf(l) + 1, fail);
+        if (problems.length === before) kept.add(key);
       }
     } catch (err) {
       fail(`check crashed: ${err.stack}`);
@@ -347,7 +469,7 @@ if (flaggedUses.length)
   );
 // the Daily Suitcase's months: exactly what make-suitcases.mts writes, from FIRST_MONTH to the pool's last month
 const dailyFile = join(dir, "daily.json");
-if (!process.argv.slice(2).length && existsSync(dailyFile)) {
+if (ALL && existsSync(dailyFile)) {
   const pool = JSON.parse(readFileSync(dailyFile, "utf8")).levels;
   const bad = [];
   const last = pool.at(-1)?.date.slice(0, 7);
@@ -364,7 +486,7 @@ if (!process.argv.slice(2).length && existsSync(dailyFile)) {
   } else if (SUITCASES.length) console.log(`suitcases: ${SUITCASES.length} months, ${SUITCASES[0].month} to ${SUITCASES.at(-1).month}${SUITCASES.some((m) => m.standIn) ? ` (stand-ins: ${SUITCASES.filter((m) => m.standIn).map((m) => m.month).join(", ")})` : ""}`);
 }
 // the Souvenirs: every trip whose Souvenir pictures Art has made has its board (make-souvenirs.mts)
-if (!process.argv.slice(2).length && souvenirPictures.length) {
+if (ALL && souvenirPictures.length) {
   const file = join(dir, "souvenirs.json");
   const made = existsSync(file) ? new Set(JSON.parse(readFileSync(file, "utf8")).levels.map((l) => l.trip)) : new Set();
   const trips = [...new Set(souvenirPictures.map((p) => p.souvenir))];
@@ -377,7 +499,7 @@ if (!process.argv.slice(2).length && souvenirPictures.length) {
 }
 // the trips: the plan's list, back to back from board 1, every campaign board in one
 const tripsFile = join(dir, "trips.json");
-if (!process.argv.slice(2).length && existsSync(tripsFile)) {
+if (ALL && existsSync(tripsFile)) {
   const trips = JSON.parse(readFileSync(tripsFile, "utf8")).trips;
   const made = JSON.parse(readFileSync(join(dir, "campaign.json"), "utf8")).levels.length;
   const bad = [];
@@ -392,5 +514,7 @@ if (!process.argv.slice(2).length && existsSync(tripsFile)) {
     console.error(`FAIL trips.json: ${bad.join("; ")}`);
   } else console.log(`trips: ${trips.map((t) => `${t.name} ${t.from}-${t.to}`).join(", ")}`);
 }
-console.log(failed ? `${failed} of ${boards} boards FAILED` : `all ${boards} boards proved: each line wins on the real rules with no helpers`);
+writeCache(kept, earlier);
+const memo = FULL ? `all ${proved} proved afresh (--full)` : `${proved} proved now, ${recalled} remembered from an earlier run of the same board and code; --full proves all afresh`;
+console.log(failed ? `${failed} of ${boards} boards FAILED (${memo})` : `all ${boards} boards proved: each line wins on the real rules with no helpers (${memo})`);
 process.exitCode = failed ? 1 : 0;

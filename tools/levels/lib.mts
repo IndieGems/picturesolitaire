@@ -13,7 +13,7 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { random, replay } from "../../src/game/rules.ts";
+import { act, random, start } from "../../src/game/rules.ts";
 import { generate } from "../../src/game/levels/generate.ts";
 import { alikeOf, fits, pick, shapeOf } from "../../src/game/levels/pick.ts";
 
@@ -128,9 +128,15 @@ export function swappedInPlace(b, i, chosen, row, rule) {
 
 /** The board's pictures (indices) in the order its stored line finishes them. */
 export function clearOrder(b) {
-  const deal = { cols: b.cols, rows: b.rows, pictures: b.pictures, stacks: b.stacks, seed: b.seed };
+  // one pass along the line (what replaying each of its prefixes gives, in a tenth of the time: check.mts runs it on every daily)
+  let s = start({ cols: b.cols, rows: b.rows, pictures: b.pictures, stacks: b.stacks, seed: b.seed }).state;
   const order = [];
-  for (let m = 1; m <= b.line.length; m++) for (const c of replay(deal, b.line.slice(0, m).map(([from, to]) => ({ from, to }))).cleared) if (!order.includes(c)) order.push(c);
+  b.line.forEach(([from, to], i) => {
+    const out = act(s, { from, to });
+    if (!out) throw new Error(`action ${i} (${JSON.stringify({ from, to })}) does nothing`);
+    s = out.state;
+    for (const c of s.cleared) if (!order.includes(c)) order.push(c);
+  });
   return order;
 }
 
