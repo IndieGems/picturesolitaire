@@ -71,7 +71,8 @@ import { Game } from "../../src/game/solver/index.ts";
 import { along, CAREFUL, careless, chain, orderTraps, READABLE, reader, traps, unavoidable, wait } from "../../src/game/solver/metrics.ts";
 import { BIG, dealFor, deadFirstMoves, doomingFirstClears } from "../../src/game/levels/generate.ts";
 import { byId, clearOrder, destById, flags, itemById, itemClash, LESSON_MOVES } from "./lib.mts";
-import { CURRENT, DISTINCT, LAST_BEFORE_T9, MARKS, MAY_TRAP, SPARES, TRIPS } from "./campaign-plan.mts";
+import { CURRENT, DISTINCT, LAST_BEFORE_T9, MARKS, MAY_TRAP, SPACING, SPARES, TRIPS } from "./campaign-plan.mts";
+import { FIRST as ATMOS_FIRST, isAtmospheric, MOST_BOARDS, shareOf, takesAtmospheric } from "./atmospheric.mts";
 import { RULES_FROM, SUITCASE_FROM } from "./daily-plan.mts";
 import { monthOf, monthsTo } from "./make-suitcases.mts";
 import { scheduleProblem } from "./suitcase.mts";
@@ -235,6 +236,23 @@ for (const file of files) {
         for (const p of l.pictures) {
           const k = data.levels.slice(0, data.levels.indexOf(l)).findIndex((e) => e.pictures.some((q) => q.id === p.id));
           if (k >= 0) fail(`${p.id} is on board ${data.levels[k].id} too (no picture is on two of boards 1-${DISTINCT})`);
+        }
+      }
+      // atmospheric pictures (creator, 2026-10-28; atmospheric.mts): from board ATMOS_FIRST + 1, a board with
+      // squares holds 1 in 8 to 1 in 6 of its pictures atmospheric (rounded, at least one), none back within
+      // SPACING boards; boards before take none or a few, an all-long board none (it has no squares)
+      if (file.endsWith("campaign.json")) {
+        const i = data.levels.indexOf(l);
+        const atmos = l.pictures.filter((p) => isAtmospheric(catalogue.get(p.id)));
+        const { lo, hi } = shareOf(l.pictures.length);
+        if (takesAtmospheric(l, i) && (atmos.length < lo || atmos.length > hi)) fail(`${atmos.length} atmospheric of ${l.pictures.length} pictures; its share is ${lo === hi ? lo : `${lo} to ${hi}`} (make-campaign.mts swaps them in: Art's look "atmospheric")`);
+        if (!takesAtmospheric(l, i) && atmos.length > (i < ATMOS_FIRST ? hi : 0)) fail(`${atmos.length} atmospheric pictures on a board that takes ${i < ATMOS_FIRST ? `at most ${hi}` : "none"}`);
+        for (const p of atmos) {
+          if (p.cols !== 2 || p.rows !== 2) fail(`atmospheric ${p.id} plays as ${p.cols}x${p.rows}: they are squares`);
+          const back = data.levels.slice(Math.max(0, i - SPACING + 1), i).findIndex((e) => e.pictures.some((q) => q.id === p.id));
+          if (back >= 0) fail(`atmospheric ${p.id} is back within ${SPACING} boards (on ${data.levels[Math.max(0, i - SPACING + 1) + back].id} too)`);
+          const on = data.levels.filter((e) => e.pictures.some((q) => q.id === p.id)).length;
+          if (on > MOST_BOARDS && data.levels.findIndex((e) => e.pictures.some((q) => q.id === p.id)) === i) fail(`atmospheric ${p.id} is on ${on} boards, at most ${MOST_BOARDS}`);
         }
       }
       if ((file.endsWith("campaign.json") && !MAY_TRAP.has(l.axes?.role)) || file.endsWith("experiments.json") || rulesDay) {
