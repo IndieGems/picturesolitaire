@@ -2,6 +2,8 @@
 
     python tools/art/pictures.py prompt <id>              print the full prompt and size
     python tools/art/pictures.py gen <raw-dir> <id>...    submit generations (gemforge, BILLS per id)
+    python tools/art/pictures.py repaint <raw-dir> <id>... redraw a postcard from its own master in its plan
+                                                          entry's "paint" style (gemforge edit, BILLS per id)
     python tools/art/pictures.py process <raw-dir> <id>... raw PNG -> tools/art/masters + public/pictures (+ thumb)
     python tools/art/pictures.py export [<id>...]         masters -> public/pictures + thumbs, at the card aspect
     python tools/art/pictures.py thumbs [<id>...]         Albums-screen thumbs from the masters (default: all)
@@ -114,6 +116,88 @@ def cmd_gen(raw, ids):
         print(pid, r.returncode, (r.stdout or r.stderr).strip().replace("\n", " ")[:300])
 
 
+# Postcards are always an obviously painted style, never photoreal (creator, 2026-10-28: a generated
+# "photo" of a real place passes itself off as one; a painting leaves leeway). A photographic one is
+# redrawn from OUR OWN postcard (its master), never from a real photo: same view, framing and season,
+# only the rendering changes. An entry's "paint" names the style (chosen to suit the place, varied
+# within a trip); its medium becomes the style's medium word (docs/picture-direction.md's menu).
+#
+# What the pilot found (2026-10-28): handed the photo itself, the edit kept its photographic detail
+# whatever the prompt said, and a painted reference alone only roughened it. So the first --from is a
+# FLAT-COLOUR STUDY of the postcard (study(): reduced, mode-filtered, quantised: the shapes, framing
+# and colours with no photographic detail to copy) and the second a picture of ours already painted
+# that way, for its medium only. Medium quality: as good at postcard size, half the cost of high.
+# style -> (medium word, words for the style, its reference pictures, the study's colours, smoothing passes).
+# The creator's verdict on the first pilot (2026-10-28): push every style a step further toward obviously
+# painted, so nothing could pass for a photo at postcard size. Hence coarser studies, looser words, and for
+# the woodblock two print references and flat bronze (the patina's mottling read as a photograph).
+PAINT = {
+    "woodblock": ("print", "a Japanese woodblock print in the classic ukiyo-e and shin-hanga manner: a line-and-flat-tone "
+                  "print with crisp dark carved key lines around every shape and along every fold, curl and feature, each "
+                  "area printed in one flat colour or at most two or three flat tones, no modelled shading, no mottling, "
+                  "streaks or photographic texture anywhere, a flat sky with one soft graded bokashi band, trees as flat "
+                  "stylised clumps, and the fibre of the paper showing through", ["mount-fuji", "torii"], 12, 2),
+    "ink-wash": ("watercolour", "a loose Japanese ink-wash painting with light colour: soft grey and black ink washes, a few "
+                 "touches of muted colour, bold expressive brushstrokes, generous mist, visible rice-paper texture",
+                 ["dest-nachi-falls"], 14, 2),
+    "impressionist": ("painting", "a loose French Impressionist oil painting of the 1880s painted outdoors in one sitting: "
+                      "bold broken brushstrokes and dabs of thick paint everywhere, forms dissolving in the light, colour in "
+                      "the shadows, almost no fine detail, canvas texture", ["dest-etretat"], 16, 2),
+    "plein-air": ("painting", "a loose plein-air oil sketch: bold visible brushstrokes, warm Mediterranean light, simplified "
+                  "shapes and almost no fine detail, rich colour, the texture of thick oil paint", ["dest-matera"], 16, 2),
+    "park-poster": ("retro", "a vintage 1930s national-park travel poster made as a screen print: flat bold shapes in a limited "
+                    "palette of about eight colours, clean edges, simplified layered forms, subtle paper texture, and "
+                    "absolutely no text, lettering, title or border", ["dest-delicate-arch"], 12, 1),
+    "gouache": ("gouache", "a bright gouache painting: flat, matte, opaque colour with visible brushstrokes and soft "
+                "hand-painted edges, simplified shapes and little fine detail, sunny clear colours", ["coast-road-cove"], 14, 2),
+    "acrylic": ("painting", "a bold acrylic painting on canvas: thick, confident, clearly visible brushstrokes and some "
+                "palette-knife texture, rich colours, simplified forms and little fine detail", ["dest-cape-winelands"], 16, 2),
+    "watercolour": ("watercolour", "a loose watercolour painting: wet transparent washes with blooms and soft runs, crisp edges "
+                    "where the washes dried, white paper showing through, simplified shapes and only a few brushed details",
+                    ["dest-nachi-falls"], 14, 2),
+    "bold-oil": ("painting", "a bold oil landscape painting in the early-twentieth-century northern style: strong simplified "
+                 "shapes, rhythmic thick brushstrokes, deep saturated colour, almost no fine detail", ["dest-old-quebec"], 14, 2),
+}
+REPAINT = ("The FIRST picture is a flat-colour study of a postcard. Make the finished postcard from it as {style}. Use the "
+           "other pictures only for their medium: their marks, their simplification, their colour handling and their "
+           "finish, never their subject. Keep the study's composition exactly: the same view and framing, the main shapes "
+           "in the same positions and at the same sizes, the same colours, season and time of day. The place: {place} "
+           "Paint the place's features clearly in the medium's own marks, as a painter or printmaker would, so that every "
+           "surface, the sky and the water show the medium and nothing could pass for a photograph. Nothing added: no "
+           "people, no text, letters, numbers, signature, seal, signs, logos, border or frame.")
+
+
+def study(im, colours, passes):
+    """A flat-colour study: the picture's shapes and colours with no photographic detail."""
+    from PIL import ImageFilter
+    s = im.resize((im.width // 3, im.height // 3), Image.LANCZOS)
+    for _ in range(passes):
+        s = s.filter(ImageFilter.MedianFilter(9))
+    s = s.quantize(colours, method=Image.Quantize.MEDIANCUT).convert("RGB").filter(ImageFilter.ModeFilter(7))
+    return s.resize(im.size, Image.BICUBIC)
+
+
+def cmd_repaint(raw, ids, quality="medium"):
+    p = plan()
+    Path(raw).mkdir(parents=True, exist_ok=True)
+    for pid in ids:
+        e = entry(p, pid)
+        _, style, refs, colours, passes = PAINT[e["paint"]]
+        src = Path(raw) / f"{pid}-study.png"
+        study(Image.open(master_path(pid)).convert("RGB"), colours, passes).save(src)
+        args = ["gemforge", "generate", "image", "--from", str(src)]
+        for k, ref_id in enumerate(e.get("paintRef", refs) if isinstance(e.get("paintRef", refs), list) else [e["paintRef"]]):
+            ref = Path(raw) / f"{pid}-ref{k}.png"
+            Image.open(master_path(ref_id)).convert("RGB").save(ref)
+            args += ["--from", str(ref)]
+        w, h = GEN_SIZE[(e["cols"], e["rows"])]
+        args += ["--prompt", REPAINT.format(style=style, place=e["prompt"]), "--size", f"{w}x{h}", "--quality", quality,
+                 "--out", str(raw), "--name", pid, "--no-wait", "--json"]
+        r = subprocess.run(args, capture_output=True, text=True, encoding="utf-8")
+        job = next((w for w in (r.stdout or "").replace('"', " ").split() if len(w) == 36 and w.count("-") == 4), None)
+        print(pid, e["paint"], job or " ".join((r.stdout or r.stderr).split())[:200], flush=True)
+
+
 def master_path(pid):
     return MASTERS / f"{pid}.webp"
 
@@ -167,7 +251,22 @@ def cmd_process(raw, ids):
         im = crop_to(Image.open(src).convert("RGB"), *size_of(e))
         im.save(master_path(pid), "WEBP", quality=90, method=6)
         out = export(e)
+        if e.get("paint") and e["medium"] != PAINT[e["paint"]][0]:  # a repainted postcard takes its style's medium
+            plan_set(pid, "medium", PAINT[e["paint"]][0])
         print(pid, im.size, "->", out.relative_to(ROOT), f"{out.stat().st_size // 1024} KB")
+
+
+def plan_set(pid, key, value):
+    """Change one string field of one entry in the plan, on its own line (the plan keeps its layout)."""
+    import re
+    lines = PLAN.read_text(encoding="utf-8").split("\n")
+    for k, line in enumerate(lines):
+        if f'"id": "{pid}"' in line:
+            lines[k], n = re.subn(rf'"{key}": "[^"]*"', f'"{key}": "{value}"', line, count=1)
+            assert n == 1, (pid, key)
+            PLAN.write_text("\n".join(lines), encoding="utf-8")
+            return
+    raise KeyError(pid)
 
 
 def cmd_export(ids):
@@ -545,6 +644,8 @@ if __name__ == "__main__":
         cmd_prompt(rest[0])
     elif c == "gen":
         cmd_gen(rest[0], rest[1:])
+    elif c == "repaint":
+        cmd_repaint(rest[0], rest[1:])
     elif c == "process":
         cmd_process(rest[0], rest[1:])
     elif c == "export":

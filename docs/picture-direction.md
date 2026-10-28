@@ -96,8 +96,15 @@ the catalogue's `destinations` (crop and fields in `tools/art/pictures.py`). The
 generated, and the facts are checked against real photos of the place (creator): the land,
 the landmark, the colours and the season. Describe the place in words and never feed
 someone's photo to the generator. Record what was checked in the entry's `checked`.
-Mostly photographic, with some painted or travel-poster postcards, and never the AI look.
-The plan's `suffix.postcard` is the prompt ending. `docs/destinations-america.md` has the
+**Always an obviously painted style, never photoreal** (creator, 2026-10-28: a generated "photo" of a
+real place passes itself off as one, and someone who knows the place notices the small differences; a
+painting leaves leeway). The style suits the place and varies within a trip: Japan woodblock or ink-wash,
+France Impressionist oil or watercolour, the American West a 1930s park poster or gouache, Italy plein-air
+oil, Canada bold oil, the UK and Ireland watercolour, Australia, Argentina and South Africa gouache or
+acrylic. The 108 photographic ones were redrawn from our own postcards (`pictures.py repaint`: a flat-colour
+study of the postcard plus one of our pictures already painted that way; the entry's `paint` names the
+style, PAINT in pictures.py its words). A new postcard is painted from the start: never the plan's photo
+suffix `suffix.postcard`, which made the old ones. The same goes for a library picture of a real landmark. `docs/destinations-america.md` has the
 first trip's candidates and the rights rules.
 
 ## Shipped files
