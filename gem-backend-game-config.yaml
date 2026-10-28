@@ -234,10 +234,10 @@ analytics_events:
   # challenge sent or not sent from the Arcade's sheet, a link shared, the game opened by either,
   # and the one-off board's result against the friend's moves. `kind` is a campaign board or a daily.
   - id: friend_action
-    description: "Friends: a friend challenge sent (or not), a board's link shared, the game opened by one, or a friend's board won or lost against their moves."
+    description: "Friends: a friend challenge sent (or not), a board's link shared, the game opened by one, or a friend's board won, lost or tied against their moves."
     sources: [client]
     dimensions:
-      action: { values: ["shared", "challenge_sent", "challenge_not_sent", "opened_challenge", "opened_share", "challenge_won", "challenge_lost"] }
+      action: { values: ["shared", "challenge_sent", "challenge_not_sent", "opened_challenge", "opened_share", "challenge_won", "challenge_lost", "challenge_tied"] }
       kind: { values: ["board", "daily"] }
 
 analytics_funnels:
