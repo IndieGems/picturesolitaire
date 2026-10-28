@@ -172,10 +172,12 @@ def icon(name, pid):
     sys.dont_write_bytecode = True
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from mockup import card  # noqa: E402  (the frame drawn to chrome-spec.md)
-    table = Image.open(OUT / name / f"{name}-table.webp").convert("RGB")
+    files = TABLES[name].get("files")  # the winter dusk keeps its original files
+    table = Image.open(PUBLIC / files["table"] if files else OUT / name / f"{name}-table.webp").convert("RGB")
     w = table.width
     im = table.crop((0, 0, w, w)).resize((1024, 1024), Image.LANCZOS).convert("RGBA")
-    back = Image.open(OUT / name / f"{name}-stack-back.webp").convert("RGBA").resize((315, 420), Image.LANCZOS)
+    back = Image.open(PUBLIC / files["stackBack"] if files else OUT / name / f"{name}-stack-back.webp")
+    back = back.convert("RGBA").resize((315, 420), Image.LANCZOS)
     for k in range(3, -1, -1):
         b = back.copy()
         if k:
