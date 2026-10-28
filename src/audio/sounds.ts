@@ -130,7 +130,11 @@ export type MusicName = "music" | "winter";
 
 /** The background music: one calm loop under the whole game, chosen by the player's table. */
 export const MUSIC = {
-  /** "music": a sunny afternoon (guitar, felt piano, airy strings, flute), C major, 72 bpm. */
+  /**
+   * "music": a sunny afternoon (guitar, felt piano, airy strings, flute), 72 bpm, in G major as
+   * generated: the creator's choice (2026-10-28) over a copy moved to C, accepting a slight rub
+   * between its F sharp and the picture harp's F.
+   */
   file: "bed-day",
   /** Each other track's file. */
   tracks: { winter: "bed" } as Record<Exclude<MusicName, "music">, string>,

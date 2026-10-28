@@ -71,11 +71,12 @@ const MUSIC = [
   // seconds into the start (src/audio/music.ts), so no loop point is baked in.
   { name: "bed", src: "bed.mp3", start: 0, end: 86.5, fade: 0.05, lufs: -20 },
   // The sunny daytime bed, every table's but Winter Dusk's (which keeps the
-  // snowy evening above). The generator played it in G major whatever the
-  // prompt asked; re-keyed up a fourth to C major, tempo kept, so the picture
-  // harp's F never rubs against an F sharp. Even from end to end, no ending:
-  // the game crossfades its last seconds into its start.
-  { name: "bed-day", src: "bed-day.mp3", start: 0, end: 90, fade: 0.05, lufs: -20, pitch: 2 ** (5 / 12) },
+  // snowy evening above), as generated: G major, whatever the prompt asked.
+  // The creator's choice (2026-10-28), over a copy moved up to C (bed-day-c in
+  // TAKES): its F sharp rubs slightly against the picture harp's F, accepted.
+  // Even from end to end, no ending: the game crossfades its last seconds into
+  // its start.
+  { name: "bed-day", src: "bed-day.mp3", start: 0, end: 90, fade: 0.05, lufs: -20 },
 ];
 // Effects arranged from slices of the originals, when no single generation
 // played what was asked: each part is a slice (start..end) of a source, faded
@@ -175,10 +176,12 @@ const BUILT = [
 // "<sound>-<letter>" (merge-a, merge-b...), their originals in takes/ here. An
 // entry with `lufs` is treated as music (stereo, loudness), else as an effect.
 const TAKES = [
-  // Not a take: the sunny bed as generated (G major, not re-keyed), for the
-  // creator to compare in Sound Tuning ("Music: original key"). Never played
-  // by the game; its name is not a take's, so it can never be picked.
-  { name: "bed-day-g", src: "bed-day.mp3", start: 0, end: 90, fade: 0.05, lufs: -20 },
+  // Not a take: the sunny bed re-keyed up a fourth to C major, tempo kept, so
+  // it never rubs against the picture harp's F. The creator kept the original
+  // key instead (2026-10-28); this stays in Sound Tuning to listen to ("Music
+  // moved to C"), never played by the game. Its name is not a take's, so it
+  // can never be picked.
+  { name: "bed-day-c", src: "bed-day.mp3", start: 0, end: 90, fade: 0.05, lufs: -20, pitch: 2 ** (5 / 12) },
 ];
 const PEAK_DB = -1.5;
 const only = new Set(process.argv.slice(2));

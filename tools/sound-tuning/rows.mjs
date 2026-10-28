@@ -9,8 +9,8 @@
 // and it has no Mute; Keep on it says the creator prefers it.
 
 export const SOUNDS = [
-  { name: "music", label: "Music", moment: "The background music, looping under the whole game: a sunny afternoon, on every table but Winter Dusk.", kind: "music" },
-  { name: "music-original", label: "Music: original key (unshifted)", moment: "The sunny track exactly as generated, in G major, before it was moved up to C to sit with the picture harp. For comparison only: the game doesn't play it. Mark Keep on whichever of the two you prefer.", kind: "music", file: "bed-day-g", dir: "takes", preview: true },
+  { name: "music", label: "Music (in the game)", moment: "The background music, looping under the whole game: a sunny afternoon, on every table but Winter Dusk. In its original key (G), the one the game plays.", kind: "music" },
+  { name: "music-c", label: "Music moved to C (listen only, not in the game)", moment: "The same sunny track moved up to C, so it never rubs against the picture harp. You chose the original key instead; this one is kept only to listen to, and the game never plays it.", kind: "music", file: "bed-day-c", dir: "takes", preview: true },
   { name: "winter", label: "Winter Dusk music", moment: "The background music while the player has chosen the Winter Dusk table (December's suitcase prize): the snowy evening.", kind: "music" },
   { name: "hardmark", label: "Hard board", moment: "A hard board opens, under its \"Hard board\" banner: a playful uh-oh." },
   { name: "supermark", label: "Super hard board", moment: "A super hard board opens, under its \"Super hard board\" banner: the uh-oh, deeper and weightier." },
