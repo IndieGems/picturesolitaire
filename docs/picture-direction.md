@@ -41,6 +41,35 @@ the plan's `suffix.close` is the prompt ending for these rules.
 - **Nothing written** in the picture (no text, numbers, logos or signatures) and no
   border. Everything is suitable for all ages.
 
+## Atmospheric pictures
+
+Since 2026-10-28, about 1 in 6 to 1 in 8 pictures, roughly one per board, is atmospheric:
+a landscape, a scene from a distance, an impressionist or loose painterly picture, or a
+busier one. The creator found the early pictures were not wrong in kind. They failed
+because all of them were distant and busy. A few such pictures give the boards variety.
+The 21 early squares are back for it, and a batch of about 150 more follows them into
+boards 1–150. The clear pictures they displace stock trip 11 and on.
+
+- **Tagged.** The plan and the catalogue mark them `"look": "atmospheric"`, and Levels
+  counts that tag. A clear picture has no `look`.
+- **Square (2×2) only**, made at the size they ship.
+- **Busier, never mush.** Every one of the four cards must hold something a player can
+  place: a horizon, a tree line, a building, a boat, a figure or a patch of distinct
+  colour. No quarter is only sky, water, mist, foliage or one even texture, and no two
+  quarters look alike. A prompt names what sits where ("a boathouse on the left, a heron
+  on the lower right, peaks at the top").
+- **`busy` 1 or 2** for most, 0 for a calm one. Levels still keeps busy 2s apart.
+- **Media:** photo, oil painting (impressionist, plein-air, romantic, tonalist,
+  pointillist, fauvist, Dutch genre), watercolour, gouache, pastel and woodblock print.
+  Vary the subjects, places, seasons and palettes, with no look-alike families.
+- **Still new subjects.** Each is a scene of its own, checked against the library's ids,
+  titles and subjects before it is drawn: a library picture of the same thing (a
+  watermill, a boathouse, the northern lights) rules it out. Subjects and ids avoid the
+  suitcase items' words (Levels' `itemClash`).
+- **The usual rules hold:** people candid and small, from behind or in profile; no real
+  landmark; no writing; all ages.
+- The plan's `suffix.atmos` (and `atmos-photo` for photographs) is the prompt ending.
+
 ## People
 
 Jigsaw Drop's people read as real because nobody poses: level 16's painted Madonna looks
@@ -83,6 +112,7 @@ first trip's candidates and the rights rules.
 | pop | 1960s comic pop art with black outlines and halftone dots |
 | painting | oil, classical or impressionist, on a calm dark or plain ground |
 | watercolour | loose washes with crisp edges and white paper showing |
+| gouache | flat, matte, opaque paint with soft hand-painted edges, like a mid-century picture book |
 | print | woodblock print (ukiyo-e) or linocut: flat colour and key lines |
 | papercut | layered paper craft with soft shadows between the layers |
 | pastel | soft pastel and chalk on toned paper |

@@ -358,7 +358,11 @@ def cmd_catalogue():
             # A real, named place (lead, 2026-10-25): it belongs to a future trip as a destination,
             # so Levels keeps it off campaign boards (a build check holds it).
             pictures[-1]["landmark"] = True
-    used = {x["album"] for x in pictures}
+        if e.get("look"):
+            # "atmospheric" (creator, 2026-10-28): a landscape, a distant scene, impressionistic or
+            # busier, about one per board; Levels counts them. Absent on every clear picture.
+            pictures[-1]["look"] = e["look"]
+    used ={x["album"] for x in pictures}
     out = {"albums": [a for a in p["albums"] if a["id"] in used], "pictures": pictures,
            "destinations": destinations(p), "items": items(p), "suitcases": items_plan()["suitcases"]}
     CATALOGUE.parent.mkdir(parents=True, exist_ok=True)
