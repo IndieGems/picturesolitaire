@@ -48249,6 +48249,282 @@
         "marble lion"
       ],
       "bg": "pink"
+    },
+    {
+      "id": "sv-t4-boot",
+      "souvenir": "t4",
+      "album": "souvenirs",
+      "title": "Cowboy Boot",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t4-boot.webp",
+      "board": "pictures/souvenirs/sv-t4-boot-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "cowboy boot"
+      ],
+      "bg": "red"
+    },
+    {
+      "id": "sv-t4-windpump",
+      "souvenir": "t4",
+      "album": "souvenirs",
+      "title": "Windpump",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t4-windpump.webp",
+      "board": "pictures/souvenirs/sv-t4-windpump-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "windpump"
+      ],
+      "bg": "sky"
+    },
+    {
+      "id": "sv-t4-lantern",
+      "souvenir": "t4",
+      "album": "souvenirs",
+      "title": "Oil Lantern",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t4-lantern.webp",
+      "board": "pictures/souvenirs/sv-t4-lantern-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "oil lantern"
+      ],
+      "bg": "navy"
+    },
+    {
+      "id": "sv-t4-guitar",
+      "souvenir": "t4",
+      "album": "souvenirs",
+      "title": "Guitar",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t4-guitar.webp",
+      "board": "pictures/souvenirs/sv-t4-guitar-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "guitar"
+      ],
+      "bg": "teal"
+    },
+    {
+      "id": "sv-t4-coffee-pot",
+      "souvenir": "t4",
+      "album": "souvenirs",
+      "title": "Campfire Coffee",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t4-coffee-pot.webp",
+      "board": "pictures/souvenirs/sv-t4-coffee-pot-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "campfire coffee pot"
+      ],
+      "bg": "purple"
+    },
+    {
+      "id": "sv-t4-saguaro",
+      "souvenir": "t4",
+      "album": "souvenirs",
+      "title": "Saguaro",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t4-saguaro.webp",
+      "board": "pictures/souvenirs/sv-t4-saguaro-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "saguaro"
+      ],
+      "bg": "orange"
+    },
+    {
+      "id": "sv-t4-saddle",
+      "souvenir": "t4",
+      "album": "souvenirs",
+      "title": "Saddle",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t4-saddle.webp",
+      "board": "pictures/souvenirs/sv-t4-saddle-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "saddle"
+      ],
+      "bg": "yellow"
+    },
+    {
+      "id": "sv-t4-wagon",
+      "souvenir": "t4",
+      "album": "souvenirs",
+      "title": "Covered Wagon",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t4-wagon.webp",
+      "board": "pictures/souvenirs/sv-t4-wagon-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "covered wagon"
+      ],
+      "bg": "blue"
+    },
+    {
+      "id": "sv-t4-stagecoach",
+      "souvenir": "t4",
+      "album": "souvenirs",
+      "title": "Stagecoach",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t4-stagecoach.webp",
+      "board": "pictures/souvenirs/sv-t4-stagecoach-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "stagecoach"
+      ],
+      "bg": "green"
+    },
+    {
+      "id": "sv-t4-hat",
+      "souvenir": "t4",
+      "album": "souvenirs",
+      "title": "Cowboy Hat",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t4-hat.webp",
+      "board": "pictures/souvenirs/sv-t4-hat-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "cowboy hat"
+      ],
+      "bg": "pink"
+    },
+    {
+      "id": "sv-t4-longhorn",
+      "souvenir": "t4",
+      "album": "souvenirs",
+      "title": "Longhorn",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t4-longhorn.webp",
+      "board": "pictures/souvenirs/sv-t4-longhorn-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "longhorn steer"
+      ],
+      "bg": "magenta"
+    },
+    {
+      "id": "sv-t4-harmonica",
+      "souvenir": "t4",
+      "album": "souvenirs",
+      "title": "Harmonica",
+      "medium": "print",
+      "file": "pictures/souvenirs/sv-t4-harmonica.webp",
+      "board": "pictures/souvenirs/sv-t4-harmonica-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "harmonica"
+      ],
+      "bg": "lime"
     }
   ],
   "souvenirs": [
@@ -48272,6 +48548,13 @@
       "table": "table-souvenir-italy",
       "tableTitle": "Sculptor's Bench",
       "sticker": "pictures/souvenirs/sv-t3-sticker.webp"
+    },
+    {
+      "trip": "t4",
+      "theme": "Ranch and trail",
+      "table": "table-souvenir-west",
+      "tableTitle": "Ranch Table",
+      "sticker": "pictures/souvenirs/sv-t4-sticker.webp"
     }
   ]
 }
