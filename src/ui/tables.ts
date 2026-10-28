@@ -32,6 +32,8 @@ export interface TableArt {
   particleKind?: string;
   particleFrame?: number;
   particleFrames?: number;
+  /** A Souvenir board's own table (Art, 2026-10-28: "t1", its trip): worn by that board, owned by nobody, never in the picker. */
+  souvenir?: string;
 }
 
 const SETTING = "table";
@@ -48,8 +50,8 @@ function loadManifest(): Promise<{ default: string; tables: TableArt[] }> {
     .then((r) => r.json() as Promise<{ default: string; tables: TableArt[] }>)
     .then((m) => {
       known = m.tables;
-      // the thumbnails are small: fetch them now, with the first screen
-      for (const a of m.tables)
+      // the thumbnails are small: fetch them now, with the first screen (a Souvenir's table is never shown as one)
+      for (const a of m.tables.filter((x) => !x.souvenir))
         void fetch(url(a.thumb))
           .then((r) => (r.ok ? r.blob() : null))
           .then((b) => b && thumbs.set(a.id, URL.createObjectURL(b)))
@@ -89,7 +91,7 @@ export const knownTable = (id: string): TableArt | undefined => known.find((a) =
 export async function ownedTableArts(): Promise<TableArt[]> {
   const m = await loadManifest();
   const owned = new Set(pretendAll() ? m.tables.map((a) => a.id) : await ownedTables());
-  return m.tables.filter((a) => a.id === m.default || owned.has(a.id));
+  return m.tables.filter((a) => !a.souvenir && (a.id === m.default || owned.has(a.id)));
 }
 
 /** The art of the table `id`, if the list has it. */
