@@ -27,7 +27,8 @@ for (const row of WEEK) Object.assign(row, { vary: true, busyMost: 1 });
 /**
  * THE DAILY SUITCASE (creator, 2026-10-27; docs/daily-suitcase.md): from SUITCASE_FROM, every day is made
  * under today's rules and hides the day's item (suitcase.mts) as one of its pictures, so SUITCASE_WEEK
- * replaces WEEK for those days (make-daily.mts --redeal-from 2026-11-01; the days before stay as played):
+ * replaces WEEK for those days, and from RULES_FROM without an item (make-daily.mts --redeal-from 2026-11-01,
+ * then --days for 28-31 October; the days before stay as played):
  *   - a 4x5 board of squares only (AGENTS.md: all 2x2 or all long, and the item is a 2x2); `count`
  *     includes the item;
  *   - READABLE, as an unmarked campaign board: a player who draws by the face-up cards wins 85% or more
@@ -40,6 +41,12 @@ for (const row of WEEK) Object.assign(row, { vary: true, busyMost: 1 });
  * The weekly rhythm stays: gentle Monday and Thursday, the week's bite on Friday.
  */
 export const SUITCASE_FROM = "2026-11-01";
+/**
+ * The first day made under SUITCASE_WEEK's rules (creator, 2026-10-28, playing that day's old-style board):
+ * 28 to 31 October, the last old-style days still to come, were re-dealt under them with no item, as the
+ * event starts on SUITCASE_FROM (make-daily.mts --days ... --played). Every day before stays as played.
+ */
+export const RULES_FROM = "2026-10-28";
 const ANY = [1, 99];
 const sq = (n) => ({ count: n, alike: [], sizes: [4], cards: [n * 4, n * 4], peek: 0, chain: ANY });
 export const SUITCASE_WEEK = [
@@ -54,7 +61,7 @@ export const SUITCASE_WEEK = [
 for (const row of SUITCASE_WEEK) Object.assign(row, { vary: true, busyMost: 0, liveMost: 1, reader: [READABLE, 1] });
 
 /** The row a date's board is made from. */
-export const rowOn = (date) => (date >= SUITCASE_FROM ? SUITCASE_WEEK : WEEK)[new Date(Date.parse(date + "T00:00:00Z")).getUTCDay()];
+export const rowOn = (date) => (date >= RULES_FROM ? SUITCASE_WEEK : WEEK)[new Date(Date.parse(date + "T00:00:00Z")).getUTCDay()];
 
 /** For tools that read every plan the same way. */
 export const PLAN = WEEK;

@@ -12,18 +12,22 @@ before it has a board for every day it can show. Every day has a weekly rhythm,
 so that days next to each other feel different. The weekday is the date's own,
 the same for everyone. Each board's par is the fewest moves the solver found.
 
-## Until 2026-10-31
+## Until 2026-10-27
 
 Mid-campaign difficulty (about campaign boards 11 to 19), pictures of mixed sizes.
+The last four days of October, 28 to 31, were re-dealt on 2026-10-28 (creator,
+playing that day's old-style board) under the rules of the next section,
+without an item, as the event starts on 2026-11-01; the next section's
+table counts them too.
 
 | weekday | pictures | lookalikes | cards per picture | cards | shown | chain | careless win, target | careless win, dealt | mean par |
 |---|---|---|---|---|---|---|---|---|---|
 | Sunday | 6 | none | 2 4 6 9 | 29-31 | 0 | 2-3 | 70%-95% | 73-94% | 19.5 |
 | Monday | 6 | none | 2 4 6 | 24-26 | 0 | 2-3 | 80%-100% | 100-100% | 14.8 |
 | Tuesday | 6 | none | 2 4 6 | 28-30 | 0 | 2-3 | 70%-95% | 74-94% | 19.2 |
-| Wednesday | 6 | none | 2 4 6 9 | 28-30 | 0 | 3-3 | 65%-90% | 67-89% | 18.2 |
+| Wednesday | 6 | none | 2 4 6 9 | 28-30 | 0 | 3-3 | 65%-90% | 67-89% | 18.3 |
 | Thursday | 7 | none | 2 4 6 | 26-28 | 0 | 2-3 | 70%-95% | 72-94% | 16.1 |
-| Friday | 6 | none | 4 6 9 | 29-31 | 0 | 3-3 | 60%-90% | 67-87% | 19.4 |
+| Friday | 6 | none | 4 6 9 | 29-31 | 0 | 3-3 | 60%-90% | 67-87% | 19.5 |
 | Saturday | 7 | none | 2 4 6 | 27-29 | 0 | 2-3 | 65%-90% | 67-89% | 16.0 |
 
 ## From 2026-11-01: the Daily Suitcase
@@ -54,7 +58,7 @@ back within 3 days (`tools/levels/suitcase.mts`, seeded by the month alone).
 | Tuesday | 9 | none | 4 | 36-36 | 0 | any | 75%-95% | 76-94% | 20.9 |
 | Wednesday | 9 | none | 4 | 36-36 | 0 | any | 70%-90% | 72-89% | 20.8 |
 | Thursday | 8 | none | 4 | 32-32 | 0 | any | 80%-97% | 81-96% | 18.8 |
-| Friday | 9 | none | 4 | 36-36 | 0 | any | 65%-90% | 65-89% | 20.9 |
+| Friday | 9 | none | 4 | 36-36 | 0 | any | 65%-90% | 65-89% | 21.0 |
 | Saturday | 9 | none | 4 | 36-36 | 0 | any | 70%-95% | 70-95% | 20.9 |
 
 Every picture's appearances in the pool: 0 to 16 (mean 2.1); no picture is on two boards within three days.
