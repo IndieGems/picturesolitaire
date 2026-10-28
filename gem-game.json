@@ -26,7 +26,7 @@
     },
     "processes": [
       {
-        "id": "soundtuning",
+        "id": "soundtuner",
         "command": [
           "node",
           "tools/sound-tuning/server.mjs"
@@ -127,7 +127,7 @@
       "id": "sound-tuning",
       "label": "Sound Tuning",
       "kind": "web",
-      "url": "http://127.0.0.1:{soundtuning.port}/"
+      "url": "http://127.0.0.1:{soundtuner.port}/"
     },
     {
       "id": "picture-library",
