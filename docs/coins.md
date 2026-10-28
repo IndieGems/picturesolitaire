@@ -12,6 +12,12 @@ board's is its par, the fewest moves found. Its length stands in for how long th
 takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle pays
 50, once a day.
 
+**A Souvenir** (the optional all-long bonus board after each trip, `docs/souvenirs.md`) pays
+what the better-paying of its trip's relief boards pays, once, ever (the lead, 2026-10-28: the
+creator's "Coins like a relief board", a bonus for the detour). By the rule its short line, about
+13 moves, would pay about 15; as a one-off per trip this adds about 350 Coins to the whole game
+and leaves the hourly rate where it is.
+
 ## The hourly maths (the standard: about 500 an hour of ordinary play)
 
 - Campaign: 150 boards, 5405 Coins in all (5305 without the onboarding prize).
@@ -20,6 +26,7 @@ takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle
 - Challenge route: 20 boards, 540 Coins in all, 27 a board on average.
   At 4 minutes a board that is about 405 an hour; at 5 minutes 324.
 - Daily: 50 once a day, on top.
+- Souvenirs: none dealt yet (Levels' src/content/levels/souvenirs.json, when Art's pictures land).
 - One-time: the onboarding prize. Replays and campaign boards past the last pay nothing.
 - **Still to measure**: real minutes per board once the creator has played some (the lead's
   note): if boards run much faster or slower than 2 to 4 minutes, change the rule here.

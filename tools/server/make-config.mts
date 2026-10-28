@@ -291,6 +291,12 @@ md.push("board's is its par, the fewest moves found. Its length stands in for ho
 md.push(`takes. Campaign board 1 pays the onboarding prize instead, ${ONBOARDING.coins}. The daily puzzle pays`);
 md.push(`${DAILY_COINS}, once a day.`);
 md.push("");
+md.push("**A Souvenir** (the optional all-long bonus board after each trip, `docs/souvenirs.md`) pays");
+md.push("what the better-paying of its trip's relief boards pays, once, ever (the lead, 2026-10-28: the");
+md.push("creator's \"Coins like a relief board\", a bonus for the detour). By the rule its short line, about");
+md.push("13 moves, would pay about 15; as a one-off per trip this adds about 350 Coins to the whole game");
+md.push("and leaves the hourly rate where it is.");
+md.push("");
 md.push("## The hourly maths (the standard: about 500 an hour of ordinary play)");
 md.push("");
 if (camp.length) {
@@ -306,6 +312,7 @@ if (ch.length) {
   md.push(`  At 4 minutes a board that is about ${Math.round((avg * 60) / 4)} an hour; at 5 minutes ${Math.round((avg * 60) / 5)}.`);
 }
 md.push(`- Daily: ${DAILY_COINS} once a day, on top.`);
+md.push("- Souvenirs: none dealt yet (Levels' src/content/levels/souvenirs.json, when Art's pictures land).");
 md.push("- One-time: the onboarding prize. Replays and campaign boards past the last pay nothing.");
 md.push("- **Still to measure**: real minutes per board once the creator has played some (the lead's");
 md.push("  note): if boards run much faster or slower than 2 to 4 minutes, change the rule here.");
