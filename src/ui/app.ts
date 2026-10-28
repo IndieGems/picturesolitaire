@@ -67,6 +67,7 @@ import { createTries } from "./tries";
 import { createMercyNote } from "./mercy-note";
 import { recentStats } from "./board-stats";
 import { createSuitcase, packedOnCard } from "./suitcase";
+import { playItemFound } from "./item-found";
 import { held as heldOf, suitcases, type SuitItem } from "./suitcase-data";
 import { createLessons, type LessonName } from "./lessons";
 import { createHintNudge } from "./hint-nudge";
@@ -74,7 +75,7 @@ import { createDestinationBanner, type Destination } from "./destination";
 import { createPassport, type AfterStamp } from "./passport";
 import { tripById, tripEndingAt, tripName } from "./trips";
 import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy, suitcaseItem } from "./catalogue";
-import { ensure, resident } from "../packs";
+import { ensure, ensureSuitcase, fileUrl, resident } from "../packs";
 import { mountParticles } from "./particles";
 import { boardFiles, levelCount, openBoard, type BoardHandle, type BoardPicture } from "./board-api";
 import type { DevMenu } from "./dev-menu";
@@ -505,6 +506,8 @@ function openLoaded(next: Play): void {
     // board 2, not won before: the Undo lesson, after the first move; the lesson board: Shuffle's
     if (next.kind === "campaign" && next.level === 2 && !isPractice(next) && campaignNext() <= 2) void lessons.offerUndo();
     if (next.kind === "lesson") lessons.startShuffle();
+    // a daily with a suitcase item: the month's cut-outs come now, for its found moment
+    if (next.kind === "daily" && next.d.item) void ensureSuitcase(next.d.item.id.slice(5, 12)).catch(() => undefined);
   }
   show("board");
 }
@@ -1007,24 +1010,26 @@ on("board:won", () => {
 });
 
 // THE DAY'S ITEM (the Daily Suitcase, suitcase.ts): the board says when the day's item picture is finished
-// (suitcase:item, Gameplay's); on the day's first daily that is a line on the board, and once the checker's
+// (suitcase:item, Gameplay's); on the day's first daily that is a moment of its own (item-found.ts: the item
+// lifts off the board, big, its name, a starburst, then into a small suitcase), and once the checker's
 // verdict says the item was packed, its picture flies into a small suitcase on the win card.
 /** The day's item as the board drew it: its id and the board's copy of its picture, for the card's flight. */
 let dayItem: { id: string; url: string } | null = null;
-const boardToast = h("div", { class: "board-toast glass", role: "status", hidden: "" });
-boardScreen.append(boardToast);
-let toastTimer = 0;
 on("suitcase:item", (e) => {
   // a practice daily counts only in the creator's event preview (the dev menu: nothing saved or sent)
   if (!play || play.kind !== "daily" || (isPractice(play) && !suitcases.previewing()) || e.again) return;
   dayItem = { id: e.id, url: e.url };
-  // a replay of the day, or a finish after the first, packs nothing: nothing said
-  if (dailyResult(play.d.date)) return;
+  // a replay of the day, or a finish after the first, packs nothing: no moment (the preview always has one)
+  if (dailyResult(play.d.date) && !suitcases.previewing()) return;
   const it = suitcases.current()?.items.find((x) => x.id === e.id);
-  boardToast.textContent = t("case.found", { item: it?.title ?? suitcaseItem(e.id)?.title ?? t("case.today") });
-  boardToast.hidden = false;
-  clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => (boardToast.hidden = true), 4200);
+  const art = suitcaseItem(e.id);
+  // Art's cut-out when it is in (the month's pack, fetched as the daily opened), else the board's copy
+  const cutout = art?.cutout && resident(art.cutout) ? fileUrl(art.cutout) : "";
+  const src = cutout || e.url;
+  if (!src) return;
+  // the board's piece hides at once: the moment's copy takes its place (the call must come inside this event)
+  (board as (BoardHandle & { takeItem?: () => void }) | null)?.takeItem?.();
+  void playItemFound(boardScreen, { id: e.id, title: it?.title ?? art?.title ?? t("case.today"), src, cutout: !!cutout, from: e.rect });
 });
 /** Verdicts whose item has flown already (the card may hear one twice: open, then landed). */
 const flownItems = new WeakSet<Verdict>();
