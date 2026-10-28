@@ -230,6 +230,15 @@ analytics_events:
       month: { values: ["2026-11", "2026-12", "2027-01", "2027-02", "2027-03", "2027-04", "2027-05", "2027-06", "2027-07", "2027-08", "2027-09", "2027-10", "2027-11", "2027-12"] }
       by: { values: ["pack", "swap"] }
     measures: { day: int }
+  # FRIEND CHALLENGES (docs/friend-challenges.md), sent by the game (src/net/friends.ts): a
+  # challenge sent or not sent from the Arcade's sheet, a link shared, the game opened by either,
+  # and the one-off board's result against the friend's moves. `kind` is a campaign board or a daily.
+  - id: friend_action
+    description: "Friends: a friend challenge sent (or not), a board's link shared, the game opened by one, or a friend's board won or lost against their moves."
+    sources: [client]
+    dimensions:
+      action: { values: ["shared", "challenge_sent", "challenge_not_sent", "opened_challenge", "opened_share", "challenge_won", "challenge_lost"] }
+      kind: { values: ["board", "daily"] }
 
 analytics_funnels:
   # How far players get: from opening the game to each milestone board won.
@@ -250,6 +259,28 @@ analytics_funnels:
   # A try that ends in a win.
   - id: board_try
     steps: [board_started, board_won]
+
+# FRIEND CHALLENGES (docs/friend-challenges.md; the creator, 2026-10-28): the line a friend's Arcade
+# inbox shows, sent by src/net/friends.ts with gem.friends.challenge. The friend's Play launches the
+# game with the params in the order declared here (?board=62&moves=35&helpers=0, or
+# ?date=2026-10-28&moves=35&helpers=0) and the game opens that board as a one-off: no claim, no
+# reward, so the checker never sees it. `board` is the campaign position the player reads on home
+# (board 62 is c62); `helpers` is forwarded for the challenge card and not in the line, since
+# with it the line runs past the platform's 80 characters. A challenge never expires, so the
+# daily's names its date, never "today". English only until the release pass.
+friend_challenge_templates:
+  - key: beat_board
+    text: "I finished board {board} of Picture Passport in {moves, plural, one {# move} other {# moves}}. Can you beat it?"
+    params:
+      board: { type: integer, min: 1, max: 999 }
+      moves: { type: integer, min: 1, max: 999 }
+      helpers: { type: integer, min: 0, max: 999 }
+  - key: beat_daily
+    text: "I solved the daily puzzle of {date} in {moves, plural, one {# move} other {# moves}}. Can you beat it?"
+    params:
+      date: { type: date, min: "2026-08-01" }
+      moves: { type: integer, min: 1, max: 999 }
+      helpers: { type: integer, min: 0, max: 999 }
 
 config:
   # The board's tuning (src/board/tuning.ts has the defaults, and what each one
