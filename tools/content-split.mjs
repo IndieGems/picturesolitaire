@@ -48,15 +48,34 @@ function weekOf(date) {
   return d.toISOString().slice(0, 10);
 }
 
+/**
+ * The catalogue fields the game reads (src/ui/catalogue.ts, src/board/index.ts): the rest of an
+ * entry (palette, subjects, family, busy, medium...) is Art's and Levels' notes for choosing
+ * pictures, read only by tools from pictures.json itself, so a chunk leaves it out.
+ */
+const GAME_FIELDS = ["id", "file", "board", "boardPx", "px", "thumb", "thumbPx", "title", "name", "place", "cols", "rows", "album", "month", "cutout"];
+const slim = (e) => Object.fromEntries(GAME_FIELDS.filter((k) => e[k] !== undefined).map((k) => [k, e[k]]));
+/** A level's notes for the level designer, shown only by the dev menu: a release build leaves them out. */
+const NOTES = ["axes", "plan"];
+
 /** Data as a module expression: JSON.parse of a string parses faster than the same object literal. */
 const literal = (data) => `JSON.parse(${JSON.stringify(JSON.stringify(data))})`;
 
 export function contentSplit() {
   /** Read once per build (and again after a source changes, in the dev loop). */
   let content = null;
+  /** A release build (`vite build --mode release`): Levels' experiment boards are the dev menu's alone. */
+  let release = false;
   const read = () => {
     if (content) return content;
-    const json = (k) => JSON.parse(readFileSync(SRC[k], "utf8"));
+    const json = (k) => {
+      const data = JSON.parse(readFileSync(SRC[k], "utf8"));
+      // a release build: each level without its designer's notes (the dev menu's board info alone shows them)
+      if (release && Array.isArray(data.levels))
+        data.levels = data.levels.map((l) => Object.fromEntries(Object.entries(l).filter(([k]) => !NOTES.includes(k))));
+      if (release) for (const k of NOTES) delete data[k];
+      return data;
+    };
     const pictures = json("pictures");
     const kinds = ["pictures", "destinations", "items", "souvenirPictures"];
     /** id -> [kind, entry] across the catalogue's lists. */
@@ -70,7 +89,7 @@ export function contentSplit() {
         if (!id || seen.has(id)) return;
         seen.add(id);
         const hit = byId.get(id);
-        if (hit) (part[hit[0]] ??= []).push(hit[1]);
+        if (hit) (part[hit[0]] ??= []).push(slim(hit[1]));
       };
       for (const l of levels) {
         for (const p of l.pictures ?? []) take(p.id);
@@ -136,10 +155,10 @@ export function contentSplit() {
         }
         if (kind === "items") {
           const list = months.get(key);
-          return list && { data: { items: list.map((i) => i.id) }, part: { items: list } };
+          return list && { data: { items: list.map((i) => i.id) }, part: { items: list.map(slim) } };
         }
         if (kind === "library") {
-          return { data: {}, part: { pictures: pictures.pictures ?? [], destinations: pictures.destinations ?? [], items: pictures.items ?? [], souvenirPictures: pictures.souvenirPictures ?? [] } };
+          return { data: {}, part: Object.fromEntries(kinds.map((k) => [k, (pictures[k] ?? []).map(slim)])) };
         }
         if (LANES.includes(kind)) {
           const levels = lanes[kind].levels ?? [];
@@ -162,6 +181,9 @@ export function contentSplit() {
 
   return {
     name: "ps-content-split",
+    configResolved(config) {
+      release = config.mode === "release";
+    },
     resolveId(id) {
       if (id === ID || id.startsWith(`${ID}/`)) return `\0${id}`;
       return null;
@@ -179,7 +201,8 @@ export function contentSplit() {
           `export const campaign = { count: ${boards.length}, boards: ${literal(boards)}, trips: ${loaders("trip", trips)} };`,
           `export const daily = { first: ${JSON.stringify(first)}, weeks: ${loaders("daily", weeks)} };`,
           `export const items = ${loaders("items", months)};`,
-          ...LANES.map((k) => `export const ${k} = ${lane(k)};`),
+          // a release build carries no experiment board (tools/no-dev-menu.mjs fails one that does)
+          ...LANES.map((k) => `export const ${k} = ${release && k === "experiments" ? "() => Promise.resolve({ levels: [] })" : lane(k)};`),
           `export const library = ${lane("library")};`,
           `export const catalogue = ${literal(catalogue)};`,
         ].join("\n");

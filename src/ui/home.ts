@@ -31,14 +31,14 @@
 // nothing moves.
 
 import { gem } from "../gem";
-import { level as campaignLevel, levelCount } from "../game/levels";
+import { levelCount } from "../game/levels";
 import { campaignNext, progress } from "../net/progress";
 import { ensureTrip, fileUrl, resident } from "../packs";
 import { t } from "./i18n";
 import { ICONS } from "./icons";
-import { markOf, markTag, markWords } from "./marks";
+import { markAt, markOf, markTag, markWords } from "./marks";
 import { stampUrl } from "./passport";
-import { currentTrip, placesOf, tripDone, tripName, tripOf, trips, type Place, type Trip } from "./trips";
+import { currentTrip, loadTripOf, placesOf, tripDone, tripName, tripOf, trips, type Place, type Trip } from "./trips";
 import { WORDMARK } from "./wordmark";
 
 /** Home's own pictures besides the wordmark: Art's, in public/art. */
@@ -299,6 +299,8 @@ export function createHome(nav: Nav, parts: Parts) {
     } else {
       itinerary.hidden = false;
       const places = placesOf(tr);
+      // the trip's postcards come with its boards (a trip at a time): drawn again once they are in
+      if (places.some((p) => p.coming)) void loadTripOf(tr).then((came) => came && draw());
       const at = places.findIndex((p) => p.board === next);
       reached = waiting ? -1 : done ? places.length - 1 : at;
       tripLine.textContent = waiting ? " " : tripName(tr);
@@ -315,7 +317,7 @@ export function createHome(nav: Nav, parts: Parts) {
     }
     // Next stop, and the board it opens (never the place: that is the board's reveal)
     playWords.textContent = t(done ? "home.again" : "home.nextStop");
-    const m = next ? markOf(campaignLevel(next)) : null;
+    const m = next ? markAt(next) : null;
     playBoard.textContent = next ? (m ? t("home.boardMarked", { n: next, mark: markWords(m) }) : t("home.board", { n: next })) : t("home.board", { n: "–" });
     play.setAttribute("aria-label", `${playWords.textContent}: ${playBoard.textContent}`);
     // the passport's stamps so far

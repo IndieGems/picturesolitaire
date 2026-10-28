@@ -29,8 +29,16 @@
 // The SOUVENIRS (docs/souvenirs.md, 2026-10-28): each trip's bonus board has pictures of its own
 // (`souvenirPictures`, never in an album, known by id like any picture), and a record per trip
 // (`souvenirs`: its theme, its table, its sticker).
+//
+// LOADED AS NEEDED (the first-load trim, 2026-10-28): the game never carries pictures.json whole.
+// The build splits it (tools/content-split.mjs): each chunk of boards (a trip, a daily week, the
+// Souvenirs) brings the entries its boards deal, a month's suitcase items come with its screen
+// (loadItems), and the whole list only for the albums (loadLibrary). So picture(), destination()
+// and suitcaseItem() answer for what has loaded (src/content.ts): every picture of a board once
+// its loader has resolved. The small lists (the albums, the Souvenir records) are always here.
 
-import CATALOGUE from "../content/pictures.json";
+import { catalogue, items as itemMonths, library } from "virtual:ps-content";
+import { entriesOf, entryOf, type CatalogueEntry } from "../content";
 import { t } from "./i18n";
 import { fileUrl } from "../packs";
 
@@ -64,7 +72,6 @@ export interface Copy {
 }
 
 type Sizes = { file: string; thumb?: string; thumbPx?: number[]; px?: number[]; board?: string; boardPx?: number[] };
-type Entry = (typeof CATALOGUE.pictures)[number] & Sizes;
 function copiesOf(p: Sizes): Copy[] {
   const [w, h] = p.px?.length === 2 ? (p.px as [number, number]) : [Infinity, Infinity];
   const list: Copy[] = [{ file: p.file, w, h }];
@@ -75,32 +82,29 @@ function copiesOf(p: Sizes): Copy[] {
   return list.sort((a, b) => a.w * a.h - b.w * b.h);
 }
 
-const albumList: Album[] = CATALOGUE.albums.map((a) => ({ id: a.id, title: a.title }));
-const pictureList: Picture[] = (CATALOGUE.pictures as Entry[]).map((p) => ({
-  id: p.id,
-  album: p.album,
-  title: p.title,
-  file: p.file,
-  thumb: p.thumb ?? p.file,
-  board: p.board && p.boardPx?.length === 2 ? p.board : null,
-  copies: copiesOf(p),
-  cols: p.cols,
-  rows: p.rows,
-}));
-// a Souvenir's pictures (docs/souvenirs.md): their own list, kept out of the albums, known by id (the win card)
-type SouvenirEntry = Sizes & { id: string; title: string; cols: number; rows: number };
-const souvenirPictureList: Picture[] = ((CATALOGUE as unknown as { souvenirPictures?: SouvenirEntry[] }).souvenirPictures ?? []).map((p) => ({
-  id: p.id,
-  album: "",
-  title: p.title,
-  file: p.file,
-  thumb: p.thumb ?? p.file,
-  board: p.board && p.boardPx?.length === 2 ? p.board : null,
-  copies: copiesOf(p),
-  cols: p.cols,
-  rows: p.rows,
-}));
-const byId = new Map([...pictureList, ...souvenirPictureList].map((p) => [p.id, p]));
+type PictureEntry = CatalogueEntry & Sizes & { album?: string; title?: string; cols: number; rows: number };
+/** Each entry as the screens read it, made once. */
+const made = new Map<string, Picture>();
+function asPicture(e: PictureEntry, album: string): Picture {
+  let p = made.get(e.id);
+  if (!p) {
+    p = {
+      id: e.id,
+      album,
+      title: e.title ?? e.id,
+      file: e.file,
+      thumb: e.thumb ?? e.file,
+      board: e.board && e.boardPx?.length === 2 ? e.board : null,
+      copies: copiesOf(e),
+      cols: e.cols,
+      rows: e.rows,
+    };
+    made.set(e.id, p);
+  }
+  return p;
+}
+
+const albumList: Album[] = catalogue.albums.map((a) => ({ id: a.id, title: a.title }));
 
 /**
  * A trip's Souvenir as Art lists it (pictures.json `souvenirs`): its theme in words, the table its
@@ -114,7 +118,7 @@ export interface SouvenirArt {
   tableTitle: string;
   sticker: string;
 }
-const souvenirByTrip = new Map(((CATALOGUE as unknown as { souvenirs?: SouvenirArt[] }).souvenirs ?? []).map((s) => [s.trip, s]));
+const souvenirByTrip = new Map<string, SouvenirArt>(catalogue.souvenirs.map((s) => [s.trip, s]));
 /** Trip `trip`'s Souvenir ("t1"), or undefined while Art has not made it. */
 export function souvenirArt(trip: string): SouvenirArt | undefined {
   return souvenirByTrip.get(trip);
@@ -125,24 +129,32 @@ export interface Destination extends Picture {
   /** Where it is: "Arizona, USA". The picture's `title` is its name. */
   place: string;
 }
-type DestEntry = Sizes & { id: string; name: string; place?: string; cols: number; rows: number };
-const destinationList: Destination[] = ((CATALOGUE as { destinations?: DestEntry[] }).destinations ?? []).map((d) => ({
-  id: d.id,
-  album: "",
-  title: d.name,
-  place: d.place ?? "",
-  file: d.file,
-  thumb: d.thumb ?? (d.board && d.boardPx?.length === 2 ? d.board : d.file),
-  board: d.board && d.boardPx?.length === 2 ? d.board : null,
-  copies: copiesOf(d),
-  cols: d.cols,
-  rows: d.rows,
-}));
-const destById = new Map(destinationList.map((d) => [d.id, d]));
+type DestEntry = PictureEntry & { name: string; place?: string };
+const destMade = new Map<string, Destination>();
 
-/** The destination `id` (a board's level data names it), or undefined while Art has not made it. */
+/**
+ * The destination `id` (a board's level data names it), once its trip has loaded (a trip's chunk
+ * brings its boards' postcards); undefined until then, and while Art has not made it.
+ */
 export function destination(id: string): Destination | undefined {
-  return destById.get(id);
+  const known = destMade.get(id);
+  if (known) return known;
+  const e = entryOf("destinations", id) as DestEntry | undefined;
+  if (!e) return undefined;
+  const d: Destination = {
+    id: e.id,
+    album: "",
+    title: e.name,
+    place: e.place ?? "",
+    file: e.file,
+    thumb: e.thumb ?? (e.board && e.boardPx?.length === 2 ? e.board : e.file),
+    board: e.board && e.boardPx?.length === 2 ? e.board : null,
+    copies: copiesOf(e),
+    cols: e.cols,
+    rows: e.rows,
+  };
+  destMade.set(id, d);
+  return d;
 }
 
 /**
@@ -158,34 +170,65 @@ export interface SuitcaseItemArt {
   picture: string;
   cutout: string | null;
 }
-type ItemEntry = { id: string; month?: string; title?: string; file: string; board?: string; cutout?: string };
-const itemById = new Map(
-  ((CATALOGUE as { items?: ItemEntry[] }).items ?? []).map((i): [string, SuitcaseItemArt] => [
-    i.id,
-    { id: i.id, month: i.month ?? i.id.slice(5, 12), title: i.title ?? i.id, picture: i.board ?? i.file, cutout: i.cutout ?? null },
-  ]),
-);
-/** A month's items as Art lists them, in slot order (for the dev server's stand-in suitcase). */
+type ItemEntry = CatalogueEntry & { month?: string; title?: string; board?: string; cutout?: string };
+const asItem = (i: ItemEntry): SuitcaseItemArt => ({
+  id: i.id,
+  month: i.month ?? i.id.slice(5, 12),
+  title: i.title ?? i.id,
+  picture: i.board ?? i.file,
+  cutout: i.cutout ?? null,
+});
+/** A month's items as Art lists them, in slot order, once loaded (loadItems). */
 export function suitcaseItemsOf(month: string): SuitcaseItemArt[] {
-  return [...itemById.values()].filter((i) => i.month === month).sort((a, b) => a.id.localeCompare(b.id));
+  return [...(entriesOf("items") as IterableIterator<ItemEntry>)]
+    .map(asItem)
+    .filter((i) => i.month === month)
+    .sort((a, b) => a.id.localeCompare(b.id));
 }
-/** The suitcase item `id` ("item-2026-11-04"), or undefined while Art has not listed it. */
+/** The suitcase item `id` ("item-2026-11-04"), once its month, or a daily board dealing it, has loaded. */
 export function suitcaseItem(id: string): SuitcaseItemArt | undefined {
-  return itemById.get(id);
+  const e = entryOf("items", id) as ItemEntry | undefined;
+  return e && asItem(e);
+}
+/** Load month `month`'s items ("YYYY-MM") for its suitcase screen; at once for a month Art has none for. */
+export async function loadItems(month: string): Promise<void> {
+  await itemMonths[month]?.();
 }
 
-/** Every album, in the catalogue's order, that has at least one picture. */
+let libraryLoad: Promise<void> | null = null;
+/** Load the whole picture list (the albums, the dev menu): never at boot. Asked again after a failure. */
+export function loadLibrary(): Promise<void> {
+  libraryLoad ??= library().then(
+    () => undefined,
+    (err: unknown) => {
+      libraryLoad = null;
+      throw err;
+    },
+  );
+  return libraryLoad;
+}
+
+const libraryEntries = () => [...(entriesOf("pictures") as IterableIterator<PictureEntry>)];
+
+/** Every album, in the catalogue's order, that has at least one loaded picture (loadLibrary first for all). */
 export function albums(): Album[] {
-  return albumList.filter((a) => pictureList.some((p) => p.album === a.id));
+  const loaded = new Set(libraryEntries().map((e) => e.album));
+  return albumList.filter((a) => loaded.has(a.id));
 }
 
-/** An album's pictures, in the catalogue's order. */
+/** An album's loaded pictures (all of them once loadLibrary has resolved), in the catalogue's order. */
 export function picturesIn(album: string): Picture[] {
-  return pictureList.filter((p) => p.album === album);
+  return libraryEntries()
+    .filter((e) => e.album === album)
+    .map((e) => asPicture(e, album));
 }
 
+/** A picture (the library's, or a Souvenir's) by id, once a chunk dealing it has loaded. */
 export function picture(id: string): Picture | undefined {
-  return byId.get(id);
+  const lib = entryOf("pictures", id) as PictureEntry | undefined;
+  if (lib) return asPicture(lib, lib.album ?? "");
+  const sv = entryOf("souvenirPictures", id) as PictureEntry | undefined;
+  return sv && asPicture(sv, "");
 }
 
 /** The picture's address at full size, as an <img> takes it. */
@@ -226,7 +269,7 @@ function localized(key: string, english: string): string {
 }
 export const albumTitle = (a: Album): string => localized(`album.${a.id}`, a.title);
 export const pictureTitle = (p: Picture): string =>
-  destById.has(p.id) ? destinationName(p.id, p.title) : localized(`picture.${p.id}`, p.title);
+  entryOf("destinations", p.id) ? destinationName(p.id, p.title) : localized(`picture.${p.id}`, p.title);
 /** A destination's two lines in the player's language: its name, and where it is. */
 export const destinationName = (id: string, english: string): string => localized(`destination.${id}.name`, english);
 export const destinationPlace = (id: string, english: string): string => localized(`destination.${id}.place`, english);

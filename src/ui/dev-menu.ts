@@ -33,7 +33,8 @@
 import "./dev-menu.css";
 import { gem } from "../gem";
 import { on } from "../events";
-import { level, levelCount, loadDaily, toLevel, type Stored } from "../game/levels";
+import { campaign, daily, experiments as experimentBoards } from "virtual:ps-content";
+import { levelCount, loadDaily, toLevel, type Stored } from "../game/levels";
 import { currentDaily } from "../net/daily";
 import { addToSettings, closeSettings } from "../settings-screen";
 import { loadChallenges, type Challenge } from "./challenge-data";
@@ -152,32 +153,41 @@ export function mountDevMenu(host: DevHost): DevMenu {
   let speed = 1;
   let everyPicture = false;
 
-  // the challenge route and the daily pool's first and last date, read once
+  // the challenge route, the daily pool's first and last date and Levels' experiment boards: read
+  // once, the first time the menu opens (never with the first screen: the first-load trim)
   let route: Challenge[] = [];
   let pool: { first: string; last: string } | null = null;
-  void loadChallenges().then((l) => {
-    route = l;
-    if (tab === "challenge") drawPick();
-  });
-  void import("../content/levels/daily.json").then((m) => {
-    const days = (m.default as unknown as { levels: { date: string }[] }).levels;
-    if (days.length) pool = { first: days[0]!.date, last: days[days.length - 1]!.date };
-    day = clampDay(day);
-    if (tab === "daily") drawPick();
-  });
   const clampDay = (d: string) => (!pool ? d : d < pool.first ? pool.first : d > pool.last ? pool.last : d);
-  // Levels' experiment boards, read once (null until they land)
   let experiments: Experiment[] | null = null;
-  void import("../content/levels/experiments.json")
-    .then((m) => {
-      const stored = (m.default as unknown as { levels: (Stored & { name?: string })[] }).levels;
-      experiments = stored.map((l, i) => ({ ...toLevel(l, i + 1), name: l.name ?? l.id }));
-    })
-    .catch((err: unknown) => {
-      console.warn("[dev-menu] the experiment boards did not load", err);
-      experiments = [];
-    })
-    .finally(() => drawExperiments());
+  let listsAsked = false;
+  function loadLists(): void {
+    if (listsAsked) return;
+    listsAsked = true;
+    void loadChallenges().then((l) => {
+      route = l;
+      if (tab === "challenge") drawPick();
+    });
+    // the pool's last date is in its last week's chunk (tools/content-split.mjs)
+    const lastWeek = Object.keys(daily.weeks).sort().pop();
+    if (daily.first && lastWeek)
+      void daily.weeks[lastWeek]!().then((w) => {
+        const last = (w.levels[w.levels.length - 1] as { date?: string } | undefined)?.date;
+        if (!daily.first || !last) return;
+        pool = { first: daily.first, last };
+        day = clampDay(day);
+        if (tab === "daily") drawPick();
+      });
+    void experimentBoards()
+      .then(({ levels }) => {
+        experiments = (levels as unknown as (Stored & { name?: string })[]).map((l, i) => ({ ...toLevel(l, i + 1), name: l.name ?? l.id }));
+      })
+      .catch((err: unknown) => {
+        console.warn("[dev-menu] the experiment boards did not load", err);
+        experiments = [];
+        listsAsked = false; // asked again on the next open
+      })
+      .finally(() => drawExperiments());
+  }
 
   async function neighbour(p: Play, step: 1 | -1): Promise<Play | null> {
     if (p.kind === "campaign") {
@@ -196,7 +206,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     if (p.kind === "lesson" || p.kind === "oneoff" || p.kind === "souvenir") return null;
     const date = addDays(p.d.date, step);
     if (pool && (date < pool.first || date > pool.last)) return null;
-    const d = await loadDaily(date);
+    const d = await loadDaily(date).catch(() => null); // its week would not load: no neighbour now
     return d ? { kind: "daily", d } : null;
   }
   function hasNeighbour(p: Play, step: 1 | -1): boolean {
@@ -386,10 +396,10 @@ export function mountDevMenu(host: DevHost): DevMenu {
     if (tab === "campaign") {
       const grid = el("div", "dev-grid");
       for (let n = 1; n <= levelCount(); n++) {
-        const l = level(n);
-        const d = l.deal;
+        // the campaign's skeleton (each board's size and mark), so the list needs no trip loaded
+        const d = campaign.boards[n - 1]!;
         // a hard board wears its tag here as on the board (marks.ts)
-        const mark = markOf(l);
+        const mark = markOf(d);
         grid.append(
           tile(String(n), [`${d.cols}×${d.rows}`], p?.kind === "campaign" && campaignNumber(p.level) === n, () => play({ kind: "campaign", level: n }), mark ? [markTag(mark, true)] : []),
         );
@@ -447,7 +457,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     const token = ++dayToken;
     dayPlay.disabled = true;
     dayInfo.textContent = "…";
-    void loadDaily(day).then((d) => {
+    void loadDaily(day).catch(() => null).then((d) => {
       if (token !== dayToken) return;
       shownDay = d;
       dayPlay.disabled = !d;
@@ -588,6 +598,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
 
   const open = btn("dev-open", "Developer", () => {
     closeSettings();
+    loadLists();
     void drawBuild();
     drawBoard();
     const p = host.now().play;

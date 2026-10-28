@@ -6,6 +6,12 @@
 // exist yet. A board's place is its level data's `destination`, drawn from Art's
 // catalogue (catalogue.ts, destination()).
 //
+// The boards themselves load a trip at a time (Gameplay's loadTrip; the first-load trim,
+// 2026-10-28), so a place is read from the campaign's skeleton (tools/content-split.mjs:
+// each board's id, size and destination id, always here), and its postcard once the trip's
+// chunk has brought it: until then a place's `dest` is null and `coming` is true, and the
+// screens call loadTripOf and draw again.
+//
 // Nothing here is saved: a place is unlocked when its board is won, and a trip is
 // stamped when its last board is won, both read from the server's record of the
 // player's progress (src/net/progress.ts: the boards before the campaign's next).
@@ -14,7 +20,8 @@
 // the file's English.
 
 import TRIPS from "../content/levels/trips.json";
-import { level as campaignLevel, levelCount } from "../game/levels";
+import { campaign } from "virtual:ps-content";
+import { levelCount, loadTrip } from "../game/levels";
 import { progress } from "../net/progress";
 import { destination, type Destination } from "./catalogue";
 import { t } from "./i18n";
@@ -69,8 +76,10 @@ export interface Place {
   id: string | null;
   exists: boolean;
   won: boolean;
-  /** Its postcard, or null while the board names none or Art has not made it. */
+  /** Its postcard, or null while the board names none or Art has not made it, or its trip has not loaded. */
   dest: Destination | null;
+  /** It has a postcard that comes with its trip's chunk, not loaded yet (loadTripOf, then draw again). */
+  coming: boolean;
   /** The postcard's size in cards (the board's): 4 x 4, or 4 x 5 for a tall board. */
   cols: number;
   rows: number;
@@ -81,11 +90,32 @@ export function placesOf(tr: Trip): Place[] {
   const out: Place[] = [];
   for (let n = tr.from; n <= tr.to; n++) {
     const exists = n <= levelCount();
-    const lvl = exists ? campaignLevel(n) : null;
-    const dest = (lvl?.destination && destination(lvl.destination.id)) || null;
-    out.push({ board: n, id: lvl?.id ?? null, exists, won: exists && n <= won, dest, cols: dest?.cols ?? lvl?.deal.cols ?? 4, rows: dest?.rows ?? lvl?.deal.rows ?? 4 });
+    const b = exists ? campaign.boards[n - 1] : undefined;
+    const dest = (b?.destination && destination(b.destination)) || null;
+    out.push({ board: n, id: b?.id ?? null, exists, won: exists && n <= won, dest, coming: !!b?.destination && !dest, cols: dest?.cols ?? b?.cols ?? 4, rows: dest?.rows ?? b?.rows ?? 4 });
   }
   return out;
+}
+
+const tripLoads = new Map<string, Promise<boolean>>();
+/**
+ * Load trip `tr`'s boards and postcards (once; again after a failure). Resolves true when they
+ * came now (the caller draws again), false when there was nothing to wait for or they would not load.
+ */
+export function loadTripOf(tr: Trip): Promise<boolean> {
+  if (!placesOf(tr).some((p) => p.coming)) return Promise.resolve(false);
+  let job = tripLoads.get(tr.id);
+  if (!job) {
+    job = loadTrip(tr.id).then(
+      () => true,
+      () => {
+        tripLoads.delete(tr.id); // the next draw asks again
+        return false;
+      },
+    );
+    tripLoads.set(tr.id, job);
+  }
+  return job;
 }
 
 /** How many of a trip's places are won, of how many. */

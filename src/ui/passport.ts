@@ -39,7 +39,7 @@ import { emit } from "../events";
 import { copyUrl, destinationName, destinationPlace, sharpCopy, type Copy, type Destination } from "./catalogue";
 import { createViewer } from "./viewer";
 import { ensureTrip, resident } from "../packs";
-import { currentTrip, placesOf, tripById, tripCount, tripDone, tripName, tripPlace, trips, type Place, type Trip } from "./trips";
+import { currentTrip, loadTripOf, placesOf, tripById, tripCount, tripDone, tripName, tripPlace, trips, type Place, type Trip } from "./trips";
 import { souvenirOf, souvenirOpen, souvenirWon, souvenirWords, stickerReady, stickerUrl } from "./souvenirs";
 
 type Nav = {
@@ -204,6 +204,14 @@ export function createPassport(nav: Nav) {
       pc.append(card);
       return pc;
     }
+    // visited, its postcard coming with its trip's boards (a moment, the page then drawn again): the
+    // card alone, so no words are read that change under the player
+    if (!p.dest && p.coming) {
+      const pc = el("div", "pc soon");
+      shape(pc, p);
+      pc.append(el("span", "pc-card"));
+      return pc;
+    }
     // visited, its postcard not drawn yet (the board names no destination yet): a postcard to come
     if (!p.dest) {
       const pc = el("div", "pc soon");
@@ -264,6 +272,12 @@ export function createPassport(nav: Nav) {
     head.append(titles, spot);
     const grid = el("div", "pp-grid");
     const places = placesOf(tr);
+    // the page's postcards come with its trip's boards (a trip at a time): the page is drawn again once
+    // they are in, if it is still the one open and nothing is landing on it
+    if (places.some((p) => p.coming))
+      void loadTripOf(tr).then((came) => {
+        if (came && trips[at] === tr && !landing && !sticking) draw();
+      });
     for (const p of places) grid.append(postcard(p, tr));
     // a built game: the trip's passport copies come in one pack; each postcard picks its picture again
     // once it is in (observing a card anew reports its size), the page itself left as it is

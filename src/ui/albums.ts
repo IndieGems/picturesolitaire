@@ -16,7 +16,7 @@
 
 import { ICONS } from "./icons";
 import { t } from "./i18n";
-import { albumTitle, albums, picturesIn, pictureTitle, sharpCopy, thumbUrl, type Album, type Copy, type Picture } from "./catalogue";
+import { albumTitle, albums, loadLibrary, picturesIn, pictureTitle, sharpCopy, thumbUrl, type Album, type Copy, type Picture } from "./catalogue";
 import { isRestored as restoredInRecord } from "../net/progress";
 import { createViewer } from "./viewer";
 
@@ -188,10 +188,15 @@ export function createAlbums(nav: Nav) {
     listScreen,
     albumScreen,
     viewer: viewer.element,
-    /** Show the list of albums, freshly counted. */
+    /** Show the list of albums, freshly counted (the whole picture list first: it never comes with the boot). */
     openList(): void {
-      drawList();
-      nav.show("albums");
+      void loadLibrary().then(
+        () => {
+          drawList();
+          nav.show("albums");
+        },
+        () => undefined, // not loaded: the tap is asked again
+      );
     },
     /** The save changed (a picture restored, the account's copy landed): redraw what is up. */
     redraw(): void {

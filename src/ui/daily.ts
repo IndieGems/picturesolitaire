@@ -50,14 +50,17 @@ function btn(cls: string, press: string, words: string): HTMLButtonElement {
 }
 
 export function createDaily(nav: Nav) {
-  // ---- home's button: hidden until the day's board is known ----
-  const homeStatus = el("span");
+  // ---- home's button: in its place from the first frame (lead, 2026-10-28: on 4G it came ~2 s after
+  // home and the dock's tiles moved over for it), its name shown and its line blank while the day and
+  // its board come (taps wait for them); hidden only once it is known there is no board today ----
+  const homeStatus = el("span", "", " ");
   const homeWords = el("span", "words");
   homeWords.append(el("b", "", t("home.daily")), homeStatus);
   const homeButton = el("button", "btn daily-btn");
   homeButton.type = "button";
   homeButton.dataset.press = "home.daily";
-  homeButton.hidden = true;
+  homeButton.classList.add("holding");
+  homeButton.setAttribute("aria-disabled", "true");
   homeButton.insertAdjacentHTML("afterbegin", ICONS.daily);
   homeButton.append(homeWords);
 
@@ -89,7 +92,10 @@ export function createDaily(nav: Nav) {
 
   async function refresh(): Promise<void> {
     const d = await today();
-    const b = await loadDaily(d.date);
+    // the day's week of boards (a chunk of its own); not loaded, the button holds its place and the
+    // next refresh (a new day, the connection back) asks again
+    const b = await loadDaily(d.date).catch(() => undefined);
+    if (b === undefined) return;
     day = d;
     board = b;
     drawHome();
@@ -98,8 +104,11 @@ export function createDaily(nav: Nav) {
   onDailyChange(() => void refresh());
 
   function drawHome(): void {
+    if (!day) return; // not known yet: holding its place
     homeButton.hidden = !board;
-    if (!day || !board) return;
+    homeButton.classList.remove("holding");
+    homeButton.removeAttribute("aria-disabled");
+    if (!board) return;
     const mine = dailyResult(day.date);
     homeStatus.textContent = mine ? t("home.dailyDone", { count: mine.moves }) : t("home.dailyNew");
     homeButton.setAttribute("aria-label", `${t("home.daily")}: ${homeStatus.textContent}`);

@@ -9,7 +9,7 @@
 // challenges (par = their stored line), to check the route with other boards.
 // The build drops it.
 
-import { level, levelCount, loadChallenges as loadRoute, type Level } from "../game/levels";
+import { levelCount, loadChallenges as loadRoute, loadLevel, type Level } from "../game/levels";
 
 export interface Challenge {
   /** "ch01" ... the save keys the player's best moves by it, and the win checker the board. */
@@ -29,10 +29,10 @@ export function challengesExist(): boolean {
   return true;
 }
 
-function demo(): Challenge[] {
+async function demo(): Promise<Challenge[]> {
   const out: Challenge[] = [];
   for (let i = 1; i <= Math.min(20, levelCount()); i++) {
-    const lvl = level(i + 5);
+    const lvl = await loadLevel(i + 5);
     out.push({ id: `demo${i}`, n: i, par: lvl.line.length, level: { ...lvl, id: `demo${i}`, number: i } });
   }
   return out;
@@ -43,7 +43,7 @@ let loading: Promise<Challenge[]> | null = null;
 /** Every challenge board, in unlock order; empty when they could not be fetched (asked again next time). */
 export function loadChallenges(): Promise<Challenge[]> {
   loading ??= demoAsked()
-    ? Promise.resolve(demo())
+    ? demo()
     : loadRoute().then((list) => {
         if (!list.length) loading = null;
         return list.map((c, i) => ({ id: c.id, n: i + 1, par: c.par, level: c }));

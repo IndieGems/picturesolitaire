@@ -73,12 +73,6 @@ function loadManifest(): Promise<{ default: string; tables: TableArt[] }> {
     .then((r) => r.json() as Promise<{ default: string; tables: TableArt[] }>)
     .then((m) => {
       known = m.tables;
-      // the thumbnails are small: fetch them now, with the first screen (a Souvenir's table is never shown as one)
-      for (const a of m.tables.filter((x) => !x.souvenir))
-        void fetch(url(a.thumb))
-          .then((r) => (r.ok ? r.blob() : null))
-          .then((b) => b && thumbs.set(a.id, URL.createObjectURL(b)))
-          .catch(() => undefined);
       return m;
     })
     .catch((err: unknown) => {
@@ -87,6 +81,24 @@ function loadManifest(): Promise<{ default: string; tables: TableArt[] }> {
       return { default: BUILT_IN_TABLE, tables: [] };
     });
   return manifest;
+}
+
+let thumbsAsked = false;
+/**
+ * Fetch every table's thumbnail into the page (a Souvenir's table is never shown as one), so the
+ * picker and a prize draw at once and offline. Small, but not home's: called once home is whole
+ * (app.ts; the first-load trim, 2026-10-28), and by the picker should it open first.
+ */
+export function warmThumbs(): void {
+  if (thumbsAsked) return;
+  thumbsAsked = true;
+  void loadManifest().then((m) => {
+    for (const a of m.tables.filter((x) => !x.souvenir && !thumbs.has(x.id)))
+      void fetch(url(a.thumb))
+        .then((r) => (r.ok ? r.blob() : null))
+        .then((b) => b && thumbs.set(a.id, URL.createObjectURL(b)))
+        .catch(() => undefined);
+  });
 }
 
 let chosen = BUILT_IN_TABLE;

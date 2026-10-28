@@ -1,7 +1,8 @@
 // Hard and super hard boards, marked for the player (the creator, 2026-10-25: "yes,
 // mark hard and super hard boards for players", as Royal Match does). Which boards
 // are marked is the level designer's: a campaign board's own `mark` field in
-// src/content/levels/campaign.json, "hard" or "super", absent on the rest (and on
+// src/content/levels/campaign.json (read here from the build's skeleton of it), "hard" or
+// "super", absent on the rest (and on
 // every challenge and daily board). The screens only show it:
 //
 //   home        the next board's line over Play: "Level 7" and a "Hard board" tag
@@ -14,14 +15,14 @@
 // and no shadow, warm red-coral for hard, deep purple for super hard (style.css,
 // --mark-hard and --mark-super, both 4.7:1 or more under white text).
 
-import CAMPAIGN from "../content/levels/campaign.json";
+import { campaign } from "virtual:ps-content";
 import { t } from "./i18n";
 
 export type Mark = "hard" | "super";
 
 const stored = new Map<string, Mark>();
-for (const l of CAMPAIGN.levels as unknown as { id: string; mark?: unknown }[])
-  if (l.mark === "hard" || l.mark === "super") stored.set(l.id, l.mark);
+// from the campaign's skeleton (tools/content-split.mjs), so a mark is known before its trip loads
+for (const b of campaign.boards) if (b.mark) stored.set(b.id, b.mark);
 
 /** Marks shown for checking the screens before the level files carry them (dev server only, app.ts `__ps.marks`); never saved. */
 const pretended = new Map<string, Mark | null>();
@@ -29,6 +30,13 @@ const pretended = new Map<string, Mark | null>();
 /** The mark of a campaign board (by its id: "c07"), or null. */
 export function markOf(board: { id: string }): Mark | null {
   return pretended.has(board.id) ? pretended.get(board.id)! : (stored.get(board.id) ?? null);
+}
+
+/** The mark of campaign board `n` (from 1, going round past the last, as level(n)), loaded or not. */
+export function markAt(n: number): Mark | null {
+  const count = campaign.boards.length;
+  const b = count ? campaign.boards[(((Math.floor(n) - 1) % count) + count) % count] : undefined;
+  return b ? markOf(b) : null;
 }
 
 /** Dev server only: show these boards as marked (null: unmarked), on top of the file's own marks. */

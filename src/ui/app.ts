@@ -50,7 +50,7 @@ import "./style.css";
 import { gem, onArcadePause, onPlayerPrefs } from "../gem";
 import { emit, on } from "../events";
 import { closeSettings, mountSettings } from "../settings-screen";
-import { startSound } from "../sound";
+import { homeWhole, startSound } from "../sound";
 import { t } from "./i18n";
 import { ICONS, keepIcons, type IconName } from "./icons";
 import { firstScreen, screenChanged } from "./browser";
@@ -62,18 +62,18 @@ import { createChallenges } from "./challenges";
 import { createGuide, type GuideMode } from "./guide";
 import { fireworks } from "./fireworks";
 import type { Challenge } from "./challenge-data";
-import { lessonLevel, level as campaignLevel, loadDaily, type Daily, type Level, type Souvenir } from "../game/levels";
+import { lessonLevel, level as campaignLevel, loadDaily, loadLevel, loadTrip, type Daily, type Level, type Souvenir } from "../game/levels";
 import { createSouvenirTile, loadSouvenirList, onSouvenirs, souvenirOf, souvenirWords, stickerReady } from "./souvenirs";
 import { createDaily } from "./daily";
 import { clock, shortDate } from "./format";
 import { claimWin, cueCoins, onVerdict, type Verdict } from "../net/claims";
 import { KEEPSAKE } from "../net/keepsake";
-import { knownTable, startTables, tableChoiceRead, tableTitle, thumbOf, tryTable, wearTable, type TryTable } from "./tables";
+import { knownTable, startTables, tableChoiceRead, tableTitle, thumbOf, tryTable, warmThumbs, wearTable, type TryTable } from "./tables";
 import { keepFitted } from "./fit";
 import { cardAspect, syncCardAspect } from "./cards";
 import { createViewer } from "./viewer";
 import { closed, cornerKey, opened } from "./dialogs";
-import { markOf, markTag, markWords, pretendMarks, type Mark } from "./marks";
+import { markAt, markOf, markTag, markWords, pretendMarks, type Mark } from "./marks";
 import { allDone, awaitingRecord, createHome, nextBoard } from "./home";
 import { KINDS, KIT, stock, type HelperKind } from "./stock";
 import { createRunOut } from "./helper-shop";
@@ -89,7 +89,7 @@ import { createLessons, type LessonName } from "./lessons";
 import { createHintNudge } from "./hint-nudge";
 import { createDestinationBanner, type Destination } from "./destination";
 import { createPassport, type AfterStamp } from "./passport";
-import { tripById, tripEndingAt, tripOf, tripPlace } from "./trips";
+import { currentTrip, loadTripOf, tripById, tripDone, tripEndingAt, tripOf, tripPlace, trips } from "./trips";
 import { challengeCard, comparePanel, createFriendCards, outcomeOf, type ChallengeView } from "./friend-cards";
 import { friendAction, launchLink, markAnswered, recentFriendActions, watchFriends, type Dare, type Launch } from "../net/friends";
 import { today as dailyToday } from "../net/daily";
@@ -140,7 +140,8 @@ const suitcaseUi = createSuitcase({ home: () => goHome(), show: () => show("suit
 async function playEventPuzzle(): Promise<void> {
   const next = suitcases.previewNextDay();
   if (!next) return;
-  const d = await loadDaily(next.date);
+  // its week would not load (offline): nothing opens, and the next tap asks again
+  const d = await loadDaily(next.date).catch(() => null);
   if (d) openPlay({ kind: "daily", d, practice: true });
 }
 // home (home.ts): the trip as an itinerary and its route, Next stop, and Daily, the passport, the month's event
@@ -340,7 +341,7 @@ const hintNudge = createHintNudge({
     !stuck &&
     play?.kind === "campaign" &&
     !isPractice(play) &&
-    markOf(campaignLevel(play.level)) !== null &&
+    markAt(play.level) !== null &&
     !guide.active() &&
     !lessons.active() &&
     winVeil.hidden &&
@@ -416,8 +417,39 @@ function drawHome(): void {
   homeUi.draw();
   souvenirTile.draw();
   suitcaseUi.redraw();
-  // the board Next stop opens, its pictures fetched ahead while home is up
-  if (!awaitingRecord()) prefetch(campaignLevel(nextBoard()));
+  // the board Next stop opens, its pictures fetched ahead while home is up (once home itself is whole:
+  // home's own pictures come first)
+  if (!awaitingRecord() && homeSettled) prefetchBoard(nextBoard());
+}
+
+/** Home's own pictures are in (or 5 s have passed): from then on, the rest loads behind it. */
+let homeSettled = false;
+/** The longest the background loads wait for home to be whole. */
+const SETTLE_CAP_MS = 5000;
+function settleHome(): void {
+  void Promise.race([homeUi.whole(), new Promise((r) => setTimeout(r, SETTLE_CAP_MS))]).then(() => {
+    if (homeSettled) return;
+    homeSettled = true;
+    // the music and the rest of the sounds (Audio's: the sound code and the click came at start)
+    homeWhole();
+    // the board Next stop opens, and its pictures
+    if (!awaitingRecord()) prefetchBoard(nextBoard());
+    // the next trip's boards, so a trip's last board leads on without a wait
+    const tr = currentTrip();
+    const after = tr ? trips[trips.indexOf(tr) + 1] : undefined;
+    if (after) void loadTrip(after.id).catch(() => undefined);
+    // the Shuffle lesson's board, for the way to board 4 (lessons.ts): only while the player may need it
+    if (awaitingRecord() || campaignNext() <= 4)
+      void lessonLevel("shuffle").then(
+        (l) => (shuffleBoard = l),
+        () => undefined,
+      );
+    // the Souvenir boards (a player with a stamp has had them since boot): before a trip's end needs them
+    void loadSouvenirList();
+    // the month's suitcase items, for its screen; every table's thumbnail, for the picker and a prize
+    suitcaseUi.warm();
+    warmThumbs();
+  });
 }
 
 let playing = false;
@@ -484,6 +516,19 @@ function prefetch(lvl: Level | null | undefined): void {
   const paths = boardPaths(lvl);
   if (!paths.every(resident)) void ensure(paths, lvl.id).catch(() => undefined);
 }
+/** Campaign board `n` ahead: its trip's boards first (a trip at a time, Gameplay's loadLevel), then its pictures. */
+function prefetchBoard(n: number): void {
+  void loadLevel(n).then(prefetch, () => undefined);
+}
+/** Is campaign board `n`'s trip loaded, so that campaignLevel(n) answers? */
+function campaignReady(n: number): boolean {
+  try {
+    campaignLevel(n);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 /** Counts each board asked for while its pictures load, so only the last one asked for opens. */
 let packWait = 0;
@@ -500,6 +545,25 @@ function openPlay(next: Play): void {
     return;
   }
   waiting = null;
+  // a campaign board whose trip has not loaded (a trip at a time): its boards first, home's Play
+  // saying "Opening…" meanwhile, then this again (only the last board asked for opens)
+  if (next.kind === "campaign" && !campaignReady(next.level)) {
+    const at = ++packWait;
+    const onHome = screen === "home";
+    if (onHome) homeUi.opening(true);
+    const asked = next;
+    void loadLevel(asked.level).then(
+      () => {
+        if (onHome) homeUi.opening(false);
+        if (at === packWait) openPlay(asked);
+      },
+      () => {
+        if (onHome) homeUi.opening(false);
+        suspect(); // no answer: the connection is checked, and the next tap asks again
+      },
+    );
+    return;
+  }
   // a built game: the board's pictures come from its pack first (src/packs.ts); usually they are in
   // already (fetched while the last card or home was up), else home's Play says "Opening…" meanwhile
   const lvl = levelOfPlay(next);
@@ -1285,7 +1349,7 @@ function flyTool(k: HelperKey, from: Element, delay: number): void {
 function showWin(): void {
   if (!lastWin || !board) return;
   // the board Next opens, its pictures fetched while the card is up
-  if (lastWin.kind === "campaign") prefetch(campaignLevel(lastWin.level + 1));
+  if (lastWin.kind === "campaign") prefetchBoard(lastWin.level + 1);
   else if (lastWin.kind === "challenge") prefetch(routeUi.after(lastWin.c)?.level);
   syncCardAspect();
   // board 1's finish card says more (the prize, the travel kit): its pictures take less of the height;
@@ -1305,7 +1369,7 @@ function showWin(): void {
   // the campaign's last board (each time round)
   const last = boardNumber(level) === levels();
   // a hard board beaten says so (marks.ts)
-  const mark = markOf(campaignLevel(level));
+  const mark = markAt(level);
   // a trip's last board, won the first time: the card says so, and goes on to the passport's stamp
   const ended = lastWin.stamp ? tripById(lastWin.stamp) : undefined;
   const after: AfterStamp = last
@@ -1707,6 +1771,7 @@ function offerLink(): void {
       pendingLink = null;
       showDare(got.o, got.notYet);
     })
+    .catch(() => suspect()) // the board's trip would not load: asked again as home shows or the record lands
     .finally(() => (offering = false));
 }
 
@@ -1720,7 +1785,9 @@ async function oneOffFor(link: Launch): Promise<{ o: OneOff; notYet: string | nu
     // not won yet, and not all done: a sneak peek (the campaign goes round past its last board)
     const next = campaignNext();
     const peek = next <= levels() && dare.board >= next;
-    return { o: { dare, ...sender, open: dare.board, level: campaignLevel(dare.board), peek, trip: trip ? tripPlace(trip) : null }, notYet: null };
+    // a far trip's board (a sneak peek) comes with its trip's chunk first
+    const level = await loadLevel(dare.board);
+    return { o: { dare, ...sender, open: dare.board, level, peek, trip: trip ? tripPlace(trip) : null }, notYet: null };
   }
   // a daily: never one whose day has not come for this player (the sender may be a time zone ahead)
   const [now, d] = await Promise.all([dailyToday(1500), loadDaily(dare.date)]);
@@ -1924,21 +1991,24 @@ export async function startApp(): Promise<void> {
   // same capped wait, so a Winter Dusk owner never sees the sunny home turn snowy
   void startTables();
   await waitForProgress(1000);
+  // THE FIRST LOAD CARRIES ONLY HOME (the creator, 2026-10-28: "it should load very quickly… then
+  // load the rest smartly in the background as needed"): the player's trip (its boards and postcards,
+  // tools/content-split.mjs) inside the same capped wait, and the Souvenirs only for a player with a
+  // stamp (home's tile); everything else once home is whole, below
+  const until = () => new Promise((r) => setTimeout(r, Math.max(0, by - performance.now())));
+  const trip = currentTrip();
+  if (trip) await Promise.race([loadTripOf(trip), until()]);
+  const stamped = trips.some(tripDone);
+  if (stamped) void loadSouvenirList();
   drawHome();
-  await Promise.race([Promise.all([fonts, homeUi.whole(), tableChoiceRead]), new Promise((r) => setTimeout(r, Math.max(0, by - performance.now())))]);
+  await Promise.race([Promise.all([fonts, homeUi.whole(), tableChoiceRead]), until()]);
 
   onProgress(drawHome);
-  // the Shuffle lesson's board, ready for the way to board 4 (lessons.ts)
-  void lessonLevel("shuffle").then(
-    (l) => (shuffleBoard = l),
-    () => undefined,
-  );
   // the Souvenir boards (souvenirs.ts): home's tile and the passport's pages once they are in
   onSouvenirs(() => {
     if (screen === "home") drawHome();
     passportUi.redraw();
   });
-  void loadSouvenirList();
   onProgress(albumsUi.redraw);
   onProgress(passportUi.redraw);
   onProgress(routeUi.redraw);
@@ -1956,8 +2026,11 @@ export async function startApp(): Promise<void> {
   // whether the player has a friend to challenge (a guest never has): Challenge a friend waits on it
   watchFriends();
   void startSound();
-  // which day it is (the platform's word) and its board: Home's Daily button appears once they are known
+  // which day it is (the platform's word) and its board (its week's chunk): Home's Daily button
+  // holds its place meanwhile (daily.ts) and shows once they are known
   void dailyUi.refresh();
+  // home is whole: the rest comes in behind it, in the order it is likely wanted
+  settleHome();
   // the table's weather (the table itself was laid before home appeared: startTables, above)
   mountParticles(app);
   // every glyph kept in the page, so a connection dropped later never leaves a button bare

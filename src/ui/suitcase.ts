@@ -37,7 +37,7 @@ import { shortDate } from "./format";
 
 /** `viewing` for the next event's preview (before it starts). */
 const UPCOMING = "upcoming";
-import { suitcaseItem } from "./catalogue";
+import { loadItems, suitcaseItem } from "./catalogue";
 import { ensureSuitcase, fileUrl } from "../packs";
 import type { HelperKind } from "./stock";
 
@@ -418,9 +418,10 @@ export function createSuitcase(nav: Nav) {
     nav.show();
     draw();
     scroll.scrollTop = 0;
-    // a built game's item pictures come in the month's own pack: drawn again once it is in
+    // the month's items (their names and pictures, a chunk of their own, usually in since home was
+    // whole: warm) and, in a built game, its pack: drawn again once they are in
     const s = shown();
-    if (s) void ensureSuitcase(s.month).then(() => !screen.hidden && !swapping && draw(), () => undefined);
+    if (s) void Promise.all([loadItems(s.month), ensureSuitcase(s.month)]).then(() => !screen.hidden && !swapping && draw(), () => undefined);
   }
 
   suitcases.onChange(() => {
@@ -433,6 +434,11 @@ export function createSuitcase(nav: Nav) {
     /** Home's dock tile. */
     tile,
     open,
+    /** Load this month's items (or the next event's) ahead, once home is whole, so the screen opens with them. */
+    warm(): void {
+      const s = suitcases.current() ?? suitcases.upcoming()?.s ?? null;
+      if (s) void loadItems(s.month).catch(() => undefined);
+    },
     /** Redraw (the day's board or result changed). */
     redraw: draw,
     /** Leave the screen (another screen is showing). */
