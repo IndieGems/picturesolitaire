@@ -130,6 +130,10 @@ gem.frame?.ready();
 // moments, and right after an event that ends something (a one-off's result).
 // keepalive lets the send outlive the page; a refusal it can retry (too soon, no
 // network) puts the events back on the queue, so sending early never loses one.
+// The platform gap is IndieGems/gem-development#2105
+// (https://github.com/IndieGems/gem-development/issues/2105): once the SDK
+// sends on hide and pause itself, the two listeners below can go (keep the
+// send after a one-off's result, friends.ts, unless the SDK covers that too).
 
 /** Send what analytics has queued, now (a no-op when nothing is queued, or unframed). */
 export function sendAnalyticsNow(): void {
