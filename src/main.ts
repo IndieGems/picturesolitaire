@@ -39,20 +39,13 @@ function preloadFirstScreen(): void {
   font.type = "font/woff2";
   font.crossOrigin = "anonymous";
   font.href = `${import.meta.env.BASE_URL}fonts/fredoka-latin.woff2`;
-  // the title in the size the screen will draw it (src/ui/wordmark.ts): a phone never fetches the big one
-  const title = (href: string, media: string) => {
-    const link = document.createElement("link");
-    link.rel = "preload";
-    link.as = "image";
-    link.href = href;
-    link.media = media;
-    return link;
-  };
-  document.head.append(
-    font,
-    title(WORDMARK.big, WORDMARK.bigWhere),
-    title(WORDMARK.small, `not all and ${WORDMARK.bigWhere}`),
-  );
+  // the title in the size the screen will draw it (src/ui/wordmark.ts), chosen here by the same media
+  // query home's <picture> uses: bigWhere is a list ("A, B"), which `not all and` cannot negate whole
+  const title = document.createElement("link");
+  title.rel = "preload";
+  title.as = "image";
+  title.href = matchMedia(WORDMARK.bigWhere).matches ? WORDMARK.big : WORDMARK.small;
+  document.head.append(font, title);
 }
 
 async function start(): Promise<void> {
