@@ -889,7 +889,9 @@ html.less-motion .marker.next::after { animation-duration: 3.4s; }
 /* ---------- the table's weather (src/ui/particles.ts) ---------- */
 
 /* under every screen: a flake or a leaf passes behind the cards and buttons, never over them */
-.particles { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.particles { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; transition: opacity 0.32s ease; }
+/* a board is up (particles.ts setWeather): a quick fade out, then the layer leaves the page */
+.particles.calm { opacity: 0; }
 .particles .pt {
   position: absolute; top: -36px; left: 0; opacity: 0;
   animation: pt-fall var(--dur) linear var(--delay) infinite; will-change: transform, opacity;

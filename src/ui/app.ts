@@ -95,7 +95,7 @@ import { friendAction, launchLink, markAnswered, recentFriendActions, watchFrien
 import { today as dailyToday } from "../net/daily";
 import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy, suitcaseItem } from "./catalogue";
 import { ensure, ensureSuitcase, fileUrl, resident, warmIndex } from "../packs";
-import { mountParticles } from "./particles";
+import { mountParticles, setWeather } from "./particles";
 import { boardFiles, levelCount, openBoard, type BoardHandle, type BoardPicture } from "./board-api";
 import type { DevMenu } from "./dev-menu";
 
@@ -373,8 +373,20 @@ const tries = createTries({
   changed: () => drawHelpers(),
 });
 
+/** A trip's stamp or sticker moment is up on the passport (it carries on from a board's win card). */
+let stampMoment = false;
+/** The stamp or sticker moment `run` opens on the passport: no weather there, as on the board it came from. */
+function momentOf(run: () => void): void {
+  stampMoment = true;
+  run();
+}
+
 function show(next: Screen): void {
   screen = next;
+  // the table's weather on home and the menus only, never on a board, its win card or a stamp moment
+  // (the creator, 2026-10-28: "too distracting" during a level): a quick fade out, and back on home
+  if (next !== "passport") stampMoment = false;
+  setWeather(next !== "board" && !stampMoment);
   if (import.meta.env.MODE !== "release") dev?.screen(next);
   // every picture and card drawn from here on takes the board's card shape (cards.ts)
   syncCardAspect();
@@ -1429,7 +1441,7 @@ function showWin(): void {
     ? withClick(button("amber next", "win.stamp", icon("passport"), t("win.stamp")), () =>
         leaveTo("win-stamp", () => {
           hideCard(winVeil);
-          passportUi.stamp(ended.id, after);
+          momentOf(() => passportUi.stamp(ended.id, after));
         }),
       )
     : withClick(button("amber next", "win.next", t("win.next"), icon("next")), () =>
@@ -1714,7 +1726,7 @@ function showSouvenirWin(w: Extract<Win, { kind: "souvenir" }>, gallery: HTMLEle
     ? withClick(button("amber next", "souvenir.addSticker", icon("passport"), t("souvenir.addSticker")), () =>
         leaveTo("souvenir-sticker", () => {
           hideCard(winVeil);
-          passportUi.sticker(trip, { label: t("home.nextStop"), icon: icon("next"), trailing: true, press: "passport.nextStop", go: nextStop });
+          momentOf(() => passportUi.sticker(trip, { label: t("home.nextStop"), icon: icon("next"), trailing: true, press: "passport.nextStop", go: nextStop }));
         }),
       )
     : withClick(button("amber next", "win.next", t("home.nextStop"), icon("next")), () => leaveInto("souvenir-next", nextStop));
@@ -2214,7 +2226,7 @@ export async function startApp(): Promise<void> {
       passport: (id?: string) => passportUi.open(id ? tripById(id) : undefined),
       /** The stamp moment for trip `id`, as after its last board's win card (nothing is won or sent). */
       stamp(id: string) {
-        passportUi.stamp(id, { label: t("passport.nextTrip"), icon: icon("next"), trailing: true, press: "passport.nextTrip", go: goHome, souvenir: true });
+        momentOf(() => passportUi.stamp(id, { label: t("passport.nextTrip"), icon: icon("next"), trailing: true, press: "passport.nextTrip", go: goHome, souvenir: true }));
       },
       /** Show a challenge board as cleared in `moves`, for this page only (a win held, never sent). */
       cleared(id: string, moves: number) {
@@ -2272,7 +2284,7 @@ export async function startApp(): Promise<void> {
       /** Trip `trip`'s Souvenir board ("t1"), as from home's tile (it claims as ever, unframed for this page only). */
       souvenir: (trip: string) => playSouvenir(trip),
       /** The sticker moment for trip `trip`, as after its Souvenir's first win (nothing is won or sent). */
-      sticker: (trip: string) => passportUi.sticker(trip, { label: t("home.nextStop"), icon: icon("next"), trailing: true, press: "passport.nextStop", go: goHome }),
+      sticker: (trip: string) => momentOf(() => passportUi.sticker(trip, { label: t("home.nextStop"), icon: icon("next"), trailing: true, press: "passport.nextStop", go: goHome })),
       /** The friend_action events sent so far (friends.ts). */
       friendActions: () => recentFriendActions.slice(),
       /** The daily card up now as if the checker had packed `item` (its count after): the flight, nothing sent. */

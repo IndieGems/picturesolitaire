@@ -14,6 +14,13 @@
 //     not drawn at all under less motion or the Arcade's Battery saver.
 // Where each one falls is fixed from a seed, so the screen looks the same each
 // time it is opened.
+//
+// HOME AND THE MENUS ONLY (the creator, 2026-10-28: "a nice touch for the home
+// screen but we can't have them happening during a level, too distracting"):
+// app.ts calls setWeather(false) as a board opens (its win card and a trip's
+// stamp moment count as the board), and the weather fades out quickly, then
+// leaves the page (display: none, so nothing runs); setWeather(true) on home or
+// a menu brings it back, each flake starting its fall afresh.
 
 import { onPlayerPrefs } from "../gem";
 import { shownTable, onTableChange, tableArt, type TableArt } from "./tables";
@@ -75,17 +82,39 @@ function flakes(a: Sprite): HTMLElement[] {
   return out;
 }
 
+/** The layer, once mounted. */
+let layer: HTMLElement | null = null;
+/** Counts each change of setWeather, so a fade-out finishing late never hides weather asked back meanwhile. */
+let turning = 0;
+/** How long the fade out takes (style.css, .particles transition). */
+const FADE_MS = 320;
+
+/** Weather on (home, the menus) or off (a board, its win card, a stamp moment): a quick fade either way. */
+export function setWeather(on: boolean): void {
+  const l = layer;
+  if (!l || on === !l.classList.contains("calm")) return;
+  const at = ++turning;
+  if (on) {
+    l.hidden = false;
+    void l.offsetWidth; // laid out first, so the fade in runs
+    l.classList.remove("calm");
+  } else {
+    l.classList.add("calm");
+    setTimeout(() => at === turning && (l.hidden = true), FADE_MS);
+  }
+}
+
 /** Lay the weather under the screens of `app` (its first child), following the chosen table. Call once. */
 export function mountParticles(app: HTMLElement): void {
-  const layer = document.createElement("div");
-  layer.className = "particles";
-  layer.setAttribute("aria-hidden", "true");
-  app.prepend(layer);
+  const weather = (layer = document.createElement("div"));
+  weather.className = "particles";
+  weather.setAttribute("aria-hidden", "true");
+  app.prepend(weather);
   let drawing = 0;
   const draw = async () => {
     const token = ++drawing;
     const a = (await tableArt(shownTable())) as Sprite | undefined;
-    if (token === drawing) layer.replaceChildren(...(a ? flakes(a) : []));
+    if (token === drawing) weather.replaceChildren(...(a ? flakes(a) : []));
   };
   onTableChange(() => void draw());
   void draw();
