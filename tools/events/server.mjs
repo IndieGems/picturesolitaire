@@ -241,9 +241,17 @@ async function data(today) {
     if (t?.souvenir)
       ways.push({ kind: "souvenir", text: `Not owned or chosen: the ${tripName.get(t.souvenir) ?? t.souvenir} Souvenir board is played on it` });
     if (net && net.award !== "onboarding" && net.award !== "suitcase") ways.push({ kind: "other", text: `Granted by: ${net.award}` });
-    if (!ways.length) ways.push({ kind: "none", text: "Not given out yet: no prize grants it" });
+    if (!ways.length) ways.push({ kind: "none", text: t ? "Kept, not awarded: no prize grants it now" : "Not given out yet: no prize grants it" });
     return ways;
   };
+  for (const net of netTables.tables ?? []) {
+    if (net.award !== "suitcase") continue;
+    const m = months.find((x) => x.month === net.month);
+    if (m && m.prize.table !== net.slug)
+      problems.push(`The server's table list (src/net/tables.json) still pays ${net.title ?? net.slug} for ${net.month}'s suitcase, but its prize is now ${m.prize.title ?? m.prize.table}: Server's make-config brings it in line.`);
+  }
+  if (ids.builtInTable && months.some((m) => m.prize.table === ids.builtInTable))
+    problems.push(`${months.filter((m) => m.prize.table === ids.builtInTable).map((m) => m.month).join(", ")}: the prize table is ${ids.builtInTable}, which src/net/suitcase-ids.json still calls every player's built-in table, so the win checker pays only the helpers for it until Server makes it an item.`);
   const tables = [];
   for (const t of art.tables ?? []) tables.push({ id: t.id, title: t.title, thumb: await served(t.thumb), base: t.base ?? null, drawn: true, how: how(t.id, t) });
   for (const m of months)
