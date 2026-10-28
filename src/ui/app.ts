@@ -68,7 +68,7 @@ import { createDaily } from "./daily";
 import { clock, shortDate } from "./format";
 import { claimWin, cueCoins, onVerdict, type Verdict } from "../net/claims";
 import { KEEPSAKE } from "../net/keepsake";
-import { knownTable, startTables, tableTitle, thumbOf, wearTable } from "./tables";
+import { knownTable, startTables, tableTitle, thumbOf, tryTable, wearTable, type TryTable } from "./tables";
 import { keepFitted } from "./fit";
 import { cardAspect, syncCardAspect } from "./cards";
 import { createViewer } from "./viewer";
@@ -2061,6 +2061,12 @@ export async function startApp(): Promise<void> {
       },
       /** The helper stock as if the platform said so (null: its own word again), for this page only. */
       stock: (p: Parameters<typeof stock.pretend>[0]) => stock.pretend(p),
+      /**
+       * A table in no list yet, on every screen (Art's options): { table, desk?, base?, deskBase?,
+       * stackBack?, particles?... }, paths under the project; null puts the player's own back
+       * (tables.ts, tryTable; ?tryTable=<folder> does it from <folder>/table.json at boot).
+       */
+      tryTable: (a: TryTable | null) => tryTable(a),
       /** Board 1's finish card over the board in hand, as after its guided win (nothing is sent). */
       milestone() {
         if (!board || !play) return;

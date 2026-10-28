@@ -208,7 +208,8 @@ html.less-motion .home-note { animation: none; }
   align-items: center; justify-content: safe center;
   padding: calc(var(--row-bottom) + 8px) 16px calc(var(--foot) + 14px);
   gap: clamp(10px, 2.2dvh, calc(24px * var(--k)));
-  background: #232d3a url("/art/home-desk.webp") center / cover no-repeat;
+  /* home's own backdrop; --home-desk/--home-base only while a table is tried (tables.ts, tryTable: dev server) */
+  background: var(--home-base, #232d3a) var(--home-desk, url("/art/home-desk.webp")) center / cover no-repeat;
 }
 /* Art's drawn title (2 : 1, its own lip and shadow): what the column's height leaves it, 150 px
    wide at the least, up to 300 on a phone (the 1400 px file where it draws large; wordmark.ts) */
@@ -974,7 +975,7 @@ html.less-motion .viewer { animation: none; }
 @media (orientation: landscape) and (max-height: 560px) and (pointer: coarse) {
   .upright {
     position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 16px;
-    background: #232d3a url("/art/home-desk.webp") center / cover no-repeat;
+    background: var(--home-base, #232d3a) var(--home-desk, url("/art/home-desk.webp")) center / cover no-repeat;
   }
   .upright .glass {
     display: flex; flex-direction: column; align-items: center; gap: 10px; max-width: 420px;

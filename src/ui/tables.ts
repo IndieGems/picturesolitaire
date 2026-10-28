@@ -102,7 +102,11 @@ export async function tableArt(id: string): Promise<TableArt | undefined> {
 /** The table on the screen now. */
 export const chosenTable = (): string => chosen;
 
-/** Hear when the table changes. Returns the unsubscribe. */
+/**
+ * Hear when the table changes: the player's choice (chosenTable) or only what shows (shownTable: a
+ * Souvenir's own table, worn while its board is up). Read the one you follow again, and ignore a call
+ * that left it as it was. Returns the unsubscribe.
+ */
 export function onTableChange(fn: () => void): () => void {
   listeners.add(fn);
   return () => void listeners.delete(fn);
@@ -134,8 +138,61 @@ async function paint(a: TableArt): Promise<void> {
 /** The player's own table is now `a`: shown, unless a board wears its own (then it shows after). */
 async function apply(a: TableArt): Promise<void> {
   chosen = a.id;
-  if (worn) return void [...listeners].forEach((fn) => fn());
+  if (worn || trying) return void [...listeners].forEach((fn) => fn());
   await paint(a);
+}
+
+// ---- dev server only: a table that is in no list yet (Art's options, for the creator's pick) ----
+
+/** A table to try: a tables.json entry's fields (`table` at least), and home's own backdrop and its colour. */
+export type TryTable = Partial<TableArt> & { table: string; desk?: string; deskBase?: string };
+/** The table being tried, shown on every screen over the player's own; null: none. */
+let trying: TableArt | null = null;
+
+/**
+ * Dev server only: show `a` on every screen though no list has it: the boards' table, its base colour,
+ * card back and weather, and home's backdrop (`desk`; the table itself where it names none). Paths are
+ * under the project, as tables.json's ("design/table-options/a/table.webp": the dev server serves the
+ * whole project). Nothing is chosen, granted or saved; null puts the player's own back. The URL switch
+ * ?tryTable=<folder> does the same from <folder>/table.json, its paths relative to that folder.
+ */
+export async function tryTable(a: TryTable | null): Promise<void> {
+  if (!import.meta.env.DEV) return;
+  const m = await loadManifest();
+  const root = document.documentElement.style;
+  const at = m.tables.findIndex((x) => x.id === "table-try");
+  if (at >= 0) m.tables.splice(at, 1);
+  if (!a) {
+    trying = null;
+    root.removeProperty("--home-desk");
+    root.removeProperty("--home-base");
+    const own = await tableArt(worn ?? chosen);
+    if (own) await paint(own);
+    return;
+  }
+  const now = m.tables.find((x) => x.id === shown);
+  const art = { title: "Try", thumb: a.table, stackBack: now?.stackBack ?? "art/stack-back.webp", base: "#2c3746", ...a, id: "table-try" } as TableArt;
+  // in the list for this page only, so the weather (particles.ts) finds it; never owned, so never in the picker
+  m.tables.push(art);
+  trying = art;
+  root.setProperty("--home-desk", `url("${url(a.desk ?? a.table)}")`);
+  root.setProperty("--home-base", a.deskBase ?? art.base);
+  await paint(art);
+}
+
+/** ?tryTable=<folder> (dev server only): <folder>/table.json tried at boot, its paths made the project's. */
+async function tryFromUrl(): Promise<void> {
+  if (!import.meta.env.DEV) return;
+  const folder = new URLSearchParams(location.search).get("tryTable")?.replace(/^\/+|\/+$/g, "");
+  if (!folder) return;
+  try {
+    const entry = (await (await fetch(url(`${folder}/table.json`))).json()) as Record<string, unknown>;
+    for (const k of ["table", "desk", "stackBack", "thumb", "particles"])
+      if (typeof entry[k] === "string") entry[k] = `${folder}/${entry[k] as string}`;
+    await tryTable(entry as TryTable);
+  } catch (err) {
+    console.warn(`[tables] ?tryTable=${folder}: no table.json to try`, err);
+  }
 }
 
 /**
@@ -147,7 +204,7 @@ export async function wearTable(id: string | null): Promise<void> {
   if (id === worn) return;
   worn = id;
   const a = await tableArt(id ?? chosen);
-  if (a && worn === id) await paint(a);
+  if (a && worn === id && !trying) await paint(a);
 }
 
 /**
@@ -156,21 +213,34 @@ export async function wearTable(id: string | null): Promise<void> {
  * the player makes meanwhile always wins over what the read finds.
  */
 export async function startTables(): Promise<void> {
-  const m = await loadManifest();
-  fallback = m.default;
-  let want = m.default;
-  if (framed && !pretendAll()) {
-    try {
-      await gem.awaitIdentity(10_000);
-      want = (await gem.me.settings.get(SETTING))?.value ?? m.default;
-    } catch {
-      return; // no player, or no answer: the table on screen stays
+  try {
+    const m = await loadManifest();
+    fallback = m.default;
+    void tryFromUrl();
+    let want = m.default;
+    if (framed && !pretendAll()) {
+      try {
+        await gem.awaitIdentity(10_000);
+        want = (await gem.me.settings.get(SETTING))?.value ?? m.default;
+      } catch {
+        return; // no player, or no answer: the table on screen stays
+      }
     }
+    if (touched || want === chosen) return;
+    const a = (await ownedTableArts()).find((x) => x.id === want);
+    if (a && !touched) await apply(a);
+  } finally {
+    choiceSettled();
   }
-  if (touched || want === chosen) return;
-  const a = (await ownedTableArts()).find((x) => x.id === want);
-  if (a && !touched) await apply(a);
 }
+
+let choiceSettled!: () => void;
+/**
+ * Settles once the boot has read the player's choice and changed over to it, or found it could not
+ * (no player, no answer): chosenTable() is then the boot's answer. For what must not start on the
+ * default and change a moment later (the music, src/audio/: Winter Dusk has its own); cap the wait.
+ */
+export const tableChoiceRead: Promise<void> = new Promise((r) => (choiceSettled = r));
 
 /** The player chose a table (one they own): show it, and keep their choice. */
 export async function chooseTable(id: string): Promise<void> {
