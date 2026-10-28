@@ -16,14 +16,22 @@
 // - markAnswered: once the one-off is won, the player's own record of it (it tells the sender
 //   nothing); a relaunch reuses the launch, so the same challenge comes back, answered.
 // - friend_action (analytics, Server's declaration): { action, kind }, both dimensions, so both
-//   strings, every time.
+//   strings, every time, and sent at once (sendAnalyticsNow, gem.ts): a result is the last thing
+//   a friend's one-off does, and the page may close seconds later (QA, 0.41.0: a challenge_won
+//   never landed when the page closed ~8 s after the win, inside the SDK's 10 s timer).
+// - WHO CAN BE CHALLENGED: a player with an Arcade friend. The SDK has no guest flag (its identity
+//   is a player id, a game id and a channel), and a guest can hold Coins (QA, 0.41.0: a test guest
+//   did, and was shown Challenge a friend), but a guest has no friends: the graph is an account's.
+//   So the button waits for this session's read of the list to find one (watchFriends: at start,
+//   and again whenever the Arcade lets the game go on, as friends.md asks); a player with none, a
+//   read that failed and a guest get Share alone.
 //
 // Rules that are not optional (the SDK's friends.md): challenge() only from a player's press, one
 // ask per press, never retried, not even on `unavailable` or `rate_limited`; share.request()
 // synchronously from the press. No name in any param, ever: the sender is the platform's `from`.
 
 import { FriendChallengeError, platformIconUrl, text, type PlayerText } from "@indiegems/gem-web-sdk/sdk";
-import { gem } from "../gem";
+import { gem, onArcadePause, sendAnalyticsNow } from "../gem";
 import { gem as declared } from "../../package.json";
 
 /** The templates' keys in the game config. */
@@ -49,6 +57,12 @@ const plain = (t: PlayerText | undefined | null) => (t ? text.toPlain(t) : null)
 /** Can a challenge be sent from here: the Arcade offers it (false anywhere else, a local host included). */
 export const challengesOffered = (): boolean => !!gem.frame?.parentSupports("friendChallenges");
 
+/** This session's last read of the list found a friend: null until one has been read. */
+let anyFriend: boolean | null = null;
+
+/** The player has an Arcade friend to challenge, by this session's last read (a guest never has). */
+export const hasFriend = (): boolean => anyFriend === true;
+
 /** The player's friends, every page (the Arcade's own order: newest friendship first; at most 1000). */
 export async function listFriends(): Promise<FriendRow[]> {
   const out: FriendRow[] = [];
@@ -60,7 +74,23 @@ export async function listFriends(): Promise<FriendRow[]> {
     if (!res.nextCursor) break;
     cursor = res.nextCursor;
   }
+  anyFriend = out.length > 0;
   return out;
+}
+
+/**
+ * Keep hasFriend() current: read the list once the Arcade's handshake has settled, and again each
+ * time the Arcade lets the game go on (a friend accepted on the Arcade's screens meanwhile). Only
+ * where the Arcade offers challenges; a read that fails leaves the last answer.
+ */
+export function watchFriends(): void {
+  const read = () => {
+    if (challengesOffered()) listFriends().catch((err: unknown) => console.info("[friends] the list did not load:", err));
+  };
+  void gem.frame?.settled(10_000).then(read);
+  onArcadePause((paused) => {
+    if (!paused) read();
+  });
 }
 
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, Math.round(n)));
@@ -239,6 +269,7 @@ export const recentFriendActions: { action: FriendAction; kind: string }[] = [];
 export function friendAction(action: FriendAction, t: Target): void {
   const kind = targetKind(t);
   gem.analytics.track("friend_action", { action, kind });
+  sendAnalyticsNow();
   if (import.meta.env.DEV) {
     recentFriendActions.push({ action, kind });
     if (recentFriendActions.length > 20) recentFriendActions.shift();

@@ -16,11 +16,11 @@
 // only those taken from the player's stock (a mercy Hint or a lesson's use is not). Levels
 // reads tries per win as started over won, and quits by board.
 //
-// track() only queues: the SDK sends on a timer and on the way out of the page. Unframed
-// (the play-test tool) nothing is sent; the dev server keeps the last events for checks
-// (__ps.stats).
+// track() only queues: the SDK sends on a timer and on the way out of the page, and the game
+// when the page hides or the Arcade pauses it (gem.ts). Unframed (the play-test tool) nothing
+// is sent; the dev server keeps the last events for checks (__ps.stats).
 
-import { gem } from "../gem";
+import { gem, sendAnalyticsNow } from "../gem";
 import type { HelperKind } from "./stock";
 
 export type Spent = Record<HelperKind, number>;
@@ -56,8 +56,11 @@ export const boardStats = {
   quit(board: number, attempt: number, picturesLeft: number, spent: Spent): void {
     send("board_quit", board, { attempt, pictures_left: picturesLeft, helpers: all(spent) });
   },
-  /** The page is going: send what is queued now. */
+  /**
+   * The page is going: send what is queued now, with keepalive (gem.ts). A plain flush here was
+   * cancelled with the page, and skipped outright while the SDK's own exit send was in flight.
+   */
   flush(): void {
-    void gem.analytics.flush().catch(() => undefined);
+    sendAnalyticsNow();
   },
 };

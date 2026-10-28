@@ -39,7 +39,7 @@ import { emit } from "../events";
 import { copyUrl, destinationName, destinationPlace, sharpCopy, type Copy, type Destination } from "./catalogue";
 import { createViewer } from "./viewer";
 import { ensureTrip, resident } from "../packs";
-import { currentTrip, placesOf, tripById, tripCount, tripDone, tripName, trips, type Place, type Trip } from "./trips";
+import { currentTrip, placesOf, tripById, tripCount, tripDone, tripName, tripPlace, trips, type Place, type Trip } from "./trips";
 import { souvenirOf, souvenirOpen, souvenirWon, souvenirWords, stickerReady, stickerUrl } from "./souvenirs";
 
 type Nav = {
@@ -208,7 +208,7 @@ export function createPassport(nav: Nav) {
     if (!p.dest) {
       const pc = el("div", "pc soon");
       shape(pc, p);
-      pc.append(el("span", "pc-card"), el("b", "pc-name", t("passport.board", { n: p.board })), el("span", "pc-place", tripName(tr)));
+      pc.append(el("span", "pc-card"), el("b", "pc-name", t("passport.board", { n: p.board })), el("span", "pc-place", tripPlace(tr)));
       return pc;
     }
     const d = p.dest;

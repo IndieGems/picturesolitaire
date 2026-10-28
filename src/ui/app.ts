@@ -89,9 +89,9 @@ import { createLessons, type LessonName } from "./lessons";
 import { createHintNudge } from "./hint-nudge";
 import { createDestinationBanner, type Destination } from "./destination";
 import { createPassport, type AfterStamp } from "./passport";
-import { tripById, tripEndingAt, tripName, tripOf } from "./trips";
+import { tripById, tripEndingAt, tripOf, tripPlace } from "./trips";
 import { challengeCard, comparePanel, createFriendCards, outcomeOf, type ChallengeView } from "./friend-cards";
-import { friendAction, launchLink, markAnswered, recentFriendActions, type Dare, type Launch } from "../net/friends";
+import { friendAction, launchLink, markAnswered, recentFriendActions, watchFriends, type Dare, type Launch } from "../net/friends";
 import { today as dailyToday } from "../net/daily";
 import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy, suitcaseItem } from "./catalogue";
 import { ensure, ensureSuitcase, fileUrl, resident } from "../packs";
@@ -1339,7 +1339,7 @@ function showWin(): void {
         h("div", { class: "stat glass" }, h("b", {}, String(moves)), h("span", {}, t("win.moves"))),
         h("div", { class: "stat glass" }, h("b", {}, clock(ms)), h("span", {}, t("win.time"))),
       ),
-      ended ? h("p", { class: "trip-done" }, t("win.tripDone", { trip: tripName(ended) })) : null,
+      ended ? h("p", { class: "trip-done" }, t("win.tripDone", { trip: tripPlace(ended) })) : null,
       last ? h("p", {}, t("win.allDone")) : null,
       dare ? friendCards.socialRow(dare) : null,
       next,
@@ -1720,7 +1720,7 @@ async function oneOffFor(link: Launch): Promise<{ o: OneOff; notYet: string | nu
     // not won yet, and not all done: a sneak peek (the campaign goes round past its last board)
     const next = campaignNext();
     const peek = next <= levels() && dare.board >= next;
-    return { o: { dare, ...sender, open: dare.board, level: campaignLevel(dare.board), peek, trip: trip ? tripName(trip) : null }, notYet: null };
+    return { o: { dare, ...sender, open: dare.board, level: campaignLevel(dare.board), peek, trip: trip ? tripPlace(trip) : null }, notYet: null };
   }
   // a daily: never one whose day has not come for this player (the sender may be a time zone ahead)
   const [now, d] = await Promise.all([dailyToday(1500), loadDaily(dare.date)]);
@@ -1950,6 +1950,8 @@ export async function startApp(): Promise<void> {
   // opened by a friend's challenge or a shared link: its card, once home and the record allow (offerLink)
   onProgress(offerLink);
   void greetLaunch();
+  // whether the player has a friend to challenge (a guest never has): Challenge a friend waits on it
+  watchFriends();
   void startSound();
   // which day it is (the platform's word) and its board: Home's Daily button appears once they are known
   void dailyUi.refresh();
@@ -1960,6 +1962,10 @@ export async function startApp(): Promise<void> {
   void keepIcons();
   // the top row's words and the stuck line wrap (or shrink, never under 12 px) rather than lose their ends
   for (const el of app.querySelectorAll<HTMLElement>(".top-pill")) keepFitted(el);
+  // a two-line top row (a challenge, a daily, a friend's board, a Souvenir): each line on its own,
+  // one line each, smaller if it must be, two lines only at 12 px (fit.ts, oneLine; style.css)
+  keepFitted(pillName, true);
+  keepFitted(pillPar, true);
   keepFitted(stuckNote);
 
   // The creator's dev menu: never in a release build (`npm run build:release` drops this branch

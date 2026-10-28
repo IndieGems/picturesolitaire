@@ -8,6 +8,8 @@
 //
 // Where the player's Coins are concerned the screens only ever ask "enough?": the
 // Arcade's wallet is the one place the number is drawn (the platform's "No counter").
+// Nothing here says who is a guest: a guest can hold Coins (QA, 0.41.0, a test guest),
+// so "no Coins" is no sign of one (who can challenge a friend: src/net/friends.ts).
 
 import { helpers, HELPER_CAP, type BuyAnswer, type HelperKind, type Pack, type SpendAnswer } from "../net/helpers";
 
@@ -18,7 +20,7 @@ export const KINDS: readonly HelperKind[] = ["undo", "hint", "shuffle"];
 export const PACKS: readonly Pack[] = [1, 3];
 
 type Prices = Record<Pack, Record<HelperKind, number>>;
-type Pretend = { counts: Record<HelperKind, number>; prices: Prices | null; coins: number; guest: boolean };
+type Pretend = { counts: Record<HelperKind, number>; prices: Prices | null; coins: number };
 /** The dev server's stand-in (never in a build): set by __ps.stock. */
 let pretend: Pretend | null = null;
 const pretendHeard = new Set<() => void>();
@@ -42,8 +44,6 @@ export const stock = {
     const p = pretend.prices?.[pack][k];
     return p === undefined ? null : pretend.coins >= p;
   },
-  /** A guest cannot buy (no Coins here): the earn line only. */
-  guest: (): boolean => (pretend ? pretend.guest : helpers.guest()),
   /** One used, AFTER the board acted and only when it was not free: the count drops at once. */
   spend(k: HelperKind): Promise<SpendAnswer> {
     if (!pretend) return helpers.spend(k);
@@ -81,7 +81,6 @@ export const stock = {
           counts: { undo: 3, hint: 3, shuffle: 3, ...pretend?.counts, ...p.counts },
           prices: p.prices === undefined ? (pretend?.prices ?? PRETEND_PRICES) : p.prices,
           coins: p.coins ?? pretend?.coins ?? 420,
-          guest: p.guest ?? pretend?.guest ?? false,
         }
       : null;
     said();

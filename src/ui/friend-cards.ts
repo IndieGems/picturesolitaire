@@ -2,7 +2,7 @@
 // side is src/net/friends.ts; the one-off board itself is app.ts's (kind "oneoff"). Here:
 //
 //   the social row     on a win card after a trip board (from board 3) or a daily: Challenge a friend
-//                      (in the Arcade, not for a guest) and Share (everywhere: the Arcade's share, the
+//                      (in the Arcade, for a player with a friend: never a guest) and Share (everywhere: the Arcade's share, the
 //                      phone's sheet or a copy). Under it, one status line says what happened (sent,
 //                      copied, too many for now), so nothing pops up over the card.
 //   the friends sheet  Challenge a friend's list: each Arcade friend, a tap asks the Arcade (which
@@ -20,9 +20,8 @@
 import { t } from "./i18n";
 import { closed, cornerKey, opened } from "./dialogs";
 import { shortDate } from "./format";
-import { stock } from "./stock";
 import { ICONS, type IconName } from "./icons";
-import { challengeFriend, challengesOffered, friendAction, listFriends, shareDare, type Dare, type FriendRow, type Sent, type Shared } from "../net/friends";
+import { challengeFriend, challengesOffered, friendAction, hasFriend, listFriends, shareDare, type Dare, type FriendRow, type Sent, type Shared } from "../net/friends";
 
 type Kids = Array<Node | string | null | undefined | false>;
 function h<K extends keyof HTMLElementTagNameMap>(tag: K, props: Partial<Record<string, string>> = {}, ...kids: Kids): HTMLElementTagNameMap[K] {
@@ -42,8 +41,11 @@ function icon(name: IconName): Node {
   return tpl.content.firstChild!;
 }
 
-/** Challenge a friend can be offered: the Arcade offers it, and the player is not a guest (a guest has no friends). */
-export const canChallenge = (): boolean => challengesOffered() && !stock.guest();
+/**
+ * Challenge a friend can be offered: the Arcade offers it, and the player has a friend to send to
+ * (friends.ts, hasFriend: a guest has none, and the SDK has no guest flag to ask instead).
+ */
+export const canChallenge = (): boolean => challengesOffered() && hasFriend();
 
 /** The words before a shared link (the fallback's; the Arcade's share writes its own): the template's line. */
 export function shareLine(d: Dare): string {

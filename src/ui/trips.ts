@@ -34,6 +34,17 @@ export function tripName(tr: Trip): string {
   return said === `trip.${tr.id}` ? tr.name : said;
 }
 
+/**
+ * A trip's place, for a sentence or a short label: "Board 8 · America", "on your America trip"
+ * (QA, 0.41.0: "Travel America" read oddly there). "tripPlace.<id>" in a locale where the trip's
+ * name is a title rather than a place, else its name. The passport's page and home's itinerary
+ * keep the name, as a title.
+ */
+export function tripPlace(tr: Trip): string {
+  const said = t(`tripPlace.${tr.id}`);
+  return said === `tripPlace.${tr.id}` ? tripName(tr) : said;
+}
+
 export function tripById(id: string): Trip | undefined {
   return trips.find((tr) => tr.id === id);
 }

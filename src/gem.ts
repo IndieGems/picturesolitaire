@@ -120,3 +120,25 @@ export function onPlayerPrefs(handler: (prefs: GemPrefs) => void): void {
 // `onStateChange` and wait for `"connected"`, reading the handle you already
 // have here rather than one the callback closes over.
 gem.frame?.ready();
+
+// ANALYTICS ON THE WAY OUT. track() only queues; the SDK sends the queue on a
+// 10 s timer and as the page unloads (pagehide, the Arcade's terminate). But a
+// page that is only HIDDEN, or that the Arcade PAUSES, just stops that timer,
+// and a hidden page may be dropped without ever unloading: whatever was queued
+// is then lost (QA, 0.41.0: a friend's challenge_won never landed when the page
+// closed ~8 s after the win). So the game sends the queue itself at those two
+// moments, and right after an event that ends something (a one-off's result).
+// keepalive lets the send outlive the page; a refusal it can retry (too soon, no
+// network) puts the events back on the queue, so sending early never loses one.
+
+/** Send what analytics has queued, now (a no-op when nothing is queued, or unframed). */
+export function sendAnalyticsNow(): void {
+  if (gem.analytics.pending === 0) return;
+  gem.analytics.flush({ keepalive: true }).catch(() => undefined);
+}
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") sendAnalyticsNow();
+});
+onArcadePause((paused) => {
+  if (paused) sendAnalyticsNow();
+});

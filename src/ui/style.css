@@ -794,6 +794,11 @@ html.less-motion .marker.next::after { animation-duration: 3.4s; }
 
 /* a challenge board's top row: its number over the par and the moves so far */
 .top-pill.two { flex-direction: column; gap: 3px; padding: 0 12px; }
+/* each of its two lines stays one line: too long beside the Gem, that line's size steps down (to
+   12 px, fit.ts on each line: app.ts) rather than wrap to a third line the row has no room for
+   (QA, 0.41.0, a friend's board at 360x640); only at 12 px may it take two, which still fit */
+.top-pill.two > * { white-space: nowrap; max-width: 100%; }
+.top-pill.two > .wrapped { white-space: normal; text-align: center; line-height: 1.05; }
 .top-pill.two .name { font: 500 13px/1 var(--round); color: var(--ink-soft); }
 .top-pill.two .par { font: 600 17px/1.05 var(--round); }
 

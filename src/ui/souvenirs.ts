@@ -18,7 +18,7 @@ import { souvenirBest } from "../net/progress";
 import { ensureTrip, fileUrl, resident } from "../packs";
 import { souvenirArt, souvenirTheme, type SouvenirArt } from "./catalogue";
 import { t } from "./i18n";
-import { tripById, tripDone, tripName, trips } from "./trips";
+import { tripById, tripDone, tripPlace, trips } from "./trips";
 
 /** The Souvenir boards, once loaded (they load with the first screen; until then, none). */
 let boards: Souvenir[] = [];
@@ -76,11 +76,11 @@ export function stickerReady(art: SouvenirArt): Promise<string> {
   );
 }
 
-/** The words for a Souvenir: "Souvenir · Travel America", its theme, and both for a screen reader. */
+/** The words for a Souvenir: its trip's place ("America": tripPlace) and its theme. */
 export function souvenirWords(trip: string): { theme: string; trip: string } {
   const art = souvenirArt(trip);
   const tr = tripById(trip);
-  return { theme: art ? souvenirTheme(art) : "", trip: tr ? tripName(tr) : trip };
+  return { theme: art ? souvenirTheme(art) : "", trip: tr ? tripPlace(tr) : trip };
 }
 
 /**
