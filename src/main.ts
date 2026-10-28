@@ -48,6 +48,32 @@ function preloadFirstScreen(): void {
   document.head.append(font, title);
 }
 
+// The game's own script files (a build fills the list: tools/boot-prefetch.mjs), fetched from the
+// frame's `load` on, so the 1 MB of game arrives while the handshake settles instead of after it.
+// Not before `load` (the Arcade offers the handshake on it, and anything asked for first holds it),
+// and only fetched: modulepreload puts a module in the page's module map without running it, so the
+// game still parses and runs after the bridge, in the import() below.
+declare const __PS_APP_FILES__: readonly string[];
+function prefetchGame(): void {
+  let files: readonly string[];
+  try {
+    files = __PS_APP_FILES__;
+  } catch {
+    return; // the dev loop: vite serves each module as it is asked for
+  }
+  for (const f of files) {
+    const link = document.createElement("link");
+    if (f.endsWith(".css")) {
+      link.rel = "preload";
+      link.as = "style";
+    } else link.rel = "modulepreload";
+    link.href = new URL(f, import.meta.url).href;
+    document.head.append(link);
+  }
+}
+if (document.readyState === "complete") prefetchGame();
+else addEventListener("load", prefetchGame, { once: true });
+
 async function start(): Promise<void> {
   if (window.self !== window.top) await gem.awaitBridge(BRIDGE_WAIT_MS);
   preloadFirstScreen();

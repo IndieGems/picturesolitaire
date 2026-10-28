@@ -250,7 +250,7 @@ export function createViewer(options: { tapToClose?: boolean } = {}): Viewer {
       };
       // the full picture: at once where it is a plain file (or already loaded), else from its board's pack
       if (resident(p.file)) swap();
-      else if (board) void ensure([p.file], board).then(swap, () => {});
+      else if (board) void ensure([p.file], board, { full: true }).then(swap, () => {});
       s = 1;
       tx = 0;
       ty = 0;

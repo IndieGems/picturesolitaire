@@ -4,9 +4,12 @@
 // full picture ONCE in ~2 MB chunks (Art, 2026-10-27: they were stored once per board), and
 // each trip's passport copies in a third, and takes the single files out of dist:
 //
-//   packs/index.json       { boards: { <board id>: { b } }, full: { <chunk>: [<path>...] },
-//                          trips: { <trip id>: <pack> }, suitcases: { <YYYY-MM>: <pack> } }
+//   packs/index.json       { boards: { <board id>: { b } }, trips: { <trip id>: <pack> },
+//                          suitcases: { <YYYY-MM>: <pack> } }, read at boot
 //                          (a board's `f`, an older build's per-board full pack, is still read)
+//   packs/full-index.json  { full: { <chunk>: [<path>...] } }, read only once a full picture is
+//                          wanted (the enlarged view; 2026-10-28, ~60 KB the boot never needs).
+//                          An older build's index.json carries `full` itself, and is read as is.
 //   packs/<name>.bin       a uint32 little-endian JSON length, then {"files":[{path, offset,
 //                          length, type}]} (path as the catalogue names it, offset from the
 //                          end of the JSON), then the bytes
@@ -339,14 +342,31 @@ function wholePack(idx: Index, name: string): boolean {
   return b === 1 && other === 0;
 }
 
-/** Which full chunk holds each full picture: index.full turned round, once. */
+/** Which full chunk holds each full picture: the full index turned round, once it is read. */
 let fullOf: Map<string, string> | null = null;
-function chunkOf(idx: Index, path: string): string | undefined {
-  if (!fullOf) {
-    fullOf = new Map();
-    for (const [name, paths] of Object.entries(idx.full ?? {})) for (const p of paths) fullOf.set(p, name);
-  }
-  return fullOf.get(path);
+let fullLoad: Promise<Map<string, string>> | null = null;
+/** The full index (packs/full-index.json, or an older build's index.full), read on the first ask. */
+function loadFull(idx: Index): Promise<Map<string, string>> {
+  const turn = (full: Record<string, string[]>) => {
+    const m = new Map<string, string>();
+    for (const [name, paths] of Object.entries(full)) for (const p of paths) m.set(p, name);
+    return (fullOf = m);
+  };
+  if (fullOf) return Promise.resolve(fullOf);
+  if (idx.full) return Promise.resolve(turn(idx.full));
+  fullLoad ??= (async () => {
+    const r = await fetch(`${base}packs/full-index.json`);
+    if (!r.ok) throw new Error(`packs/full-index.json: ${r.status}`);
+    return turn(((await r.json()) as { full?: Record<string, string[]> }).full ?? {});
+  })().catch((err: unknown) => {
+    fullLoad = null; // asked again next time
+    throw err;
+  });
+  return fullLoad;
+}
+/** The chunk holding full picture `path`, as far as the full index is read yet. */
+function chunkOf(path: string): string | undefined {
+  return fullOf?.get(path);
 }
 
 function remember(owner: string, paths: string[]): void {
@@ -378,7 +398,7 @@ function remember(owner: string, paths: string[]): void {
  * packs (its board copies', then its full pictures'). Resolves once they are resident (at
  * once with no packs); rejects when a pack would not load or does not hold one of them.
  */
-export async function ensure(paths: string[], board: string): Promise<void> {
+export async function ensure(paths: string[], board: string, opts: { full?: boolean } = {}): Promise<void> {
   const idx = await loadIndex();
   if (!idx) return;
   remember(board, paths);
@@ -388,10 +408,13 @@ export async function ensure(paths: string[], board: string): Promise<void> {
   let job = loading.get(key);
   if (!job) {
     job = (async () => {
-      // full pictures go straight to their chunk (index.full): a board's own pack never holds one,
-      // so the enlarged view of a board not opened this session does not fetch that board's pack
-      const chunked = want.filter((p) => chunkOf(idx, p));
-      let left = want.filter((p) => !chunkOf(idx, p));
+      // full pictures go straight to their chunk (the full index): a board's own pack never holds
+      // one, so the enlarged view (opts.full) of a board not opened this session does not fetch that
+      // board's pack. Not told, and the full index not read yet, the board's pack is tried first
+      // and what it lacks is looked for in the full index after (a board drawing full pictures).
+      if (opts.full || idx.full) await loadFull(idx);
+      let chunked = want.filter((p) => chunkOf(p));
+      let left = want.filter((p) => !chunkOf(p));
       const packs = idx.boards[board];
       if (left.length && !packs) throw new Error(`packs: no board ${board}`);
       for (const name of [packs?.b, packs?.f]) {
@@ -401,11 +424,16 @@ export async function ensure(paths: string[], board: string): Promise<void> {
         if (known && !left.some((p) => known.files.has(p))) continue;
         left = await fromPack(name, left, wholePack(idx, name));
       }
+      if (left.length && !fullOf) {
+        await loadFull(idx);
+        chunked = [...chunked, ...left.filter((p) => chunkOf(p))];
+        left = left.filter((p) => !chunkOf(p));
+      }
       // full pictures: each in one shared chunk, read by Range like any shared pack (a host that
       // ignores Range: one stream per chunk, read only as far as the pictures wanted)
       if (chunked.length) {
         const by = new Map<string, string[]>();
-        for (const p of chunked) by.set(chunkOf(idx, p)!, [...(by.get(chunkOf(idx, p)!) ?? []), p]);
+        for (const p of chunked) by.set(chunkOf(p)!, [...(by.get(chunkOf(p)!) ?? []), p]);
         const rest = await Promise.all([...by].map(([name, ps]) => chunkSlot(() => fromPack(name, ps, false))));
         left = [...left, ...rest.flat()];
       }

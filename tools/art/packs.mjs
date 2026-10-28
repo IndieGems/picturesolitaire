@@ -31,11 +31,13 @@
 // A pack (UI's format, src/packs.ts reads it): a little-endian uint32 JSON length, the JSON
 // {"files":[{"path","offset","length","type"}]} (path as the catalogue names it, offset counted
 // from the end of the JSON), then the files end to end, byte for byte as in public/.
-// <dist>/packs/index.json:
+// <dist>/packs/index.json, read at boot (so kept small):
 //   {"boards":{<board id>:{"b":<pack>}},     each board's board copies
-//    "full":{<full chunk>:[<path>,...]},     where each full picture is (each path in one chunk)
 //    "trips":{<trip id>:<pack>},             each trip's passport copies
 //    "suitcases":{<yyyy-mm>:<pack>}}         each month's item cut-outs
+// <dist>/packs/full-index.json, read only when the enlarged view first opens (UI, 2026-10-28: the
+// list of every full picture was ~60 KB of the boot's 74 KB index):
+//   {"full":{<full chunk>:[<path>,...]}}     where each full picture is (each path in one chunk)
 import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -193,9 +195,12 @@ if (problems.length) {
   for (const p of problems) console.error("  " + p);
   process.exit(1);
 }
-const indexJson = JSON.stringify(index);
+const { full, ...boot } = index;
+const indexJson = JSON.stringify(boot);
+const fullJson = JSON.stringify({ full });
 if (!dry) {
   writeFileSync(join(outDir, "index.json"), indexJson);
+  writeFileSync(join(outDir, "full-index.json"), fullJson);
   let loose = false;
   try {
     loose = statSync(join(dist, "pictures")).isDirectory();
@@ -219,7 +224,7 @@ for (const [id, { lane, b, files }] of boardFiles) {
 }
 const fullMax = Math.max(0, ...Object.keys(index.full).map((n) => sizes.get(n) ?? 0));
 console.log(
-  `packs: ${count} packs + index.json (${Math.round(indexJson.length / 1024)} KB), ${Math.round(bytes / 1048576)} MB, for ${Object.keys(index.boards).length} boards and ${trips.length} trips; ` +
+  `packs: ${count} packs + index.json (${Math.round(indexJson.length / 1024)} KB) + full-index.json (${Math.round(fullJson.length / 1024)} KB), ${Math.round(bytes / 1048576)} MB, for ${Object.keys(index.boards).length} boards and ${trips.length} trips; ` +
     `${shipped.size} picture files packed, each full picture once in ${Object.keys(index.full).length} chunks${dry ? " (dry run, nothing written)" : `, ${dist}/pictures removed`}`,
 );
 for (const [lane, w] of Object.entries(worst))

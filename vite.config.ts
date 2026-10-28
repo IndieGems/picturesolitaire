@@ -1,6 +1,8 @@
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { defineConfig, type Plugin } from "vite";
+import { contentSplit } from "./tools/content-split.mjs";
+import { bootPrefetch } from "./tools/boot-prefetch.mjs";
 
 // `npm run dev` runs this server under the Gem host (`gemctl serve start .
 // --dev`), which frames it and hands the game a play token, so the game runs
@@ -72,5 +74,8 @@ export default defineConfig({
     // Watching them would walk every copy on each start, so leave them out.
     watch: { ignored: ["**/.claude/**"] },
   },
-  plugins: [gemDevHost()],
+  // contentSplit: the picture list and the boards in chunks the screens load as needed (the game
+  // imports "virtual:ps-content", never the content files); bootPrefetch: the app script fetched
+  // during the Arcade's handshake (src/main.ts). Both in tools/, each file says why.
+  plugins: [gemDevHost(), contentSplit(), bootPrefetch()],
 });
