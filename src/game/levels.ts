@@ -139,6 +139,41 @@ export async function loadDaily(date: string): Promise<Daily | null> {
   return { ...toLevel(b, pool.levels.indexOf(b) + 1), par: b.par, date: b.date };
 }
 
+// ---------------------------------------------------------------- souvenirs
+
+/** A Souvenir: a trip's optional themed bonus board (docs/souvenirs.md); `trip` is its trip's id ("t1"). */
+export type Souvenir = Level & { trip: string };
+type StoredSouvenir = Stored & { trip: string };
+
+let souvenirs: Promise<Souvenir[]> | null = null;
+/**
+ * The Souvenir boards (src/content/levels/souvenirs.json, the levels member's:
+ * ids s1..., one per trip whose pictures exist, so fewer than the trips at
+ * first). Fetched apart from the boot, on the first ask, then kept; [] if it
+ * cannot be loaded (asked again next time). Opened like any board
+ * (openBoard(host, souvenir)); its pictures are the catalogue's
+ * souvenirPictures, its table is the screens' to set, and board:won says its id.
+ */
+export function loadSouvenirs(): Promise<Souvenir[]> {
+  souvenirs ??= import("../content/levels/souvenirs.json")
+    .then((m) =>
+      (m.default.levels as unknown as StoredSouvenir[])
+        .filter((l) => typeof l.trip === "string")
+        .map((l, i) => ({ ...toLevel(l, i + 1), trip: l.trip })),
+    )
+    .catch((err: unknown) => {
+      console.warn("[levels] the souvenir boards did not load", err);
+      souvenirs = null; // ask again next time
+      return [];
+    });
+  return souvenirs;
+}
+
+/** Trip `trip`'s Souvenir ("t1"), or null when it has none (yet) or they cannot be loaded. */
+export async function loadSouvenir(trip: string): Promise<Souvenir | null> {
+  return (await loadSouvenirs()).find((s) => s.trip === trip) ?? null;
+}
+
 // ---------------------------------------------------------------- lessons
 
 /** What a staged lesson board teaches. */

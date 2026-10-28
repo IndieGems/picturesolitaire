@@ -2,7 +2,7 @@
 // with plain helper buttons and every event logged. Dev only; never built.
 import { openBoard } from "./index.ts";
 import { on, type GameEvents } from "../events";
-import { lessonLevel, level as levelOf, loadChallenges, toLevel, type Level, type Stored } from "../game/levels.ts";
+import { lessonLevel, level as levelOf, loadChallenges, loadSouvenir, toLevel, type Level, type Stored } from "../game/levels.ts";
 import EXPERIMENTS from "../content/levels/experiments.json";
 import { TUNING } from "./tuning.ts";
 
@@ -29,6 +29,9 @@ if (x) {
 // ?lesson=shuffle: a lesson's staged board (src/content/levels/lessons.json)
 const lesson = q.get("lesson");
 if (lesson === "shuffle") level = (await lessonLevel(lesson)) ?? undefined;
+// ?souvenir=t1: that trip's Souvenir board (src/content/levels/souvenirs.json)
+const souvenir = q.get("souvenir");
+if (souvenir) level = (await loadSouvenir(souvenir)) ?? undefined;
 // ?dest=dest-grand-canyon&crop=2,2: the board's first 2x2 picture made that destination's window
 const dest = q.get("dest");
 if (dest) {
