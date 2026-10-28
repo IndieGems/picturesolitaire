@@ -242,6 +242,8 @@
   "settings.open": "Settings",
   "settings.sound": "Sound",
   "settings.table": "Table",
+  "settings.tableLocked": "Fill {{month}}'s suitcase",
+  "settings.tableLockedAria": "{{table}}, locked: fill {{month}}'s suitcase to win it",
   "settings.title": "Settings",
   "settings.vibration": "Vibration",
   "settings.volume": "Volume",

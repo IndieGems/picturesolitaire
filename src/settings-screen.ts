@@ -22,7 +22,7 @@ import { choose, loadSettings, onSettingsChange, setting } from "./settings";
 import { t } from "./ui/i18n";
 import { ICONS } from "./ui/icons";
 import { cornerKey } from "./ui/dialogs";
-import { chooseTable, chosenTable, onTableChange, ownedTableArts, tableTitle, thumbOf } from "./ui/tables";
+import { chooseTable, chosenTable, onTableChange, pickerTables, tableTitle, thumbOf } from "./ui/tables";
 import { startMenuSettings } from "./menu-settings";
 
 // Rows added from outside, above Close: the creator's Developer button (src/ui/dev-menu.ts,
@@ -102,13 +102,41 @@ export function mountSettings(parent: HTMLElement = document.body): void {
   tablesRow.hidden = true;
   tablesRow.append(tablesName, tablesList);
   let drawing = 0;
+  /** "December", the month whose suitcase wins a locked table, in the player's language. */
+  const monthName = (month: string) =>
+    new Intl.DateTimeFormat(document.documentElement.lang || "en", { month: "long", timeZone: "UTC" }).format(new Date(`${month}-01T00:00:00Z`));
   async function drawTables(): Promise<void> {
     const token = ++drawing;
-    const mine = await ownedTableArts();
+    const all = await pickerTables();
     if (token !== drawing) return;
-    tablesRow.hidden = mine.length < 2;
+    tablesRow.hidden = all.length < 2;
     tablesList.replaceChildren(
-      ...mine.map((a) => {
+      ...all.map(({ art: a, lockedMonth }) => {
+        // a table to win, not to choose (Winter Dusk until December's suitcase is full): information,
+        // never a button (the two materials): its picture flat and dimmed under a lock, and how to win it
+        if (lockedMonth) {
+          const month = monthName(lockedMonth);
+          const tile = document.createElement("div");
+          tile.className = "table-pick locked";
+          tile.setAttribute("role", "img");
+          tile.setAttribute("aria-label", t("settings.tableLockedAria", { table: tableTitle(a), month }));
+          const frame = document.createElement("span");
+          frame.className = "table-pick-frame";
+          const img = document.createElement("img");
+          img.src = thumbOf(a);
+          img.alt = "";
+          img.draggable = false;
+          const lock = document.createElement("span");
+          lock.className = "table-lock";
+          lock.innerHTML = ICONS.lock;
+          frame.append(img, lock);
+          const name = document.createElement("span");
+          name.textContent = tableTitle(a);
+          const how = document.createElement("small");
+          how.textContent = t("settings.tableLocked", { month });
+          tile.append(frame, name, how);
+          return tile;
+        }
         const pick = document.createElement("button");
         pick.type = "button";
         pick.className = "table-pick";

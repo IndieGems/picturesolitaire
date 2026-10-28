@@ -68,7 +68,7 @@ import { createDaily } from "./daily";
 import { clock, shortDate } from "./format";
 import { claimWin, cueCoins, onVerdict, type Verdict } from "../net/claims";
 import { KEEPSAKE } from "../net/keepsake";
-import { knownTable, startTables, tableTitle, thumbOf, tryTable, wearTable, type TryTable } from "./tables";
+import { knownTable, startTables, tableChoiceRead, tableTitle, thumbOf, tryTable, wearTable, type TryTable } from "./tables";
 import { keepFitted } from "./fit";
 import { cardAspect, syncCardAspect } from "./cards";
 import { createViewer } from "./viewer";
@@ -1920,9 +1920,12 @@ export async function startApp(): Promise<void> {
   // home draws, and redraws when the record lands
   loadProgress();
   loadGuideSave();
+  // the player's table, which home now shows (tables.ts): read and laid before home appears, in the
+  // same capped wait, so a Winter Dusk owner never sees the sunny home turn snowy
+  void startTables();
   await waitForProgress(1000);
   drawHome();
-  await Promise.race([Promise.all([fonts, homeUi.whole()]), new Promise((r) => setTimeout(r, Math.max(0, by - performance.now())))]);
+  await Promise.race([Promise.all([fonts, homeUi.whole(), tableChoiceRead]), new Promise((r) => setTimeout(r, Math.max(0, by - performance.now())))]);
 
   onProgress(drawHome);
   // the Shuffle lesson's board, ready for the way to board 4 (lessons.ts)
@@ -1955,9 +1958,8 @@ export async function startApp(): Promise<void> {
   void startSound();
   // which day it is (the platform's word) and its board: Home's Daily button appears once they are known
   void dailyUi.refresh();
-  // the player's chosen table, once their choice and what they own are read, and its weather
+  // the table's weather (the table itself was laid before home appeared: startTables, above)
   mountParticles(app);
-  void startTables();
   // every glyph kept in the page, so a connection dropped later never leaves a button bare
   void keepIcons();
   // the top row's words and the stuck line wrap (or shrink, never under 12 px) rather than lose their ends

@@ -32,7 +32,7 @@ import { emit } from "../events";
 import { t } from "./i18n";
 import { ICONS } from "./icons";
 import { held, spares, suitcases, SWAP_COST, type SuitItem, type Suitcase, type SwapAnswer } from "./suitcase-data";
-import { knownTable, thumbOf } from "./tables";
+import { BUILT_IN_TABLE, knownTable, thumbOf } from "./tables";
 import { shortDate } from "./format";
 
 /** `viewing` for the next event's preview (before it starts). */
@@ -93,8 +93,8 @@ function itemPic(it: SuitItem, missing: boolean): HTMLElement {
   return box;
 }
 
-/** The table every player has (public/art/tables/tables.json's default): never a month's prize. */
-const DEFAULT_TABLE = "table-winter-dusk";
+/** The table every player has (tables.ts, the manifest's default: Sunny Day): never a month's prize. */
+const DEFAULT_TABLE = BUILT_IN_TABLE;
 
 /** Art's suitcases (public/art, transparent): open from above (its teal lining plain across the middle), closed, and small. */
 const ART = {

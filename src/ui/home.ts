@@ -25,9 +25,10 @@
 // on it and take no touch. Only the buttons are buttons (the two materials, style.css).
 //
 // HOME APPEARS WHOLE (the creator, 2026-10-26, as Untangled does): the first screen waits
-// for its pictures (the wordmark, the backdrop, the booklet and the visited stops'
-// postcards), at most a moment (app.ts, startApp), then shows anyway; a picture that comes
-// later fades in where its place already was, so nothing moves.
+// for its pictures (the wordmark, the booklet and the visited stops' postcards, and the
+// player's table behind it: tables.ts, tableChoiceRead), at most a moment (app.ts, startApp),
+// then shows anyway; a picture that comes later fades in where its place already was, so
+// nothing moves.
 
 import { gem } from "../gem";
 import { level as campaignLevel, levelCount } from "../game/levels";
@@ -42,8 +43,6 @@ import { WORDMARK } from "./wordmark";
 
 /** Home's own pictures besides the wordmark: Art's, in public/art. */
 const ART = {
-  /** The traveller's desk behind home (style.css draws it; asked for here so home waits for it). */
-  desk: new URL(`${import.meta.env.BASE_URL}art/home-desk.webp`, location.href).href,
   /** The passport booklet on the Passport tile. */
   booklet: `${import.meta.env.BASE_URL}art/passport-booklet.webp`,
   /** The satchel on the Shop tile. */
@@ -339,7 +338,7 @@ export function createHome(nav: Nav, parts: Parts) {
 
   /** Home's own pictures, asked for once; settles once they are decoded. */
   let art: Promise<unknown> | null = null;
-  const warmArt = () => (art ??= Promise.all([wordmark.decode().catch(() => undefined), warm(ART.desk), warm(ART.booklet), warm(ART.satchel)]));
+  const warmArt = () => (art ??= Promise.all([wordmark.decode().catch(() => undefined), warm(ART.booklet), warm(ART.satchel)]));
 
   return {
     screen,

@@ -1,6 +1,7 @@
 // THE TABLE'S OWN WEATHER: soft snow drifting past the edges of the Winter
-// Dusk table, a few leaves tumbling at the edges of the Autumn Study (the art
-// member's sprites, named in public/art/tables/tables.json).
+// Dusk table, a few leaves tumbling at the edges of the Autumn Study, blossom
+// petals on a breeze at the edges of the Sunny Day (the art member's sprites,
+// named in public/art/tables/tables.json, `particleKind`).
 //
 // The design's "soft snow drifting past its edges", within the game standard's
 // rules for battery and heat:
@@ -35,12 +36,15 @@ interface Kind {
 
 const SNOW: Kind = { count: 12, size: [9, 17], fall: [15, 24], sway: [8, 16], swing: [2.6, 4.2], turn: [20, 60], opacity: 0.85 };
 const LEAVES: Kind = { count: 9, size: [22, 30], fall: [17, 27], sway: [14, 24], swing: [3.2, 5], turn: [30, 60], opacity: 0.95 };
+/** "A breeze, not a fall" (Art, 2026-10-28): half the leaves, two-thirds their speed, a wider, slower sway and a slow tumble. */
+const PETALS: Kind = { count: 5, size: [18, 26], fall: [26, 40], sway: [22, 34], swing: [4.6, 7], turn: [40, 80], opacity: 0.95 };
+const KINDS: Record<string, Kind> = { snow: SNOW, leaves: LEAVES, petals: PETALS };
 
 const url = (path: string) => new URL(`${import.meta.env.BASE_URL}${path}`, location.href).href;
 
 function flakes(a: Sprite): HTMLElement[] {
   if (!a.particles) return [];
-  const kind = a.particleKind === "leaves" ? LEAVES : SNOW;
+  const kind = KINDS[a.particleKind ?? "snow"] ?? SNOW;
   const frames = Math.max(1, a.particleFrames ?? 1);
   const sprite = url(a.particles);
   let seed = 20261024;

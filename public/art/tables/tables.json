@@ -1,5 +1,5 @@
 {
-  "default": "table-winter-dusk",
+  "default": "table-sunny-day",
   "tables": [
     {
       "id": "table-sunny-day",
@@ -8,7 +8,7 @@
       "stackBack": "art/tables/sunny-day/sunny-day-stack-back.webp",
       "particles": "art/tables/sunny-day/sunny-day-particles.png",
       "thumb": "art/tables/sunny-day/sunny-day-thumb.webp",
-      "particleKind": "leaves",
+      "particleKind": "petals",
       "particleFrame": 64,
       "particleFrames": 4,
       "base": "#59bef6"
@@ -20,6 +20,7 @@
       "stackBack": "art/stack-back.webp",
       "particles": "art/snow.png",
       "desk": "art/home-desk.webp",
+      "showLocked": true,
       "thumb": "art/tables/winter-dusk/winter-dusk-thumb.webp",
       "particleKind": "snow",
       "particleFrame": 32,
