@@ -47,7 +47,7 @@
   --glass: rgba(232, 240, 248, 0.86);
   --glass-line: rgba(255, 255, 255, 0.75);
   --shade: rgba(12, 18, 30, 0.62);
-  --table: #59bef6; /* the built-in table's base colour (Sunny Day; tables.ts sets --table-base) */
+  --table: #51c5fd; /* the built-in table's base colour (Sunny Day; tables.ts sets --table-base) */
   /* a hard board's tag (marks.ts): warm red-coral and deep purple, as r g b, both 4.7:1 or more under white */
   --mark-hard: 204 68 52;
   --mark-super: 91 42 134;

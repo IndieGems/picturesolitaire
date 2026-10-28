@@ -22,7 +22,7 @@
 // once a chunk has resolved, its boards can be drawn, and nothing else needs to know the split.
 // In the dev loop the same modules are served; a change to a source file reloads the page.
 
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url)).replace(/\\/g, "/");
@@ -38,7 +38,12 @@ const SRC = {
 };
 const STORE = `${ROOT}src/content.ts`;
 const ID = "virtual:ps-content";
-const LANES = ["souvenirs", "challenge", "lessons", "experiments"];
+// The interface's glyphs (Art's public/art/ui/icon-*.svg) as data URLs in the game's script, so home's
+// buttons never wait for 20 small files (QA, 0.47.0: the gear was blank ~0.7 s after home on 4G).
+// src/ui/icons.ts reads them: import GLYPHS from "virtual:ps-icons" ({ gear: "data:image/svg+xml,..." }).
+const ICONS_ID = "virtual:ps-icons";
+const ICON_DIR = `${ROOT}public/art/ui/`;
+const LANES =["souvenirs", "challenge", "lessons", "experiments"];
 
 /** A daily's week: the Monday on or before its date (yyyy-mm-dd, UTC), as tools/art/packs.mjs names it. */
 function weekOf(date) {
@@ -185,10 +190,18 @@ export function contentSplit() {
       release = config.mode === "release";
     },
     resolveId(id) {
-      if (id === ID || id.startsWith(`${ID}/`)) return `\0${id}`;
+      if (id === ID || id.startsWith(`${ID}/`) || id === ICONS_ID) return `\0${id}`;
       return null;
     },
     load(id) {
+      if (id === `\0${ICONS_ID}`) {
+        const glyphs = {};
+        for (const f of readdirSync(ICON_DIR).filter((f) => /^icon-.+\.svg$/.test(f)).sort()) {
+          this.addWatchFile(ICON_DIR + f);
+          glyphs[f.slice(5, -4)] = `data:image/svg+xml,${encodeURIComponent(readFileSync(ICON_DIR + f, "utf8").trim())}`;
+        }
+        return `export default ${JSON.stringify(glyphs)};`;
+      }
       if (!id.startsWith(`\0${ID}`)) return null;
       for (const file of Object.values(SRC)) this.addWatchFile(file);
       const c = read();

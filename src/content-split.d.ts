@@ -47,3 +47,9 @@ declare module "virtual:ps-content" {
     souvenirs: { trip: string; theme: string; table: string; tableTitle: string; sticker: string }[];
   };
 }
+
+declare module "virtual:ps-icons" {
+  /** Each interface glyph (public/art/ui/icon-<name>.svg) as a data URL, by <name>: the build's (tools/content-split.mjs). */
+  const glyphs: Record<string, string>;
+  export default glyphs;
+}

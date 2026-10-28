@@ -105,6 +105,14 @@ function loadIndex(): Promise<Index | null> {
   return indexLoad;
 }
 
+/**
+ * Ask for packs/index.json now (18 KB), so the next board's pack can start the moment home is drawn
+ * (app.ts, at boot) rather than an index's round trip later. A failure is asked again on the next ensure.
+ */
+export function warmIndex(): void {
+  void loadIndex().catch(() => undefined);
+}
+
 /** The file's address now: its blob URL once loaded, else the plain path. */
 export function fileUrl(path: string): string {
   return urls.get(path) ?? `${base}${path}`;
@@ -133,12 +141,12 @@ type Read = { bytes: Uint8Array; at: number; ranged: boolean };
  * the whole pack: its stream is read only as far as `orTo` (all that is wanted of the pack,
  * so one stream serves every span of it), then dropped.
  */
-async function readSpan(url: string, from: number, to: number, orTo = to): Promise<Read> {
+async function readSpan(url: string, from: number, to: number, orTo = to, priority?: RequestPriority): Promise<Read> {
   // a host that ignores Range: what an earlier stream already read of this pack serves again
   const pre = prefixes.get(url);
   if (ignoresRange && pre && pre.length >= orTo) return { bytes: pre, at: 0, ranged: false };
   const stop = new AbortController();
-  const r = await fetch(url, { headers: { Range: `bytes=${from}-${to - 1}` }, signal: stop.signal });
+  const r = await fetch(url, { headers: { Range: `bytes=${from}-${to - 1}` }, signal: stop.signal, ...(priority ? { priority } : {}) });
   if (r.status === 206) {
     const first = Number(/bytes (\d+)-/.exec(r.headers.get("Content-Range") ?? "")?.[1] ?? from);
     note("range");
@@ -194,7 +202,7 @@ async function streamPrefix(url: string, r: Response, stop: AbortController, nee
  * The host is known to ignore Range: pack `name`'s index and the files wanted come in ONE stream
  * (or none, if an earlier one already read that far).
  */
-async function oneStream(name: string, paths: string[]): Promise<Uint8Array> {
+async function oneStream(name: string, paths: string[], priority?: RequestPriority): Promise<Uint8Array> {
   const url = packUrl(name);
   const need = (b: Uint8Array) => {
     const head = headFrom(b);
@@ -205,7 +213,7 @@ async function oneStream(name: string, paths: string[]): Promise<Uint8Array> {
   const pre = prefixes.get(url);
   if (pre && need(pre) <= pre.length) return pre;
   const stop = new AbortController();
-  const r = await fetch(url, { signal: stop.signal });
+  const r = await fetch(url, { signal: stop.signal, ...(priority ? { priority } : {}) });
   if (!r.ok || !r.body) {
     stop.abort();
     throw new Error(`${url}: ${r.status}`);
@@ -214,8 +222,8 @@ async function oneStream(name: string, paths: string[]): Promise<Uint8Array> {
 }
 
 /** A whole pack, in one request (one board's own). */
-async function readWhole(url: string): Promise<Uint8Array> {
-  const r = await fetch(url);
+async function readWhole(url: string, priority?: RequestPriority): Promise<Uint8Array> {
+  const r = await fetch(url, priority ? { priority } : {});
   if (!r.ok) {
     void r.body?.cancel().catch(() => undefined);
     throw new Error(`${url}: ${r.status}`);
@@ -245,15 +253,15 @@ function headFrom(bytes: Uint8Array): Head | null {
 }
 
 /** A pack's index, read once: its first HEAD_BYTES, more if the index is longer. */
-function headOf(name: string): Promise<Head> {
+function headOf(name: string, priority?: RequestPriority): Promise<Head> {
   let h = heads.get(name);
   if (!h) {
     h = (async () => {
-      const first = (await readSpan(packUrl(name), 0, HEAD_BYTES)).bytes;
+      const first = (await readSpan(packUrl(name), 0, HEAD_BYTES, HEAD_BYTES, priority)).bytes;
       const head = headFrom(first);
       if (head) return head;
       const n = new DataView(first.buffer, first.byteOffset, first.byteLength).getUint32(0, true);
-      const more = headFrom((await readSpan(packUrl(name), 0, 4 + n)).bytes);
+      const more = headFrom((await readSpan(packUrl(name), 0, 4 + n, 4 + n, priority)).bytes);
       if (!more) throw new Error(`${name}: no index`);
       return more;
     })();
@@ -275,9 +283,9 @@ function keep(entries: Entry[], head: Head, bytes: Uint8Array, at: number): void
 }
 
 /** Load `paths` that pack `name` holds; the rest are returned. */
-async function fromPack(name: string, paths: string[], whole: boolean): Promise<string[]> {
+async function fromPack(name: string, paths: string[], whole: boolean, priority?: RequestPriority): Promise<string[]> {
   if (whole) {
-    const bytes = await readWhole(packUrl(name));
+    const bytes = await readWhole(packUrl(name), priority);
     const head = headFrom(bytes);
     if (!head) throw new Error(`${name}: no index`);
     heads.set(name, Promise.resolve(head));
@@ -286,14 +294,14 @@ async function fromPack(name: string, paths: string[], whole: boolean): Promise<
     return paths.filter((p) => !head.files.has(p));
   }
   if (ignoresRange) {
-    const bytes = await oneStream(name, paths);
+    const bytes = await oneStream(name, paths, priority);
     const head = headFrom(bytes);
     if (!head) throw new Error(`${name}: no index`);
     heads.set(name, Promise.resolve(head));
     keep(paths.map((p) => head.files.get(p)).filter((e): e is Entry => !!e), head, bytes, 0);
     return paths.filter((p) => !head.files.has(p));
   }
-  const head = await headOf(name);
+  const head = await headOf(name, priority);
   const here = paths
     .map((p) => head.files.get(p))
     .filter((e): e is Entry => !!e)
@@ -311,14 +319,14 @@ async function fromPack(name: string, paths: string[], whole: boolean): Promise<
     const last = span(runs[runs.length - 1]!)[1];
     // the first run says whether the host answers Range; a 200's one stream then serves them all
     const [from, to] = span(runs[0]!);
-    const first = await readSpan(packUrl(name), from, to, last);
+    const first = await readSpan(packUrl(name), from, to, last, priority);
     if (!first.ranged) keep(here, head, first.bytes, first.at);
     else {
       keep(runs[0]!, head, first.bytes, first.at);
       await Promise.all(
         runs.slice(1).map(async (run) => {
           const [a, b] = span(run);
-          const r = await readSpan(packUrl(name), a, b, last);
+          const r = await readSpan(packUrl(name), a, b, last, priority);
           keep(r.ranged ? run : here, head, r.bytes, r.at);
         }),
       );
@@ -397,8 +405,10 @@ function remember(owner: string, paths: string[]): void {
  * Load `paths` (catalogue paths: board copies, full pictures, a postcard) from board `board`'s
  * packs (its board copies', then its full pictures'). Resolves once they are resident (at
  * once with no packs); rejects when a pack would not load or does not hold one of them.
+ * `priority: "low"`: the board's own pack is asked for behind what the page needs now (home's
+ * pictures: the next board's, started with home); a later ask for the same files joins it.
  */
-export async function ensure(paths: string[], board: string, opts: { full?: boolean } = {}): Promise<void> {
+export async function ensure(paths: string[], board: string, opts: { full?: boolean; priority?: RequestPriority } = {}): Promise<void> {
   const idx = await loadIndex();
   if (!idx) return;
   remember(board, paths);
@@ -422,7 +432,7 @@ export async function ensure(paths: string[], board: string, opts: { full?: bool
         // a pack whose index is known to hold none of them is not fetched again
         const known = heads.has(name) ? await heads.get(name)!.catch(() => null) : null;
         if (known && !left.some((p) => known.files.has(p))) continue;
-        left = await fromPack(name, left, wholePack(idx, name));
+        left = await fromPack(name, left, wholePack(idx, name), opts.priority);
       }
       if (left.length && !fullOf) {
         await loadFull(idx);

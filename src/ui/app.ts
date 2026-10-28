@@ -94,7 +94,7 @@ import { challengeCard, comparePanel, createFriendCards, outcomeOf, type Challen
 import { friendAction, launchLink, markAnswered, recentFriendActions, watchFriends, type Dare, type Launch } from "../net/friends";
 import { today as dailyToday } from "../net/daily";
 import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy, suitcaseItem } from "./catalogue";
-import { ensure, ensureSuitcase, fileUrl, resident } from "../packs";
+import { ensure, ensureSuitcase, fileUrl, resident, warmIndex } from "../packs";
 import { mountParticles } from "./particles";
 import { boardFiles, levelCount, openBoard, type BoardHandle, type BoardPicture } from "./board-api";
 import type { DevMenu } from "./dev-menu";
@@ -426,30 +426,47 @@ function drawHome(): void {
 let homeSettled = false;
 /** The longest the background loads wait for home to be whole. */
 const SETTLE_CAP_MS = 5000;
-function settleHome(): void {
-  void Promise.race([homeUi.whole(), new Promise((r) => setTimeout(r, SETTLE_CAP_MS))]).then(() => {
+/** The longest the rest waits behind the next board's pictures. */
+const BOARD_FIRST_MS = 3000;
+function settleHome(fonts: Promise<unknown>): void {
+  const after = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  void Promise.race([Promise.all([fonts, homeUi.whole()]), after(SETTLE_CAP_MS)]).then(async () => {
     if (homeSettled) return;
     homeSettled = true;
     // the music and the rest of the sounds (Audio's: the sound code and the click came at start)
     homeWhole();
-    // the board Next stop opens, and its pictures
-    if (!awaitingRecord()) prefetchBoard(nextBoard());
+    // the board Next stop opens: its pictures began with home at low priority (startApp); asked
+    // again here, the same files join that request
+    const board = awaitingRecord()
+      ? Promise.resolve()
+      : loadLevel(nextBoard())
+          .then((l) => ensure(boardPaths(l), l.id))
+          .catch(() => undefined);
+    // the rest behind it, so a quick tap on Next stop waits for nothing else (QA, 0.47.0: a new
+    // player's next trip and the Souvenirs came before home and board 1's pictures)
+    await Promise.race([board, after(BOARD_FIRST_MS)]);
     // the next trip's boards, so a trip's last board leads on without a wait
     const tr = currentTrip();
-    const after = tr ? trips[trips.indexOf(tr) + 1] : undefined;
-    if (after) void loadTrip(after.id).catch(() => undefined);
+    const nextTrip = tr ? trips[trips.indexOf(tr) + 1] : undefined;
+    if (nextTrip) void loadTrip(nextTrip.id).catch(() => undefined);
     // the Shuffle lesson's board, for the way to board 4 (lessons.ts): only while the player may need it
     if (awaitingRecord() || campaignNext() <= 4)
       void lessonLevel("shuffle").then(
         (l) => (shuffleBoard = l),
         () => undefined,
       );
-    // the Souvenir boards (a player with a stamp has had them since boot): before a trip's end needs them
-    void loadSouvenirList();
+    // the Souvenir boards: only a player with a stamp (since boot) shows one; anyone else gets them
+    // when a trip's last board opens (openPlay), or a stamp lands in the record
+    soonSouvenirs();
+    onProgress(soonSouvenirs);
     // the month's suitcase items, for its screen; every table's thumbnail, for the picker and a prize
     suitcaseUi.warm();
     warmThumbs();
   });
+}
+/** The Souvenir boards, once the player has a stamp (souvenirs.ts: loaded once). */
+function soonSouvenirs(): void {
+  if (trips.some(tripDone)) void loadSouvenirList();
 }
 
 let playing = false;
@@ -545,6 +562,8 @@ function openPlay(next: Play): void {
     return;
   }
   waiting = null;
+  // a trip's last board: the Souvenir boards, for the stamp's way on to its Souvenir
+  if (next.kind === "campaign" && tripEndingAt(boardNumber(next.level))) void loadSouvenirList();
   // a campaign board whose trip has not loaded (a trip at a time): its boards first, home's Play
   // saying "Opening…" meanwhile, then this again (only the last board asked for opens)
   if (next.kind === "campaign" && !campaignReady(next.level)) {
@@ -1987,6 +2006,8 @@ export async function startApp(): Promise<void> {
   // home draws, and redraws when the record lands
   loadProgress();
   loadGuideSave();
+  // where the pictures are (the packs' index), so the next board's can start the moment home is drawn
+  warmIndex();
   // the player's table, which home now shows (tables.ts): read and laid before home appears, in the
   // same capped wait, so a Winter Dusk owner never sees the sunny home turn snowy
   void startTables();
@@ -2001,6 +2022,12 @@ export async function startApp(): Promise<void> {
   const stamped = trips.some(tripDone);
   if (stamped) void loadSouvenirList();
   drawHome();
+  // the board Next stop opens: its pictures start with home, at low priority behind home's own (QA,
+  // 0.47.0: started after home, a quick tap on 4G waited ~1.4 s for them)
+  if (!awaitingRecord())
+    void loadLevel(nextBoard())
+      .then((l) => ensure(boardPaths(l), l.id, { priority: "low" }))
+      .catch(() => undefined);
   await Promise.race([Promise.all([fonts, homeUi.whole(), tableChoiceRead]), until()]);
 
   onProgress(drawHome);
@@ -2030,7 +2057,7 @@ export async function startApp(): Promise<void> {
   // holds its place meanwhile (daily.ts) and shows once they are known
   void dailyUi.refresh();
   // home is whole: the rest comes in behind it, in the order it is likely wanted
-  settleHome();
+  settleHome(fonts);
   // the table's weather (the table itself was laid before home appeared: startTables, above)
   mountParticles(app);
   // every glyph kept in the page, so a connection dropped later never leaves a button bare

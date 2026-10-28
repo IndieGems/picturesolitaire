@@ -237,6 +237,8 @@ export function createHome(nav: Nav, parts: Parts) {
     // the trip's stamp at its last stop: earned, Art's stamp over the postcard; else its faint outline
     if (last && next !== null) {
       li.classList.add("last");
+      // home appears with it (QA, 0.47.0: on 4G the outline came ~0.7 s after home)
+      pictures.push(warm(new URL(stampUrl(tr), location.href).href));
       if (tripDone(tr)) {
         const s = el("img", "stamp");
         Object.assign(s, { src: stampUrl(tr), alt: "", draggable: false });
