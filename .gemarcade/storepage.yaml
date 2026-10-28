@@ -107,14 +107,14 @@ media:
   # hooks and each board played by its own proved line (the UI member, 2026-10-27).
   screenshots:
     - src: screenshots/01-home-france.jpg
-      alt: "Home screen under the Picture Passport title, on the France trip, stop 6 of 15. The first five stops show postcards of the cliffs of Étretat, Mont-Saint-Michel, the pink granite coast, the chapel oak of Allouville and Château de Chenonceau; the America trip's Souvenir waits beside the trip's name, with the Next stop button below."
+      alt: "Home screen on the sunny sky-blue suitcase table, under the Picture Passport title, on the France trip, stop 6 of 15. The first five stops show postcards of the cliffs of Étretat, Mont-Saint-Michel, the pink granite coast, the chapel oak of Allouville and Château de Chenonceau; the America trip's Souvenir waits beside the trip's name, with the Next stop button below."
     - src: screenshots/02-board-mid-play.jpg
-      alt: "A 4 by 5 board in play. Picture cards fill the grid under stacks of face-up cards, and two pictures are partly joined into larger pieces. Restart, Undo, Hint and Shuffle buttons sit below."
+      alt: "A 4 by 5 board in play on the sunny table. Picture cards fill the grid under stacks of face-up cards, and one picture, a red handcar, is partly joined into a larger piece. Restart, Undo, Hint and Shuffle buttons sit below."
     - src: screenshots/03-postcard-mont-saint-michel.jpg
       alt: "A finished destination unfolded into a postcard of Mont-Saint-Michel that covers the board, with its name and Normandy, France above it."
     - src: screenshots/04-passport-stamp.jpg
-      alt: "The passport open at the American West trip: its stamp, 15 of 15 places visited, and postcards of Bixby Bridge, Emerald Bay and Mono Lake."
+      alt: "The passport open at the American West trip: its stamp, 15 of 15 places visited, a button to play its Souvenir, and postcards of Bixby Bridge, Emerald Bay and Mono Lake."
     - src: screenshots/05-board-6x6.jpg
       alt: "A 6 by 6 board marked Super hard, with thirty-six picture cards and a carousel horse partly pieced together."
     - src: screenshots/06-win-card.jpg
-      alt: "The win card for a hard board: a finished painting of a lavender field and two other pictures, 35 moves in 3 minutes, plus 40 Coins, one Undo and one Hint."
+      alt: "The win card for a hard board: a finished painting of a lavender field beside the board's other pictures, 35 moves in 3 minutes, plus 40 Coins, one Undo and one Hint."
