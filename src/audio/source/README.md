@@ -31,7 +31,8 @@ original holds.
 | mark-thump.wav | super hard board sting: the low thump | 0-0.66 s | one soft C2 thump, under supermark's second note |
 | stamp.wav | passport stamp lands | 0.525-0.82 s | rubber hit then its body; low-passed at 5 kHz (a first take was silent, regenerated) |
 | fanfare.mp3 | destination postcard opens (music cue, 4 s) | 0-2.6 s | D major horns and strings, glockenspiel sparkle; -16 LUFS |
-| latch.wav | the Daily Suitcase's case closing (packed) | 1.575-1.8 s | lid thud then two latch clicks (1.585, 1.66), boom thinned at 180 Hz; packed adds the hint chime an octave up; found and suitcase are built from mark-marimba, mark-thump and hint |
+| latch.wav | the Daily Suitcase's case closing (packed) | 1.575-1.8 s | lid thud then two latch clicks (1.585, 1.66), boom thinned at 180 Hz; packed adds the hint chime an octave up; suitcase is built from mark-marimba, mark-thump and hint |
+| found-fanfare.mp3 | the Daily Suitcase's found-it moment (music cue, 6 s) | 0.02-0.94 s, then 3.205-5.2 s | xylophone, glockenspiel, pizzicato in C, beats every 0.455 s; the cut skips to the beat before the final chord (3.66), which lands at 1.36 s |
 | bed.mp3 | background music, 90 s | 0-86.5 s | loop: crossfade last ~4 s into the start at run time |
 
 Shipped: Ogg Opus (effects mono 40 kbps, won/bed stereo 48 kbps), about

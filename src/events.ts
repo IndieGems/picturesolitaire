@@ -149,6 +149,15 @@ export interface GameEvents {
    * when a swap brings it. Once per moment. Sound plays the full-suitcase sting.
    */
   "suitcase:full": { month: string };
+  /**
+   * The day's item, found on the board (after suitcase:item, UI's big moment:
+   * it lifts, grows with a starburst and its name, then flies into a small
+   * suitcase), just touched that suitcase, ~1.45 s in (1.4 s with reduced
+   * motion). `skipped`: a tap jumped the moment to its end, so it comes early
+   * and everything fades in 150 ms. Sound plays the latch, and on a skip cuts
+   * the found-it fanfare.
+   */
+  "suitcase:stowed": { id: string; skipped: boolean };
   /** Any button pressed in the interface (for its click sound). */
   "ui:press": { id: string };
   /**

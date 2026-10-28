@@ -74,7 +74,7 @@ const MUSIC = [
 // played what was asked: each part is a slice (start..end) of a source, faded
 // at its end, re-pitched by `rate` (below 1 is lower and slower, as on tape),
 // starting `at` seconds in, `db` louder or softer, `lowpass` (Hz) to soften
-// it, `highpass` (Hz) to thin it. The mix is cut to `len`, faded over `fade`, high-passed and
+// it, `highpass` (Hz) to thin it, `fadeIn` (s) for a slice cut mid-sound. The mix is cut to `len`, faded over `fade`, high-passed and
 // peak-normalised like any effect; `stereo` keeps a music part's width.
 const B3 = 2 ** (-3 / 12); // a minor third down
 const P4 = 2 ** (-5 / 12); // a fourth down
@@ -107,15 +107,17 @@ const BUILT = [
       { src: "mark-thump.wav", start: 0, end: 0.66, at: 0.32, db: -3 },
     ],
   },
-  // The Daily Suitcase (docs/daily-suitcase.md). Found it: the day's item
-  // finished on the board, over the picture-whole harp (C major / A minor): a
-  // quick bright marimba "ba-ding" up a fifth (C5, G5) under a glass ping (the
-  // hint chime an octave up, E7). Short: it lands on the picture's clear.
+  // The Daily Suitcase (docs/daily-suitcase.md). Found it: the day's item lifts
+  // to the centre with a starburst and its name, then flies into a suitcase,
+  // touching it ~1.45 s in (UI), where the latch plays on suitcase:stowed. A
+  // generated xylophone, glockenspiel and pizzicato fanfare in C (beats every
+  // 0.455 s), cut from 6 s: its opening two beats (onset 0.028), then its last
+  // beat before the final chord (3.218), so the chord lands at 1.36 s, just
+  // before the latch. Its ring is cut short: the moment is gone by ~1.9 s.
   {
-    name: "found", len: 0.5, fade: 0.25, parts: [
-      { src: "mark-marimba.wav", start: 0.695, end: 1.1, at: 0, rate: up(12) },
-      { src: "mark-marimba.wav", start: 0.695, end: 1.2, at: 0.075, rate: up(19) },
-      { src: "hint.wav", start: 0.02, end: 0.8, at: 0.075, rate: up(12), db: 6 },
+    name: "found", len: 1.95, fade: 0.5, stereo: true, parts: [
+      { src: "found-fanfare.mp3", start: 0.02, end: 0.94, at: 0 },
+      { src: "found-fanfare.mp3", start: 3.205, end: 5.2, at: 0.905, fadeIn: 0.01 },
     ],
   },
   // (Part levels are relative to each source's own: the hint chime's original
@@ -206,6 +208,7 @@ function built(s, dir) {
     return [
       `[${i}:a]atrim=start=${p.start}:end=${p.end}`,
       "asetpts=PTS-STARTPTS",
+      p.fadeIn ? `afade=t=in:d=${p.fadeIn}` : null,
       `afade=t=out:st=${(len - 0.05).toFixed(3)}:d=0.05`,
       p.rate ? `asetrate=${(48000 * p.rate).toFixed(1)},aresample=48000` : null,
       `adelay=${Math.round(p.at * 1000)}:all=1`,

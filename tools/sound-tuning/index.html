@@ -141,6 +141,13 @@ async function playEffect(name, take = takeOf(name)) {
       const across = col / 4;
       voice(buf, level, { rate: rate * (0.94 + across * 0.14), pan: (across - 0.5) * 1.1, when: col * 0.055 });
     }
+  } else if (name === "found") {
+    // The moment as the game plays it: the latch as the item lands in the suitcase.
+    voice(buf, level, { rate });
+    const sd = data.levels.effects.stow;
+    const ss = setting("stow");
+    const latch = await buffer(fileUrl("stow", takeOf("stow")));
+    voice(latch, sd.gain * (ss.volume ?? 1) * mix.effects, { rate: sd.rate * 2 ** ((ss.pitch ?? 0) / 12), when: 1.45 });
   } else if (name === "settle") {
     // Five columns landing one after another, as the game plays them.
     for (let col = 0; col < 5; col++) {

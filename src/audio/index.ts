@@ -103,6 +103,8 @@ function landsIn(payload: object, fallback: number, at = 0.85): number {
 let flourish: Voice | null = null;
 /** The win cue, cut short if a milestone card replaces the win card. */
 let winCue: Voice | null = null;
+/** The found-it fanfare, cut short if its moment is skipped. */
+let foundCue: Voice | null = null;
 /** When the last suitcase item was packed (performance.now ms). */
 let packedAt = -Infinity;
 
@@ -221,9 +223,21 @@ function listen(): void {
   // A trip's stamp lands on its passport page (UI, the instant it lands).
   on("trip:stamp", () => play("stamp"));
   // The Daily Suitcase. The day's item finished on the board, at its picture's
-  // clear (the harp is ringing): its "found it", once per opening of the board.
+  // clear: UI's big moment (~1.9 s) and its fanfare, the harp fading under it.
+  // Once per opening of the board. The item lands in its suitcase ~1.45 s in
+  // (suitcase:stowed): the latch, just after the fanfare's final chord. A tap
+  // skips the moment to its end: the fanfare goes with it (UI fades in 150 ms).
   on("suitcase:item", ({ again }) => {
-    if (!again) play("found");
+    if (again) return;
+    flourish?.fadeOut(0.3);
+    flourish = null;
+    foundCue = play("found");
+    if (foundCue) duckMusic(0.3, 1.8, 1.2);
+  });
+  on("suitcase:stowed", ({ skipped }) => {
+    if (skipped) foundCue?.fadeOut(0.15);
+    foundCue = null;
+    play("stow");
   });
   // The item lands in the suitcase on the win card (UI): the latch, a little
   // softer for a spare copy.

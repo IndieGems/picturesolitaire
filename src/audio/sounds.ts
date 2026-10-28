@@ -30,7 +30,8 @@ export type EffectName =
   | "settle"
   | "found"
   | "packed"
-  | "suitcase";
+  | "suitcase"
+  | "stow";
 
 export type EffectDef = {
   /** The file in public/audio/, when it is not the effect's own name. */
@@ -93,10 +94,13 @@ export const EFFECTS: Record<EffectName, EffectDef> = {
   // orchestral flourish (horns, strings, glockenspiel). Every board has one,
   // so it sits under the win cue and stays light enough to hear often.
   fanfare: { gain: 0.6, jitter: 0, minGap: 1 },
-  // The Daily Suitcase. Found it: the day's item finished on the board, a
-  // bright marimba "ba-ding" with a glass ping, over the picture-whole harp
-  // (which stays the bigger sound).
-  found: { gain: 0.5, jitter: 0, minGap: 1 },
+  // The Daily Suitcase. Found it: the day's item finished on the board, the
+  // big moment (it lifts with a starburst and its name, then flies into a
+  // suitcase): a bouncy xylophone, glockenspiel and pizzicato fanfare, under
+  // 2 s, its final chord just before the item lands. Stow: the case's latch as
+  // it lands (the packed sound, a level of its own).
+  found: { gain: 0.6, jitter: 0, minGap: 1 },
+  stow: { file: "packed", gain: 0.55, jitter: 0, minGap: 0.5 },
   // Packed: the item lands in the suitcase on the win card, its lid and latches
   // and a tiny sparkle (softer for a spare copy, src/audio/index.ts).
   packed: { gain: 0.55, jitter: 0, minGap: 0.3 },
