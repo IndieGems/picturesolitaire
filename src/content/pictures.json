@@ -3819,6 +3819,37 @@
       "landmark": true
     },
     {
+      "id": "eagle-figurehead",
+      "album": "travel",
+      "title": "The Figurehead",
+      "medium": "photo",
+      "file": "pictures/travel/eagle-figurehead.webp",
+      "board": "pictures/travel/eagle-figurehead-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "gold",
+        "red",
+        "deep blue",
+        "brown"
+      ],
+      "subjects": [
+        "figurehead",
+        "carved eagle",
+        "sailing ship"
+      ],
+      "family": "eagle-figurehead",
+      "busy": 0
+    },
+    {
       "id": "palm-island",
       "album": "landscapes",
       "title": "Palm Island",
