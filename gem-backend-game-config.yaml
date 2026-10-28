@@ -2086,6 +2086,96 @@ progressions:
         - mode: on_complete
           amount: 20
           target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: f573127b-eb31-5f1c-b26f-5ff843e78686
+    slug: board_s2
+    display_name: "Souvenir 2"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 4e5b646e-0d12-5327-88f4-d39241310327
+    slug: board_s3
+    display_name: "Souvenir 3"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: df12ff4c-8127-5a4d-b563-d5e37d84c8d2
+    slug: board_s4
+    display_name: "Souvenir 4"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 31b5524a-f8c0-5cc3-91c5-6f552b5c25a7
+    slug: board_s5
+    display_name: "Souvenir 5"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: f65bcfd0-7ffd-5792-9842-0eece405c5de
+    slug: board_s6
+    display_name: "Souvenir 6"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 11b4c866-9d65-5279-a34f-88b7e68901b9
+    slug: board_s7
+    display_name: "Souvenir 7"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: a41de677-c3d0-542f-ac15-9a834e2e78e7
+    slug: board_s8
+    display_name: "Souvenir 8"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 315f8f63-f0c1-5d4d-b494-b4971f3167ce
+    slug: board_s9
+    display_name: "Souvenir 9"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 8c79be77-761c-50fe-9b20-d2eafff18181
+    slug: board_s10
+    display_name: "Souvenir 10"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
   # THE HELPER KIT: 3 of each helper, once ever, at the end of board 1 (the guided start),
   # or on the next win of a player already past it. The win checker pays it into the
   # helper currencies and sets this to 1 in the same order, so it is paid once or not at all.

@@ -26,7 +26,7 @@ and leaves the hourly rate where it is.
 - Challenge route: 20 boards, 540 Coins in all, 27 a board on average.
   At 4 minutes a board that is about 405 an hour; at 5 minutes 324.
 - Daily: 50 once a day, on top.
-- Souvenirs: 1 of 10 trips dealt, 20 Coins in all, once each (s1 20).
+- Souvenirs: 10 of 10 trips dealt, 350 Coins in all, once each (s1 20, s2 35, s3 30, s4 30, s5 40, s6 40, s7 40, s8 40, s9 35, s10 40).
 - One-time: the onboarding prize. Replays and campaign boards past the last pay nothing.
 - **Still to measure**: real minutes per board once the creator has played some (the lead's
   note): if boards run much faster or slower than 2 to 4 minutes, change the rule here.
@@ -206,3 +206,12 @@ and leaves the hourly rate where it is.
 | ch19 | challenge 19 | 26 | 30 |
 | ch20 | challenge 20 | 31 | 35 |
 | s1 | souvenir 1 | 13 | 20 |
+| s2 | souvenir 2 | 13 | 35 |
+| s3 | souvenir 3 | 15 | 30 |
+| s4 | souvenir 4 | 13 | 30 |
+| s5 | souvenir 5 | 14 | 40 |
+| s6 | souvenir 6 | 13 | 40 |
+| s7 | souvenir 7 | 13 | 40 |
+| s8 | souvenir 8 | 16 | 40 |
+| s9 | souvenir 9 | 14 | 35 |
+| s10 | souvenir 10 | 14 | 40 |
