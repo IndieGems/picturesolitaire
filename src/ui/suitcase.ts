@@ -2,25 +2,27 @@
 // the daily puzzle fills. Its record is the platform's (suitcase-data.ts, over Server's module):
 //
 //   the tile        home's dock, in the challenge route's old place (the creator, 2026-10-27:
-//                   "that button should be for the current event"): Art's closed suitcase, the
-//                   theme ("Ski Trip") and "7 of 10 · 12 days left"; before a month's event starts,
-//                   the next one, "Starts Nov 1". It opens the suitcase.
+//                   "that button should be for the current event"): Art's closed suitcase, "Event"
+//                   and the theme under it ("Ski Trip"), in every state (the creator, 2026-10-28: the
+//                   count and the start date are the page's). It opens the suitcase.
 //   the suitcase    a screen of its own, from the tile: the month's 10 slots,
 //                   each the item's picture once packed (with "×2", "×3" for spare copies) or its
-//                   outline while missing; then the swap (tap a missing item; 3 spares, of any
-//                   items, swap for it, checked on the server), the prize (the month's table and a
-//                   few helpers, paid once by the platform), today's daily (Play, or its results),
-//                   and the shelf.
+//                   outline while missing; under them today's daily, "Play the Daily Puzzle!" (the
+//                   creator, 2026-10-28: the event has no puzzles of its own, the daily is how items
+//                   come, so the page says so where a phone shows it), or once won its results and
+//                   "Come back tomorrow"; then the swap (tap a missing item; 3 spares, of any items,
+//                   swap for it, checked on the server; with no spares, only once one is tapped), how
+//                   it works (four short steps, glass), the prize (the month's table and a few
+//                   helpers, paid once by the platform), and the shelf.
 //   the shelf       past months, each a closed suitcase with how many were packed; a tap opens it
-//                   to look at, never to finish (no swap, no daily).
-//   the preview     before the event: the next month's suitcase, every slot an outline, its prize,
-//                   when it starts, and no swap.
+//                   to look at, never to finish (no swap, no daily, no how it works).
+//   the preview     before the event: the next month's suitcase, every slot an outline, when it
+//                   starts, how it works and its prize; no play (nothing packs yet) and no swap.
 //   the win card    the day's first daily win packs the day's item: once the checker's verdict says
 //                   so, the item's picture flies into a small suitcase on the card, and the line
 //                   says "Goggles packed! 8 of 10". Decoration only: it takes no touch and never
 //                   holds the card's buttons.
-//   the board       the item's picture finished on a first daily of the day: one line, taking no
-//                   touch, "Goggles found! It goes in your suitcase when you win."
+//   the board       the item's picture finished on a first daily of the day: item-found.ts's moment.
 //
 // No item is ever shown before its day: the slots show what the player holds, and a missing slot is
 // the item's outline and name (the month's 10 are the theme, known from the 1st; which one comes on
@@ -55,6 +57,8 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", text = ""):
   if (text) e.textContent = text;
   return e;
 }
+
+const lessMotion = () => document.documentElement.classList.contains("less-motion") || matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /** "November" for "2026-11" (the player's own month, in the game's language). */
 export function monthName(m: string): string {
@@ -190,6 +194,8 @@ export function createSuitcase(nav: Nav) {
           picked = picked === it.id ? null : it.id;
           said = "";
           draw();
+          // the swap sits under the play button: bring its button into view
+          if (picked) screen.querySelector(".case-swap")?.scrollIntoView({ block: "nearest", behavior: lessMotion() ? "auto" : "smooth" });
         });
       }
       slot.append(itemPic(it, missing), el("span", "slot-name", it.title));
@@ -282,6 +288,55 @@ export function createSuitcase(nav: Nav) {
     return box;
   }
 
+  /**
+   * Today's daily, under the suitcase: "Play the Daily Puzzle!", the screen's amber button (the swap's
+   * takes the amber while an item is picked); once today's is won, its results and when the next item
+   * comes. The creator's event preview plays its next event puzzle under the same words, in practice.
+   */
+  function play(s: Suitcase): HTMLElement | null {
+    const box = el("div", "case-play");
+    if (suitcases.previewing()) {
+      const b = el("button", `btn ${picked ? "" : "amber "}case-daily case-event`);
+      b.type = "button";
+      b.dataset.press = "case.playEvent";
+      b.textContent = t("case.play");
+      b.addEventListener("click", () => nav.playEvent());
+      box.append(b, el("p", "case-note", t("case.previewNote")));
+      return box;
+    }
+    const d = nav.daily();
+    if (!d) return null;
+    const b = el("button", `btn ${d.done || picked ? "" : "amber "}case-daily`);
+    b.type = "button";
+    b.dataset.press = d.done ? "case.results" : "case.play";
+    b.textContent = d.done ? t("case.results") : t("case.play");
+    b.addEventListener("click", () => d.go());
+    box.append(b);
+    // the month's last day has no tomorrow for this suitcase
+    if (d.done) box.append(el("p", "case-later glass", s.daysLeft > 1 ? t("case.tomorrow") : t("case.lastDay")));
+    return box;
+  }
+
+  /** How it works: four short steps, information only (the creator, 2026-10-28). */
+  function howItWorks(s: Suitcase): HTMLElement {
+    const box = el("section", "case-how glass");
+    const head = el("h2", "", t("case.how.title"));
+    head.id = "case-how-title";
+    box.setAttribute("aria-labelledby", head.id);
+    const own = s.prize.table !== DEFAULT_TABLE;
+    const table = own ? (s.prize.tableTitle ?? knownTable(s.prize.table)?.title ?? "") : "";
+    const steps = el("ol");
+    for (const line of [
+      t("case.how.play"),
+      t("case.how.hides"),
+      t("case.how.swap", { count: SWAP_COST }),
+      table ? t("case.how.prizeTable", { count: s.items.length, table }) : t("case.how.prizeHelpers", { count: s.items.length }),
+    ])
+      steps.append(el("li", "", line));
+    box.append(head, steps);
+    return box;
+  }
+
   function shelf(): HTMLElement | null {
     const past = suitcases.past().slice(0, 12);
     if (!past.length) return null;
@@ -331,47 +386,27 @@ export function createSuitcase(nav: Nav) {
     const wrap = el("div", "case-wrap");
     wrap.append(suitcase);
     parts.push(wrap);
-    if (open && !s.complete) parts.push(swapPanel(s));
+    // this month's (or the creator's preview of it, its puzzles in practice: the creator, 2026-10-27,
+    // "let me play those puzzles and go through the whole process"): today's daily, under the suitcase
+    if (!viewing) parts.push(play(s));
+    // the swap, close under the slots it picks from; with no spares it waits for a pick (how it works,
+    // next, says what spares are), so a new player reads how it works straight under the button
+    if (open && !s.complete && (picked || spares(s) > 0)) parts.push(swapPanel(s));
+    // how it works: this month's and the next one's preview, never a shelf month
+    if (!viewing || viewing === UPCOMING) parts.push(howItWorks(s));
     parts.push(prize(s));
-    if (!viewing && suitcases.previewing()) {
-      // the creator's event preview: its puzzles, in practice, one press each (the creator, 2026-10-27:
-      // "let me play those puzzles and go through the whole process")
-      const b = el("button", `btn ${picked ? "" : "amber "}case-daily case-event`);
-      b.type = "button";
-      b.dataset.press = "case.playEvent";
-      b.textContent = t("case.playEvent");
-      b.addEventListener("click", () => nav.playEvent());
-      parts.push(b, el("p", "case-note", t("case.previewNote")));
-    } else if (!viewing) {
-      const d = nav.daily();
-      if (d) {
-        // the screen's one amber button: the swap's, while one is picked, else today's daily
-        const b = el("button", `btn ${d.done || picked ? "" : "amber "}case-daily`);
-        b.type = "button";
-        b.dataset.press = d.done ? "case.results" : "case.play";
-        b.textContent = d.done ? t("case.results") : t("case.play");
-        b.addEventListener("click", () => d.go());
-        parts.push(b);
-      }
-      parts.push(shelf());
-    }
+    if (!viewing && !suitcases.previewing()) parts.push(shelf());
     scroll.replaceChildren(...parts.filter((p): p is HTMLElement => !!p));
   }
 
+  /** Home's tile: "Event" and the theme, this month's or (before it starts) the next one's. */
   function drawTile(): void {
-    const s = suitcases.current();
-    const next = s ? null : suitcases.upcoming();
-    tile.hidden = !s && !next;
-    if (s) {
-      tileName.textContent = s.theme;
-      tileLine.textContent = s.complete
-        ? t("case.tileFull")
-        : `${t("case.tileOf", { count: held(s), all: s.items.length })} · ${t("case.daysLeft", { count: s.daysLeft })}`;
-    } else if (next) {
-      tileName.textContent = next.s.theme;
-      tileLine.textContent = t("case.starts", { date: shortDate(next.starts) });
-    } else return;
-    tile.setAttribute("aria-label", `${eventTitle(s ?? next!.s)}: ${tileLine.textContent}. ${t("case.open")}`);
+    const s = suitcases.current() ?? suitcases.upcoming()?.s ?? null;
+    tile.hidden = !s;
+    if (!s) return;
+    tileName.textContent = t("case.tile");
+    tileLine.textContent = s.theme;
+    tile.setAttribute("aria-label", t("case.tileAria", { theme: s.theme }));
   }
 
   /** Open the suitcase: this month's; before the event, the next one's preview; or a shelf month. */
@@ -447,8 +482,7 @@ export function packedOnCard(
   const card = line.closest(".card");
   const own = card?.querySelector<HTMLElement>(`[data-pic="${CSS.escape(item.id)}"]`) ?? null;
   const src = url || own?.querySelector("img")?.currentSrc || item.pic || "";
-  const less = document.documentElement.classList.contains("less-motion") || matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (!src || less) {
+  if (!src || lessMotion()) {
     landed();
     return;
   }

@@ -505,7 +505,8 @@ export function mountDevMenu(host: DevHost): DevMenu {
     el("h3", "", "Event preview (practice)"),
     eventState,
     eventRow,
-    btn("dev-wide amber", "Play an event puzzle", () => {
+    // the event page's own words, so the creator sees what players will
+    btn("dev-wide amber", "Play the Daily Puzzle!", () => {
       if (!suitcases.previewing()) suitcases.preview("start");
       dialog.close();
       host.playEvent();
@@ -514,7 +515,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     el(
       "p",
       "dev-note",
-      "A pretend November suitcase: nothing is saved or sent. Play an event puzzle opens the next November daily whose item the suitcase lacks: win it and the item flies in, then Back to suitcase. A swap works from the suitcase. Almost full is one item short of the full suitcase and the Ski Lodge table. While the preview is on, home's event tile opens it.",
+      "A pretend November suitcase: nothing is saved or sent. Play the Daily Puzzle! opens the next November daily whose item the suitcase lacks, in practice: win it and the item flies in, then Back to suitcase. A swap works from the suitcase. Almost full is one item short of the full suitcase and the Ski Lodge table. While the preview is on, home's event tile opens it.",
     ),
   );
 

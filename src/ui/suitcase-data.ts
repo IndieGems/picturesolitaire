@@ -165,7 +165,7 @@ export const suitcases = {
   /** The creator's event preview is on. */
   previewing: (): boolean => ALLOWED && !!pretend?.preview,
   /**
-   * The preview's next event puzzle (its "Play an event puzzle"): the next November day, after the
+   * The preview's next event puzzle (its "Play the Daily Puzzle!"): the next November day, after the
    * last one given, whose item the pretend suitcase lacks, so each win packs a new one; with nothing
    * missing, the next day at all (its item a spare: "packed again ×N").
    */
