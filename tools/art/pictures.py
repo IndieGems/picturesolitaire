@@ -184,7 +184,7 @@ def cmd_repaint(raw, ids, quality="medium"):
         e = entry(p, pid)
         _, style, refs, colours, passes = PAINT[e["paint"]]
         src = Path(raw) / f"{pid}-study.png"
-        study(Image.open(master_path(pid)).convert("RGB"), colours, passes).save(src)
+        study(framed(e), colours, passes).save(src)  # the picture as it ships (a library master may be wider)
         args = ["gemforge", "generate", "image", "--from", str(src)]
         for k, ref_id in enumerate(e.get("paintRef", refs) if isinstance(e.get("paintRef", refs), list) else [e["paintRef"]]):
             ref = Path(raw) / f"{pid}-ref{k}.png"
