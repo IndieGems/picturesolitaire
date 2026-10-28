@@ -145,15 +145,21 @@ function loadTuning(): void {
 /**
  * A picture's files: the full one, and Art's light board copy with its size in pixels (none yet:
  * the full). A destination's postcard is in the catalogue's own `destinations` list, with the
- * place's name; a daily's suitcase item in its `items` list (Levels' ids, item-YYYY-MM-NN).
+ * place's name; a daily's suitcase item in its `items` list (Levels' ids, item-YYYY-MM-NN); a
+ * Souvenir board's pictures in `souvenirPictures` (docs/souvenirs.md). None of those three is
+ * the library's: each is dealt only on its own boards.
  */
 type PictureFiles = {
   id: string; file: string; board?: string; boardPx?: number[]; px?: number[];
   name?: string; title?: string; place?: string;
 };
-const catalogue = CATALOGUE as unknown as { pictures: PictureFiles[]; destinations?: PictureFiles[]; items?: PictureFiles[] };
+const catalogue = CATALOGUE as unknown as {
+  pictures: PictureFiles[]; destinations?: PictureFiles[]; items?: PictureFiles[]; souvenirPictures?: PictureFiles[];
+};
 const pictureFiles = new Map(
-  [...catalogue.pictures, ...(catalogue.destinations ?? []), ...(catalogue.items ?? [])].map((p) => [p.id, p]),
+  [
+    ...catalogue.pictures, ...(catalogue.destinations ?? []), ...(catalogue.items ?? []), ...(catalogue.souvenirPictures ?? []),
+  ].map((p) => [p.id, p]),
 );
 /** A picture's file is drawn over this many cells: a destination's postcard over the whole board. */
 function drawnSize(l: Level, p: Picture): { cols: number; rows: number } {
