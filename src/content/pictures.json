@@ -49437,6 +49437,282 @@
         "tango shoes"
       ],
       "bg": "lime"
+    },
+    {
+      "id": "sv-t8-kangaroo",
+      "souvenir": "t8",
+      "album": "souvenirs",
+      "title": "Kangaroo",
+      "medium": "illustration",
+      "file": "pictures/souvenirs/sv-t8-kangaroo.webp",
+      "board": "pictures/souvenirs/sv-t8-kangaroo-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "kangaroo"
+      ],
+      "bg": "teal"
+    },
+    {
+      "id": "sv-t8-emu",
+      "souvenir": "t8",
+      "album": "souvenirs",
+      "title": "Emu",
+      "medium": "illustration",
+      "file": "pictures/souvenirs/sv-t8-emu.webp",
+      "board": "pictures/souvenirs/sv-t8-emu-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "emu"
+      ],
+      "bg": "pink"
+    },
+    {
+      "id": "sv-t8-koala",
+      "souvenir": "t8",
+      "album": "souvenirs",
+      "title": "Koala",
+      "medium": "illustration",
+      "file": "pictures/souvenirs/sv-t8-koala.webp",
+      "board": "pictures/souvenirs/sv-t8-koala-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "koala"
+      ],
+      "bg": "orange"
+    },
+    {
+      "id": "sv-t8-kookaburra",
+      "souvenir": "t8",
+      "album": "souvenirs",
+      "title": "Kookaburra",
+      "medium": "illustration",
+      "file": "pictures/souvenirs/sv-t8-kookaburra.webp",
+      "board": "pictures/souvenirs/sv-t8-kookaburra-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "kookaburra"
+      ],
+      "bg": "purple"
+    },
+    {
+      "id": "sv-t8-cockatoo",
+      "souvenir": "t8",
+      "album": "souvenirs",
+      "title": "Cockatoo",
+      "medium": "illustration",
+      "file": "pictures/souvenirs/sv-t8-cockatoo.webp",
+      "board": "pictures/souvenirs/sv-t8-cockatoo-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "cockatoo"
+      ],
+      "bg": "navy"
+    },
+    {
+      "id": "sv-t8-lyrebird",
+      "souvenir": "t8",
+      "album": "souvenirs",
+      "title": "Lyrebird",
+      "medium": "illustration",
+      "file": "pictures/souvenirs/sv-t8-lyrebird.webp",
+      "board": "pictures/souvenirs/sv-t8-lyrebird-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "subjects": [
+        "lyrebird"
+      ],
+      "bg": "lime"
+    },
+    {
+      "id": "sv-t8-platypus",
+      "souvenir": "t8",
+      "album": "souvenirs",
+      "title": "Platypus",
+      "medium": "illustration",
+      "file": "pictures/souvenirs/sv-t8-platypus.webp",
+      "board": "pictures/souvenirs/sv-t8-platypus-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "platypus"
+      ],
+      "bg": "yellow"
+    },
+    {
+      "id": "sv-t8-wombat",
+      "souvenir": "t8",
+      "album": "souvenirs",
+      "title": "Wombat",
+      "medium": "illustration",
+      "file": "pictures/souvenirs/sv-t8-wombat.webp",
+      "board": "pictures/souvenirs/sv-t8-wombat-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "wombat"
+      ],
+      "bg": "sky"
+    },
+    {
+      "id": "sv-t8-echidna",
+      "souvenir": "t8",
+      "album": "souvenirs",
+      "title": "Echidna",
+      "medium": "illustration",
+      "file": "pictures/souvenirs/sv-t8-echidna.webp",
+      "board": "pictures/souvenirs/sv-t8-echidna-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "echidna"
+      ],
+      "bg": "magenta"
+    },
+    {
+      "id": "sv-t8-crocodile",
+      "souvenir": "t8",
+      "album": "souvenirs",
+      "title": "Saltwater Crocodile",
+      "medium": "illustration",
+      "file": "pictures/souvenirs/sv-t8-crocodile.webp",
+      "board": "pictures/souvenirs/sv-t8-crocodile-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "saltwater crocodile"
+      ],
+      "bg": "red"
+    },
+    {
+      "id": "sv-t8-devil",
+      "souvenir": "t8",
+      "album": "souvenirs",
+      "title": "Tasmanian Devil",
+      "medium": "illustration",
+      "file": "pictures/souvenirs/sv-t8-devil.webp",
+      "board": "pictures/souvenirs/sv-t8-devil-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "tasmanian devil"
+      ],
+      "bg": "green"
+    },
+    {
+      "id": "sv-t8-lizard",
+      "souvenir": "t8",
+      "album": "souvenirs",
+      "title": "Frilled-neck Lizard",
+      "medium": "illustration",
+      "file": "pictures/souvenirs/sv-t8-lizard.webp",
+      "board": "pictures/souvenirs/sv-t8-lizard-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "subjects": [
+        "frilled-neck lizard"
+      ],
+      "bg": "blue"
     }
   ],
   "souvenirs": [
@@ -49488,6 +49764,13 @@
       "table": "table-souvenir-argentina",
       "tableTitle": "Buenos Aires Café",
       "sticker": "pictures/souvenirs/sv-t7-sticker.webp"
+    },
+    {
+      "trip": "t8",
+      "theme": "Wildlife",
+      "table": "table-souvenir-australia",
+      "tableTitle": "Ranger's Desk",
+      "sticker": "pictures/souvenirs/sv-t8-sticker.webp"
     }
   ]
 }
