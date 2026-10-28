@@ -422,6 +422,34 @@ function drawHome(): void {
   if (!awaitingRecord() && homeSettled) prefetchBoard(nextBoard());
 }
 
+/**
+ * Every picture home shows, decoded: its <img>s, and the CSS backgrounds of the page, the table and
+ * home's elements (::before and ::after too), as QA's probe counts "home whole". Nothing else starts
+ * before them (the lead, 0.48.0: board 1's pack sharing the line cost home ~0.4 s on 4G).
+ */
+function homeDrawn(): Promise<unknown> {
+  const shown = (e: Element) => {
+    const r = e.getBoundingClientRect();
+    return r.width > 0 && r.height > 0 && getComputedStyle(e).visibility !== "hidden";
+  };
+  const waits: Promise<unknown>[] = [];
+  for (const img of home.querySelectorAll("img")) if (shown(img)) waits.push(img.decode().catch(() => undefined));
+  const urls = new Set<string>();
+  for (const e of [document.documentElement, document.body, app, home, ...home.querySelectorAll("*")]) {
+    if (e !== document.documentElement && e !== document.body && !shown(e)) continue;
+    for (const pseudo of [null, "::before", "::after"]) {
+      const bg = getComputedStyle(e, pseudo).backgroundImage;
+      for (const m of bg.matchAll(/url\("?([^")]+)"?\)/g)) if (!/^(data|blob):/.test(m[1]!)) urls.add(m[1]!);
+    }
+  }
+  for (const u of urls) {
+    const img = new Image();
+    img.src = u;
+    waits.push(img.decode().catch(() => undefined));
+  }
+  return Promise.all(waits);
+}
+
 /** Home's own pictures are in (or 5 s have passed): from then on, the rest loads behind it. */
 let homeSettled = false;
 /** The longest the background loads wait for home to be whole. */
@@ -430,13 +458,13 @@ const SETTLE_CAP_MS = 5000;
 const BOARD_FIRST_MS = 3000;
 function settleHome(fonts: Promise<unknown>): void {
   const after = (ms: number) => new Promise((r) => setTimeout(r, ms));
-  void Promise.race([Promise.all([fonts, homeUi.whole()]), after(SETTLE_CAP_MS)]).then(async () => {
+  void Promise.race([Promise.all([fonts, homeUi.whole(), homeDrawn()]), after(SETTLE_CAP_MS)]).then(async () => {
     if (homeSettled) return;
     homeSettled = true;
     // the music and the rest of the sounds (Audio's: the sound code and the click came at start)
     homeWhole();
-    // the board Next stop opens: its pictures began with home at low priority (startApp); asked
-    // again here, the same files join that request
+    // the board Next stop opens, and its pictures: first once home is whole (it is long in before a
+    // player's first tap)
     const board = awaitingRecord()
       ? Promise.resolve()
       : loadLevel(nextBoard())
@@ -1874,6 +1902,16 @@ function layoutGallery(pics: BoardPicture[], share = 0.34): HTMLElement {
   }
   // the card height that keeps every picture's narrow side tappable
   const uTap = Math.max(0, ...pics.map((p) => TAP / Math.min(p.cols * aspect, p.rows)));
+  // too many for rows at a size worth tapping: a mosaic may still show them all at one look (QA,
+  // 0.48.0: a Souvenir's twelve long pictures ran off the card as a strip); only past that, the strip
+  const mosaic = best.u < uTap ? bestMosaic(pics, width, height, aspect, uTap) : null;
+  if (mosaic) {
+    const gallery = h("div", { class: "gallery mosaic", style: `--u:${Math.floor(mosaic.u)}px;--gap:${MOSAIC_GAP}px;--k:${mosaic.k}` });
+    const line = h("div", { class: "line" });
+    mosaic.order.forEach((p, i) => line.append(galleryPicture(p, i, { u: Math.floor(mosaic.u), aspect })));
+    gallery.append(line);
+    return gallery;
+  }
   const strip = best.u < uTap;
   const tall = Math.max(1, ...pics.map((p) => p.rows));
   const u = strip ? Math.max(uTap, Math.min(STRIP_U, height / tall)) : best.u;
@@ -1888,6 +1926,43 @@ function layoutGallery(pics: BoardPicture[], share = 0.34): HTMLElement {
     if (strip) keepEdges(line);
   }
   return gallery;
+}
+
+/** The mosaic's gap: tighter than the rows', so more fits at a tappable size. */
+const MOSAIC_GAP = 6;
+/**
+ * The win card's pictures as a MOSAIC: a grid of k columns, each one card wide (u x the card's
+ * aspect), rows u tall, every picture spanning its own cols x rows and placed, biggest first, at the
+ * first free place from the top left (what CSS grid-auto-flow: dense does with the same order, so
+ * style.css lays them exactly as counted here). The k that gives the biggest unit wins; null when even
+ * that is under `uTap` (the sideways strip then). Each picture keeps its own shape: it sits centred
+ * in its cells, which a span widens by the gaps it crosses.
+ */
+function bestMosaic(pics: BoardPicture[], width: number, height: number, aspect: number, uTap: number): { u: number; k: number; order: BoardPicture[] } | null {
+  const order = pics
+    .map((p, i) => ({ p, i }))
+    .sort((a, b) => b.p.cols * b.p.rows - a.p.cols * a.p.rows || a.i - b.i)
+    .map((x) => x.p);
+  const widest = Math.max(1, ...pics.map((p) => p.cols));
+  let best: { u: number; k: number; order: BoardPicture[] } | null = null;
+  for (let k = widest; k <= 12; k++) {
+    const used: boolean[][] = [];
+    const free = (r: number, c: number, p: BoardPicture) => {
+      if (c + p.cols > k) return false;
+      for (let dr = 0; dr < p.rows; dr++) for (let dc = 0; dc < p.cols; dc++) if (used[r + dr]?.[c + dc]) return false;
+      return true;
+    };
+    for (const p of order) {
+      let r = 0;
+      let c = 0;
+      while (!free(r, c, p)) if (++c >= k) [r, c] = [r + 1, 0];
+      for (let dr = 0; dr < p.rows; dr++) for (let dc = 0; dc < p.cols; dc++) (used[r + dr] ??= [])[c + dc] = true;
+    }
+    const rows = used.length;
+    const u = Math.min(54, (width - MOSAIC_GAP * (k - 1)) / k / aspect, (height - MOSAIC_GAP * (rows - 1)) / rows);
+    if (!best || u > best.u + 0.5) best = { u, k, order };
+  }
+  return best && best.u >= uTap ? best : null;
 }
 
 /** One picture of the win card: a button that looks like the picture, opening it big. */
@@ -2027,12 +2102,6 @@ export async function startApp(): Promise<void> {
   const stamped = trips.some(tripDone);
   if (stamped) void loadSouvenirList();
   drawHome();
-  // the board Next stop opens: its pictures start with home, at low priority behind home's own (QA,
-  // 0.47.0: started after home, a quick tap on 4G waited ~1.4 s for them)
-  if (!awaitingRecord())
-    void loadLevel(nextBoard())
-      .then((l) => ensure(boardPaths(l), l.id, { priority: "low" }))
-      .catch(() => undefined);
   await Promise.race([Promise.all([fonts, homeUi.whole(), tableChoiceRead]), until()]);
 
   onProgress(drawHome);

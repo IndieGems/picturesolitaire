@@ -402,6 +402,14 @@ html.less-motion .board-host.stuck::after { animation: none; }
 /* rows of pictures laid out by app.ts (layoutGallery): one unit per card, as big as fits */
 .win .gallery { display: flex; flex-direction: column; align-items: center; gap: var(--gap, 10px); margin: 14px 0 18px; --u: 34px; }
 .win .gallery .line { display: flex; justify-content: center; align-items: center; gap: var(--gap, 10px); }
+/* too many for rows: a mosaic (app.ts, bestMosaic), k columns one card wide and rows one unit tall,
+   each picture spanning its cells in the order app.ts counted them (dense, from the top left) and
+   centred there at its own shape */
+.win .gallery.mosaic .line {
+  display: grid; grid-template-columns: repeat(var(--k), calc(var(--u) * var(--card-aspect)));
+  grid-auto-rows: var(--u); grid-auto-flow: row dense; justify-content: center;
+}
+.win .gallery.mosaic .line > * { grid-column: span var(--c); grid-row: span var(--r); place-self: center; }
 /* too many pictures to show at a size worth tapping: one row that scrolls sideways (app.ts), centred
    while it fits (the auto margins), faded at an edge while there is more that way */
 .win .gallery.strip { align-items: stretch; margin-left: -8px; margin-right: -8px; }
