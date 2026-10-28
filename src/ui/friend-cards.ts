@@ -21,7 +21,19 @@ import { t } from "./i18n";
 import { closed, cornerKey, opened } from "./dialogs";
 import { shortDate } from "./format";
 import { ICONS, type IconName } from "./icons";
-import { challengeFriend, challengesOffered, friendAction, hasFriend, listFriends, shareDare, type Dare, type FriendRow, type Sent, type Shared } from "../net/friends";
+import {
+  challengeFriend,
+  challengesOffered,
+  friendAction,
+  friendState,
+  listFriends,
+  onFriendState,
+  shareDare,
+  type Dare,
+  type FriendRow,
+  type Sent,
+  type Shared,
+} from "../net/friends";
 
 type Kids = Array<Node | string | null | undefined | false>;
 function h<K extends keyof HTMLElementTagNameMap>(tag: K, props: Partial<Record<string, string>> = {}, ...kids: Kids): HTMLElementTagNameMap[K] {
@@ -40,12 +52,6 @@ function icon(name: IconName): Node {
   tpl.innerHTML = ICONS[name];
   return tpl.content.firstChild!;
 }
-
-/**
- * Challenge a friend can be offered: the Arcade offers it, and the player has a friend to send to
- * (friends.ts, hasFriend: a guest has none, and the SDK has no guest flag to ask instead).
- */
-export const canChallenge = (): boolean => challengesOffered() && hasFriend();
 
 /** The words before a shared link (the fallback's; the Arcade's share writes its own): the template's line. */
 export function shareLine(d: Dare): string {
@@ -161,25 +167,74 @@ export function createFriendCards(app: HTMLElement) {
 
   /**
    * The win card's row: Challenge a friend (or Challenge back, straight to `back`, the challenge's
-   * sender) where the Arcade offers it, and Share; one status line under them. `amber` makes the
-   * challenge the card's main action (the compare card after a win or a tie).
+   * sender) where the Arcade offers it and the player has a friend, and Share; one status line under
+   * them. `amber` makes the challenge the card's main action (the compare card after a win or a tie),
+   * else Share.
+   *
+   * The friends list may still be out when the card opens (a slow read, a first win right after the
+   * handshake: QA's read of 50b9aba). Then the row keeps the challenge's place, unseen, so Share
+   * already sits where it stays: a friend found fills the place, none (or a failed read) gives it up,
+   * and Share widens over it, covering where it was, so a thumb on its way never lands on another
+   * button. A list that lands later still (the handshake settled after the card opened, a friend
+   * accepted while the Arcade had the game paused) adds the button before Share in the same way.
    */
   function socialRow(d: Dare, opts: { back?: { id: string; name: string | null }; amber?: boolean } = {}): HTMLElement {
     const say = h("p", { class: "social-say", role: "status" });
     const tell = (w: string) => (say.textContent = w);
-    const challenge = canChallenge()
-      ? opts.back
-        ? button(opts.amber ? "amber" : "", "friends.back", t("friends.back"), () => void challengeBack(opts.back!, d, challenge!, tell), "friends")
-        : button(opts.amber ? "amber" : "", "friends.challenge", t("friends.challenge"), () =>
+    const make = (): HTMLButtonElement => {
+      const b: HTMLButtonElement = opts.back
+        ? button("", "friends.back", t("friends.back"), () => void challengeBack(opts.back!, d, b, tell), "friends")
+        : button("", "friends.challenge", t("friends.challenge"), () =>
             openSheet(d, (name) => {
-              sentOn(challenge!);
+              sentOn(b);
               tell(name ? t("friends.sentTo", { name }) : t("friends.sent"));
             }),
             "friends",
-          )
-      : null;
-    const shareBtn = button(challenge ? "" : opts.amber ? "amber" : "", "friends.share", t("friends.share"), () => share(d, tell, () => undefined), "share");
-    return h("div", { class: "social" }, h("div", { class: "row" }, challenge, shareBtn), say);
+          );
+      return b;
+    };
+    const shareBtn = button("", "friends.share", t("friends.share"), () => share(d, tell, () => undefined), "share");
+    const row = h("div", { class: "row" }, shareBtn);
+    let challenge: HTMLButtonElement | null = null;
+    /** The challenge's place, kept unseen while the list is out. */
+    const hold = (b: HTMLButtonElement, held: boolean) => {
+      b.classList.toggle("held", held);
+      b.disabled = held;
+      if (held) b.setAttribute("aria-hidden", "true");
+      else b.removeAttribute("aria-hidden");
+    };
+    const lead = () => {
+      if (!opts.amber) return;
+      const main = challenge ?? shareBtn;
+      main.classList.add("amber");
+      (main === shareBtn ? challenge : shareBtn)?.classList.remove("amber");
+    };
+    const state = () => (challengesOffered() ? friendState() : "no");
+    const draw = (s: "yes" | "no" | "asking") => {
+      if (s !== "no" && !challenge) {
+        challenge = make();
+        row.prepend(challenge);
+      }
+      if (s === "no" && challenge?.classList.contains("held")) {
+        challenge.remove();
+        challenge = null;
+      }
+      if (challenge) hold(challenge, s === "asking");
+      lead();
+    };
+    const first = state();
+    draw(first);
+    if (first !== "yes") {
+      const off = onFriendState(() => {
+        // the card closed, or the button is out: nothing more to hear
+        if (!row.isConnected) return off();
+        const s = state();
+        if (s === "asking") return;
+        draw(s);
+        if (s === "yes") off();
+      });
+    }
+    return h("div", { class: "social" }, row, say);
   }
 
   /** Challenge back: one press, one ask, straight to the sender (the Arcade confirms and sends). */

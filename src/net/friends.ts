@@ -24,7 +24,8 @@
 //   did, and was shown Challenge a friend), but a guest has no friends: the graph is an account's.
 //   So the button waits for this session's read of the list to find one (watchFriends: at start,
 //   and again whenever the Arcade lets the game go on, as friends.md asks); a player with none, a
-//   read that failed and a guest get Share alone.
+//   read that failed and a guest get Share alone. A card that opens while the first read is still
+//   out keeps the button's place and fills it when the read lands (friendState, onFriendState).
 //
 // Rules that are not optional (the SDK's friends.md): challenge() only from a player's press, one
 // ask per press, never retried, not even on `unavailable` or `rate_limited`; share.request()
@@ -59,23 +60,44 @@ export const challengesOffered = (): boolean => !!gem.frame?.parentSupports("fri
 
 /** This session's last read of the list found a friend: null until one has been read. */
 let anyFriend: boolean | null = null;
+/** Reads of the list out now. */
+let reading = 0;
+const friendsHeard = new Set<() => void>();
 
-/** The player has an Arcade friend to challenge, by this session's last read (a guest never has). */
-export const hasFriend = (): boolean => anyFriend === true;
+/**
+ * Can the player challenge a friend, by this session's reads: "yes" (a friend listed), "no" (none,
+ * a guest; or no read has answered and none is out), or "asking" (none has answered yet, and one is
+ * out: a card opened then keeps the button's place, and fills it when the read lands).
+ */
+export function friendState(): "yes" | "no" | "asking" {
+  if (anyFriend !== null) return anyFriend ? "yes" : "no";
+  return reading > 0 ? "asking" : "no";
+}
+/** Hear when a read of the list has settled (found, none, or failed). Returns the unsubscribe. */
+export function onFriendState(fn: () => void): () => void {
+  friendsHeard.add(fn);
+  return () => void friendsHeard.delete(fn);
+}
 
 /** The player's friends, every page (the Arcade's own order: newest friendship first; at most 1000). */
 export async function listFriends(): Promise<FriendRow[]> {
-  const out: FriendRow[] = [];
-  let cursor: string | undefined;
-  for (let page = 0; page < 5; page++) {
-    const res = await gem.friends.list({ limit: 200, ...(cursor ? { cursor } : {}) });
-    for (const f of res.friends)
-      out.push({ playerId: f.playerId, name: plain(f.displayName), tag: f.discriminator ?? null, avatar: platformIconUrl(f.avatarIconUrl) ?? null });
-    if (!res.nextCursor) break;
-    cursor = res.nextCursor;
+  reading++;
+  try {
+    const out: FriendRow[] = [];
+    let cursor: string | undefined;
+    for (let page = 0; page < 5; page++) {
+      const res = await gem.friends.list({ limit: 200, ...(cursor ? { cursor } : {}) });
+      for (const f of res.friends)
+        out.push({ playerId: f.playerId, name: plain(f.displayName), tag: f.discriminator ?? null, avatar: platformIconUrl(f.avatarIconUrl) ?? null });
+      if (!res.nextCursor) break;
+      cursor = res.nextCursor;
+    }
+    anyFriend = out.length > 0;
+    return out;
+  } finally {
+    reading--;
+    for (const fn of [...friendsHeard]) fn();
   }
-  anyFriend = out.length > 0;
-  return out;
 }
 
 /**
