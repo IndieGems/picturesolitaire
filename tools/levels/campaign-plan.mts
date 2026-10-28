@@ -82,7 +82,7 @@
 //   traps     (optional) the winning line's steps where another choice loses the board
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { CAREFUL, READABLE } from "../../src/game/solver/metrics.ts";
 
 /**
@@ -369,6 +369,13 @@ const BACK_FILE = JSON.parse(readFileSync(new URL("./pictures-back.json", import
 export const BACK = new Set(BACK_FILE.back.filter((id) => !(id in BACK_FILE.struck)));
 export const SPARES = new Set(BACK_FILE.spares.filter((id) => !(id in BACK_FILE.struck)));
 const ALSO = new Set([...BACK, ...SPARES]);
+/**
+ * TRIP 11 ON (creator, 2026-10-28): the clear pictures the atmospheric swap took out of boards 1-150 and
+ * left on no board (atmospheric.json `freed`, written by make-campaign.mts) are the next trips' stock,
+ * taken first (a row's `also`), then Art's new ones.
+ */
+const ATMOS_FILE = new URL("./atmospheric.json", import.meta.url);
+export const FREED = new Set(existsSync(ATMOS_FILE) ? JSON.parse(readFileSync(ATMOS_FILE, "utf8")).freed : []);
 PLAN.forEach((row, i) => {
   if (i < 120) return;
   const back = Math.floor((row.count - 1) / 2);

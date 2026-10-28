@@ -34,8 +34,9 @@
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { catalogue, destById, famName, flags, lookalikes, readBoards, reserveLandmarks, root, route, spacingOf, usable, writeBoards } from "./lib.mts";
+import { byId as byIdOf, catalogue, destById, famName, flags, lookalikes, readBoards, reserveLandmarks, root, route, spacingOf, usable, writeBoards } from "./lib.mts";
 import { BOARD, DISTINCT, MARKS, PLAN as FULL, PLAN_TAG, SPACING, TRIPS } from "./campaign-plan.mts";
+import { atmosphericPass, isAtmospheric, writeRecord } from "./atmospheric.mts";
 
 const t0 = performance.now();
 // landmarks are saved for future trips' destinations: none on a campaign board (lib.mts)
@@ -117,12 +118,20 @@ const withMark = (l, row) => {
   }
   return out;
 };
-const levels = made.map((l, i) => withMark(l, PLAN[i]));
+// last, the atmospheric pictures in place of clear squares (atmospheric.mts): deals and lines unchanged
+const atmos = atmosphericPass(
+  made.map((l, i) => withMark(l, PLAN[i])),
+  { distinct: DISTINCT, spacing: SPACING },
+);
+const levels = atmos.levels;
+const ar = atmos.report;
+console.log(`atmospheric: ${ar.placed} placed of ${ar.wanted} wanted, from a stock of ${ar.stock} (${ar.distinctUsed} used, the most on ${ar.mostUses} boards); ${atmos.record.displaced.length} clear pictures displaced, ${atmos.record.freed.length} freed${ar.short.length ? `; SHORT of the share on ${ar.short.join(", ")}` : ""}`);
 // the first board hosts the guided start (UI's onboarding plays its line)
 if (shipped[0] && JSON.stringify(levels[0]) !== JSON.stringify(shipped[0])) console.warn("!! c01 changed: tell UI to re-check the guided start's steps");
 const sp = spacingOf(levels.map((l) => l.pictures), SPACING);
 console.log(`spacing: a picture comes back after ${sp.shortest} boards at the soonest (median ${sp.median}); ${sp.short} of ${sp.gaps} returns are sooner than ${SPACING}`);
 writeBoards(OUT, "relaxed campaign; made by tools/levels/make-campaign.mts, checked by tools/levels/check.mts", levels, tag ? { plan: tag } : {});
+if (OUT === SHIPPED) writeRecord(atmos.record);
 // record what became of each request (only when the shipped file was written)
 if (pending.length && OUT === SHIPPED) {
   const at = new Date().toISOString().slice(0, 16) + "Z";
@@ -167,11 +176,17 @@ daily puzzle in [daily.md](daily.md).
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 ${rows.join("\n")}
 
+**Atmospheric pictures** (creator, 2026-10-28): about 1 in 6 to 1 in 8 of a board's pictures, from board 3 on (none on an all-long board), are atmospheric, each in a clear square's place with the deal unchanged (\`tools/levels/atmospheric.mts\`). Per trip: ${TRIPS.map((t) => {
+  const ls = levels.slice(t.from - 1, t.to);
+  const a = ls.reduce((n, l) => n + l.pictures.filter((p) => isAtmospheric(byIdOf.get(p.id))).length, 0);
+  return `${t.name} ${a} of ${ls.reduce((n, l) => n + l.pictures.length, 0)}`;
+}).join(", ")}. The clear pictures they displaced: ${atmos.record.displaced.length}, of which ${atmos.record.freed.length} are on no board now, the stock trips 11 on take first (\`tools/levels/atmospheric.json\`).
+
 Every picture's appearances across the ${levels.length} boards: ${Math.min(...counts)} to ${Math.max(...counts)} (mean ${(counts.reduce((a, b) => a + b, 0) / counts.length).toFixed(1)}). A picture comes back ${sp.shortest} boards later at the soonest (median ${sp.median}). Every board made since 2026-10-25 keeps the rule: no picture on two of boards 1-${DISTINCT}, none back within ${SPACING} boards; ${sp.short} of ${sp.gaps} returns are sooner than ${SPACING}, on boards kept from before it.
 
 | picture | boards |
 |---|---|
-${catalogue.map((p) => `| ${p.id} (${p.cols}x${p.rows}, ${famName(p.family)})${flags.has(p.id) ? " FLAGGED: don't use" : ""} | ${levels.map((l, i) => (l.pictures.some((q) => q.id === p.id) ? i + 1 : null)).filter(Boolean).join(", ")} |`).join("\n")}
+${catalogue.map((p) => `| ${p.id} (${p.cols}x${p.rows}, ${famName(p.family)}${isAtmospheric(p) ? ", atmospheric" : ""})${flags.has(p.id) ? " FLAGGED: don't use" : ""} | ${levels.map((l, i) => (l.pictures.some((q) => q.id === p.id) ? i + 1 : null)).filter(Boolean).join(", ")} |`).join("\n")}
 `;
 writeFileSync(join(root, "docs/levels.md"), md);
 console.log(`wrote src/content/levels/campaign.json (${levels.length} boards) and docs/levels.md in ${((performance.now() - t0) / 1000).toFixed(1)} s; picture uses ${Math.min(...counts)}..${Math.max(...counts)}`);

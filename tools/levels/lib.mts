@@ -42,9 +42,9 @@ export const items = CATALOGUE.items ?? [];
 export const itemById = new Map(items.map((p) => [p.id, p]));
 export const themeOf = new Map((CATALOGUE.suitcases ?? []).map((t) => [t.month, t]));
 /** A picture's words, for the item clash rule: its subjects and id (an item's subjects and title), lower case, 3 letters or more. */
-const wordsOf = (p) => [...(p.subjects ?? []), p.month ? (p.title ?? "") : p.id].flatMap((s) => String(s).toLowerCase().split(/[^a-z]+/)).filter((w) => w.length >= 3);
+export const wordsOf = (p) => [...(p.subjects ?? []), p.month ? (p.title ?? "") : p.id].flatMap((s) => String(s).toLowerCase().split(/[^a-z]+/)).filter((w) => w.length >= 3);
 /** One word is the other, give or take a plural or a short ending (ski, skier; skate, skates; pot, pots). */
-const sameWord = (a, b) => {
+export const sameWord = (a, b) => {
   const [s, l] = a.length <= b.length ? [a, b] : [b, a];
   return l.startsWith(s) && l.length - s.length <= 2;
 };
@@ -312,10 +312,12 @@ const poolOn = (chosen, i, rule, row?) => {
   const from = row?.newFrom ? at(row.newFrom, "newFrom") : row?.newAfter ? at(row.newAfter, "newAfter") + 1 : undefined;
   // newTo (the next batch's first id) not in the catalogue yet: that batch is not in, so nothing is cut
   const to = row?.newTo ? catalogueAt.get(row.newTo) ?? Infinity : row?.newThrough ? at(row.newThrough, "newThrough") + 1 : Infinity;
-  if (!rule && from === undefined && to === Infinity) return usable;
+  // an atmospheric picture (Art's "look") is never picked as a board's clear picture: atmospheric.mts swaps those in
+  const clear = usable.filter((p) => p.look !== "atmospheric");
+  if (!rule && from === undefined && to === Infinity) return clear;
   const banned = rule ? bannedOn(chosen, i, rule) : new Set();
   const inWindow = (p) => (from === undefined || catalogueAt.get(p.id) >= from) && catalogueAt.get(p.id) < to;
-  return usable.filter((p) => !banned.has(p.id) && (inWindow(p) || !!row?.also?.has(p.id)));
+  return clear.filter((p) => !banned.has(p.id) && (inWindow(p) || !!row?.also?.has(p.id)));
 };
 
 /** Why a board under the rule found no pictures: how many of each size it may still take. */
