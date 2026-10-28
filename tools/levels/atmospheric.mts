@@ -14,7 +14,8 @@
 //   - the atmospheric picture: not flagged, no landmark, a square; no family on the board (the
 //     destination's included); no word in common with any of its pictures (lib.mts sameWord, as the item
 //     rule: two atmospheric pictures on a board look different); album and medium within the picker's
-//     variety; none on two of boards 1-DISTINCT and none back within SPACING boards either side; the
+//     variety; on MOST_BOARDS boards at most, none on two of boards 1-DISTINCT and none back within
+//     SPACING boards either side; the
 //     least used first (unseen first), then a hash. Every board is first given `lo`, then `target`, then
 //     (up to `hi`) one more for each busy clear square still on it.
 // Re-runnable: each run first puts back the clear pictures its record (atmospheric.json) says it took,
@@ -37,6 +38,8 @@ export const FIRST = 2;
 /** How many of a board's n pictures are atmospheric: lo..hi (1 in 8 to 1 in 6, rounded, at least 1). */
 export const shareOf = (n) => ({ lo: Math.max(1, Math.round(n / 8)), hi: Math.max(1, Math.round(n / 6)) });
 /** A board that takes atmospheric pictures: from FIRST, and with squares (no all-long board). */
+/** No atmospheric picture is on more boards than this (lead, 2026-10-28: pictures rarely repeat). */
+export const MOST_BOARDS = 2;
 export const takesAtmospheric = (l, i) => i >= FIRST && l.pictures.some((p) => p.cols === 2 && p.rows === 2);
 
 export const readRecord = () => (existsSync(RECORD) ? JSON.parse(readFileSync(RECORD, "utf8")) : { swaps: {} });
@@ -97,6 +100,7 @@ export function atmosphericPass(levels, { distinct, spacing }) {
     if (a.album && others.filter((q) => q.album === a.album).length >= Math.ceil(n / 3)) return false;
     if (a.medium && others.filter((q) => q.medium === a.medium).length >= Math.ceil(n / 2)) return false;
     const on = at.get(a.id) ?? [];
+    if (on.length >= MOST_BOARDS) return false;
     if (i < distinct && on.some((k) => k < distinct)) return false;
     if (on.some((k) => Math.abs(k - i) < spacing)) return false;
     return true;
