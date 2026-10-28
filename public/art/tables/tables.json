@@ -26,7 +26,8 @@
       "particleKind": "snow",
       "particleFrame": 32,
       "particleFrames": 4,
-      "base": "#2c3746"
+      "base": "#2c3746",
+      "border": "winter-dusk"
     },
     {
       "id": "table-autumn-study",
@@ -50,7 +51,8 @@
       "particleKind": "snow",
       "particleFrame": 32,
       "particleFrames": 4,
-      "base": "#20140f"
+      "base": "#20140f",
+      "border": "ski-lodge"
     },
     {
       "id": "table-winter-market",

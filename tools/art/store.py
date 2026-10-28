@@ -423,7 +423,7 @@ def square_tile():
 
 # PC/TV side art per table, the border's name (storepage.yaml's portrait_borders, the game picks
 # one by name: the table's slug without "table-") -> its 2560x1440 master. The first is the default.
-BORDERS = {"sunny-day": "store-sunny-day-border"}
+BORDERS = {"sunny-day": "store-sunny-day-border", "ski-lodge": "store-ski-lodge-border", "winter-dusk": "store-winter-dusk-border"}
 
 
 def save(im, rel, out, q=92):
