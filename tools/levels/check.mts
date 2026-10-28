@@ -70,12 +70,13 @@ import { arrange, cardsOf, isDeadEnd, isWon, joinCount, replay, start } from "..
 import { Game } from "../../src/game/solver/index.ts";
 import { along, CAREFUL, careless, chain, orderTraps, READABLE, reader, traps, unavoidable, wait } from "../../src/game/solver/metrics.ts";
 import { BIG, dealFor, deadFirstMoves, doomingFirstClears } from "../../src/game/levels/generate.ts";
-import { byId, clearOrder, destById, flags, itemById, itemClash, LESSON_MOVES } from "./lib.mts";
+import { byId, clearOrder, destById, flags, itemById, itemClash, LESSON_MOVES, souvenirById, souvenirPictures } from "./lib.mts";
 import { CURRENT, DISTINCT, LAST_BEFORE_T9, MARKS, MAY_TRAP, SPACING, SPARES, TRIPS } from "./campaign-plan.mts";
 import { FIRST as ATMOS_FIRST, isAtmospheric, MOST_BOARDS, shareOf, takesAtmospheric } from "./atmospheric.mts";
 import { RULES_FROM, SUITCASE_FROM } from "./daily-plan.mts";
 import { monthOf, monthsTo } from "./make-suitcases.mts";
 import { scheduleProblem } from "./suitcase.mts";
+import { SOUVENIR_BOARD, SOUVENIR_COUNT, souvenirId, souvenirOf } from "./make-souvenirs.mts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 // the library pictures and the destination postcards (lib.mts; PICTURES=<file> checks a trial catalogue)
@@ -165,6 +166,26 @@ for (const file of files) {
         if (twin) fail(`destination ${id} looks like ${twin.id} (family ${fam}), on the same board`);
         if (d?.crop && JSON.stringify(d.crop) !== JSON.stringify(crop)) fail(`destination ${id}: crop ${JSON.stringify(crop)}, the catalogue's is ${JSON.stringify(d.crop)} (re-run the maker)`);
       }
+      // a SOUVENIR (creator, 2026-10-28; docs/souvenirs.md; make-souvenirs.mts): trip tN's bonus board sN,
+      // dealt from exactly its own pictures (Art's souvenirPictures; so stand-ins never ship), all long, on
+      // its board size, no two of the same background colour; readable with a safe start (below). The
+      // look-alike rule is waived: one style and one theme on purpose
+      const souvenirBoard = file.endsWith("souvenirs.json");
+      if (souvenirBoard) {
+        const trip = TRIPS.find((t) => t.id === l.trip);
+        if (!trip) fail(`trip ${l.trip ?? "none"} is no trip of trips.json`);
+        else if (l.id !== souvenirId(trip.id)) fail(`a Souvenir of ${trip.id} is ${souvenirId(trip.id)}, not ${l.id}`);
+        if (l.axes?.role !== "souvenir") fail(`role ${l.axes?.role}, a Souvenir's is "souvenir"`);
+        if (l.destination || l.mark || l.item) fail("a Souvenir has no destination, mark or item");
+        if (l.cols !== SOUVENIR_BOARD.cols || l.rows !== SOUVENIR_BOARD.rows) fail(`a ${l.cols}x${l.rows} board; a Souvenir is ${SOUVENIR_BOARD.cols}x${SOUVENIR_BOARD.rows}`);
+        if (l.pictures.length < SOUVENIR_COUNT[0] || l.pictures.length > SOUVENIR_COUNT[1]) fail(`${l.pictures.length} pictures; a Souvenir takes ${SOUVENIR_COUNT.join(" to ")}`);
+        if (l.pictures.some((p) => p.cols * p.rows !== 2)) fail("a Souvenir is all long pictures (tall 1x2 and wide 2x1)");
+        const own = trip ? souvenirOf(trip.id).map((p) => p.id).sort() : [];
+        if (JSON.stringify(l.pictures.map((p) => p.id).sort()) !== JSON.stringify(own)) fail(`its pictures are not exactly ${l.trip}'s Souvenir pictures (pictures.json souvenirPictures${own.length ? "" : ": none yet"}; a stand-in never ships): re-run make-souvenirs.mts`);
+        const bgs = l.pictures.map((p) => souvenirById.get(p.id)?.bg).filter(Boolean);
+        const twice = bgs.find((b, k) => bgs.indexOf(b) !== k);
+        if (twice) fail(`two pictures on the background colour ${twice} (Art: never two alike on a board)`);
+      }
       // the Daily Suitcase: a daily from SUITCASE_FROM hides its day's item (daily-plan.mts, make-daily.mts)
       const suitcaseDay = l.date !== undefined && l.date >= SUITCASE_FROM;
       // and a daily from RULES_FROM (28-31 October with no item) is made under the same rules
@@ -201,6 +222,13 @@ for (const file of files) {
           const note = flags.get(p.id).note;
           fail(`uses flagged picture ${p.id}`);
           flaggedUses.push({ board: l.id, line: `board ${l.id} uses flagged picture ${p.id}${note ? ` ("${note}")` : ""}` });
+        }
+        // a Souvenir's picture plays only on its own Souvenir (checked below)
+        if (souvenirById.has(p.id)) {
+          const sv = souvenirById.get(p.id);
+          if (!file.endsWith("souvenirs.json") || l.trip !== sv.souvenir) fail(`${p.id} is ${sv.souvenir}'s Souvenir picture, dealt here on ${l.id}`);
+          if (sv.cols !== p.cols || sv.rows !== p.rows) fail(`${p.id} is ${sv.cols}x${sv.rows} in the catalogue, ${p.cols}x${p.rows} here`);
+          continue;
         }
         // a suitcase item plays only as its daily's item (checked above)
         if (itemById.has(p.id)) {
@@ -255,7 +283,7 @@ for (const file of files) {
           if (on > MOST_BOARDS && data.levels.findIndex((e) => e.pictures.some((q) => q.id === p.id)) === i) fail(`atmospheric ${p.id} is on ${on} boards, at most ${MOST_BOARDS}`);
         }
       }
-      if ((file.endsWith("campaign.json") && !MAY_TRAP.has(l.axes?.role)) || file.endsWith("experiments.json") || rulesDay) {
+      if ((file.endsWith("campaign.json") && !MAY_TRAP.has(l.axes?.role)) || file.endsWith("experiments.json") || rulesDay || souvenirBoard) {
         const dead = deadFirstMoves(deal);
         if (dead.length) fail(`${dead.length} first move(s) leave the board stuck, e.g. ${dead[0].from} to ${dead[0].to}`);
         const g0 = new Game(s);
@@ -276,7 +304,7 @@ for (const file of files) {
       // readable (creator, 2026-10-27): an unmarked campaign board is one a player who draws by the
       // face-up cards wins READABLE or more of the time (metrics.ts READER; it assumes the next card
       // face up). The challenge route and the daily are not held to it (docs/difficulty-curve.md)
-      if ((file.endsWith("campaign.json") && !MAY_TRAP.has(l.axes?.role)) || rulesDay) {
+      if ((file.endsWith("campaign.json") && !MAY_TRAP.has(l.axes?.role)) || rulesDay || souvenirBoard) {
         const rd = reader(game);
         if (rd < READABLE) fail(`not readable: a player who draws by the face-up cards wins ${Math.round(rd * 100)}%, under ${READABLE * 100}% (make-campaign.mts --reseat ${data.levels.indexOf(l) + 1})`);
       }
@@ -334,6 +362,18 @@ if (!process.argv.slice(2).length && existsSync(dailyFile)) {
     failed++;
     console.error(`FAIL suitcases.json: ${bad.join("; ")}`);
   } else if (SUITCASES.length) console.log(`suitcases: ${SUITCASES.length} months, ${SUITCASES[0].month} to ${SUITCASES.at(-1).month}${SUITCASES.some((m) => m.standIn) ? ` (stand-ins: ${SUITCASES.filter((m) => m.standIn).map((m) => m.month).join(", ")})` : ""}`);
+}
+// the Souvenirs: every trip whose Souvenir pictures Art has made has its board (make-souvenirs.mts)
+if (!process.argv.slice(2).length && souvenirPictures.length) {
+  const file = join(dir, "souvenirs.json");
+  const made = existsSync(file) ? new Set(JSON.parse(readFileSync(file, "utf8")).levels.map((l) => l.trip)) : new Set();
+  const trips = [...new Set(souvenirPictures.map((p) => p.souvenir))];
+  const missing = trips.filter((t) => !made.has(t));
+  const stray = trips.filter((t) => !TRIPS.some((x) => x.id === t));
+  if (missing.length || stray.length) {
+    failed++;
+    console.error(`FAIL souvenirs.json: ${[missing.length ? `no Souvenir board for ${missing.join(", ")} (node tools/levels/make-souvenirs.mts)` : "", stray.length ? `Souvenir pictures of ${stray.join(", ")}, no trip of trips.json` : ""].filter(Boolean).join("; ")}`);
+  } else console.log(`souvenirs: ${made.size} boards (${[...made].join(", ")})`);
 }
 // the trips: the plan's list, back to back from board 1, every campaign board in one
 const tripsFile = join(dir, "trips.json");

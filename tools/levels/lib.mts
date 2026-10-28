@@ -41,6 +41,13 @@ export const byId = new Map(catalogue.map((p) => [p.id, p]));
 export const items = CATALOGUE.items ?? [];
 export const itemById = new Map(items.map((p) => [p.id, p]));
 export const themeOf = new Map((CATALOGUE.suitcases ?? []).map((t) => [t.month, t]));
+/**
+ * THE SOUVENIRS (creator, 2026-10-28; docs/souvenirs.md; make-souvenirs.mts): Art's `souvenirPictures`,
+ * each a Souvenir's own (`souvenir`: its trip's id), kept out of the library as items are, so no
+ * ordinary board deals one; and the `souvenirs` themes ({ trip, theme, table, tableTitle, sticker }).
+ */
+export const souvenirPictures = CATALOGUE.souvenirPictures ?? [];
+export const souvenirById = new Map(souvenirPictures.map((p) => [p.id, p]));
 /** A picture's words, for the item clash rule: its subjects and id (an item's subjects and title), lower case, 3 letters or more. */
 export const wordsOf = (p) => [...(p.subjects ?? []), p.month ? (p.title ?? "") : p.id].flatMap((s) => String(s).toLowerCase().split(/[^a-z]+/)).filter((w) => w.length >= 3);
 /** One word is the other, give or take a plural or a short ending (ski, skier; skate, skates; pot, pots). */
@@ -83,7 +90,7 @@ export function destPicture(id) {
   return { id, cols, rows };
 }
 /** A picture's lookalike family, a postcard's included (Art gives a postcard its lookalike's). */
-export const familyOf = (id) => (byId.get(id) ?? destById.get(id) ?? itemById.get(id))?.family ?? id;
+export const familyOf = (id) => (byId.get(id) ?? destById.get(id) ?? itemById.get(id) ?? souvenirById.get(id))?.family ?? id;
 
 /**
  * A kept board given its row's destination IN PLACE (lead, 2026-10-25): the
