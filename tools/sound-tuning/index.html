@@ -147,7 +147,7 @@ async function playEffect(name, take = takeOf(name)) {
     const sd = data.levels.effects.stow;
     const ss = setting("stow");
     const latch = await buffer(fileUrl("stow", takeOf("stow")));
-    voice(latch, sd.gain * (ss.volume ?? 1) * mix.effects, { rate: sd.rate * 2 ** ((ss.pitch ?? 0) / 12), when: 1.45 });
+    voice(latch, sd.gain * (ss.volume ?? 1) * mix.effects, { rate: sd.rate * 2 ** ((ss.pitch ?? 0) / 12), when: 1.65 });
   } else if (name === "settle") {
     // Five columns landing one after another, as the game plays them.
     for (let col = 0; col < 5; col++) {

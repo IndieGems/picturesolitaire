@@ -108,16 +108,17 @@ const BUILT = [
     ],
   },
   // The Daily Suitcase (docs/daily-suitcase.md). Found it: the day's item lifts
-  // to the centre with a starburst and its name, then flies into a suitcase,
-  // touching it ~1.45 s in (UI), where the latch plays on suitcase:stowed. A
-  // generated xylophone, glockenspiel and pizzicato fanfare in C (beats every
-  // 0.455 s), cut from 6 s: its opening two beats (onset 0.028), then its last
-  // beat before the final chord (3.218), so the chord lands at 1.36 s, just
-  // before the latch. Its ring is cut short: the moment is gone by ~1.9 s.
+  // to the centre with a starburst and its name, gives a happy shake, then
+  // flies into a suitcase, touching it ~1.65 s in (UI), where the latch plays
+  // on suitcase:stowed. A generated xylophone, glockenspiel and pizzicato
+  // fanfare in C (beats every 0.455 s, notes every 0.228), cut from 6 s: its
+  // opening two beats (onset 0.028), then the pickup note (2.988) before its
+  // last beat and final chord (3.66), so the chord lands at 1.59 s, just
+  // before the latch. Its ring is cut short: the moment is gone by ~2.1 s.
   {
-    name: "found", len: 1.95, fade: 0.5, stereo: true, parts: [
+    name: "found", len: 2.1, fade: 0.45, stereo: true, parts: [
       { src: "found-fanfare.mp3", start: 0.02, end: 0.94, at: 0 },
-      { src: "found-fanfare.mp3", start: 3.205, end: 5.2, at: 0.905, fadeIn: 0.01 },
+      { src: "found-fanfare.mp3", start: 2.976, end: 5.2, at: 0.906, fadeIn: 0.01 },
     ],
   },
   // (Part levels are relative to each source's own: the hint chime's original

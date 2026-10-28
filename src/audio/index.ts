@@ -223,8 +223,8 @@ function listen(): void {
   // A trip's stamp lands on its passport page (UI, the instant it lands).
   on("trip:stamp", () => play("stamp"));
   // The Daily Suitcase. The day's item finished on the board, at its picture's
-  // clear: UI's big moment (~1.9 s) and its fanfare, the harp fading under it.
-  // Once per opening of the board. The item lands in its suitcase ~1.45 s in
+  // clear: UI's big moment (~2.1 s) and its fanfare, the harp fading under it.
+  // Once per opening of the board. The item lands in its suitcase ~1.65 s in
   // (suitcase:stowed): the latch, just after the fanfare's final chord. A tap
   // skips the moment to its end: the fanfare goes with it (UI fades in 150 ms).
   on("suitcase:item", ({ again }) => {
