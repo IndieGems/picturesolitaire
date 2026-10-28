@@ -67,6 +67,9 @@ function prefetchGame(): void {
       link.rel = "preload";
       link.as = "style";
     } else link.rel = "modulepreload";
+    // as vite's own links for the import() below ask for them (crossorigin, its preload helper): a
+    // preload made otherwise is not reused, and the stylesheet came twice
+    link.crossOrigin = "";
     link.href = new URL(f, import.meta.url).href;
     document.head.append(link);
   }
