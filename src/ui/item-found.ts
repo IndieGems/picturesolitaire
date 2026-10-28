@@ -8,13 +8,17 @@
 //             and turns slowly; a few twinkles
 //    150 ms   its name, big, pops in under it ("Hot-water bottle!"), and a small line: "Packed when
 //             you win today's puzzle"
-//    950 ms   a small closed suitcase (Art's) pops in near the top
-//   1100 ms   the item shrinks and flies into it; the name and the starburst fade
-//  ~1450 ms   it touches: the suitcase bounces (suitcase:stowed, Audio's latch), then fades; all gone
-//             by ~1900 ms
+//   1000 ms   a happy little shake (the creator, 2026-10-27: "give it a happy little shake before it
+//             goes into the suitcase"): three swings, -8 / +8 / -5 / +3 degrees, easing out, with a
+//             small hop, 300 ms
+//   1150 ms   a small closed suitcase (Art's) pops in near the top
+//   1300 ms   the item shrinks and flies into it; the name and the starburst fade
+//  ~1650 ms   it touches: the suitcase bounces (suitcase:stowed, Audio's latch), then fades; all gone
+//             by ~2100 ms
 //
 // A tap anywhere skips to the end (stowed at once, skipped: true, a 150 ms fade). Less motion: the
-// item and its name fade in where the middle is, hold, fade out (stowed at 1400 ms); no flight, no
+// item and its name fade in where the middle is, hold, fade out (stowed at 1650 ms, with the full
+// moment's touch, so Audio's last chord lines up the same); no flight, no shake, no
 // spin, no twinkles. It takes no touch but the skip, which is captured before the board sees it,
 // so the tap that skips moves nothing; the board never waits on it: the cards fall underneath, and
 // the player moves once it is done.
@@ -29,7 +33,7 @@ const ART = {
 };
 
 /** The moment's timings (ms from its start). */
-export const TIMING = { lift: 350, settle: 450, name: 150, suitcase: 950, fly: 1100, touch: 1450, fade: 1700, end: 1900, quickEnd: 1400 };
+export const TIMING = { lift: 350, settle: 450, name: 150, shake: 1000, shakeMs: 300, suitcase: 1150, fly: 1300, touch: 1650, fade: 1900, end: 2100, quickEnd: 1650 };
 
 const lessMotion = () => document.documentElement.classList.contains("less-motion") || matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -133,7 +137,7 @@ export function playItemFound(layer: HTMLElement, item: ItemFound): Promise<void
     const caseBox = mr.width ? { x: mr.left + mr.width / 2, y: mr.top + mr.height / 2 } : { x: L.left + L.width / 2, y: L.top + 110 };
 
     if (less) {
-      anims.push(stage.animate([{ opacity: 0 }, { opacity: 1, offset: 200 / TIMING.quickEnd }, { opacity: 1, offset: 1100 / TIMING.quickEnd }, { opacity: 0 }], { duration: TIMING.quickEnd, fill: "both" }));
+      anims.push(stage.animate([{ opacity: 0 }, { opacity: 1, offset: 200 / TIMING.quickEnd }, { opacity: 1, offset: 1350 / TIMING.quickEnd }, { opacity: 0 }], { duration: TIMING.quickEnd, fill: "both" }));
       later(TIMING.quickEnd, () => {
         stow(false);
         finish();
@@ -168,6 +172,21 @@ export function playItemFound(layer: HTMLElement, item: ItemFound): Promise<void
           { transform: `translate(-50%, -50%) translate(${dx}px, ${dy}px) scale(${end})`, opacity: 0.9 },
         ],
         { duration: TIMING.touch, fill: "both" },
+      ),
+    );
+    // the happy little shake, once it has settled and been read: its own rotate and translate (CSS's
+    // individual transforms), so it adds to the lift and flight's transform rather than replacing it
+    anims.push(
+      pic.animate(
+        [
+          { rotate: "0deg", translate: "0 0", easing: "ease-out" },
+          { rotate: "-8deg", translate: "0 -10px", offset: 0.2, easing: "ease-in-out" },
+          { rotate: "8deg", translate: "0 -6px", offset: 0.45, easing: "ease-in-out" },
+          { rotate: "-5deg", translate: "0 -2px", offset: 0.7, easing: "ease-in-out" },
+          { rotate: "3deg", translate: "0 0", offset: 0.88, easing: "ease-out" },
+          { rotate: "0deg", translate: "0 0" },
+        ],
+        { duration: TIMING.shakeMs, delay: TIMING.shake },
       ),
     );
     // the name: pops in, holds, goes as the item flies
