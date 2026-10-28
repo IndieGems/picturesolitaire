@@ -17,7 +17,8 @@
 //   in silence), and resumed when both end.
 // - sound starts as soon as it is loaded. Only where the browser holds it back
 //   (the context comes up suspended) does the first lift of a finger, click
-//   or key release it: never pointerdown, which a phone does not count.
+//   or key release it: never pointerdown, which a phone does not count. That
+//   tap's own sound is heard too, started into the waking context (audible()).
 //
 // This module is created after createGem (it is imported lazily from
 // src/sound.ts), so the SDK's own mute reaches everything here.
@@ -87,10 +88,29 @@ export function setMusicLevel(level: number): void {
   applyLevels();
 }
 
-/** Is there any point making an effect right now? */
+/**
+ * Is there any point making an effect right now? While the browser holds
+ * sound back, the tap that releases it counts as audible too: its press
+ * sound is started into the waking context and heard as it wakes (play()).
+ */
 function audible(): boolean {
-  return ctx.state === "running" && channels.sounds && masterGain() > 0;
+  if (!channels.sounds || masterGain() <= 0) return false;
+  return ctx.state === "running" || waking();
 }
+
+/**
+ * Inside a tap or key press while the context is held back (a phone's first
+ * tap): ask it to wake now, within the press. Never on a press the browser
+ * does not count (navigator.userActivation), so nothing queues for later.
+ */
+function waking(): boolean {
+  if (!wanted() || !(navigator as { userActivation?: { isActive: boolean } }).userActivation?.isActive) return false;
+  resume();
+  return true;
+}
+
+/** How long a sound started into a waking context may wait for it, before it is dropped. */
+const WAKE_WAIT_MS = 300;
 
 // --- Running, suspended, released -----------------------------------------
 
@@ -214,11 +234,23 @@ export function forget(name: string): void {
 
 // --- The mix -------------------------------------------------------------------
 //
-// The Sound Tuning editor saves public/sound-mix.json (src/audio/mix.ts). It is
-// read when the audio starts and again whenever the player comes back to the
-// page (focus, or the tab shown again), at most once a second: in the
-// Editor, a change saved there is heard as soon as the creator clicks back into
-// the game. Nothing polls.
+// The Sound Tuning editor saves public/sound-mix.json (src/audio/mix.ts), and
+// the built game's copy too (dist/), so the Editor's Play has it at once.
+//
+// LIVE where the tool can save it while the game runs: the dev server, or a
+// build played on this machine (the Editor's Play). There it is read when the
+// audio starts and again whenever the player comes back to the page (focus,
+// or the tab shown again), at most once a second, past every cache: a change
+// saved in the tool is heard as soon as the creator clicks back into the game.
+// Nothing polls.
+//
+// Everywhere else (an uploaded build, and every release build, which drops the
+// live branch at build time) it is read once, as a plain request the browser
+// may cache: a published build's mix never changes, and the release checklist
+// flags a file fetched past the cache on every load (QA, 2026-10-28).
+const LIVE_MIX =
+  import.meta.env.MODE !== "release" &&
+  (import.meta.env.DEV || ["127.0.0.1", "localhost", "[::1]"].includes(location.hostname));
 
 let mixText: string | null = null;
 let mixReadAt = -Infinity;
@@ -231,11 +263,18 @@ export function onMixChange(handler: () => void): void {
 
 /** Read the mix; put it in force when it changed. A failed read keeps the last good mix. Never throws. */
 export async function refreshMix(): Promise<void> {
+  // Not live: one answer (even "no file") is the mix for good; a failed read retries.
+  if (!LIVE_MIX && mixText !== null) return;
   if (performance.now() - mixReadAt < 1000) return;
   mixReadAt = performance.now();
   try {
+    const file = `${import.meta.env.BASE_URL}sound-mix.json`;
     // `rev`, never `t`: the Gem host reads `t` as its sign-in token.
-    const res = await fetch(`${import.meta.env.BASE_URL}sound-mix.json?rev=${Date.now()}`, { cache: "no-store" });
+    // The release test spelled out here, so a release build drops the live branch's text too.
+    const res =
+      import.meta.env.MODE !== "release" && LIVE_MIX
+        ? await fetch(`${file}?rev=${Date.now()}`, { cache: "no-store" })
+        : await fetch(file);
     // A missing file can come back as the game's page (the dev server), so the type is the test.
     const text = res.ok && /json/.test(res.headers.get("content-type") ?? "") ? await res.text() : "";
     if (text === mixText) return;
@@ -284,12 +323,29 @@ export function play(name: EffectName, opts: PlayOptions = {}): Voice | null {
   }
   out.connect(effectsBus);
   voices++;
-  source.onended = () => {
+  let ended = false;
+  const done = () => {
+    if (ended) return;
+    ended = true;
     voices--;
     out.disconnect();
     level.disconnect();
   };
+  source.onended = done;
   source.start(at, Math.max(0, opts.offset ?? 0));
+  // Started into a waking context (audible()): it plays as the context wakes,
+  // or, if that has not happened soon, never, so no backlog bursts out later.
+  if (ctx.state !== "running") {
+    setTimeout(() => {
+      if (ctx.state === "running") return;
+      try {
+        source.stop();
+      } catch {
+        // Already stopped.
+      }
+      done();
+    }, WAKE_WAIT_MS);
+  }
   return {
     fadeOut(seconds) {
       const now = ctx.currentTime;

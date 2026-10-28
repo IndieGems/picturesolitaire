@@ -1,5 +1,6 @@
 // The game's sound, started once the first screen is up (src/sound.ts loads
-// this module lazily, so none of it weighs on the first screen).
+// this module lazily, so none of it weighs on the first screen), in two steps
+// (src/sound.ts says when each runs): startAudio, then loadRest.
 //
 // The board never calls sound: it emits events (src/events.ts) and this file
 // answers each with its sound. A new event that needs a sound gets a line in
@@ -12,18 +13,30 @@ import { devProbe, fileOf, load, play, refreshMix, wireEngine, type Voice } from
 import { duckMusic, startMusic } from "./music";
 import { LOAD_ORDER } from "./sounds";
 
-let started = false;
+let started: Promise<void> | null = null;
+let rest = false;
 
-export async function startAudio(): Promise<void> {
-  if (started) return;
-  started = true;
-  wireEngine();
-  listen();
-  if (import.meta.env.DEV) (window as unknown as { __audio: unknown }).__audio = { ...devProbe(), play };
+/**
+ * Step 1: listen, and fetch the Sound Tuning editor's mix (a small file,
+ * capped) and the button click, so the first tap on home is heard. A sound
+ * asked for before step 2 starts loading when asked.
+ */
+export function startAudio(): Promise<void> {
+  return (started ??= (async () => {
+    wireEngine();
+    listen();
+    if (import.meta.env.DEV) (window as unknown as { __audio: unknown }).__audio = { ...devProbe(), play };
+    // The click as it stands with no mix: a take picked for it loads with the mix.
+    await Promise.all([Promise.race([refreshMix(), new Promise((r) => setTimeout(r, 1000))]), load(fileOf("ui"))]);
+  })());
+}
 
-  // The Sound Tuning editor's mix first (a small file, capped), so a picked
-  // take loads in place of the original.
-  await Promise.race([refreshMix(), new Promise((r) => setTimeout(r, 1000))]);
+/** Step 2, once home is whole: every other effect, then the music. Once. */
+export async function loadRest(): Promise<void> {
+  if (rest) return;
+  rest = true;
+  // After the mix, so a picked take loads in place of the original.
+  await startAudio();
 
   // Effects next, a few at a time: they are small, and the first move wants them.
   const queue = [...LOAD_ORDER];

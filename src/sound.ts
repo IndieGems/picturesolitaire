@@ -59,18 +59,54 @@ export function setMuted(next: boolean): void {
   gem.reportMuted(muted);
 }
 
+// --- Loading the audio, in two steps (agreed with UI, 2026-10-28) ---------------
+//
+// The game's audio (src/audio/) never holds up the first screen, nor competes
+// with home's pictures:
+//
+// 1. Once home is drawn and the page is idle (startSound): the audio code, a
+//    chunk of its own, the Sound Tuning mix and the button click, a few KB
+//    in all, so the first tap on home is heard.
+// 2. Once home is whole (homeWhole, from UI: its pictures in, or its wait
+//    capped): every other effect, then the music, which starts as soon as it
+//    is ready. The player's first press brings this forward (the board's
+//    sounds come next), and it happens after REST_BY_MS whatever else does.
+//
+// Where the browser holds sound back, the first tap releases it, and is heard.
+
+/** The latest the rest of the sounds wait for homeWhole(). */
+const REST_BY_MS = 10_000;
+
+let audio: Promise<typeof import("./audio") | null> | null = null;
+let restAsked = false;
+
+/** The audio code, fetched once: step 1 starts as it arrives. */
+function audioCode(): Promise<typeof import("./audio") | null> {
+  return (audio ??= import("./audio").then(
+    (code) => {
+      code.startAudio().catch((err) => console.warn("[sound] the game's audio did not start", err));
+      return code;
+    },
+    (err) => {
+      console.warn("[sound] the game's audio did not load", err);
+      return null;
+    },
+  ));
+}
+
 /**
- * Load the game's audio (src/audio/) once the first screen has been drawn,
- * without ever holding it up: its code is a chunk of its own, fetched when the
- * page is idle, and its sounds load after that. Music starts as soon as it is
- * ready; where the browser holds sound back, the first tap releases it.
+ * Home is whole (UI: its pictures are in, or its wait ran out): the rest of
+ * the game's sounds, and its music, may load now. Once; again is harmless.
  */
+export function homeWhole(): void {
+  if (restAsked) return;
+  restAsked = true;
+  void audioCode().then((code) => code?.loadRest().catch((err) => console.warn("[sound] the game's sounds did not load", err)));
+}
+
+/** Step 1 once the first screen has been drawn and the page is idle. */
 function startAudioWhenIdle(): void {
-  const go = () => {
-    import("./audio")
-      .then((audio) => audio.startAudio())
-      .catch((err) => console.warn("[sound] the game's audio did not start", err));
-  };
+  const go = () => void audioCode();
   // Two frames: whatever the first screen draws at start-up is on screen.
   requestAnimationFrame(() =>
     requestAnimationFrame(() => {
@@ -78,12 +114,16 @@ function startAudioWhenIdle(): void {
       else setTimeout(go, 200);
     }),
   );
+  // Step 2's backstops: the first press, or time.
+  for (const type of ["pointerdown", "keydown"]) addEventListener(type, homeWhole, { capture: true, passive: true, once: true });
+  setTimeout(homeWhole, REST_BY_MS);
 }
 
 /**
  * Read the saved setting, tell the Arcade what it is, and follow the Arcade's
- * mute from then on, and start the game's audio. `reportMuted` is held until
- * the bridge is up, so this is safe to call at start-up.
+ * mute from then on, and start the game's audio (step 1 above; UI calls
+ * homeWhole for step 2). `reportMuted` is held until the bridge is up, so this
+ * is safe to call at start-up.
  */
 export async function startSound(): Promise<void> {
   startAudioWhenIdle();
