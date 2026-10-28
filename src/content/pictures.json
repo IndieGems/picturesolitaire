@@ -43511,7 +43511,7 @@
         300,
         500
       ],
-      "medium": "photo",
+      "medium": "painting",
       "family": "table-mountain",
       "subjects": [
         "Table Mountain",
@@ -43601,7 +43601,7 @@
         300,
         500
       ],
-      "medium": "photo",
+      "medium": "gouache",
       "family": "ostrich",
       "subjects": [
         "Oudtshoorn",
@@ -43691,7 +43691,7 @@
         300,
         500
       ],
-      "medium": "photo",
+      "medium": "painting",
       "family": "cliff-lighthouse",
       "subjects": [
         "Cape Point",
@@ -43736,7 +43736,7 @@
         300,
         400
       ],
-      "medium": "photo",
+      "medium": "painting",
       "family": "amphitheatre",
       "subjects": [
         "Drakensberg",
@@ -43826,7 +43826,7 @@
         300,
         500
       ],
-      "medium": "photo",
+      "medium": "gouache",
       "family": "meerkat",
       "subjects": [
         "Kalahari",
@@ -43871,7 +43871,7 @@
         300,
         500
       ],
-      "medium": "photo",
+      "medium": "painting",
       "family": "ribbon-falls",
       "subjects": [
         "Augrabies",
@@ -43916,7 +43916,7 @@
         300,
         400
       ],
-      "medium": "photo",
+      "medium": "gouache",
       "family": "wildflowers",
       "subjects": [
         "Namaqualand",
@@ -43961,7 +43961,7 @@
         300,
         500
       ],
-      "medium": "photo",
+      "medium": "painting",
       "family": "potholes",
       "subjects": [
         "Bourke's Luck",
@@ -44006,7 +44006,7 @@
         300,
         500
       ],
-      "medium": "photo",
+      "medium": "gouache",
       "family": "baby-elephant",
       "subjects": [
         "Kruger",
@@ -44096,7 +44096,7 @@
         300,
         500
       ],
-      "medium": "photo",
+      "medium": "gouache",
       "family": "hippo",
       "subjects": [
         "St Lucia",
@@ -44141,7 +44141,7 @@
         300,
         400
       ],
-      "medium": "photo",
+      "medium": "painting",
       "family": "rondavels",
       "subjects": [
         "Three Rondavels",
