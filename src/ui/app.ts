@@ -1657,7 +1657,12 @@ function showChallengeWin(w: Extract<Win, { kind: "challenge" }>, gallery: HTMLE
 /** Play trip `trip`'s Souvenir (home's tile, its passport page, the stamp moment), once its trip is stamped. */
 function playSouvenir(trip: string): void {
   const sv = souvenirOf(trip);
-  if (sv) openPlay({ kind: "souvenir", s: sv.board });
+  if (sv) return openPlay({ kind: "souvenir", s: sv.board });
+  // the Souvenir boards not loaded yet (they come with a stamp): loaded, then opened
+  void loadSouvenirList().then(() => {
+    const now = souvenirOf(trip);
+    if (now) openPlay({ kind: "souvenir", s: now.board });
+  }, () => suspect());
 }
 
 /**

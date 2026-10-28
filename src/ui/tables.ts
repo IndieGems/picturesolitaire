@@ -54,6 +54,12 @@ export interface TableArt {
   desk?: string;
   /** Shown in the picker though not owned, locked, with how to win it (a month's suitcase: Levels' schedule). */
   showLocked?: boolean;
+  /**
+   * Its art beside the game on a PC or a TV (the creator, 2026-10-28: each table its own): the name of
+   * a `media.portrait_borders` image on the store page (Art's, "sunny-day"), set by Art only once the
+   * page carries it. A table without one shows the Arcade's own bars.
+   */
+  border?: string;
 }
 
 /** The table every player has, and the one drawn before anything is read (style.css draws its files until then). */
@@ -221,11 +227,22 @@ async function homeReady(a: TableArt): Promise<() => void> {
 }
 
 /**
+ * The art beside the game on a PC or a TV (the store page's portrait borders) follows the player's
+ * CHOICE, as home does: a Souvenir's worn table never changes it. Called at start-up and on every
+ * change, unconditionally (the SDK holds it until the Arcade connects, and a phone ignores it); null
+ * for a table with no border, which brings back the Arcade's own bars.
+ */
+function showBorder(a: TableArt | undefined): void {
+  gem.showPortraitBorders(typeof a?.border === "string" && a.border ? a.border : null);
+}
+
+/**
  * The player's own table is now `a`: on the boards (unless one wears its own: then after) and home
  * together, once both pictures are ready, so home never shows the old table between the two.
  */
 async function apply(a: TableArt): Promise<void> {
   chosen = a.id;
+  if (!trying) showBorder(a);
   if (trying) return void [...listeners].forEach((fn) => fn());
   if (worn) {
     [...listeners].forEach((fn) => fn());
@@ -320,7 +337,10 @@ export async function startTables(): Promise<void> {
     // everyone's table, laid at once (its card back too, which no stylesheet fallback carries), while
     // the player's own choice is asked for; a different choice changes over when it is read
     const builtIn = m.tables.find((x) => x.id === m.default);
-    if (builtIn && !touched && chosen === m.default) void paint(builtIn);
+    if (builtIn && !touched && chosen === m.default) {
+      void paint(builtIn);
+      showBorder(builtIn);
+    }
     let want = m.default;
     if (framed && !pretendAll()) {
       try {
