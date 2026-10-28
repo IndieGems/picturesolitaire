@@ -7,6 +7,7 @@
 
 import { on, type GameEvents } from "../events";
 import { loadSettings } from "../settings";
+import { tableChoiceRead } from "../ui/tables";
 import { devProbe, fileOf, load, play, refreshMix, wireEngine, type Voice } from "./engine";
 import { duckMusic, startMusic } from "./music";
 import { LOAD_ORDER } from "./sounds";
@@ -32,9 +33,10 @@ export async function startAudio(): Promise<void> {
     }),
   );
 
-  // Music last, once the player's saved mute and volume are known (capped,
-  // so a slow read never keeps the game silent). It fades in from nothing.
-  await Promise.race([loadSettings(), new Promise((r) => setTimeout(r, 1500))]);
+  // Music last, once the player's saved mute and volume and their table (which
+  // picks the track) are known: capped, so a slow read never keeps the game
+  // silent, and a table read late crossfades. It fades in from nothing.
+  await Promise.race([Promise.all([loadSettings(), tableChoiceRead]), new Promise((r) => setTimeout(r, 1500))]);
   await startMusic();
 }
 

@@ -173,10 +173,10 @@ function makeLoop(buf, seconds) {
   return n / buf.sampleRate;
 }
 const musicLevel = () => data.levels.music.gain * mix.music;
-async function startMusic(take, fromEnd) {
+async function startMusic(name, take, fromEnd) {
   audio();
   stopMusic(true);
-  const buf = await buffer(fileUrl("music", take));
+  const buf = await buffer(fileUrl(name, take));
   const src = ctx.createBufferSource();
   src.buffer = buf;
   src.loop = true;
@@ -186,20 +186,20 @@ async function startMusic(take, fromEnd) {
   g.gain.value = musicLevel();
   src.connect(g).connect(out);
   src.start(0, fromEnd ? Math.max(0, buf.duration - fromEnd) : 0);
-  music = { src, g, take };
+  music = { src, g, take, name };
   musicButton(true);
 }
 function stopMusic(now) {
   if (!music) return;
   const { src, g } = music;
-  music = null;
   musicButton(false);
+  music = null;
   if (now) return src.stop();
   g.gain.setTargetAtTime(0, ctx.currentTime, 0.1);
   src.stop(ctx.currentTime + 0.5);
 }
 function musicButton(on) {
-  const b = document.querySelector("li.music .play");
+  const b = document.querySelector(`li.music[data-name="${music.name}"] .play`);
   if (b) { b.textContent = on ? "■" : "▶"; b.setAttribute("aria-pressed", String(on)); }
 }
 
@@ -353,8 +353,8 @@ function row(s) {
     play.disabled = true;
     li.querySelector(".moment").insertAdjacentHTML("beforeend", ' <span class="missing">(file missing)</span>');
   } else if (s.kind === "music") {
-    play.addEventListener("click", () => (music ? stopMusic() : startMusic(takeOf("music"))));
-    li.querySelector(".join").addEventListener("click", () => startMusic(takeOf("music"), 6));
+    play.addEventListener("click", () => (music?.name === s.name ? stopMusic() : startMusic(s.name, takeOf(s.name))));
+    li.querySelector(".join").addEventListener("click", () => startMusic(s.name, takeOf(s.name), 6));
   } else {
     play.addEventListener("click", () => playEffect(s.name));
     li.querySelector(".level").addEventListener("input", (e) => edit(s.name, { volume: Number(e.target.value) / 100 }));
@@ -363,7 +363,7 @@ function row(s) {
     li.querySelector(".up").addEventListener("click", () => { nudge(1); playEffect(s.name); });
   }
   li.querySelector(".mute").addEventListener("click", () => edit(s.name, { muted: !setting(s.name).muted }));
-  li.querySelector(".reset").addEventListener("click", () => { delete mix.sounds[s.name]; changed(s.name); if (s.name === "music" && music) startMusic(null); });
+  li.querySelector(".reset").addEventListener("click", () => { delete mix.sounds[s.name]; changed(s.name); if (music?.name === s.name) startMusic(s.name, null); });
 
   // Takes: the original and each alternate; a press plays it and makes it the game's.
   const takes = li.querySelector(".takes");
@@ -376,7 +376,7 @@ function row(s) {
     pill.title = "Play it, and make it the one the game plays";
     pill.addEventListener("click", () => {
       edit(s.name, { take: take ?? undefined });
-      if (s.kind === "music") startMusic(take); else playEffect(s.name, take);
+      if (s.kind === "music") startMusic(s.name, take); else playEffect(s.name, take);
     });
     takes.append(pill);
   }

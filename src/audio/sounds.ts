@@ -121,9 +121,21 @@ export const LOAD_ORDER: EffectName[] = [
 ];
 // Not loaded up front: milestone.
 
-/** The background music: one calm loop under the whole game. */
+/**
+ * The background music's tracks, each a row of the Sound Tuning editor:
+ * "music", the sunny daytime track every table plays unless it has its own,
+ * and "winter", today's snowy-evening track, the Winter Dusk table's.
+ */
+export type MusicName = "music" | "winter";
+
+/** The background music: one calm loop under the whole game, chosen by the player's table. */
 export const MUSIC = {
-  file: "bed",
+  /** "music": a sunny afternoon (guitar, felt piano, airy strings, flute), C major, 72 bpm. */
+  file: "bed-day",
+  /** Each other track's file. */
+  tracks: { winter: "bed" } as Record<Exclude<MusicName, "music">, string>,
+  /** A table with a track of its own, by the table's id (src/ui/tables.ts); fetched only while it is chosen. */
+  tables: { "table-winter-dusk": "winter" } as Record<string, MusicName>,
   /** Level of the music bus: well under the effects. */
   gain: 0.3,
   /** Seconds of the loop's end crossfaded into its start. */

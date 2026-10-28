@@ -43,7 +43,8 @@ const { cleanMix, pickedTakes, takeOwner } = await import(pathToFileURL(join(ROO
 
 // Every sound, in the order a board meets them, with the moment it belongs to.
 const SOUNDS = [
-  { name: "music", label: "Music", moment: "The background music, looping under the whole game.", kind: "music" },
+  { name: "music", label: "Music", moment: "The background music, looping under the whole game: a sunny afternoon, on every table but Winter Dusk.", kind: "music" },
+  { name: "winter", label: "Winter Dusk music", moment: "The background music while the player has chosen the Winter Dusk table (December's suitcase prize): the snowy evening.", kind: "music" },
   { name: "hardmark", label: "Hard board", moment: "A hard board opens, under its \"Hard board\" banner: a playful uh-oh." },
   { name: "supermark", label: "Super hard board", moment: "A super hard board opens, under its \"Super hard board\" banner: the uh-oh, deeper and weightier." },
   { name: "lift", label: "Pick up", moment: "Picking up a card or a joined piece." },
@@ -79,7 +80,7 @@ async function levels() {
   const file = join(ROOT, "src/audio/sounds.ts");
   const { EFFECTS, MUSIC } = await import(`${pathToFileURL(file).href}?v=${(await fs.stat(file)).mtimeMs}`);
   const effects = Object.fromEntries(Object.entries(EFFECTS).map(([k, v]) => [k, { gain: v.gain, rate: v.rate ?? 1, file: v.file ?? k }]));
-  return { effects, music: { gain: MUSIC.gain, file: MUSIC.file, crossfade: MUSIC.crossfade } };
+  return { effects, music: { gain: MUSIC.gain, file: MUSIC.file, tracks: MUSIC.tracks, crossfade: MUSIC.crossfade } };
 }
 
 const exists = (p) => fs.access(p).then(() => true, () => false);
@@ -164,7 +165,7 @@ const server = createServer(async (req, res) => {
       const have = await takes();
       const sounds = await Promise.all(
         SOUNDS.map(async (s) => {
-          const file = s.kind === "music" ? lv.music.file : lv.effects[s.name]?.file ?? s.name;
+          const file = s.kind === "music" ? (lv.music.tracks[s.name] ?? lv.music.file) : lv.effects[s.name]?.file ?? s.name;
           return { ...s, kind: s.kind ?? "effect", file, present: await exists(join(AUDIO, `${file}.ogg`)), takes: have.filter((t) => takeOwner(t) === s.name) };
         }),
       );

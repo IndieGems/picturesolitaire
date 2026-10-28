@@ -8,13 +8,13 @@
 // Pure: the editor's server imports this file straight into Node (types
 // stripped), so it imports nothing but ./sounds.ts, by its full name.
 
-import { EFFECTS, type EffectName } from "./sounds.ts";
+import { EFFECTS, type EffectName, type MusicName } from "./sounds.ts";
 
-/** Everything the mix can tune: each effect, and "music" for the background music. */
-export type SoundName = EffectName | "music";
+/** Everything the mix can tune: each effect, and each background music track ("music", "winter"). */
+export type SoundName = EffectName | MusicName;
 
 export type SoundSetting = {
-  /** A multiple of the sound's built-in level (0 to 4); absent: 1. Not for the music: its level is `music`. */
+  /** A multiple of the sound's built-in level (0 to 4); absent: 1. Not for a music track: their level is `music`. */
   volume?: number;
   /** Silent in the game. */
   muted?: true;
@@ -27,14 +27,15 @@ export type SoundSetting = {
 export type SoundMix = {
   /** All effects, a multiple of their levels (0 to 4). */
   effects: number;
-  /** The music, a multiple of its level (0 to 4). */
+  /** The music, every track, a multiple of its level (0 to 4). */
   music: number;
   sounds: Partial<Record<SoundName, SoundSetting>>;
 };
 
 export const EMPTY_MIX: SoundMix = { effects: 1, music: 1, sounds: {} };
 
-export const SOUND_NAMES: SoundName[] = [...(Object.keys(EFFECTS) as EffectName[]), "music"];
+const MUSIC_NAMES: readonly SoundName[] = ["music", "winter"];
+export const SOUND_NAMES: SoundName[] = [...(Object.keys(EFFECTS) as EffectName[]), ...MUSIC_NAMES];
 
 /** A take's stem belongs to `name` when it is that name, a dash and one letter: "merge-a". */
 export function takeOwner(stem: string): SoundName | undefined {
@@ -59,10 +60,11 @@ export function cleanMix(input: unknown, takes?: readonly string[]): SoundMix {
     const s = given[name] as Record<string, unknown> | undefined;
     if (!s || typeof s !== "object") continue;
     const entry: SoundSetting = {};
-    const volume = name === "music" ? undefined : num(s.volume, 0, 4);
+    const music = MUSIC_NAMES.includes(name);
+    const volume = music ? undefined : num(s.volume, 0, 4);
     if (volume !== undefined && volume !== 1) entry.volume = volume;
     if (s.muted === true) entry.muted = true;
-    const pitch = name === "music" ? undefined : num(s.pitch, -12, 12);
+    const pitch = music ? undefined : num(s.pitch, -12, 12);
     const semitones = Math.round(pitch ?? 0);
     if (semitones) entry.pitch = semitones;
     if (typeof s.take === "string" && takeOwner(s.take) === name && (!takes || takes.includes(s.take))) entry.take = s.take;

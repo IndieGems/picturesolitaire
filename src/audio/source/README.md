@@ -33,10 +33,12 @@ original holds.
 | fanfare.mp3 | destination postcard opens (music cue, 4 s) | 0-2.6 s | D major horns and strings, glockenspiel sparkle; -16 LUFS |
 | latch.wav | the Daily Suitcase's case closing (packed) | 1.575-1.8 s | lid thud then two latch clicks (1.585, 1.66), boom thinned at 180 Hz; packed adds the hint chime an octave up; suitcase is built from mark-marimba, mark-thump and hint; sticker (a Souvenir's) from land, mark-marimba and hint |
 | found-fanfare.mp3 | the Daily Suitcase's found-it moment (music cue, 6 s) | 0.02-0.94 s, then 2.976-5.2 s | xylophone, glockenspiel, pizzicato in C, beats every 0.455 s; the cut skips to the pickup note before the last beat and final chord (3.66), which lands at 1.59 s |
-| bed.mp3 | background music, 90 s | 0-86.5 s | loop: crossfade last ~4 s into the start at run time |
+| bed.mp3 | background music on the Winter Dusk table, 90 s (snowy evening: felt piano, string pad, celesta) | 0-86.5 s | loop: crossfade last ~4 s into the start at run time |
+| bed-day.mp3 | background music on every other table, 90 s (sunny afternoon: guitar, felt piano, airy strings, flute) | 0-90 s | generated in G major (a second take asked harder for C and came out keyless, discarded); encode re-keys it up a fourth to C, tempo kept (rubberband); same loop as bed |
 
-Shipped: Ogg Opus (effects mono 40 kbps, won/bed stereo 48 kbps), about
-690 KB in all, plus an MP3 fallback for a browser that cannot decode Opus.
+Shipped: Ogg Opus (effects mono 40 kbps, music stereo 48 kbps), plus an MP3
+fallback for a browser that cannot decode Opus. A player fetches one of the
+two beds (about 600 KB), the one their table plays.
 The bed is real stereo (side only 4 dB under mid): keep it stereo.
 slide, merge and restart came out faint in the originals and are lifted by
 normalising; regenerate them if they sound thin in play.

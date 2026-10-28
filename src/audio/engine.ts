@@ -26,7 +26,7 @@ import { gem, onArcadePause, onAudioChannels } from "../gem";
 import { onSettingsChange } from "../settings";
 import { masterGain, onMutedChange } from "../sound";
 import { EMPTY_MIX, cleanMix, pickedTakes, type SoundMix } from "./mix";
-import { EFFECTS, MUSIC, type EffectName } from "./sounds";
+import { EFFECTS, MUSIC, type EffectName, type MusicName } from "./sounds";
 
 export const ctx = new AudioContext({ latencyHint: "interactive" });
 
@@ -52,6 +52,8 @@ musicBus.connect(master);
 
 let channels = { music: true, sounds: true };
 let musicLevel = 1;
+/** The music track playing (src/audio/music.ts), for its Sound Tuning mute. */
+let musicTrack: MusicName = "music";
 /** The Sound Tuning editor's mix (src/audio/mix.ts), in force from when it is read. */
 let mix: SoundMix = EMPTY_MIX;
 
@@ -68,7 +70,15 @@ function ramp(param: AudioParam, value: number): void {
 function applyLevels(): void {
   ramp(master.gain, volumeCurve(masterGain()));
   ramp(effectsBus.gain, channels.sounds ? mix.effects : 0);
-  ramp(musicBus.gain, channels.music && !mix.sounds.music?.muted ? musicLevel * mix.music : 0);
+  // The Music row's Mute silences every track; another track's row, only its own.
+  const muted = mix.sounds.music?.muted || mix.sounds[musicTrack]?.muted;
+  ramp(musicBus.gain, channels.music && !muted ? musicLevel * mix.music : 0);
+}
+
+/** The music track playing now (src/audio/music.ts), for its Sound Tuning mute. */
+export function setMusicTrack(track: MusicName): void {
+  musicTrack = track;
+  applyLevels();
 }
 
 /** Set the music bus's own level (src/audio/sounds.ts, MUSIC.gain). */
@@ -191,10 +201,15 @@ export function fileOf(name: EffectName): string {
   return take ? `takes/${take}` : (EFFECTS[name].file ?? name);
 }
 
-/** The file the music plays: the take the mix picks, else the built-in track. */
-export function musicFile(): string {
-  const take = mix.sounds.music?.take;
-  return take ? `takes/${take}` : MUSIC.file;
+/** The file a music track plays: the take the mix picks, else the built-in track. */
+export function musicFile(track: MusicName = "music"): string {
+  const take = mix.sounds[track]?.take;
+  return take ? `takes/${take}` : track === "music" ? MUSIC.file : MUSIC.tracks[track];
+}
+
+/** Let a decoded file go (a music track no longer played: ~30 MB of samples). */
+export function forget(name: string): void {
+  buffers.delete(name);
 }
 
 // --- The mix -------------------------------------------------------------------

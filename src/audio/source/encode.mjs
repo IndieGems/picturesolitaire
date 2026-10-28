@@ -29,7 +29,8 @@ const takesOut = resolve(here, "../../../audio/takes");
 mkdirSync(out, { recursive: true });
 
 // start/end in seconds of the source; fade = fade-out length; stereo for music;
-// lowpass (Hz), when an effect's top end is too bright for the calm table.
+// lowpass (Hz), when an effect's top end is too bright for the calm table;
+// pitch, a ratio to re-key a take without changing its tempo (rubberband).
 const EFFECTS = [
   { name: "lift", src: "lift.wav", start: 1.22, end: 1.4, fade: 0.06 },
   { name: "land", src: "land.wav", start: 0.48, end: 0.66, fade: 0.08 },
@@ -69,6 +70,12 @@ const MUSIC = [
   // The bed: its own ending fade is cut; the game crossfades the last few
   // seconds into the start (src/audio/music.ts), so no loop point is baked in.
   { name: "bed", src: "bed.mp3", start: 0, end: 86.5, fade: 0.05, lufs: -20 },
+  // The sunny daytime bed, every table's but Winter Dusk's (which keeps the
+  // snowy evening above). The generator played it in G major whatever the
+  // prompt asked; re-keyed up a fourth to C major, tempo kept, so the picture
+  // harp's F never rubs against an F sharp. Even from end to end, no ending:
+  // the game crossfades its last seconds into its start.
+  { name: "bed-day", src: "bed-day.mp3", start: 0, end: 90, fade: 0.05, lufs: -20, pitch: 2 ** (5 / 12) },
 ];
 // Effects arranged from slices of the originals, when no single generation
 // played what was asked: each part is a slice (start..end) of a source, faded
@@ -187,6 +194,7 @@ function chain(s, highpass) {
   return [
     `atrim=start=${s.start}:end=${s.end}`,
     "asetpts=PTS-STARTPTS",
+    s.pitch ? `rubberband=pitch=${s.pitch.toFixed(5)}:transients=mixed:pitchq=quality:formant=preserved` : null,
     highpass ? "highpass=f=60" : null,
     s.lowpass ? `lowpass=f=${s.lowpass}` : null,
     "afade=t=in:d=0.003",

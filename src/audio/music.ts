@@ -1,5 +1,9 @@
 // The background music: one calm loop under the whole game, which steps back
-// while a picture's flourish or the win cue plays.
+// while a picture's flourish or the win cue plays. The player's table picks
+// the track (MUSIC.tables in src/audio/sounds.ts: Winter Dusk keeps the snowy
+// evening, every other table plays the sunny one); choosing another table
+// crossfades to its track. Only the player's own choice counts: a board that
+// wears a table of its own (a Souvenir's) leaves the music as it is.
 //
 // The loop point is made here rather than in the file: the last few seconds
 // of the track are crossfaded into its first few, and the loop runs from the
@@ -7,11 +11,19 @@
 // codec adds at the file's edges (MP3 pads both), and lets the track keep its
 // natural phrasing.
 //
-// The decoded track is about 33 MB of samples (86 s of stereo). If memory on
-// low-end phones becomes a problem, stream it from an <audio> element instead.
+// A decoded track is about 33 MB of samples (86-90 s of stereo), so only the
+// one playing is kept: a track swapped away from is let go once it has faded.
+// If memory on low-end phones becomes a problem, stream it from an <audio>
+// element instead.
 
-import { ctx, load, musicBus, musicFile, onMixChange, setMusicLevel } from "./engine";
-import { MUSIC } from "./sounds";
+import { chosenTable, onTableChange } from "../ui/tables";
+import { ctx, forget, load, musicBus, musicFile, onMixChange, setMusicLevel, setMusicTrack } from "./engine";
+import { MUSIC, type MusicName } from "./sounds";
+
+/** The track the player's table plays: its own, else the sunny one. */
+const trackNow = (): MusicName => MUSIC.tables[chosenTable()] ?? "music";
+/** The file to play now: that track, or the take the Sound Tuning editor picks for it. */
+const fileNow = (): string => musicFile(trackNow());
 
 const duck = ctx.createGain();
 duck.connect(musicBus);
@@ -42,7 +54,7 @@ function makeLoop(buffer: AudioBuffer, seconds: number): number {
 /** Start `file` looping, fading in over `fadeIn` s; whatever played before fades out over the same time. */
 async function play(file: string, fadeIn: number): Promise<boolean> {
   const buffer = await load(file);
-  if (!buffer || file !== musicFile()) return false; // failed, or the mix moved on meanwhile
+  if (!buffer || file !== fileNow()) return false; // failed, or the table or the mix moved on meanwhile
   const loopStart = makeLoop(buffer, MUSIC.crossfade);
   const source = ctx.createBufferSource();
   source.buffer = buffer;
@@ -63,8 +75,10 @@ async function play(file: string, fadeIn: number): Promise<boolean> {
     old.fader.gain.setValueAtTime(old.fader.gain.value, now);
     old.fader.gain.linearRampToValueAtTime(0, now + fadeIn);
     old.source.stop(now + fadeIn + 0.05);
+    if (old.file !== file) setTimeout(() => playing?.file !== old.file && forget(old.file), (fadeIn + 0.1) * 1000);
   }
   playing = { file, source, fader };
+  setMusicTrack(trackNow());
   return true;
 }
 
@@ -73,12 +87,17 @@ export async function startMusic(): Promise<void> {
   if (started) return;
   started = true;
   setMusicLevel(MUSIC.gain);
-  if (!(await play(musicFile(), MUSIC.fadeIn)) && !playing) started = false; // a later call may try again
+  if (!(await play(fileNow(), MUSIC.fadeIn)) && !playing) started = false; // a later call may try again
 }
 
-// A different take picked in the Sound Tuning editor: swap to it, crossfading.
+// Another table chosen, or another take picked in the Sound Tuning editor:
+// swap to its track, crossfading. (A table change that leaves the track as it
+// was, such as a Souvenir's table showing, changes nothing.)
+onTableChange(() => {
+  if (started && playing && playing.file !== fileNow()) void play(fileNow(), 2.5);
+});
 onMixChange(() => {
-  if (started && playing && playing.file !== musicFile()) void play(musicFile(), 1.5);
+  if (started && playing && playing.file !== fileNow()) void play(fileNow(), 1.5);
 });
 
 /**
