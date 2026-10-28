@@ -2364,6 +2364,16 @@ items:
     stack_size: 1
     transfer_policy: none
     client_writable: false
+  - id: 681f5677-95d7-573d-ab58-9b3f3adc73fa
+    slug: table-winter-dusk
+    display_name: "Winter Dusk table"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 1
+    transfer_policy: none
+    client_writable: false
+    icon: tools/art/items/table-winter-dusk.png
 # The suitcase items (src/content/levels/suitcases.json): a copy held per day packed, spares
 # swapped by the checker; cosmetic, never traded, never written by the game.
   - id: 6bd4759e-2705-5a7e-a95c-201fa7c3b17d

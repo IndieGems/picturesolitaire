@@ -1,5 +1,5 @@
 {
-  "note": "The table items: cosmetic platform items only the server grants. The one place a table's slug, id and title live; read by src/net/tables.ts (the game), tools/server/make-config.mts (the game config) and functions/checker/build.rs (which board grants which table). An id never changes once uploaded. The onboarding table's \"coins\" is the onboarding prize paid with it (board \"board\", once): the game shows it up front, and the config pays it. The built-in snowy dusk table (table-winter-dusk) is every player's and is no item.",
+  "note": "The table items: cosmetic platform items only the server grants. The one place a table's slug, id and title live; read by src/net/tables.ts (the game), tools/server/make-config.mts (the game config) and functions/checker/build.rs (which board grants which table). An id never changes once uploaded. The onboarding table's \"coins\" is the onboarding prize paid with it (board \"board\", once): the game shows it up front, and the config pays it. Every player's own table (src/net/suitcase-ids.json builtInTable) is no item. award \"none\": an uploaded table no month awards any more, its id and item kept (Winter Market, creator 2026-10-28).",
   "tables": [
     {
       "slug": "table-autumn-study",
@@ -22,8 +22,7 @@
       "slug": "table-winter-market",
       "id": "c6c2ed4a-1334-55ad-b2e2-0441c48a9f34",
       "title": "Winter Market table",
-      "award": "suitcase",
-      "month": "2026-12",
+      "award": "none",
       "icon": "tools/art/items/table-winter-market.png"
     },
     {
@@ -67,6 +66,14 @@
       "title": "Island Terrace table",
       "award": "suitcase",
       "month": "2027-06"
+    },
+    {
+      "slug": "table-winter-dusk",
+      "id": "681f5677-95d7-573d-ab58-9b3f3adc73fa",
+      "title": "Winter Dusk table",
+      "award": "suitcase",
+      "month": "2026-12",
+      "icon": "tools/art/items/table-winter-dusk.png"
     }
   ]
 }

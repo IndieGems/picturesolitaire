@@ -94,6 +94,20 @@ const markSlug = (month) => `suitcase_prize_${month.replace("-", "_")}`;
     Object.assign(t, { title, award: "suitcase", month: m.month });
     if (existsSync(join(root, icon))) t.icon = icon;
   }
+  // a suitcase table no month names any more keeps its id and item, awarded by nothing (the creator,
+  // 2026-10-28: Winter Market, kept for a later winter event, when Winter Dusk took December)
+  for (const t of doc.tables) {
+    if (t.award !== "suitcase" || MONTHS.some((m) => m.table === t.slug)) continue;
+    t.award = "none";
+    delete t.month;
+  }
+  // the built-in table is every player's: an item of it would be granted and never needed, and a
+  // month showing it would pay no table (the checker's rule), so it must not be one
+  const twin = doc.tables.find((t) => t.slug === SUITCASE.builtInTable);
+  if (twin) {
+    console.error(`make-config: ${twin.slug} is an item in src/net/tables.json and also src/net/suitcase-ids.json's builtInTable, every player's own. Name the new built-in table there.`);
+    process.exit(1);
+  }
   if (JSON.stringify(doc) !== before) {
     writeFileSync(file, JSON.stringify(doc, null, 2) + "\n");
     console.log("config: src/net/tables.json gains or updates the suitcase tables");

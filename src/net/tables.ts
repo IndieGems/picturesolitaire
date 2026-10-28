@@ -9,7 +9,9 @@
 // is granted by the same platform step that pays the onboarding prize: board
 // c01's progression completing, which only the win checker can move, after it
 // has replayed the board. So it lands once, ever, and the game never writes it.
-// The built-in snowy dusk table (table-winter-dusk) is every player's and is no item.
+// Every player's own table (src/net/suitcase-ids.json, builtInTable) is no item. The snowy
+// dusk desk (table-winter-dusk) was it until the game turned sunny (creator, 2026-10-28):
+// it is now December 2026's suitcase prize, an item like the others.
 
 import DATA from "./tables.json";
 
@@ -25,9 +27,11 @@ export interface Table {
   /**
    * How it is earned: "onboarding" is granted when board `board` is verified for the first
    * time; "suitcase" with month `month`'s full Daily Suitcase (src/net/suitcase.ts; its entry
-   * is written by tools/server/make-config.mts from Levels' suitcases.json).
+   * is written by tools/server/make-config.mts from Levels' suitcases.json); "none" is an
+   * uploaded table no month awards any more, its id and item kept for a later event
+   * (Winter Market, creator 2026-10-28).
    */
-  award: "onboarding" | "suitcase";
+  award: "onboarding" | "suitcase" | "none";
   board?: string;
   month?: string;
   /**

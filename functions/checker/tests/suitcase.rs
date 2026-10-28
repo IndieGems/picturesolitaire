@@ -185,7 +185,9 @@ fn every_suitcase_id_is_the_configs() {
             assert!(config.contains(&format!("- id: {}\n    slug: {}\n", suitcase::uuid(m, i), item["id"].as_str().unwrap())), "{}", item["id"]);
         }
         if let Some(t) = suitcase::table(m) {
-            assert!(config.contains(&format!("    slug: {t}\n")), "{t}");
+            // the id the prize grants is the config's item of that slug
+            let id = m["table"]["uuid"].as_str().unwrap();
+            assert!(config.contains(&format!("- id: {id}\n    slug: {t}\n")), "{}'s table {t} ({id})", suitcase::name(m));
         }
         assert!(config.contains(&format!("\"{}\"", suitcase::name(m))), "{} is a declared value of the suitcase events' month", suitcase::name(m));
     }

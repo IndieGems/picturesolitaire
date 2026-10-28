@@ -165,8 +165,13 @@ fn main() {
     // whichever version of its board was played. A daily board that names its item must name
     // its date's, and hold it as one of its own pictures (check.mts proves the same).
     let fixed = read(&Path::new(&here).join("../../src/net/suitcase-ids.json"));
-    let built_in = fixed["builtInTable"].as_str().unwrap_or("table-winter-dusk");
+    let built_in = fixed["builtInTable"].as_str().expect("src/net/suitcase-ids.json names its builtInTable");
     let table_items = read(&tables_file)["tables"].as_array().cloned().unwrap_or_default();
+    // every player's own table is no item: one that is both would be paid for by nothing
+    assert!(
+        !table_items.iter().any(|t| t["slug"] == built_in),
+        "{built_in} is an item in src/net/tables.json and also src/net/suitcase-ids.json's builtInTable: a month showing it would pay no table"
+    );
     let schedule = levels.join("suitcases.json");
     println!("cargo:rerun-if-changed={}", schedule.display());
     let source: Vec<Value> = fs::read_to_string(&schedule)
