@@ -13,6 +13,10 @@ vintage suitcase on a sunny sky-blue ground, with REAL destination postcards spi
 - Burano is being pieced together inside the suitcase, in the board's own card frames
   (tools/art/chrome-spec.md), its last card lifted; other trips' postcards lie loose in white
   borders, and the passport lies open with its stamps (src/ui/style.css .pp-*);
+- the PC/TV side art is not the suitcase scene any more (creator, 2026-10-28: it was "too busy
+  and distracting" beside the game): each table's own scene finished outward, with nothing near
+  the game (tools/art/tables.py `scene`; the props by the game cleared by a masked edit, prompt in
+  tools/art/prompts.txt), so the colours flow on from the table the player is on;
 - the logo is the travel-poster title: the stacked one (sun above) on the store, the wide 2:1 one
   (tools/art/wordmark.py, home's title) on the square tile, where it must read small.
 There is no fake interface: no buttons, counters or text other than the title.
@@ -23,7 +27,7 @@ Writes (paths are the bundle's; storepage.yaml names them under media):
   hero/capsule_square.jpg     1024x1024, with title   media.capsules.square
   hero/logo.png               the logo, alpha         media.hero.logo
   hero/share_card.jpg         1200x630, with title    media.share_card
-  borders/suitcase-sky.jpg    2560x1440, opaque       media.portrait_borders[0]
+  borders/<name>.jpg          2560x1440, opaque       media.portrait_borders (BORDERS below, the first is the default)
 Opaque art is JPEG q92: the Arcade re-encodes every image anyway, and this keeps the
 bundle (which is committed) small.
 """
@@ -315,11 +319,11 @@ def logo(name, width, height):
 
 # --- masters -----------------------------------------------------------------------------
 
-WIDE, SQUARE, BORDER = "store-suitcase-wide", "store-suitcase-square", "store-suitcase-border"
-RAW = {WIDE: "bg-suitcase.png", SQUARE: "bg-suitcase-square.png", BORDER: "bg-suitcase-border.png"}
+WIDE, SQUARE = "store-suitcase-wide", "store-suitcase-square"
+RAW = {WIDE: "bg-suitcase.png", SQUARE: "bg-suitcase-square.png"}
 # Each camera lens ring with made-up lettering, on these raws: (centre x, y, inner and outer radius).
-LENS = {WIDE: [(1227.5, 165, 29, 47)], SQUARE: [(1483, 635, 29, 46)], BORDER: [(2102.5, 302.5, 31, 49)]}
-DABS = {BORDER: [(2169, 267, 7)]}  # a stray glyph on the border camera's top plate: (x, y, radius)
+LENS = {WIDE: [(1227.5, 165, 29, 47)], SQUARE: [(1483, 635, 29, 46)]}
+DABS = {}  # stray glyphs to soften: name -> [(x, y, radius)]
 
 
 def smooth_ring(im, cx, cy, r0, r1, window=24, pct=35):
@@ -417,14 +421,9 @@ def square_tile():
     return c
 
 
-def border():
-    """PC/TV side art: the game's 9:16 box covers the calm middle third; postcards in the suitcase
-    on the left, one beside the props on the right."""
-    c = Image.open(MASTERS / f"{BORDER}.webp").convert("RGBA")
-    for pid, w, a, at in [(LOOSE[0], 200, -10, (235, 930)), (LOOSE[1], 205, 6, (440, 905)),
-                          (LOOSE[3], 200, 12, (630, 950)), (LOOSE[2], 190, -8, (1850, 660))]:
-        put(c, card(pid, w, a), at)
-    return c
+# PC/TV side art per table, the border's name (storepage.yaml's portrait_borders, the game picks
+# one by name: the table's slug without "table-") -> its 2560x1440 master. The first is the default.
+BORDERS = {"sunny-day": "store-sunny-day-border"}
 
 
 def save(im, rel, out, q=92):
@@ -442,7 +441,8 @@ def build():
     share = titled(wide_scene(1.0), (TITLE[0], TITLE[1] + 22, TITLE[2], TITLE[3] - 30)).crop((0, 36, 1920, 1044))
     save(share.resize((1200, 630), Image.LANCZOS), "hero/share_card.jpg", out)
     save(square_tile(), "hero/capsule_square.jpg", out)
-    save(border(), "borders/suitcase-sky.jpg", out, q=90)
+    for name, master in BORDERS.items():
+        save(Image.open(MASTERS / f"{master}.webp"), f"borders/{name}.jpg", out, q=90)
     lg = Image.open(MASTERS / "logo-poster.webp").convert("RGBA")
     lg.save(BUNDLE / "hero/logo.png", optimize=True)
     out["hero/logo.png"] = lg
@@ -466,9 +466,10 @@ def sheet(out, path):
     canvas.paste(sq.resize((96, 96), Image.LANCZOS), (560, y2 + 220))
     canvas.paste(out["hero/share_card.jpg"].convert("RGB").resize((600, 315), Image.LANCZOS), (1280, y + 450))
     # The border as a 16:9 PC screen: the game's 9:16 box drawn in the middle.
-    b = out["borders/suitcase-sky.jpg"].convert("RGB").resize((1040, 585), Image.LANCZOS)
+    first = next(iter(BORDERS))
+    b = out[f"borders/{first}.jpg"].convert("RGB").resize((1040, 585), Image.LANCZOS)
     gw = round(585 * 9 / 16)
-    game = Image.open(ROOT / "public/art/home-desk.webp").convert("RGB").resize((gw, 585), Image.LANCZOS)
+    game = Image.open(ROOT / f"public/art/tables/{first}/{first}-table.webp").convert("RGB").resize((gw, 585), Image.LANCZOS)
     b.paste(game, ((1040 - gw) // 2, 0))
     canvas.paste(b, (800, y2 + 250))
     canvas.save(path)

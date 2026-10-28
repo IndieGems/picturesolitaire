@@ -95,10 +95,12 @@ media:
   share_card:
     src: hero/share_card.jpg
     alt: "Picture Passport: an open suitcase on a sunny blue background, with a postcard of Burano's colourful houses being pieced together inside it and postcards of Mount Fuji, the Eiffel Tower, Positano and Sydney Harbour spilling out beside an open passport"
-  # The art is the suitcase set (creator, 2026-10-28; tools/art/store.py).
+  # The tiles are the suitcase set (creator, 2026-10-28; tools/art/store.py). The PC/TV side art is
+  # each table's own scene finished outward, calm beside the game; named by the table's slug, the
+  # game shows the one for the player's table (tables.json "border"). The first is the default.
   portrait_borders:
-    - name: suitcase-sky
-      src: borders/suitcase-sky.jpg
+    - name: sunny-day
+      src: borders/sunny-day.jpg
   # The desktop tile's hover loop: board 62 played on its own winning line, Mont-Saint-Michel's
   # picture finished and its postcard unfolding with the place's name, over the sunny side art
   # (tools/art/preview/; re-record when the board's look or the side art changes).

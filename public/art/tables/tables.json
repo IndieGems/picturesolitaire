@@ -11,7 +11,8 @@
       "particleKind": "petals",
       "particleFrame": 64,
       "particleFrames": 4,
-      "base": "#59bef6"
+      "base": "#51c5fd",
+      "border": "sunny-day"
     },
     {
       "id": "table-winter-dusk",

@@ -8,7 +8,7 @@ with the place's name on its banner, and the postcard going again. Times are sec
 <start move>'s drag begins; the last half second dissolves into the frames before the start, so
 the end flows into the start. Pick them from a contact sheet of the take.
 
-The whole board sits in the middle over the store's PC/TV side art (the sunny suitcase,
+The whole board sits in the middle over the store's PC/TV side art (Sunny Day's scene,
 tools/art/store.py), with a slow push-in and back out (the tile's checks want motion in every
 frame). The last cut (2026-10-28): record.mjs <scratch> 62 44 810 1440, then
 cut.py <scratch>/take-62 <frames> dest-mont-saint-michel 23 6.8 3.0 4.9. The bench (src/board/try.html) has no screens, so the name banner is drawn
@@ -44,7 +44,7 @@ S = at[str(m_start)]
 FPS, XF = 30, 0.5
 n_body = round(L * FPS)
 W, H = 1280, 720
-bg = Image.open(ROOT / ".gemarcade/borders/suitcase-sky.jpg").convert("RGB")  # 16:9, drawn at W x H per frame
+bg = Image.open(ROOT / ".gemarcade/borders/sunny-day.jpg").convert("RGB")  # 16:9, drawn at W x H per frame
 FW, FH = d["size"]
 cells = d["cells"]
 ys = sorted({round(c["y"]) for c in cells})

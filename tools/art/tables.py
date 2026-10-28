@@ -3,6 +3,14 @@
     python tools/art/tables.py ingest <raw-dir>    raw generations -> tools/art/masters/tables/
     python tools/art/tables.py build               masters -> public/art/tables/ + tables.json
     python tools/art/tables.py icon <name> <picture-id>   the platform item's icon (512 px PNG)
+    python tools/art/tables.py scene <name> <scene.png>   a table finished outward (16:9) -> its masters
+
+A table can come from a wider SCENE (creator, 2026-10-28, Sunny Day without its suitcase rims): the
+table's scene finished outward to 16:9 by the generator, so the PC side art beside the game is the
+same picture. `scene` keeps it as masters/tables/<name>-scene.webp and cuts its middle 9:16 as the
+table's master; the side art (tools/art/store.py, BORDERS) is that scene with the props near the
+game cleared, so it fits every window shape (the Arcade scales side art to cover the window, so a
+prop running past the game's edge lines up only on a 16:9 screen).
 
 Every table follows game-l.png's layout (detail at the edges and top corners, a calm
 darker middle where the cards sit) and keeps the same chrome: frosted frames and pale
@@ -64,7 +72,7 @@ TABLES = {
 SHIPPED = ["sunny-day", "winter-dusk", "autumn-study", "ski-lodge", "winter-market"]  # the picker's order
 DEFAULT = "sunny-day"  # everyone's table (UI's code switched to it in 78c3623)
 # Made-up marks the generator left on a table's props, softened at ingest: (x, y, radius) on the raw.
-CLEAN = {"sunny-day": [(268, 72, 8)]}  # a glyph on the camera's top plate
+CLEAN = {}  # raw stem -> marks to soften at ingest (the first sunny table had a glyph on its camera)
 # Each trip's Souvenir board has a table of its own (docs/souvenirs.md; tools/art/souvenirs.py makes it):
 # named in tools/art/souvenirs-plan.json, no particles, and marked "souvenir" in the manifest, so a picker
 # or a shop can tell it apart from a table a player owns. It ships once its table and back masters exist.
@@ -149,6 +157,8 @@ def stack_back(master, out):
 
 def build():
     OUT.mkdir(parents=True, exist_ok=True)
+    sys.dont_write_bytecode = True
+    from store import BORDERS as borders  # noqa: E402  (only a border the store page has)
     manifest = {"default": f"table-{DEFAULT}", "tables": []}
     for tid in SHIPPED:
         t = TABLES[tid]
@@ -182,11 +192,24 @@ def build():
         rec["base"] = t.get("base") or base_colour(table)
         if t.get("souvenir"):
             rec["souvenir"] = t["souvenir"]
+        if tid in borders:  # its PC/TV side art on the store page, by name (UI passes it to gem.showPortraitBorders)
+            rec["border"] = tid
         manifest["tables"].append(rec)
         sizes = ", ".join(f"{k} {(PUBLIC / v).stat().st_size // 1024} KB" for k, v in files.items() if isinstance(v, str))
         print(tid, sizes)
     (OUT / "tables.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print("public/art/tables/tables.json")
+
+
+def scene(name, src):
+    """A table's 16:9 scene -> masters/tables/<name>-scene.webp, and its middle 9:16 (what the game
+    shows) -> masters/tables/<name>.webp at 1152 x 2048, for build."""
+    im = Image.open(src).convert("RGB")
+    im.save(MASTERS / f"{name}-scene.webp", "WEBP", quality=90, method=6)
+    w = round(im.height * 9 / 16)
+    x0 = (im.width - w) // 2
+    im.crop((x0, 0, x0 + w, im.height)).resize((1152, 2048), Image.LANCZOS).save(MASTERS / f"{name}.webp", "WEBP", quality=92, method=6)
+    print(f"tools/art/masters/tables/{name}-scene.webp", im.size, f"-> {name}.webp (its middle, x {x0}..{x0 + w})")
 
 
 def icon(name, pid):
@@ -233,5 +256,7 @@ if __name__ == "__main__":
         build()
     elif sys.argv[1] == "icon":
         icon(sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == "scene":
+        scene(sys.argv[2], sys.argv[3])
     else:
         sys.exit(__doc__)
