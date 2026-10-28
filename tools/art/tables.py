@@ -43,11 +43,12 @@ FRAME = 64  # particle frame, px
 
 TABLES = {
     # The sunny day: the store's sky-blue suitcase carried in (creator, 2026-10-28, picked from three).
-    # Its petals drift like leaves (particleKind "leaves", the weather layer's kind for a falling sprite).
-    "sunny-day": {"title": "Sunny Day", "particles": "leaves"},
+    # Its petals drift as "petals" (UI's kind: sparser, slower and swaying wider than "leaves").
+    "sunny-day": {"title": "Sunny Day", "particles": "petals"},
     "winter-dusk": {"title": "Winter Dusk", "particles": "snow",
                     "files": {"table": "art/table.webp", "stackBack": "art/stack-back.webp",
                               "particles": "art/snow.png", "desk": "art/home-desk.webp"}, "frame": 32, "base": "#2c3746",
+                    "showLocked": True,  # December's prize: the picker shows it locked until owned
                     "master": ROOT / "tools/art/masters/chrome/table.webp"},
     "autumn-study": {"title": "Autumn Study", "particles": "leaves"},
     "summer-terrace": {"title": "Summer Terrace", "particles": "petals"},
@@ -58,9 +59,7 @@ TABLES = {
     "winter-market": {"title": "Winter Market", "particles": "snow", "share": "winter-dusk"},
 }
 SHIPPED = ["sunny-day", "winter-dusk", "autumn-study", "ski-lodge", "winter-market"]  # the picker's order
-# Everyone's table. UI flips it to "sunny-day" in tables.json with the code that goes with it (the snowy
-# fallbacks, home following the table); this follows.
-DEFAULT = "winter-dusk"
+DEFAULT = "sunny-day"  # everyone's table (UI's code switched to it in 78c3623)
 # Made-up marks the generator left on a table's props, softened at ingest: (x, y, radius) on the raw.
 CLEAN = {"sunny-day": [(268, 72, 8)]}  # a glyph on the camera's top plate
 # Each trip's Souvenir board has a table of its own (docs/souvenirs.md; tools/art/souvenirs.py makes it):
@@ -168,6 +167,8 @@ def build():
             else:  # no weather (a Souvenir's table): particles.ts draws none without a strip
                 files.pop("particles")
                 frames = frame = None
+        if t.get("showLocked"):  # a prize table every player sees in the picker, locked until owned
+            files["showLocked"] = True
         thumb(table, d / f"{tid}-thumb.webp")
         files["thumb"] = f"art/tables/{tid}/{tid}-thumb.webp"
         rec = {"id": f"table-{tid}", "title": t["title"], **files}
@@ -177,7 +178,7 @@ def build():
         if t.get("souvenir"):
             rec["souvenir"] = t["souvenir"]
         manifest["tables"].append(rec)
-        sizes = ", ".join(f"{k} {(PUBLIC / v).stat().st_size // 1024} KB" for k, v in files.items())
+        sizes = ", ".join(f"{k} {(PUBLIC / v).stat().st_size // 1024} KB" for k, v in files.items() if isinstance(v, str))
         print(tid, sizes)
     (OUT / "tables.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print("public/art/tables/tables.json")
