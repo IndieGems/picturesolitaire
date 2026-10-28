@@ -1205,6 +1205,19 @@ html.less-motion .case-slots .slot.arrived .item-pic { animation: none; }
 /* the daily card: the item packed, its suitcase in the line */
 .card .daily-line.packed { display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; color: var(--ink); }
 .card .daily-line.packed .mini-case { width: 40px; height: 30px; }
+/* the suitcase beside the words (they wrap within themselves); the 10th's prize on a row of its own */
+.card .daily-line.packed { flex-wrap: wrap; row-gap: 6px; margin-top: 4px; margin-bottom: 8px; }
+.card .daily-line.packed .packed-words { flex: 0 1 auto; min-width: 0; }
+/* the 10th: the prize under the line, its place kept (invisible) until the item lands */
+.card .daily-line .case-full {
+  flex-basis: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: nowrap;
+  visibility: hidden; opacity: 0; transition: opacity 0.35s ease; font: 600 14px/1.2 var(--round); color: var(--ink); white-space: nowrap;
+}
+.card .daily-line .case-full.shown { visibility: visible; opacity: 1; }
+.card .daily-line .case-full img { width: 24px; height: 30px; object-fit: cover; border-radius: 6px; box-shadow: 0 2px 5px rgba(6, 12, 24, 0.35); }
+.card .daily-line .case-full .tool { display: inline-flex; align-items: center; gap: 1px; }
+.card .daily-line .case-full .tool :is(svg, .ico) { width: 18px; height: 18px; }
+.suitcase-screen p.case-note { margin: -4px 0 0; text-align: center; font: 500 13px/1.3 var(--round); color: #e3eaf3; }
 .item-flight {
   position: fixed; z-index: 60; width: 74px; height: 74px; object-fit: cover; border-radius: 12px; pointer-events: none;
   box-shadow: 0 0 0 3px #fff, 0 8px 16px rgba(6, 12, 24, 0.4);

@@ -64,6 +64,8 @@ function fromLevels(m: MonthData, counts: Record<string, number> = {}, daysLeft 
 // ---------------------------------------------------------------- outside a release build
 type Pretend = { now: Suitcase | null; past: Suitcase[]; preview?: boolean };
 let pretend: Pretend | null = null;
+/** The last November day the preview gave to play. */
+let previewCursor: string | null = null;
 const ALLOWED = import.meta.env.MODE !== "release";
 
 /** The creator's preview: November as it would be some days in, 7 of 10 with 3 spares (one swap's worth). */
@@ -157,10 +159,29 @@ export const suitcases = {
       if (n) counts[it.id] = n;
     });
     pretend = { now: fromLevels(nov, counts, 30), past: [], preview: true };
+    previewCursor = null;
     say();
   },
   /** The creator's event preview is on. */
   previewing: (): boolean => ALLOWED && !!pretend?.preview,
+  /**
+   * The preview's next event puzzle (its "Play an event puzzle"): the next November day, after the
+   * last one given, whose item the pretend suitcase lacks, so each win packs a new one; with nothing
+   * missing, the next day at all (its item a spare: "packed again ×N").
+   */
+  previewNextDay(): { date: string; item: string; spare: boolean } | null {
+    const s = ALLOWED && pretend?.preview ? pretend.now : null;
+    const m = s ? months.find((x) => x.month === s.month) : undefined;
+    if (!s || !m) return null;
+    const days = Object.keys(m.days).sort();
+    const at = previewCursor ? days.indexOf(previewCursor) + 1 : 0;
+    const order = [...days.slice(at), ...days.slice(0, at)];
+    const missing = order.find((d) => !(s.counts[m.days[d]!] ?? 0));
+    const date = missing ?? order[0];
+    if (!date) return null;
+    previewCursor = date;
+    return { date, item: m.days[date]!, spare: !missing };
+  },
   /**
    * A practice daily's item, packed into the preview (its win card's moment): the copies after it,
    * and whether it was the 10th. Null when no preview is on or the item is not this month's.

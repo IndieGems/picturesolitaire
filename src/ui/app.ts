@@ -47,7 +47,7 @@ import { createChallenges } from "./challenges";
 import { createGuide, type GuideMode } from "./guide";
 import { fireworks } from "./fireworks";
 import type { Challenge } from "./challenge-data";
-import { lessonLevel, level as campaignLevel, type Daily, type Level } from "../game/levels";
+import { lessonLevel, level as campaignLevel, loadDaily, type Daily, type Level } from "../game/levels";
 import { createDaily } from "./daily";
 import { clock, shortDate } from "./format";
 import { claimWin, cueCoins, onVerdict, type Verdict } from "../net/claims";
@@ -112,7 +112,17 @@ const dailyUi = createDaily({
   play: (d) => openPlay({ kind: "daily", d }),
 });
 // the Daily Suitcase (suitcase.ts): the month's event the daily fills, its tile on home, its screen and shelf
-const suitcaseUi = createSuitcase({ home: () => goHome(), show: () => show("suitcase"), daily: () => dailyUi.state() });
+const suitcaseUi = createSuitcase({ home: () => goHome(), show: () => show("suitcase"), daily: () => dailyUi.state(), playEvent: () => void playEventPuzzle() });
+/**
+ * The creator's event preview (the dev menu, suitcase-data.ts): the next November daily whose item the
+ * pretend suitcase lacks, opened in practice (nothing saved or sent), so each win packs a new one.
+ */
+async function playEventPuzzle(): Promise<void> {
+  const next = suitcases.previewNextDay();
+  if (!next) return;
+  const d = await loadDaily(next.date);
+  if (d) openPlay({ kind: "daily", d, practice: true });
+}
 // home (home.ts): the trip as an itinerary and its route, Next stop, and Daily, the passport, the month's event
 // and the Shop. The challenge route is no longer on home (the creator, 2026-10-27: "Remove Challenges from the
 // home screen"): its screen and code stay (routeUi), reached from nowhere for now
@@ -1032,7 +1042,7 @@ function packedMoment(v: Verdict, line: HTMLElement): void {
   // the 10th: the prize came with this claim (the verdict's gifts say "suitcase", Server's); its table is
   // named only if it LANDED (the verdict's items), as every reward on a card is
   const full = (v as { gifts?: string[] }).gifts?.includes("suitcase")
-    ? { month: s?.month ?? "", table: !!s && ((v as { items?: string[] }).items ?? []).includes(s.prize.table) }
+    ? { month: s?.month ?? "", table: !!s && ((v as { items?: string[] }).items ?? []).includes(s.prize.table), ...(s ? { prize: s.prize } : {}) }
     : null;
   packedOnCard(line, it, dayItem?.id === p.item ? dayItem.url : "", p.count, packed, s?.items.length ?? 10, full);
 }
@@ -1294,7 +1304,20 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement):
   const line = isPractice(w) && dev ? dev.dailyLine : dailyLine(w);
   // practice: Next is the day after (the dev menu's), in place of the day's results
   const p = play;
-  const after = isPractice(w)
+  // the creator's event preview: back to the suitcase, which now holds what this win packed
+  const preview = isPractice(w) && suitcases.previewing();
+  const after = preview
+    ? withClick(button("amber next", "case.backToCase", t("case.backToCase")), () =>
+        leaveTo("daily-case", () => {
+          hideCard(winVeil);
+          board?.destroy();
+          host.replaceChildren();
+          board = null;
+          boardWon = false;
+          suitcaseUi.open();
+        }),
+      )
+    : isPractice(w)
     ? p && dev?.hasNext(p)
       ? withClick(button("amber next", "win.next", t("win.next"), icon("next")), () => leaveTo("daily-next", () => dev?.next(p)))
       : null
@@ -1342,7 +1365,7 @@ function previewPacked(line: HTMLElement): void {
   const s = suitcases.current();
   if (!r || !s) return;
   const it: SuitItem = s.items.find((x) => x.id === dayItem!.id) ?? { id: dayItem.id, title: t("case.today") };
-  packedOnCard(line, it, dayItem.url, r.count, heldOf(s), s.items.length, r.full ? { month: r.month, table: true } : null);
+  packedOnCard(line, it, dayItem.url, r.count, heldOf(s), s.items.length, r.full ? { month: r.month, table: true, prize: s.prize } : null);
 }
 
 /** The Shuffle lesson's card: done, then on to board 4 (no claim, no Coins, no break: it is still the lesson). */
@@ -1665,6 +1688,10 @@ export async function startApp(): Promise<void> {
         openSuitcase: () => {
           closeSettings();
           suitcaseUi.open();
+        },
+        playEvent: () => {
+          closeSettings();
+          void playEventPuzzle();
         },
       });
     })().catch((err: unknown) => console.warn("[dev-menu] did not load", err));

@@ -45,6 +45,8 @@ type Nav = {
   show(): void;
   /** Today's daily: play it, or its results once done; null while the day's board is unknown. */
   daily(): { done: boolean; go(): void } | null;
+  /** The creator's event preview: open the next event puzzle, in practice (app.ts). */
+  playEvent(): void;
 };
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", text = ""): HTMLElementTagNameMap[K] {
@@ -96,6 +98,27 @@ const ART = {
   closed: `${import.meta.env.BASE_URL}art/suitcase-closed.webp`,
   small: `${import.meta.env.BASE_URL}art/suitcase-closed-small.webp`,
 };
+
+/** A full suitcase's prize on the win card: the month's table (if it landed) and its helpers. */
+function fullPrize(prize: Suitcase["prize"], table: boolean): HTMLElement {
+  const row = el("span", "case-full");
+  const art = table && prize.table !== DEFAULT_TABLE ? knownTable(prize.table) : undefined;
+  if (art) {
+    const img = el("img");
+    Object.assign(img, { src: thumbOf(art), alt: "", draggable: false, decoding: "async" });
+    row.append(img, el("span", "full-table", t("case.tableName", { table: prize.tableTitle ?? art.title })));
+  }
+  for (const k of ["hint", "undo", "shuffle"] as HelperKind[]) {
+    const n = prize.helpers[k];
+    if (!n) continue;
+    const tool = el("span", "tool");
+    tool.innerHTML = ICONS[k];
+    tool.append(el("span", "", `×${n}`));
+    tool.setAttribute("aria-label", t(`win.gift.${k}`, { count: n }));
+    row.append(tool);
+  }
+  return row;
+}
 
 /** A closed suitcase, Art's: the small one (the banner, the win card), or the shelf's. */
 export function miniCase(cls = "", big = false): HTMLElement {
@@ -310,7 +333,16 @@ export function createSuitcase(nav: Nav) {
     parts.push(wrap);
     if (open && !s.complete) parts.push(swapPanel(s));
     parts.push(prize(s));
-    if (!viewing) {
+    if (!viewing && suitcases.previewing()) {
+      // the creator's event preview: its puzzles, in practice, one press each (the creator, 2026-10-27:
+      // "let me play those puzzles and go through the whole process")
+      const b = el("button", `btn ${picked ? "" : "amber "}case-daily case-event`);
+      b.type = "button";
+      b.dataset.press = "case.playEvent";
+      b.textContent = t("case.playEvent");
+      b.addEventListener("click", () => nav.playEvent());
+      parts.push(b, el("p", "case-note", t("case.previewNote")));
+    } else if (!viewing) {
       const d = nav.daily();
       if (d) {
         // the screen's one amber button: the swap's, while one is picked, else today's daily
@@ -388,20 +420,26 @@ export function packedOnCard(
   count: number,
   packed: number,
   all: number,
-  /** The 10th: the month, and whether its table landed with the prize (else the helpers alone are said). */
-  full: { month: string; table: boolean } | null = null,
+  /** The 10th: the month, whether its table landed with the prize (else the helpers alone are said), and the prize. */
+  full: { month: string; table: boolean; prize?: Suitcase["prize"] } | null = null,
 ): void {
   const mini = miniCase("on-card");
   // a new item says how full the suitcase is; a spare copy says how many of it there are now
   const words = el("span", "packed-words", count > 1 ? t("case.packedAgain", { item: item.title, count }) : t("case.packedCard", { item: item.title, count: packed, all }));
   line.replaceChildren(mini, words);
   line.classList.add("packed");
+  // the 10th: the prize under the line (the table, if it landed, and the helpers), its place kept from
+  // the start so nothing on the card moves when it shows
+  const prizeRow = full?.prize ? fullPrize(full.prize, full.table) : null;
+  if (prizeRow) line.append(prizeRow);
   /** It has landed: the latch (Audio's), and the full suitcase's word when this was the 10th. */
   const landed = () => {
     mini.classList.add("bump");
     emit("suitcase:packed", { id: item.id, count });
     if (full) {
-      words.textContent = t(full.table ? "case.fullCard" : "case.fullHelpers");
+      // with the prize row under it, the words are short: the row says the table and the helpers
+      words.textContent = prizeRow ? t("case.fullShort") : t(full.table ? "case.fullCard" : "case.fullHelpers");
+      prizeRow?.classList.add("shown");
       emit("suitcase:full", { month: full.month });
     }
   };

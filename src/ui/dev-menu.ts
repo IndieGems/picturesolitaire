@@ -62,6 +62,8 @@ export interface DevHost {
   showAll(on: boolean): void;
   /** Open the Daily Suitcase's screen (the event preview's). */
   openSuitcase(): void;
+  /** Open the event preview's next puzzle (a November daily the pretend suitcase lacks the item of), in practice. */
+  playEvent(): void;
 }
 
 /** What the menu lends the screens back. */
@@ -503,11 +505,16 @@ export function mountDevMenu(host: DevHost): DevMenu {
     el("h3", "", "Event preview (practice)"),
     eventState,
     eventRow,
+    btn("dev-wide amber", "Play an event puzzle", () => {
+      if (!suitcases.previewing()) suitcases.preview("start");
+      dialog.close();
+      host.playEvent();
+    }),
     btn("dev-wide", "Preview off", () => suitcases.preview(null)),
     el(
       "p",
       "dev-note",
-      "A pretend November suitcase: nothing is saved or sent. Play a November day from Play any board, Daily: its item is found on the board and packs on the win card. A swap works from the suitcase. Almost full lacks only 1 Nov's item: play 1 Nov, or swap for it, to see the full suitcase and the Ski Lodge table. Leaving the preview on, the home tile shows it.",
+      "A pretend November suitcase: nothing is saved or sent. Play an event puzzle opens the next November daily whose item the suitcase lacks: win it and the item flies in, then Back to suitcase. A swap works from the suitcase. Almost full is one item short of the full suitcase and the Ski Lodge table. While the preview is on, home's event tile opens it.",
     ),
   );
 
