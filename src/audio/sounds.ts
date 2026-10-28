@@ -31,7 +31,8 @@ export type EffectName =
   | "found"
   | "packed"
   | "suitcase"
-  | "stow";
+  | "stow"
+  | "sticker";
 
 export type EffectDef = {
   /** The file in public/audio/, when it is not the effect's own name. */
@@ -107,13 +108,16 @@ export const EFFECTS: Record<EffectName, EffectDef> = {
   // The suitcase full: a rising marimba arpeggio in the win cue's key, with a
   // low thump and glass pings.
   suitcase: { gain: 0.7, jitter: 0, minGap: 1 },
+  // A Souvenir won: its sticker is patted onto the trip's passport page, with a
+  // warm two-note marimba "da-DING" and glass pings. Smaller than the stamp.
+  sticker: { gain: 0.5, jitter: 0, minGap: 1 },
 };
 
 /** The order effects load in: what a first move needs comes first. */
 export const LOAD_ORDER: EffectName[] = [
   "ui", "lift", "land", "slide", "merge", "split", "deal", "nope", "fall", "settle",
   "complete", "undo", "hint", "shuffle", "restart", "won", "fanfare", "hardmark", "supermark", "stamp",
-  "found", "packed", "suitcase",
+  "found", "packed", "suitcase", "sticker",
 ];
 // Not loaded up front: milestone.
 

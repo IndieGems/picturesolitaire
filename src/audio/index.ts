@@ -222,6 +222,14 @@ function listen(): void {
   on("board:mark", ({ mark }) => play(mark === "super" ? "supermark" : "hardmark"));
   // A trip's stamp lands on its passport page (UI, the instant it lands).
   on("trip:stamp", () => play("stamp"));
+  // A Souvenir's sticker is patted onto its trip's page (UI, at the touch, ~0.85 s
+  // after the passport opens). A quick tap from the win card can bring it
+  // under 2 s into the win cue: the cue gives way, so the sticker is heard.
+  on("souvenir:sticker", () => {
+    winCue?.fadeOut(0.6);
+    winCue = null;
+    if (play("sticker")) duckMusic(0.4, 1, 1.5);
+  });
   // The Daily Suitcase. The day's item finished on the board, at its picture's
   // clear: UI's big moment (~2.1 s) and its fanfare, the harp fading under it.
   // Once per opening of the board. The item lands in its suitcase ~1.65 s in

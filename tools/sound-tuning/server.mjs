@@ -69,6 +69,7 @@ const SOUNDS = [
   { name: "packed", label: "Packed", moment: "The Daily Suitcase: the item flies into the suitcase on the daily win card and the case latches. A little softer for a spare copy." },
   { name: "suitcase", label: "Suitcase full", moment: "The Daily Suitcase: the 10th item is in and the month's suitcase is full, on the win card (just after its latch) or after a swap." },
   { name: "stamp", label: "Passport stamp", moment: "A trip's last board is won and the player stamps the passport: the stamp lands on the trip's page." },
+  { name: "sticker", label: "Souvenir sticker", moment: "A trip's Souvenir board is won and the player adds its sticker: it presses down onto the trip's passport page." },
   { name: "milestone", label: "Milestone", moment: "A milestone card with fireworks: today, finishing the guided start. Bigger than a board win, and plays instead of it." },
 ];
 const NAMES = new Set(SOUNDS.map((s) => s.name));

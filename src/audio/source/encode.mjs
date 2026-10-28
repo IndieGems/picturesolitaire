@@ -146,6 +146,23 @@ const BUILT = [
       { src: "hint.wav", start: 0.02, end: 1.0, at: 0.36, rate: up(7), db: 3 },
     ],
   },
+  // A Souvenir's sticker lands on its trip's passport page (docs/souvenirs.md):
+  // a hand patting it flat (the put-down tap's first knock, twice, softened),
+  // with a two-note marimba "da-DING" (B4 up to E5, a soft E4 under) and two
+  // glass pings (E6, B6). Smaller than the stamp's moment, and only E and B,
+  // so it sits in the bed's C major and over the win cue's E major alike.
+  // (The tap's original peaks at -23 dB.)
+  {
+    name: "sticker", len: 1.1, fade: 0.5, parts: [
+      { src: "land.wav", start: 0.485, end: 0.57, at: 0, rate: 0.9, lowpass: 2500, db: 14 },
+      { src: "land.wav", start: 0.485, end: 0.57, at: 0.11, rate: 0.95, lowpass: 2500, db: 10 },
+      { src: "mark-marimba.wav", start: 0.695, end: 1.0, at: 0, rate: up(11), db: -4 },
+      { src: "mark-marimba.wav", start: 0.695, end: 1.35, at: 0.11, rate: up(16), db: -1 },
+      { src: "mark-marimba.wav", start: 0.695, end: 1.35, at: 0.11, rate: up(4), db: -13 },
+      { src: "hint.wav", start: 0.02, end: 1.2, at: 0.11, db: 8 },
+      { src: "hint.wav", start: 0.02, end: 1.0, at: 0.2, rate: up(7), db: 2 },
+    ],
+  },
 ];
 // Alternate takes for Sound Tuning, made when the creator marks a sound Remake:
 // "<sound>-<letter>" (merge-a, merge-b...), their originals in takes/ here. An

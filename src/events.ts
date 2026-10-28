@@ -136,6 +136,13 @@ export interface GameEvents {
    */
   "trip:stamp": { trip: string };
   /**
+   * A Souvenir (docs/souvenirs.md) was won and its sticker just pressed onto its
+   * trip's passport page (UI, at the touch, once, on the first Souvenir win only,
+   * never on a replay; with reduced motion, as it fades in). `trip`: the trip's
+   * id ("t1"). Sound plays the sticker's sting.
+   */
+  "souvenir:sticker": { trip: string };
+  /**
    * The Daily Suitcase (docs/daily-suitcase.md), sent by UI. The day's item
    * just landed in the suitcase on the daily win card (as it touches, with its
    * bump; under reduced motion, as its line appears). `id`: the item; `count`:
