@@ -41,6 +41,7 @@ Still owed:
   - check whether Gem Arcade asks for an AI-art disclosure on the store page;
   - re-read the postcards' borderline notes (Japan's temples and shrines, Dog Bark Park, Paul Bunyan, the Big Banana's name) and the Souvenirs' museum credits (`docs/credits.md`).
   Record the result in `docs/credits.md`.
+- **At release: check the first load on the real server** (QA, 2026-10-28): signed in on Dev, DevTools → Network: the scripts come compressed (`content-encoding`), a second visit answers from cache (304s), and the enlarged view's chunk reads use Range. The local host can't show any of these. On 4G, home took ~4.4 s and ~1.05 MB from the frame starting (0.51.0).
 - **Effects on WebGL, the next time they are worked on** (the standard,
   2026-10-25; QA's second pass, 2026-10-26): the milestone fireworks (a 2D
   canvas on the page's thread, UI) and the finished picture's twinkles (page
