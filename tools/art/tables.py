@@ -10,13 +10,13 @@ buttons are drawn by the game and do not change per table. What changes per tabl
 
   <name>-table.webp       the background, 1080x1920 (cover, centre top), like public/art/table.webp
   <name>-stack-back.webp  the card back of the stacks, 384x512 (portrait 3:4) with alpha
-  <name>-particles.png    a strip of square frames drifting at the edges (snow, leaves...)
+  <name>-particles.webp   a strip of square frames drifting at the edges (snow, leaves...), lossless
   <name>-thumb.webp       a 320x400 preview for the table picker (the top of the table)
 Every file name carries the table's name: the platform refuses a build in which two
 files share a name, whatever their folders (tools/unique-names.mjs checks it).
 
 The winter dusk (the game's first table, December 2026's suitcase prize since the default turned
-sunny) keeps its original files (public/art/table.webp, stack-back.webp, snow.png) and its own home
+sunny) keeps its original files (public/art/table.webp, stack-back.webp, snow.webp) and its own home
 backdrop ("desk": art/home-desk.webp; a table without one shows on home too); only its thumb lives
 under public/art/tables/winter-dusk/ (winter-dusk-thumb.webp). The manifest
 public/art/tables/tables.json lists every SHIPPED table with its paths, the built-in one first.
@@ -35,6 +35,9 @@ from pathlib import Path
 
 from PIL import Image
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from images import squeeze  # noqa: E402  (the lossless last step: tools/art/images.py)
+
 ROOT = Path(__file__).resolve().parents[2]
 MASTERS = ROOT / "tools/art/masters/tables"
 PUBLIC = ROOT / "public"
@@ -47,7 +50,7 @@ TABLES = {
     "sunny-day": {"title": "Sunny Day", "particles": "petals"},
     "winter-dusk": {"title": "Winter Dusk", "particles": "snow",
                     "files": {"table": "art/table.webp", "stackBack": "art/stack-back.webp",
-                              "particles": "art/snow.png", "desk": "art/home-desk.webp"}, "frame": 32, "base": "#2c3746",
+                              "particles": "art/snow.webp", "desk": "art/home-desk.webp"}, "frame": 32, "base": "#2c3746",
                     "showLocked": True,  # December's prize: the picker shows it locked until owned
                     "master": ROOT / "tools/art/masters/chrome/table.webp"},
     "autumn-study": {"title": "Autumn Study", "particles": "leaves"},
@@ -131,7 +134,9 @@ def particles(master, out):
         k = (FRAME - 4) / max(s.size)
         s = s.resize((max(1, round(s.width * k)), max(1, round(s.height * k))), Image.LANCZOS)
         strip.alpha_composite(s, (i * FRAME + (FRAME - s.width) // 2, (FRAME - s.height) // 2))
-    strip.save(out, optimize=True)
+    # Lossless WebP, not PNG (2026-10-28): the same pixels, a quarter lighter.
+    strip.save(out, "WEBP", lossless=True, quality=100, method=6, exact=True)
+    squeeze(out)
     return len(spans)
 
 
@@ -158,12 +163,12 @@ def build():
             table.resize((1080, 1920), Image.LANCZOS).save(d / f"{tid}-table.webp", "WEBP", quality=72, method=6)
             stack_back(MASTERS / f"{tid}-back.webp", d / f"{tid}-stack-back.webp")
             files = {k: f"art/tables/{tid}/{tid}-{v}" for k, v in
-                     (("table", "table.webp"), ("stackBack", "stack-back.webp"), ("particles", "particles.png"))}
+                     (("table", "table.webp"), ("stackBack", "stack-back.webp"), ("particles", "particles.webp"))}
             if "share" in t:  # another table's particles, as they are
                 other = TABLES[t["share"]]
                 files["particles"], frames, frame = other["files"]["particles"], 4, other["frame"]
             elif t.get("particles"):
-                frames, frame = particles(MASTERS / f"{tid}-particles.webp", d / f"{tid}-particles.png"), FRAME
+                frames, frame = particles(MASTERS / f"{tid}-particles.webp", d / f"{tid}-particles.webp"), FRAME
             else:  # no weather (a Souvenir's table): particles.ts draws none without a strip
                 files.pop("particles")
                 frames = frame = None

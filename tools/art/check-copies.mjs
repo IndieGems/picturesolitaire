@@ -5,7 +5,7 @@
 // numbers here in step with BOARD_CELL, BOARD_BUDGET, THUMB_LONG and THUMB_BUDGET there.
 //
 //   node tools/art/check-copies.mjs [dir]      (default: public; dist works too)
-import { readFileSync, statSync } from "node:fs";
+import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 const root = process.argv[2] ?? "public";
@@ -97,9 +97,54 @@ for (const d of catalogue.destinations ?? []) {
     bad.push(`${d.id}: no full picture (${d.file})`);
   }
 }
+// No image carries metadata (EXIF, XMP, a colour profile, PNG text): bytes every player downloads
+// for nothing. tools/art/images.py squeezes each file the art scripts write; this holds the line
+// for any file made another way (2026-10-28).
+const META = { webp: ["EXIF", "XMP ", "ICCP"], png: ["tEXt", "iTXt", "zTXt", "eXIf", "iCCP", "tIME"] };
+function metadata(buf, ext) {
+  const found = [];
+  if (ext === "webp") {
+    for (let at = 12; at + 8 <= buf.length; ) {
+      const cc = buf.toString("latin1", at, at + 4);
+      const n = buf.readUInt32LE(at + 4);
+      if (META.webp.includes(cc)) found.push(cc.trim());
+      at += 8 + n + (n & 1);
+    }
+  } else if (ext === "png") {
+    for (let at = 8; at + 8 <= buf.length; ) {
+      const n = buf.readUInt32BE(at);
+      const cc = buf.toString("latin1", at + 4, at + 8);
+      if (META.png.includes(cc)) found.push(cc);
+      at += 12 + n;
+    }
+  } else if (ext === "jpg" || ext === "jpeg") {
+    for (let at = 2; at + 4 <= buf.length && buf[at] === 0xff && buf[at + 1] !== 0xda; at += 2 + buf.readUInt16BE(at + 2)) {
+      const m = buf[at + 1];
+      if ((m >= 0xe1 && m <= 0xef) || m === 0xfe) found.push(m === 0xfe ? "COM" : `APP${m - 0xe0}`);
+    }
+  }
+  return found;
+}
+let images = 0;
+for (const top of ["art", "pictures"]) {
+  let names = [];
+  try {
+    names = readdirSync(join(root, top), { recursive: true });
+  } catch {
+    continue; // a built dist packs its pictures
+  }
+  for (const rel of names) {
+    const ext = String(rel).split(".").pop().toLowerCase();
+    if (!["webp", "png", "jpg", "jpeg"].includes(ext)) continue;
+    images++;
+    const found = metadata(readFileSync(join(root, top, String(rel))), ext);
+    if (found.length) bad.push(`${top}/${rel}: carries ${found.join(", ")} (python tools/art/images.py squeeze <file>)`);
+  }
+}
+
 if (bad.length) {
   console.error(`check-copies: ${bad.length} problem(s); remake them with python tools/art/pictures.py boards / thumbs, then catalogue:`);
   for (const b of bad) console.error("  " + b);
   process.exit(1);
 }
-console.log(`check-copies: ${catalogue.pictures.length} pictures, ${(catalogue.destinations ?? []).length} destinations, board copies ${Math.round(boardBytes / 1024)} KB in all`);
+console.log(`check-copies: ${catalogue.pictures.length} pictures, ${(catalogue.destinations ?? []).length} destinations, board copies ${Math.round(boardBytes / 1024)} KB in all; ${images} images, no metadata`);

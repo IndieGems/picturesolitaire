@@ -36,6 +36,8 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
+from images import squeeze  # the lossless last step on every file written (tools/art/images.py)
+
 ROOT = Path(__file__).resolve().parents[2]
 PLAN = ROOT / "tools/art/pictures-plan.json"
 MASTERS = ROOT / "tools/art/masters"
@@ -141,6 +143,7 @@ def export(e):
     if im.width < size[0]:
         size = im.size
     im.resize(size, Image.LANCZOS).save(out, "WEBP", quality=80, method=6)
+    squeeze(out)
     if "window" in e:  # a destination: the passport's copy
         make_dest_thumb(e)
     # Library pictures ship no thumb (2026-10-26): the Albums screen that drew them is gone, the win
@@ -227,6 +230,7 @@ def make_board(e):
         im.save(out, "WEBP", quality=q, method=6)
         if out.stat().st_size <= budget:
             break
+    squeeze(out)
     return im.size, out.stat().st_size
 
 
@@ -263,6 +267,7 @@ def make_dest_thumb(e):
         im.save(out, "WEBP", quality=q, method=6)
         if out.stat().st_size <= DEST_THUMB_BUDGET * im.height // 400:
             break
+    squeeze(out)
     return im.size, out.stat().st_size
 
 

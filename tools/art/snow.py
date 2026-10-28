@@ -1,6 +1,6 @@
 """Drifting-snow sprites for the table, drawn procedurally (no generation needed).
 
-    python tools/art/snow.py   -> public/art/snow.png
+    python tools/art/snow.py   -> public/art/snow.webp
 
 One strip of four 32x32 white flakes on transparent, left to right:
   0 soft dot, small and dense        (most of the flakes: the concept's out-of-focus snow)
@@ -15,7 +15,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "public/art/snow.png"
+OUT = ROOT / "public/art/snow.webp"
 CELL, SS = 32, 8  # cell size, supersampling
 
 
@@ -69,7 +69,7 @@ def main():
     for i, im in enumerate((soft(6.5, 0.95), soft(15, 0.55), crisp(4.2), crystal())):
         strip.paste(im, (i * CELL, 0))
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    strip.save(OUT, optimize=True)
+    strip.save(OUT, "WEBP", lossless=True, quality=100, method=6, exact=True)  # the same pixels as a PNG, lighter
     print(OUT.relative_to(ROOT), strip.size, OUT.stat().st_size, "bytes")
 
 
