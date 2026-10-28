@@ -34,7 +34,7 @@
 import "./style.css";
 import { gem, onArcadePause, onPlayerPrefs } from "../gem";
 import { emit, on } from "../events";
-import { mountSettings } from "../settings-screen";
+import { closeSettings, mountSettings } from "../settings-screen";
 import { startSound } from "../sound";
 import { t } from "./i18n";
 import { ICONS, keepIcons, type IconName } from "./icons";
@@ -110,26 +110,20 @@ const dailyUi = createDaily({
   home: () => goHome(),
   show: () => show("daily"),
   play: (d) => openPlay({ kind: "daily", d }),
-  // the Daily tile opens the month's suitcase while there is one (its Play and results buttons go on from there)
-  tile: () => {
-    if (!suitcases.current()) return false;
-    suitcaseUi.open();
-    return true;
-  },
 });
-// the Daily Suitcase (suitcase.ts): the month's event the daily fills, its banner on home, its screen and shelf
+// the Daily Suitcase (suitcase.ts): the month's event the daily fills, its tile on home, its screen and shelf
 const suitcaseUi = createSuitcase({ home: () => goHome(), show: () => show("suitcase"), daily: () => dailyUi.state() });
-// home (home.ts): the trip as an itinerary and its route, Next stop, and Daily, the passport and the challenges
+// home (home.ts): the trip as an itinerary and its route, Next stop, and Daily, the passport, the month's event
+// and the Shop. The challenge route is no longer on home (the creator, 2026-10-27: "Remove Challenges from the
+// home screen"): its screen and code stay (routeUi), reached from nowhere for now
 const homeUi = createHome(
   {
     play: () => void playNext(),
     passport: () => passportUi.open(),
-    challenges: () => void routeUi.openRoute(),
     shop: () => homeShop.open(),
   },
-  // the challenge tile shows once the challenge boards exist: nothing promises a screen with nothing on it;
   // the Shop once the first board is done (its travel kit is how a player first meets the helpers)
-  { note: homeNote, event: suitcaseUi.banner, daily: dailyUi.homeButton, challengesShown: () => routeUi.exists(), shopShown: () => guideDone() },
+  { note: homeNote, event: suitcaseUi.tile, daily: dailyUi.homeButton, shopShown: () => guideDone() },
 );
 const home = homeUi.screen;
 
@@ -471,6 +465,7 @@ function openLoaded(next: Play): void {
   if (!board || !samePlay(play, next) || boardWon) {
     // the try in hand ends here (lost if it stood stuck, else quit; a won one has ended already)
     tries.end();
+    dayItem = null;
     mercyNote.clear();
     board?.destroy();
     host.replaceChildren();
@@ -1010,7 +1005,8 @@ const boardToast = h("div", { class: "board-toast glass", role: "status", hidden
 boardScreen.append(boardToast);
 let toastTimer = 0;
 on("suitcase:item", (e) => {
-  if (!play || play.kind !== "daily" || isPractice(play) || e.again) return;
+  // a practice daily counts only in the creator's event preview (the dev menu: nothing saved or sent)
+  if (!play || play.kind !== "daily" || (isPractice(play) && !suitcases.previewing()) || e.again) return;
   dayItem = { id: e.id, url: e.url };
   // a replay of the day, or a finish after the first, packs nothing: nothing said
   if (dailyResult(play.d.date)) return;
@@ -1335,6 +1331,18 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement):
   // the verdict landed before the card: the day's item flies now
   const dl = winVeil.querySelector<HTMLElement>(".daily-line");
   if (w.verdict && dl && !isPractice(w)) packedMoment(w.verdict, dl);
+  // the creator's event preview: a practice daily's item packs into the pretend month, as a first win would
+  if (dl && isPractice(w) && dayItem) previewPacked(dl);
+}
+
+/** The event preview's pack (the dev menu): the day's item into the pretend month, its flight and, if 10th, the full moment. */
+function previewPacked(line: HTMLElement): void {
+  if (!dayItem) return;
+  const r = suitcases.previewPack(dayItem.id);
+  const s = suitcases.current();
+  if (!r || !s) return;
+  const it: SuitItem = s.items.find((x) => x.id === dayItem!.id) ?? { id: dayItem.id, title: t("case.today") };
+  packedOnCard(line, it, dayItem.url, r.count, heldOf(s), s.items.length, r.full ? { month: r.month, table: true } : null);
 }
 
 /** The Shuffle lesson's card: done, then on to board 4 (no claim, no Coins, no break: it is still the lesson). */
@@ -1654,6 +1662,10 @@ export async function startApp(): Promise<void> {
         },
         cancelGuide: () => guide.cancel(),
         showAll: (on) => albumsUi.showAll(on),
+        openSuitcase: () => {
+          closeSettings();
+          suitcaseUi.open();
+        },
       });
     })().catch((err: unknown) => console.warn("[dev-menu] did not load", err));
   }

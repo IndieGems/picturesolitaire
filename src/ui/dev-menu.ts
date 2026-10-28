@@ -13,6 +13,10 @@
 //   Play any board     the campaign, the challenge route, any date of the daily pool
 //   Experiments        Levels' experiment boards (src/content/levels/experiments.json,
 //                      imported here only, so a release build drops it with the menu)
+//   Event preview      the Daily Suitcase as November will be, pretend and practice (the creator,
+//                      2026-10-27: "test November now"): suitcase-data.ts's preview; a practice
+//                      November daily finds and packs its item, a swap and the full moment play
+//                      against it; nothing is saved or sent
 //   Guided start       board 1's guide again, from its first step
 //
 // NEVER IN A RELEASE BUILD. app.ts imports this file only behind
@@ -37,6 +41,7 @@ import { shortDate } from "./format";
 import { markOf, markTag } from "./marks";
 import type { BoardHandle, DevStep } from "./board-api";
 import type { Experiment, Play } from "./app";
+import { suitcases } from "./suitcase-data";
 
 /** What vite.config.ts stamps in at build time (its `define`). */
 declare const __BUILD_INFO__: { version: string; sdk: string; commit: string; changed: boolean; built: string };
@@ -55,6 +60,8 @@ export interface DevHost {
   cancelGuide(): void;
   /** The albums show every picture as restored (never saved), or go back to the record. */
   showAll(on: boolean): void;
+  /** Open the Daily Suitcase's screen (the event preview's). */
+  openSuitcase(): void;
 }
 
 /** What the menu lends the screens back. */
@@ -471,6 +478,39 @@ export function mountDevMenu(host: DevHost): DevMenu {
     );
   }
 
+  // the Daily Suitcase's event preview: pretend, practice, nothing saved or sent
+  const eventState = el("p", "dev-info glass");
+  const drawEvent = () => {
+    const s = suitcases.previewing() ? suitcases.current() : null;
+    eventState.textContent = s
+      ? `On: ${s.theme}, ${s.items.filter((it) => (s.counts[it.id] ?? 0) > 0).length} of ${s.items.length} packed, ${s.items.reduce((n, it) => n + Math.max(0, (s.counts[it.id] ?? 0) - 1), 0)} spares.`
+      : "Off: the game shows the platform's event (none until 1 Nov: the tile previews it).";
+  };
+  suitcases.onChange(drawEvent);
+  drawEvent();
+  const startPreview = (kind: "start" | "almost") => {
+    suitcases.preview(kind);
+    dialog.close();
+    host.openSuitcase();
+  };
+  const eventRow = el("div", "dev-row");
+  eventRow.append(
+    btn("amber", "November, 7 of 10", () => startPreview("start")),
+    btn("", "Almost full, 9 of 10", () => startPreview("almost")),
+  );
+  const eventSec = el("section");
+  eventSec.append(
+    el("h3", "", "Event preview (practice)"),
+    eventState,
+    eventRow,
+    btn("dev-wide", "Preview off", () => suitcases.preview(null)),
+    el(
+      "p",
+      "dev-note",
+      "A pretend November suitcase: nothing is saved or sent. Play a November day from Play any board, Daily: its item is found on the board and packs on the win card. A swap works from the suitcase. Almost full lacks only 1 Nov's item: play 1 Nov, or swap for it, to see the full suitcase and the Ski Lodge table. Leaving the preview on, the home tile shows it.",
+    ),
+  );
+
   // the guided start
   const guideSec = el("section");
   guideSec.append(
@@ -479,7 +519,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     el("p", "dev-note", "Board 1 with its four steps from the first, then its finish card. Nothing is saved, and no table is given."),
   );
 
-  scroll.append(title, buildBox, boardSec, switches, pickSec, xSec, guideSec);
+  scroll.append(title, buildBox, boardSec, switches, pickSec, xSec, eventSec, guideSec);
   document.body.append(dialog);
 
   // ---------- the Next move bar, over the board's foot ----------

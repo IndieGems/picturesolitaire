@@ -10,9 +10,11 @@
 //                 (marks.ts); the last stop holds the trip's stamp, a faint outline until
 //                 the trip is done
 //   Next stop     the amber button, with the board number under it
-//   the dock      Daily (daily.ts), the passport (a booklet, with its count of stamps), the
-//                 challenge route and, once the first board is done, the Shop (home-shop.ts:
-//                 helpers, one or a pack of 3; the creator, 2026-10-27), as up to four tiles
+//   the dock      Daily (daily.ts), the passport (a booklet, with its count of stamps), the month's
+//                 event (suitcase.ts: the Daily Suitcase, or the next one before it starts; in the
+//                 challenge route's old place, the creator, 2026-10-27: the route's code stays,
+//                 unreached from home) and, once the first board is done, the Shop (home-shop.ts:
+//                 helpers, one or a pack of 3), as up to four tiles
 //
 // Every board won: the itinerary shows the trip of the board Play goes round to, every stop
 // visited and the stamp earned, and the button says Play again.
@@ -53,19 +55,16 @@ type Nav = {
   /** Next stop (or Play again): the board nextBoard() names. */
   play(): void;
   passport(): void;
-  challenges(): void;
   shop(): void;
 };
 
 type Parts = {
   /** home's note of a win from last time (app.ts), in the top row */
   note: HTMLElement;
-  /** the month's event banner (suitcase.ts), in the top row too: glass, a tap opens the suitcase */
+  /** the month's event tile (suitcase.ts), hidden while there is no event to show */
   event: HTMLElement;
   /** the day's board's button (daily.ts), hidden until the day's board is known */
   daily: HTMLElement;
-  /** Is the challenge route there to open? */
-  challengesShown(): boolean;
   /** Is the Shop on home (the first board done, so the helpers are known)? */
   shopShown(): boolean;
 };
@@ -161,12 +160,6 @@ export function createHome(nav: Nav, parts: Parts) {
   passport.dataset.press = "home.passport";
   passport.append(bookletBox, el("span", "label", t("home.passport")), stampsLine);
   passport.addEventListener("click", () => nav.passport());
-  const challenges = el("button", "btn tile-btn challenges");
-  challenges.type = "button";
-  challenges.dataset.press = "home.challenges";
-  challenges.append(glyph(ICONS.challenges), el("span", "label", t("home.challenges")), el("small", "", t("home.challengesLine")));
-  challenges.hidden = true;
-  challenges.addEventListener("click", () => nav.challenges());
   // the Shop: Art's satchel, the Hint's magnifier peeking out
   const shopArt = el("span", "booklet");
   shopArt.append(bookletImg(ART.satchel));
@@ -178,11 +171,12 @@ export function createHome(nav: Nav, parts: Parts) {
   shop.addEventListener("click", () => nav.shop());
   parts.daily.classList.add("tile-btn");
   const dock = el("div", "dock");
-  dock.append(parts.daily, passport, challenges, shop);
+  parts.event.classList.add("tile-btn");
+  dock.append(parts.daily, passport, parts.event, shop);
 
   const screen = el("section", "screen home");
   screen.setAttribute("aria-label", t("game.title"));
-  screen.append(parts.note, parts.event, title, itinerary, play, dock);
+  screen.append(parts.note, title, itinerary, play, dock);
 
   // a tablet's big column: home grows with it (style.css, --k), up to 1.7, never past what fits its height
   new ResizeObserver(() => {
@@ -325,7 +319,6 @@ export function createHome(nav: Nav, parts: Parts) {
     const stamped = trips.filter(tripDone).length;
     stampsLine.textContent = t("home.stamps", { count: stamped });
     passport.setAttribute("aria-label", `${t("home.passport")}: ${stampsLine.textContent}`);
-    challenges.hidden = !parts.challengesShown();
     shop.hidden = !parts.shopShown();
   }
 

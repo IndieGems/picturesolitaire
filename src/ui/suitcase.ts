@@ -1,10 +1,11 @@
 // THE DAILY SUITCASE on screen (docs/daily-suitcase.md; the creator, 2026-10-27): the monthly event
 // the daily puzzle fills. Its record is the platform's (suitcase-data.ts, over Server's module):
 //
-//   the banner      home's top row, glass: "November: Ski Trip" over "12 days left", a tap opens
-//                   the suitcase. Information that leads somewhere (the lead's brief), so glass and
-//                   not a raised button, with a chevron saying it opens.
-//   the suitcase    a screen of its own, from the banner or the Daily tile: the month's 10 slots,
+//   the tile        home's dock, in the challenge route's old place (the creator, 2026-10-27:
+//                   "that button should be for the current event"): Art's closed suitcase, the
+//                   theme ("Ski Trip") and "7 of 10 · 12 days left"; before a month's event starts,
+//                   the next one, "Starts Nov 1". It opens the suitcase.
+//   the suitcase    a screen of its own, from the tile: the month's 10 slots,
 //                   each the item's picture once packed (with "×2", "×3" for spare copies) or its
 //                   outline while missing; then the swap (tap a missing item; 3 spares, of any
 //                   items, swap for it, checked on the server), the prize (the month's table and a
@@ -12,6 +13,8 @@
 //                   and the shelf.
 //   the shelf       past months, each a closed suitcase with how many were packed; a tap opens it
 //                   to look at, never to finish (no swap, no daily).
+//   the preview     before the event: the next month's suitcase, every slot an outline, its prize,
+//                   when it starts, and no swap.
 //   the win card    the day's first daily win packs the day's item: once the checker's verdict says
 //                   so, the item's picture flies into a small suitcase on the card, and the line
 //                   says "Goggles packed! 8 of 10". Decoration only: it takes no touch and never
@@ -28,6 +31,10 @@ import { t } from "./i18n";
 import { ICONS } from "./icons";
 import { held, spares, suitcases, SWAP_COST, type SuitItem, type Suitcase, type SwapAnswer } from "./suitcase-data";
 import { knownTable, thumbOf } from "./tables";
+import { shortDate } from "./format";
+
+/** `viewing` for the next event's preview (before it starts). */
+const UPCOMING = "upcoming";
 import { suitcaseItem } from "./catalogue";
 import { ensureSuitcase, fileUrl } from "../packs";
 import type { HelperKind } from "./stock";
@@ -99,20 +106,17 @@ export function miniCase(cls = "", big = false): HTMLElement {
 }
 
 export function createSuitcase(nav: Nav) {
-  // ---- home's banner: in the top row, glass, a tap opens the suitcase ----
-  const bannerTitle = el("b");
-  const bannerLeft = el("span");
-  const bannerWords = el("span", "words");
-  bannerWords.append(bannerTitle, bannerLeft);
-  const banner = el("button", "top-pill glass event-banner");
-  banner.type = "button";
-  banner.dataset.press = "home.event";
-  banner.hidden = true;
-  const chev = el("span", "chev");
-  chev.innerHTML = ICONS.chevron;
-  chev.setAttribute("aria-hidden", "true");
-  banner.append(miniCase(), bannerWords, chev);
-  banner.addEventListener("click", () => open());
+  // ---- home's tile, in the dock: the event (or the next one), a tap opens the suitcase ----
+  const tileName = el("span", "label");
+  const tileLine = el("small");
+  const caseArt = el("span", "booklet case-art");
+  caseArt.append(miniCase("", true));
+  const tile = el("button", "btn tile-btn event");
+  tile.type = "button";
+  tile.dataset.press = "home.event";
+  tile.hidden = true;
+  tile.append(caseArt, tileName, tileLine);
+  tile.addEventListener("click", () => open());
 
   // ---- the screen ----
   const pill = el("div", "top-pill glass");
@@ -126,7 +130,7 @@ export function createSuitcase(nav: Nav) {
   screen.hidden = true;
   screen.append(pill, back, scroll);
 
-  /** The month on show: null is this month's; a month id is a shelf suitcase. */
+  /** The month on show: null is this month's; a month id is a shelf suitcase; UPCOMING the next event's preview. */
   let viewing: string | null = null;
   /** The missing item picked to swap for. */
   let picked: string | null = null;
@@ -134,7 +138,7 @@ export function createSuitcase(nav: Nav) {
   let said = "";
 
   back.addEventListener("click", () => {
-    if (viewing) {
+    if (viewing && viewing !== UPCOMING) {
       viewing = null;
       picked = null;
       draw();
@@ -142,7 +146,8 @@ export function createSuitcase(nav: Nav) {
     } else nav.home();
   });
 
-  const shown = (): Suitcase | null => (viewing ? (suitcases.past().find((s) => s.month === viewing) ?? null) : suitcases.current());
+  const shown = (): Suitcase | null =>
+    viewing === UPCOMING ? (suitcases.upcoming()?.s ?? null) : viewing ? (suitcases.past().find((s) => s.month === viewing) ?? null) : suitcases.current();
 
   function slots(s: Suitcase, open: boolean): HTMLElement {
     const grid = el("div", "case-slots");
@@ -274,8 +279,10 @@ export function createSuitcase(nav: Nav) {
   }
 
   function draw(): void {
-    drawBanner();
+    drawTile();
     if (screen.hidden) return;
+    // the event began (or a preview was switched off) while its preview was up: this month's now
+    if (viewing === UPCOMING && suitcases.current()) viewing = null;
     const s = shown();
     if (!s) {
       pill.textContent = t("case.name");
@@ -285,11 +292,14 @@ export function createSuitcase(nav: Nav) {
     const open = !viewing && s.daysLeft > 0;
     pill.textContent = eventTitle(s);
     const status = el("p", "case-status glass");
-    status.append(
-      el("b", "", t("case.packedOf", { count: held(s), all: s.items.length })),
-      " · ",
-      el("span", "", open ? t("case.daysLeft", { count: s.daysLeft }) : t("case.closed")),
-    );
+    const next = viewing === UPCOMING ? suitcases.upcoming() : null;
+    if (next) status.append(el("b", "", t("case.starts", { date: shortDate(next.starts) })), " · ", el("span", "", t("case.previewWhy")));
+    else
+      status.append(
+        el("b", "", t("case.packedOf", { count: held(s), all: s.items.length })),
+        " · ",
+        el("span", "", open ? t("case.daysLeft", { count: s.daysLeft }) : t("case.closed")),
+      );
     const parts: (HTMLElement | null)[] = [status];
     // Art's open suitcase round the slots, its plain lining stretched to fit them (a 9-slice, style.css)
     const suitcase = el("div", "case");
@@ -316,17 +326,25 @@ export function createSuitcase(nav: Nav) {
     scroll.replaceChildren(...parts.filter((p): p is HTMLElement => !!p));
   }
 
-  function drawBanner(): void {
+  function drawTile(): void {
     const s = suitcases.current();
-    banner.hidden = !s;
-    if (!s) return;
-    bannerTitle.textContent = eventTitle(s);
-    bannerLeft.textContent = s.complete ? t("case.bannerDone") : t("case.daysLeft", { count: s.daysLeft });
-    banner.setAttribute("aria-label", `${eventTitle(s)}, ${bannerLeft.textContent}. ${t("case.open")}`);
+    const next = s ? null : suitcases.upcoming();
+    tile.hidden = !s && !next;
+    if (s) {
+      tileName.textContent = s.theme;
+      tileLine.textContent = s.complete
+        ? t("case.tileFull")
+        : `${t("case.tileOf", { count: held(s), all: s.items.length })} · ${t("case.daysLeft", { count: s.daysLeft })}`;
+    } else if (next) {
+      tileName.textContent = next.s.theme;
+      tileLine.textContent = t("case.starts", { date: shortDate(next.starts) });
+    } else return;
+    tile.setAttribute("aria-label", `${eventTitle(s ?? next!.s)}: ${tileLine.textContent}. ${t("case.open")}`);
   }
 
+  /** Open the suitcase: this month's; before the event, the next one's preview; or a shelf month. */
   function open(month: string | null = null): void {
-    viewing = month;
+    viewing = month ?? (suitcases.current() ? null : suitcases.upcoming() ? UPCOMING : null);
     picked = null;
     said = "";
     screen.hidden = false;
@@ -341,11 +359,12 @@ export function createSuitcase(nav: Nav) {
   suitcases.onChange(() => {
     if (!swapping) draw();
   });
-  drawBanner();
+  drawTile();
 
   return {
     screen,
-    banner,
+    /** Home's dock tile. */
+    tile,
     open,
     /** Redraw (the day's board or result changed). */
     redraw: draw,

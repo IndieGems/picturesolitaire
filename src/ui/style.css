@@ -1103,21 +1103,8 @@ html.less-motion .card .gift { animation: none; }
 
 /* ---------- the Daily Suitcase (suitcase.ts): the month's event the daily fills ---------- */
 
-/* home's banner: in the top row, glass (information that opens the suitcase), a chevron saying so.
-   The note of a win from last time takes the row for its few seconds (app.ts), the banner after it */
-.home .event-banner {
-  right: calc(var(--row-right) + var(--btn) + 12px); justify-content: flex-start; gap: 9px;
-  padding: 0 10px 0 12px; border: 0; color: var(--ink); cursor: pointer; text-align: left; font: inherit;
-  touch-action: manipulation;
-}
-.home .event-banner[hidden], .home .home-note:not([hidden]) ~ .event-banner { display: none; }
-.event-banner .words { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
-.event-banner .words b { font: 600 15px/1.1 var(--round); white-space: nowrap; overflow: hidden; }
-.event-banner .words span { font: 500 12.5px/1.1 var(--round); color: var(--ink-soft); }
-.event-banner .chev { flex: none; width: 18px; height: 18px; color: var(--ink-soft); }
-.event-banner .chev :is(svg, .ico) { width: 100%; height: 100%; }
-.event-banner:focus-visible { outline: 3px solid var(--amber-hi); outline-offset: 3px; }
-.event-banner:active { transform: scale(0.98); }
+/* home's event tile (suitcase.ts): Art's closed suitcase in the booklet's place, the theme, its line */
+.tile-btn.event .case-art img { height: 100%; width: auto; }
 
 /* a closed suitcase, Art's (the small one; the shelf's is the bigger file) */
 .mini-case { flex: none; display: inline-block; width: 32px; height: 24px; object-fit: contain; }
