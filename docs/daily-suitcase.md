@@ -23,7 +23,9 @@ event.
 - **The shelf.** When the month ends, its suitcase closes onto a shelf, full or not, and the next
   event begins. Past suitcases stay there to look back on, and can't be finished afterwards.
 - **Unchanged.** The daily's Coins and its free helper for the day's first win stay as they are.
-- **Where it lives.** The suitcase opens from the Daily tile on home.
+- **Where it lives.** The suitcase opens from home's Event tile ("Event", the theme under it), in
+  the old Challenges place. Its page leads with "Play the Daily Puzzle!" and a short how-it-works,
+  since the daily is the event's only puzzle (creator, 2026-10-28).
 
 ## Who builds what
 
