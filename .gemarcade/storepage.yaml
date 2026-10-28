@@ -113,7 +113,7 @@ media:
   # hooks and each board played by its own proved line (the UI member, 2026-10-27).
   screenshots:
     - src: screenshots/01-home-france.jpg
-      alt: "Home screen on the sunny sky-blue suitcase table, under the Picture Passport title, on the France trip, stop 6 of 15. The first five stops show postcards of the cliffs of Étretat, Mont-Saint-Michel, the pink granite coast, the chapel oak of Allouville and Château de Chenonceau; the America trip's Souvenir waits beside the trip's name, with the Next stop button below."
+      alt: "Home screen on the sunny sky-blue table, under the Picture Passport title, on the France trip, stop 6 of 15. The first five stops show postcards of the cliffs of Étretat, Mont-Saint-Michel, the pink granite coast, the chapel oak of Allouville and Château de Chenonceau; the America trip's Souvenir waits beside the trip's name, with the Next stop button below."
     - src: screenshots/02-board-mid-play.jpg
       alt: "A 4 by 5 board in play on the sunny table. Picture cards fill the grid under stacks of face-up cards, and one picture, a red handcar, is partly joined into a larger piece. Restart, Undo, Hint and Shuffle buttons sit below."
     - src: screenshots/03-postcard-mont-saint-michel.jpg
