@@ -104,7 +104,11 @@ function audio() {
   if (ctx.state !== "running") ctx.resume();
   return ctx;
 }
-const fileUrl = (name, take) => (take ? `takes/${take}.${ext}` : `audio/${data.sounds.find((s) => s.name === name).file}.${ext}`);
+const fileUrl = (name, take) => {
+  if (take) return `takes/${take}.${ext}`;
+  const s = data.sounds.find((x) => x.name === name);
+  return `${s.dir ?? "audio"}/${s.file}.${ext}`;
+};
 function buffer(url) {
   if (!buffers.has(url)) buffers.set(url, fetch(url).then((r) => r.arrayBuffer()).then((b) => audio().decodeAudioData(b)));
   return buffers.get(url);
@@ -346,6 +350,8 @@ function row(s) {
       <span class="coming" hidden>The audio member will make two or three new takes; they appear here to choose from.</span>
     </div>`;
   li.querySelector(".name").textContent = s.label;
+  // For listening only: the game never plays it, so nothing to mute or reset.
+  if (s.preview) li.querySelector(".corner").hidden = true;
   li.querySelector(".moment").textContent = s.moment;
   const play = li.querySelector(".play");
 

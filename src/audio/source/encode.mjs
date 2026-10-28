@@ -174,7 +174,12 @@ const BUILT = [
 // Alternate takes for Sound Tuning, made when the creator marks a sound Remake:
 // "<sound>-<letter>" (merge-a, merge-b...), their originals in takes/ here. An
 // entry with `lufs` is treated as music (stereo, loudness), else as an effect.
-const TAKES = [];
+const TAKES = [
+  // Not a take: the sunny bed as generated (G major, not re-keyed), for the
+  // creator to compare in Sound Tuning ("Music: original key"). Never played
+  // by the game; its name is not a take's, so it can never be picked.
+  { name: "bed-day-g", src: "bed-day.mp3", start: 0, end: 90, fade: 0.05, lufs: -20 },
+];
 const PEAK_DB = -1.5;
 const only = new Set(process.argv.slice(2));
 const wanted = (s) => only.size === 0 || only.has(s.name);

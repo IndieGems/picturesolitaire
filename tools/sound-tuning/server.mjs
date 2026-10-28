@@ -22,11 +22,13 @@
 // "soundtuning", editor "sound-tuning"): the port is assigned by the host,
 // read from SOUNDTUNING_PORT, bound on the literal 127.0.0.1 (it writes into
 // the project, and nothing off this machine may ask it to), and printed behind
-// "SOUNDTUNING_PORT ". No dependencies, no file watching.
+// "SOUNDTUNING_PORT ". No dependencies, no file watching: its rows (rows.mjs)
+// and the game's sound table and mix rules are re-read when they change.
 
 import { createServer } from "node:http";
 import { promises as fs, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
+import { stripTypeScriptTypes } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -39,54 +41,35 @@ const CHOICES = join(here, "choices.json");
 const DIST = join(ROOT, JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8")).gem?.out ?? "dist");
 
 // The game's own mix rules (types stripped by Node), so the file holds only what the game reads.
-const { cleanMix, pickedTakes, takeOwner } = await import(pathToFileURL(join(ROOT, "src/audio/mix.ts")).href);
-
-// Every sound, in the order a board meets them, with the moment it belongs to.
-const SOUNDS = [
-  { name: "music", label: "Music", moment: "The background music, looping under the whole game: a sunny afternoon, on every table but Winter Dusk.", kind: "music" },
-  { name: "winter", label: "Winter Dusk music", moment: "The background music while the player has chosen the Winter Dusk table (December's suitcase prize): the snowy evening.", kind: "music" },
-  { name: "hardmark", label: "Hard board", moment: "A hard board opens, under its \"Hard board\" banner: a playful uh-oh." },
-  { name: "supermark", label: "Super hard board", moment: "A super hard board opens, under its \"Super hard board\" banner: the uh-oh, deeper and weightier." },
-  { name: "lift", label: "Pick up", moment: "Picking up a card or a joined piece." },
-  { name: "land", label: "Put down", moment: "A move lands. Also plays softer when a piece is put back where it was." },
-  { name: "slide", label: "Slide back", moment: "Cards the move pushed aside slide back to where it came from." },
-  { name: "merge", label: "Join", moment: "Two correct neighbours touch and join. A little brighter the bigger the joined piece." },
-  { name: "split", label: "Come apart", moment: "A joined piece is split by a move or by cards falling." },
-  { name: "complete", label: "Picture whole", moment: "A picture is complete: the flourish, the best sound in the game." },
-  { name: "fanfare", label: "Destination fanfare", moment: "A board's destination picture is finished and unfolds into its postcard: plays under the place's name. Nothing on a repeat after Undo or a restart." },
-  { name: "fall", label: "Cards fall", moment: "Cards drop into a gap after a picture clears, under the column ticks." },
-  { name: "settle", label: "Column lands", moment: "After a picture clears, each column's cards touch down: one soft tick per column, a little higher further right. Plays here as five columns landing, left to right." },
-  { name: "deal", label: "Stack deals", moment: "A stack deals a card into its column. Plays here as a refill rippling across five stacks, left to right." },
-  { name: "nope", label: "Stack says no", moment: "A press on a stack, which can't be picked up: the stack gives a little sideways shake. Players repeat it, so it stays quiet." },
-  { name: "undo", label: "Undo", moment: "The Undo helper." },
-  { name: "hint", label: "Hint", moment: "The Hint helper." },
-  { name: "shuffle", label: "Shuffle", moment: "The Shuffle helper." },
-  { name: "restart", label: "Restart", moment: "The board is started over." },
-  { name: "ui", label: "Button", moment: "Any button in the menus and screens." },
-  { name: "stuck", label: "Stuck", moment: "The player is stuck: a dead end, or Hint finds no way. Also a Shuffle that can't help. The hint chime, lower and softer." },
-  { name: "won", label: "Board won", moment: "Every picture restored: the board is won. It is the win sting too." },
-  { name: "found", label: "Found it", moment: "The Daily Suitcase: the day's item picture is finished on the daily board and gets its big moment (it lifts with a starburst and its name, then flies into a suitcase). Plays here with its latch, as in the game." },
-  { name: "stow", label: "Into the suitcase", moment: "The Daily Suitcase: the found item lands in the little suitcase on the board screen, at the end of its big moment. The same latch as Packed, with a level of its own." },
-  { name: "packed", label: "Packed", moment: "The Daily Suitcase: the item flies into the suitcase on the daily win card and the case latches. A little softer for a spare copy." },
-  { name: "suitcase", label: "Suitcase full", moment: "The Daily Suitcase: the 10th item is in and the month's suitcase is full, on the win card (just after its latch) or after a swap." },
-  { name: "stamp", label: "Passport stamp", moment: "A trip's last board is won and the player stamps the passport: the stamp lands on the trip's page." },
-  { name: "sticker", label: "Souvenir sticker", moment: "A trip's Souvenir board is won and the player adds its sticker: it presses down onto the trip's passport page." },
-  { name: "milestone", label: "Milestone", moment: "A milestone card with fireworks: today, finishing the guided start. Bigger than a board win, and plays instead of it." },
-];
-const NAMES = new Set(SOUNDS.map((s) => s.name));
-
-/** The in-game levels, from the game's table (re-read when it changes). */
-async function levels() {
-  const file = join(ROOT, "src/audio/sounds.ts");
-  const { EFFECTS, MUSIC } = await import(`${pathToFileURL(file).href}?v=${(await fs.stat(file)).mtimeMs}`);
-  const effects = Object.fromEntries(Object.entries(EFFECTS).map(([k, v]) => [k, { gain: v.gain, rate: v.rate ?? 1, file: v.file ?? k }]));
-  return { effects, music: { gain: MUSIC.gain, file: MUSIC.file, tracks: MUSIC.tracks, crossfade: MUSIC.crossfade } };
+// What changes as the game does is loaded afresh whenever its file changes, so
+// the process the Editor started never serves a stale list (only a change to
+// this file needs a restart): the rows (rows.mjs), the game's sound table
+// (src/audio/sounds.ts) and its mix rules (src/audio/mix.ts), which are bound
+// to that same table, not to the copy Node loaded first.
+const ROWS = join(here, "rows.mjs");
+const SOUNDS_TS = join(ROOT, "src/audio/sounds.ts");
+const MIX_TS = join(ROOT, "src/audio/mix.ts");
+let loaded = null;
+async function game() {
+  const v = (await Promise.all([ROWS, SOUNDS_TS, MIX_TS].map((f) => fs.stat(f)))).map((st) => Math.floor(st.mtimeMs)).join("-");
+  if (loaded?.v === v) return loaded;
+  const soundsUrl = `${pathToFileURL(SOUNDS_TS).href}?v=${v}`;
+  const { EFFECTS, MUSIC } = await import(soundsUrl);
+  const mixSource = (await fs.readFile(MIX_TS, "utf8")).replace(/from "\.\/sounds\.ts"/g, `from ${JSON.stringify(soundsUrl)}`);
+  const { cleanMix, pickedTakes, takeOwner } = await import(`data:text/javascript,${encodeURIComponent(stripTypeScriptTypes(mixSource))}`);
+  const { SOUNDS } = await import(`${pathToFileURL(ROWS).href}?v=${v}`);
+  const effects = Object.fromEntries(Object.entries(EFFECTS).map(([k, e]) => [k, { gain: e.gain, rate: e.rate ?? 1, file: e.file ?? k }]));
+  const levels = { effects, music: { gain: MUSIC.gain, file: MUSIC.file, tracks: MUSIC.tracks, crossfade: MUSIC.crossfade } };
+  loaded = { v, SOUNDS, NAMES: new Set(SOUNDS.map((s) => s.name)), levels, cleanMix, pickedTakes, takeOwner };
+  return loaded;
 }
+
 
 const exists = (p) => fs.access(p).then(() => true, () => false);
 
 /** The takes on disk, by stem ("merge-a"), each with both its files. */
 async function takes() {
+  const { takeOwner } = await game();
   try {
     const files = await fs.readdir(TAKES);
     return files.filter((f) => f.endsWith(".ogg") && takeOwner(f.slice(0, -4)) && files.includes(f.replace(/ogg$/, "mp3"))).map((f) => f.slice(0, -4)).sort();
@@ -161,12 +144,13 @@ const server = createServer(async (req, res) => {
       return send(res, 200, await fs.readFile(join(here, "index.html")), "text/html; charset=utf-8");
     }
     if (req.method === "GET" && path === "/api/sounds") {
-      const lv = await levels();
+      const { SOUNDS, levels: lv, cleanMix, takeOwner } = await game();
       const have = await takes();
       const sounds = await Promise.all(
         SOUNDS.map(async (s) => {
-          const file = s.kind === "music" ? (lv.music.tracks[s.name] ?? lv.music.file) : lv.effects[s.name]?.file ?? s.name;
-          return { ...s, kind: s.kind ?? "effect", file, present: await exists(join(AUDIO, `${file}.ogg`)), takes: have.filter((t) => takeOwner(t) === s.name) };
+          const file = s.file ?? (s.kind === "music" ? (lv.music.tracks[s.name] ?? lv.music.file) : lv.effects[s.name]?.file ?? s.name);
+          const present = await exists(join(s.dir === "takes" ? TAKES : AUDIO, `${file}.ogg`));
+          return { ...s, kind: s.kind ?? "effect", file, present, takes: s.preview ? [] : have.filter((t) => takeOwner(t) === s.name) };
         }),
       );
       return send(res, 200, {
@@ -184,6 +168,7 @@ const server = createServer(async (req, res) => {
       return send(res, 200, await fs.readFile(full), TYPES[file[3]]);
     }
     if (req.method === "PUT" && (path === "/api/mix" || path === "/api/live")) {
+      const { cleanMix, pickedTakes } = await game();
       const have = await takes();
       const mix = cleanMix(await readBody(req, 64 * 1024), have);
       const picked = pickedTakes(mix);
@@ -203,6 +188,7 @@ const server = createServer(async (req, res) => {
     }
     if (req.method === "POST" && path === "/api/choice") {
       const { name, choice, note } = await readBody(req, 8192);
+      const { NAMES } = await game();
       if (!NAMES.has(name) || ![null, "keep", "remake"].includes(choice)) return send(res, 400, { error: "bad choice" });
       return send(res, 200, await saveChoice(name, choice, typeof note === "string" ? note.slice(0, 1000).trim() : ""));
     }
