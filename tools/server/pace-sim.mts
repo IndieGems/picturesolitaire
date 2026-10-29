@@ -9,7 +9,7 @@
 // retry-after, or more than once in 5 minutes once it has settled.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
-import { GemApiError } from "@indiegems/gem-web-sdk/sdk";
+import { GemApiError, GemSaveError } from "@indiegems/gem-web-sdk/sdk";
 import { backoff, CAP_MS, heard, held, notNow } from "../../src/net/pace.ts";
 
 const MIN = 60_000;
@@ -72,13 +72,26 @@ const table = (title: string, rows: Record<string, { ask: number[]; req: number 
 table("BEFORE (the loops as they were)", before, false);
 table("AFTER (paced by src/net/pace.ts)", paced, true);
 
-// a 429's retry-after holds every loop, not only the one refused
+// a 429's retry-after holds every loop, not only the one refused (on a clock of our own, moved on
+// past each hold so one check's wait never spills into the next)
+let clock = Date.now();
+Date.now = () => clock;
+const pass = () => (clock += 2 * CAP_MS);
 heard(rate429);
 const h = held();
 if (!(h >= 19_000 && h <= 20_000)) bad++, console.log(`FAIL: a 429 naming 20 s holds ${h} ms`);
 if (backoff(1, 2000) < h - 50) bad++, console.log("FAIL: a loop's first wait is shorter than the platform's");
 if (!notNow(rate429) || !notNow(new Error("save_timeout")) || notNow(new GemApiError("too_large", 413, "big"))) bad++, console.log("FAIL: notNow misreads a refusal");
+pass();
 heard(new GemApiError("rate_limited", 429, "no wait named"));
 if (held() < 29_000) bad++, console.log("FAIL: a 429 naming no wait holds less than 30 s");
+// storage's leg of a save, refused for the rate, arrives as a GemSaveError (the log, 2026-10-29 14:20)
+pass();
+heard(new GemSaveError("upload_failed", 'the save upload answered 429. Storage said: {"error":{"code":"rate_limited","message":"Rate limit exceeded"}}'));
+if (held() < 29_000) bad++, console.log("FAIL: storage's 429 on a save holds no loop");
+pass();
+heard(new GemSaveError("save_timeout", "the save save did not finish within 10000ms"));
+heard(new GemSaveError("upload_failed", "the save upload answered 403. Storage said: AuthorizationFailure"));
+if (held() > 0) bad++, console.log("FAIL: a timeout or a storage refusal that is not the rate holds every loop");
 console.log(`\n${bad ? `pace check: ${bad} FAILED` : "pace check: every paced loop grows to one ask in 5 minutes, and waits out the platform's retry-after"}`);
 process.exit(bad ? 1 : 0);

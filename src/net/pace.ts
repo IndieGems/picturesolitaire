@@ -13,7 +13,7 @@
 // Worst case, under a throttle that refuses everything: each loop asks about 5 times in its
 // first minute and once in 5 minutes after that, and no loop asks while the platform's wait runs.
 
-import { GemApiError } from "@indiegems/gem-web-sdk/sdk";
+import { GemApiError, GemSaveError } from "@indiegems/gem-web-sdk/sdk";
 
 /** The longest any loop waits between two asks. */
 export const CAP_MS = 300_000;
@@ -32,8 +32,20 @@ export function notNow(err: unknown): boolean {
   return err.retryable || err.reason === "rate_limited" || err.reason === "unavailable";
 }
 
-/** Take in what a refusal says about waiting: a named wait, or a 429's, holds every loop here. */
+/**
+ * A save's storage leg refused for the rate: it reaches the game as a GemSaveError, not an API
+ * refusal ("the save upload answered 429. Storage said: {"error":{"code":"rate_limited"...").
+ * The first refusal of the 2026-10-29 throttle was one (Gameplay's note, session c2751c4c).
+ */
+const storageRateLimited = (err: unknown): boolean =>
+  err instanceof GemSaveError && /answered 429\b|"rate_limited"/.test(err.message);
+
+/** Take in what a refusal says about waiting: a named wait, or a 429's (storage's too), holds every loop here. */
 export function heard(err: unknown): void {
+  if (storageRateLimited(err)) {
+    heldUntil = Math.max(heldUntil, Date.now() + RATE_LIMITED_MS);
+    return;
+  }
   if (!(err instanceof GemApiError)) return;
   const named = err.retryAfterSeconds && err.retryAfterSeconds > 0 ? err.retryAfterSeconds * 1000 : err.reason === "rate_limited" ? RATE_LIMITED_MS : 0;
   if (named > 0) heldUntil = Math.max(heldUntil, Date.now() + Math.min(named, CAP_MS));
