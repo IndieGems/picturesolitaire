@@ -40911,6 +40911,296 @@
       ],
       "family": "finish-line",
       "busy": 1
+    },
+    {
+      "id": "baking-together",
+      "album": "people",
+      "title": "Baking Together",
+      "medium": "painting",
+      "file": "pictures/people/baking-together.webp",
+      "board": "pictures/people/baking-together-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "cream",
+        "blue",
+        "gold"
+      ],
+      "subjects": [
+        "baking",
+        "father and son"
+      ],
+      "family": "baking-together",
+      "busy": 0
+    },
+    {
+      "id": "cloud-sea",
+      "album": "people",
+      "title": "Above the Clouds",
+      "medium": "photo",
+      "file": "pictures/people/cloud-sea.webp",
+      "board": "pictures/people/cloud-sea-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "pink",
+        "grey",
+        "blue"
+      ],
+      "subjects": [
+        "sea of clouds",
+        "couple"
+      ],
+      "family": "cloud-sea",
+      "busy": 0
+    },
+    {
+      "id": "family-dinner",
+      "album": "people",
+      "title": "Sunday Dinner",
+      "medium": "watercolour",
+      "file": "pictures/people/family-dinner.webp",
+      "board": "pictures/people/family-dinner-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "red",
+        "green",
+        "gold"
+      ],
+      "subjects": [
+        "family dinner"
+      ],
+      "family": "family-dinner",
+      "busy": 1
+    },
+    {
+      "id": "party-lights",
+      "album": "people",
+      "title": "Party Lights",
+      "medium": "flat",
+      "file": "pictures/people/party-lights.webp",
+      "board": "pictures/people/party-lights-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "navy",
+        "yellow",
+        "red"
+      ],
+      "subjects": [
+        "string lights",
+        "backyard party"
+      ],
+      "family": "party-lights",
+      "busy": 0
+    },
+    {
+      "id": "sailing-helm",
+      "album": "people",
+      "title": "At the Helm",
+      "medium": "photo",
+      "file": "pictures/people/sailing-helm.webp",
+      "board": "pictures/people/sailing-helm-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "black",
+        "grey",
+        "white"
+      ],
+      "subjects": [
+        "sailing",
+        "helm"
+      ],
+      "family": "sailing-helm",
+      "busy": 0
+    },
+    {
+      "id": "bike-shop",
+      "album": "people",
+      "title": "The Bike Shop",
+      "medium": "painting",
+      "file": "pictures/people/bike-shop.webp",
+      "board": "pictures/people/bike-shop-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "red",
+        "blue",
+        "silver"
+      ],
+      "subjects": [
+        "bicycle repair",
+        "workshop"
+      ],
+      "family": "bike-shop",
+      "busy": 1
+    },
+    {
+      "id": "marching-band",
+      "album": "people",
+      "title": "Marching Band",
+      "medium": "photo",
+      "file": "pictures/people/marching-band.webp",
+      "board": "pictures/people/marching-band-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "red",
+        "white",
+        "gold"
+      ],
+      "subjects": [
+        "marching band",
+        "drummer"
+      ],
+      "family": "marching-band",
+      "busy": 1
+    },
+    {
+      "id": "beach-twirl",
+      "album": "people",
+      "title": "Round and Round",
+      "medium": "painting",
+      "file": "pictures/people/beach-twirl.webp",
+      "board": "pictures/people/beach-twirl-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "blue",
+        "yellow",
+        "white"
+      ],
+      "subjects": [
+        "father",
+        "toddler",
+        "beach"
+      ],
+      "family": "beach-twirl",
+      "busy": 0
+    },
+    {
+      "id": "rolling-chapatis",
+      "album": "people",
+      "title": "Rolling Chapatis",
+      "medium": "painting",
+      "file": "pictures/people/rolling-chapatis.webp",
+      "board": "pictures/people/rolling-chapatis-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "gold",
+        "green",
+        "cream"
+      ],
+      "subjects": [
+        "chapatis",
+        "grandmother"
+      ],
+      "family": "rolling-chapatis",
+      "busy": 0
+    },
+    {
+      "id": "learning-to-ride",
+      "album": "people",
+      "title": "Learning to Ride",
+      "medium": "watercolour",
+      "file": "pictures/people/learning-to-ride.webp",
+      "board": "pictures/people/learning-to-ride-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "green",
+        "red",
+        "blue"
+      ],
+      "subjects": [
+        "learning to ride",
+        "grandfather"
+      ],
+      "family": "learning-to-ride",
+      "busy": 0
     }
   ],
   "destinations": [

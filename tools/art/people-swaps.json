@@ -1,5 +1,5 @@
 {
- "//": "People swaps (creator, 2026-10-29, via the lead): each old people picture, turned away or framed like its neighbours (the lookalike bun-and-blue-top women in profile, men from behind), is replaced on its levels by a new one of the same shape, so deals stay unchanged. The olds stay in the library, unflagged. orchestra-flautist is atmospheric: it may only go where its level has no other atmospheric picture. New pictures sit after drone in the catalogue, so they cannot go into dailies from RULES_FROM; those dailies keep the old picture. The creator kept five olds (2026-10-29): shepherd-lambs, tennis-player, wok-chef, paddleboarder and hiker; their new pictures (hayfield-farmer, basketball-dunk, birthday-tea, hill-roll, snowy-lane) stay in the catalogue as stock.",
+ "//": "People swaps (creator, 2026-10-29, via the lead): each old people picture, turned away or framed like its neighbours (the lookalike bun-and-blue-top women in profile, men from behind), is replaced on its levels by a new one of the same shape, so deals stay unchanged. The olds stay in the library, unflagged. orchestra-flautist is atmospheric: it may only go where its level has no other atmospheric picture. New pictures sit after drone in the catalogue, so they cannot go into dailies from RULES_FROM; those dailies keep the old picture. The creator kept five olds (2026-10-29): shepherd-lambs, tennis-player, wok-chef, paddleboarder and hiker; their new pictures (hayfield-farmer, basketball-dunk, birthday-tea, hill-roll, snowy-lane) stay in the catalogue as stock. Added 2026-10-29: eight people-of-colour swaps (the creator kept pasta-maker and lobster-pot; rolling-chapatis and sailing-helm ship as stock).",
  "swaps": [
   {
    "old": "milliner",
@@ -279,6 +279,70 @@
    "shape": [
     2,
     1
+   ]
+  },
+  {
+   "old": "baker",
+   "new": "baking-together",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "mapmaker",
+   "new": "cloud-sea",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "asador",
+   "new": "family-dinner",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "lamplighter",
+   "new": "party-lights",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "printmaker",
+   "new": "bike-shop",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "stonemason",
+   "new": "marching-band",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "grape-picker",
+   "new": "beach-twirl",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "carrot-harvest",
+   "new": "learning-to-ride",
+   "shape": [
+    2,
+    2
    ]
   }
  ]
