@@ -19,7 +19,7 @@
 import { gem } from "./gem";
 import { isMuted, onMutedChange, setMuted } from "./sound";
 import { choose, loadSettings, onSettingsChange, setting } from "./settings";
-import { t } from "./ui/i18n";
+import { liveAttr, liveText, t } from "./ui/i18n";
 import { ICONS } from "./ui/icons";
 import { cornerKey } from "./ui/dialogs";
 import { chooseTable, chosenTable, onTableChange, pickerTables, tableTitle, thumbOf } from "./ui/tables";
@@ -41,11 +41,10 @@ export function closeSettings(): void {
   if (screenEl?.open) screenEl.close();
 }
 
-function row(text: string, input: HTMLInputElement): HTMLLabelElement {
+function row(key: string, input: HTMLInputElement): HTMLLabelElement {
   const label = document.createElement("label");
   label.className = "set-row";
-  const name = document.createElement("span");
-  name.textContent = text;
+  const name = liveText(document.createElement("span"), key);
   label.append(name, input);
   return label;
 }
@@ -58,7 +57,7 @@ export function mountSettings(parent: HTMLElement = document.body): void {
   button.className = "btn round";
   button.dataset.press = "settings.open";
   button.innerHTML = ICONS.gear;
-  button.setAttribute("aria-label", t("settings.open"));
+  liveAttr(button, "aria-label", "settings.open");
   button.setAttribute("aria-haspopup", "dialog");
 
   const screen = document.createElement("dialog");
@@ -67,7 +66,7 @@ export function mountSettings(parent: HTMLElement = document.body): void {
   screen.setAttribute("aria-labelledby", "settings-title");
   const title = document.createElement("h2");
   title.id = "settings-title";
-  title.textContent = t("settings.title");
+  liveText(title, "settings.title");
 
   // Sound: the game's own mute, the same one as the Arcade's (src/sound.ts).
   const sound = document.createElement("input");
@@ -88,15 +87,15 @@ export function mountSettings(parent: HTMLElement = document.body): void {
   vibration.type = "checkbox";
   vibration.setAttribute("role", "switch");
   vibration.addEventListener("change", () => choose({ vibration: vibration.checked }));
-  const vibrationRow = row(t("settings.vibration"), vibration);
+  const vibrationRow = row("settings.vibration", vibration);
 
   // Table: the owned tables as small pictures, the chosen one ringed
   const tablesList = document.createElement("div");
   tablesList.className = "table-picks";
   tablesList.setAttribute("role", "radiogroup");
-  tablesList.setAttribute("aria-label", t("settings.table"));
+  liveAttr(tablesList, "aria-label", "settings.table");
   const tablesName = document.createElement("span");
-  tablesName.textContent = t("settings.table");
+  liveText(tablesName, "settings.table");
   const tablesRow = document.createElement("div");
   tablesRow.className = "set-row set-tables";
   tablesRow.hidden = true;
@@ -160,13 +159,13 @@ export function mountSettings(parent: HTMLElement = document.body): void {
   });
 
   // its own way out, an X at its top right (dialogs.ts)
-  const close = cornerKey("close", t("settings.close"), "settings.close", () => screen.close());
+  const close = liveAttr(cornerKey("close", t("settings.close"), "settings.close", () => screen.close()), "aria-label", "settings.close");
   // a tap on the shade outside the screen closes it too
   screen.addEventListener("click", (e) => {
     if (e.target === screen) screen.close();
   });
 
-  screen.append(close, title, row(t("settings.sound"), sound), row(t("settings.volume"), volume), vibrationRow, tablesRow, extra);
+  screen.append(close, title, row("settings.sound", sound), row("settings.volume", volume), vibrationRow, tablesRow, extra);
 
   const render = () => {
     sound.checked = !isMuted();

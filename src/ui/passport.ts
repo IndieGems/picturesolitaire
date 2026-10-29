@@ -34,7 +34,7 @@
 // shape: a 4x5 board's is taller than a 4x4's.
 
 import { ICONS } from "./icons";
-import { t } from "./i18n";
+import { liveAttr, liveText, t } from "./i18n";
 import { emit } from "../events";
 import { copyUrl, destinationName, destinationPlace, sharpCopy, type Copy, type Destination } from "./catalogue";
 import { createViewer } from "./viewer";
@@ -140,8 +140,8 @@ function stampOf(tr: Trip): HTMLElement {
 }
 
 export function createPassport(nav: Nav) {
-  const pill = el("div", "top-pill glass", t("passport.title"));
-  const back = roundButton("top-back", "passport.back", t("passport.back"), ICONS.back);
+  const pill = liveText(el("div", "top-pill glass"), "passport.title");
+  const back = liveAttr(roundButton("top-back", "passport.back", "", ICONS.back), "aria-label", "passport.back");
 
   // the book: the cover's gold title over the open page
   const book = el("div", "pp-book");
@@ -152,8 +152,8 @@ export function createPassport(nav: Nav) {
   const content = el("div", "pp-content");
 
   // turning the pages
-  const prev = roundButton("pp-prev", "passport.prev", t("passport.prev"), ICONS.chevron);
-  const next = roundButton("pp-next", "passport.next", t("passport.next"), ICONS.chevron);
+  const prev = liveAttr(roundButton("pp-prev", "passport.prev", "", ICONS.chevron), "aria-label", "passport.prev");
+  const next = liveAttr(roundButton("pp-next", "passport.next", "", ICONS.chevron), "aria-label", "passport.next");
   const where = el("span", "pp-where glass");
   const turn = el("div", "pp-turn");
   turn.append(prev, where, next);
@@ -167,7 +167,7 @@ export function createPassport(nav: Nav) {
   scroll.append(book);
   const screen = el("section", "screen menu-screen passport-screen");
   screen.hidden = true;
-  screen.setAttribute("aria-label", t("passport.title"));
+  liveAttr(screen, "aria-label", "passport.title");
   screen.append(pill, back, scroll, foot);
 
   const viewer = createViewer();

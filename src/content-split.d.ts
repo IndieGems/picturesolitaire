@@ -48,6 +48,12 @@ declare module "virtual:ps-content" {
   };
 }
 
+declare module "virtual:ps-boot-words" {
+  /** The boot line's words in every language the game has, by language ("de"): tools/content-split.mjs. */
+  const words: Record<string, Partial<Record<"boot.loading" | "boot.failed" | "game.title", string>>>;
+  export default words;
+}
+
 declare module "virtual:ps-icons" {
   /** Each interface glyph (public/art/ui/icon-<name>.svg) as a data URL, by <name>: the build's (tools/content-split.mjs). */
   const glyphs: Record<string, string>;

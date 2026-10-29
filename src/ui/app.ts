@@ -51,7 +51,7 @@ import { gem, onArcadePause, onPlayerPrefs } from "../gem";
 import { emit, on } from "../events";
 import { closeSettings, mountSettings } from "../settings-screen";
 import { homeWhole, startSound } from "../sound";
-import { t } from "./i18n";
+import { arcadeLocale, liveAttr, liveText, locale, onLocaleChange, setLocale, t, warmTitles } from "./i18n";
 import { ICONS, keepIcons, type IconName } from "./icons";
 import { firstScreen, screenChanged } from "./browser";
 import { online, onOnline, pretend, suspect } from "./online";
@@ -165,9 +165,9 @@ const levelPill = h("div", { class: "top-pill glass" });
 const pillName = h("span", { class: "name" });
 const pillPar = h("span", { class: "par" });
 const back = button("round top-back", "board.back", icon("back"));
-back.setAttribute("aria-label", t("board.back"));
+liveAttr(back, "aria-label", "board.back");
 const host = h("div", { class: "board-host" });
-const restartBtn = button("restart", "board.restart", icon("restart"), t("board.restart"));
+const restartBtn = button("restart", "board.restart", icon("restart"), liveText(h("span"), "board.restart"));
 
 type HelperKey = HelperKind;
 const helperBtns = {} as Record<HelperKey, { btn: HTMLButtonElement; badge: HTMLElement }>;
@@ -208,9 +208,9 @@ const offlineVeil = h(
   h(
     "div",
     { class: "card" },
-    h("h2", {}, t("offline.title")),
-    h("p", {}, t("offline.why")),
-    h("div", { class: "waiting" }, h("i", { "aria-hidden": "true" }), t("offline.reconnecting")),
+    liveText(h("h2"), "offline.title"),
+    liveText(h("p"), "offline.why"),
+    h("div", { class: "waiting" }, h("i", { "aria-hidden": "true" }), liveText(h("span"), "offline.reconnecting")),
   ),
 );
 
@@ -475,6 +475,8 @@ function settleHome(fonts: Promise<unknown>): void {
     homeSettled = true;
     // the music and the rest of the sounds (Audio's: the sound code and the click came at start)
     homeWhole();
+    // the pictures' titles in the player's language (the enlarged picture, the win card's labels)
+    warmTitles();
     // the board Next stop opens, and its pictures: first once home is whole (it is long in before a
     // player's first tap)
     const board = awaitingRecord()
@@ -2088,15 +2090,68 @@ document.addEventListener("visibilitychange", drawPaused);
 /** The longest the first screen waits for home's pictures (the lead, 2026-10-26: "about 1.5 s"). */
 const HOME_WAIT_MS = 1500;
 
+// THE ROUND TYPE IN EVERY LANGUAGE. Fredoka's Latin cut is the game's type (asked for by the boot
+// entry). Its extended cut has ł and most accents but no ą ę ż, no Turkish İ ğ ş and no Cyrillic, so
+// Nunito, a rounded face of the same weight, stands behind it in `--round` (style.css) for just those
+// letters, rather than the device's plain font mid-word; Russian reads in Nunito throughout. Each cut
+// is fetched by the browser only when a page shows one of its letters, except for the languages that
+// show them on every screen (Polish and Turkish: the extended cuts; Russian: Nunito's Cyrillic), which
+// home waits for with Fredoka. Japanese, Korean and Chinese read in the device's own font (a CJK font
+// would be megabytes); the page's lang (i18n.ts) picks the right one. The faces are Untangled's.
+const LATIN_EXT = "U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF";
+const CYRILLIC = "U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116";
+function addFaces(): Promise<unknown> {
+  const lang = locale();
+  const ext = lang === "pl" || lang === "tr";
+  const faces: [family: string, file: string, weight: string, range: string, now: boolean][] = [
+    ["Fredoka", "fredoka-latin", "300 700", "", true],
+    ["Fredoka", "fredoka-latinext", "300 700", LATIN_EXT, ext],
+    ["Nunito", "nunito-latinext", "300 900", LATIN_EXT, ext],
+    ["Nunito", "nunito-cyrillic", "300 900", CYRILLIC, lang === "ru"],
+  ];
+  const waits: Promise<unknown>[] = [];
+  for (const [family, file, weight, range, now] of faces) {
+    const face = new FontFace(family, `url(${import.meta.env.BASE_URL}fonts/${file}.woff2)`, range ? { weight, display: "swap", unicodeRange: range } : { weight, display: "swap" });
+    document.fonts.add(face);
+    if (now) waits.push(face.load().catch(() => undefined));
+  }
+  return Promise.all(waits);
+}
+
+// A CHANGE OF LANGUAGE while the game is open (the Arcade's, or a late one after a slow handshake):
+// the labels set once are set again by i18n.ts (live), and every screen that draws itself redraws
+// here. A card open at that moment keeps its words until it is next opened.
+onLocaleChange(() => {
+  drawHome();
+  drawHomeNote();
+  if (board) {
+    drawPill();
+    drawHelpers();
+  }
+  passportUi.redraw();
+  dailyUi.redraw();
+  suitcaseUi.redraw();
+  albumsUi.redraw();
+  routeUi.redraw();
+  homeShop.redraw();
+  runOut.redraw();
+  if (screen === "daily") void dailyUi.openResults();
+  drawOffline();
+});
+
 /** Draw the first screen. Called once by the boot entry (src/main.ts). */
 export async function startApp(): Promise<void> {
   // HOME APPEARS WHOLE (the creator, 2026-10-26, as Untangled does): the round type, home's own
   // pictures (the title, the desk, the booklet) and the route's postcards are waited for, at most
   // HOME_WAIT_MS from here, then home shows anyway and a late picture fades in where it belongs
   const by = performance.now() + HOME_WAIT_MS;
-  const face = new FontFace("Fredoka", `url(${import.meta.env.BASE_URL}fonts/fredoka-latin.woff2)`, { weight: "300 700", display: "swap" });
-  document.fonts.add(face);
-  const fonts = face.load().catch(() => undefined);
+  const fonts = addFaces();
+  // the Arcade's language, whenever it says (it can change while the game is open): the boot entry
+  // chose it before this module ran (src/main.ts), so home is built in it; a later word redraws
+  onPlayerPrefs((prefs) => {
+    const l = arcadeLocale(prefs.locale);
+    if (l) void setLocale(l);
+  });
   void homeUi.warmArt();
   // and the player's progress, the server's record: a second at most (the game standard), then
   // home draws, and redraws when the record lands

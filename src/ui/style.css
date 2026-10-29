@@ -55,7 +55,10 @@
   --mark-big: 30 100 140;
   /* a card's width ÷ height: the board's TUNING.cardAspect, set again on every screen (cards.ts) */
   --card-aspect: 0.75;
-  --round: "Fredoka", ui-rounded, "Nunito", "Segoe UI", system-ui, sans-serif;
+  /* Nunito (the extended Latin and Cyrillic cuts only: app.ts, addFaces) stands behind Fredoka for the
+     letters Fredoka lacks (Polish ą ę ż, Turkish İ ğ ş, all of Russian); Japanese, Korean and Chinese
+     read in the device's own font, chosen by the page's lang */
+  --round: "Fredoka", "Nunito", ui-rounded, "Segoe UI", system-ui, sans-serif;
 
   /* The Gem's middle and height (the SDK writes --gem-reserved-*; the
      fallback is where the Arcade puts it on a full-bleed game). Every top-row
@@ -82,6 +85,12 @@
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+/* Lines break where the language breaks them (the page's lang is the player's: i18n.ts): Japanese
+   between phrases, never inside one ("Alexandraさんか / らの挑戦"); Korean between words, as it is
+   written; elsewhere a word too long for its box breaks rather than spill out (German compounds) */
+:root:lang(ja) body { word-break: auto-phrase; }
+:root:lang(ko) body { word-break: keep-all; }
 
 html, body {
   overflow: hidden;
@@ -1161,7 +1170,7 @@ html.less-motion .mini-case.bump { animation: none; }
 .item-pic.stand-in { background: hsl(var(--hue, 30) 55% 62%); color: #fff; font: 700 22px/1 var(--round); text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25); }
 .item-pic.stand-in.missing { background: transparent; color: rgba(255, 255, 255, 0.45); text-shadow: none; outline: 2px dashed rgba(255, 255, 255, 0.35); outline-offset: -5px; }
 /* a long word breaks only where the language hyphenates it ("Ear-muffs"), never mid-letter */
-.case-slots .slot-name { max-width: 100%; font: 600 12px/1.1 var(--round); overflow-wrap: normal; -webkit-hyphens: auto; hyphens: auto; text-shadow: 0 1px 2px rgba(0, 30, 35, 0.6); }
+.case-slots .slot-name { max-width: 100%; font: 600 12px/1.1 var(--round); overflow-wrap: break-word; -webkit-hyphens: auto; hyphens: auto; text-shadow: 0 1px 2px rgba(0, 30, 35, 0.6); }
 .case-slots .slot.missing .slot-name { color: rgba(242, 248, 248, 0.72); font-weight: 500; }
 .case-slots .slot-count {
   position: absolute; top: -4px; right: -3px; min-width: 24px; height: 22px; padding: 0 5px; border-radius: 11px;

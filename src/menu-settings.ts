@@ -14,7 +14,7 @@
 import { gem } from "./gem";
 import { onVerdict } from "./net/claims";
 import { choose, onSettingsChange, setting } from "./settings";
-import { t } from "./ui/i18n";
+import { onLocaleChange, t } from "./ui/i18n";
 import { chooseTable, chosenTable, onTableChange, ownedTableArts, tableTitle } from "./ui/tables";
 import { menuSettings } from "./menu-settings-list";
 
@@ -59,6 +59,8 @@ export function startMenuSettings(): void {
   });
   onSettingsChange(mirror);
   onTableChange(mirror);
+  // the labels, and the tables' names, in the language on screen
+  onLocaleChange(() => void readOwned());
   // a win that paid may have granted a table (the guide's keepsake)
   onVerdict((v) => {
     if (v.status === "paid") void readOwned();

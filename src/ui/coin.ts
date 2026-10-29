@@ -16,7 +16,7 @@ import c32x1 from "@indiegems/gem-web-sdk/brand/ticket-icon-32-1x.png";
 import c32x15 from "@indiegems/gem-web-sdk/brand/ticket-icon-32-1.5x.png";
 import c32x2 from "@indiegems/gem-web-sdk/brand/ticket-icon-32-2x.png";
 import c32x3 from "@indiegems/gem-web-sdk/brand/ticket-icon-32-3x.png";
-import { t } from "./i18n";
+import { locale, t } from "./i18n";
 
 /**
  * The Coins icon in a `px` box (16 to 40). `named`: its alt says "Coins" (beside a bare number);
@@ -43,7 +43,7 @@ export function coinIcon(px = 20, named = true, cls = ""): HTMLImageElement {
 export function priceTag(price: number, px = 20): HTMLElement {
   const tag = document.createElement("span");
   tag.className = "price-tag";
-  tag.append(document.createTextNode(price.toLocaleString()), coinIcon(px));
+  tag.append(document.createTextNode(price.toLocaleString(locale())), coinIcon(px));
   return tag;
 }
 

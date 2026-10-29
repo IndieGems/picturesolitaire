@@ -29,7 +29,7 @@
 // which day is not). Information is glass; only what a press answers is a button.
 
 import { emit } from "../events";
-import { t } from "./i18n";
+import { liveAttr, locale, named, t } from "./i18n";
 import { ICONS } from "./icons";
 import { held, spares, suitcases, SWAP_COST, type SuitItem, type Suitcase, type SwapAnswer } from "./suitcase-data";
 import { BUILT_IN_TABLE, knownTable, thumbOf } from "./tables";
@@ -63,10 +63,16 @@ const lessMotion = () => document.documentElement.classList.contains("less-motio
 /** "November" for "2026-11" (the player's own month, in the game's language). */
 export function monthName(m: string): string {
   const [y, mo] = m.split("-").map(Number);
-  return new Intl.DateTimeFormat("en", { month: "long", timeZone: "UTC" }).format(new Date(Date.UTC(y ?? 2026, (mo ?? 1) - 1, 1)));
+  return new Intl.DateTimeFormat(locale(), { month: "long", timeZone: "UTC" }).format(new Date(Date.UTC(y ?? 2026, (mo ?? 1) - 1, 1)));
 }
+/** A title or a label starts with a capital, whatever the language writes a month with ("ноябрь: …" reads "Ноябрь: …"). */
+const capital = (s: string): string => s.charAt(0).toLocaleUpperCase(locale()) + s.slice(1);
 /** "November: Ski Trip". */
-export const eventTitle = (s: Suitcase): string => t("case.title", { month: monthName(s.month), theme: s.theme });
+export const eventTitle = (s: Suitcase): string => capital(t("case.title", { month: monthName(s.month), theme: themeName(s) }));
+/** An item's name, a month's theme and a prize table's name in the player's language (the locale's names list), else their English. */
+export const itemName = (it: { id: string; title: string }): string => named(`picture.${it.id}`, it.title);
+export const themeName = (s: { month: string; theme: string }): string => named(`suitcase.${s.month}.theme`, s.theme);
+const prizeTableName = (prize: Suitcase["prize"], english: string): string => named(`table.${prize.table}`, english);
 
 /**
  * An item's picture. Art's cut-out (the object alone, on transparency) once there is one: itself when
@@ -87,7 +93,7 @@ function itemPic(it: SuitItem, missing: boolean): HTMLElement {
     box.classList.add("stand-in");
     box.dataset.hue = String([...it.id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 360, 7));
     box.style.setProperty("--hue", box.dataset.hue);
-    box.append(el("span", "", it.title.slice(0, 1).toUpperCase()));
+    box.append(el("span", "", itemName(it).slice(0, 1).toUpperCase()));
   }
   box.setAttribute("aria-hidden", "true");
   return box;
@@ -110,7 +116,7 @@ function fullPrize(prize: Suitcase["prize"], table: boolean): HTMLElement {
   if (art) {
     const img = el("img");
     Object.assign(img, { src: thumbOf(art), alt: "", draggable: false, decoding: "async" });
-    row.append(img, el("span", "full-table", t("case.tableName", { table: prize.tableTitle ?? art.title })));
+    row.append(img, el("span", "full-table", t("case.tableName", { table: prizeTableName(prize, prize.tableTitle ?? art.title) })));
   }
   for (const k of ["hint", "undo", "shuffle"] as HelperKind[]) {
     const n = prize.helpers[k];
@@ -151,7 +157,7 @@ export function createSuitcase(nav: Nav) {
   back.type = "button";
   back.dataset.press = "case.back";
   back.innerHTML = ICONS.back;
-  back.setAttribute("aria-label", t("case.back"));
+  liveAttr(back, "aria-label", "case.back");
   const scroll = el("div", "scroll case-scroll");
   const screen = el("section", "screen menu-screen suitcase-screen");
   screen.hidden = true;
@@ -198,11 +204,11 @@ export function createSuitcase(nav: Nav) {
           if (picked) screen.querySelector(".case-swap")?.scrollIntoView({ block: "nearest", behavior: lessMotion() ? "auto" : "smooth" });
         });
       }
-      slot.append(itemPic(it, missing), el("span", "slot-name", it.title));
+      slot.append(itemPic(it, missing), el("span", "slot-name", itemName(it)));
       if (n > 1) slot.append(el("span", "slot-count", t("case.count", { count: n })));
       slot.setAttribute(
         "aria-label",
-        missing ? `${it.title}: ${t("case.missing")}` : n > 1 ? `${it.title}: ${t("case.copies", { count: n })}` : `${it.title}: ${t("case.packed")}`,
+        missing ? `${itemName(it)}: ${t("case.missing")}` : n > 1 ? `${itemName(it)}: ${t("case.copies", { count: n })}` : `${itemName(it)}: ${t("case.packed")}`,
       );
       grid.append(slot);
     }
@@ -220,7 +226,7 @@ export function createSuitcase(nav: Nav) {
       const b = el("button", "btn amber case-swap-btn");
       b.type = "button";
       b.dataset.press = "case.swap";
-      b.textContent = t("case.swapFor", { count: SWAP_COST, item: it.title });
+      b.textContent = t("case.swapFor", { count: SWAP_COST, item: itemName(it) });
       b.addEventListener("click", () => void swap(b, it));
       box.append(b);
     } else {
@@ -242,18 +248,18 @@ export function createSuitcase(nav: Nav) {
     const answer: SwapAnswer = await suitcases.swap(it.id).catch((): SwapAnswer => "failed");
     swapping = false;
     picked = answer === "ok" ? null : picked;
-    said = answer === "ok" ? t("case.swapped", { item: it.title }) : t(`case.refused.${answer}`);
+    said = answer === "ok" ? t("case.swapped", { item: itemName(it) }) : t(`case.refused.${answer}`);
     // the swap that brought the 10th: the prize lands with it (Server pays, and says so once; the sting is Audio's)
     const now = suitcases.current();
     const prize = answer === "ok" ? suitcases.lastPrize() : null;
     if (answer === "ok" && (prize || now?.complete)) {
       // the table is said only once the platform holds it for the player (Server's `paid`: the month's table held)
       const table = !!now?.paid && now.prize.table !== DEFAULT_TABLE;
-      said = t(table ? "case.swappedFull" : "case.swappedFullPlain", { item: it.title });
+      said = t(table ? "case.swappedFull" : "case.swappedFullPlain", { item: itemName(it) });
       emit("suitcase:full", { month: prize?.month ?? now?.month ?? "" });
     }
     draw();
-    if (answer === "ok") screen.querySelector(`.slot[aria-label^="${CSS.escape(it.title)}"]`)?.classList.add("arrived");
+    if (answer === "ok") screen.querySelector(`.slot[aria-label^="${CSS.escape(itemName(it))}"]`)?.classList.add("arrived");
   }
 
   function prize(s: Suitcase): HTMLElement {
@@ -270,7 +276,7 @@ export function createSuitcase(nav: Nav) {
     pic.setAttribute("aria-hidden", "true");
     const words = el("div", "prize-words");
     words.append(el("b", "", s.paid ? t("case.prizeWon") : t("case.prizeHead", { count: s.items.length })));
-    words.append(el("span", "", own ? t("case.prizeTable", { table: s.prize.tableTitle ?? art?.title ?? "" }) : t("case.prizeHelpers")));
+    words.append(el("span", "", own ? t("case.prizeTable", { table: prizeTableName(s.prize, s.prize.tableTitle ?? art?.title ?? "") }) : t("case.prizeHelpers")));
     const tools = el("span", "prize-tools");
     for (const k of ["hint", "undo", "shuffle"] as HelperKind[]) {
       const n = s.prize.helpers[k];
@@ -324,7 +330,7 @@ export function createSuitcase(nav: Nav) {
     head.id = "case-how-title";
     box.setAttribute("aria-labelledby", head.id);
     const own = s.prize.table !== DEFAULT_TABLE;
-    const table = own ? (s.prize.tableTitle ?? knownTable(s.prize.table)?.title ?? "") : "";
+    const table = own ? prizeTableName(s.prize, s.prize.tableTitle ?? knownTable(s.prize.table)?.title ?? "") : "";
     const steps = el("ol");
     for (const line of [
       t("case.how.play"),
@@ -347,7 +353,7 @@ export function createSuitcase(nav: Nav) {
       const b = el("button", `btn shelf-case${s.complete ? " full" : ""}`);
       b.type = "button";
       b.dataset.press = "case.shelf";
-      b.append(miniCase("", true), el("b", "", monthName(s.month)), el("span", "", s.theme), el("small", "", t("case.packedOf", { count: held(s), all: s.items.length })));
+      b.append(miniCase("", true), el("b", "", capital(monthName(s.month))), el("span", "", themeName(s)), el("small", "", t("case.packedOf", { count: held(s), all: s.items.length })));
       b.setAttribute("aria-label", `${eventTitle(s)}: ${t("case.packedOf", { count: held(s), all: s.items.length })}`);
       b.addEventListener("click", () => open(s.month));
       row.append(b);
@@ -405,8 +411,8 @@ export function createSuitcase(nav: Nav) {
     tile.hidden = !s;
     if (!s) return;
     tileName.textContent = t("case.tile");
-    tileLine.textContent = s.theme;
-    tile.setAttribute("aria-label", t("case.tileAria", { theme: s.theme }));
+    tileLine.textContent = themeName(s);
+    tile.setAttribute("aria-label", t("case.tileAria", { theme: themeName(s) }));
   }
 
   /** Open the suitcase: this month's; before the event, the next one's preview; or a shelf month. */
@@ -466,7 +472,7 @@ export function packedOnCard(
 ): void {
   const mini = miniCase("on-card");
   // a new item says how full the suitcase is; a spare copy says how many of it there are now
-  const words = el("span", "packed-words", count > 1 ? t("case.packedAgain", { item: item.title, count }) : t("case.packedCard", { item: item.title, count: packed, all }));
+  const words = el("span", "packed-words", count > 1 ? t("case.packedAgain", { item: itemName(item), count }) : t("case.packedCard", { item: itemName(item), count: packed, all }));
   line.replaceChildren(mini, words);
   line.classList.add("packed");
   // the 10th: the prize under the line (the table, if it landed, and the helpers), its place kept from

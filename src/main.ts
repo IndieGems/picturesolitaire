@@ -14,19 +14,28 @@
 
 import "./ui/browser"; // no zoom, selection or long-press menus, from the first frame
 import { gem } from "./gem";
-import { t } from "./ui/i18n";
+import BOOT from "virtual:ps-boot-words";
+import { askedLocale, deviceLocale, negotiate } from "./ui/locale";
 import { WORDMARK } from "./ui/wordmark";
 
 const boot = document.getElementById("boot");
+// The boot line in the player's language: the device's until the Arcade says its own (after the
+// bridge, below). Only these few words are here (virtual:ps-boot-words, from each locales/<lang>.json);
+// the game's whole word list comes with the game (src/ui/i18n.ts).
+let bootLang = deviceLocale();
+const say = (key: "boot.loading" | "boot.failed" | "game.title"): string => BOOT[bootLang]?.[key] ?? BOOT.en?.[key] ?? "";
 // The tab's title is the game's name in the player's language (index.html carries the English
 // one for the moment before this runs: the Arcade's header reads it).
-document.title = t("game.title");
-if (boot) boot.textContent = t("boot.loading");
+document.title = say("game.title");
+document.documentElement.lang = bootLang; // the device picks its own CJK type by it
+if (boot) boot.textContent = say("boot.loading");
 
 // How long the first screen waits for the Arcade's handshake: 3 s, never the
 // SDK's default 10. The Arcade offers again every 2 s and the SDK keeps
 // listening after this, so a late handshake still connects.
 const BRIDGE_WAIT_MS = 3000;
+/** How long the first screen waits for the player's language before it draws in English. */
+const LOCALE_WAIT_MS = 1500;
 
 // The round type and the title the first screen draws, asked for beside the
 // game's code rather than after it has run. After the bridge, never in
@@ -79,7 +88,22 @@ else addEventListener("load", prefetchGame, { once: true });
 
 async function start(): Promise<void> {
   if (window.self !== window.top) await gem.awaitBridge(BRIDGE_WAIT_MS);
+  // the Arcade's language, once it has said (and `?lang=` has not pinned another)
+  const arcade = askedLocale() ? null : negotiate(gem.prefs?.locale);
+  if (arcade && arcade !== bootLang) {
+    bootLang = arcade;
+    document.documentElement.lang = arcade;
+    if (boot?.isConnected) boot.textContent = say("boot.loading");
+  }
   preloadFirstScreen();
+  // the player's words before the game's screens are built from them (src/ui/i18n.ts): a small chunk
+  // and the language's list, LOCALE_WAIT_MS at most (then English, and the screens redraw once it lands)
+  try {
+    const { setLocale } = await import("./ui/i18n");
+    await Promise.race([setLocale(bootLang), new Promise((r) => setTimeout(r, LOCALE_WAIT_MS))]);
+  } catch {
+    // no words list: the game's own import below tries again, and English stands in
+  }
   // a phone on a bad connection can drop the fetch: try once more, then say so
   for (let tries = 0; ; tries++) {
     try {
@@ -95,5 +119,5 @@ async function start(): Promise<void> {
 
 start().catch((err) => {
   console.error(err);
-  if (boot) boot.textContent = t("boot.failed");
+  if (boot) boot.textContent = say("boot.failed");
 });

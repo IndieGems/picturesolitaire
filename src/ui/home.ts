@@ -34,7 +34,7 @@ import { gem } from "../gem";
 import { levelCount } from "../game/levels";
 import { campaignNext, progress } from "../net/progress";
 import { ensureTrip, fileUrl, resident } from "../packs";
-import { t } from "./i18n";
+import { liveText, t } from "./i18n";
 import { ICONS } from "./icons";
 import { markAt, markOf, markTag, markWords } from "./marks";
 import { stampUrl } from "./passport";
@@ -178,7 +178,7 @@ export function createHome(nav: Nav, parts: Parts) {
   const passport = el("button", "btn tile-btn passport");
   passport.type = "button";
   passport.dataset.press = "home.passport";
-  passport.append(bookletBox, el("span", "label", t("home.passport")), stampsLine);
+  passport.append(bookletBox, liveText(el("span", "label"), "home.passport"), stampsLine);
   passport.addEventListener("click", () => nav.passport());
   // the Shop: Art's satchel, the Hint's magnifier peeking out
   const shopArt = el("span", "booklet");
@@ -186,7 +186,7 @@ export function createHome(nav: Nav, parts: Parts) {
   const shop = el("button", "btn tile-btn shop");
   shop.type = "button";
   shop.dataset.press = "home.shop";
-  shop.append(shopArt, el("span", "label", t("home.shop")), el("small", "", t("home.shopLine")));
+  shop.append(shopArt, liveText(el("span", "label"), "home.shop"), liveText(el("small"), "home.shopLine"));
   shop.hidden = true;
   shop.addEventListener("click", () => nav.shop());
   parts.daily.classList.add("tile-btn");

@@ -24,7 +24,7 @@
 // the player moves once it is done.
 
 import { emit } from "../events";
-import { t } from "./i18n";
+import { named, t } from "./i18n";
 
 const ART = {
   /** Art's starburst (public/art/item-starburst.webp); until it is in, a CSS stand-in (style.css). */
@@ -72,7 +72,7 @@ export function playItemFound(layer: HTMLElement, item: ItemFound): Promise<void
   const pic = el("img", `if-item${item.cutout ? " cutout" : " card"}`);
   Object.assign(pic, { src: item.src, alt: "", draggable: false });
   const words = el("div", "if-words");
-  words.append(el("b", "if-name", t("case.foundName", { item: item.title })), el("span", "if-line", t("case.foundLine")));
+  words.append(el("b", "if-name", t("case.foundName", { item: named(`picture.${item.id}`, item.title) })), el("span", "if-line", t("case.foundLine")));
   const mini = el("img", "if-case");
   Object.assign(mini, { src: ART.caseSmall, alt: "", draggable: false });
   stage.append(burst, pic, words, mini);

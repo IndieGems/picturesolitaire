@@ -21,7 +21,7 @@ import { loadDaily, type Daily } from "../game/levels";
 import { onDailyChange, standings, today, type DailyStandings, type DailyToday } from "../net/daily";
 import type { Verdict } from "../net/claims";
 import { ICONS } from "./icons";
-import { t } from "./i18n";
+import { liveAttr, liveText, t } from "./i18n";
 import { clock, shortDate } from "./format";
 import { dailyResult } from "../net/progress";
 
@@ -55,7 +55,7 @@ export function createDaily(nav: Nav) {
   // its board come (taps wait for them); hidden only once it is known there is no board today ----
   const homeStatus = el("span", "", " ");
   const homeWords = el("span", "words");
-  homeWords.append(el("b", "", t("home.daily")), homeStatus);
+  homeWords.append(liveText(el("b"), "home.daily"), homeStatus);
   const homeButton = el("button", "btn daily-btn");
   homeButton.type = "button";
   homeButton.dataset.press = "home.daily";
@@ -70,7 +70,7 @@ export function createDaily(nav: Nav) {
   back.type = "button";
   back.dataset.press = "daily.back";
   back.innerHTML = ICONS.back;
-  back.setAttribute("aria-label", t("daily.back"));
+  liveAttr(back, "aria-label", "daily.back");
   back.addEventListener("click", nav.home);
   const you = el("div", "daily-you glass");
   const note = el("p", "daily-note");

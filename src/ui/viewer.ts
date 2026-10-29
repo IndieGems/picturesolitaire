@@ -21,7 +21,7 @@
 // look, then back to the card.
 
 import { ICONS } from "./icons";
-import { t } from "./i18n";
+import { liveAttr, t } from "./i18n";
 import { pictureTitle, pictureUrl, type Picture } from "./catalogue";
 import { ensure, resident } from "../packs";
 import { screenChanged } from "./browser";
@@ -58,7 +58,7 @@ export function createViewer(options: { tapToClose?: boolean } = {}): Viewer {
   back.className = "btn round top-back";
   back.dataset.press = "viewer.close";
   back.innerHTML = ICONS.back;
-  back.setAttribute("aria-label", t("viewer.close"));
+  liveAttr(back, "aria-label", "viewer.close");
 
   const stage = document.createElement("div");
   stage.className = "viewer-stage";

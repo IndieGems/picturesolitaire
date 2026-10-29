@@ -17,7 +17,7 @@
 // run-out panel.
 
 import { on } from "../events";
-import { t } from "./i18n";
+import { liveText } from "./i18n";
 import { learnt, lessonSeen } from "./guide-save";
 
 /** The nudge's tuning. */
@@ -49,7 +49,7 @@ export function createHintNudge(d: Deps) {
   tip.className = "hint-tip glass";
   tip.setAttribute("role", "status");
   tip.hidden = true;
-  tip.textContent = t("board.hintTip");
+  liveText(tip, "board.hintTip");
   d.layer.append(tip);
 
   let timer = 0;

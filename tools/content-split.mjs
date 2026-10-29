@@ -43,6 +43,13 @@ const ID = "virtual:ps-content";
 // src/ui/icons.ts reads them: import GLYPHS from "virtual:ps-icons" ({ gear: "data:image/svg+xml,..." }).
 const ICONS_ID = "virtual:ps-icons";
 const ICON_DIR = `${ROOT}public/art/ui/`;
+// The boot line in every language ("Loading Picture Passport…", and its failure), taken from each
+// locales/<lang>.json, so the boot entry (src/main.ts) says it in the player's language without
+// fetching a whole word list before the Arcade's handshake: import BOOT from "virtual:ps-boot-words"
+// ({ de: { "boot.loading": "...", "boot.failed": "...", "game.title": "..." } }).
+const BOOT_ID = "virtual:ps-boot-words";
+const LOCALE_DIR = `${ROOT}locales/`;
+const BOOT_KEYS = ["boot.loading", "boot.failed", "game.title"];
 const LANES =["souvenirs", "challenge", "lessons", "experiments"];
 
 /** A daily's week: the Monday on or before its date (yyyy-mm-dd, UTC), as tools/art/packs.mjs names it. */
@@ -190,10 +197,20 @@ export function contentSplit() {
       release = config.mode === "release";
     },
     resolveId(id) {
-      if (id === ID || id.startsWith(`${ID}/`) || id === ICONS_ID) return `\0${id}`;
+      if (id === ID || id.startsWith(`${ID}/`) || id === ICONS_ID || id === BOOT_ID) return `\0${id}`;
       return null;
     },
     load(id) {
+      if (id === `\0${BOOT_ID}`) {
+        const words = {};
+        // a word list per language: <lang>.json (never names-, titles- or anything not a language's)
+        for (const f of readdirSync(LOCALE_DIR).filter((f) => /^[a-z]{2}(-[A-Za-z]+)?\.json$/.test(f)).sort()) {
+          this.addWatchFile(LOCALE_DIR + f);
+          const all = JSON.parse(readFileSync(LOCALE_DIR + f, "utf8"));
+          words[f.slice(0, -5)] = Object.fromEntries(BOOT_KEYS.filter((k) => typeof all[k] === "string").map((k) => [k, all[k]]));
+        }
+        return `export default ${JSON.stringify(words)};`;
+      }
       if (id === `\0${ICONS_ID}`) {
         const glyphs = {};
         for (const f of readdirSync(ICON_DIR).filter((f) => /^icon-.+\.svg$/.test(f)).sort()) {

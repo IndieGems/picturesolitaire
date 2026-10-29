@@ -1,3 +1,4 @@
-fredoka-latin.woff2 (Fredoka) is the Latin subset served by Google Fonts, where
-Fredoka is published under the SIL Open Font License, Version 1.1:
+fredoka-*.woff2 (Fredoka) and nunito-*.woff2 (Nunito) are subsets served by
+Google Fonts (the Latin, extended Latin and Cyrillic cuts), where both are
+published under the SIL Open Font License, Version 1.1:
 https://openfontlicense.org

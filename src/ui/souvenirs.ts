@@ -17,7 +17,7 @@ import { loadSouvenirs, type Souvenir } from "../game/levels";
 import { souvenirBest } from "../net/progress";
 import { ensureTrip, fileUrl, resident } from "../packs";
 import { souvenirArt, souvenirTheme, type SouvenirArt } from "./catalogue";
-import { t } from "./i18n";
+import { liveText, t } from "./i18n";
 import { tripById, tripDone, tripPlace, trips } from "./trips";
 
 /** The Souvenir boards, once loaded (they load with the first screen; until then, none). */
@@ -93,7 +93,7 @@ export function createSouvenirTile(play: (trip: string) => void) {
   img.alt = "";
   img.draggable = false;
   const name = document.createElement("b");
-  name.textContent = t("souvenir.tile");
+  liveText(name, "souvenir.tile");
   const sub = document.createElement("small");
   const words = document.createElement("span");
   words.className = "words";
