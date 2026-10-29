@@ -13,6 +13,7 @@
 //     moves the rules refuse, and shuffles both legal and not;
 //   - forged claims: a line cut short, a board that does not exist, a deal
 //     version the function does not know, one shuffle past the limit, a bad action;
+//   - a resumed level (GSR-014): its whole line pays, the moves after the resume alone never;
 //   - when the Shuffle helper returns the action it picked (src/game/shuffle.ts),
 //     real rescue shuffles inside winning lines.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
@@ -261,6 +262,29 @@ claim("an unknown claim version", { ...base0, v: 2 }, { reason: "bad_claim" });
 claim("a daily whose board is not its date", { ...base0, lane: "daily", board: "d2026-01-01", date: "2026-01-02" }, { reason: "bad_claim" });
 claim("a move off the board", { ...base0, line: [{ from: 0, to: 9999 }, ...b0.line] }, { reason: "bad_action" });
 claims.push({ name: "not JSON", input: "{nope", expect: { reason: "bad_claim" } });
+
+// a level resumed after the Arcade ended a parked session (GSR-014): the game keeps the level
+// in hand in a slot the player writes, so its win still claims the WHOLE line from the deal,
+// which the checker replays from its own data and pays once (pay.rs, the board's first win).
+// The moves after the resume alone prove nothing, whatever board the claim says it resumed from:
+// the checker reads no state from a claim.
+{
+  const ok0 = { ok: true, moves: b0.line.length, shuffles: 0, ms: Math.max(60_000, b0.line.length * MIN_MS_PER_MOVE) };
+  claim("a resumed level: the whole line from the deal", { ...base0, resumed: true }, ok0);
+  const at = Math.ceil(b0.line.length / 2);
+  let s = start(b0.deal).state;
+  for (const a of b0.line.slice(0, at)) s = apply(s, a);
+  const tail = b0.line.slice(at);
+  let t = start(b0.deal).state, reason = "not_won";
+  for (const a of tail) {
+    const next = apply(t, a);
+    if (!next) { reason = "bad_action"; break; }
+    t = next;
+  }
+  if (reason === "not_won" && isWon(t)) throw new Error(`vectors: ${b0.id}'s second half wins from the deal, so it cannot stand for a resumed line`);
+  claim("a resumed level: only the moves after the resume", { ...base0, line: tail, resumed: true }, { reason });
+  claim("a resumed level: those moves, with the board it says it had", { ...base0, line: tail, resumed: true, state: { board: s.board, stacks: s.stacks, cleared: s.cleared, moves: s.moves } }, { reason });
+}
 
 // one shuffle past the checker's limit (claim.rs SHUFFLES): a legal mix each time (when the
 // board has loose cards), then the line cannot win
