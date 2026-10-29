@@ -323,14 +323,17 @@ def board_rel(e):
 
 def make_board(e):
     """The copy the board draws: the picture at BOARD_CELL a card, stepped down in quality
-    (never below q56) until it fits BOARD_BUDGET a card."""
+    (never below q58, pen and ink q54) until it fits BOARD_BUDGET a card."""
     w, h = e["cols"] * BOARD_CELL[0], e["rows"] * BOARD_CELL[1]
     im = framed(e).resize((w, h), Image.LANCZOS)
     out = PUBLIC / board_rel(e)
     out.parent.mkdir(parents=True, exist_ok=True)
     dest = "window" in e
     budget = (DEST_BOARD_BUDGET if dest else BOARD_BUDGET) * e["cols"] * e["rows"]
-    for q in range(84 if e["medium"] in SMOOTH_MEDIA else BOARD_Q, 49 if dest else 55, -4):
+    # Pen and ink's hatching and halftone dots are the densest detail in the library (its board copies
+    # average ~84 KB to the others' ~51 KB): it may step one notch further, to q54, which still reads at card size.
+    floor = 49 if dest else (51 if e["medium"] == "ink" else 55)
+    for q in range(84 if e["medium"] in SMOOTH_MEDIA else BOARD_Q, floor, -4):
         im.save(out, "WEBP", quality=q, method=6)
         if out.stat().st_size <= budget:
             break
