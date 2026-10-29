@@ -371,11 +371,16 @@ export const SPARES = new Set(BACK_FILE.spares.filter((id) => !(id in BACK_FILE.
 const ALSO = new Set([...BACK, ...SPARES]);
 /**
  * TRIP 11 ON (creator, 2026-10-28): the clear pictures the atmospheric swap took out of boards 1-150 and
- * left on no board (atmospheric.json `freed`, written by make-campaign.mts) are the next trips' stock,
- * taken first (a row's `also`), then Art's new ones.
+ * left on no board (atmospheric.json `freed`, written by make-campaign.mts), and those a swap-in batch
+ * displaced (swap-ins.json, each batch's `freed`, written by swap-in.mts: the pen-and-ink pictures,
+ * creator, 2026-10-29), are the next trips' stock, taken first (a row's `also`), then Art's new ones.
  */
 const ATMOS_FILE = new URL("./atmospheric.json", import.meta.url);
-export const FREED = new Set(existsSync(ATMOS_FILE) ? JSON.parse(readFileSync(ATMOS_FILE, "utf8")).freed : []);
+const SWAP_INS_FILE = new URL("./swap-ins.json", import.meta.url);
+export const FREED = new Set([
+  ...(existsSync(ATMOS_FILE) ? JSON.parse(readFileSync(ATMOS_FILE, "utf8")).freed : []),
+  ...(existsSync(SWAP_INS_FILE) ? Object.values(JSON.parse(readFileSync(SWAP_INS_FILE, "utf8")).batches).flatMap((b) => b.freed) : []),
+]);
 PLAN.forEach((row, i) => {
   if (i < 120) return;
   const back = Math.floor((row.count - 1) / 2);

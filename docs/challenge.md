@@ -437,7 +437,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | dewdrops (2x2, dewdrops) |  |
 | rowboat-lake (2x2, rowboat lake) |  |
 | glowing-waves (2x2, glowing waves) |  |
-| icy-berries (2x2, icy berries) | 12 |
+| icy-berries (2x2, icy berries) |  |
 | snowy-pine (1x2, snowy pine) |  |
 | hay-bales (2x1, hay bales) |  |
 | tea-pourer (2x2, tea pourer) |  |
@@ -657,7 +657,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | hoarfrost (2x2, white snow) |  |
 | termite-mound (2x2, termite mound) |  |
 | saturn (2x2, space) |  |
-| nebula (2x2, space) | 19 |
+| nebula (2x2, space) |  |
 | desert-bloom (2x2, wildflowers) |  |
 | wildflower-meadow (2x2, wildflowers) |  |
 | rain-window (2x2, rain window) |  |
@@ -724,7 +724,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | clownfish (2x2, clownfish) |  |
 | walrus (2x2, walrus) |  |
 | seal-pup (2x2, seal pup) |  |
-| pelican (2x2, pelican) | 6 |
+| pelican (2x2, pelican) |  |
 | cockatoo (2x2, cockatoo) |  |
 | hoopoe (2x2, hoopoe) |  |
 | bee-eater (2x2, bee eater) |  |
@@ -933,7 +933,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | date-palms (2x2, date palms) |  |
 | outback-track (2x2, outback) |  |
 | spinifex (2x2, spinifex) |  |
-| pampas-grass (2x2, tall grass) | 17 |
+| pampas-grass (2x2, tall grass) |  |
 | fogbow (2x2, fogbow) |  |
 | tumbleweed (2x2, tumbleweed) |  |
 | frosty-meadow (2x2, winter fog) |  |
@@ -1012,7 +1012,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | guinea-pig (2x2, guinea pig) |  |
 | budgies (2x2, parrot) |  |
 | golden-eagle (2x2, raptor) |  |
-| scarlet-ibis (2x2, scarlet ibis) | 2 |
+| scarlet-ibis (2x2, scarlet ibis) |  |
 | toad (2x2, toad) |  |
 | fire-salamander (2x2, fire salamander) |  |
 | iguana (2x2, iguana) |  |
@@ -1355,3 +1355,63 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | street-of-steps (2x2, street of steps) |  |
 | thermal-pools (2x2, thermal pools) |  |
 | hop-picking (2x2, hop picking) |  |
+| ink-haircut (2x2, ink haircut) |  |
+| ink-icing-cake (2x2, ink icing cake) |  |
+| ink-spaniel (2x2, ink spaniel) |  |
+| ink-thread-pins (2x2, ink thread pins) |  |
+| ink-pram (2x2, ink pram) |  |
+| ink-model-yacht (2x2, ink model yacht) |  |
+| ink-ironing (2x2, ink ironing) |  |
+| ink-shoeshine (2x2, ink shoeshine) |  |
+| ink-bowler (2x2, ink bowler) |  |
+| ink-waiter (2x2, ink waiter) | 2 |
+| ink-badminton (2x2, ink badminton) |  |
+| ink-puncture (2x2, ink puncture) |  |
+| ink-cutting-roses (2x2, ink cutting roses) |  |
+| ink-wallpaper (2x2, ink wallpaper) |  |
+| ink-projectionist (2x2, ink projectionist) | 19 |
+| ink-switchboard (2x2, ink switchboard) |  |
+| ink-croquet (2x2, ink croquet) |  |
+| ink-pug (2x2, ink pug) |  |
+| ink-terrier (2x2, ink terrier) |  |
+| ink-greyhound (2x2, ink greyhound) |  |
+| ink-bulldog (2x2, ink bulldog) |  |
+| ink-hamster (2x2, ink hamster) |  |
+| ink-woodpecker (2x2, ink woodpecker) |  |
+| ink-gull (2x2, ink gull) |  |
+| ink-field-mouse (2x2, ink field mouse) |  |
+| ink-lobster (2x2, ink lobster) |  |
+| ink-boxing-gloves (2x2, ink boxing gloves) |  |
+| ink-birdcage (2x2, ink birdcage) | 6 |
+| ink-garden-gnome (2x2, ink garden gnome) |  |
+| ink-perfume (2x2, ink perfume) |  |
+| ink-handbell (2x2, ink handbell) |  |
+| ink-pepper-mill (2x2, ink pepper mill) |  |
+| ink-toy-plane (2x2, ink toy plane) |  |
+| ink-door-knocker (2x2, ink door knocker) |  |
+| ink-sundae (2x2, ink sundae) |  |
+| ink-sardines (2x2, ink sardines) |  |
+| ink-trifle (2x2, ink trifle) |  |
+| ink-porridge (2x2, ink porridge) |  |
+| ink-battenberg (2x2, ink battenberg) |  |
+| ink-crumpets (2x2, ink crumpets) |  |
+| ink-crumble (2x2, ink crumble) |  |
+| ink-cauliflower (2x2, ink cauliflower) |  |
+| ink-raspberries (2x2, ink raspberries) |  |
+| ink-taxi (2x2, ink taxi) | 12 |
+| ink-roadster (2x2, ink roadster) |  |
+| ink-milk-float (2x2, ink milk float) |  |
+| ink-soapbox (2x2, ink soapbox) |  |
+| ink-traction-engine (2x2, ink traction engine) |  |
+| ink-snowplough (2x2, ink snowplough) | 17 |
+| ink-forklift (2x2, ink forklift) |  |
+| ink-dodgems (2x2, ink dodgems) |  |
+| ink-pigeons (2x2, ink pigeons) |  |
+| ink-hydrant (2x2, ink hydrant) |  |
+| ink-sprinkler (2x2, ink sprinkler) |  |
+| ink-seesaw (2x2, ink seesaw) |  |
+| ink-station-master (2x2, ink station master) |  |
+| ink-level-crossing (2x2, ink level crossing) |  |
+| ink-fireside (2x2, ink fireside) |  |
+| ink-kennel (2x2, ink kennel) |  |
+| ink-bird-table (2x2, ink bird table) |  |

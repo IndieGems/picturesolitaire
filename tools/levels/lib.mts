@@ -106,7 +106,7 @@ export const familyOf = (id) => (byId.get(id) ?? destById.get(id) ?? itemById.ge
  * busy, or one of the early ones), so it counts only as the swap above judges it: no family or word in
  * common with `r`, and `r`'s album within a third and its medium within half of the board.
  */
-function fitsBeside(all, spec, pictures, r) {
+export function fitsBeside(all, spec, pictures, r) {
   const isAtm = (q) => byId.get(q.id)?.look === "atmospheric";
   const atm = pictures.filter(isAtm);
   const cards = atm.reduce((n, q) => n + q.cols * q.rows, 0);

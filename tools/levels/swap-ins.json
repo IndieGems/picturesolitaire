@@ -1,0 +1,481 @@
+{
+ "note": "tools/levels/swap-in.mts writes this: each batch of new pictures swapped into made levels in place, the clear picture each took the place of, `displaced`, and `freed` (displaced and on no campaign board then), which campaign-plan.mts FREED adds to trip 11's stock. Do not edit by hand.",
+ "batches": {
+  "ink": {
+   "medium": "ink",
+   "swaps": [
+    {
+     "lane": "challenge",
+     "level": "ch02",
+     "clear": "scarlet-ibis",
+     "picture": "ink-waiter"
+    },
+    {
+     "lane": "challenge",
+     "level": "ch06",
+     "clear": "pelican",
+     "picture": "ink-birdcage"
+    },
+    {
+     "lane": "challenge",
+     "level": "ch12",
+     "clear": "icy-berries",
+     "picture": "ink-taxi"
+    },
+    {
+     "lane": "challenge",
+     "level": "ch17",
+     "clear": "pampas-grass",
+     "picture": "ink-snowplough"
+    },
+    {
+     "lane": "challenge",
+     "level": "ch19",
+     "clear": "nebula",
+     "picture": "ink-projectionist"
+    },
+    {
+     "lane": "campaign",
+     "level": "c04",
+     "clear": "steam-train",
+     "picture": "ink-dodgems"
+    },
+    {
+     "lane": "campaign",
+     "level": "c06",
+     "clear": "cappuccino",
+     "picture": "ink-hydrant"
+    },
+    {
+     "lane": "campaign",
+     "level": "c09",
+     "clear": "palm-island",
+     "picture": "ink-cutting-roses"
+    },
+    {
+     "lane": "campaign",
+     "level": "c12",
+     "clear": "iceberg",
+     "picture": "ink-greyhound"
+    },
+    {
+     "lane": "campaign",
+     "level": "c15",
+     "clear": "cow-nose",
+     "picture": "ink-kennel"
+    },
+    {
+     "lane": "campaign",
+     "level": "c17",
+     "clear": "pier",
+     "picture": "ink-haircut"
+    },
+    {
+     "lane": "campaign",
+     "level": "c20",
+     "clear": "pistachios",
+     "picture": "ink-pram"
+    },
+    {
+     "lane": "campaign",
+     "level": "c23",
+     "clear": "roller-skate",
+     "picture": "ink-boxing-gloves"
+    },
+    {
+     "lane": "campaign",
+     "level": "c26",
+     "clear": "clematis",
+     "picture": "ink-handbell"
+    },
+    {
+     "lane": "campaign",
+     "level": "c28",
+     "clear": "standing-stones",
+     "picture": "ink-shoeshine"
+    },
+    {
+     "lane": "campaign",
+     "level": "c31",
+     "clear": "carousel-horse",
+     "picture": "ink-roadster"
+    },
+    {
+     "lane": "campaign",
+     "level": "c33",
+     "clear": "forget-me-nots",
+     "picture": "ink-bowler"
+    },
+    {
+     "lane": "campaign",
+     "level": "c37",
+     "clear": "oasis",
+     "picture": "ink-sundae"
+    },
+    {
+     "lane": "campaign",
+     "level": "c39",
+     "clear": "palace-window",
+     "picture": "ink-pepper-mill"
+    },
+    {
+     "lane": "campaign",
+     "level": "c42",
+     "clear": "monarch",
+     "picture": "ink-garden-gnome"
+    },
+    {
+     "lane": "campaign",
+     "level": "c44",
+     "clear": "puffin",
+     "picture": "ink-toy-plane"
+    },
+    {
+     "lane": "campaign",
+     "level": "c47",
+     "clear": "yarn-balls",
+     "picture": "ink-terrier"
+    },
+    {
+     "lane": "campaign",
+     "level": "c49",
+     "clear": "container-ship",
+     "picture": "ink-icing-cake"
+    },
+    {
+     "lane": "campaign",
+     "level": "c53",
+     "clear": "blooming-tea",
+     "picture": "ink-switchboard"
+    },
+    {
+     "lane": "campaign",
+     "level": "c55",
+     "clear": "bleeding-heart",
+     "picture": "ink-sardines"
+    },
+    {
+     "lane": "campaign",
+     "level": "c58",
+     "clear": "popcorn",
+     "picture": "ink-croquet"
+    },
+    {
+     "lane": "campaign",
+     "level": "c60",
+     "clear": "dumplings",
+     "picture": "ink-crumpets"
+    },
+    {
+     "lane": "campaign",
+     "level": "c63",
+     "clear": "fern-forest",
+     "picture": "ink-woodpecker"
+    },
+    {
+     "lane": "campaign",
+     "level": "c67",
+     "clear": "cupcakes",
+     "picture": "ink-seesaw"
+    },
+    {
+     "lane": "campaign",
+     "level": "c69",
+     "clear": "freesias",
+     "picture": "ink-trifle"
+    },
+    {
+     "lane": "campaign",
+     "level": "c71",
+     "clear": "tuk-tuk",
+     "picture": "ink-spaniel"
+    },
+    {
+     "lane": "campaign",
+     "level": "c74",
+     "clear": "paraglider",
+     "picture": "ink-fireside"
+    },
+    {
+     "lane": "campaign",
+     "level": "c77",
+     "clear": "barrel-cacti",
+     "picture": "ink-field-mouse"
+    },
+    {
+     "lane": "campaign",
+     "level": "c79",
+     "clear": "dining-car",
+     "picture": "ink-milk-float"
+    },
+    {
+     "lane": "campaign",
+     "level": "c83",
+     "clear": "door-knocker",
+     "picture": "ink-battenberg"
+    },
+    {
+     "lane": "campaign",
+     "level": "c85",
+     "clear": "pop-sunset",
+     "picture": "ink-puncture"
+    },
+    {
+     "lane": "campaign",
+     "level": "c88",
+     "clear": "airliner",
+     "picture": "ink-pigeons"
+    },
+    {
+     "lane": "campaign",
+     "level": "c90",
+     "clear": "zen-garden",
+     "picture": "ink-station-master"
+    },
+    {
+     "lane": "campaign",
+     "level": "c93",
+     "clear": "goldenrod",
+     "picture": "ink-badminton"
+    },
+    {
+     "lane": "campaign",
+     "level": "c95",
+     "clear": "clover",
+     "picture": "ink-sprinkler"
+    },
+    {
+     "lane": "campaign",
+     "level": "c99",
+     "clear": "jetpack",
+     "picture": "ink-gull"
+    },
+    {
+     "lane": "campaign",
+     "level": "c101",
+     "clear": "golden-eagle",
+     "picture": "ink-soapbox"
+    },
+    {
+     "lane": "campaign",
+     "level": "c104",
+     "clear": "canna",
+     "picture": "ink-hamster"
+    },
+    {
+     "lane": "campaign",
+     "level": "c106",
+     "clear": "emu",
+     "picture": "ink-bulldog"
+    },
+    {
+     "lane": "campaign",
+     "level": "c109",
+     "clear": "steam-roller",
+     "picture": "ink-model-yacht"
+    },
+    {
+     "lane": "campaign",
+     "level": "c112",
+     "clear": "log-flume",
+     "picture": "ink-ironing"
+    },
+    {
+     "lane": "campaign",
+     "level": "c115",
+     "clear": "tapir",
+     "picture": "ink-raspberries"
+    },
+    {
+     "lane": "campaign",
+     "level": "c117",
+     "clear": "metro-station",
+     "picture": "ink-pug"
+    },
+    {
+     "lane": "campaign",
+     "level": "c120",
+     "clear": "wombat",
+     "picture": "ink-level-crossing"
+    },
+    {
+     "lane": "campaign",
+     "level": "c122",
+     "clear": "donkey",
+     "picture": "ink-thread-pins"
+    },
+    {
+     "lane": "campaign",
+     "level": "c125",
+     "clear": "tower-crane",
+     "picture": "ink-porridge"
+    },
+    {
+     "lane": "campaign",
+     "level": "c128",
+     "clear": "campanula",
+     "picture": "ink-perfume"
+    },
+    {
+     "lane": "campaign",
+     "level": "c131",
+     "clear": "bmx",
+     "picture": "ink-cauliflower"
+    },
+    {
+     "lane": "campaign",
+     "level": "c133",
+     "clear": "trilobite",
+     "picture": "ink-wallpaper"
+    },
+    {
+     "lane": "campaign",
+     "level": "c136",
+     "clear": "marigolds",
+     "picture": "ink-forklift"
+    },
+    {
+     "lane": "campaign",
+     "level": "c138",
+     "clear": "camping-stove",
+     "picture": "ink-lobster"
+    },
+    {
+     "lane": "campaign",
+     "level": "c142",
+     "clear": "chocolate-truffles",
+     "picture": "ink-traction-engine"
+    },
+    {
+     "lane": "campaign",
+     "level": "c144",
+     "clear": "flower-balcony",
+     "picture": "ink-bird-table"
+    },
+    {
+     "lane": "campaign",
+     "level": "c147",
+     "clear": "river-raft",
+     "picture": "ink-door-knocker"
+    },
+    {
+     "lane": "campaign",
+     "level": "c149",
+     "clear": "cranberry-bog",
+     "picture": "ink-crumble"
+    }
+   ],
+   "displaced": [
+    "airliner",
+    "barrel-cacti",
+    "bleeding-heart",
+    "blooming-tea",
+    "bmx",
+    "campanula",
+    "camping-stove",
+    "canna",
+    "cappuccino",
+    "carousel-horse",
+    "chocolate-truffles",
+    "clematis",
+    "clover",
+    "container-ship",
+    "cow-nose",
+    "cranberry-bog",
+    "cupcakes",
+    "dining-car",
+    "donkey",
+    "door-knocker",
+    "dumplings",
+    "emu",
+    "fern-forest",
+    "flower-balcony",
+    "forget-me-nots",
+    "freesias",
+    "golden-eagle",
+    "goldenrod",
+    "iceberg",
+    "icy-berries",
+    "jetpack",
+    "log-flume",
+    "marigolds",
+    "metro-station",
+    "monarch",
+    "nebula",
+    "oasis",
+    "palace-window",
+    "palm-island",
+    "pampas-grass",
+    "paraglider",
+    "pelican",
+    "pier",
+    "pistachios",
+    "pop-sunset",
+    "popcorn",
+    "puffin",
+    "river-raft",
+    "roller-skate",
+    "scarlet-ibis",
+    "standing-stones",
+    "steam-roller",
+    "steam-train",
+    "tapir",
+    "tower-crane",
+    "trilobite",
+    "tuk-tuk",
+    "wombat",
+    "yarn-balls",
+    "zen-garden"
+   ],
+   "freed": [
+    "airliner",
+    "barrel-cacti",
+    "bleeding-heart",
+    "bmx",
+    "campanula",
+    "camping-stove",
+    "canna",
+    "cappuccino",
+    "chocolate-truffles",
+    "clematis",
+    "clover",
+    "container-ship",
+    "cow-nose",
+    "cranberry-bog",
+    "dining-car",
+    "donkey",
+    "door-knocker",
+    "emu",
+    "fern-forest",
+    "flower-balcony",
+    "forget-me-nots",
+    "freesias",
+    "golden-eagle",
+    "goldenrod",
+    "jetpack",
+    "log-flume",
+    "marigolds",
+    "metro-station",
+    "monarch",
+    "palace-window",
+    "palm-island",
+    "pampas-grass",
+    "paraglider",
+    "pier",
+    "pistachios",
+    "pop-sunset",
+    "puffin",
+    "river-raft",
+    "roller-skate",
+    "standing-stones",
+    "steam-roller",
+    "tapir",
+    "tower-crane",
+    "trilobite",
+    "tuk-tuk",
+    "yarn-balls",
+    "zen-garden"
+   ]
+  }
+ }
+}
