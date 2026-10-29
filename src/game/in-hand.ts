@@ -17,9 +17,11 @@
 // a network address) and at once when the page hides, the Arcade pauses the game, or it is
 // about to close it. It empties itself when there is nothing to carry on: a win (from the
 // moment the rules say so), a Restart, a board not played yet, another board opened in its
-// place; and dropInHand() for the screens' own reasons (Back to home, a daily whose day has
-// gone). Never written before this session's read has landed, so a board kept last time is
-// never written over unseen.
+// place; and dropInHand() for the screens' own reasons (a daily whose day has gone, a kept
+// board that no longer fits). Back to home keeps it, as the screens keep the board in hand
+// (the lead, 2026-10-29: a session that ends on home loses nothing either). Never written
+// before this session's read has landed, so a board kept last time is never written over
+// unseen.
 //
 // The screens' part (UI's, src/ui/app.ts): read keptBoard() once at boot (cap the wait, as
 // for any save) and offer the board when it fits() the level as loaded; open it with
@@ -159,7 +161,7 @@ export function keepInHand(board: BoardHandle, play: KeptPlay, level: Level): vo
   soon();
 }
 
-/** Let the board in hand go: the slot empties (Back to home, a daily whose day has gone). */
+/** Let the board kept go: the slot empties (a daily whose day has gone, a kept board that no longer fits). */
 export function dropInHand(): void {
   current = "dropped";
   dirty = true;
