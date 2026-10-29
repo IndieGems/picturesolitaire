@@ -68,9 +68,36 @@ TABLES = {
     # dusk's snow strip instead of a particles file of its own.
     "ski-lodge": {"title": "Ski Lodge", "particles": "snow", "share": "winter-dusk"},
     "winter-market": {"title": "Winter Market", "particles": "snow", "share": "winter-dusk"},
+    # The Cosmetics screen's four, 2,000 Coins each (creator, 2026-10-29, picked from concepts in design/concepts/tables/),
+    # each paired with one of Audio's trip tracks; built as Sunny Day (scene -> table, the side art cleared in the middle).
+    "paris-cafe": {"title": "Paris Café"},
+    "kyoto-blossom": {"title": "Kyoto Blossom", "particles": "petals"},
+    "buenos-aires": {"title": "Buenos Aires", "particles": "petals"},
+    "irish-coast": {"title": "Irish Coast"},
 }
-SHIPPED = ["sunny-day", "winter-dusk", "autumn-study", "ski-lodge", "winter-market"]  # the picker's order
+SHIPPED = ["sunny-day", "winter-dusk", "autumn-study", "ski-lodge", "winter-market",
+           "paris-cafe", "kyoto-blossom", "buenos-aires", "irish-coast"]  # the picker's order
 DEFAULT = "sunny-day"  # everyone's table (UI's code switched to it in 78c3623)
+# The plain panel a board sits on during a level (UI, 2026-10-29, the creator's pick after Jigsaw Drop): a calm
+# mid-tone of the table's own surface, under the cards' pale frames. A table not named here uses its `base` (the
+# sunny tables' bases are mid-tones already); these dark ones lift their surface to about 40% lightness, the
+# near-grey ones picked by eye from their tables (West's and South Africa's wood, France's stone, the market's cobbles).
+PANELS = {
+    "winter-dusk": "#51637b",
+    "autumn-study": "#835949",
+    "ski-lodge": "#875845",
+    "winter-market": "#665e6e",
+    "souvenir-america": "#51737b",
+    "souvenir-japan": "#894b43",
+    "souvenir-italy": "#70605c",
+    "souvenir-west": "#6e625a",
+    "souvenir-france": "#5c6274",
+    "souvenir-canada": "#804c50",
+    "souvenir-argentina": "#895243",
+    "souvenir-australia": "#705c5f",
+    "souvenir-south-africa": "#7a5f4c",
+    "souvenir-uk-ireland": "#894c43",
+}
 # Made-up marks the generator left on a table's props, softened at ingest: (x, y, radius) on the raw.
 CLEAN = {}  # raw stem -> marks to soften at ingest (the first sunny table had a glyph on its camera)
 # Each trip's Souvenir board has a table of its own (docs/souvenirs.md; tools/art/souvenirs.py makes it):
@@ -190,6 +217,8 @@ def build():
         if "particles" in files:
             rec |= {"particleKind": t["particles"], "particleFrame": frame, "particleFrames": frames}
         rec["base"] = t.get("base") or base_colour(table)
+        if tid in PANELS:
+            rec["panel"] = PANELS[tid]
         if t.get("souvenir"):
             rec["souvenir"] = t["souvenir"]
         if tid in borders:  # its PC/TV side art on the store page, by name (UI passes it to gem.showPortraitBorders)

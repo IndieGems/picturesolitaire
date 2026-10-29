@@ -27,6 +27,7 @@
       "particleFrame": 32,
       "particleFrames": 4,
       "base": "#2c3746",
+      "panel": "#51637b",
       "border": "winter-dusk"
     },
     {
@@ -39,7 +40,8 @@
       "particleKind": "leaves",
       "particleFrame": 64,
       "particleFrames": 4,
-      "base": "#1d130f"
+      "base": "#1d130f",
+      "panel": "#835949"
     },
     {
       "id": "table-ski-lodge",
@@ -52,6 +54,7 @@
       "particleFrame": 32,
       "particleFrames": 4,
       "base": "#20140f",
+      "panel": "#875845",
       "border": "ski-lodge"
     },
     {
@@ -64,7 +67,52 @@
       "particleKind": "snow",
       "particleFrame": 32,
       "particleFrames": 4,
-      "base": "#1c1a1c"
+      "base": "#1c1a1c",
+      "panel": "#665e6e"
+    },
+    {
+      "id": "table-paris-cafe",
+      "title": "Paris Caf\u00e9",
+      "table": "art/tables/paris-cafe/paris-cafe-table.webp",
+      "stackBack": "art/tables/paris-cafe/paris-cafe-stack-back.webp",
+      "thumb": "art/tables/paris-cafe/paris-cafe-thumb.webp",
+      "base": "#d87d6d",
+      "border": "paris-cafe"
+    },
+    {
+      "id": "table-kyoto-blossom",
+      "title": "Kyoto Blossom",
+      "table": "art/tables/kyoto-blossom/kyoto-blossom-table.webp",
+      "stackBack": "art/tables/kyoto-blossom/kyoto-blossom-stack-back.webp",
+      "particles": "art/tables/kyoto-blossom/kyoto-blossom-particles.webp",
+      "thumb": "art/tables/kyoto-blossom/kyoto-blossom-thumb.webp",
+      "particleKind": "petals",
+      "particleFrame": 64,
+      "particleFrames": 4,
+      "base": "#c78851",
+      "border": "kyoto-blossom"
+    },
+    {
+      "id": "table-buenos-aires",
+      "title": "Buenos Aires",
+      "table": "art/tables/buenos-aires/buenos-aires-table.webp",
+      "stackBack": "art/tables/buenos-aires/buenos-aires-stack-back.webp",
+      "particles": "art/tables/buenos-aires/buenos-aires-particles.webp",
+      "thumb": "art/tables/buenos-aires/buenos-aires-thumb.webp",
+      "particleKind": "petals",
+      "particleFrame": 64,
+      "particleFrames": 4,
+      "base": "#43b0b6",
+      "border": "buenos-aires"
+    },
+    {
+      "id": "table-irish-coast",
+      "title": "Irish Coast",
+      "table": "art/tables/irish-coast/irish-coast-table.webp",
+      "stackBack": "art/tables/irish-coast/irish-coast-stack-back.webp",
+      "thumb": "art/tables/irish-coast/irish-coast-thumb.webp",
+      "base": "#609d6c",
+      "border": "irish-coast"
     },
     {
       "id": "table-souvenir-america",
@@ -73,6 +121,7 @@
       "stackBack": "art/tables/souvenir-america/souvenir-america-stack-back.webp",
       "thumb": "art/tables/souvenir-america/souvenir-america-thumb.webp",
       "base": "#1b282b",
+      "panel": "#51737b",
       "souvenir": "t1"
     },
     {
@@ -82,6 +131,7 @@
       "stackBack": "art/tables/souvenir-japan/souvenir-japan-stack-back.webp",
       "thumb": "art/tables/souvenir-japan/souvenir-japan-thumb.webp",
       "base": "#1f0e0c",
+      "panel": "#894b43",
       "souvenir": "t2"
     },
     {
@@ -91,6 +141,7 @@
       "stackBack": "art/tables/souvenir-italy/souvenir-italy-stack-back.webp",
       "thumb": "art/tables/souvenir-italy/souvenir-italy-thumb.webp",
       "base": "#3e3533",
+      "panel": "#70605c",
       "souvenir": "t3"
     },
     {
@@ -100,6 +151,7 @@
       "stackBack": "art/tables/souvenir-west/souvenir-west-stack-back.webp",
       "thumb": "art/tables/souvenir-west/souvenir-west-thumb.webp",
       "base": "#1f1f21",
+      "panel": "#6e625a",
       "souvenir": "t4"
     },
     {
@@ -109,6 +161,7 @@
       "stackBack": "art/tables/souvenir-france/souvenir-france-stack-back.webp",
       "thumb": "art/tables/souvenir-france/souvenir-france-thumb.webp",
       "base": "#222227",
+      "panel": "#5c6274",
       "souvenir": "t5"
     },
     {
@@ -118,6 +171,7 @@
       "stackBack": "art/tables/souvenir-canada/souvenir-canada-stack-back.webp",
       "thumb": "art/tables/souvenir-canada/souvenir-canada-thumb.webp",
       "base": "#1b0f10",
+      "panel": "#804c50",
       "souvenir": "t6"
     },
     {
@@ -127,6 +181,7 @@
       "stackBack": "art/tables/souvenir-argentina/souvenir-argentina-stack-back.webp",
       "thumb": "art/tables/souvenir-argentina/souvenir-argentina-thumb.webp",
       "base": "#140906",
+      "panel": "#895243",
       "souvenir": "t7"
     },
     {
@@ -136,6 +191,7 @@
       "stackBack": "art/tables/souvenir-australia/souvenir-australia-stack-back.webp",
       "thumb": "art/tables/souvenir-australia/souvenir-australia-thumb.webp",
       "base": "#221c1d",
+      "panel": "#705c5f",
       "souvenir": "t8"
     },
     {
@@ -145,6 +201,7 @@
       "stackBack": "art/tables/souvenir-south-africa/souvenir-south-africa-stack-back.webp",
       "thumb": "art/tables/souvenir-south-africa/souvenir-south-africa-thumb.webp",
       "base": "#1e1c1e",
+      "panel": "#7a5f4c",
       "souvenir": "t9"
     },
     {
@@ -154,6 +211,7 @@
       "stackBack": "art/tables/souvenir-uk-ireland/souvenir-uk-ireland-stack-back.webp",
       "thumb": "art/tables/souvenir-uk-ireland/souvenir-uk-ireland-thumb.webp",
       "base": "#200a07",
+      "panel": "#894c43",
       "souvenir": "t10"
     }
   ]

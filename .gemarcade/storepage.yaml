@@ -547,6 +547,14 @@ media:
       src: borders/ski-lodge.jpg
     - name: winter-dusk
       src: borders/winter-dusk.jpg
+    - name: paris-cafe
+      src: borders/paris-cafe.jpg
+    - name: kyoto-blossom
+      src: borders/kyoto-blossom.jpg
+    - name: buenos-aires
+      src: borders/buenos-aires.jpg
+    - name: irish-coast
+      src: borders/irish-coast.jpg
   # The desktop tile's hover loop: board 62 played on its own winning line, Mont-Saint-Michel's
   # picture finished and its postcard unfolding with the place's name, over the sunny side art
   # (tools/art/preview/; re-record when the board's look or the side art changes).
