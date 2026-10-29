@@ -11,15 +11,17 @@
 // (art/home-desk.webp), so its whole winter skin comes back. Home follows the
 // CHOICE: a Souvenir's table, worn by its board, never reaches it.
 //
-// THE PICKER lists the default and every table owned, then any table marked
-// `showLocked` that is not, as information, with how to win it: Winter Dusk,
-// every player's table until the game turned sunny, says "Fill December's
-// suitcase" (its month: Levels' suitcases.json), so nobody wonders where it went.
-// While the Daily Suitcase is on hold (event-switch.ts), a table no suitcase can win is simply
-// absent: the picker lists only what the player may choose, an owned prize table included.
+// THE PICKER is the Cosmetics screen's Tables (cosmetics.ts; it left Settings, the creator,
+// 2026-10-29): the default and every table owned, then the shop's tables not yet bought (award
+// "shop" in Server's src/net/tables.json, shopTableArts), then any table marked `showLocked` that
+// is not owned, as information, with how to win it: Winter Dusk says "Fill December's suitcase"
+// (its month: Levels' suitcases.json). While the Daily Suitcase is on hold (event-switch.ts), a
+// table no suitcase can win is simply absent: an event's table shows only to its owners, and is
+// never sold.
 //
 // Which owned table is CHOSEN is the player's setting, and follows them
-// (gem.me.settings "table", AGENTS.md's table); only what they chose is stored.
+// (gem.me.settings "table", choices.ts: one read with the track's, writes paced); only what they
+// chose is stored.
 // A chosen table they no longer own falls back to the default. The first
 // screen never waits for any of it: it draws on the default and changes over
 // once the choice and the ownership have been read.
@@ -33,6 +35,8 @@
 
 import { gem } from "../gem";
 import { ownedTables } from "../net/keepsake";
+import { TABLES } from "../net/tables";
+import { keepChoice, readChoices } from "./choices";
 import SCHEDULE from "../content/levels/suitcases.json";
 import { eventShown } from "./event-switch";
 import { t } from "./i18n";
@@ -69,7 +73,6 @@ export interface TableArt {
 export const BUILT_IN_TABLE = "table-sunny-day";
 
 const SETTING = "table";
-const framed = window.self !== window.top;
 const url = (path: string) => new URL(`${import.meta.env.BASE_URL}${path}`, location.href).href;
 
 let manifest: Promise<{ default: string; tables: TableArt[] }> | null = null;
@@ -80,7 +83,8 @@ const thumbs = new Map<string, string>();
 function loadManifest(): Promise<{ default: string; tables: TableArt[] }> {
   manifest ??= fetch(url("art/tables/tables.json"))
     .then((r) => r.json() as Promise<{ default: string; tables: TableArt[] }>)
-    .then((m) => {
+    .then(async (m) => {
+      if (import.meta.env.DEV) await standIns(m.tables);
       known = m.tables;
       return m;
     })
@@ -90,6 +94,31 @@ function loadManifest(): Promise<{ default: string; tables: TableArt[] }> {
       return { default: BUILT_IN_TABLE, tables: [] };
     });
   return manifest;
+}
+
+/**
+ * Dev server only: a shop table with no art in the list yet stands in from Art's concept folder
+ * (design/concepts/tables/<name>/table.json, the ?tryTable= try-outs), so the Cosmetics screen can be
+ * checked before the creator's pick lands. Never in a build: there a table with no art is not shown.
+ */
+async function standIns(list: TableArt[]): Promise<void> {
+  const missing = TABLES.filter((x) => x.award === "shop" && !list.some((a) => a.id === x.slug));
+  const sunny = list.find((a) => a.id === BUILT_IN_TABLE);
+  await Promise.all(
+    missing.map(async (x) => {
+      const folder = `design/concepts/tables/${x.slug.replace(/^table-/, "")}`;
+      try {
+        const r = await fetch(url(`${folder}/table.json`));
+        if (!r.ok) return;
+        const e = (await r.json()) as { title?: string; table?: string; base?: string };
+        if (!e.table) return;
+        const pic = `${folder}/${e.table}`;
+        list.push({ id: x.slug, title: e.title ?? x.title, table: pic, thumb: pic, stackBack: sunny?.stackBack ?? "art/stack-back.webp", base: e.base ?? "#51c5fd" });
+      } catch {
+        // no concept folder: the table is not shown
+      }
+    }),
+  );
 }
 
 let thumbsAsked = false;
@@ -131,11 +160,27 @@ export const thumbOf = (a: TableArt): string => thumbs.get(a.id) ?? url(a.thumb)
 /** A table's art if the list has already loaded (it loads with the first screen). */
 export const knownTable = (id: string): TableArt | undefined => known.find((a) => a.id === id);
 
+/** Dev server only: the tables owned for a check in the play-test tool (cosmetics-shop.ts's pretend); null: the platform's word. */
+let devOwned: Set<string> | null = null;
+export function pretendOwnedTables(ids: readonly string[] | null): void {
+  if (!import.meta.env.DEV) return;
+  devOwned = ids ? new Set(ids) : null;
+}
+const pretending = (): boolean => pretendAll() || devOwned !== null;
+
 /** The tables this player may choose: the default, then each they own, in the list's order. */
 export async function ownedTableArts(): Promise<TableArt[]> {
   const m = await loadManifest();
-  const owned = new Set(pretendAll() ? m.tables.map((a) => a.id) : await ownedTables());
+  const owned = new Set(pretendAll() ? m.tables.map((a) => a.id) : devOwned ? devOwned : await ownedTables());
   return m.tables.filter((a) => !a.souvenir && (a.id === m.default || owned.has(a.id)));
+}
+
+/** The shop's tables (award "shop", Server's src/net/tables.json) that have art to draw, in that list's order: owned or not. */
+export async function shopTableArts(): Promise<TableArt[]> {
+  const m = await loadManifest();
+  return TABLES.filter((x) => x.award === "shop")
+    .map((x) => m.tables.find((a) => a.id === x.slug))
+    .filter((a): a is TableArt => !!a && !a.souvenir);
 }
 
 /** A picker's row: a table to choose, or one shown locked with the month whose suitcase wins it ("2026-12"). */
@@ -346,15 +391,8 @@ export async function startTables(): Promise<void> {
       void paint(builtIn);
       showBorder(builtIn);
     }
-    let want = m.default;
-    if (framed && !pretendAll()) {
-      try {
-        await gem.awaitIdentity(10_000);
-        want = (await gem.me.settings.get(SETTING))?.value ?? m.default;
-      } catch {
-        // no player, or no answer: the default stays
-      }
-    }
+    // the player's choice (one read with the track's, choices.ts): no player, or no answer, keeps the default
+    const want = pretendAll() ? m.default : ((await readChoices()).get(SETTING) ?? m.default);
     if (touched) return;
     // the default is everyone's: no need to ask what is owned for it (the usual case, and the quick one)
     const mine = want === m.default ? m.tables : await ownedTableArts();
@@ -381,12 +419,7 @@ export async function chooseTable(id: string): Promise<void> {
   // chosen on a board that wears its own (the settings over a Souvenir): theirs from now on, there too
   worn = null;
   await apply(a);
-  if (!framed || pretendAll()) return;
-  try {
-    await gem.me.settings.put(SETTING, a.id);
-  } catch (err) {
-    console.warn("[tables] the choice was not kept", err);
-  }
+  if (!pretending()) keepChoice(SETTING, a.id);
 }
 
 /** The default table's id (the manifest's: the sunny day). */
