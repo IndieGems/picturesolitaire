@@ -194,6 +194,7 @@
   "oneoff.daily": "Das Tagesrätsel vom {{date}}",
   "oneoff.funBoard": "Nur zum Spaß: keine Münzen, und es zählt nicht für deine Reise.",
   "oneoff.funDaily": "Nur zum Spaß: keine Münzen, und es füllt deinen Koffer nicht.",
+  "oneoff.funDailyPlain": "Nur zum Spaß: keine Münzen, und es zählt nicht als dein Tagesrätsel.",
   "oneoff.helpers_one": "{{count}} Hilfe",
   "oneoff.helpers_other": "{{count}} Hilfen",
   "oneoff.lost": "Ganz knapp!",

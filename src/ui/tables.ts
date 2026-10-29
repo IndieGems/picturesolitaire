@@ -15,6 +15,8 @@
 // `showLocked` that is not, as information, with how to win it: Winter Dusk,
 // every player's table until the game turned sunny, says "Fill December's
 // suitcase" (its month: Levels' suitcases.json), so nobody wonders where it went.
+// While the Daily Suitcase is on hold (event-switch.ts), a table no suitcase can win is simply
+// absent: the picker lists only what the player may choose, an owned prize table included.
 //
 // Which owned table is CHOSEN is the player's setting, and follows them
 // (gem.me.settings "table", AGENTS.md's table); only what they chose is stored.
@@ -32,6 +34,7 @@
 import { gem } from "../gem";
 import { ownedTables } from "../net/keepsake";
 import SCHEDULE from "../content/levels/suitcases.json";
+import { eventShown } from "./event-switch";
 import { t } from "./i18n";
 
 export interface TableArt {
@@ -149,6 +152,8 @@ const prizeMonth = (id: string): string | null =>
 export async function pickerTables(): Promise<PickerTable[]> {
   const mine = await ownedTableArts();
   const have = new Set(mine.map((a) => a.id));
+  // the event on hold: no suitcase wins a table, so none is shown to be won
+  if (!eventShown()) return mine.map((art) => ({ art, lockedMonth: null }));
   const m = await loadManifest();
   const locked = m.tables
     .filter((a) => a.showLocked && !a.souvenir && !have.has(a.id))

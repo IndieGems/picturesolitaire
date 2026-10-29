@@ -194,6 +194,7 @@
   "oneoff.daily": "Le puzzle du jour du {{date}}",
   "oneoff.funBoard": "Juste pour le plaisir : pas de pièces, et ça ne compte pas pour ton voyage.",
   "oneoff.funDaily": "Juste pour le plaisir : pas de pièces, et ça ne remplit pas ta valise.",
+  "oneoff.funDailyPlain": "Juste pour le plaisir : pas de pièces, et ça ne compte pas comme ton puzzle du jour.",
   "oneoff.helpers_one": "{{count}} bonus",
   "oneoff.helpers_other": "{{count}} bonus",
   "oneoff.lost": "Presque !",

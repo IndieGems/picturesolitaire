@@ -180,6 +180,7 @@
   "oneoff.daily": "{{date}}のデイリーパズル",
   "oneoff.funBoard": "お楽しみプレイ：コインはもらえず、旅の進行にもなりません。",
   "oneoff.funDaily": "お楽しみプレイ：コインはもらえず、スーツケースにも入りません。",
+  "oneoff.funDailyPlain": "お楽しみプレイ：コインはもらえず、デイリーの記録にもなりません。",
   "oneoff.helpers_other": "アイテム{{count}}個",
   "oneoff.lost": "おしい！",
   "oneoff.lostLine_other": "今回は{{name}}さんの勝ち。{{count}}手差でした。",

@@ -194,6 +194,7 @@
   "oneoff.daily": "{{date}} tarihli günün bulmacası",
   "oneoff.funBoard": "Sadece eğlencesine: jeton yok ve gezine sayılmaz.",
   "oneoff.funDaily": "Sadece eğlencesine: jeton yok ve bavulunu doldurmaz.",
+  "oneoff.funDailyPlain": "Sadece eğlencesine: jeton yok ve günlük bulmacana sayılmaz.",
   "oneoff.helpers_one": "{{count}} yardım",
   "oneoff.helpers_other": "{{count}} yardım",
   "oneoff.lost": "Az kaldı!",

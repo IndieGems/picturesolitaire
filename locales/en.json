@@ -194,6 +194,7 @@
   "oneoff.daily": "The daily puzzle of {{date}}",
   "oneoff.funBoard": "Just for fun: no Coins, and it won't count toward your trip.",
   "oneoff.funDaily": "Just for fun: no Coins, and it won't fill your suitcase.",
+  "oneoff.funDailyPlain": "Just for fun: no Coins, and it won't count as your daily puzzle.",
   "oneoff.helpers_one": "{{count}} helper",
   "oneoff.helpers_other": "{{count}} helpers",
   "oneoff.lost": "So close!",

@@ -85,6 +85,7 @@ import { keepInHand, type InHand } from "../game/in-hand";
 import { createMercyNote } from "./mercy-note";
 import { recentStats } from "./board-stats";
 import { createSuitcase, packedOnCard } from "./suitcase";
+import { eventShown } from "./event-switch";
 import { playItemFound } from "./item-found";
 import { held as heldOf, suitcases, type SuitItem } from "./suitcase-data";
 import { createLessons, type LessonName } from "./lessons";
@@ -133,7 +134,8 @@ const dailyUi = createDaily({
   show: () => show("daily"),
   play: (d) => openPlay({ kind: "daily", d }),
 });
-// the Daily Suitcase (suitcase.ts): the month's event the daily fills, its tile on home, its screen and shelf
+// the Daily Suitcase (suitcase.ts): the month's event the daily fills, its tile on home, its screen and shelf;
+// on hold behind one switch (event-switch.ts: the creator, 2026-10-29), so while it is off none of it shows
 const suitcaseUi = createSuitcase({ home: () => goHome(), show: () => show("suitcase"), daily: () => dailyUi.state(), playEvent: () => void playEventPuzzle() });
 /**
  * The creator's event preview (the dev menu, suitcase-data.ts): the next November daily whose item the
@@ -572,7 +574,7 @@ function drawHomeNote(): void {
   homeNote.replaceChildren(coin, h("span", {}, t("home.lastWin", { count: paid.reduce((sum, v) => sum + (v.status === "paid" ? v.coins : 0), 0) })));
   homeNote.hidden = false;
   for (const v of paid) cueCoins(v, coin);
-  // it says its piece, then goes: the month's banner shares the top row (style.css hides it under the note)
+  // it says its piece, then goes
   clearTimeout(homeNoteTimer);
   homeNoteTimer = window.setTimeout(() => (homeNote.hidden = true), 7000);
 }
@@ -731,8 +733,8 @@ function openLoaded(next: Play): void {
     // board 2, not won before: the Undo lesson, after the first move; the lesson board: Shuffle's
     if (next.kind === "campaign" && next.level === 2 && !isPractice(next) && campaignNext() <= 2) void lessons.offerUndo();
     if (next.kind === "lesson") lessons.startShuffle();
-    // a daily with a suitcase item: the month's cut-outs come now, for its found moment
-    if (next.kind === "daily" && next.d.item) void ensureSuitcase(next.d.item.id.slice(5, 12)).catch(() => undefined);
+    // a daily with a suitcase item: the month's cut-outs come now, for its found moment (none while the event is off)
+    if (next.kind === "daily" && next.d.item && eventShown()) void ensureSuitcase(next.d.item.id.slice(5, 12)).catch(() => undefined);
   }
   show("board");
 }
@@ -1283,10 +1285,12 @@ on("board:won", () => {
 // THE DAY'S ITEM (the Daily Suitcase, suitcase.ts): the board says when the day's item picture is finished
 // (suitcase:item, Gameplay's); on the day's first daily that is a moment of its own (item-found.ts: the item
 // lifts off the board, big, its name, a starburst, then into a small suitcase), and once the checker's
-// verdict says the item was packed, its picture flies into a small suitcase on the win card.
+// verdict says the item was packed, its picture flies into a small suitcase on the win card. While the event is
+// off (event-switch.ts) neither happens: the item's picture finishes on the board as any other picture does.
 /** The day's item as the board drew it: its id and the board's copy of its picture, for the card's flight. */
 let dayItem: { id: string; url: string } | null = null;
 on("suitcase:item", (e) => {
+  if (!eventShown()) return;
   // a practice daily counts only in the creator's event preview (the dev menu: nothing saved or sent)
   if (!play || play.kind !== "daily" || (isPractice(play) && !suitcases.previewing()) || e.again) return;
   dayItem = { id: e.id, url: e.url };
@@ -1307,7 +1311,7 @@ const flownItems = new WeakSet<Verdict>();
 /** The checker packed the day's item (its verdict's `packed`, Server's): the card's line says so and the item flies in. */
 function packedMoment(v: Verdict, line: HTMLElement): void {
   const p = (v as { packed?: { item: string; count: number } }).packed;
-  if (v.status !== "paid" || !p || flownItems.has(v)) return;
+  if (v.status !== "paid" || !p || flownItems.has(v) || !eventShown()) return;
   flownItems.add(v);
   const s = suitcases.current();
   const it: SuitItem = s?.items.find((x) => x.id === p.item) ?? { id: p.item, title: suitcaseItem(p.item)?.title ?? t("case.today") };

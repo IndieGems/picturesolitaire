@@ -23,12 +23,12 @@ if (!LANGS.length) LANGS.push("de", "ru", "ja");
 
 const sleep = (ms) => `await new Promise((r) => setTimeout(r, ${ms}));`;
 const click = (sel) => `document.querySelector(${JSON.stringify(sel)})?.click();`;
-// board 1 won for this page (home shows its Shop), the stand-in suitcase months, a stock with no Hints
+// board 1 won for this page (home shows its Shop), a stock with no Hints (the stand-in suitcase months only
+// for the suitcase's own screen: the event is on hold, so home shows no Event tile, src/ui/event-switch.ts)
 const SETUP = `
   const p = await import("/src/net/progress.ts");
   p.hold("dev-c1", { lane: "campaign", board: "c01", n: 1, moves: 9, ms: 1, pictures: [] });
   for (let i = 2; i <= 26; i++) p.hold("dev-c" + i, { lane: "campaign", board: "c" + i, n: i, moves: 9, ms: 1, pictures: [] });
-  window.__ps.suitcase();
   window.__ps.stock({ coins: 300, counts: { hint: 0, undo: 10, shuffle: 3 } });
   window.__ps.marks({ c27: "super" });
   ${sleep(800)}`;
@@ -36,7 +36,7 @@ const SCREENS = [
   { name: "home", act: "" },
   { name: "shop", act: `${click('[data-press="home.shop"]')} ${sleep(500)}` },
   { name: "settings", act: `${click("#settings-button")} ${sleep(500)}` },
-  { name: "suitcase", act: `window.__ps.openSuitcase(); ${sleep(800)}` },
+  { name: "suitcase", act: `window.__ps.suitcase(); window.__ps.openSuitcase(); ${sleep(800)}` },
   { name: "level", act: `window.__ps.openLevel(27); ${sleep(2500)}` },
   { name: "run-out", act: `window.__ps.openLevel(27); ${sleep(2500)} ${click('[data-press="board.hint"]')} ${sleep(500)}` },
   { name: "daily", act: `${click('[data-press="home.daily"]')} ${sleep(2500)}` },

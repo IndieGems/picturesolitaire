@@ -194,6 +194,7 @@
   "oneoff.daily": "El puzle diario del {{date}}",
   "oneoff.funBoard": "Solo por diversión: sin monedas, y no cuenta para tu viaje.",
   "oneoff.funDaily": "Solo por diversión: sin monedas, y no llena tu maleta.",
+  "oneoff.funDailyPlain": "Solo por diversión: sin monedas, y no cuenta como tu puzle diario.",
   "oneoff.helpers_one": "{{count}} ayuda",
   "oneoff.helpers_other": "{{count}} ayudas",
   "oneoff.lost": "¡Casi!",

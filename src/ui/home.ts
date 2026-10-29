@@ -16,7 +16,8 @@
 //                 event (suitcase.ts: the Daily Suitcase, or the next one before it starts; in the
 //                 challenge route's old place, the creator, 2026-10-27: the route's code stays,
 //                 unreached from home) and, once the first board is done, the Shop (home-shop.ts:
-//                 helpers, one or a pack of 3), as up to four tiles
+//                 helpers, one or a pack of 3), as up to four tiles. The event is on hold (the
+//                 creator, 2026-10-29: event-switch.ts), so players see three: Daily, Passport, Shop
 //
 // Every board won: the itinerary shows the trip of the board Play goes round to, every stop
 // visited and the stamp earned, and the button says Play again.

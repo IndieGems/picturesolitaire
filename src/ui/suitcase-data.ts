@@ -12,6 +12,10 @@
 //   the play-test tool's stand-in (__ps.suitcase).
 //
 // Nothing here is the device's record: no count, no "paid" flag, no date of its own.
+//
+// ON HOLD (the creator, 2026-10-29): while the shared switch is off (event-switch.ts), the platform's
+// word is never asked for here: no month, no shelf, no prize, no swap, no next event. A pretend month
+// still shows, outside a release build, for the creator's preview and the play-test tool.
 
 import { suitcase as platform, type Suitcase as NetSuitcase, type SwapAnswer } from "../net/suitcase";
 import { currentDaily } from "../net/daily";
@@ -19,6 +23,7 @@ import IDS from "../net/suitcase-ids.json";
 import MONTHS from "../content/levels/suitcases.json";
 import type { HelperKind } from "./stock";
 import { suitcaseItemsOf } from "./catalogue";
+import { EVENT_ON, lookAtEvent } from "./event-switch";
 
 export type { SwapAnswer };
 /** An item: its id (Levels', "item-2026-11-04", also its picture's) and title; `pic` only for a stand-in drawn from elsewhere. */
@@ -89,25 +94,25 @@ export function standIn(): Pretend {
 
 export const suitcases = {
   /** This month's suitcase, or null (not read yet, or no event this month). */
-  current: (): Suitcase | null => (pretend ? pretend.now : platform.current()),
+  current: (): Suitcase | null => (pretend ? pretend.now : EVENT_ON ? platform.current() : null),
   /**
    * The next event, while none is on (home's tile: "Starts Nov 1"; the suitcase as a preview: every
    * slot an outline, the prize, no swap): Levels' next month after the platform's today, with the day
    * it starts. Null while an event is on, or when Levels has no later month.
    */
   upcoming(): { s: Suitcase; starts: string } | null {
-    if (suitcases.current()) return null;
+    if (!EVENT_ON || suitcases.current()) return null;
     const today = currentDaily().date;
     const m = months.find((x) => x.month > today.slice(0, 7));
     return m ? { s: fromLevels(m), starts: `${m.month}-01` } : null;
   },
   /** The shelf: closed months, newest first (empty ones left out: nothing to look back on). */
-  past: (): Suitcase[] => (pretend ? pretend.past : platform.past().filter((s) => Object.values(s.counts).some((n) => n > 0))),
+  past: (): Suitcase[] => (pretend ? pretend.past : EVENT_ON ? platform.past().filter((s) => Object.values(s.counts).some((n) => n > 0)) : []),
   /** A prize that landed since last asked (a swap's, a win's, a read's), once; null otherwise. */
-  lastPrize: (): { month: string; helpers: Partial<Record<HelperKind, number>> } | null => (pretend ? null : platform.lastPrize()),
+  lastPrize: (): { month: string; helpers: Partial<Record<HelperKind, number>> } | null => (pretend || !EVENT_ON ? null : platform.lastPrize()),
   /** Swap 3 spares for missing item `want` (the server picks which spares go; a preview's, here alike). */
   async swap(want: string): Promise<SwapAnswer> {
-    if (!pretend) return platform.swap(want);
+    if (!pretend) return EVENT_ON ? platform.swap(want) : "closed";
     const s = pretend.now;
     if (!s || s.daysLeft <= 0) return "closed";
     if ((s.counts[want] ?? 0) > 0) return "has";
@@ -137,6 +142,7 @@ export const suitcases = {
   pretend(p: Partial<Pretend> | null | "default"): void {
     if (!ALLOWED) return;
     pretend = p === null ? null : p === "default" ? standIn() : { ...(pretend ?? standIn()), ...p };
+    lookAtEvent(!!pretend);
     say();
   },
   /**
@@ -149,6 +155,7 @@ export const suitcases = {
     const nov = months.find((m) => m.month === "2026-11");
     if (!kind || !nov) {
       pretend = null;
+      lookAtEvent(false);
       say();
       return;
     }
@@ -159,6 +166,7 @@ export const suitcases = {
       if (n) counts[it.id] = n;
     });
     pretend = { now: fromLevels(nov, counts, 30), past: [], preview: true };
+    lookAtEvent(true);
     previewCursor = null;
     say();
   },

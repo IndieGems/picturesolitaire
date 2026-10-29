@@ -194,6 +194,7 @@
   "oneoff.daily": "O quebra-cabeça do dia de {{date}}",
   "oneoff.funBoard": "Só por diversão: sem moedas, e não conta para a sua viagem.",
   "oneoff.funDaily": "Só por diversão: sem moedas, e não conta para a sua mala.",
+  "oneoff.funDailyPlain": "Só por diversão: sem moedas, e não conta como o seu quebra-cabeça do dia.",
   "oneoff.helpers_one": "{{count}} ajuda",
   "oneoff.helpers_other": "{{count}} ajudas",
   "oneoff.lost": "Quase!",

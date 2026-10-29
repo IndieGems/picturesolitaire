@@ -180,6 +180,7 @@
   "oneoff.daily": "{{date}} 데일리 퍼즐",
   "oneoff.funBoard": "재미로 하는 판이에요: 코인이 없고 여행 진행에도 반영되지 않아요.",
   "oneoff.funDaily": "재미로 하는 판이에요: 코인이 없고 여행 가방도 채워지지 않아요.",
+  "oneoff.funDailyPlain": "재미로 하는 판이에요: 코인이 없고 데일리 기록에도 반영되지 않아요.",
   "oneoff.helpers_other": "아이템 {{count}}개",
   "oneoff.lost": "아깝네요!",
   "oneoff.lostLine_other": "이번엔 {{name}}님이 {{count}}수 차이로 이겼어요.",

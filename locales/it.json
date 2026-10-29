@@ -194,6 +194,7 @@
   "oneoff.daily": "Il puzzle del giorno del {{date}}",
   "oneoff.funBoard": "Solo per divertimento: niente monete, e non conta per il tuo viaggio.",
   "oneoff.funDaily": "Solo per divertimento: niente monete, e non riempie la tua valigia.",
+  "oneoff.funDailyPlain": "Solo per divertimento: niente monete, e non conta come il tuo puzzle del giorno.",
   "oneoff.helpers_one": "{{count}} aiuto",
   "oneoff.helpers_other": "{{count}} aiuti",
   "oneoff.lost": "C'eri quasi!",

@@ -20,6 +20,7 @@
 import { t } from "./i18n";
 import { closed, cornerKey, opened } from "./dialogs";
 import { shortDate } from "./format";
+import { eventShown } from "./event-switch";
 import { ICONS, type IconName } from "./icons";
 import {
   challengeFriend,
@@ -303,7 +304,8 @@ export function challengeCard(v: ChallengeView, play: () => void, close: () => v
       h("span", { class: "dare-helpers" }, helpers),
     ),
     note ? h("p", { class: `dare-note${v.peek && !v.answered && !v.notYet ? " peek" : ""}` }, note) : null,
-    h("p", { class: "dare-fun" }, t("board" in dare ? "oneoff.funBoard" : "oneoff.funDaily")),
+    // (a daily's: the suitcase it would not fill is said only while the event is on, event-switch.ts)
+    h("p", { class: "dare-fun" }, t("board" in dare ? "oneoff.funBoard" : eventShown() ? "oneoff.funDaily" : "oneoff.funDailyPlain")),
     v.notYet ? null : button("amber next", "oneoff.play", v.answered ? t("oneoff.again") : t("oneoff.play"), play),
   );
 }

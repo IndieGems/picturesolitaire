@@ -180,6 +180,7 @@
   "oneoff.daily": "{{date}}的每日谜题",
   "oneoff.funBoard": "仅供娱乐：没有金币，也不计入你的旅行进度。",
   "oneoff.funDaily": "仅供娱乐：没有金币，也不会装进你的行李箱。",
+  "oneoff.funDailyPlain": "仅供娱乐：没有金币，也不计入你的每日谜题。",
   "oneoff.helpers_other": "{{count}}个道具",
   "oneoff.lost": "就差一点！",
   "oneoff.lostLine_other": "{{name}}以{{count}}步之差赢了这局。",

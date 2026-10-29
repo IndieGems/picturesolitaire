@@ -222,6 +222,7 @@
   "oneoff.daily": "Łamigłówka dnia z {{date}}",
   "oneoff.funBoard": "Dla zabawy: bez monet i nie liczy się do twojej podróży.",
   "oneoff.funDaily": "Dla zabawy: bez monet i nie zapełnia walizki.",
+  "oneoff.funDailyPlain": "Dla zabawy: bez monet i nie liczy się jako twoja łamigłówka dnia.",
   "oneoff.helpers_one": "{{count}} pomoc",
   "oneoff.helpers_few": "{{count}} pomoce",
   "oneoff.helpers_many": "{{count}} pomocy",

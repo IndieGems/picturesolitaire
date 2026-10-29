@@ -43,6 +43,7 @@ import { markOf, markTag } from "./marks";
 import type { BoardHandle, DevStep } from "./board-api";
 import type { Experiment, Play } from "./app";
 import { suitcases } from "./suitcase-data";
+import { EVENT_ON } from "./event-switch";
 
 /** What vite.config.ts stamps in at build time (its `define`). */
 declare const __BUILD_INFO__: { version: string; sdk: string; commit: string; changed: boolean; built: string };
@@ -498,7 +499,9 @@ export function mountDevMenu(host: DevHost): DevMenu {
     const s = suitcases.previewing() ? suitcases.current() : null;
     eventState.textContent = s
       ? `On: ${s.theme}, ${s.items.filter((it) => (s.counts[it.id] ?? 0) > 0).length} of ${s.items.length} packed, ${s.items.reduce((n, it) => n + Math.max(0, (s.counts[it.id] ?? 0) - 1), 0)} spares.`
-      : "Off: the game shows the platform's event (none until 1 Nov: the tile previews it).";
+      : EVENT_ON
+        ? "Off: the game shows the platform's event (none until 1 Nov: the tile previews it)."
+        : "Off. The event is on hold for players (src/net/suitcase-ids.json's \"on\"): no tile, no item moment, no suitcase. The preview still shows it here.";
   };
   suitcases.onChange(drawEvent);
   drawEvent();

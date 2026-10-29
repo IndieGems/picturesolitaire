@@ -24,6 +24,10 @@
 //                   holds the card's buttons.
 //   the board       the item's picture finished on a first daily of the day: item-found.ts's moment.
 //
+// ON HOLD (the creator, 2026-10-29): behind one switch (event-switch.ts). While it is off, suitcase-data.ts
+// reports no month, so the tile stays hidden and nothing here reaches a player; the dev menu's preview
+// still opens the screen for the creator.
+//
 // No item is ever shown before its day: the slots show what the player holds, and a missing slot is
 // the item's outline and name (the month's 10 are the theme, known from the 1st; which one comes on
 // which day is not). Information is glass; only what a press answers is a button.
@@ -31,6 +35,7 @@
 import { emit } from "../events";
 import { liveAttr, locale, named, t } from "./i18n";
 import { ICONS } from "./icons";
+import { eventShown } from "./event-switch";
 import { held, spares, suitcases, SWAP_COST, type SuitItem, type Suitcase, type SwapAnswer } from "./suitcase-data";
 import { BUILT_IN_TABLE, knownTable, thumbOf } from "./tables";
 import { shortDate } from "./format";
@@ -408,7 +413,7 @@ export function createSuitcase(nav: Nav) {
   /** Home's tile: "Event" and the theme, this month's or (before it starts) the next one's. */
   function drawTile(): void {
     const s = suitcases.current() ?? suitcases.upcoming()?.s ?? null;
-    tile.hidden = !s;
+    tile.hidden = !s || !eventShown();
     if (!s) return;
     tileName.textContent = t("case.tile");
     tileLine.textContent = themeName(s);
