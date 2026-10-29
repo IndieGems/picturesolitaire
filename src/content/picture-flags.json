@@ -1,6 +1,21 @@
 {
   "v": 1,
   "pictures": {
+    "agapanthus": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-29"
+    },
+    "anemones": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-29"
+    },
+    "anthurium": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-29"
+    },
     "apple-orchard": {
       "flagged": true,
       "note": "looks AI-made (the same tilt and smile); remade as apple-ladder",
@@ -11,10 +26,30 @@
       "note": "looks AI-made (the same tilt and smile); remade as book-reader",
       "date": "2026-10-25"
     },
+    "borage": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-29"
+    },
+    "breakdancer": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-29"
+    },
     "bubbles": {
       "flagged": true,
       "note": "looks AI-made (the same tilt and smile); remade as dandelion-wish",
       "date": "2026-10-25"
+    },
+    "camellia-plate": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-29"
+    },
+    "campanula": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-29"
     },
     "canal-bicycle": {
       "flagged": true,
@@ -31,10 +66,40 @@
       "note": "looks AI-made (the same tilt and smile); remade as fence-cowboy",
       "date": "2026-10-25"
     },
+    "crocus": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-29"
+    },
+    "dog-sled": {
+      "flagged": true,
+      "note": "man is backwards, dogs look like copies",
+      "date": "2026-10-29"
+    },
+    "dung-beetle": {
+      "flagged": true,
+      "note": "inaccurate",
+      "date": "2026-10-29"
+    },
+    "fritillary": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-29"
+    },
+    "gentian": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-29"
+    },
     "golden-gate": {
       "flagged": true,
       "note": "retired: the bridge district licenses its image for commercial use (lead, 2026-10-25); board 10 has Pictured Rocks in its place",
       "date": "2026-10-25"
+    },
+    "gorse": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-29"
     },
     "grand-stairway": {
       "flagged": true,
@@ -46,15 +111,70 @@
       "note": "looks AI-made (the same tilt and smile); remade as carrot-harvest",
       "date": "2026-10-25"
     },
+    "heliconia": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-29"
+    },
+    "ink-crumble": {
+      "flagged": true,
+      "note": "Too busy",
+      "date": "2026-10-29"
+    },
+    "ink-lobster": {
+      "flagged": true,
+      "note": "the lobster has one claw",
+      "date": "2026-10-29"
+    },
+    "lilac-bouquet": {
+      "flagged": true,
+      "note": "Too busy",
+      "date": "2026-10-29"
+    },
     "moai": {
       "flagged": true,
       "note": "retired: the moai are sacred to the Rapa Nui (creator, 2026-10-28); remade as eagle-figurehead",
       "date": "2026-10-28"
     },
+    "morning-glory": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-29"
+    },
+    "osteospermum": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-29"
+    },
     "painter": {
       "flagged": true,
       "note": "looks AI-made (the same tilt and smile); remade as plein-air",
       "date": "2026-10-25"
+    },
+    "salvia": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-29"
+    },
+    "scabious": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-29"
+    },
+    "snapdragons": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-29"
+    },
+    "sweet-violets": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-29"
+    },
+    "sweet-william": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-29"
     },
     "yellow-raincoat": {
       "flagged": true,
