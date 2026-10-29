@@ -124,9 +124,10 @@ export const LOAD_ORDER: EffectName[] = [
 /**
  * The background music's tracks, each a row of the Sound Tuning editor:
  * "music", the sunny daytime track every table plays unless it has its own,
- * and "winter", today's snowy-evening track, the Winter Dusk table's.
+ * "winter", today's snowy-evening track, the Winter Dusk table's, and the
+ * four Cosmetics soundtracks a player buys (creator, 2026-10-29).
  */
-export type MusicName = "music" | "winter";
+export type MusicName = "music" | "winter" | "paris-cafe" | "japanese-garden" | "buenos-aires-tango" | "celtic-folk";
 
 /** The background music: one calm loop under the whole game, chosen by the player's table. */
 export const MUSIC = {
@@ -136,8 +137,27 @@ export const MUSIC = {
    * between its F sharp and the picture harp's F.
    */
   file: "bed-day",
-  /** Each other track's file. */
-  tracks: { winter: "bed" } as Record<Exclude<MusicName, "music">, string>,
+  /** Each other track's file, fetched only while it plays (chosen, or tried on the Cosmetics screen). */
+  tracks: {
+    winter: "bed",
+    "paris-cafe": "track-paris-cafe",
+    "japanese-garden": "track-japanese-garden",
+    "buenos-aires-tango": "track-buenos-aires-tango",
+    "celtic-folk": "track-celtic-folk",
+  } as Record<Exclude<MusicName, "music">, string>,
+  /**
+   * Each soundtrack by its id (agreed with UI and Server, 2026-10-29: src/ui/tracks.ts
+   * picks one, src/net/tracks.json sells the four bought ones). Ids never change once
+   * uploaded; any other id plays "music".
+   */
+  ids: {
+    "track-sunny-day": "music",
+    "track-winter-dusk": "winter",
+    "track-paris-cafe": "paris-cafe",
+    "track-japanese-garden": "japanese-garden",
+    "track-buenos-aires-tango": "buenos-aires-tango",
+    "track-celtic-folk": "celtic-folk",
+  } as Record<string, MusicName>,
   /** A table with a track of its own, by the table's id (src/ui/tables.ts); fetched only while it is chosen. */
   tables: { "table-winter-dusk": "winter" } as Record<string, MusicName>,
   /** Level of the music bus: well under the effects. */

@@ -77,6 +77,20 @@ const MUSIC = [
   // Even from end to end, no ending: the game crossfades its last seconds into
   // its start.
   { name: "bed-day", src: "bed-day.mp3", start: 0, end: 90, fade: 0.05, lufs: -20 },
+  // The Cosmetics soundtracks (creator, 2026-10-29: "4 from our trips", 500
+  // Coins each), looped like the beds, at their loudness. Each is cut where
+  // its own ending begins to fall away.
+  // France: café accordion, nylon guitar and upright bass, a slow waltz; D minor.
+  { name: "track-paris-cafe", src: "track-paris-cafe.mp3", start: 0, end: 86, fade: 0.05, lufs: -20 },
+  // Japan: koto, shakuhachi and a soft pad; pentatonic on A and D. Its first
+  // 16 s are sparse phrases with near-silent gaps, 8-10 dB under the rest: the
+  // loop starts at the phrase after the last gap, so it is even throughout.
+  { name: "track-japanese-garden", src: "track-japanese-garden.mp3", start: 16.3, end: 79, fade: 0.05, lufs: -20 },
+  // Argentina: bandoneon, violin, piano and pizzicato bass, a laid-back tango; C minor.
+  { name: "track-buenos-aires-tango", src: "track-buenos-aires-tango.mp3", start: 0, end: 88, fade: 0.05, lufs: -20 },
+  // UK & Ireland: tin whistle, fiddle, fingerpicked guitar and harp; C major.
+  // Its first 24 s are about 4 dB softer, kept: a gentle swell back in each loop.
+  { name: "track-celtic-folk", src: "track-celtic-folk.mp3", start: 0, end: 89.5, fade: 0.05, lufs: -20 },
 ];
 // Effects arranged from slices of the originals, when no single generation
 // played what was asked: each part is a slice (start..end) of a source, faded

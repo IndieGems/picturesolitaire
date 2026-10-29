@@ -1,14 +1,14 @@
 // The Sound Tuning editor's mix (tools/sound-tuning/), saved as
 // public/sound-mix.json: the creator's level, mute and pitch nudge for each
 // sound, which take of it plays, and the levels of all effects and of the
-// music. The game reads it fresh at start and again when the player comes back
-// to the page (src/audio/engine.ts), in every build; no file means the sounds
-// as built.
+// music. The game reads it at start, and again when the player comes back to
+// the page wherever the editor can save it (src/audio/engine.ts, LIVE_MIX); no
+// file means the sounds as built.
 //
 // Pure: the editor's server imports this file straight into Node (types
 // stripped), so it imports nothing but ./sounds.ts, by its full name.
 
-import { EFFECTS, type EffectName, type MusicName } from "./sounds.ts";
+import { EFFECTS, MUSIC, type EffectName, type MusicName } from "./sounds.ts";
 
 /** Everything the mix can tune: each effect, and each background music track ("music", "winter"). */
 export type SoundName = EffectName | MusicName;
@@ -34,7 +34,7 @@ export type SoundMix = {
 
 export const EMPTY_MIX: SoundMix = { effects: 1, music: 1, sounds: {} };
 
-const MUSIC_NAMES: readonly SoundName[] = ["music", "winter"];
+const MUSIC_NAMES: readonly SoundName[] = ["music", ...(Object.keys(MUSIC.tracks) as MusicName[])];
 export const SOUND_NAMES: SoundName[] = [...(Object.keys(EFFECTS) as EffectName[]), ...MUSIC_NAMES];
 
 /** A take's stem belongs to `name` when it is that name, a dash and one letter: "merge-a". */
