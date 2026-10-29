@@ -28,13 +28,31 @@ export const TUNING = {
    * shadow; joined cards are one picture inside one edge. Each stack is a full
    * card wide on top of its column, flatStackGap of a card's height above the
    * grid. false: the frosted frames (frame, gutter, stackRow, stackGap).
+   *
+   * The margin, the gap and the edge close up as the board has more columns
+   * (the creator, 2026-10-29: "the gaps close as the number of tiles grows,
+   * so the images get larger"), every px saved going to the cards: the
+   * values for 4 columns or fewer, for 5, and for 6 or more.
    */
   flat: false,
-  sidePad: 8,
-  hairline: 4,
-  edgePx: 1.5,
+  sidePad4: 8,
+  sidePad5: 6,
+  sidePad6: 4,
+  hairline4: 4,
+  hairline5: 3,
+  hairline6: 2,
+  edgePx4: 1.5,
+  edgePx5: 1,
+  edgePx6: 1,
   corner: 0.07,
   flatStackGap: 0.12,
+  /**
+   * The flat look's stack face is a whole card; where the box's height binds
+   * (a 4x5 board on a phone, any board on a small one) it may shrink down to
+   * this share of a card, so the grid's cards stay as big as the width allows.
+   * 1: always a whole card.
+   */
+  flatFaceMin: 1,
   /**
    * The pale frosted frame round every picture, board and stacks alike: its
    * width as a fraction of a card, never under frameMin CSS px. Thin by the

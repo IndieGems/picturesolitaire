@@ -57,6 +57,8 @@ export interface Geometry {
    */
   edge: number;
   edges: number;
+  /** The flat look's light edge round every card and piece, in CSS px; 0 in the framed look. */
+  line: number;
 }
 
 /**
@@ -89,13 +91,18 @@ export const cardAspect = () => (Number.isFinite(TUNING.cardAspect) ? Math.min(2
  * Fit the stacks and the grid, with portrait cards (TUNING.cardAspect), inside
  * a host of w x h. The stacks' row is the same whether the level shows its
  * next card or only backs (`_peek`), so the switch never resizes the board.
+ * `deepest`: the most cards any stack of the deal holds (a stack never holds
+ * more than it was dealt): the flat look keeps room for that many edges only.
  */
-export function layout(w: number, h: number, cols: number, rows: number, _peek = 0): Geometry {
-  return TUNING.flat ? layoutFlat(w, h, cols, rows) : layoutFramed(w, h, cols, rows);
+export function layout(w: number, h: number, cols: number, rows: number, _peek = 0, deepest = Infinity): Geometry {
+  return TUNING.flat ? layoutFlat(w, h, cols, rows, deepest) : layoutFramed(w, h, cols, rows);
 }
 
-/** The flat look's gap between cards, in whole CSS px. */
-const hairline = () => Math.max(1, Math.round(Number.isFinite(TUNING.hairline) ? TUNING.hairline : 4));
+/** The flat look's number `k` for a board of `cols` columns: its value for 4 or fewer, 5, or 6 or more (tuning.ts). */
+function byCols(k: "sidePad" | "hairline" | "edgePx", cols: number, fallback: number): number {
+  const v = TUNING[`${k}${cols <= 4 ? 4 : cols >= 6 ? 6 : 5}`];
+  return Number.isFinite(v) && v >= 0 ? v : fallback;
+}
 
 /**
  * A card's corner radius at `s` px wide: the flat look's small one (TUNING.corner,
@@ -104,30 +111,43 @@ const hairline = () => Math.max(1, Math.round(Number.isFinite(TUNING.hairline) ?
 export const radiusOf = (s: number): number => (TUNING.flat ? Math.max(3, s * TUNING.corner) : s * 0.14);
 
 /**
- * The flat look: the grid as wide as the box allows less sidePad each side,
- * hairline gaps, and each stack a full card on top of its column (its face
- * the next card, the cards under it an edge each above it), flatStackGap of a
- * card's height over the grid. Cards as big as the width or the height allow.
+ * The flat look: the grid as wide as the box allows less the side margin,
+ * hairline gaps (both closing up as the board has more columns), and each
+ * stack a full card on top of its column (its face the next card, the cards
+ * under it an edge each above it), flatStackGap of a card's height over the
+ * grid. Cards as big as the width or the height allow, and the board centred
+ * in the box, so spare height splits evenly above and below: the stacks' row
+ * keeps room only for the edges the deal's deepest stack shows.
  */
-function layoutFlat(w: number, h: number, cols: number, rows: number): Geometry {
-  const pad = Math.max(0, TUNING.sidePad);
-  const g = hairline();
+function layoutFlat(w: number, h: number, cols: number, rows: number, deepest: number): Geometry {
+  const pad = byCols("sidePad", cols, 8);
+  const g = Math.max(1, Math.round(byCols("hairline", cols, 4)));
+  const line = Math.max(0.5, byCols("edgePx", cols, 1.5));
   const A = cardAspect();
-  const most = Math.max(0, Math.round(TUNING.stackEdges));
+  const most = Math.max(0, Math.min(Math.round(TUNING.stackEdges), Math.ceil(deepest) - 1));
   const step = Math.max(0, TUNING.stackEdge);
   const least = Math.max(1, TUNING.stackEdgeMin);
   const gap = Math.max(0, TUNING.flatStackGap);
   const vpad = 6;
-  // in card heights: the rows, the stack's face, its gap and its edges (each at least `least` px)
-  const avail = h - 2 * vpad - (rows - 1) * g;
-  let shH = avail / (rows + 1 + gap + most * step);
-  if (most && shH * step < least) shH = (avail - most * least) / (rows + 1 + gap);
-  const byW = (w - 2 * pad - (cols - 1) * g) / cols;
-  const s = Math.max(24, Math.floor(Math.min(byW, shH * A, cardCap())));
-  const sh = Math.round(s / A);
   const k = dpr();
-  const edge = Math.max(least, Math.round(sh * step * k) / k);
-  const stackH = sh + Math.ceil(most * edge);
+  // a stack's face is a whole card; on a board the height binds, it may give way down to
+  // flatFaceMin of one, so the grid's cards keep the size the width allows (or as near as fits)
+  const faceMin = Math.min(1, Math.max(0.3, TUNING.flatFaceMin));
+  const edgeOf = (sh: number) => Math.max(least, Math.round(sh * step * k) / k, 1 / k);
+  // the stacks' share of the height for cards `s` wide: the most face that fits, or -1 for none
+  const faceFor = (s: number): number => {
+    const sh = Math.round(s / A);
+    const room = h - 2 * vpad - rows * sh - (rows - 1) * g - Math.ceil(most * edgeOf(sh)) - Math.max(4, Math.round(sh * gap));
+    const f = Math.min(1, room / sh);
+    return f >= faceMin ? f : -1;
+  };
+  let s = Math.max(24, Math.floor(Math.min((w - 2 * pad - (cols - 1) * g) / cols, cardCap())));
+  while (s > 24 && faceFor(s) < 0) s--;
+  const sh = Math.round(s / A);
+  const face = Math.max(1, Math.min(s, Math.floor(s * Math.max(faceMin, faceFor(s)))));
+  const faceH = Math.round(face / A);
+  const edge = edgeOf(sh);
+  const stackH = faceH + Math.ceil(most * edge);
   const gridY = stackH + Math.max(4, Math.round(sh * gap));
   const width = cols * s + (cols - 1) * g;
   const height = gridY + rows * sh + (rows - 1) * g;
@@ -138,12 +158,13 @@ function layoutFlat(w: number, h: number, cols: number, rows: number): Geometry 
     left: Math.round((w - width) / 2),
     top: Math.max(0, Math.round((h - height) / 2)),
     stackH,
-    face: s,
-    faceH: sh,
-    faceTop: stackH - sh,
+    face,
+    faceH,
+    faceTop: stackH - faceH,
     fan: Math.round(sh * 0.2),
     edge,
-    edges: Math.min(most, Math.floor((stackH - sh + 0.001) / edge)),
+    edges: Math.min(most, Math.floor((stackH - faceH + 0.001) / edge)),
+    line,
   };
 }
 
@@ -201,6 +222,7 @@ function layoutFramed(w: number, h: number, cols: number, rows: number): Geometr
     fan: Math.round(sh * st.fan),
     edge,
     edges: Math.min(most, Math.floor(faceTop / edge)),
+    line: 0,
   };
 }
 
@@ -253,7 +275,7 @@ export function drawPiece(geo: Geometry, art: Art[], cells: readonly number[], c
   const xy = cells.map((c) => [c % geo.cols, (c / geo.cols) | 0] as [number, number]);
   const b = box(xy, s, g, sh);
   const m = Math.ceil(s * 0.16);
-  const el = svgCard(xy, cards[0]!, cells[0]!, geo.cols, s, sh, g, art, pictures, b, m);
+  const el = svgCard(xy, cards[0]!, cells[0]!, geo.cols, s, sh, g, art, pictures, b, m, geo.line);
   const v: PieceView = {
     el, cards: [...cards], cells: [...cells], key: keyOf(cards, cells),
     ox: b.x - m, oy: b.y - m, x: b.x - m, y: b.y - m, k: 1,
@@ -263,18 +285,19 @@ export function drawPiece(geo: Geometry, art: Art[], cells: readonly number[], c
 }
 
 /** A single card face, `size` px wide and `sizeH` tall, at the top-left of its own element (a stack's upcoming card). */
-export function drawFace(size: number, sizeH: number, card: Card, art: Art[], pictures: readonly Picture[]): HTMLDivElement {
-  const g = TUNING.flat ? hairline() : Math.max(2, Math.round(size * TUNING.gutter));
+export function drawFace(geo: Geometry, size: number, sizeH: number, card: Card, art: Art[], pictures: readonly Picture[]): HTMLDivElement {
+  // the flat look's face is a whole card: the board's own gap, so its crop of the picture is the grid's
+  const g = geo.line ? geo.g : Math.max(2, Math.round(size * TUNING.gutter));
   const b = box([[0, 0]], size, g, sizeH);
   const m = Math.ceil(size * 0.16);
-  const el = svgCard([[0, 0]], card, 0, 1, size, sizeH, g, art, pictures, b, m);
+  const el = svgCard([[0, 0]], card, 0, 1, size, sizeH, g, art, pictures, b, m, geo.line);
   el.style.transform = `translate(${-m}px, ${-m}px)`;
   return el;
 }
 
 function svgCard(
   xy: [number, number][], card0: Card, cell0: number, cols: number, s: number, sh: number, g: number,
-  art: Art[], pictures: readonly Picture[], b: { x: number; y: number; w: number; h: number }, m: number,
+  art: Art[], pictures: readonly Picture[], b: { x: number; y: number; w: number; h: number }, m: number, line: number,
 ): HTMLDivElement {
   const L = loops(xy, s, g, sh);
   const flat = TUNING.flat;
@@ -306,13 +329,13 @@ function svgCard(
   const image = `<image href="${a.url}" x="${imgX.toFixed(2)}" y="${imgY.toFixed(2)}" width="${(a.cols * (s + g)).toFixed(2)}" height="${(a.rows * (sh + g)).toFixed(2)}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${id})"/>`;
   if (flat) {
     // one picture inside one edge, however many cards: a plain card under it until it loads
-    const e = Math.max(0.5, TUNING.edgePx);
-    const line = path(inset(L, e / 2), Math.max(0.5, R - e / 2), R + e / 2);
+    const e = Math.max(0.5, line || 1);
+    const rimLine = path(inset(L, e / 2), Math.max(0.5, R - e / 2), R + e / 2);
     el.innerHTML =
       `<svg xmlns="${SVGNS}" width="${W}" height="${H}" viewBox="${b.x - m} ${b.y - m} ${W} ${H}">` +
       `<defs><clipPath id="${id}"><path d="${outer}"/></clipPath></defs>` +
       `<path class="bd-body" d="${outer}" fill="#dfe6ee"/>` + image +
-      `<path class="bd-line" d="${line}" stroke-width="${e}"/>` +
+      `<path class="bd-line" d="${rimLine}" stroke-width="${e}"/>` +
       `</svg>`;
     return el;
   }
@@ -450,7 +473,7 @@ export function drawStack(
   if (!shown) return back(faceTop, "bd-back");
   // the level's upcoming cards, face up: the next on the face, the one after it fanned behind
   for (let i = shown - 1; i >= 0; i--) {
-    const f = drawFace(face, faceH, stack[i]!, art, pictures);
+    const f = drawFace(geo, face, faceH, stack[i]!, art, pictures);
     f.classList.add("bd-peek");
     const wrap = document.createElement("div");
     wrap.className = "bd-peek-at";

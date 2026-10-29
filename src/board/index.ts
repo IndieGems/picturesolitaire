@@ -197,6 +197,16 @@ function peekOf(l: Level): number {
 }
 
 /**
+ * The most cards any stack holds once the deal has opened (the opening fills the grid from the
+ * stacks): no stack holds more later, as Undo goes back no further and Shuffle only swaps cards.
+ * The flat look's stacks keep room for that many edges; while the opening plays, a deeper stack
+ * shows only as many edges as fit.
+ */
+function deepestOf(d: Level["deal"]): number {
+  return Math.max(1, ...start(d).state.stacks.map((st) => st.length));
+}
+
+/**
  * True only when it is PROVED that no line of moves wins from `s` (helpers
  * aside): the solver's abstract game is a relaxation of the real one, so its
  * "lost" is certain (tools/levels/exactness.mts checks it against the real
@@ -257,7 +267,7 @@ function drawable(c: { want: string; other: string }): string {
 export function boardFiles(l: Level, host: HTMLElement): string[] {
   const w = host.clientWidth || innerWidth || 360;
   const h = host.clientHeight || innerHeight || 640;
-  const s = layout(w, h, l.deal.cols, l.deal.rows, peekOf(l)).s;
+  const s = layout(w, h, l.deal.cols, l.deal.rows, peekOf(l), deepestOf(l.deal)).s;
   const out = new Set<string>();
   for (const p of l.deal.pictures) {
     const { cols, rows } = drawnSize(l, p);
@@ -453,7 +463,9 @@ export function openBoard(
   let since: number | null = null;
   /** The win, as a claim needs it, from the moment the rules say the board is won (board:solved). */
   let solved: GameEvents["board:solved"] | null = null;
-  let geo: Geometry = layout(host.clientWidth || 360, host.clientHeight || 480, deal.cols, deal.rows, peekOf(lvl));
+  /** The deepest a stack will be once the deal opens (the flat look's stacks keep that much room). */
+  const deepest = deepestOf(deal);
+  let geo: Geometry = layout(host.clientWidth || 360, host.clientHeight || 480, deal.cols, deal.rows, peekOf(lvl), deepest);
   /** The catalogue path each picture draws now ("": a stand-in). */
   const drawn: string[] = pics.map(() => "");
   /** Picture `i` draws `rel` (a catalogue path; "": its stand-in), its cards drawn again when the board is open. */
@@ -1974,7 +1986,7 @@ export function openBoard(
     const w = host.clientWidth;
     const h = host.clientHeight;
     if (!w || !h) return;
-    const g = layout(w, h, deal.cols, deal.rows, peekOf(lvl));
+    const g = layout(w, h, deal.cols, deal.rows, peekOf(lvl), deepest);
     if (g.s === geo.s && g.sh === geo.sh && g.left === geo.left && g.top === geo.top) return;
     geo = g;
     sharpen();
@@ -2014,7 +2026,7 @@ export function openBoard(
     // its pictures, and deals, once the box has its size
     if (!host.clientWidth || !host.clientHeight) await new Promise<void>((r) => (sized = r));
     if (destroyed) return;
-    const cardW = layout(host.clientWidth, host.clientHeight, deal.cols, deal.rows, peekOf(lvl)).s;
+    const cardW = layout(host.clientWidth, host.clientHeight, deal.cols, deal.rows, peekOf(lvl), deepest).s;
     // a packed build: what the board wants that the screens have not loaded (none, as a rule)
     const wanted = pics.flatMap((p, i) => choose(p.id, art[i]!.cols, art[i]!.rows, cardW)?.want ?? []);
     const missing = wanted.filter((rel) => !resident(rel));
