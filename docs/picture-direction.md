@@ -11,6 +11,7 @@ the plan's `suffix.close` is the prompt ending for these rules.
 
 ## Rules for one picture
 
+- **Clean and crisp by default** (creator, 2026-10-29, after a test against Jigsaw Drop, `design/references/jigsaw-drop-crisp-*.png`). Every new batch leans clean: a bright subject on a deep, plain ground, big simple shapes cropped close, smooth shading and little texture, in sharp photography, clean or cel-shaded illustration, smooth 3D render or flat vector. Heavy brush, paper or stitch texture (palette-knife and impressionist oil, watercolour, pastel, print, embroidery, mosaic) becomes an occasional accent. The test showed the softness is in the art, not the export: re-saving textured level copies at q84 with a sharpen looked the same at card size and weighed about 1.8x (+113 MB across the levels), so there is no mass re-export. The plan's `suffix.crisp` is the prompt ending. Crisp pictures are also lighter, about 33 KB a level copy against textured's ~64 KB.
 - **Checked card by card before it ships, anatomy first** (creator, 2026-10-29: Horse Fair's dapple-grey
   had a leg at an impossible angle, the generator's commonest slip). At full size, count every animal's
   legs and tail and every person's arms, hands and fingers, and look at how each leg meets the body and the

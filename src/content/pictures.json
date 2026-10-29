@@ -41201,6 +41201,174 @@
       ],
       "family": "learning-to-ride",
       "busy": 0
+    },
+    {
+      "id": "koi-pair",
+      "album": "animals",
+      "title": "Koi",
+      "medium": "photo",
+      "file": "pictures/animals/koi-pair.webp",
+      "board": "pictures/animals/koi-pair-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "orange",
+        "white",
+        "black"
+      ],
+      "subjects": [
+        "koi"
+      ],
+      "family": "koi-pair",
+      "busy": 0
+    },
+    {
+      "id": "french-horn",
+      "album": "food",
+      "title": "French Horn",
+      "medium": "photo",
+      "file": "pictures/food/french-horn.webp",
+      "board": "pictures/food/french-horn-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "gold",
+        "black",
+        "red"
+      ],
+      "subjects": [
+        "french horn"
+      ],
+      "family": "french-horn",
+      "busy": 0
+    },
+    {
+      "id": "firefighter",
+      "album": "people",
+      "title": "Firefighter",
+      "medium": "cel",
+      "file": "pictures/people/firefighter.webp",
+      "board": "pictures/people/firefighter-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "red",
+        "yellow",
+        "navy"
+      ],
+      "subjects": [
+        "firefighter"
+      ],
+      "family": "firefighter",
+      "busy": 0
+    },
+    {
+      "id": "jukebox",
+      "album": "food",
+      "title": "Jukebox",
+      "medium": "render",
+      "file": "pictures/food/jukebox.webp",
+      "board": "pictures/food/jukebox-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "red",
+        "cream",
+        "teal"
+      ],
+      "subjects": [
+        "jukebox"
+      ],
+      "family": "jukebox",
+      "busy": 0
+    },
+    {
+      "id": "puffer-fish",
+      "album": "animals",
+      "title": "Puffer Fish",
+      "medium": "flat",
+      "file": "pictures/animals/puffer-fish.webp",
+      "board": "pictures/animals/puffer-fish-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "yellow",
+        "teal",
+        "coral"
+      ],
+      "subjects": [
+        "puffer fish"
+      ],
+      "family": "puffer-fish",
+      "busy": 0
+    },
+    {
+      "id": "limes",
+      "album": "food",
+      "title": "Limes",
+      "medium": "photo",
+      "file": "pictures/food/limes.webp",
+      "board": "pictures/food/limes-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "green",
+        "rust",
+        "white"
+      ],
+      "subjects": [
+        "limes"
+      ],
+      "family": "limes",
+      "busy": 0
     }
   ],
   "destinations": [
