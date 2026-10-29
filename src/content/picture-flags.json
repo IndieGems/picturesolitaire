@@ -1,6 +1,26 @@
 {
   "v": 1,
   "pictures": {
+    "apple-orchard": {
+      "flagged": true,
+      "note": "looks AI-made (the same tilt and smile); remade as apple-ladder",
+      "date": "2026-10-25"
+    },
+    "blue-headscarf": {
+      "flagged": true,
+      "note": "looks AI-made (the same tilt and smile); remade as book-reader",
+      "date": "2026-10-25"
+    },
+    "bubbles": {
+      "flagged": true,
+      "note": "looks AI-made (the same tilt and smile); remade as dandelion-wish",
+      "date": "2026-10-25"
+    },
+    "canal-bicycle": {
+      "flagged": true,
+      "note": "looks AI-made (the same tilt and smile); remade as towpath-cyclist",
+      "date": "2026-10-25"
+    },
     "chef": {
       "flagged": true,
       "note": "looks AI-made (the same tilt and smile); remade as wok-chef",
@@ -11,50 +31,35 @@
       "note": "looks AI-made (the same tilt and smile); remade as fence-cowboy",
       "date": "2026-10-25"
     },
-    "painter": {
+    "golden-gate": {
       "flagged": true,
-      "note": "looks AI-made (the same tilt and smile); remade as plein-air",
+      "note": "retired: the bridge district licenses its image for commercial use (lead, 2026-10-25); board 10 has Pictured Rocks in its place",
       "date": "2026-10-25"
     },
-    "apple-orchard": {
+    "grand-stairway": {
       "flagged": true,
-      "note": "looks AI-made (the same tilt and smile); remade as apple-ladder",
-      "date": "2026-10-25"
-    },
-    "yellow-raincoat": {
-      "flagged": true,
-      "note": "looks AI-made (the same tilt and smile); remade as lobster-pot",
-      "date": "2026-10-25"
-    },
-    "bubbles": {
-      "flagged": true,
-      "note": "looks AI-made (the same tilt and smile); remade as dandelion-wish",
-      "date": "2026-10-25"
+      "note": "Looks AI-ish",
+      "date": "2026-10-29"
     },
     "greenhouse": {
       "flagged": true,
       "note": "looks AI-made (the same tilt and smile); remade as carrot-harvest",
       "date": "2026-10-25"
     },
-    "canal-bicycle": {
-      "flagged": true,
-      "note": "looks AI-made (the same tilt and smile); remade as towpath-cyclist",
-      "date": "2026-10-25"
-    },
-    "blue-headscarf": {
-      "flagged": true,
-      "note": "looks AI-made (the same tilt and smile); remade as book-reader",
-      "date": "2026-10-25"
-    },
-    "golden-gate": {
-      "flagged": true,
-      "note": "retired: the bridge district licenses its image for commercial use (lead, 2026-10-25); board 10 has Pictured Rocks in its place",
-      "date": "2026-10-25"
-    },
     "moai": {
       "flagged": true,
       "note": "retired: the moai are sacred to the Rapa Nui (creator, 2026-10-28); remade as eagle-figurehead",
       "date": "2026-10-28"
+    },
+    "painter": {
+      "flagged": true,
+      "note": "looks AI-made (the same tilt and smile); remade as plein-air",
+      "date": "2026-10-25"
+    },
+    "yellow-raincoat": {
+      "flagged": true,
+      "note": "looks AI-made (the same tilt and smile); remade as lobster-pot",
+      "date": "2026-10-25"
     }
   }
 }
