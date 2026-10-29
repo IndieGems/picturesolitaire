@@ -1,13 +1,11 @@
 # What is still owed
 
-- **Before 30 Jun 2027: extend the daily puzzle** (it now runs to 2027-06-30, with the
-  Daily Suitcase's items). Levels runs `make-daily.mts` for the new months once Art's
-  items for them exist, then Server rebuilds the checker.
-- **Each month's suitcase art a month ahead** (Art): 10 items, the table and its icon
-  for the next theme in `docs/daily-suitcase.md`. January's is due by 1 Dec 2026.
-- **On or after 1 Nov 2026: a framed check of the first live suitcase** as a new test
-  guest: the home banner, the first pack flying in on the daily's win card, and the
-  suitcase screen (UI or QA).
+- **Before 30 Jun 2027: extend the daily puzzle** (it now runs to 2027-06-30). Levels
+  runs `make-daily.mts` for the new months, then Server rebuilds the checker.
+- **The monthly event, after release** (on hold, creator 2026-10-29): it may return for
+  the Gem Arcade's VIP members once that system exists. Then: the switch back on behind
+  the VIP check, each month's suitcase art a month ahead (Art; none is made while it is
+  held), and a framed check of the first live suitcase.
 - **Build size:** 0.31.0 is 618 MB of a 1 GiB limit, up from 349 MB, mostly the
   re-dealt dailies' packs. Before more trips or months, Art de-duplicates pictures
   that repeat across packs, or ships a month's dailies only near their month.
