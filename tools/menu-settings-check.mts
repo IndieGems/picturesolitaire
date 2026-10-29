@@ -1,5 +1,5 @@
 // Holds the game's list in the Arcade's Gem menu (src/menu-settings-list.ts) to the
-// rules, at its fullest (every table a choice can hold):
+// rules (the table left it for the Cosmetics screen, 2026-10-29):
 //
 //   node tools/menu-settings-check.mts        (in `npm run build` and `build:release`)
 //
@@ -14,15 +14,10 @@ import { MENU_MAX, menuSettings } from "../src/menu-settings-list.ts";
 
 // the rows' real names (English: the other locales are written at release)
 const en = JSON.parse(readFileSync(new URL("../locales/en.json", import.meta.url), "utf8")) as Record<string, string>;
-const labels = { volume: en["settings.volume"]!, table: en["settings.table"]! };
+const labels = { volume: en["settings.volume"]! };
 
-const fullest = menuSettings({
-  volume: 73,
-  table: "table-b",
-  tables: ["a", "b", "c", "d"].map((x) => ({ id: `table-${x}`, label: `Table ${x}` })),
-  labels,
-});
-const fewest = menuSettings({ volume: 100, table: "table-a", tables: [{ id: "table-a", label: "Table a" }], labels });
+const fullest = menuSettings({ volume: 73, labels });
+const fewest = menuSettings({ volume: 100, labels });
 
 const wrong: string[] = [];
 for (const [name, list] of [
@@ -41,8 +36,8 @@ for (const [name, list] of [
     if (s.kind === "slider" && (s.value < (s.min ?? 0) || s.value > (s.max ?? 100))) wrong.push(`${name}: slider "${s.id}" is outside its range`);
   }
 }
-if (!fullest.some((s) => s.id === "table")) wrong.push("fullest: the Table choice is missing");
-if (fewest.some((s) => s.id === "table")) wrong.push("fewest: a Table choice with only one table");
+if (!fullest.some((s) => s.id === "volume")) wrong.push("the Volume slider is missing");
+if (fullest.some((s) => s.id === "table")) wrong.push("a Table choice: the table is chosen on the Cosmetics screen, not in Settings");
 
 if (wrong.length) {
   console.error(`menu-settings: the Arcade's menu list breaks its rules:\n  ${wrong.join("\n  ")}`);

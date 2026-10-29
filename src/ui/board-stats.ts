@@ -27,6 +27,15 @@
 //   daily_ended    result (won, lost, quit)    one per try, ended as a campaign try is
 //                                              (tries.ts); a practice daily sends nothing
 //
+// The Cosmetics screen (cosmetics.ts; the creator, 2026-10-29; declared by Server, with the funnel
+// cosmetics: opened, previewed, bought):
+//
+//   cosmetics_opened    where ("home")            as the screen opens
+//   cosmetic_previewed  kind (table, track), id   a table tried on or a track listened to, for an
+//                                                 item the player does not own; once per item per visit
+//   cosmetic_bought     kind, id                  price (the Coins it cost), only once the platform
+//                                                 has taken the purchase (cosmetics-shop.ts buy)
+//
 // track() only queues: the SDK sends on a timer and on the way out of the page, and the game
 // when the page hides or the Arcade pauses it (gem.ts). Unframed (the play-test tool) nothing
 // is sent; the dev server keeps the last events for checks (__ps.stats).
@@ -65,6 +74,19 @@ export const shopStats = {
   bought(where: ShopWhere, helper: HelperKind, pack: Pack, price: number | null): void {
     // pack is a dimension, so a string; the price a measure, sent when it was known
     track("helper_bought", { where, helper, pack: String(pack), ...(price !== null ? { price: Math.round(price) } : {}) });
+  },
+};
+
+export const cosmeticStats = {
+  opened(where: "home"): void {
+    track("cosmetics_opened", { where });
+  },
+  previewed(kind: "table" | "track", id: string): void {
+    track("cosmetic_previewed", { kind, id });
+  },
+  /** Bought, as the platform answered: `price` is what it cost. */
+  bought(kind: "table" | "track", id: string, price: number | null): void {
+    track("cosmetic_bought", { kind, id, ...(price !== null ? { price: Math.round(price) } : {}) });
   },
 };
 

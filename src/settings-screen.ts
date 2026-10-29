@@ -10,10 +10,10 @@
 // Every value starts from the player's Arcade-wide default until they change it
 // here (src/settings.ts). Add the game's own settings as rows below.
 //
-// The Table row (src/ui/tables.ts) lists the tables the player owns, and shows
-// only once they own more than the snowy dusk: a choice of one is no choice.
+// The table and the soundtrack are chosen on the Cosmetics screen (src/ui/cosmetics.ts, home's
+// Cosmetics tile; the creator, 2026-10-29), not here.
 //
-// The Arcade's Gem menu lists Volume and Table too, as a mirror of this screen
+// The Arcade's Gem menu lists Volume too, as a mirror of this screen
 // (src/menu-settings.ts); this screen stays, for every embedder that draws none.
 
 import { gem } from "./gem";
@@ -22,7 +22,6 @@ import { choose, loadSettings, onSettingsChange, setting } from "./settings";
 import { liveAttr, liveText, t } from "./ui/i18n";
 import { ICONS } from "./ui/icons";
 import { cornerKey } from "./ui/dialogs";
-import { chooseTable, chosenTable, onTableChange, pickerTables, tableTitle, thumbOf } from "./ui/tables";
 import { startMenuSettings } from "./menu-settings";
 
 // Rows added from outside, above Close: the creator's Developer button (src/ui/dev-menu.ts,
@@ -89,75 +88,6 @@ export function mountSettings(parent: HTMLElement = document.body): void {
   vibration.addEventListener("change", () => choose({ vibration: vibration.checked }));
   const vibrationRow = row("settings.vibration", vibration);
 
-  // Table: the owned tables as small pictures, the chosen one ringed
-  const tablesList = document.createElement("div");
-  tablesList.className = "table-picks";
-  tablesList.setAttribute("role", "radiogroup");
-  liveAttr(tablesList, "aria-label", "settings.table");
-  const tablesName = document.createElement("span");
-  liveText(tablesName, "settings.table");
-  const tablesRow = document.createElement("div");
-  tablesRow.className = "set-row set-tables";
-  tablesRow.hidden = true;
-  tablesRow.append(tablesName, tablesList);
-  let drawing = 0;
-  /** "December", the month whose suitcase wins a locked table, in the player's language. */
-  const monthName = (month: string) =>
-    new Intl.DateTimeFormat(document.documentElement.lang || "en", { month: "long", timeZone: "UTC" }).format(new Date(`${month}-01T00:00:00Z`));
-  async function drawTables(): Promise<void> {
-    const token = ++drawing;
-    const all = await pickerTables();
-    if (token !== drawing) return;
-    tablesRow.hidden = all.length < 2;
-    tablesList.replaceChildren(
-      ...all.map(({ art: a, lockedMonth }) => {
-        // a table to win, not to choose (Winter Dusk until December's suitcase is full): information,
-        // never a button (the two materials): its picture flat and dimmed under a lock, and how to win it
-        if (lockedMonth) {
-          const month = monthName(lockedMonth);
-          const tile = document.createElement("div");
-          tile.className = "table-pick locked";
-          tile.setAttribute("role", "img");
-          tile.setAttribute("aria-label", t("settings.tableLockedAria", { table: tableTitle(a), month }));
-          const frame = document.createElement("span");
-          frame.className = "table-pick-frame";
-          const img = document.createElement("img");
-          img.src = thumbOf(a);
-          img.alt = "";
-          img.draggable = false;
-          const lock = document.createElement("span");
-          lock.className = "table-lock";
-          lock.innerHTML = ICONS.lock;
-          frame.append(img, lock);
-          const name = document.createElement("span");
-          name.textContent = tableTitle(a);
-          const how = document.createElement("small");
-          how.textContent = t("settings.tableLocked", { month });
-          tile.append(frame, name, how);
-          return tile;
-        }
-        const pick = document.createElement("button");
-        pick.type = "button";
-        pick.className = "table-pick";
-        pick.dataset.press = "settings.table";
-        pick.setAttribute("role", "radio");
-        pick.setAttribute("aria-checked", String(a.id === chosenTable()));
-        const img = document.createElement("img");
-        img.src = thumbOf(a);
-        img.alt = "";
-        img.draggable = false;
-        const name = document.createElement("span");
-        name.textContent = tableTitle(a);
-        pick.append(img, name);
-        pick.addEventListener("click", () => void chooseTable(a.id));
-        return pick;
-      }),
-    );
-  }
-  onTableChange(() => {
-    if (screen.open) void drawTables();
-  });
-
   // its own way out, an X at its top right (dialogs.ts)
   const close = liveAttr(cornerKey("close", t("settings.close"), "settings.close", () => screen.close()), "aria-label", "settings.close");
   // a tap on the shade outside the screen closes it too
@@ -165,7 +95,7 @@ export function mountSettings(parent: HTMLElement = document.body): void {
     if (e.target === screen) screen.close();
   });
 
-  screen.append(close, title, row("settings.sound", sound), row("settings.volume", volume), vibrationRow, tablesRow, extra);
+  screen.append(close, title, row("settings.sound", sound), row("settings.volume", volume), vibrationRow, extra);
 
   const render = () => {
     sound.checked = !isMuted();
@@ -178,7 +108,6 @@ export function mountSettings(parent: HTMLElement = document.body): void {
   button.addEventListener("click", () => {
     vibrationRow.hidden = !gem.vibration.available;
     render();
-    void drawTables();
     screen.showModal();
   });
 

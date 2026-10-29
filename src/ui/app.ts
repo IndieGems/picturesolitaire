@@ -78,6 +78,8 @@ import { allDone, awaitingRecord, createHome, nextBoard, warmTripStamp } from ".
 import { KINDS, KIT, stock, type HelperKind } from "./stock";
 import { createRunOut } from "./helper-shop";
 import { createHomeShop } from "./home-shop";
+import { createCosmetics } from "./cosmetics";
+import { pretendCosmetics, pretendState } from "./cosmetics-shop";
 import { coinIcon, priceTag } from "./coin";
 import { createTries, mercyFor } from "./tries";
 import { CARRY_WAIT_MS, carryOnCard, carryOnFrom, keptPlayOf, readCarryOn, type CarryOn } from "./resume";
@@ -158,6 +160,7 @@ const homeUi = createHome(
     play: () => void playNext(),
     passport: () => passportUi.open(),
     shop: () => homeShop.open(),
+    cosmetics: () => cosmeticsUi.open(),
   },
   // the Shop once the first board is done (its travel kit is how a player first meets the helpers)
   { note: homeNote, event: suitcaseUi.tile, daily: dailyUi.homeButton, souvenir: souvenirTile.tile, shopShown: () => guideDone() },
@@ -241,14 +244,16 @@ const routeUi = createChallenges({ home: () => goHome(), show: () => show("chall
 const runOut = createRunOut(stock, (k) => pressHelper(k));
 // home's shop (home-shop.ts): the helpers, one or a pack of 3, bought ahead
 const homeShop = createHomeShop(stock);
+// the Cosmetics screen (cosmetics.ts): tables and soundtracks, tried, bought and chosen
+const cosmeticsUi = createCosmetics({ home: () => goHome(), show: () => show("cosmetics") });
 
-app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, suitcaseUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, dareVeil, resumeVeil, runOut.element, homeShop.element, offlineVeil);
+app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, suitcaseUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, dareVeil, resumeVeil, runOut.element, homeShop.element, cosmeticsUi.screen, offlineVeil);
 // the win card's Challenge a friend and Share, and the friends sheet over it (friend-cards.ts)
 const friendCards = createFriendCards(app);
 
 // ---------- state ----------
 
-type Screen = "home" | "board" | "albums" | "album" | "passport" | "challenges" | "daily" | "suitcase";
+type Screen = "home" | "board" | "albums" | "album" | "passport" | "challenges" | "daily" | "suitcase" | "cosmetics";
 /**
  * A board to play: one of the campaign's, one on the challenge route, the day's, or one of the
  * dev menu's experiment boards (practice always).
@@ -418,6 +423,8 @@ function show(next: Screen): void {
   dailyUi.screen.hidden = next !== "daily";
   suitcaseUi.screen.hidden = next !== "suitcase";
   if (next !== "suitcase") suitcaseUi.leave();
+  cosmeticsUi.screen.hidden = next !== "cosmetics";
+  if (next !== "cosmetics") cosmeticsUi.leave();
   if (next === "home") {
     drawHomeNote();
     // a friend's challenge waiting for home (offerLink): once this screen has settled
@@ -2404,6 +2411,10 @@ export async function startApp(): Promise<void> {
       },
       /** The helper stock as if the platform said so (null: its own word again), for this page only. */
       stock: (p: Parameters<typeof stock.pretend>[0]) => stock.pretend(p),
+      /** The Cosmetics screen without the platform: Coins, what is owned, prices, buys failing (cosmetics-shop.ts); null: the platform's word. */
+      cosmetics: (p: Parameters<typeof pretendCosmetics>[0]) => pretendCosmetics(p),
+      cosmeticsState: pretendState,
+      openCosmetics: () => cosmeticsUi.open(),
       /**
        * A table in no list yet, on every screen (Art's options): { table, desk?, base?, deskBase?,
        * stackBack?, particles?... }, paths under the project; null puts the player's own back

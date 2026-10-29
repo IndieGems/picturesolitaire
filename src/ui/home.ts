@@ -16,8 +16,9 @@
 //                 event (suitcase.ts: the Daily Suitcase, or the next one before it starts; in the
 //                 challenge route's old place, the creator, 2026-10-27: the route's code stays,
 //                 unreached from home) and, once the first board is done, the Shop (home-shop.ts:
-//                 helpers, one or a pack of 3), as up to four tiles. The event is on hold (the
-//                 creator, 2026-10-29: event-switch.ts), so players see three: Daily, Passport, Shop
+//                 helpers, one or a pack of 3) and Cosmetics (cosmetics.ts: tables and soundtracks;
+//                 the creator, 2026-10-29), as up to four tiles. The event is on hold (the creator,
+//                 2026-10-29: event-switch.ts), so players see four: Daily, Passport, Shop, Cosmetics
 //
 // Every board won: the itinerary shows the trip of the board Play goes round to, every stop
 // visited and the stamp earned, and the button says Play again.
@@ -48,6 +49,8 @@ const ART = {
   booklet: `${import.meta.env.BASE_URL}art/passport-booklet.webp`,
   /** The satchel on the Shop tile. */
   satchel: `${import.meta.env.BASE_URL}art/shop-satchel.webp`,
+  /** The gramophone and the rolled poster on the Cosmetics tile. */
+  cosmetics: `${import.meta.env.BASE_URL}art/cosmetics-tile.webp`,
 };
 
 /** Stops to a row of the route. */
@@ -58,6 +61,7 @@ type Nav = {
   play(): void;
   passport(): void;
   shop(): void;
+  cosmetics(): void;
 };
 
 type Parts = {
@@ -190,10 +194,19 @@ export function createHome(nav: Nav, parts: Parts) {
   shop.append(shopArt, liveText(el("span", "label"), "home.shop"), liveText(el("small"), "home.shopLine"));
   shop.hidden = true;
   shop.addEventListener("click", () => nav.shop());
+  // Cosmetics: Art's gramophone and rolled travel poster; shown with the Shop
+  const cosmeticsArt = el("span", "booklet");
+  cosmeticsArt.append(bookletImg(ART.cosmetics));
+  const cosmetics = el("button", "btn tile-btn cosmetics");
+  cosmetics.type = "button";
+  cosmetics.dataset.press = "home.cosmetics";
+  cosmetics.append(cosmeticsArt, liveText(el("span", "label"), "home.cosmetics"), liveText(el("small"), "home.cosmeticsLine"));
+  cosmetics.hidden = true;
+  cosmetics.addEventListener("click", () => nav.cosmetics());
   parts.daily.classList.add("tile-btn");
   const dock = el("div", "dock");
   parts.event.classList.add("tile-btn");
-  dock.append(parts.daily, passport, parts.event, shop);
+  dock.append(parts.daily, passport, parts.event, shop, cosmetics);
 
   const screen = el("section", "screen home");
   screen.setAttribute("aria-label", t("game.title"));
@@ -345,6 +358,7 @@ export function createHome(nav: Nav, parts: Parts) {
     stampsLine.textContent = t("home.stamps", { count: stamped });
     passport.setAttribute("aria-label", `${t("home.passport")}: ${stampsLine.textContent}`);
     shop.hidden = !parts.shopShown();
+    cosmetics.hidden = !parts.shopShown();
   }
 
   /** The press is answered at once while the board's pictures come ("Opening…"), and put back after. */
@@ -360,7 +374,7 @@ export function createHome(nav: Nav, parts: Parts) {
 
   /** Home's own pictures, asked for once; settles once they are decoded. */
   let art: Promise<unknown> | null = null;
-  const warmArt = () => (art ??= Promise.all([wordmark.decode().catch(() => undefined), warm(ART.booklet), warm(ART.satchel)]));
+  const warmArt = () => (art ??= Promise.all([wordmark.decode().catch(() => undefined), warm(ART.booklet), warm(ART.satchel), warm(ART.cosmetics)]));
 
   return {
     screen,

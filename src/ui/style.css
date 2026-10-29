@@ -832,40 +832,101 @@ html.less-motion .marker.next::after { animation-duration: 3.4s; }
 /* ---------- the daily puzzle (src/ui/daily.ts) ---------- */
 
 /* Home's Daily button: its name over today's state */
-/* ---------- the table picker (Settings) and a table won ---------- */
+/* ---------- a table won (the guide's milestone card) ---------- */
 
-#settings-screen .set-tables { flex-direction: column; align-items: stretch; gap: 10px; padding: 12px 0 4px; }
-.table-picks { display: flex; gap: 12px; flex-wrap: wrap; }
-.table-pick {
-  display: flex; flex-direction: column; align-items: center; gap: 6px; width: 84px; padding: 0; border: 0; background: none;
-  font: 500 13px/1.15 var(--round); color: var(--ink); text-align: center; cursor: pointer; touch-action: manipulation;
-}
 /* a small picture in the thin frame: the rim is the picture's own padding, the hairline an outline just inside it */
-.table-pick img, .card .prize .won-table img {
+.card .prize .won-table img, .cz-look img {
   padding: 2px; background: linear-gradient(180deg, #e9eef5, #b0bac8); outline: 1px solid #8b97a8; outline-offset: -3px;
 }
-.table-pick img {
-  display: block; width: 84px; height: 105px; object-fit: cover; border-radius: 14px;
-  box-shadow: 0 3px 0 #7f8b9c, 0 6px 10px rgba(6, 12, 24, 0.35);
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
-}
-.table-pick:active img { transform: translateY(2px); box-shadow: 0 1px 0 #7f8b9c, 0 3px 6px rgba(6, 12, 24, 0.3); }
-.table-pick[aria-checked="true"] img { box-shadow: 0 0 0 3px var(--amber-lo), 0 3px 0 #7f8b9c, 0 6px 10px rgba(6, 12, 24, 0.35); }
-.table-pick[aria-checked="true"] span { font-weight: 600; }
-.table-pick:focus-visible { outline: none; }
-.table-pick:focus-visible img { outline: 3px solid var(--amber-hi); outline-offset: 3px; }
-/* a table to win, not to choose (settings-screen.ts): information, so flat (no lip, no shadow), its
-   picture dimmed under a lock on a glass disc, and how to win it under its name */
-.table-pick.locked { cursor: default; }
-.table-pick-frame { position: relative; display: block; }
-.table-pick.locked img { box-shadow: none; filter: saturate(0.55) brightness(0.92); opacity: 0.8; }
+/* a table to win (an event's, while it runs): its picture dimmed under a lock on a glass disc */
 .table-lock {
   position: absolute; left: 50%; top: 50%; width: 36px; height: 36px; margin: -18px 0 0 -18px;
   display: grid; place-items: center; border-radius: 50%; color: var(--ink);
   background: var(--glass); border: 1.5px solid var(--glass-line);
 }
 .table-lock :is(svg, .ico) { width: 20px; height: 20px; }
-.table-pick.locked small { font: 500 12px/1.2 var(--round); color: var(--ink-soft); }
+
+/* ---------- THE COSMETICS SCREEN (cosmetics.ts): Tables | Music, and a table tried on ----------
+   The tiles and rows are information (glass); the picture to try on, Use, Listen and the prices are
+   buttons. A tile never moves when its table is bought. The column is the portrait game's on every
+   device (a phone, or the letterboxed column on a PC or a TV): two tiles to a row, three once the
+   column is wide enough (a tablet, a TV's column). */
+.cosmetics-screen { container-type: inline-size; }
+.cz-tabs { display: flex; gap: 12px; width: min(100%, 360px); margin: 2px auto 18px; }
+.btn.cz-tab { flex: 1 1 0; min-width: 0; min-height: 50px; padding: 0 12px; font-size: 18px; }
+/* the tab shown: pressed in, its words in the amber's deep colour */
+.btn.cz-tab.pressed { color: var(--amber-lip); background: linear-gradient(180deg, #e6ecf3 0%, #d3dce7 100%); }
+.cz-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; max-width: 640px; margin: 0 auto; }
+@container (min-width: 520px) { .cz-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; } }
+.cz-tile { display: flex; flex-direction: column; align-items: stretch; gap: 8px; padding: 10px 10px 12px; border-radius: 22px; text-align: center; }
+.cz-look {
+  position: relative; display: block; width: 100%; padding: 0; border: 0; border-radius: 16px; background: none;
+  cursor: pointer; touch-action: manipulation; font: inherit; color: inherit;
+}
+.cz-look img {
+  display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 14px;
+  box-shadow: 0 3px 0 #7f8b9c, 0 6px 10px rgba(6, 12, 24, 0.35);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+button.cz-look:active img { transform: translateY(2px); box-shadow: 0 1px 0 #7f8b9c, 0 3px 6px rgba(6, 12, 24, 0.3); }
+.cz-look:focus-visible { outline: none; }
+.cz-look:focus-visible img { outline: 3px solid var(--amber-hi); outline-offset: 3px; }
+/* the table in use: ringed in amber */
+.cz-tile.inUse .cz-look img { box-shadow: 0 0 0 3px var(--amber-lo), 0 3px 0 #7f8b9c, 0 6px 10px rgba(6, 12, 24, 0.35); }
+/* an event's table to win: information, flat and dimmed */
+.cz-look.locked { cursor: default; }
+.cz-look.locked img { box-shadow: none; filter: saturate(0.55) brightness(0.92); opacity: 0.8; }
+.cz-name { font: 600 16px/1.15 var(--round); }
+.cz-how { font: 500 12.5px/1.2 var(--round); color: var(--ink-soft); }
+.btn.cz-buy.shop-buy, .btn.cz-use { width: 100%; min-width: 0; min-height: 46px; padding: 0 10px; font-size: 17px; }
+.cz-inuse { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 46px; font: 600 16px/1.1 var(--round); color: #2e7d5a; }
+.cz-inuse :is(svg, .ico) { width: 20px; height: 20px; }
+p.cz-say { margin: 0; font: 600 13px/1.3 var(--round); color: var(--ink-soft); text-align: center; }
+p.cz-say:empty { display: none; }
+p.cz-say.good { color: #2e7d5a; }
+.cz-tile.grew, .cz-track.grew { animation: badge-pop 0.5s ease-out; }
+html.less-motion :is(.cz-tile, .cz-track).grew { animation: none; }
+
+/* Music: a row per soundtrack, its cover, its name, Listen and its price (or Use, or In use) */
+.cz-list { display: flex; flex-direction: column; gap: 12px; max-width: 520px; margin: 0 auto; }
+.cz-track {
+  display: grid; grid-template-columns: 64px minmax(0, 1fr); grid-template-areas: "cover words" "acts acts" "say say";
+  align-items: center; column-gap: 12px; row-gap: 10px; padding: 10px 12px 12px; border-radius: 22px;
+}
+.cz-cover { grid-area: cover; position: relative; width: 64px; height: 64px; border-radius: 12px; overflow: hidden; background: rgba(52, 67, 90, 0.14); }
+.cz-cover img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* playing now: three little bars on the cover */
+.cz-eq { position: absolute; right: 4px; bottom: 4px; display: flex; align-items: flex-end; gap: 2px; height: 18px; padding: 3px 4px; border-radius: 6px; background: rgba(255, 255, 255, 0.88); }
+.cz-eq i { display: block; width: 3px; height: 6px; border-radius: 1px; background: var(--amber-lo); animation: cz-eq 0.9s ease-in-out infinite; }
+.cz-eq i:nth-child(2) { animation-delay: -0.3s; }
+.cz-eq i:nth-child(3) { animation-delay: -0.6s; }
+@keyframes cz-eq { 0%, 100% { height: 4px; } 50% { height: 12px; } }
+html.less-motion .cz-eq i { animation: none; height: 10px; }
+.cz-words { grid-area: words; display: flex; flex-direction: column; gap: 4px; min-width: 0; text-align: left; }
+.cz-words b { font: 600 18px/1.15 var(--round); }
+.cz-words small { font: 500 13px/1.25 var(--round); color: var(--ink-soft); }
+.cz-acts { grid-area: acts; display: flex; gap: 10px; }
+.cz-acts > * { flex: 1 1 0; min-width: 0; }
+.cz-acts > .btn.cz-buy.shop-buy { width: auto; min-width: 0; }
+/* a track owned: Use or In use beside its name, on the same line */
+.cz-track:is(.owned, .inUse) { grid-template-columns: 64px minmax(0, 1fr) auto; grid-template-areas: "cover words acts" "say say say"; }
+.cz-track:is(.owned, .inUse) .cz-acts > * { flex: none; }
+.cz-track.owned .btn.cz-use { width: auto; padding: 0 22px; }
+.btn.cz-listen { min-width: 0; min-height: 46px; padding: 0 12px; font-size: 17px; gap: 8px; white-space: nowrap; }
+.cz-listen :is(.cz-play, .cz-stop) { flex: none; }
+.btn.cz-listen.on { color: var(--amber-lip); }
+.cz-play { width: 0; height: 0; border-left: 12px solid currentColor; border-top: 7px solid transparent; border-bottom: 7px solid transparent; }
+.cz-stop { width: 12px; height: 12px; border-radius: 2px; background: currentColor; }
+.cz-track p.cz-say { grid-area: say; }
+
+/* a table tried on: the list steps aside, the table fills the screen behind a card at the foot */
+.cz-tryon { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; display: flex; justify-content: center; padding: 0 16px calc(var(--foot) + 12px); }
+.cz-tryon[hidden] { display: none; }
+.card.cz-tryon-card { position: relative; width: min(100%, 380px); padding: 18px 18px 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.card.cz-tryon-card h2 { margin: 0; font-size: 23px; }
+.card.cz-tryon-card p.cz-tryon-line { margin: 0; font: 500 15px/1.3 var(--round); }
+.card.cz-tryon-card :is(.btn.cz-buy, .btn.cz-use) { width: min(100%, 260px); min-height: 54px; font-size: 19px; }
+.card.cz-tryon-card p.cz-say { font-size: 14px; }
 
 /* the guide's milestone card: a table won, beside the Coins */
 .card .prize .won-coins { display: flex; align-items: center; gap: 10px; }
