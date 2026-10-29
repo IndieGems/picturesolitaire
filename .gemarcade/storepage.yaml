@@ -549,8 +549,20 @@ modes:
 accessibility: []
 
 metadata:
+  # The game's own text in every Arcade locale (UI's locales/<lang>.json, release review GSR-002).
   languages:
     - { code: en, interface: true }
+    - { code: de, interface: true }
+    - { code: es, interface: true }
+    - { code: fr, interface: true }
+    - { code: it, interface: true }
+    - { code: ja, interface: true }
+    - { code: ko, interface: true }
+    - { code: pl, interface: true }
+    - { code: pt-BR, interface: true }
+    - { code: ru, interface: true }
+    - { code: tr, interface: true }
+    - { code: zh-Hans, interface: true }
 
 tags:
   - play-puzzle-brain
