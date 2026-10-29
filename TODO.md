@@ -32,7 +32,8 @@ Still owed:
   one picture lighter past ~2 tries (hard 3, super hard 5).
 - **At release, the languages** (all 12 since 2026-10-29): bring each up to
   date with what changed since; a native read of what the translators flagged
-  (ko/zh place spellings, "Arcade" per language, the postcard greetings) and of
+  (ko/zh place spellings, "Arcade" per language, the postcard greetings, Russian
+  Coins wording) and of
   the long Super hard badge in pl, fr and it.
 - **At release: a rights pass on the pictures** (creator, 2026-10-28; QA and Art, about half an hour):
   - flag any generated picture with lettering or logo-like marks (team jerseys, signs, rinds);
