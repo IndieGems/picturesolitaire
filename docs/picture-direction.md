@@ -43,12 +43,19 @@ the plan's `suffix.close` is the prompt ending for these rules.
 
 ## Atmospheric pictures
 
-Since 2026-10-28, about 1 in 6 to 1 in 8 pictures, roughly one per board, is atmospheric:
-a landscape, a scene from a distance, an impressionist or loose painterly picture, or a
-busier one. The creator found the early pictures were not wrong in kind. They failed
-because all of them were distant and busy. A few such pictures give the boards variety.
-The 21 early squares are back for it, and a batch of about 150 more follows them into
-boards 1–150. The clear pictures they displace stock trip 11 and on.
+**At most one picture per level is atmospheric** (creator, 2026-10-29: a cap, not a
+target), in every lane but the Souvenirs, which are one style and one theme by design
+(`docs/souvenirs.md`). This replaced the 2026-10-28 aim of about 1 in 6 to 1 in 8,
+roughly one per board. Atmospheric means a landscape, a scene from a distance, an
+impressionist or loose painterly picture, or a busier one. The creator found the early
+pictures were not wrong in kind. They failed because all of them were distant and busy,
+and a single one on a level gives variety without the noise. Levels holds the cap in
+the makers (0cf569e).
+
+**No more are made unless the lead asks** (2026-10-29). The library has 171, the 21
+early squares and three batches of 50, all tagged. Levels places them within the cap,
+and the clear pictures they displaced stock trip 11 and on. The rules below describe
+those 171 and any new one the lead asks for.
 
 - **Tagged.** The plan and the catalogue mark them `"look": "atmospheric"`, and Levels
   counts that tag. A clear picture has no `look`.
