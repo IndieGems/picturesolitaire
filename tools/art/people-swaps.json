@@ -1,5 +1,5 @@
 {
- "//": "People swaps (creator, 2026-10-29, via the lead): each old people picture, turned away or framed like its neighbours (the lookalike bun-and-blue-top women in profile, men from behind), is replaced on its levels by a new one of the same shape, so deals stay unchanged. The olds stay in the library, unflagged. orchestra-flautist is atmospheric: it may only go where its level has no other atmospheric picture. New pictures sit after drone in the catalogue, so they cannot go into dailies from RULES_FROM; those dailies keep the old picture.",
+ "//": "People swaps (creator, 2026-10-29, via the lead): each old people picture, turned away or framed like its neighbours (the lookalike bun-and-blue-top women in profile, men from behind), is replaced on its levels by a new one of the same shape, so deals stay unchanged. The olds stay in the library, unflagged. orchestra-flautist is atmospheric: it may only go where its level has no other atmospheric picture. New pictures sit after drone in the catalogue, so they cannot go into dailies from RULES_FROM; those dailies keep the old picture. The creator kept five olds (2026-10-29): shepherd-lambs, tennis-player, wok-chef, paddleboarder and hiker; their new pictures (hayfield-farmer, basketball-dunk, birthday-tea, hill-roll, snowy-lane) stay in the catalogue as stock.",
  "swaps": [
   {
    "old": "milliner",
@@ -98,22 +98,6 @@
    ]
   },
   {
-   "old": "shepherd-lambs",
-   "new": "hayfield-farmer",
-   "shape": [
-    2,
-    2
-   ]
-  },
-  {
-   "old": "hiker",
-   "new": "snowy-lane",
-   "shape": [
-    2,
-    2
-   ]
-  },
-  {
    "old": "pier-fishing",
    "new": "crab-catch",
    "shape": [
@@ -202,14 +186,6 @@
    ]
   },
   {
-   "old": "wok-chef",
-   "new": "birthday-tea",
-   "shape": [
-    2,
-    2
-   ]
-  },
-  {
    "old": "photographer",
    "new": "bus-window",
    "shape": [
@@ -250,14 +226,6 @@
    ]
   },
   {
-   "old": "tennis-player",
-   "new": "basketball-dunk",
-   "shape": [
-    2,
-    2
-   ]
-  },
-  {
    "old": "lantern-maker",
    "new": "windowsill-peek",
    "shape": [
@@ -276,14 +244,6 @@
   {
    "old": "scuba-diver",
    "new": "cartwheel",
-   "shape": [
-    2,
-    2
-   ]
-  },
-  {
-   "old": "paddleboarder",
-   "new": "hill-roll",
    "shape": [
     2,
     2
