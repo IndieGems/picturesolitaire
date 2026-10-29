@@ -307,16 +307,43 @@ analytics_funnels:
 # reward, so the checker never sees it. `board` is the campaign position the player reads on home
 # (board 62 is c62); `helpers` is forwarded for the challenge card and not in the line, since
 # with it the line runs past the platform's 80 characters. A challenge never expires, so the
-# daily's names its date, never "today". English only until the release pass.
+# daily's names its date, never "today". Players read "level", never "board" (the creator, GSR-016);
+# the key and the `board` param keep their names, which the game sends. Every Arcade locale is
+# here (the creator chose to translate now, GSR-004), worded as UI's locales/*.json share lines;
+# a changed English line needs all eleven again, or test and release refuse the config.
 friend_challenge_templates:
   - key: beat_board
-    text: "I finished board {board} of Picture Passport in {moves, plural, one {# move} other {# moves}}. Can you beat it?"
+    text: "I finished level {board} of Picture Passport in {moves, plural, one {# move} other {# moves}}. Can you beat it?"
+    localized:
+      de: { text: "Ich habe Level {board} von Picture Passport in {moves, plural, one {# Zug} other {# Zügen}} gelöst. Schlägst du das?" }
+      es: { text: "Terminé el nivel {board} de Picture Passport en {moves, plural, one {# movimiento} other {# movimientos}}. ¿Lo superas?" }
+      fr: { text: "J'ai fini le niveau {board} de Picture Passport en {moves, plural, one {# coup} other {# coups}}. Tu fais mieux ?" }
+      it: { text: "Ho finito il livello {board} di Picture Passport in {moves, plural, one {# mossa} other {# mosse}}. Mi batti?" }
+      ja: { text: "Picture Passportのレベル{board}を{moves, plural, other {#手}}でクリアしたよ。もっと少ない手数でできる？" }
+      ko: { text: "Picture Passport 레벨 {board}, {moves, plural, other {#수}} 만에 클리어! 더 적게 할 수 있나요?" }
+      pl: { text: "Poziom {board} w Picture Passport ukończony w {moves, plural, one {# ruchu} few {# ruchach} many {# ruchach} other {# ruchu}}. Dasz radę lepiej?" }
+      pt-BR: { text: "Terminei o nível {board} de Picture Passport em {moves, plural, one {# jogada} other {# jogadas}}. Supera essa?" }
+      ru: { text: "Уровень {board} в Picture Passport пройден за {moves, plural, one {# ход} few {# хода} many {# ходов} other {# хода}}. Сможешь лучше?" }
+      tr: { text: "Picture Passport'ta {board}. seviyeyi {moves, plural, one {# hamlede} other {# hamlede}} bitirdim. Geçebilir misin?" }
+      zh-Hans: { text: "我用{moves, plural, other {#步}}通关了 Picture Passport 第{board}关。你能用更少的步数吗？" }
     params:
       board: { type: integer, min: 1, max: 999 }
       moves: { type: integer, min: 1, max: 999 }
       helpers: { type: integer, min: 0, max: 999 }
   - key: beat_daily
     text: "I solved the daily puzzle of {date} in {moves, plural, one {# move} other {# moves}}. Can you beat it?"
+    localized:
+      de: { text: "Das Tagesrätsel vom {date}: gelöst in {moves, plural, one {# Zug} other {# Zügen}}. Schlägst du das?" }
+      es: { text: "Resolví el puzle diario del {date} en {moves, plural, one {# movimiento} other {# movimientos}}. ¿Lo superas?" }
+      fr: { text: "J'ai résolu le puzzle du jour du {date} en {moves, plural, one {# coup} other {# coups}}. Tu fais mieux ?" }
+      it: { text: "Ho risolto il puzzle del giorno del {date} in {moves, plural, one {# mossa} other {# mosse}}. Mi batti?" }
+      ja: { text: "{date}のデイリーパズルを{moves, plural, other {#手}}で解いたよ。もっと少ない手数でできる？" }
+      ko: { text: "{date} 데일리 퍼즐, {moves, plural, other {#수}} 만에 해결! 더 적게 할 수 있나요?" }
+      pl: { text: "Łamigłówka dnia z {date} rozwiązana w {moves, plural, one {# ruchu} few {# ruchach} many {# ruchach} other {# ruchu}}. Dasz radę lepiej?" }
+      pt-BR: { text: "Fiz o quebra-cabeça do dia de {date} em {moves, plural, one {# jogada} other {# jogadas}}. Supera essa?" }
+      ru: { text: "Головоломка дня от {date}: решена за {moves, plural, one {# ход} few {# хода} many {# ходов} other {# хода}}. Сможешь лучше?" }
+      tr: { text: "{date} tarihli günün bulmacasını {moves, plural, one {# hamlede} other {# hamlede}} çözdüm. Geçebilir misin?" }
+      zh-Hans: { text: "我用{moves, plural, other {#步}}解开了 {date} 的每日谜题。你能用更少的步数吗？" }
     params:
       date: { type: date, min: "2026-08-01" }
       moves: { type: integer, min: 1, max: 999 }
