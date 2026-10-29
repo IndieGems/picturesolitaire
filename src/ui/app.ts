@@ -79,7 +79,9 @@ import { KINDS, KIT, stock, type HelperKind } from "./stock";
 import { createRunOut } from "./helper-shop";
 import { createHomeShop } from "./home-shop";
 import { coinIcon, priceTag } from "./coin";
-import { createTries } from "./tries";
+import { createTries, mercyFor } from "./tries";
+import { CARRY_WAIT_MS, carryOnCard, carryOnFrom, keptPlayOf, readCarryOn, type CarryOn } from "./resume";
+import { keepInHand, type InHand } from "../game/in-hand";
 import { createMercyNote } from "./mercy-note";
 import { recentStats } from "./board-stats";
 import { createSuitcase, packedOnCard } from "./suitcase";
@@ -202,6 +204,15 @@ const winViewer = createViewer({ tapToClose: true });
 const restartVeil = h("div", { class: "veil restart", hidden: "", role: "dialog", "aria-modal": "true" });
 // a friend's challenge or a shared link, as the game opens on it (friend-cards.ts, challengeCard)
 const dareVeil = h("div", { class: "veil dare", hidden: "", role: "dialog", "aria-modal": "true" });
+// the level kept from the last session, offered over home (resume.ts, offerCarryOn)
+const resumeVeil = h("div", { class: "veil resume", hidden: "", role: "dialog", "aria-modal": "true" });
+/** The level kept last time, still as dealt, until it is carried on or another level opens. */
+let carryOn: CarryOn | null = null;
+/** The slot's read, resolved; home never waits on it, a press into a level CARRY_WAIT_MS at most. */
+let carryRead: Promise<void> = Promise.resolve();
+let carryLanded = false;
+/** The free Hints the level carried on came back with (tries.ts reads it on its board:start). */
+let resumedFree = 0;
 const offlineVeil = h(
   "div",
   { class: "veil offline", hidden: "", role: "alertdialog", "aria-live": "assertive" },
@@ -229,7 +240,7 @@ const runOut = createRunOut(stock, (k) => pressHelper(k));
 // home's shop (home-shop.ts): the helpers, one or a pack of 3, bought ahead
 const homeShop = createHomeShop(stock);
 
-app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, suitcaseUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, dareVeil, runOut.element, homeShop.element, offlineVeil);
+app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, suitcaseUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, dareVeil, resumeVeil, runOut.element, homeShop.element, offlineVeil);
 // the win card's Challenge a friend and Share, and the friends sheet over it (friend-cards.ts)
 const friendCards = createFriendCards(app);
 
@@ -365,6 +376,7 @@ type MercyBoard = BoardHandle & { grantFree?: (k: HelperKind, n?: number) => voi
 const tries = createTries({
   counted: () => (play?.kind === "campaign" && !isPractice(play) ? boardNumber(play.level) : null),
   daily: () => play?.kind === "daily" && !isPractice(play),
+  resumedFree: () => resumedFree,
   pictures: () => board?.pictures().length ?? 0,
   grant: (n) => (board as MercyBoard | null)?.grantFree?.("hint", n),
   announce: (n) => {
@@ -408,8 +420,11 @@ function show(next: Screen): void {
     drawHomeNote();
     // a friend's challenge waiting for home (offerLink): once this screen has settled
     if (pendingLink) setTimeout(offerLink, 0);
+    // the level kept last time (offerCarryOn), likewise
+    if (carryOn) setTimeout(offerCarryOn, 0);
   } else homeNote.hidden = true;
   if (next !== "home" && !dareVeil.hidden) hideCard(dareVeil);
+  if (next !== "home" && !resumeVeil.hidden) hideCard(resumeVeil);
   if (next !== "album") albumsUi.closeViewer();
   if (next !== "home") homeShop.close();
   if (next !== "board") {
@@ -525,6 +540,16 @@ async function playNext(): Promise<void> {
     homeUi.opening(false);
     drawHome();
     if (screen !== "home") return; // the player went elsewhere meanwhile
+  }
+  // the level kept last time, if its read is still on its way (resume.ts): a moment at most, so
+  // Next stop carries it on rather than deal it again over it
+  if (!carryLanded) {
+    playing = true;
+    homeUi.opening(true);
+    await Promise.race([carryRead, new Promise((r) => setTimeout(r, CARRY_WAIT_MS))]);
+    playing = false;
+    homeUi.opening(false);
+    if (screen !== "home") return;
   }
   // the next position; once every board is won the position stays at "all done" (the server's
   // rule), and Next stop goes round the boards in order (home.ts, nextBoard)
@@ -674,10 +699,22 @@ function openLoaded(next: Play): void {
     runOut.close();
     hintNudge.reset();
     helpersUsed = 0;
+    // the level kept last time, when this is it, carries on as it was left (resume.ts); any other
+    // level opened lets it go (the screens keep one level in hand)
+    const carry = carryOn && samePlay(carryOn.play, next) ? carryOn.kept : null;
+    carryOn = null;
+    hideCard(resumeVeil);
+    // a campaign level's free Hints: never more than mercy help could have given this try (tries.ts)
+    const freeAllowed = carry && next.kind === "campaign" ? { hint: mercyFor(boardNumber(next.level)) } : undefined;
+    resumedFree = carry ? Math.min(Math.floor(Number(carry.free?.hint) || 0), freeAllowed?.hint ?? 0) : 0;
     board = openBoard(
       host,
       next.kind === "campaign" ? next.level : next.kind === "challenge" ? next.c.level : next.kind === "daily" ? next.d : next.kind === "oneoff" ? next.o.open : next.kind === "souvenir" ? next.s : next.x,
+      carry ? { resume: carry, freeAllowed } : {},
     );
+    // kept for the next session from here on, every level that may be carried on (in-hand.ts)
+    const keep = keptPlayOf(next, next.kind === "campaign" && next.level === 1 && !guideDone());
+    if (keep) keepInHand(board, keep, levelOfPlay(next));
     // a Souvenir wears its own table while it is up; any other board, the player's own
     void wearTable(next.kind === "souvenir" ? (souvenirOf(next.s.trip)?.art.table ?? null) : null);
     // the player's own stock on the buttons (the board reports undo through board:changed)
@@ -1801,6 +1838,57 @@ function showOneOffWin(w: Extract<Win, { kind: "oneoff" }>, gallery: HTMLElement
 }
 
 /** The challenge or link this launch carried, until its card has shown (once a launch: a relaunch brings it back). */
+// ---------- the level kept last time (resume.ts; its state is declared beside resumeVeil) ----------
+
+/** Read the level kept last time, once, as home is up. */
+function startCarryOn(): void {
+  carryRead = readCarryOn()
+    .then((c) => {
+      // a level opened meanwhile has let it go
+      if (c && !board) {
+        carryOn = c;
+        offerCarryOn();
+      }
+    })
+    .catch(() => undefined)
+    .finally(() => (carryLanded = true));
+}
+
+/** Where a kept level is, as the player reads it: "Level 27 · Japan", "Daily · Oct 29". */
+function carryWhere(p: Play): string {
+  if (p.kind === "campaign") {
+    const n = boardNumber(p.level);
+    const tr = tripOf(n);
+    return tr ? t("oneoff.where", { n, trip: tripPlace(tr) }) : t("home.board", { n });
+  }
+  if (p.kind === "daily") return t("board.daily", { date: shortDate(p.d.date) });
+  if (p.kind === "challenge") return t("board.challenge", { n: p.c.n });
+  if (p.kind === "souvenir") {
+    const w = souvenirWords(p.s.trip);
+    return t("souvenir.wonTheme", { trip: w.trip, theme: w.theme });
+  }
+  return "";
+}
+
+/**
+ * "Carry on?" over home, once a session, when home is up with nothing over it, the record has landed
+ * and the guided first level is done (as a friend's challenge waits: offerLink, which goes first).
+ * Continue opens the level as it was left; Not now leaves it to Next stop (or its tile).
+ */
+let carryOffered = false;
+function offerCarryOn(): void {
+  const c = carryOn;
+  if (!c || carryOffered || screen !== "home" || awaitingRecord() || !guideDone() || pendingLink || cardUp()) return;
+  carryOffered = true;
+  const later = () => hideCard(resumeVeil);
+  const go = () => {
+    hideCard(resumeVeil);
+    if (carryOn === c) openPlay(c.play);
+  };
+  resumeVeil.replaceChildren(carryOnCard(carryWhere(c.play), go, later, cornerKey("close", t("resume.later"), "resume.close", later)));
+  showCard(resumeVeil, later);
+}
+
 let pendingLink: Launch | null = null;
 
 /** What the game was opened with (friends.ts), read once as the first screen is up. */
@@ -2196,6 +2284,9 @@ export async function startApp(): Promise<void> {
   // opened by a friend's challenge or a shared link: its card, once home and the record allow (offerLink)
   onProgress(offerLink);
   void greetLaunch();
+  // the level kept last time: offered over home once its read lands (resume.ts)
+  onProgress(offerCarryOn);
+  startCarryOn();
   // whether the player has a friend to challenge (a guest never has): Challenge a friend waits on it
   watchFriends();
   void startSound();
@@ -2330,6 +2421,13 @@ export async function startApp(): Promise<void> {
       stats: () => ({ sent: recentStats.slice(), now: tries.current() }),
       /** The board in hand, for a script that plays its proved line (board.dev.step) without the dev menu, so it is no practice. */
       board: () => board,
+      /** As if `kept` (InHand: { v: 1, play, id, deal, ...board.kept() }) had been read at boot: offered over home (resume.ts). */
+      async carry(kept: InHand | null) {
+        carryOn = await carryOnFrom(kept);
+        carryOffered = false;
+        if (screen === "home") offerCarryOn();
+        return !!carryOn;
+      },
       /** The Daily Suitcase as if the platform said so ("default": the stand-in months; null: its own word), for this page only. */
       suitcase(p?: Parameters<typeof suitcases.pretend>[0]) {
         suitcases.pretend(p === undefined ? "default" : p);

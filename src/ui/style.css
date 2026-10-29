@@ -1336,6 +1336,11 @@ html.less-motion .case-slots .slot.arrived .item-pic { animation: none; }
 .dare-card p.dare-note.peek { color: var(--amber-lip); }
 .dare-card p.dare-fun { margin: 0 0 18px; font-size: 14px; }
 
+/* the level kept last time, offered over home (resume.ts): where it is, and that it waits as left */
+.resume-card { position: relative; }
+.resume-card p.resume-where { margin: 0 0 6px; font: 600 18px/1.25 var(--round); color: var(--ink); }
+.resume-card p.resume-why { margin: 0 0 18px; font: 500 15px/1.3 var(--round); color: var(--ink-soft); }
+
 /* the compare card: the two counts side by side, the better lit; each with its helpers */
 .win .stats.compare { margin-bottom: 10px; }
 .win .stats.compare .stat { flex: 1 1 0; min-width: 0; max-width: 150px; padding: 9px 10px 8px; }

@@ -22,6 +22,10 @@
 // The day's daily (not practice: app.ts's `daily`) has tries too, for its player numbers alone
 // (daily_started, daily_ended: board-stats.ts): they start and end exactly as a campaign try's,
 // with no attempt count and no mercy help.
+//
+// A level carried on from another session (resume.ts; board:start says resumed) is the SAME try:
+// no new attempt, no started event, no mercy granted again (the board gives back the free Hints the
+// try had left, up to what it could have had: app.ts's `resumedFree`).
 
 import { on } from "../events";
 import { keepTries, savedTries } from "./guide-save";
@@ -69,6 +73,8 @@ type Deps = {
   grant(n: number): void;
   /** A try starts with `n` free Hints: say so on the board. */
   announce(n: number): void;
+  /** The free Hints a carried-on try came back with (the board's own count of them). */
+  resumedFree(): number;
   /** The free Hints left changed (the Hint button's badge). */
   changed(): void;
 };
@@ -76,17 +82,24 @@ type Deps = {
 export function createTries(d: Deps) {
   let cur: Try | null = null;
 
-  /** A try begins: the board was dealt (a new board, or a Restart). */
-  function begin(): void {
+  /** A try begins: the board was dealt (a new board, or a Restart), or carried on from another session (`resumed`). */
+  function begin(resumed = false): void {
     end();
     const n = d.counted();
     if (n === null) {
       cur = d.daily() ? { lane: "daily", n: 0, attempt: 0, spent: { hint: 0, undo: 0, shuffle: 0 }, stuck: false, mercy: false, free: 0, cleared: 0, pictures: 0, ended: false } : null;
-      if (cur) dailyStats.started();
+      if (cur && !resumed) dailyStats.started();
       d.changed();
       return;
     }
     const saved = savedTries();
+    if (resumed) {
+      // the same try as before the break: its attempt, its free Hints as the board gave them back
+      const free = d.resumedFree();
+      cur = { lane: "campaign", n, attempt: saved.boards[n] ?? 1, spent: { hint: 0, undo: 0, shuffle: 0 }, stuck: false, mercy: mercyFor(n) > 0, free, cleared: 0, pictures: d.pictures(), ended: false };
+      d.changed();
+      return;
+    }
     const attempt = (saved.boards[n] ?? 0) + 1;
     keepTries({ ...saved, boards: { ...saved.boards, [n]: attempt } });
     const free = mercyFor(n);
@@ -117,8 +130,8 @@ export function createTries(d: Deps) {
 
   // a board is dealt: a new board (once, as it is created), or a Restart (each time); the grant
   // waits a moment, so the board's handle is the new one and a restart has cleared the old grant
-  on("board:start", () => queueMicrotask(begin));
-  on("board:restart", () => queueMicrotask(begin));
+  on("board:start", ({ resumed }) => queueMicrotask(() => begin(resumed)));
+  on("board:restart", () => queueMicrotask(() => begin()));
   on("board:stuck", () => {
     if (cur && !cur.ended) cur.stuck = true;
   });
