@@ -6,6 +6,7 @@
   the Gem Arcade's VIP members once that system exists. Then: the switch back on behind
   the VIP check, each month's suitcase art a month ahead (Art; none is made while it is
   held), and a framed check of the first live suitcase.
+- **Gem Web SDK 16.2.0 or later, after the release candidate.** The game is on 16.1.0. From 16.2.0, a save write that collides with newer saved data is refused as `save_conflict` unless it passes `overwrite`, a load can fail as `load_failed`, and writes get the SDK's own spacing (`minWriteIntervalMs`). Before the pin moves, Server and Gameplay handle both in every save path, `src/net/pace.ts`'s loops included.
 - **Build size:** 0.31.0 is 618 MB of a 1 GiB limit, up from 349 MB, mostly the
   re-dealt dailies' packs. Before more trips or months, Art de-duplicates pictures
   that repeat across packs, or ships a month's dailies only near their month.
