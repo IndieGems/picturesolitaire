@@ -20,25 +20,25 @@ line); a sharp player may beat it.
 | # | role | board | pictures | lookalikes | cards per picture | shapes | cards (waiting) | shown | chain | big waits | order traps | careless win | par |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | intro | 4x5 | 6 | none | 4 4 9 4 4 6 | 2x2 2x3 3x3 | 31 (11) | 0 | 4 | 2 | 1 | 33% | 19 |
-| 2 | demand | 4x5 | 6 | 2 lavender | 4 4 4 6 6 6 | 2x2 2x3 3x2 | 30 (10) | 0 | 3 | 2 | 1 | 24% | 21 |
+| 2 | demand | 4x5 | 6 | none | 4 4 4 6 6 6 | 2x2 2x3 3x2 | 30 (10) | 0 | 3 | 2 | 1 | 24% | 21 |
 | 3 | relief | 4x5 | 6 | 2 blue hour | 6 6 2 6 4 6 | 2x1 2x2 2x3 3x2 | 30 (10) | 0 | 3 | 2 | 1 | 67% | 19 |
 | 4 | demand | 4x5 | 6 | 3 lavender | 4 6 9 2 6 6 | 1x2 2x2 2x3 3x2 3x3 | 33 (13) | 0 | 4 | 3 | 1 | 25% | 19 |
-| 5 | demand | 4x5 | 7 | 3 warm dusk, 2 berry red | 4 2 6 6 6 4 6 | 2x1 2x2 2x3 3x2 | 34 (14) | 0 | 4 | 3 | 2 | 12% | 19 |
-| 6 | relief | 4x6 | 7 | 2 sea blue | 6 4 4 4 6 6 6 | 2x2 2x3 3x2 | 36 (12) | 0 | 3 | 2 | 1 | 67% | 23 |
+| 5 | demand | 4x5 | 7 | 3 warm dusk | 4 2 6 6 6 4 6 | 2x1 2x2 2x3 3x2 | 34 (14) | 0 | 4 | 3 | 2 | 12% | 19 |
+| 6 | relief | 4x6 | 7 | none | 6 4 4 4 6 6 6 | 2x2 2x3 3x2 | 36 (12) | 0 | 3 | 2 | 1 | 67% | 23 |
 | 7 | demand | 4x6 | 7 | 2 warm dusk, 2 berry red | 4 4 6 9 4 6 6 | 2x2 2x3 3x2 3x3 | 39 (15) | 0 | 4 | 3 | 1 | 33% | 26 |
 | 8 | demand | 4x6 | 8 | 2 autumn rust | 4 9 2 6 6 6 6 2 | 1x2 2x2 2x3 3x2 3x3 | 41 (17) | 0 | 5 | 4 | 2 | 13% | 29 |
 | 9 | relief | 4x6 | 7 | 2 fresh green | 6 6 2 6 2 6 6 | 1x2 2x1 2x3 3x2 | 34 (10) | 0 | 3 | 2 | 1 | 54% | 21 |
-| 10 | demand | 4x6 | 8 | 4 berry red, 2 lemon yellow | 4 4 9 4 2 6 6 6 | 1x2 2x2 2x3 3x2 3x3 | 41 (17) | 0 | 5 | 3 | 2 | 22% | 28 |
+| 10 | demand | 4x6 | 8 | 4 berry red | 4 4 9 4 2 6 6 6 | 1x2 2x2 2x3 3x2 3x3 | 41 (17) | 0 | 5 | 3 | 2 | 22% | 28 |
 | 11 | relief | 5x5 | 7 | 2 golden wheat | 2 6 6 6 6 2 6 | 1x2 2x1 2x3 3x2 | 34 (9) | 0 | 3 | 2 | 1 | 60% | 20 |
 | 12 | demand | 5x5 | 8 | 3 lemon yellow | 4 9 4 9 4 4 4 4 | 2x2 3x3 | 42 (17) | 0 | 4 | 2 | 1 | 31% | 27 |
 | 13 | demand | 5x5 | 9 | 3 golden wheat, 2 autumn rust | 6 2 2 6 6 6 2 6 6 | 1x2 2x1 2x3 3x2 | 42 (17) | 0 | 5 | 4 | 2 | 8% | 26 |
 | 14 | relief | 5x5 | 8 | 2 warm dusk, 2 blue hour | 6 6 4 2 2 6 6 6 | 2x1 2x2 2x3 3x2 | 38 (13) | 0 | 3 | 2 | 1 | 50% | 22 |
 | 15 | demand | 5x5 | 9 | 4 berry red | 4 4 2 9 2 6 6 6 6 | 1x2 2x2 2x3 3x2 3x3 | 45 (20) | 0 | 5 | 4 | 2 | 8% | 28 |
-| 16 | relief | 5x6 | 9 | 2 pink bloom, 2 sea blue | 4 6 4 4 6 4 4 4 6 | 2x2 2x3 | 42 (12) | 0 | 3 | 2 | 1 | 69% | 25 |
-| 17 | demand | 5x6 | 10 | 2 lemon yellow, 2 blue hour | 6 9 2 4 2 6 4 6 4 4 | 1x2 2x1 2x2 2x3 3x2 3x3 | 47 (17) | 0 | 5 | 4 | 2 | 13% | 28 |
-| 18 | demand | 5x6 | 10 | 4 pink bloom, 3 golden wheat | 4 6 2 4 6 2 6 6 6 6 | 1x2 2x1 2x2 2x3 3x2 | 48 (18) | 0 | 4 | 4 | 2 | 10% | 30 |
+| 16 | relief | 5x6 | 9 | 2 sea blue | 4 6 4 4 6 4 4 4 6 | 2x2 2x3 | 42 (12) | 0 | 3 | 2 | 1 | 69% | 25 |
+| 17 | demand | 5x6 | 10 | 2 blue hour | 6 9 2 4 2 6 4 6 4 4 | 1x2 2x1 2x2 2x3 3x2 3x3 | 47 (17) | 0 | 5 | 4 | 2 | 13% | 28 |
+| 18 | demand | 5x6 | 10 | 3 pink bloom, 3 golden wheat | 4 6 2 4 6 2 6 6 6 6 | 1x2 2x1 2x2 2x3 3x2 | 48 (18) | 0 | 4 | 4 | 2 | 10% | 30 |
 | 19 | relief | 5x6 | 9 | 3 lavender | 4 6 2 6 4 4 6 6 6 | 1x2 2x2 2x3 3x2 | 44 (14) | 0 | 4 | 3 | 1 | 60% | 26 |
-| 20 | finale | 5x6 | 11 | 3 lemon yellow, 2 warm dusk, 2 fresh green | 6 4 9 2 4 2 9 4 4 4 2 | 1x2 2x1 2x2 2x3 3x3 | 50 (20) | 0 | 5 | 4 | 2 | 8% | 31 |
+| 20 | finale | 5x6 | 11 | 3 lemon yellow | 6 4 9 2 4 2 9 4 4 4 2 | 1x2 2x1 2x2 2x3 3x3 | 50 (20) | 0 | 5 | 4 | 2 | 8% | 31 |
 
 Every picture's appearances across the route: 0 to 6 (mean 0.1).
 
@@ -46,11 +46,11 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 |---|---|
 | dusk-harbour (3x2, warm dusk) | 5, 7, 11, 19 |
 | dune-caravan (2x1, warm dusk) | 5, 14, 17 |
-| poppy-sunset (2x2, warm dusk) | 5, 16, 20 |
-| candle-oranges (2x2, warm dusk) | 1, 7, 14, 20 |
+| poppy-sunset (2x2, warm dusk) | 5 |
+| candle-oranges (2x2, warm dusk) | 1, 7, 14 |
 | blossom-lane (2x3, pink bloom) | 3, 9, 13, 18 |
-| peony-jug (2x2, pink bloom) | 1, 12, 16, 18 |
-| berry-cake (2x2, pink bloom) | 7, 16, 18 |
+| peony-jug (2x2, pink bloom) |  |
+| berry-cake (2x2, pink bloom) | 18 |
 | rose-hat (2x3, pink bloom) | 2, 8, 11, 14, 18 |
 | maple-path (2x3, autumn rust) | 5, 8, 13, 16 |
 | harvest-table (3x2, autumn rust) | 3, 9, 11, 13, 17 |
@@ -58,30 +58,30 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | ivy-lane (1x2, autumn rust) | 8, 15, 19 |
 | blue-domes (2x3, sea blue) | 3, 9, 14, 16 |
 | wave-coast (3x2, sea blue) | 4, 10, 13, 18 |
-| hydrangeas (2x2, sea blue) | 2, 6, 16 |
-| net-mender (2x2, sea blue) | 6, 12, 17, 19 |
+| hydrangeas (2x2, sea blue) | 6, 16 |
+| net-mender (2x2, sea blue) |  |
 | wheat-farm (3x2, golden wheat) | 2, 6, 13, 18 |
 | bread-table (2x1, golden wheat) | 3, 11, 13, 18 |
 | sunflower-vase (1x2, golden wheat) | 8, 11, 13, 18 |
 | wheat-walk (2x3, golden wheat) | 9, 16, 19 |
 | lavender-rows (3x2, lavender) | 4, 8, 11, 13, 19 |
 | wisteria-door (2x3, lavender) | 4, 6, 14, 19 |
-| lilac-bouquet (2x2, lavender) | 2, 7, 16, 19 |
-| figs-grapes (2x2, lavender) | 2, 4, 17 |
+| lilac-bouquet (2x2, lavender) | 19 |
+| figs-grapes (2x2, lavender) | 2, 4 |
 | tea-terraces (3x2, fresh green) | 2, 9, 15, 18 |
-| market-greens (2x2, fresh green) | 1, 12, 16, 20 |
+| market-greens (2x2, fresh green) |  |
 | greenhouse (2x2, fresh green) |  |
 | green-alley (1x2, fresh green) | 9, 13, 17, 20 |
 | venice-canal (2x3, blue hour) | 3, 6, 11, 15, 18 |
 | lantern-market (3x2, blue hour) | 5, 8, 14, 17 |
-| lantern-child (2x2, blue hour) | 3, 12, 17 |
+| lantern-child (2x2, blue hour) | 3, 17 |
 | lake-village (2x1, blue hour) | 9, 14, 20 |
-| cherry-bowl (2x2, berry red) | 5, 10, 15 |
+| cherry-bowl (2x2, berry red) | 10, 15 |
 | tulip-rows (3x2, berry red) | 5, 7, 10, 15, 19 |
 | red-tram (1x2, berry red) | 4, 10, 15, 20 |
 | red-umbrella (2x3, berry red) | 1, 7, 10, 15 |
 | lemon-coast (3x3, lemon yellow) | 4, 7, 10, 12, 15, 20 |
-| lemon-tart (2x2, lemon yellow) | 10, 12, 17, 20 |
+| lemon-tart (2x2, lemon yellow) | 12, 20 |
 | daffodil-meadow (3x3, lemon yellow) | 1, 8, 12, 17, 20 |
 | canal-bicycle (2x3, lemon yellow) |  |
 | snow-chalets (3x2, snow ice) |  |
@@ -112,7 +112,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | cactus-bloom (2x2, cactus bloom) |  |
 | cliff-lighthouse (2x2, cliff lighthouse) |  |
 | blue-headscarf (2x2, blue headscarf) |  |
-| pink-lotus (2x2, pink lotus) |  |
+| pink-lotus (2x2, pink lotus) | 17 |
 | yellow-raincoat (2x2, yellow raincoat) |  |
 | blue-bicycle (2x2, blue bicycle) |  |
 | mount-fuji (2x2, mount fuji) |  |
@@ -145,7 +145,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | rubber-duck (2x2, rubber duck) |  |
 | teddy-bear (2x2, teddy bear) |  |
 | camper-van (2x2, camper van) |  |
-| steam-train (2x2, steam train) |  |
+| steam-train (2x2, steam train) | 16 |
 | classic-car (2x2, classic car) |  |
 | biplane (2x2, biplane) |  |
 | cable-car (2x2, cable car) |  |
@@ -400,7 +400,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | rotary-phone (2x2, rotary phone) |  |
 | music-box (2x2, music box) |  |
 | kaleidoscope (2x2, kaleidoscope) |  |
-| paper-fan (2x2, paper fan) |  |
+| paper-fan (2x2, paper fan) | 10 |
 | yarn-balls (2x2, yarn balls) |  |
 | spinning-top (2x2, spinning top) |  |
 | parfait (1x2, parfait) |  |
@@ -437,7 +437,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | dewdrops (2x2, dewdrops) |  |
 | rowboat-lake (2x2, rowboat lake) |  |
 | glowing-waves (2x2, glowing waves) |  |
-| icy-berries (2x2, icy berries) |  |
+| icy-berries (2x2, icy berries) | 12 |
 | snowy-pine (1x2, snowy pine) |  |
 | hay-bales (2x1, hay bales) |  |
 | tea-pourer (2x2, tea pourer) |  |
@@ -499,7 +499,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | dhow (2x2, dhow) |  |
 | catamaran (2x2, catamaran) |  |
 | snowmobile (2x2, snowmobile) |  |
-| monster-truck (2x2, monster truck) |  |
+| monster-truck (2x2, monster truck) | 12 |
 | unicycle (2x2, unicycle) |  |
 | propeller-plane (2x2, propeller plane) |  |
 | dog-sled (2x2, dog sled) |  |
@@ -511,7 +511,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | spiral-staircase (2x2, spiral staircase) |  |
 | grain-silos (2x2, grain silos) |  |
 | geodesic-dome (2x2, geodesic dome) |  |
-| stilt-house (2x2, stilt house) |  |
+| stilt-house (2x2, stilt house) | 5 |
 | fire-lookout (2x2, fire lookout) |  |
 | drawbridge (2x2, drawbridge) |  |
 | viaduct (2x2, viaduct) |  |
@@ -551,7 +551,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | axolotl (2x2, axolotl) |  |
 | tree-frog (2x2, tree frog) |  |
 | ladybird (2x2, ladybird) |  |
-| bumblebee (2x2, bumblebee) |  |
+| bumblebee (2x2, bumblebee) | 12 |
 | monarch (2x2, monarch) |  |
 | snail (2x2, snail) |  |
 | goldfish (2x2, goldfish) |  |
@@ -591,7 +591,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | sweet-violets (2x2, sweet violets) |  |
 | petunias (2x2, petunias) |  |
 | begonias (2x2, begonias) |  |
-| bromeliad (2x2, bromeliad) |  |
+| bromeliad (2x2, bromeliad) | 7 |
 | bottlebrush (2x2, bottlebrush) |  |
 | cockscomb (2x2, cockscomb) |  |
 | crown-imperial (2x2, crown imperial) |  |
@@ -603,7 +603,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | lantana (2x2, lantana) |  |
 | salvia (2x2, blue spikes) |  |
 | sundew (2x2, sundew) |  |
-| clivia (2x2, clivia) |  |
+| clivia (2x2, clivia) | 1 |
 | buttercups (2x2, buttercups) |  |
 | statice (2x2, statice) |  |
 | cotton-bolls (2x2, cotton bolls) |  |
@@ -657,7 +657,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | hoarfrost (2x2, white snow) |  |
 | termite-mound (2x2, termite mound) |  |
 | saturn (2x2, space) |  |
-| nebula (2x2, space) |  |
+| nebula (2x2, space) | 19 |
 | desert-bloom (2x2, wildflowers) |  |
 | wildflower-meadow (2x2, wildflowers) |  |
 | rain-window (2x2, rain window) |  |
@@ -681,7 +681,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | container-house (1x2, container house) |  |
 | station-roof (2x1, iron glass) |  |
 | arch-bridge (2x1, arch bridge) |  |
-| hanok-eaves (2x2, hanok eaves) |  |
+| hanok-eaves (2x2, hanok eaves) | 18 |
 | gazebo (2x2, gazebo) |  |
 | pergola (2x2, pergola) |  |
 | brownstone (2x2, brick city) |  |
@@ -724,7 +724,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | clownfish (2x2, clownfish) |  |
 | walrus (2x2, walrus) |  |
 | seal-pup (2x2, seal pup) |  |
-| pelican (2x2, pelican) |  |
+| pelican (2x2, pelican) | 6 |
 | cockatoo (2x2, cockatoo) |  |
 | hoopoe (2x2, hoopoe) |  |
 | bee-eater (2x2, bee eater) |  |
@@ -754,7 +754,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | jeweller (2x2, jeweller) |  |
 | basket-weaver (2x2, basket weaver) |  |
 | chocolatier (2x2, chocolatier) |  |
-| barista (2x2, barista) |  |
+| barista (2x2, barista) | 16 |
 | ice-fisher (2x2, ice fisher) |  |
 | dog-walker (2x2, dog walker) |  |
 | kite-flyer (2x2, kite flyer) |  |
@@ -790,7 +790,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | lifeboat (2x2, lifeboat) |  |
 | monorail (2x2, monorail) |  |
 | handcar (2x2, handcar) |  |
-| caboose (2x2, red railcar) |  |
+| caboose (2x2, red railcar) | 2 |
 | picnic-basket (2x2, picnic basket) |  |
 | snorkel-mask (2x2, snorkel mask) |  |
 | flip-flops (2x2, flip flops) |  |
@@ -860,7 +860,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | gaillardia (2x2, gaillardia) |  |
 | ixora (2x2, ixora) |  |
 | plumbago (2x2, plumbago) |  |
-| canna (2x2, canna) |  |
+| canna (2x2, canna) | 12 |
 | stocks (2x2, stocks) |  |
 | gazania (2x2, gazania) |  |
 | osteospermum (2x2, osteospermum) |  |
@@ -906,7 +906,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | dango (2x2, dango) |  |
 | pho (2x2, pho) |  |
 | bibimbap (2x2, bibimbap) |  |
-| nachos (2x2, nachos) |  |
+| nachos (2x2, nachos) | 16 |
 | crepes (2x2, crepes) |  |
 | fudge (2x2, fudge) |  |
 | liquorice (2x2, liquorice) |  |
@@ -933,7 +933,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | date-palms (2x2, date palms) |  |
 | outback-track (2x2, outback) |  |
 | spinifex (2x2, spinifex) |  |
-| pampas-grass (2x2, tall grass) |  |
+| pampas-grass (2x2, tall grass) | 17 |
 | fogbow (2x2, fogbow) |  |
 | tumbleweed (2x2, tumbleweed) |  |
 | frosty-meadow (2x2, winter fog) |  |
@@ -963,12 +963,12 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | shearing-shed (2x2, shearing shed) |  |
 | estancia (2x2, ranch house) |  |
 | lacework-verandah (2x2, verandah) |  |
-| rotunda (2x2, rotunda) |  |
+| rotunda (2x2, rotunda) | 20 |
 | bothy (2x2, bothy) |  |
 | pavilion (2x2, pavilion) |  |
 | loggia (2x2, loggia) |  |
 | deco-facade (2x2, deco facade) |  |
-| lock-gates (2x2, lock gates) |  |
+| lock-gates (2x2, lock gates) | 16 |
 | pantry (2x2, pantry) |  |
 | attic (2x2, attic) |  |
 | terrazzo (2x2, terrazzo) |  |
@@ -999,7 +999,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | tasmanian-devil (2x2, tasmanian devil) |  |
 | emu (2x2, ratite) |  |
 | cassowary (2x2, ratite) |  |
-| kookaburra (2x2, kookaburra) |  |
+| kookaburra (2x2, kookaburra) | 16 |
 | lorikeet (2x2, parrot) |  |
 | sugar-glider (2x2, sugar glider) |  |
 | anteater (2x2, anteater) |  |
@@ -1012,12 +1012,12 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | guinea-pig (2x2, guinea pig) |  |
 | budgies (2x2, parrot) |  |
 | golden-eagle (2x2, raptor) |  |
-| scarlet-ibis (2x2, scarlet ibis) |  |
+| scarlet-ibis (2x2, scarlet ibis) | 2 |
 | toad (2x2, toad) |  |
 | fire-salamander (2x2, fire salamander) |  |
 | iguana (2x2, iguana) |  |
 | hermit-crab (2x2, hermit crab) |  |
-| nautilus (2x2, nautilus) |  |
+| nautilus (2x2, nautilus) | 20 |
 | swallowtail (2x2, wings) |  |
 | atlas-moth (2x2, wings) |  |
 | fruit-bat (2x2, fruit bat) |  |
@@ -1135,7 +1135,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | weaverbird (2x2, weaverbird) |  |
 | red-deer (2x2, red deer) |  |
 | shetland-pony (2x2, shetland pony) |  |
-| pine-marten (2x2, pine marten) |  |
+| pine-marten (2x2, pine marten) | 17 |
 | magpie (2x2, magpie) |  |
 | maine-coon (2x2, maine coon) |  |
 | beagle (2x2, beagle) |  |
@@ -1143,7 +1143,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | orca (2x1, orca) |  |
 | funicular (1x2, red railcar) |  |
 | punt (2x2, punt) |  |
-| hot-rod (2x2, hot rod) |  |
+| hot-rod (2x2, hot rod) | 20 |
 | snowcat (2x2, snowcat) |  |
 | fireboat (2x2, fireboat) |  |
 | felucca (2x2, sail) |  |
@@ -1152,13 +1152,13 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | bmx (2x2, bmx) |  |
 | space-shuttle (2x2, rocket) |  |
 | moon-buggy (2x2, spacecraft) |  |
-| tow-truck (2x2, tow truck) |  |
+| tow-truck (2x2, tow truck) | 1 |
 | car-carrier (2x2, car carrier) |  |
 | paper-plane (2x2, paper plane) |  |
 | windsock (2x2, windsock) |  |
 | cable-ferry (2x1, cable ferry) |  |
 | quiver-tree (1x2, quiver tree) |  |
-| ice-cave (2x2, ice cave) |  |
+| ice-cave (2x2, ice cave) | 7 |
 | mud-pots (2x2, mud pots) |  |
 | icicles (2x2, icicles) |  |
 | cork-oak (2x2, cork oak) |  |

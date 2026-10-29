@@ -89,7 +89,7 @@ import { along, CAREFUL, careless, chain, orderTraps, READABLE, reader, traps, u
 import { BIG, dealFor, deadFirstMoves, doomingFirstClears } from "../../src/game/levels/generate.ts";
 import { byId, clearOrder, destById, flags, itemById, itemClash, LESSON_MOVES, souvenirById, souvenirPictures } from "./lib.mts";
 import { CURRENT, DISTINCT, LAST_BEFORE_T9, MARKS, MAY_TRAP, SPACING, SPARES, TRIPS } from "./campaign-plan.mts";
-import { FIRST as ATMOS_FIRST, isAtmospheric, MOST_BOARDS, shareOf, takesAtmospheric } from "./atmospheric.mts";
+import { ATMOS_DAILY_FROM, FIRST as ATMOS_FIRST, isAtmospheric, MOST as ATMOS_MOST, MOST_BOARDS, shareOf, takesAtmospheric } from "./atmospheric.mts";
 import { RULES_FROM, SUITCASE_FROM } from "./daily-plan.mts";
 import { monthOf, monthsTo } from "./make-suitcases.mts";
 import { scheduleProblem } from "./suitcase.mts";
@@ -403,8 +403,8 @@ for (const file of files) {
         }
       }
       // atmospheric pictures (creator, 2026-10-28; atmospheric.mts): from board ATMOS_FIRST + 1, a board with
-      // squares holds 1 in 8 to 1 in 6 of its pictures atmospheric (rounded, at least one), none back within
-      // SPACING boards; boards before take none or a few, an all-long board none (it has no squares)
+      // squares holds one atmospheric picture (shareOf; creator, 2026-10-29: at most one a level), none back
+      // within SPACING boards; boards before take at most that, an all-long board none (it has no squares)
       if (file.endsWith("campaign.json")) {
         const i = data.levels.indexOf(l);
         const atmos = l.pictures.filter((p) => isAtmospheric(catalogue.get(p.id)));
@@ -418,6 +418,12 @@ for (const file of files) {
           const on = data.levels.filter((e) => e.pictures.some((q) => q.id === p.id)).length;
           if (on > MOST_BOARDS && data.levels.findIndex((e) => e.pictures.some((q) => q.id === p.id)) === i) fail(`atmospheric ${p.id} is on ${on} boards, at most ${MOST_BOARDS}`);
         }
+      }
+      // and at most one a level in every other lane but the Souvenirs (creator, 2026-10-29; atmospheric.mts
+      // fewerAtmospheric): the challenge route, the dev menu's, the lesson and the dailies from ATMOS_DAILY_FROM
+      else if (!souvenirBoard && (l.date === undefined || l.date >= ATMOS_DAILY_FROM)) {
+        const atmos = l.pictures.filter((p) => isAtmospheric(catalogue.get(p.id))).length;
+        if (atmos > ATMOS_MOST) fail(`${atmos} atmospheric pictures; a level takes at most ${ATMOS_MOST} (its maker swaps the rest in place: atmospheric.mts fewerAtmospheric)`);
       }
       const line = l.line.map(([from, to]) => ({ from, to }));
       let won = false;

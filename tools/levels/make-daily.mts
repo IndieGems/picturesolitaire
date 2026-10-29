@@ -41,6 +41,7 @@ import { byId, catalogue, catchUp, clearOrder, dealBoard, flaggedOn, itemById, i
 import { RULES_FROM, rowOn, SUITCASE_FROM, SUITCASE_WEEK, WEEK } from "./daily-plan.mts";
 import { CURRENT, LAST_BEFORE_T9, SPARES } from "./campaign-plan.mts";
 import { schedule } from "./suitcase.mts";
+import { isAtmospheric } from "./atmospheric.mts";
 
 const FILE = join(root, "src/content/levels/daily.json");
 const BOARD = { cols: 4, rows: 5 };
@@ -66,7 +67,9 @@ reserveLandmarks();
  */
 const at = new Map(catalogue.map((p, k) => [p.id, k]));
 const lastKept = at.get(LAST_BEFORE_T9);
-const CURRENT_SQUARES = usable.filter((p) => p.cols === 2 && p.rows === 2 && !CURRENT.has(p.id) && !SPARES.has(p.id) && at.get(p.id) <= lastKept);
+// and never an atmospheric one (creator, 2026-10-29: at most one a level; atmospheric.mts): a daily's are all clear
+const CLEAR = usable.filter((p) => !isAtmospheric(p));
+const CURRENT_SQUARES = CLEAR.filter((p) => p.cols === 2 && p.rows === 2 && !CURRENT.has(p.id) && !SPARES.has(p.id) && at.get(p.id) <= lastKept);
 /** The day's item (suitcase.mts schedule), from SUITCASE_FROM. */
 const itemOn = (date) => {
   if (date < SUITCASE_FROM) return null;
@@ -121,7 +124,7 @@ function makeDay(k, date, sets, weigh, span = 2) {
   for (let attempt = 0; attempt < 12; attempt++) {
     const avoid = new Map([...weigh()].map(([k, v]) => [k, v + (failed.get(k) ?? 0)]));
     for (const p of recent) avoid.set(p, (avoid.get(p) ?? 0) + 1000);
-    const pictures = pick(usable, { count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, vary: row.vary, busyMost: row.busyMost, meanFamilies: true }, avoid, recent, random((hashId(id) + attempt * 104729) >>> 0));
+    const pictures = pick(CLEAR, { count: row.count, alike: row.alike, cards: row.cards, sizes: row.sizes, vary: row.vary, busyMost: row.busyMost, meanFamilies: true }, avoid, recent, random((hashId(id) + attempt * 104729) >>> 0));
     if (!pictures) throw new Error(`${id}: no pictures fit the day's type`);
     const { board, tally } = dealBoard(row, pictures, opts);
     if (board) return board;

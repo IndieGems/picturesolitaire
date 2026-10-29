@@ -17,13 +17,14 @@ import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { catalogue, famName, lookalikes, readBoards, root, route, usable, writeBoards } from "./lib.mts";
 import { PLAN } from "./challenge-plan.mts";
+import { fewerAtmospheric } from "./atmospheric.mts";
 
 const t0 = performance.now();
 /** A wide par search: the route is made once, offline (about 1-40 s a board). */
 const PAR = { width: 600, perKey: 24, ways: 80 };
 
 const FILE = join(root, "src/content/levels/challenge.json");
-const levels = route(PLAN, readBoards(FILE), {
+const made = route(PLAN, readBoards(FILE), {
   repairOnly: process.argv.includes("--repair-only"),
   seedOf: (i) => 0x5eed00 + i * 7919,
   optsOf: (i) => ({
@@ -37,6 +38,11 @@ const levels = route(PLAN, readBoards(FILE), {
     vary: true,
   }),
 });
+// at most one atmospheric picture a level (creator, 2026-10-29): the extras give way in place to clear ones
+const fewer = fewerAtmospheric(made);
+for (const w of fewer.swaps) console.log(`${w.level}: ${w.atmospheric} -> ${w.clear} in place (at most one atmospheric a level); the deal and line unchanged`);
+if (fewer.short.length) throw new Error(`no clear picture fits in place of ${fewer.short.join(", ")}`);
+const levels = fewer.levels;
 const outAt = process.argv.indexOf("--out");
 writeBoards(outAt > 0 ? process.argv[outAt + 1] : FILE, "challenge route; made by tools/levels/make-challenge.mts, checked by tools/levels/check.mts; par = moves in the stored line", levels);
 

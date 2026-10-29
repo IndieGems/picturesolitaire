@@ -583,7 +583,7 @@ export function makeBoard(plan, i, chosen, uses, opts) {
       const seen = vary ? new Map([...base].map(([k, v]) => [k, v + (failed.get(k) ?? 0)])) : base;
       const pictures = pick(poolOf ? poolOf(i) : usable, specOf(row), seen, new Set([...(chosen[i - 1] ?? []), ...(chosen[i + 1] ?? [])].map((q) => q.id)), random(reseedOf(i, attempt - sets.length + 1)));
       for (const q of own) uses.set(q.id, uses.get(q.id) + 1);
-      if (!pictures) throw new Error(`${id}: no other pictures fit the plan${poolOf ? " under the no-repeat rule (the library needs more pictures)" : ""}${flags.size ? " (flagged pictures are left out)" : ""}`);
+      if (!pictures) throw new Error(`${id}: no other pictures fit the plan${seenOf ? " under the no-repeat rule (the library needs more pictures)" : ""}${flags.size ? " (flagged pictures are left out)" : ""}`);
       take(pictures);
     }
     const { board, tally } = dealBoard(row, chosen[i], opts);
@@ -746,7 +746,8 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
       chosen[i] = d.pictures;
     });
   const uses = usesOf(chosen);
-  const poolOf = rule ? (i) => poolOn(chosen, i, rule, plan[i]) : undefined;
+  // the pictures a pick may take: clear ones only in every lane (poolOn), and with spacing none the rule bans
+  const poolOf = (i) => poolOn(chosen, i, rule, plan[i]);
   // with spacing, a swap's nearness is the gap it would make (1000: the rule bans it)
   const near = spacing
     ? (i, id) => (bannedOn(chosen, i, rule).has(id) ? 1000 : 0) + chosen.reduce((n, set, k) => n + (k !== i && set?.some((q) => q.id === id) ? Math.max(0, spacing - Math.abs(k - i)) : 0), 0)

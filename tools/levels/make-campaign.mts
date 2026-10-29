@@ -176,7 +176,7 @@ daily puzzle in [daily.md](daily.md).
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 ${rows.join("\n")}
 
-**Atmospheric pictures** (creator, 2026-10-28): about 1 in 6 to 1 in 8 of a board's pictures, from board 3 on (none on an all-long board), are atmospheric, each in a clear square's place with the deal unchanged (\`tools/levels/atmospheric.mts\`). Per trip: ${TRIPS.map((t) => {
+**Atmospheric pictures** (creator, 2026-10-28; at most one a level, 2026-10-29): one of each board's pictures, from board 3 on (none on an all-long board), is atmospheric, each in a clear square's place with the deal unchanged (\`tools/levels/atmospheric.mts\`). Per trip: ${TRIPS.map((t) => {
   const ls = levels.slice(t.from - 1, t.to);
   const a = ls.reduce((n, l) => n + l.pictures.filter((p) => isAtmospheric(byIdOf.get(p.id))).length, 0);
   return `${t.name} ${a} of ${ls.reduce((n, l) => n + l.pictures.length, 0)}`;

@@ -71,10 +71,6 @@
    {
     "clear": "hibiscus",
     "atmospheric": "figs-grapes"
-   },
-   {
-    "clear": "cow-nose",
-    "atmospheric": "crows-winter-field"
    }
   ],
   "c16": [
@@ -105,10 +101,6 @@
    {
     "clear": "sweet-william",
     "atmospheric": "leg-rowers"
-   },
-   {
-    "clear": "pistachios",
-    "atmospheric": "poppy-sunset"
    }
   ],
   "c22": [
@@ -121,10 +113,6 @@
    {
     "clear": "watermill",
     "atmospheric": "ochre-sails-lagoon"
-   },
-   {
-    "clear": "roller-skate",
-    "atmospheric": "luzzu-harbour"
    }
   ],
   "c24": [
@@ -137,10 +125,6 @@
    {
     "clear": "croissant",
     "atmospheric": "argan-tree"
-   },
-   {
-    "clear": "desk-globe",
-    "atmospheric": "fishing-fleet"
    }
   ],
   "c26": [
@@ -159,34 +143,18 @@
    {
     "clear": "crystal-cave",
     "atmospheric": "autumn-lake-reflections"
-   },
-   {
-    "clear": "standing-stones",
-    "atmospheric": "rocky-cove"
    }
   ],
   "c29": [
    {
     "clear": "magnolia",
     "atmospheric": "berry-cake"
-   },
-   {
-    "clear": "baobab",
-    "atmospheric": "fish-landing"
    }
   ],
   "c30": [
    {
     "clear": "mussels",
     "atmospheric": "lemon-tart"
-   },
-   {
-    "clear": "frilled-lizard",
-    "atmospheric": "night-bridge-lights"
-   },
-   {
-    "clear": "cooper",
-    "atmospheric": "rodeo"
    }
   ],
   "c31": [
@@ -199,10 +167,6 @@
    {
     "clear": "hot-spring",
     "atmospheric": "river-village-willows"
-   },
-   {
-    "clear": "lumberjack",
-    "atmospheric": "rowing-race-crowd"
    }
   ],
   "c33": [
@@ -221,10 +185,6 @@
    {
     "clear": "bananas",
     "atmospheric": "regatta-headland"
-   },
-   {
-    "clear": "tea-pourer",
-    "atmospheric": "river-town-bridge"
    }
   ],
   "c37": [
@@ -237,10 +197,6 @@
    {
     "clear": "axolotl",
     "atmospheric": "wax-print-market"
-   },
-   {
-    "clear": "rainbow-eucalyptus",
-    "atmospheric": "cafe-interior"
    }
   ],
   "c39": [
@@ -253,20 +209,12 @@
    {
     "clear": "carnation",
     "atmospheric": "research-station"
-   },
-   {
-    "clear": "switchbacks",
-    "atmospheric": "hanami-picnic"
    }
   ],
   "c41": [
    {
     "clear": "lido",
     "atmospheric": "night-train"
-   },
-   {
-    "clear": "vine-tomatoes",
-    "atmospheric": "steam-cranes-dock"
    }
   ],
   "c42": [
@@ -279,10 +227,6 @@
    {
     "clear": "harpist",
     "atmospheric": "ghost-town"
-   },
-   {
-    "clear": "prickly-pear",
-    "atmospheric": "peony-jug"
    }
   ],
   "c44": [
@@ -295,10 +239,6 @@
    {
     "clear": "stepping-stones",
     "atmospheric": "alpine-hut-hikers"
-   },
-   {
-    "clear": "dormer-roof",
-    "atmospheric": "lilac-bouquet"
    }
   ],
   "c46": [
@@ -311,10 +251,6 @@
    {
     "clear": "nasturtiums",
     "atmospheric": "sugarcane-harvest"
-   },
-   {
-    "clear": "yarn-balls",
-    "atmospheric": "cliff-walk"
    }
   ],
   "c48": [
@@ -327,60 +263,36 @@
    {
     "clear": "pitcher-plant",
     "atmospheric": "post-bus"
-   },
-   {
-    "clear": "container-ship",
-    "atmospheric": "drive-in-cinema"
    }
   ],
   "c50": [
    {
     "clear": "dovecote",
     "atmospheric": "river-shower-boats"
-   },
-   {
-    "clear": "ladybird",
-    "atmospheric": "market-square-livestock"
    }
   ],
   "c52": [
    {
     "clear": "hedge-maze",
     "atmospheric": "cow-parade"
-   },
-   {
-    "clear": "dog-sled",
-    "atmospheric": "polder"
    }
   ],
   "c53": [
    {
     "clear": "braided-river",
     "atmospheric": "island-market"
-   },
-   {
-    "clear": "blooming-tea",
-    "atmospheric": "lake-summer-houses"
    }
   ],
   "c54": [
    {
     "clear": "fruit-seller",
     "atmospheric": "chateau-lake"
-   },
-   {
-    "clear": "kaleidoscope",
-    "atmospheric": "maypole-dance"
    }
   ],
   "c55": [
    {
     "clear": "chimney-pots",
     "atmospheric": "stormy-swell"
-   },
-   {
-    "clear": "bleeding-heart",
-    "atmospheric": "salmon-run"
    }
   ],
   "c56": [
@@ -399,10 +311,6 @@
    {
     "clear": "kick-scooter",
     "atmospheric": "river-barges"
-   },
-   {
-    "clear": "popcorn",
-    "atmospheric": "flooded-village"
    }
   ],
   "c59": [
@@ -415,14 +323,6 @@
    {
     "clear": "sextant",
     "atmospheric": "hayracks"
-   },
-   {
-    "clear": "seedlings",
-    "atmospheric": "city-view-dusk"
-   },
-   {
-    "clear": "dumplings",
-    "atmospheric": "ochre-sails-lagoon"
    }
   ],
   "c61": [
@@ -435,10 +335,6 @@
    {
     "clear": "falconer",
     "atmospheric": "open-air-dance"
-   },
-   {
-    "clear": "bao-buns",
-    "atmospheric": "reed-boats"
    }
   ],
   "c63": [
@@ -451,20 +347,12 @@
    {
     "clear": "snorkel-mask",
     "atmospheric": "frost-hellebores"
-   },
-   {
-    "clear": "salt-marsh",
-    "atmospheric": "alpine-hut-hikers"
    }
   ],
   "c65": [
    {
     "clear": "mimosa",
     "atmospheric": "schooner-harbour"
-   },
-   {
-    "clear": "gardenia",
-    "atmospheric": "glacial-lake-tents"
    }
   ],
   "c67": [
@@ -477,10 +365,6 @@
    {
     "clear": "iron-gate",
     "atmospheric": "winter-village-dusk"
-   },
-   {
-    "clear": "begonias",
-    "atmospheric": "dawn-market-wagons"
    }
   ],
   "c69": [
@@ -493,20 +377,12 @@
    {
     "clear": "blue-shutters",
     "atmospheric": "winter-street-dome"
-   },
-   {
-    "clear": "teacup-ride",
-    "atmospheric": "village-fete"
    }
   ],
   "c71": [
    {
     "clear": "toboggan",
     "atmospheric": "seawall-train"
-   },
-   {
-    "clear": "tuk-tuk",
-    "atmospheric": "riverside-picnic"
    }
   ],
   "c72": [
@@ -519,10 +395,6 @@
    {
     "clear": "termite-mound",
     "atmospheric": "full-moon-reeds"
-   },
-   {
-    "clear": "horreo",
-    "atmospheric": "poplar-river"
    }
   ],
   "c74": [
@@ -535,20 +407,12 @@
    {
     "clear": "breakdancer",
     "atmospheric": "gondola-lift"
-   },
-   {
-    "clear": "kumquats",
-    "atmospheric": "village-downpour"
    }
   ],
   "c76": [
    {
     "clear": "rain-window",
     "atmospheric": "stilt-fishermen"
-   },
-   {
-    "clear": "spaghetti",
-    "atmospheric": "cycle-race"
    }
   ],
   "c77": [
@@ -561,30 +425,18 @@
    {
     "clear": "orange-grove",
     "atmospheric": "reed-boats"
-   },
-   {
-    "clear": "archer",
-    "atmospheric": "cantilever-nets"
    }
   ],
   "c79": [
    {
     "clear": "town-square",
     "atmospheric": "sheep-market"
-   },
-   {
-    "clear": "dining-car",
-    "atmospheric": "train-compartment"
    }
   ],
   "c80": [
    {
     "clear": "swing-ride",
     "atmospheric": "badlands"
-   },
-   {
-    "clear": "bagels",
-    "atmospheric": "cherry-bowl"
    }
   ],
   "c82": [
@@ -603,20 +455,12 @@
    {
     "clear": "gumball-machine",
     "atmospheric": "sheepdog-trial"
-   },
-   {
-    "clear": "show-jumper",
-    "atmospheric": "river-barges"
    }
   ],
   "c85": [
    {
     "clear": "picnic-basket",
     "atmospheric": "cliff-walk"
-   },
-   {
-    "clear": "farrier",
-    "atmospheric": "highland-games"
    }
   ],
   "c86": [
@@ -629,10 +473,6 @@
    {
     "clear": "vineyard",
     "atmospheric": "threshing-day"
-   },
-   {
-    "clear": "tempura",
-    "atmospheric": "andean-terraces"
    }
   ],
   "c88": [
@@ -645,24 +485,12 @@
    {
     "clear": "kangaroo",
     "atmospheric": "fauvist-port"
-   },
-   {
-    "clear": "stone-well",
-    "atmospheric": "hop-picking"
    }
   ],
   "c90": [
    {
     "clear": "pufferfish",
     "atmospheric": "cattle-ford"
-   },
-   {
-    "clear": "zen-garden",
-    "atmospheric": "pomegranates"
-   },
-   {
-    "clear": "abacus",
-    "atmospheric": "net-mender"
    }
   ],
   "c91": [
@@ -675,10 +503,6 @@
    {
     "clear": "gaillardia",
     "atmospheric": "hillside-harbour-town"
-   },
-   {
-    "clear": "eclipse",
-    "atmospheric": "street-of-steps"
    }
   ],
   "c93": [
@@ -691,20 +515,12 @@
    {
     "clear": "gyrocopter",
     "atmospheric": "candle-oranges"
-   },
-   {
-    "clear": "tumbleweed",
-    "atmospheric": "paddling-children"
    }
   ],
   "c95": [
    {
     "clear": "beehive-hut",
     "atmospheric": "abbey-cloister"
-   },
-   {
-    "clear": "clover",
-    "atmospheric": "lawn-tennis"
    }
   ],
   "c97": [
@@ -717,10 +533,6 @@
    {
     "clear": "sea-glass",
     "atmospheric": "autumn-village"
-   },
-   {
-    "clear": "desert-pea",
-    "atmospheric": "sugarcane-harvest"
    }
   ],
   "c99": [
@@ -733,20 +545,12 @@
    {
     "clear": "digger",
     "atmospheric": "boat-hauling"
-   },
-   {
-    "clear": "pasteis-de-nata",
-    "atmospheric": "potter-studio"
    }
   ],
   "c101": [
    {
     "clear": "dragster",
     "atmospheric": "murmuration"
-   },
-   {
-    "clear": "beachcomber",
-    "atmospheric": "river-valley"
    }
   ],
   "c102": [
@@ -759,10 +563,6 @@
    {
     "clear": "terrazzo",
     "atmospheric": "boatyard"
-   },
-   {
-    "clear": "spinifex",
-    "atmospheric": "village-fete"
    }
   ],
   "c104": [
@@ -775,10 +575,6 @@
    {
     "clear": "pampas-grass",
     "atmospheric": "wild-ponies-heath"
-   },
-   {
-    "clear": "crepes",
-    "atmospheric": "poplar-river"
    }
   ],
   "c106": [
@@ -791,10 +587,6 @@
    {
     "clear": "driftwood",
     "atmospheric": "anemones"
-   },
-   {
-    "clear": "queenslander",
-    "atmospheric": "village-pond"
    }
   ],
   "c108": [
@@ -807,70 +599,42 @@
    {
     "clear": "shearer",
     "atmospheric": "shrimp-fishers"
-   },
-   {
-    "clear": "steam-roller",
-    "atmospheric": "lava-moss-field"
    }
   ],
   "c110": [
    {
     "clear": "bibimbap",
     "atmospheric": "carpet-bazaar"
-   },
-   {
-    "clear": "pantry",
-    "atmospheric": "jungle-river"
    }
   ],
   "c112": [
    {
     "clear": "kite-maker",
     "atmospheric": "tidal-island"
-   },
-   {
-    "clear": "log-flume",
-    "atmospheric": "rooftops-laundry"
    }
   ],
   "c113": [
    {
     "clear": "toymaker",
     "atmospheric": "misty-pass-road"
-   },
-   {
-    "clear": "fudge",
-    "atmospheric": "frost-hellebores"
    }
   ],
   "c114": [
    {
     "clear": "coffered-ceiling",
     "atmospheric": "river-town-bridge"
-   },
-   {
-    "clear": "asador",
-    "atmospheric": "berry-cake"
    }
   ],
   "c115": [
    {
     "clear": "autumn-treetops",
     "atmospheric": "wedding-procession"
-   },
-   {
-    "clear": "tapir",
-    "atmospheric": "arcaded-street"
    }
   ],
   "c116": [
    {
     "clear": "pirate-ship-ride",
     "atmospheric": "ballet-rehearsal"
-   },
-   {
-    "clear": "mosaic-artist",
-    "atmospheric": "mushroom-pickers"
    }
   ],
   "c117": [
@@ -883,10 +647,6 @@
    {
     "clear": "birdwatcher",
     "atmospheric": "arctic-village"
-   },
-   {
-    "clear": "ammonite",
-    "atmospheric": "badlands"
    }
   ],
   "c119": [
@@ -899,24 +659,12 @@
    {
     "clear": "glazier",
     "atmospheric": "cycle-race"
-   },
-   {
-    "clear": "wombat",
-    "atmospheric": "fish-market-dutch"
-   },
-   {
-    "clear": "jasmine",
-    "atmospheric": "threshing-day"
    }
   ],
   "c121": [
    {
     "clear": "library-shelves",
     "atmospheric": "winding-road-hills"
-   },
-   {
-    "clear": "grape-picker",
-    "atmospheric": "boatyard"
    }
   ],
   "c122": [
@@ -929,10 +677,6 @@
    {
     "clear": "paper-plane",
     "atmospheric": "thermal-pools"
-   },
-   {
-    "clear": "welsh-cakes",
-    "atmospheric": "lawn-tennis"
    }
   ],
   "c124": [
@@ -945,10 +689,6 @@
    {
     "clear": "ice-hotel",
     "atmospheric": "hay-barn-meadow"
-   },
-   {
-    "clear": "mapmaker",
-    "atmospheric": "peony-jug"
    }
   ],
   "c127": [
@@ -961,30 +701,18 @@
    {
     "clear": "cinnamon-rolls",
     "atmospheric": "blossom-orchard"
-   },
-   {
-    "clear": "campanula",
-    "atmospheric": "night-bridge-lights"
    }
   ],
   "c129": [
    {
     "clear": "turf-house",
     "atmospheric": "cricket-green"
-   },
-   {
-    "clear": "magpie",
-    "atmospheric": "papel-picado-plaza"
    }
   ],
   "c130": [
    {
     "clear": "mud-pots",
     "atmospheric": "narrowboats-towpath"
-   },
-   {
-    "clear": "red-deer",
-    "atmospheric": "mokoro-papyrus"
    }
   ],
   "c131": [
@@ -1003,30 +731,18 @@
    {
     "clear": "ice-cream-van",
     "atmospheric": "flooded-village"
-   },
-   {
-    "clear": "trilobite",
-    "atmospheric": "layered-hills-dawn"
    }
   ],
   "c134": [
    {
     "clear": "rollerskater",
     "atmospheric": "lava-moss-field"
-   },
-   {
-    "clear": "crevasse",
-    "atmospheric": "alpine-train"
    }
   ],
   "c135": [
    {
     "clear": "falafel",
     "atmospheric": "city-park-boating"
-   },
-   {
-    "clear": "lamplighter",
-    "atmospheric": "snowfall-bridge"
    }
   ],
   "c136": [
@@ -1045,30 +761,18 @@
    {
     "clear": "stag-beetle",
     "atmospheric": "hydrangeas"
-   },
-   {
-    "clear": "camping-stove",
-    "atmospheric": "lakeside-inn"
    }
   ],
   "c139": [
    {
     "clear": "yarrow",
     "atmospheric": "willows-misty-river"
-   },
-   {
-    "clear": "physalis",
-    "atmospheric": "island-market"
    }
   ],
   "c140": [
    {
     "clear": "signal-box",
     "atmospheric": "midnight-sun"
-   },
-   {
-    "clear": "fireboat",
-    "atmospheric": "peat-cutting"
    }
   ],
   "c142": [
@@ -1081,173 +785,102 @@
    {
     "clear": "pumpkins",
     "atmospheric": "apple-press"
-   },
-   {
-    "clear": "market-hall",
-    "atmospheric": "abbey-cloister"
    }
   ],
   "c144": [
    {
     "clear": "dragon-boat",
     "atmospheric": "cafe-interior"
-   },
-   {
-    "clear": "flower-balcony",
-    "atmospheric": "thermal-pools"
    }
   ],
   "c145": [
    {
     "clear": "bumper-cars",
     "atmospheric": "pergola-lunch"
-   },
-   {
-    "clear": "dollhouse",
-    "atmospheric": "trajineras"
    }
   ],
   "c146": [
    {
     "clear": "fishmonger",
     "atmospheric": "promenade-parasols"
-   },
-   {
-    "clear": "rainforest-canopy",
-    "atmospheric": "train-compartment"
    }
   ],
   "c147": [
    {
     "clear": "glass-arcade",
     "atmospheric": "winter-farmyard"
-   },
-   {
-    "clear": "river-raft",
-    "atmospheric": "chateau-lake"
    }
   ],
   "c148": [
    {
     "clear": "shell-grotto",
     "atmospheric": "goose-girl"
-   },
-   {
-    "clear": "paella",
-    "atmospheric": "blossom-orchard"
    }
   ],
   "c149": [
    {
     "clear": "bluebonnets",
     "atmospheric": "flea-market"
-   },
-   {
-    "clear": "cranberry-bog",
-    "atmospheric": "hillside-harbour-town"
    }
   ],
   "c150": [
    {
     "clear": "trapeze",
     "atmospheric": "savanna-zebras"
-   },
-   {
-    "clear": "sleeping-pods",
-    "atmospheric": "potato-harvest"
-   },
-   {
-    "clear": "cockscomb",
-    "atmospheric": "autumn-village"
    }
   ]
  },
  "displaced": [
-  "abacus",
-  "ammonite",
-  "archer",
-  "asador",
   "aspen-grove",
   "autumn-treetops",
   "axolotl",
-  "bagels",
   "baker",
   "ballerina",
   "bananas",
-  "bao-buns",
-  "baobab",
   "beachcomber",
   "beehive-hut",
   "beetroot",
-  "begonias",
   "bibimbap",
   "birdwatcher",
   "black-eyed-susans",
-  "bleeding-heart",
-  "blooming-tea",
   "blue-bicycle",
   "blue-shutters",
   "bluebonnets",
   "braided-river",
   "breakdancer",
   "bumper-cars",
-  "campanula",
-  "camping-stove",
   "car-carrier",
   "carnation",
   "chanterelles",
   "chimney-pots",
   "cinnamon-rolls",
-  "clover",
-  "cockscomb",
   "coffee-roaster",
   "coffered-ceiling",
   "coleus",
   "conductor",
-  "container-ship",
-  "cooper",
-  "cow-nose",
-  "cranberry-bog",
-  "crepes",
-  "crevasse",
   "croissant",
   "crown-imperial",
   "crystal-cave",
   "dandelion-wish",
-  "desert-pea",
-  "desk-globe",
   "dewdrops",
   "digger",
-  "dining-car",
-  "dog-sled",
-  "dollhouse",
-  "dormer-roof",
   "double-decker",
   "dovecote",
   "dragon-boat",
   "dragster",
   "driftwood",
-  "dumplings",
-  "eclipse",
   "falafel",
   "falconer",
-  "farrier",
-  "fireboat",
   "fishmonger",
-  "flower-balcony",
   "focaccia",
-  "frilled-lizard",
   "fruit-seller",
-  "fudge",
   "gaillardia",
   "garden-fountain",
-  "gardenia",
   "gazebo",
   "giant-lily-pads",
   "glass-arcade",
   "glazier",
   "grain-silos",
-  "grape-picker",
   "gumball-machine",
   "gyrocopter",
   "harpist",
@@ -1257,36 +890,24 @@
   "hermit-crab",
   "hibiscus",
   "high-diver",
-  "horreo",
   "hot-spring",
   "hummingbird",
   "ice-cream-van",
   "ice-hotel",
   "iron-gate",
-  "jasmine",
   "jelly",
-  "kaleidoscope",
   "kangaroo",
   "kasbah",
   "kick-scooter",
   "kite-maker",
-  "kumquats",
-  "ladybird",
-  "lamplighter",
   "library-shelves",
   "lido",
-  "log-flume",
   "longtail-boat",
-  "lumberjack",
   "lynx",
   "macaw",
   "magnolia",
-  "magpie",
   "maine-coon",
-  "mapmaker",
-  "market-hall",
   "mimosa",
-  "mosaic-artist",
   "mud-pots",
   "mussels",
   "nachos",
@@ -1295,67 +916,41 @@
   "orange-grove",
   "origami-crane",
   "outrigger",
-  "paella",
   "pampas-grass",
   "panda",
-  "pantry",
   "paper-plane",
-  "pasteis-de-nata",
   "patchwork-hills",
-  "physalis",
   "picnic-basket",
   "pirate-ship-ride",
-  "pistachios",
   "pitcher-plant",
   "pizza",
-  "popcorn",
   "pretzel",
-  "prickly-pear",
   "pufferfish",
   "pumpkins",
   "quad-bike",
-  "queenslander",
   "rack-railway",
   "rain-window",
   "rainbow-eucalyptus",
-  "rainforest-canopy",
-  "red-deer",
   "reed-bed",
-  "river-raft",
-  "roller-skate",
   "rollerskater",
   "rooftop-garden",
   "rugby",
-  "salt-marsh",
   "sandcastle",
   "scabious",
   "sea-glass",
   "seashells",
-  "seedlings",
   "sextant",
   "shearer",
   "shell-grotto",
   "shooting-stars",
-  "show-jumper",
   "signal-box",
-  "sleeping-pods",
   "snorkel-mask",
-  "spaghetti",
-  "spinifex",
   "stag-beetle",
-  "standing-stones",
-  "steam-roller",
   "stepping-stones",
-  "stone-well",
   "suitcase",
   "sundew",
   "sweet-william",
   "swing-ride",
-  "switchbacks",
-  "tapir",
-  "tea-pourer",
-  "teacup-ride",
-  "tempura",
   "termite-mound",
   "terrazzo",
   "tiled-stairs",
@@ -1366,102 +961,60 @@
   "toymaker",
   "trapeze",
   "tree-house",
-  "trilobite",
-  "tuk-tuk",
-  "tumbleweed",
   "turf-house",
-  "vine-tomatoes",
   "vineyard",
   "watermill",
-  "welsh-cakes",
   "windsock",
-  "wombat",
-  "yarn-balls",
   "yarrow",
   "yurt",
-  "zen-garden",
   "zinnia"
  ],
  "freed": [
-  "abacus",
-  "ammonite",
-  "archer",
-  "asador",
   "autumn-treetops",
-  "bagels",
   "ballerina",
   "bananas",
-  "bao-buns",
-  "baobab",
-  "beachcomber",
   "beehive-hut",
   "beetroot",
-  "begonias",
   "bibimbap",
   "birdwatcher",
   "black-eyed-susans",
-  "bleeding-heart",
   "blue-bicycle",
   "blue-shutters",
   "bluebonnets",
   "braided-river",
   "breakdancer",
   "bumper-cars",
-  "campanula",
-  "camping-stove",
   "car-carrier",
   "carnation",
   "chanterelles",
   "chimney-pots",
   "cinnamon-rolls",
-  "clover",
-  "cockscomb",
   "coffee-roaster",
   "coffered-ceiling",
   "coleus",
   "conductor",
-  "container-ship",
-  "cooper",
-  "cow-nose",
-  "cranberry-bog",
-  "crepes",
-  "crevasse",
   "croissant",
   "crown-imperial",
   "crystal-cave",
   "dandelion-wish",
-  "desert-pea",
-  "desk-globe",
   "dewdrops",
   "digger",
-  "dining-car",
-  "dog-sled",
-  "dollhouse",
-  "dormer-roof",
   "double-decker",
   "dovecote",
   "dragon-boat",
   "dragster",
   "driftwood",
-  "eclipse",
   "falafel",
   "falconer",
-  "farrier",
-  "fireboat",
   "fishmonger",
-  "flower-balcony",
   "focaccia",
-  "frilled-lizard",
   "fruit-seller",
-  "fudge",
   "gaillardia",
   "garden-fountain",
-  "gardenia",
   "gazebo",
   "giant-lily-pads",
   "glass-arcade",
   "glazier",
-  "grape-picker",
   "gumball-machine",
   "gyrocopter",
   "harpist",
@@ -1471,7 +1024,6 @@
   "hermit-crab",
   "hibiscus",
   "high-diver",
-  "horreo",
   "hot-spring",
   "hummingbird",
   "ice-cream-van",
@@ -1480,22 +1032,14 @@
   "jelly",
   "kasbah",
   "kite-maker",
-  "kumquats",
-  "ladybird",
-  "lamplighter",
   "library-shelves",
   "lido",
-  "log-flume",
   "longtail-boat",
   "lynx",
   "macaw",
   "magnolia",
-  "magpie",
   "maine-coon",
-  "mapmaker",
-  "market-hall",
   "mimosa",
-  "mosaic-artist",
   "mud-pots",
   "mussels",
   "nachos",
@@ -1504,33 +1048,21 @@
   "orange-grove",
   "origami-crane",
   "outrigger",
-  "paella",
   "pampas-grass",
   "panda",
-  "pantry",
   "paper-plane",
-  "pasteis-de-nata",
   "patchwork-hills",
-  "physalis",
   "picnic-basket",
   "pirate-ship-ride",
-  "pistachios",
   "pitcher-plant",
   "pizza",
   "pretzel",
-  "prickly-pear",
   "pufferfish",
   "pumpkins",
   "quad-bike",
-  "queenslander",
   "rack-railway",
   "rain-window",
-  "rainbow-eucalyptus",
-  "rainforest-canopy",
-  "red-deer",
   "reed-bed",
-  "river-raft",
-  "roller-skate",
   "rollerskater",
   "rooftop-garden",
   "rugby",
@@ -1538,28 +1070,18 @@
   "scabious",
   "sea-glass",
   "seashells",
-  "seedlings",
   "sextant",
   "shearer",
   "shell-grotto",
   "shooting-stars",
   "signal-box",
-  "sleeping-pods",
   "snorkel-mask",
-  "spaghetti",
-  "spinifex",
   "stag-beetle",
-  "standing-stones",
-  "steam-roller",
   "stepping-stones",
   "suitcase",
   "sundew",
   "sweet-william",
   "swing-ride",
-  "switchbacks",
-  "tapir",
-  "tea-pourer",
-  "teacup-ride",
   "termite-mound",
   "terrazzo",
   "tiled-stairs",
@@ -1570,18 +1092,11 @@
   "toymaker",
   "trapeze",
   "tree-house",
-  "trilobite",
-  "tuk-tuk",
-  "tumbleweed",
   "turf-house",
-  "vine-tomatoes",
   "watermill",
-  "welsh-cakes",
   "windsock",
-  "yarn-balls",
   "yarrow",
   "yurt",
-  "zen-garden",
   "zinnia"
  ]
 }
