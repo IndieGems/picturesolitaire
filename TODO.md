@@ -17,7 +17,6 @@
 - **Trip 11 and on.** Ten trips ship (boards 1–150, to the UK & Ireland); New Zealand is in reserve. The creator picks where. Their pictures come first from the clear pictures the atmospheric swap takes out of boards 1–150 (creator, 2026-10-28; Levels keeps the list), then new ones. Art's cap is $70 (raised 2026-10-28 for the painted-postcard pass), with $57.72 spent before it. Later trips grow through 5×5 and 6×6 boards, within the readable and careful-player rules (`docs/difficulty-curve.md`).
 - **The challenge route and daily** still deal some landmark pictures (`"landmark": true`). Swap them out when those are redone under the new picture rules.
 - **The old albums' code** is unreachable from home; remove it, and the albums' catalogue fields, when the passport has settled.
-- **At release:** a travel key art for the store page (the current one is the old winter table), and a new preview video showing a postcard unfolding.
 
 ## From the Untangled review (2026-10-25)
 
@@ -27,13 +26,16 @@ UI), cards as keyboard dialogs (UI), held wins trimmed in order
 (`src/net/claims.ts`, Server), pictures at the size drawn (Art, Gameplay, UI).
 Still owed:
 
-- **At release:** analytics events and funnels (Untangled's
-  `docs/analytics.md` shape), including per board: tries per win, stuck
-  notices, helpers spent and bought, and where players stop; Levels re-deals a
-  board one picture lighter past ~2 tries (hard 3, super hard 5); twelve locales, with a fallback font behind
-  Fredoka for ą ę ż İ ğ ş and Cyrillic (Untangled's `FACES`) and a text-fit
-  check per language; the store page rewritten (it still says 30 boards and
-  look-alike pictures), new screenshots and hover loop.
+- **Before release: the people's checks** in `docs/release-record.md` (an
+  iPhone and an Android phone, two or three fresh players, the pictures at full
+  size), then re-run the release checklist (first review: NO-GO, 2026-10-29).
+- **After launch, from the numbers** (shop, purchase and daily events and the
+  buying and first-session funnels since 2026-10-29): Levels re-deals a level
+  one picture lighter past ~2 tries (hard 3, super hard 5).
+- **At release, the languages** (all 12 since 2026-10-29): bring each up to
+  date with what changed since; a native read of what the translators flagged
+  (ko/zh place spellings, "Arcade" per language, the postcard greetings) and of
+  the long Super hard badge in pl, fr and it.
 - **At release: a rights pass on the pictures** (creator, 2026-10-28; QA and Art, about half an hour):
   - flag any generated picture with lettering or logo-like marks (team jerseys, signs, rinds);
   - reverse-image-search the most iconic-looking pictures for near-copies of famous photos or characters;
