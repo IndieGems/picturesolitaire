@@ -214,9 +214,8 @@ const offlineVeil = h(
   ),
 );
 
-// a phone held sideways: one card over everything asking for it upright, shown by the stylesheet
-// alone (style.css, .upright); the game is laid out upright only (the creator, 2026-10-26)
-const upright = h("div", { class: "upright", role: "status" }, h("div", { class: "glass" }, icon("rotate"), h("h2", {}, t("upright.title")), h("p", {}, t("upright.why"))));
+// a phone held sideways: the Arcade draws its own "turn upright" panel over the game (the store page
+// declares it portrait-only), so the game draws none (the creator, 2026-10-29, GSR-011)
 
 // the albums (albums.ts): no longer on home (the passport took their place); kept, unreached, until they are tidied away
 const albumsUi = createAlbums({ home: () => goHome(), show: (which) => show(which) });
@@ -1898,7 +1897,7 @@ const TAP = 36;
 const STRIP_U = 60;
 function layoutGallery(pics: BoardPicture[], share = 0.34): HTMLElement {
   // the gallery has the card's width and a third of the height (a phone held sideways is asked to
-  // turn upright, style.css: the game is laid out upright only)
+  // turn upright by the Arcade: the game is laid out upright only)
   const width = Math.min(360, app.clientWidth - 32) - 44 - 4;
   const height = Math.max(110, Math.min(300, app.clientHeight * share));
   const aspect = cardAspect();
@@ -2133,7 +2132,7 @@ export async function startApp(): Promise<void> {
   onProgress(routeUi.redraw);
   onProgress(dailyUi.redraw);
   drawHome();
-  document.body.append(app, upright);
+  document.body.append(app);
   mountSettings(app);
   document.getElementById("boot")?.remove();
   show("home");

@@ -85,16 +85,16 @@ export interface DevMenu {
   hasNext(p: Play): boolean;
   /** Open the board after `p`, in practice. */
   next(p: Play): void;
-  /** An experiment board's name for the top row ("Board x01"). */
+  /** An experiment board's name for the top row ("Level x01"). */
   label(p: Extract<Play, { kind: "experiment" }>): string;
 }
 
 const SPEEDS = [0.25, 0.5, 1, 2];
 const WHY_NOT: Record<Extract<DevStep, { ok: false }>["reason"], string> = {
-  busy: "Wait for the board to settle",
-  finishing: "The board is finishing",
-  "no-line": "This board has no stored solution",
-  closed: "The board has closed",
+  busy: "Wait for the level to settle",
+  finishing: "The level is finishing",
+  "no-line": "This level has no stored solution",
+  closed: "The level has closed",
 };
 
 /** The lists of Play any board (the experiments have their own section). */
@@ -280,11 +280,11 @@ export function mountDevMenu(host: DevHost): DevMenu {
     dialog.close();
     showBar();
   });
-  const prev = btn("", "◀ Board before", () => {
+  const prev = btn("", "◀ Level before", () => {
     const p = host.now().play;
     if (p) go(p, -1);
   });
-  const next = btn("", "Board after ▶", () => {
+  const next = btn("", "Level after ▶", () => {
     const p = host.now().play;
     if (p) go(p, 1);
   });
@@ -292,15 +292,15 @@ export function mountDevMenu(host: DevHost): DevMenu {
   row1.append(winNow, showSolution);
   const row2 = el("div", "dev-row");
   row2.append(prev, next);
-  boardSec.append(el("h3", "", "This board"), boardBox, row1, row2);
+  boardSec.append(el("h3", "", "This level"), boardBox, row1, row2);
 
   function playName(p: Play): string {
-    if (p.kind === "campaign") return `Campaign board ${campaignNumber(p.level)}`;
+    if (p.kind === "campaign") return `Campaign level ${campaignNumber(p.level)}`;
     if (p.kind === "challenge") return `Challenge ${p.c.n}`;
     if (p.kind === "experiment") return `Experiment ${p.x.number}: ${p.x.name}`;
     if (p.kind === "lesson") return "The Shuffle lesson";
     if (p.kind === "souvenir") return `The ${p.s.trip} Souvenir (${p.s.id})`;
-    if (p.kind === "oneoff") return "board" in p.o.dare ? `A friend's board ${p.o.dare.board} (one-off)` : `A friend's daily, ${shortDate(p.o.dare.date)} (one-off)`;
+    if (p.kind === "oneoff") return "board" in p.o.dare ? `A friend's level ${p.o.dare.board} (one-off)` : `A friend's daily, ${shortDate(p.o.dare.date)} (one-off)`;
     return `Daily, ${shortDate(p.d.date)}`;
   }
 
@@ -363,7 +363,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
   switches.append(
     el("h3", "", "Switches"),
     setting("Endless helpers", endlessSwitch),
-    el("p", "dev-note", "While it's on, every board you open is practice."),
+    el("p", "dev-note", "While it's on, every level you open is practice."),
     speedSet,
     setting("Every picture in the albums", picturesSwitch),
   );
@@ -381,7 +381,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
   tabs.append(...tabBtns);
   const pick = el("div", "dev-pick");
   const pickSec = el("section");
-  pickSec.append(el("h3", "", "Play any board (practice)"), tabs, pick);
+  pickSec.append(el("h3", "", "Play any level (practice)"), tabs, pick);
 
   function tile(big: string, small: string[], current: boolean, pickIt: () => void, extra: HTMLElement[] = []): HTMLButtonElement {
     const b = btn(current ? "amber" : "", "", pickIt);
@@ -465,7 +465,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
       const when = day === today ? "today" : day < today ? "past" : "still to come";
       dayInfo.textContent = d
         ? `${shortDate(day)} (${when}) · ${d.deal.cols}×${d.deal.rows} · ${d.deal.pictures.length} pictures · par ${d.par}`
-        : `No board on ${shortDate(day)}${pool ? `: the pool runs ${shortDate(pool.first)} to ${shortDate(pool.last)}` : ""}`;
+        : `No daily puzzle on ${shortDate(day)}${pool ? `: the pool runs ${shortDate(pool.first)} to ${shortDate(pool.last)}` : ""}`;
     });
   }
 
@@ -474,12 +474,12 @@ export function mountDevMenu(host: DevHost): DevMenu {
   const xSec = el("section");
   xSec.append(
     el("h3", "", "Experiments (practice)"),
-    el("p", "dev-note", "Boards Levels made to try an idea out. They are never in the game, and the win checker does not know them."),
+    el("p", "dev-note", "Levels the level designer made to try an idea out. They are never in the game, and the win checker does not know them."),
     xList,
   );
   function drawExperiments(): void {
-    if (!experiments) return void xList.replaceChildren(el("p", "dev-note", "Loading the experiment boards…"));
-    if (!experiments.length) return void xList.replaceChildren(el("p", "dev-note", "No experiment boards yet."));
+    if (!experiments) return void xList.replaceChildren(el("p", "dev-note", "Loading the experiment levels…"));
+    if (!experiments.length) return void xList.replaceChildren(el("p", "dev-note", "No experiment levels yet."));
     const now = host.now();
     const p = now.screen === "board" ? now.play : null;
     xList.replaceChildren(
@@ -536,7 +536,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
   guideSec.append(
     el("h3", "", "Guided start"),
     btn("dev-wide", "Replay the guided start", () => play({ kind: "campaign", level: 1, guide: true })),
-    el("p", "dev-note", "Board 1 with its four steps from the first, then its finish card. Nothing is saved, and no table is given."),
+    el("p", "dev-note", "Level 1 with its four steps from the first, then its finish card. Nothing is saved, and no table is given."),
   );
 
   scroll.append(title, buildBox, boardSec, switches, pickSec, xSec, eventSec, guideSec);
@@ -633,6 +633,6 @@ export function mountDevMenu(host: DevHost): DevMenu {
     hasNext: (p) => hasNeighbour(p, 1),
     next: (p) => go(p, 1),
     // its id, as its row in the menu shows it ("Experiment 1" wraps beside the tag on a small phone)
-    label: (p) => `Board ${p.x.id}`,
+    label: (p) => `Level ${p.x.id}`,
   };
 }

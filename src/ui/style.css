@@ -994,28 +994,6 @@ html.less-motion .card .coins-chip { animation: none; }
 .viewer img { position: absolute; display: block; object-fit: cover; border-radius: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
 html.less-motion .viewer { animation: none; }
 
-/* ---------- a phone held sideways: turn it upright ----------
-   The game is laid out upright only (the store page says portrait; a PC or a TV letterboxes it).
-   A phone browser that turns anyway gets this card over everything (app.ts puts it on the page)
-   instead of a layout of its own (the creator, 2026-10-26). A tablet keeps its portrait column. */
-.upright { display: none; }
-@media (orientation: landscape) and (max-height: 560px) and (pointer: coarse) {
-  .upright {
-    position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 16px;
-    background: var(--home-base, var(--table-base, var(--table)))
-      var(--home-img, var(--table-img, url("/art/tables/sunny-day/sunny-day-table.webp"))) center / cover no-repeat;
-  }
-  .upright .glass {
-    display: flex; flex-direction: column; align-items: center; gap: 10px; max-width: 420px;
-    padding: 20px 28px 22px; border-radius: 26px; text-align: center;
-  }
-  .upright .ico { width: 56px; height: 56px; animation: upright-turn 2.4s ease-in-out infinite; }
-  .upright h2 { margin: 0; font: 600 22px/1.15 var(--round); }
-  .upright p { margin: 0; font: 500 15px/1.3 var(--round); color: var(--ink-soft); }
-  html.less-motion .upright .ico { animation: none; }
-}
-@keyframes upright-turn { 0%, 30% { transform: rotate(-90deg); } 60%, 100% { transform: rotate(0deg); } }
-
 /* ---------- the helper stock: the player's own Hints, Undos and Shuffles (app.ts, helper-shop.ts) ---------- */
 
 /* none left: the badge says "+" (more to be had), and a tap opens the run-out panel */

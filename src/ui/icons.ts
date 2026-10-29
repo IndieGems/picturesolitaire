@@ -45,7 +45,6 @@ export const ICONS = {
   lock: art("lock"),
   daily: art("daily"),
   plane: art("plane"),
-  rotate: art("rotate"),
   share: art("share"),
   friends: art("friends"),
 } as const;
