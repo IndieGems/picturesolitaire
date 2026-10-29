@@ -29,6 +29,8 @@
 // The screens read the chosen art through CSS variables on :root:
 //   --table-img    the table's picture        --table-base   the colour behind it
 //   --stack-back   a stack's card back (the board draws its stacks from it too)
+//   --table-panel  the plain panel behind the board during a level (the creator, 2026-10-29,
+//                  after Jigsaw Drop's flat blue): the table's `panel` colour, else its `base`
 //   --home-img     home's own picture (`desk`) --home-base its colour: unset, home is
 //                  see-through to the table
 // Until they are set, style.css draws the built-in table, the same files.
@@ -50,6 +52,8 @@ export interface TableArt {
   stackBack: string;
   thumb: string;
   base: string;
+  /** The plain panel's colour behind the board during a level (style.css, .board-host); without one, `base`. */
+  panel?: string;
   /** Its weather (particles.ts): a strip of `particleFrames` sprites, `particleKind` "snow", "leaves" or "petals". */
   particles?: string;
   particleKind?: string;
@@ -243,6 +247,7 @@ async function paint(a: TableArt): Promise<void> {
   const root = document.documentElement.style;
   root.setProperty("--table-img", `url("${url(a.table)}")`);
   root.setProperty("--table-base", a.base);
+  root.setProperty("--table-panel", a.panel ?? a.base);
   root.setProperty("--stack-back", `url("${url(a.stackBack)}")`);
   shown = a.id;
   for (const fn of [...listeners]) fn();
