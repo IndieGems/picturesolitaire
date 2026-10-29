@@ -25,16 +25,18 @@ export const TUNING = {
    * (hairline CSS px); each card is the picture with a thin light edge
    * (edgePx CSS px, stroked inside the outline, var(--card-edge)) and small
    * corners (corner of a card's width, at least 3 px), with no frame, lip or
-   * shadow; joined cards are one picture inside one edge. Each stack is a full
-   * card wide on top of its column, flatStackGap of a card's height above the
-   * grid. false: the frosted frames (frame, gutter, stackRow, stackGap).
+   * shadow; joined cards are one picture inside one edge. Each stack sits
+   * centred on top of its column, smaller than a card (flatFace), flatStackGap
+   * of a card's height above the grid. On since the creator's yes
+   * (2026-10-29); false (the config can say so, with no build) brings back the
+   * frosted frames (frame, gutter, stackRow, stackGap).
    *
    * The margin, the gap and the edge close up as the board has more columns
    * (the creator, 2026-10-29: "the gaps close as the number of tiles grows,
    * so the images get larger"), every px saved going to the cards: the
    * values for 4 columns or fewer, for 5, and for 6 or more.
    */
-  flat: false,
+  flat: true,
   sidePad4: 8,
   sidePad5: 6,
   sidePad6: 4,
@@ -47,12 +49,15 @@ export const TUNING = {
   corner: 0.07,
   flatStackGap: 0.12,
   /**
-   * The flat look's stack face is a whole card; where the box's height binds
-   * (a 4x5 board on a phone, any board on a small one) it may shrink down to
-   * this share of a card, so the grid's cards stay as big as the width allows.
-   * 1: always a whole card.
+   * The flat look's stack face, as a share of a column's card: smaller than a
+   * card on every board (the creator, 2026-10-29: face-up cards a whole card
+   * big invite a grab; their size says "not yours to move"), centred over its
+   * column. Where the box's height binds (a 4x5 board on a phone, any board on
+   * a small one) it may give way down to flatFaceMin, so the grid's cards
+   * grow; flatFaceMin = flatFace: always the same share.
    */
-  flatFaceMin: 1,
+  flatFace: 0.8,
+  flatFaceMin: 0.7,
   /**
    * The pale frosted frame round every picture, board and stacks alike: its
    * width as a fraction of a card, never under frameMin CSS px. Thin by the

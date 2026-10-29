@@ -113,9 +113,10 @@ export const radiusOf = (s: number): number => (TUNING.flat ? Math.max(3, s * TU
 /**
  * The flat look: the grid as wide as the box allows less the side margin,
  * hairline gaps (both closing up as the board has more columns), and each
- * stack a full card on top of its column (its face the next card, the cards
- * under it an edge each above it), flatStackGap of a card's height over the
- * grid. Cards as big as the width or the height allow, and the board centred
+ * stack centred on top of its column, smaller than a card (flatFace: "not
+ * yours to move"), its face the next card and the cards under it an edge each
+ * above it, flatStackGap of a card's height over the grid. Cards as big as the
+ * width or the height allow, and the board centred
  * in the box, so spare height splits evenly above and below: the stacks' row
  * keeps room only for the edges the deal's deepest stack shows.
  */
@@ -130,15 +131,16 @@ function layoutFlat(w: number, h: number, cols: number, rows: number, deepest: n
   const gap = Math.max(0, TUNING.flatStackGap);
   const vpad = 6;
   const k = dpr();
-  // a stack's face is a whole card; on a board the height binds, it may give way down to
+  // a stack's face is flatFace of a card; on a board the height binds, it may give way down to
   // flatFaceMin of one, so the grid's cards keep the size the width allows (or as near as fits)
-  const faceMin = Math.min(1, Math.max(0.3, TUNING.flatFaceMin));
+  const faceMax = Math.min(1, Math.max(0.3, TUNING.flatFace));
+  const faceMin = Math.min(faceMax, Math.max(0.3, TUNING.flatFaceMin));
   const edgeOf = (sh: number) => Math.max(least, Math.round(sh * step * k) / k, 1 / k);
   // the stacks' share of the height for cards `s` wide: the most face that fits, or -1 for none
   const faceFor = (s: number): number => {
     const sh = Math.round(s / A);
     const room = h - 2 * vpad - rows * sh - (rows - 1) * g - Math.ceil(most * edgeOf(sh)) - Math.max(4, Math.round(sh * gap));
-    const f = Math.min(1, room / sh);
+    const f = Math.min(faceMax, room / sh);
     return f >= faceMin ? f : -1;
   };
   let s = Math.max(24, Math.floor(Math.min((w - 2 * pad - (cols - 1) * g) / cols, cardCap())));
