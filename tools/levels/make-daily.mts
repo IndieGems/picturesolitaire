@@ -37,7 +37,7 @@ import { join } from "node:path";
 import { random } from "../../src/game/rules.ts";
 import { hashId } from "../../src/game/levels/generate.ts";
 import { fits, pick } from "../../src/game/levels/pick.ts";
-import { byId, catalogue, catchUp, clearOrder, dealBoard, familyOf, flaggedOn, flags, isFlower, itemById, itemClash, onSchedule, REMAKES, remadeInPlace, reserveLandmarks, root, swapSets, sameWord, tallyText, usable, usesOf, wordsOf, writeBoards } from "./lib.mts";
+import { byId, catalogue, catchUp, clearOrder, dealBoard, familyOf, flaggedOn, flags, isFlower, itemById, MOVED_OFF, itemClash, onSchedule, REMAKES, remadeInPlace, reserveLandmarks, root, swapSets, sameWord, tallyText, usable, usesOf, wordsOf, writeBoards } from "./lib.mts";
 import { RULES_FROM, rowOn, SUITCASE_FROM, SUITCASE_WEEK, WEEK } from "./daily-plan.mts";
 import { CURRENT, LAST_BEFORE_T9, SPARES } from "./campaign-plan.mts";
 import { schedule } from "./suitcase.mts";
@@ -230,7 +230,7 @@ levels.forEach((l, k) => {
       };
       const pool = squaresDay ? CURRENT_SQUARES : OLDER_POOL.filter((c) => c.cols === p.cols && c.rows === p.rows);
       const swap = pool
-        .filter((c) => (flowery || !isFlower(c)) && !(it && clashes(it, c)) && !near.has(c.id) && !pictures.some((q) => q.id === c.id) && (squaresDay ? fits(catalogue, spec, [...others, { id: c.id, cols: 2, rows: 2 }]) : olderFits(c)))
+        .filter((c) => (flowery || !isFlower(c)) && !MOVED_OFF.has(c.id) && !(it && clashes(it, c)) && !near.has(c.id) && !pictures.some((q) => q.id === c.id) && (squaresDay ? fits(catalogue, spec, [...others, { id: c.id, cols: 2, rows: 2 }]) : olderFits(c)))
         .sort((a, b) => isFlower(a) - isFlower(b) || (uses.get(a.id) ?? 0) - (uses.get(b.id) ?? 0) || hashId(`${l.id}~${a.id}`) - hashId(`${l.id}~${b.id}`))[0];
       if (!swap) {
         pictures = null;

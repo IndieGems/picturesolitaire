@@ -96,6 +96,13 @@ export function destPicture(id) {
  * has none (swappedInPlace, make-daily.mts).
  */
 export const isFlower = (p) => p?.album === "flowers";
+/**
+ * The people pictures the people swap moves off (Art's tools/art/people-swaps.json `swaps[].old`; creator,
+ * 2026-10-29: the look-alike framings, the bun-and-blue-top women in profile, the men from behind). They
+ * stay in the library, but an in-place swap never brings one back (swappedInPlace, make-daily.mts).
+ */
+const PEOPLE_SWAPS = join(root, "tools/art/people-swaps.json");
+export const MOVED_OFF = new Set(existsSync(PEOPLE_SWAPS) ? JSON.parse(readFileSync(PEOPLE_SWAPS, "utf8")).swaps.map((s) => s.old) : []);
 export const familyOf = (id) => (byId.get(id) ?? destById.get(id) ?? itemById.get(id) ?? souvenirById.get(id))?.family ?? id;
 
 /**
@@ -160,15 +167,17 @@ export function swappedInPlace(b, i, chosen, row, rule, out = isLandmark, orNull
   const banned = rule ? bannedOn(chosen, i, rule) : new Set();
   const seen = rule ? spacedCost(chosen, i, rule.spacing) : new Map();
   const costOf = (r) => (seen.get(r.id) ?? 0) + (r.busy ?? 0);
+  const onBoards = (id) => chosen.reduce((n, set, j) => n + (j !== i && set?.some((q) => q.id === id) ? 1 : 0), 0);
   const pictures = [...b.pictures];
   for (const [k, p] of b.pictures.entries()) {
     if (!out(p.id)) continue;
     // a flower close-up only where the level has one already, and only when nothing else fits (isFlower)
     const flowery = pictures.some((q, j) => j !== k && isFlower(byId.get(q.id)));
     const cands = usable
-      .filter((r) => r.cols === p.cols && r.rows === p.rows && r.look !== "atmospheric" && !r.landmark && !banned.has(r.id) && !pictures.some((q) => q.id === r.id) && (flowery || !isFlower(r)))
-      // then a hash, not the id: an alphabetical tie-break would hand every board the same "a..." pictures
-      .sort((a, c) => isFlower(a) - isFlower(c) || costOf(a) - costOf(c) || hashId(`${b.id}~${a.id}`) - hashId(`${b.id}~${c.id}`));
+      .filter((r) => r.cols === p.cols && r.rows === p.rows && r.look !== "atmospheric" && !r.landmark && !MOVED_OFF.has(r.id) && !banned.has(r.id) && !pictures.some((q) => q.id === r.id) && (flowery || !isFlower(r)))
+      // unseen first (on the fewest of the lane's boards: pictures rarely repeat), then a hash, not the id:
+      // an alphabetical tie-break would hand every board the same "a..." pictures
+      .sort((a, c) => isFlower(a) - isFlower(c) || costOf(a) - costOf(c) || onBoards(a.id) - onBoards(c.id) || hashId(`${b.id}~${a.id}`) - hashId(`${b.id}~${c.id}`));
     const swapIn = (r) => pictures.map((q, j) => (j === k ? { id: r.id, cols: r.cols, rows: r.rows } : q));
     // a board that already misses its row's picture rules (one dealt under older rules: the challenge
     // route's lookalikes) is held to the loose rules instead (looseFits), so it can still keep its deal

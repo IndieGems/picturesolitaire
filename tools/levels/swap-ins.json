@@ -476,6 +476,512 @@
     "yarn-balls",
     "zen-garden"
    ]
+  },
+  "people": {
+   "pairs": "tools/art/people-swaps.json",
+   "kept": [
+    "shepherd-lambs",
+    "tennis-player",
+    "wok-chef",
+    "paddleboarder",
+    "hiker",
+    "pasta-making",
+    "hauling-pots"
+   ],
+   "swaps": [
+    {
+     "lane": "campaign",
+     "level": "c94",
+     "clear": "milliner",
+     "picture": "sculptor"
+    },
+    {
+     "lane": "campaign",
+     "level": "c113",
+     "clear": "milliner",
+     "picture": "sculptor"
+    },
+    {
+     "lane": "campaign",
+     "level": "c103",
+     "clear": "dressmaker",
+     "picture": "upholsterer"
+    },
+    {
+     "lane": "campaign",
+     "level": "c43",
+     "clear": "florist",
+     "picture": "greengrocer"
+    },
+    {
+     "lane": "campaign",
+     "level": "c142",
+     "clear": "florist",
+     "picture": "greengrocer",
+     "broughtBack": true
+    },
+    {
+     "lane": "campaign",
+     "level": "c46",
+     "clear": "tailor",
+     "picture": "butcher-stall"
+    },
+    {
+     "lane": "campaign",
+     "level": "c47",
+     "clear": "weaver",
+     "picture": "plaiting-hair"
+    },
+    {
+     "lane": "campaign",
+     "level": "c131",
+     "clear": "weaver",
+     "picture": "plaiting-hair",
+     "broughtBack": true
+    },
+    {
+     "lane": "campaign",
+     "level": "c55",
+     "clear": "hairdresser",
+     "picture": "kitchen-dance"
+    },
+    {
+     "lane": "campaign",
+     "level": "c150",
+     "clear": "hairdresser",
+     "picture": "kitchen-dance",
+     "broughtBack": true
+    },
+    {
+     "lane": "campaign",
+     "level": "c23",
+     "clear": "washing-line",
+     "picture": "broom-doorway"
+    },
+    {
+     "lane": "challenge",
+     "level": "ch01",
+     "clear": "apple-ladder",
+     "picture": "prize-marrow"
+    },
+    {
+     "lane": "challenge",
+     "level": "ch12",
+     "clear": "apple-ladder",
+     "picture": "prize-marrow"
+    },
+    {
+     "lane": "challenge",
+     "level": "ch19",
+     "clear": "apple-ladder",
+     "picture": "prize-marrow"
+    },
+    {
+     "lane": "campaign",
+     "level": "c20",
+     "clear": "apple-ladder",
+     "picture": "prize-marrow"
+    },
+    {
+     "lane": "campaign",
+     "level": "c06",
+     "clear": "plein-air",
+     "picture": "crayons"
+    },
+    {
+     "lane": "campaign",
+     "level": "c121",
+     "clear": "plein-air",
+     "picture": "crayons",
+     "broughtBack": true
+    },
+    {
+     "lane": "campaign",
+     "level": "c116",
+     "clear": "mosaic-artist",
+     "picture": "bartender"
+    },
+    {
+     "lane": "campaign",
+     "level": "c121",
+     "clear": "basket-weaver",
+     "picture": "armchair-nap"
+    },
+    {
+     "lane": "campaign",
+     "level": "c110",
+     "clear": "dog-groomer",
+     "picture": "vet-puppy"
+    },
+    {
+     "lane": "campaign",
+     "level": "c50",
+     "clear": "pier-fishing",
+     "picture": "crab-catch"
+    },
+    {
+     "lane": "campaign",
+     "level": "c78",
+     "clear": "ice-fisher",
+     "picture": "beach-dog"
+    },
+    {
+     "lane": "campaign",
+     "level": "c19",
+     "clear": "fly-fisher",
+     "picture": "gondolier"
+    },
+    {
+     "lane": "campaign",
+     "level": "c150",
+     "clear": "fly-fisher",
+     "picture": "gondolier",
+     "broughtBack": true
+    },
+    {
+     "lane": "campaign",
+     "level": "c87",
+     "clear": "thatcher",
+     "picture": "hilltop-dusk"
+    },
+    {
+     "lane": "campaign",
+     "level": "c100",
+     "clear": "milking",
+     "picture": "big-boots"
+    },
+    {
+     "lane": "campaign",
+     "level": "c120",
+     "clear": "milking",
+     "picture": "big-boots"
+    },
+    {
+     "lane": "campaign",
+     "level": "c91",
+     "clear": "gaucho",
+     "picture": "meadow-daydream"
+    },
+    {
+     "lane": "campaign",
+     "level": "c113",
+     "clear": "gaucho",
+     "picture": "meadow-daydream"
+    },
+    {
+     "lane": "campaign",
+     "level": "c49",
+     "clear": "rope-sailor",
+     "picture": "cafe-regular"
+    },
+    {
+     "lane": "campaign",
+     "level": "c149",
+     "clear": "rope-sailor",
+     "picture": "cafe-regular",
+     "broughtBack": true
+    },
+    {
+     "lane": "campaign",
+     "level": "c07",
+     "clear": "fence-cowboy",
+     "picture": "wall-balance"
+    },
+    {
+     "lane": "campaign",
+     "level": "c147",
+     "clear": "fence-cowboy",
+     "picture": "wall-balance",
+     "broughtBack": true
+    },
+    {
+     "lane": "campaign",
+     "level": "c23",
+     "clear": "glassblower",
+     "picture": "jazz-drummer"
+    },
+    {
+     "lane": "campaign",
+     "level": "c124",
+     "clear": "glassblower",
+     "picture": "jazz-drummer",
+     "broughtBack": true
+    },
+    {
+     "lane": "campaign",
+     "level": "c34",
+     "clear": "violin-maker",
+     "picture": "toddler-lift"
+    },
+    {
+     "lane": "campaign",
+     "level": "c59",
+     "clear": "violin-maker",
+     "picture": "toddler-lift"
+    },
+    {
+     "lane": "campaign",
+     "level": "c33",
+     "clear": "photographer",
+     "picture": "bus-window"
+    },
+    {
+     "lane": "campaign",
+     "level": "c59",
+     "clear": "photographer",
+     "picture": "bus-window"
+    },
+    {
+     "lane": "campaign",
+     "level": "c100",
+     "clear": "golfer",
+     "picture": "finish-line"
+    },
+    {
+     "lane": "campaign",
+     "level": "c119",
+     "clear": "golfer",
+     "picture": "finish-line"
+    },
+    {
+     "lane": "campaign",
+     "level": "c72",
+     "clear": "cabinetmaker",
+     "picture": "mechanic"
+    },
+    {
+     "lane": "campaign",
+     "level": "c30",
+     "clear": "cooper",
+     "picture": "garden-secret"
+    },
+    {
+     "lane": "campaign",
+     "level": "c112",
+     "clear": "bricklayer",
+     "picture": "leaf-jump"
+    },
+    {
+     "lane": "campaign",
+     "level": "c31",
+     "clear": "lantern-maker",
+     "picture": "windowsill-peek"
+    },
+    {
+     "lane": "campaign",
+     "level": "c57",
+     "clear": "lantern-maker",
+     "picture": "windowsill-peek"
+    },
+    {
+     "lane": "campaign",
+     "level": "c92",
+     "clear": "surf-lifesaver",
+     "picture": "football-boot"
+    },
+    {
+     "lane": "campaign",
+     "level": "c65",
+     "clear": "scuba-diver",
+     "picture": "cartwheel"
+    },
+    {
+     "lane": "campaign",
+     "level": "c89",
+     "clear": "scuba-diver",
+     "picture": "cartwheel"
+    },
+    {
+     "lane": "campaign",
+     "level": "c38",
+     "clear": "watering-garden",
+     "picture": "baby-rug"
+    },
+    {
+     "lane": "campaign",
+     "level": "c60",
+     "clear": "watering-garden",
+     "picture": "baby-rug"
+    },
+    {
+     "lane": "campaign",
+     "level": "c75",
+     "clear": "dog-walker",
+     "picture": "rain-coat"
+    },
+    {
+     "lane": "campaign",
+     "level": "c81",
+     "clear": "window-cleaner",
+     "picture": "tree-climb"
+    },
+    {
+     "lane": "campaign",
+     "level": "c36",
+     "clear": "rower-scull",
+     "picture": "rowing-family"
+    },
+    {
+     "lane": "campaign",
+     "level": "c30",
+     "clear": "baker",
+     "picture": "baking-together"
+    },
+    {
+     "lane": "campaign",
+     "level": "c114",
+     "clear": "asador",
+     "picture": "family-dinner"
+    },
+    {
+     "lane": "campaign",
+     "level": "c135",
+     "clear": "lamplighter",
+     "picture": "party-lights"
+    },
+    {
+     "lane": "campaign",
+     "level": "c65",
+     "clear": "printmaker",
+     "picture": "bike-shop"
+    },
+    {
+     "lane": "campaign",
+     "level": "c80",
+     "clear": "printmaker",
+     "picture": "bike-shop"
+    },
+    {
+     "lane": "campaign",
+     "level": "c69",
+     "clear": "stonemason",
+     "picture": "marching-band"
+    },
+    {
+     "lane": "campaign",
+     "level": "c86",
+     "clear": "stonemason",
+     "picture": "marching-band"
+    },
+    {
+     "lane": "campaign",
+     "level": "c121",
+     "clear": "grape-picker",
+     "picture": "beach-twirl"
+    },
+    {
+     "lane": "challenge",
+     "level": "ch06",
+     "clear": "carrot-harvest",
+     "picture": "learning-to-ride"
+    },
+    {
+     "lane": "challenge",
+     "level": "ch10",
+     "clear": "carrot-harvest",
+     "picture": "learning-to-ride"
+    },
+    {
+     "lane": "challenge",
+     "level": "ch15",
+     "clear": "carrot-harvest",
+     "picture": "learning-to-ride"
+    },
+    {
+     "lane": "challenge",
+     "level": "ch20",
+     "clear": "carrot-harvest",
+     "picture": "learning-to-ride"
+    },
+    {
+     "lane": "campaign",
+     "level": "c15",
+     "clear": "carrot-harvest",
+     "picture": "learning-to-ride"
+    }
+   ],
+   "skipped": [
+    {
+     "level": "c149",
+     "old": "tailor",
+     "new": "butcher-stall",
+     "why": "a family or word in common with the level"
+    },
+    {
+     "level": "ch08",
+     "old": "apple-ladder",
+     "new": "prize-marrow",
+     "why": "a family or word in common with the level"
+    },
+    {
+     "level": "c68",
+     "old": "thatcher",
+     "new": "hilltop-dusk",
+     "why": "a family or word in common with the level"
+    },
+    {
+     "level": "c24",
+     "old": "cellist",
+     "new": "orchestra-flautist",
+     "why": "a second atmospheric picture"
+    },
+    {
+     "level": "c120",
+     "old": "surf-lifesaver",
+     "new": "football-boot",
+     "why": "a family or word in common with the level"
+    },
+    {
+     "level": "c125",
+     "old": "mapmaker",
+     "new": "cloud-sea",
+     "why": "a family or word in common with the level"
+    }
+   ],
+   "displaced": [
+    "apple-ladder",
+    "asador",
+    "baker",
+    "basket-weaver",
+    "bricklayer",
+    "cabinetmaker",
+    "carrot-harvest",
+    "cooper",
+    "dog-groomer",
+    "dog-walker",
+    "dressmaker",
+    "fence-cowboy",
+    "florist",
+    "fly-fisher",
+    "gaucho",
+    "glassblower",
+    "golfer",
+    "grape-picker",
+    "hairdresser",
+    "ice-fisher",
+    "lamplighter",
+    "lantern-maker",
+    "milking",
+    "milliner",
+    "mosaic-artist",
+    "photographer",
+    "pier-fishing",
+    "plein-air",
+    "printmaker",
+    "rope-sailor",
+    "rower-scull",
+    "scuba-diver",
+    "stonemason",
+    "surf-lifesaver",
+    "tailor",
+    "thatcher",
+    "violin-maker",
+    "washing-line",
+    "watering-garden",
+    "weaver",
+    "window-cleaner"
+   ],
+   "freed": []
   }
  }
 }

@@ -37,7 +37,7 @@ line); a sharp player may beat it.
 | 16 | relief | 5x6 | 9 | 2 sea blue | 4 6 4 4 6 4 4 4 6 | 2x2 2x3 | 42 (12) | 0 | 3 | 2 | 1 | 69% | 25 |
 | 17 | demand | 5x6 | 10 | 2 blue hour | 6 9 2 4 2 6 4 6 4 4 | 1x2 2x1 2x2 2x3 3x2 3x3 | 47 (17) | 0 | 5 | 4 | 2 | 13% | 28 |
 | 18 | demand | 5x6 | 10 | 3 pink bloom, 3 golden wheat | 4 6 2 4 6 2 6 6 6 6 | 1x2 2x1 2x2 2x3 3x2 | 48 (18) | 0 | 4 | 4 | 2 | 10% | 30 |
-| 19 | relief | 5x6 | 9 | 3 lavender | 4 6 2 6 4 4 6 6 6 | 1x2 2x2 2x3 3x2 | 44 (14) | 0 | 4 | 3 | 1 | 60% | 26 |
+| 19 | relief | 5x6 | 9 | 2 lavender | 4 6 2 6 4 4 6 6 6 | 1x2 2x2 2x3 3x2 | 44 (14) | 0 | 4 | 3 | 1 | 60% | 26 |
 | 20 | finale | 5x6 | 11 | 3 lemon yellow | 6 4 9 2 4 2 9 4 4 4 2 | 1x2 2x1 2x2 2x3 3x3 | 50 (20) | 0 | 5 | 4 | 2 | 8% | 31 |
 
 Every picture's appearances across the route: 0 to 6 (mean 0.1).
@@ -66,7 +66,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | wheat-walk (2x3, golden wheat) | 9, 16, 19 |
 | lavender-rows (3x2, lavender) | 4, 8, 11, 13, 19 |
 | wisteria-door (2x3, lavender) | 4, 6, 14, 19 |
-| lilac-bouquet (2x2, lavender) | 19 |
+| lilac-bouquet (2x2, lavender) |  |
 | figs-grapes (2x2, lavender) | 2, 4 |
 | tea-terraces (3x2, fresh green) | 2, 9, 15, 18 |
 | market-greens (2x2, fresh green) |  |
@@ -204,10 +204,10 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | wok-chef (2x2, wok chef) |  |
 | fence-cowboy (2x2, fence cowboy) |  |
 | plein-air (2x2, plein air) |  |
-| apple-ladder (2x2, apple ladder) | 1, 8, 12, 19 |
+| apple-ladder (2x2, apple ladder) | 8 |
 | lobster-pot (2x2, lobster pot) |  |
 | dandelion-wish (2x2, dandelion wish) |  |
-| carrot-harvest (2x2, carrot harvest) | 6, 10, 15, 20 |
+| carrot-harvest (2x2, carrot harvest) |  |
 | towpath-cyclist (2x3, towpath cyclist) | 6, 14, 17, 20 |
 | book-reader (2x2, book reader) |  |
 | passion-flower (2x2, passion flower) |  |
@@ -657,7 +657,7 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | hoarfrost (2x2, white snow) |  |
 | termite-mound (2x2, termite mound) |  |
 | saturn (2x2, space) |  |
-| nebula (2x2, space) |  |
+| nebula (2x2, space) | 19 |
 | desert-bloom (2x2, wildflowers) |  |
 | wildflower-meadow (2x2, wildflowers) |  |
 | rain-window (2x2, rain window) |  |
@@ -1415,3 +1415,53 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | ink-fireside (2x2, ink fireside) |  |
 | ink-kennel (2x2, ink kennel) |  |
 | ink-bird-table (2x2, ink bird table) |  |
+| prize-marrow (2x2, prize marrow) | 1, 12, 19 |
+| mechanic (2x2, mechanic) |  |
+| hayfield-farmer (2x2, hayfield farmer) |  |
+| plaiting-hair (2x2, plaiting hair) |  |
+| meadow-daydream (2x2, meadow daydream) |  |
+| wall-balance (2x2, wall balance) |  |
+| cafe-regular (2x2, cafe regular) |  |
+| greengrocer (2x2, greengrocer) |  |
+| orchestra-flautist (2x2, orchestra flautist) |  |
+| toddler-lift (2x2, toddler lift) |  |
+| butcher-stall (2x2, butcher stall) |  |
+| garden-secret (2x2, garden secret) |  |
+| snowy-lane (2x2, snowy lane) |  |
+| basketball-dunk (2x2, basketball dunk) |  |
+| jazz-drummer (2x2, jazz drummer) |  |
+| kitchen-dance (2x2, kitchen dance) |  |
+| bus-window (2x2, bus window) |  |
+| baby-rug (2x2, baby rug) |  |
+| upholsterer (2x2, upholsterer) |  |
+| rain-coat (2x2, rain coat) |  |
+| big-boots (2x2, big boots) |  |
+| beach-dog (2x2, beach dog) |  |
+| cartwheel (2x2, cartwheel) |  |
+| windowsill-peek (2x2, windowsill peek) |  |
+| football-boot (2x2, football boot) |  |
+| sculptor (2x2, sculptor) |  |
+| birthday-tea (2x2, birthday tea) |  |
+| tree-climb (1x2, tree climb) |  |
+| vet-puppy (2x2, vet puppy) |  |
+| hill-roll (2x2, hill roll) |  |
+| hilltop-dusk (2x2, hilltop dusk) |  |
+| crab-catch (2x2, crab catch) |  |
+| gondolier (2x2, gondolier) |  |
+| bartender (2x2, bartender) |  |
+| armchair-nap (2x2, armchair nap) |  |
+| crayons (2x2, crayons) |  |
+| leaf-jump (2x2, leaf jump) |  |
+| broom-doorway (2x2, broom doorway) |  |
+| rowing-family (2x1, rowing family) |  |
+| finish-line (2x2, finish line) |  |
+| baking-together (2x2, baking together) |  |
+| cloud-sea (2x2, cloud sea) |  |
+| family-dinner (2x2, family dinner) |  |
+| party-lights (2x2, party lights) |  |
+| sailing-helm (2x2, sailing helm) |  |
+| bike-shop (2x2, bike shop) |  |
+| marching-band (2x2, marching band) |  |
+| beach-twirl (2x2, beach twirl) |  |
+| rolling-chapatis (2x2, rolling chapatis) |  |
+| learning-to-ride (2x2, learning to ride) | 6, 10, 15, 20 |
