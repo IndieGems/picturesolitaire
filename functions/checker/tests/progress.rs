@@ -127,26 +127,34 @@ fn a_daily_keeps_its_first_result_and_only_recent_dates() {
 }
 
 #[test]
-fn an_old_device_save_is_taken_in_once() {
-    let old = json!({ "v": 1, "level": 7, "won": 9, "restored": ["a", "b", "a", 5, ""], "best": { "ch01": 20, "ch02": "x" }, "guide": 3 });
-    let d = progress::import_legacy(&old);
-    assert_eq!(d["campaign"], json!({ "next": 7, "won": 9 }));
-    assert_eq!(d["restored"], json!(["a", "b"]));
-    assert_eq!(d["challenge"], json!({ "ch01": 20 }));
-    assert_eq!(d["imported"], json!({ "from": "campaign" }));
-    // nonsense is taken in as nothing
-    let d = progress::import_legacy(&json!({ "level": -3, "won": "many" }));
-    assert_eq!(d["campaign"], json!({ "next": 1, "won": 0 }));
+fn a_campaign_save_the_player_wrote_never_becomes_progress() {
+    // GSR-006: a new player writes level 150 into their own "campaign" slot before any win
+    let mut asked = Vec::new();
+    let saves = |key: &str| -> Result<Option<serde_json::Value>, ()> {
+        asked.push(key.to_string());
+        Ok(match key {
+            "campaign" => Some(json!({ "v": 1, "level": 150, "won": 149, "restored": ["a"], "best": { "ch01": 3 } })),
+            _ => None,
+        })
+    };
+    let (mut d, stored) = progress::from_saves(saves).unwrap();
+    assert_eq!(asked, ["progress"], "only the slot the checker writes is read");
+    assert!(!stored);
+    assert_eq!(d, progress::empty());
+    // their first win, board 1, puts them on board 2
+    assert_eq!(apply(&mut d, &win(Lane::Campaign, "c01", 7, &["a"]), Some("k1"), Some(1)), Ok(true));
+    assert_eq!(d["campaign"], json!({ "next": 2, "won": 1 }));
+    assert!(d.get("imported").is_none());
 }
 
 #[test]
-fn a_slot_with_only_the_guide_step_is_no_old_save() {
-    assert!(!progress::has_progress(&json!({ "v": 1, "guide": 5 })));
-    assert!(!progress::has_progress(&json!({ "v": 1, "level": 1, "won": 0, "restored": [], "best": {} })));
-    assert!(progress::has_progress(&json!({ "level": 2 })));
-    assert!(progress::has_progress(&json!({ "won": 1 })));
-    assert!(progress::has_progress(&json!({ "restored": ["a"] })));
-    assert!(progress::has_progress(&json!({ "best": { "ch01": 20 } })));
+fn a_stored_record_is_read_as_it_is() {
+    let saves = |key: &str| -> Result<Option<serde_json::Value>, ()> {
+        Ok((key == "progress").then(|| json!({ "v": 1, "campaign": { "next": 6, "won": 7 } })))
+    };
+    let (d, stored) = progress::from_saves(saves).unwrap();
+    assert!(stored);
+    assert_eq!(d["campaign"], json!({ "next": 6, "won": 7 }));
 }
 
 #[test]

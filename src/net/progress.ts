@@ -23,8 +23,8 @@
 //   - a won board shows at once: claimWin() holds the win here and progress()
 //     applies it over the server's record until the checker answers; its verdict
 //     carries the new record, which replaces the held win; a refusal drops it;
-//   - progress made before the record existed (the UI's old "campaign" slot) is
-//     taken in ONCE by the checker ({"what":"progress"}), never by the device.
+//   - with no record yet, progress starts empty: nothing the player can write
+//     (the UI's own "campaign" slot) ever becomes progress (release report GSR-006).
 // Unframed (a plain tab) there is no platform: wins apply for this page only.
 
 import { gem } from "../gem";
@@ -39,8 +39,6 @@ export interface Progress {
   /** Souvenirs won, by id: best (fewest) moves. Won when present. */
   souvenir: Record<string, number>;
   restored: string[];
-  /** Set once, when the checker took in an old device save. */
-  imported?: { from: string };
 }
 
 /** What a won board would change, held until the checker answers. */
@@ -56,7 +54,6 @@ export interface HeldWin {
 }
 
 const SLOT = "progress";
-const LEGACY = "campaign";
 const framed = window.self !== window.top;
 
 const empty = (): Progress => ({ campaign: { next: 1, won: 0 }, challenge: {}, daily: {}, souvenir: {}, restored: [] });
@@ -95,7 +92,6 @@ function normal(x: unknown): Progress {
     daily: d.daily && typeof d.daily === "object" ? { ...d.daily } : {},
     souvenir: d.souvenir && typeof d.souvenir === "object" ? { ...d.souvenir } : {},
     restored: Array.isArray(d.restored) ? d.restored.filter((p): p is string => typeof p === "string") : [],
-    ...(d.imported ? { imported: d.imported } : {}),
   };
 }
 
@@ -176,7 +172,6 @@ async function read(): Promise<void> {
     } catch (err) {
       if (noAnswer(err) || (err as { reason?: string }).reason !== "not_found") throw err;
     }
-    if (!record) record = await takeInOldSave();
     if (!known) {
       server = normal(record);
       known = true;
@@ -190,22 +185,6 @@ async function read(): Promise<void> {
   } finally {
     reading = false;
   }
-}
-
-/** No record yet: if the old device slot holds progress, ask the checker to take it in (once). */
-async function takeInOldSave(): Promise<unknown> {
-  let old: Record<string, unknown> | null = null;
-  try {
-    old = await gem.me.saves.get<Record<string, unknown>>(LEGACY, { timeoutMs: 10_000 });
-  } catch (err) {
-    if (noAnswer(err) || (err as { reason?: string }).reason !== "not_found") throw err;
-  }
-  const level = Number(old?.level) || 1;
-  const has = old && (level > 1 || (Array.isArray(old.restored) && old.restored.length) || (old.best && Object.keys(old.best as object).length));
-  if (!has) return null;
-  const answer = (await gem.functions.invoke({ v: 1, what: "progress" })).json() as { status?: string; progress?: unknown };
-  if (answer.status !== "progress") throw new Error(`the checker did not take in the old save (${String(answer.status)})`);
-  return answer.progress;
 }
 
 /** Start reading. Call once, at boot. Also sends again any win a previous session left unanswered. */

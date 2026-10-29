@@ -1,8 +1,8 @@
 //! THE PLAYER'S PROGRESS, owned by the server: the "progress" save slot, which
 //! the player reads and only this function writes (game config, save_schemas:
 //! access_self_write false). Pure: the platform calls are lib.rs's; this file
-//! only says what one verified win changes, and how an old device save is
-//! taken in once. tests/progress.rs runs it on this machine.
+//! only says what one verified win changes, and where the record starts (from_saves).
+//! tests/progress.rs runs it on this machine.
 //!
 //! The record (src/net/progress.ts reads it):
 //!   { "v": 1,
@@ -13,10 +13,10 @@
 //!     "restored": ["apple-orchard", ...],   pictures of boards won, in the order first restored
 //!     "souvenir": { "s1": 13 },              best (fewest) moves per Souvenir won: its sticker on its
 //!                                             trip's passport page (UI, 2026-10-28); absent until the first
-//!     "imported": { "from": "campaign" },   set once, when an old device save was taken in
+//!     "imported": { "from": "campaign" },   only on a record begun before 0.1.28 from an old device save; read by nothing
 //!     "seen": ["<claim id>", ...] }          the last claims applied, so a resent claim changes nothing
 
-use serde_json::{json, Map, Value};
+use serde_json::{json, Value};
 
 use crate::claim::{Lane, Win};
 
@@ -53,54 +53,16 @@ pub fn normal(doc: Option<Value>) -> Value {
     d
 }
 
-/// Does an old device save hold progress worth taking in? The UI's slot also
-/// holds presentation state (the guide's step) that is no progress: a slot with
-/// only that is no old save. src/net/progress.ts asks the same question.
-pub fn has_progress(old: &Value) -> bool {
-    old["level"].as_u64().is_some_and(|l| l > 1)
-        || old["won"].as_u64().is_some_and(|w| w > 0)
-        || old["restored"].as_array().is_some_and(|r| !r.is_empty())
-        || old["best"].as_object().is_some_and(|b| !b.is_empty())
-}
-
-/// Take in an old device save (the UI's "campaign" slot, written by the game
-/// before progress moved to the server): { level, won, restored, best }.
-/// Its word is the device's, accepted ONCE so nobody loses progress; from then
-/// on only verified wins move the record.
-pub fn import_legacy(old: &Value) -> Value {
-    let mut d = empty();
-    let level = old["level"].as_u64().filter(|l| *l >= 1 && *l < 100_000).unwrap_or(1);
-    d["campaign"]["next"] = json!(level);
-    d["campaign"]["won"] = json!(old["won"].as_u64().unwrap_or(0).min(1_000_000));
-    let restored: Vec<Value> = old["restored"]
-        .as_array()
-        .into_iter()
-        .flatten()
-        .filter_map(|p| p.as_str().filter(|s| !s.is_empty() && s.len() <= 64).map(|s| json!(s)))
-        .take(1000)
-        .collect();
-    d["restored"] = Value::Array(dedupe(restored));
-    let mut best = Map::new();
-    for (id, moves) in old["best"].as_object().into_iter().flatten().take(1000) {
-        if let Some(m) = moves.as_u64().filter(|m| *m >= 1 && *m < 100_000) {
-            if id.len() <= 32 {
-                best.insert(id.clone(), json!(m));
-            }
-        }
-    }
-    d["challenge"] = Value::Object(best);
-    d["imported"] = json!({ "from": "campaign" });
-    d
-}
-
-fn dedupe(list: Vec<Value>) -> Vec<Value> {
-    let mut out: Vec<Value> = Vec::new();
-    for v in list {
-        if !out.contains(&v) {
-            out.push(v);
-        }
-    }
-    out
+/// The record a win is applied to, from the player's saves (`save(key)` reads one slot), and
+/// whether it is stored yet. Only the "progress" slot is read, the one only this function
+/// writes; with none, the record starts empty. No slot the player can write ever becomes
+/// progress (release report GSR-006): the game's own "campaign" slot is presentation state,
+/// and the device's old progress in it was taken in by checkers before 0.1.28, never since.
+pub fn from_saves<E>(mut save: impl FnMut(&str) -> Result<Option<Value>, E>) -> Result<(Value, bool), E> {
+    Ok(match save(crate::PROGRESS)? {
+        Some(doc) => (normal(Some(doc)), true),
+        None => (empty(), false),
+    })
 }
 
 /// Why a win cannot be applied yet.

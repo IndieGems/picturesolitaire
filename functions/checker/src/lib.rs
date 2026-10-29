@@ -21,9 +21,9 @@
 //!
 //! THE PLAYER'S PROGRESS is the server's too (progress.rs): every verified win
 //! updates the "progress" save slot, which only this function writes, BEFORE
-//! anything is paid, and the verdict carries the new record. The first time, an
-//! old device save (the "campaign" slot) is taken in once. {"v":1,"what":"progress"}
-//! does only that: reads the record, taking in an old save if there is no record.
+//! anything is paid, and the verdict carries the new record. With no record yet it
+//! starts empty: no slot the player can write is ever taken in (GSR-006; the old
+//! device "campaign" slot was, before 0.1.28). {"v":1,"what":"progress"} only reads it.
 //!
 //! THE DAILY SUITCASE (suitcase.rs, docs/daily-suitcase.md): the daily's first win of the
 //! player's day packs the day's item in that same one order; {"v":1,"what":"swap","month",
@@ -47,10 +47,9 @@ pub const DAILY_ID: &str = "6d1f3b0e-8a52-4c7e-9f14-2b6e0d9a7c31";
 pub const DAILY_SLUG: &str = "daily_picture";
 /// The run type the daily's results are posted as, and its board.
 pub const DAILY_RUN: &str = "daily_result";
-/// The save slot holding the player's progress, written only by this function.
+/// The save slot holding the player's progress, written only by this function. The only
+/// slot it reads progress from: none the player can write (release report GSR-006).
 pub const PROGRESS: &str = "progress";
-/// The old device-written slot, taken in once (src/ui/progress.ts wrote it).
-pub const LEGACY: &str = "campaign";
 
 /// The progression slug that pays for one campaign or challenge board.
 pub fn board_slug(board: &str) -> String {
@@ -683,19 +682,10 @@ mod function {
         Ok(())
     }
 
-    /// The player's progress record, and whether it is stored yet. With none
-    /// stored, an old device save ("campaign") is taken in.
+    /// The player's progress record, and whether it is stored yet: the "progress" slot
+    /// alone, empty when there is none (progress::from_saves; never a slot the player writes).
     fn read_progress(player: &str) -> Result<(Value, bool), Value> {
-        if let Some(doc) = read_save(player, crate::PROGRESS)? {
-            return Ok((progress::normal(Some(doc)), true));
-        }
-        Ok(match read_save(player, crate::LEGACY)? {
-            Some(old) if progress::has_progress(&old) => {
-                host::log(LogLevel::Info, "taking in the old campaign save");
-                (progress::import_legacy(&old), false)
-            }
-            _ => (progress::empty(), false),
-        })
+        progress::from_saves(|key| read_save(player, key))
     }
 
     /// The record as the game reads it (without the claim ids it keeps).
@@ -773,14 +763,7 @@ mod function {
             }
             if serde_json::from_slice::<Value>(&input).ok().and_then(|v| v.get("what").cloned()) == Some(json!("progress")) {
                 let verdict = match read_progress(&player) {
-                    Ok((doc, stored)) => {
-                        if !stored && doc.get("imported").is_some() {
-                            if let Err(v) = write_save(&player, crate::PROGRESS, &doc) {
-                                return Ok(v.to_string().into_bytes());
-                            }
-                        }
-                        json!({ "v": 1, "status": "progress", "progress": public(&doc) })
-                    }
+                    Ok((doc, _)) => json!({ "v": 1, "status": "progress", "progress": public(&doc) }),
                     Err(v) => v,
                 };
                 return Ok(verdict.to_string().into_bytes());
