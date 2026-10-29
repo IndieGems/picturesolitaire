@@ -28,7 +28,15 @@ import { heard, held } from "./pace";
 import { TABLES } from "./tables";
 import { TRACKS } from "./tracks";
 
-const framed = window.self !== window.top;
+/** Framed by the platform: another origin's frame (as src/net/helpers.ts). The play-test tool's frame is this page's own origin, with no platform behind it, so it plays as a plain tab and asks nothing. */
+const framed = ((): boolean => {
+  if (window.self === window.top) return false;
+  try {
+    return window.parent.location.origin !== location.origin;
+  } catch {
+    return true; // another origin: a platform frame
+  }
+})();
 const COINS = "ARCADE_TICKETS";
 const CATALOG = "cosmetics";
 const offerSlug = (slug: string): string => `buy-${slug}`;

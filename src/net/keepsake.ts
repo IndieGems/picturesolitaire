@@ -31,7 +31,15 @@ import { TRACKS } from "./tracks";
 export { KEEPSAKE, TABLES, type Table } from "./tables";
 export { TRACKS, type Track } from "./tracks";
 
-const framed = window.self !== window.top;
+/** Framed by the platform: another origin's frame (as src/net/helpers.ts). The play-test tool's frame is this page's own origin, with no platform behind it: nothing owned, nothing asked. */
+const framed = ((): boolean => {
+  if (window.self === window.top) return false;
+  try {
+    return window.parent.location.origin !== location.origin;
+  } catch {
+    return true; // another origin: a platform frame
+  }
+})();
 
 /** Every item read here: the tables, then the soundtracks (no slug is both). */
 const ITEMS: readonly { slug: string; id: string }[] = [...TABLES, ...TRACKS];
