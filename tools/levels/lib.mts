@@ -14,7 +14,7 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { act, random, start } from "../../src/game/rules.ts";
-import { generate } from "../../src/game/levels/generate.ts";
+import { generate, hashId } from "../../src/game/levels/generate.ts";
 import { alikeOf, fits, pick, shapeOf } from "../../src/game/levels/pick.ts";
 
 export const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
@@ -90,6 +90,12 @@ export function destPicture(id) {
   return { id, cols, rows };
 }
 /** A picture's lookalike family, a postcard's included (Art gives a postcard its lookalike's). */
+/**
+ * A flower close-up (Art's album "flowers"; a flower in a scene is in another album). The library has far
+ * too many (creator, 2026-10-29): a swap prefers any other picture, and never brings one to a level that
+ * has none (swappedInPlace, make-daily.mts).
+ */
+export const isFlower = (p) => p?.album === "flowers";
 export const familyOf = (id) => (byId.get(id) ?? destById.get(id) ?? itemById.get(id) ?? souvenirById.get(id))?.family ?? id;
 
 /**
@@ -122,6 +128,23 @@ export function fitsBeside(all, spec, pictures, r) {
 }
 
 /**
+ * The loose rules for a picture `r` in place of picture k: no busier than it, no family or word in common
+ * with the board's other pictures (destination included), its album within a third and its medium within
+ * half of the board.
+ */
+export function looseFits(pictures, k, r) {
+  const was = byId.get(pictures[k].id) ?? {};
+  if ((r.busy ?? 0) > (was.busy ?? 0)) return false;
+  const others = pictures.filter((_, j) => j !== k).map((q) => byId.get(q.id) ?? destById.get(q.id) ?? itemById.get(q.id) ?? { id: q.id });
+  const words = wordsOf(r);
+  if (others.some((q) => (q.family ?? q.id) === (r.family ?? r.id) || wordsOf(q).some((x) => words.some((y) => sameWord(x, y))))) return false;
+  const n = pictures.length;
+  if (r.album && others.filter((q) => q.album === r.album).length >= Math.ceil(n / 3)) return false;
+  if (r.medium && others.filter((q) => q.medium === r.medium).length >= Math.ceil(n / 2)) return false;
+  return true;
+}
+
+/**
  * A kept board with each landmark on it (or each picture `out` names: a
  * flagged one with no remake, route) swapped IN PLACE for a usable clear
  * picture of the same shape (so the deal, line and measures stay as they
@@ -140,10 +163,17 @@ export function swappedInPlace(b, i, chosen, row, rule, out = isLandmark, orNull
   const pictures = [...b.pictures];
   for (const [k, p] of b.pictures.entries()) {
     if (!out(p.id)) continue;
+    // a flower close-up only where the level has one already, and only when nothing else fits (isFlower)
+    const flowery = pictures.some((q, j) => j !== k && isFlower(byId.get(q.id)));
     const cands = usable
-      .filter((r) => r.cols === p.cols && r.rows === p.rows && r.look !== "atmospheric" && !r.landmark && !banned.has(r.id) && !pictures.some((q) => q.id === r.id))
-      .sort((a, c) => costOf(a) - costOf(c) || (a.id < c.id ? -1 : 1));
-    const r = cands.find((r) => fitsBeside(all, spec, pictures.map((q, j) => (j === k ? { id: r.id, cols: r.cols, rows: r.rows } : q)), r));
+      .filter((r) => r.cols === p.cols && r.rows === p.rows && r.look !== "atmospheric" && !r.landmark && !banned.has(r.id) && !pictures.some((q) => q.id === r.id) && (flowery || !isFlower(r)))
+      // then a hash, not the id: an alphabetical tie-break would hand every board the same "a..." pictures
+      .sort((a, c) => isFlower(a) - isFlower(c) || costOf(a) - costOf(c) || hashId(`${b.id}~${a.id}`) - hashId(`${b.id}~${c.id}`));
+    const swapIn = (r) => pictures.map((q, j) => (j === k ? { id: r.id, cols: r.cols, rows: r.rows } : q));
+    // a board that already misses its row's picture rules (one dealt under older rules: the challenge
+    // route's lookalikes) is held to the loose rules instead (looseFits), so it can still keep its deal
+    const strict = fitsBeside(all, spec, pictures, p);
+    const r = cands.find((r) => (strict ? fitsBeside(all, spec, swapIn(r), r) : looseFits(pictures, k, r)));
     if (!r && orNull) return null;
     if (!r) throw new Error(`${b.id}: no picture can take ${isLandmark(p.id) ? "landmark " : ""}${p.id}'s place within the board's rules`);
     pictures[k] = { id: r.id, cols: r.cols, rows: r.rows };

@@ -4,6 +4,7 @@
 // pictures (creator, 2026-10-29, via the lead and Art b8c92e6): the campaign 1-150 and the challenge
 // route, no daily (check.mts keeps pictures new to the catalogue out of them).
 // Run: node tools/levels/swap-in.mts <batch> [--after <id>] [--medium <medium>] [--dry]
+//      node tools/levels/swap-in.mts <batch> --pairs <file> [--dry]   (PAIRS, below)
 //   <batch>       the batch's name in the record (ink)
 //   --after ID    the batch: catalogue pictures after ID that are on no level and not flagged ...
 //   --medium M    ... and of that medium (ink); at least one of the two
@@ -25,6 +26,14 @@
 // keeps its album within a third and its medium within half of the level, and leaves any atmospheric
 // picture on the level within those too (so atmospheric.mts keeps it on a re-run); on a campaign board
 // the row's picture rules hold as well (lib.mts fitsBeside, which also keeps the row's old pictures).
+// PAIRS (creator, 2026-10-29: the people swap; Art's tools/art/people-swaps.json, `swaps` of {old, new}):
+// each old picture gives way to its new one, of the same shape, on every campaign and challenge level it
+// is on (a daily keeps it: check.mts keeps pictures new to the catalogue out of the dailies from
+// RULES_FROM), so its levels and their spacing are the old one's. A pair is skipped whole where the new
+// picture is flagged or not the old one's shape; on one level, where the new one has a family or word in
+// common with the level's other pictures, would put a second atmospheric picture on it, or misses the
+// level's picture rules (lib.mts fitsBeside where the level meets its row, else looseFits). The olds stay
+// in the library, and are no preferred stock for trip 11 (they are the framings the swap moved off).
 // The record, tools/levels/swap-ins.json: each batch's swaps, `displaced` and `freed` (displaced and on
 // no campaign board now), which campaign-plan.mts FREED adds to trip 11's stock. Deterministic.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
@@ -32,7 +41,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { hashId } from "../../src/game/levels/generate.ts";
-import { byId, catalogue, destById, destinations, fitsBeside, flags, root, sameWord, specOf, wordsOf, writeBoards } from "./lib.mts";
+import { byId, catalogue, destById, destinations, fitsBeside, flags, looseFits, root, sameWord, specOf, wordsOf, writeBoards } from "./lib.mts";
 import { CURRENT, PLAN } from "./campaign-plan.mts";
 import { isAtmospheric } from "./atmospheric.mts";
 
@@ -43,8 +52,9 @@ const arg = (name) => {
 const batch = process.argv[2];
 const after = arg("--after");
 const medium = arg("--medium");
+const pairsFile = arg("--pairs");
 const dry = process.argv.includes("--dry");
-if (!batch || batch.startsWith("--") || !(after || medium)) throw new Error("usage: node tools/levels/swap-in.mts <batch> [--after <id>] [--medium <medium>] [--dry]");
+if (!batch || batch.startsWith("--") || !(after || medium || pairsFile)) throw new Error("usage: node tools/levels/swap-in.mts <batch> [--after <id>] [--medium <medium>] | --pairs <file> [--dry]");
 
 const dir = join(root, "src/content/levels");
 const RECORD = join(root, "tools/levels/swap-ins.json");
@@ -57,6 +67,13 @@ const lanes = [
   { name: "campaign", file: "campaign.json", data: campaignData, levels: campaignData.levels.map((l) => l), first: 2, row: (i) => PLAN[i] },
 ];
 const onLevels = new Set(["campaign.json", "challenge.json", "daily.json", "experiments.json", "lessons.json", "souvenirs.json"].flatMap((f) => (existsSync(join(dir, f)) ? read(f).levels.flatMap((l) => l.pictures.map((p) => p.id)) : [])));
+const entryOf = (id) => byId.get(id) ?? destById.get(id) ?? { id };
+const fam = (e) => e.family ?? e.id;
+const all = [...catalogue, ...destinations];
+if (pairsFile) {
+  swapPairs();
+  process.exit(0);
+}
 const at = after ? catalogue.findIndex((p) => p.id === after) : -1;
 if (after && at < 0) throw new Error(`--after ${after}: no such picture in the catalogue`);
 const pictures = catalogue.slice(at + 1).filter((p) => (!medium || p.medium === medium) && !flags.has(p.id) && !onLevels.has(p.id) && !p.landmark && !isAtmospheric(p));
@@ -64,9 +81,6 @@ if (!pictures.length) throw new Error("no picture of the batch is off every leve
 const batchIds = new Set(pictures.map((p) => p.id));
 const order = [...pictures].sort((a, b) => hashId(`${batch}:${a.id}`) - hashId(`${batch}:${b.id}`));
 
-const entryOf = (id) => byId.get(id) ?? destById.get(id) ?? { id };
-const fam = (e) => e.family ?? e.id;
-const all = [...catalogue, ...destinations];
 const campaignUses = new Map();
 for (const l of campaignData.levels) for (const p of l.pictures) campaignUses.set(p.id, (campaignUses.get(p.id) ?? 0) + 1);
 const shapes = new Set(pictures.map((p) => `${p.cols}x${p.rows}`));
@@ -184,3 +198,54 @@ record.note = "tools/levels/swap-in.mts writes this: each batch of new pictures 
 record.batches[batch] = { ...(after ? { after } : {}), ...(medium ? { medium } : {}), swaps: swaps.map(({ lane, level, clear, picture }) => ({ lane, level, clear, picture })), displaced, freed };
 writeFileSync(RECORD, `${JSON.stringify({ note: record.note, batches: record.batches }, null, 1)}\n`);
 console.log(`wrote ${lanes.map((l) => l.file).join(" and ")} and tools/levels/swap-ins.json`);
+
+/** PAIRS (the header): each old picture's new one in its place on the campaign and the challenge route. */
+function swapPairs() {
+  const pairs = JSON.parse(readFileSync(join(root, pairsFile), "utf8")).swaps;
+  const swaps = [];
+  const skipped = [];
+  for (const { old, new: id } of pairs) {
+    const o = byId.get(old);
+    const r = byId.get(id);
+    if (!o || !r) {
+      skipped.push({ old, new: id, why: `${!o ? old : id} is not in the catalogue` });
+      continue;
+    }
+    if (flags.has(id) || r.landmark || r.cols !== o.cols || r.rows !== o.rows) {
+      skipped.push({ old, new: id, why: flags.has(id) ? `${id} is flagged` : r.landmark ? `${id} is a landmark` : `${id} is ${r.cols}x${r.rows}, ${old} ${o.cols}x${o.rows}` });
+      continue;
+    }
+    for (const lane of lanes) {
+      lane.levels.forEach((l, i) => {
+        const j = l.pictures.findIndex((p) => p.id === old);
+        if (j < 0) return;
+        if (l.pictures.some((p) => p.id === id)) return skipped.push({ level: l.id, old, new: id, why: `${id} is on it already` });
+        const next = l.pictures.map((q, k) => (k === j ? { ...q, id } : q));
+        const others = next.filter((_, k) => k !== j).map((q) => entryOf(q.id));
+        const words = wordsOf(r);
+        if (others.some((q) => fam(q) === fam(r) || wordsOf(q).some((x) => words.some((y) => sameWord(x, y))))) return skipped.push({ level: l.id, old, new: id, why: "a family or word in common with the level" });
+        if (isAtmospheric(r) && others.some((q) => isAtmospheric(q))) return skipped.push({ level: l.id, old, new: id, why: "a second atmospheric picture" });
+        const row = lane.row(i);
+        const spec = row && { ...specOf(row), keep: undefined };
+        const ok = row && fitsBeside(all, spec, l.pictures, o) ? fitsBeside(all, spec, next, r) : looseFits(l.pictures, j, r);
+        if (!ok) return skipped.push({ level: l.id, old, new: id, why: "the level's picture rules" });
+        const families = l.axes?.families ? l.axes.families.map((f, k) => (k === j ? fam(r) : f)) : undefined;
+        lane.levels[i] = { ...l, pictures: next, ...(families ? { axes: { ...l.axes, families } } : {}) };
+        swaps.push({ lane: lane.name, level: l.id, clear: old, picture: id });
+      });
+    }
+  }
+  for (const s of swaps) console.log(`${s.level}: ${s.clear} -> ${s.picture} in place; the deal and line unchanged`);
+  for (const k of skipped) console.log(`skipped ${k.level ? `${k.level}: ` : ""}${k.old} -> ${k.new}: ${k.why}`);
+  const levelsChanged = new Set(swaps.map((s) => s.level));
+  console.log(`${swaps.length} swaps on ${levelsChanged.size} levels (${lanes.map((ln) => `${ln.name} ${new Set(swaps.filter((s) => s.lane === ln.name).map((s) => s.level)).size}`).join(", ")}); ${skipped.length} skipped`);
+  if (dry) return;
+  for (const lane of lanes) {
+    const { v, board, levels, ...extra } = lane.data;
+    writeBoards(join(dir, lane.file), board, lane.levels, extra);
+  }
+  const record = existsSync(RECORD) ? JSON.parse(readFileSync(RECORD, "utf8")) : { batches: {} };
+  record.batches[batch] = { pairs: pairsFile, swaps, skipped, displaced: [...new Set(swaps.map((s) => s.clear))].sort(), freed: [] };
+  writeFileSync(RECORD, `${JSON.stringify({ note: record.note, batches: record.batches }, null, 1)}\n`);
+  console.log(`wrote ${lanes.map((l) => l.file).join(" and ")} and tools/levels/swap-ins.json`);
+}

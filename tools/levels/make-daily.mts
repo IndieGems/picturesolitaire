@@ -37,7 +37,7 @@ import { join } from "node:path";
 import { random } from "../../src/game/rules.ts";
 import { hashId } from "../../src/game/levels/generate.ts";
 import { fits, pick } from "../../src/game/levels/pick.ts";
-import { byId, catalogue, catchUp, clearOrder, dealBoard, flaggedOn, flags, itemById, itemClash, onSchedule, REMAKES, remadeInPlace, reserveLandmarks, root, swapSets, tallyText, usable, usesOf, writeBoards } from "./lib.mts";
+import { byId, catalogue, catchUp, clearOrder, dealBoard, familyOf, flaggedOn, flags, isFlower, itemById, itemClash, onSchedule, REMAKES, remadeInPlace, reserveLandmarks, root, swapSets, sameWord, tallyText, usable, usesOf, wordsOf, writeBoards } from "./lib.mts";
 import { RULES_FROM, rowOn, SUITCASE_FROM, SUITCASE_WEEK, WEEK } from "./daily-plan.mts";
 import { CURRENT, LAST_BEFORE_T9, SPARES } from "./campaign-plan.mts";
 import { schedule } from "./suitcase.mts";
@@ -69,6 +69,8 @@ const at = new Map(catalogue.map((p, k) => [p.id, k]));
 const lastKept = at.get(LAST_BEFORE_T9);
 // and never an atmospheric one (creator, 2026-10-29: at most one a level; atmospheric.mts): a daily's are all clear
 const CLEAR = usable.filter((p) => !isAtmospheric(p));
+/** An older day's in-place pictures: clear, and none of those kept new to the campaign. */
+const OLDER_POOL = CLEAR.filter((p) => !SPARES.has(p.id) && at.get(p.id) <= lastKept);
 const CURRENT_SQUARES = CLEAR.filter((p) => p.cols === 2 && p.rows === 2 && !CURRENT.has(p.id) && !SPARES.has(p.id) && at.get(p.id) <= lastKept);
 /** The day's item (suitcase.mts schedule), from SUITCASE_FROM. */
 const itemOn = (date) => {
@@ -196,10 +198,15 @@ levels.forEach((l, k) => {
     levels[k] = same;
     return;
   }
-  // no remake: on a board of squares (a day from RULES_FROM), each flagged picture gives way IN PLACE to
-  // another square of today's rules that clashes with nothing, the least used first (as 1b below): the
-  // deal, line and par unchanged
-  if (l.date >= RULES_FROM && l.pictures.every((p) => p.cols === 2 && p.rows === 2)) {
+  // no remake: each flagged picture gives way IN PLACE to a clear picture of its shape, the least used
+  // first, a flower close-up only where the day has one already and nothing else fits (lib.mts isFlower),
+  // none within three days either side, none the day's item rules out: the deal, line and par unchanged.
+  // On a board of squares from RULES_FROM, a square of today's rules within the day's type (fits); on an
+  // older day (mixed shapes, its type's lookalikes from before the rule against them), a picture with no
+  // family or word in common with the day's others, its album within a third and its medium within half,
+  // no busier than what it replaces, and none of the pictures kept new to the campaign
+  {
+    const squaresDay = l.date >= RULES_FROM && l.pictures.every((p) => p.cols === 2 && p.rows === 2);
     const it = l.item && itemById.get(l.item.id);
     const row = rowOn(l.date);
     const n = it ? row.count - 1 : row.count;
@@ -209,13 +216,27 @@ levels.forEach((l, k) => {
     for (const [j, p] of l.pictures.entries()) {
       if (!flags.has(p.id)) continue;
       const others = pictures.filter((q, i) => i !== j && q.id !== it?.id);
-      const swap = CURRENT_SQUARES.filter((c) => !(it && clashes(it, c)) && !near.has(c.id) && !pictures.some((q) => q.id === c.id) && fits(catalogue, spec, [...others, { id: c.id, cols: 2, rows: 2 }]))
-        .sort((a, b) => (uses.get(a.id) ?? 0) - (uses.get(b.id) ?? 0) || (a.id < b.id ? -1 : 1))[0];
+      const flowery = others.some((q) => isFlower(byId.get(q.id)));
+      const was = byId.get(p.id) ?? p;
+      const olderFits = (c) => {
+        const os = pictures.filter((_, i) => i !== j).map((q) => byId.get(q.id) ?? itemById.get(q.id) ?? { id: q.id });
+        const words = wordsOf(c);
+        return (
+          (c.busy ?? 0) <= (was.busy ?? 0) &&
+          !os.some((q) => familyOf(q.id) === (c.family ?? c.id) || wordsOf(q).some((x) => words.some((y) => sameWord(x, y)))) &&
+          !(c.album && os.filter((q) => q.album === c.album).length >= Math.ceil(pictures.length / 3)) &&
+          !(c.medium && os.filter((q) => q.medium === c.medium).length >= Math.ceil(pictures.length / 2))
+        );
+      };
+      const pool = squaresDay ? CURRENT_SQUARES : OLDER_POOL.filter((c) => c.cols === p.cols && c.rows === p.rows);
+      const swap = pool
+        .filter((c) => (flowery || !isFlower(c)) && !(it && clashes(it, c)) && !near.has(c.id) && !pictures.some((q) => q.id === c.id) && (squaresDay ? fits(catalogue, spec, [...others, { id: c.id, cols: 2, rows: 2 }]) : olderFits(c)))
+        .sort((a, b) => isFlower(a) - isFlower(b) || (uses.get(a.id) ?? 0) - (uses.get(b.id) ?? 0) || hashId(`${l.id}~${a.id}`) - hashId(`${l.id}~${b.id}`))[0];
       if (!swap) {
         pictures = null;
         break;
       }
-      pictures = pictures.map((q, i) => (i === j ? { id: swap.id, cols: 2, rows: 2 } : q));
+      pictures = pictures.map((q, i) => (i === j ? { id: swap.id, cols: p.cols, rows: p.rows } : q));
     }
     if (pictures) {
       console.log(`${l.id}: ${l.pictures.map((p, j) => (p.id !== pictures[j].id ? `${p.id} -> ${pictures[j].id}` : "")).filter(Boolean).join(", ")} in place (flagged, no remake); the deal and line unchanged`);
