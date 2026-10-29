@@ -29,10 +29,11 @@
 // level) for every board that may be carried on (never practice, a lesson, the dev menu
 // or a friend's one-off); dropInHand() where the board in hand is let go.
 
+import { GemApiError } from "@indiegems/gem-web-sdk/sdk";
 import { gem, onArcadePause, onWillTerminate } from "../gem";
 import { on } from "../events";
 import { dealHash } from "../net/deal-hash.ts";
-import { noAnswer, refusalOf } from "../net/no-answer.ts";
+import { refusalOf } from "../net/no-answer.ts";
 import { onOnline } from "../ui/online.ts";
 import type { BoardHandle, BoardKept } from "../board/index.ts";
 import type { Level } from "./levels.ts";
@@ -125,7 +126,7 @@ async function readOnce(): Promise<void> {
     try {
       got = await gem.me.saves.get(SLOT, { timeoutMs: 10_000 });
     } catch (err) {
-      if (noAnswer(err) || (err as { reason?: string }).reason !== "not_found") throw err;
+      if (!(err instanceof GemApiError) || err.reason !== "not_found") throw err;
     }
     finishRead(asRecord(got));
   } catch (err) {
@@ -148,6 +149,8 @@ let dirty = false;
 let written: string | undefined;
 let writing = false;
 let lastPut = 0;
+/** No save call before this (the platform said to wait: rate_limited's retry-after). */
+let holdUntil = 0;
 let timer: ReturnType<typeof setTimeout> | undefined;
 /** At most one write in this long while playing (each change after waits for it). */
 const GAP_MS = 8000;
@@ -182,12 +185,21 @@ function soon(): void {
   timer = setTimeout(() => {
     timer = undefined;
     void write();
-  }, Math.max(1500, lastPut + GAP_MS - Date.now()));
+  }, Math.max(1500, lastPut + GAP_MS - Date.now(), holdUntil - Date.now()));
 }
+
+/**
+ * A refusal no retry changes: the record is too large or malformed, or the slot is not
+ * declared on this channel. Anything else (rate_limited, unavailable, a session that
+ * ended mid-save, storage's own GemSaveError, no answer at all) is asked again later.
+ */
+const forGood = (err: unknown): boolean =>
+  err instanceof GemApiError && (err.reason === "too_large" || err.reason === "invalid" || err.reason === "not_found");
 
 /** Write now (the page hides, a pause, the game closing; or the wait is over). */
 async function write(timeoutMs = 10_000): Promise<void> {
   if (!framed || stored === undefined || !current) return; // the read writes what waited; nothing said yet: the slot stays
+  if (Date.now() < holdUntil) return soon(); // the platform asked for a pause
   if (writing) {
     dirty = true;
     return;
@@ -212,8 +224,10 @@ async function write(timeoutMs = 10_000): Promise<void> {
         written = text;
       } catch (err) {
         console.warn(`[in-hand] the board in hand could not be kept: ${refusalOf(err)}`);
-        if (noAnswer(err)) {
-          again = true; // no answer: sent again on a timer, and when the connection is back
+        if (!forGood(err)) {
+          // asked again on a timer (and when the connection is back), after any wait the platform set
+          if (err instanceof GemApiError && err.reason === "rate_limited") holdUntil = Date.now() + Math.max(5, err.retryAfterSeconds ?? 30) * 1000;
+          again = true;
           break;
         }
         // refused for good (too large, no such slot here): keep nothing more of this board, which
