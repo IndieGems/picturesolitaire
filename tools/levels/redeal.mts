@@ -4,9 +4,12 @@
 // board byte-identical; then
 // re-proves every board. One command:
 //   node tools/levels/redeal.mts
-// Each maker keeps the boards it has and re-deals only the flagged ones, in the
-// same place in its plan with as few pictures changed as can be (lib.mts,
-// route and swapSets). Then commit the level files and ask Server to rebuild
+// Each maker keeps the boards it has and mends only the flagged ones: first IN
+// PLACE, the deal, line and par unchanged (Art's remake, lib.mts REMAKES, else a
+// clear picture of the same shape the level's rules allow: lib.mts
+// swappedInPlace, make-daily.mts on a board of squares), and only where none
+// fits re-dealt, in the same place in its plan with as few pictures changed as
+// can be (lib.mts, route and swapSets). Then commit the level files and ask Server to rebuild
 // the win checker (functions/checker), which holds a copy of every board.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 

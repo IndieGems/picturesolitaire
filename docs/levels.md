@@ -173,7 +173,7 @@ daily puzzle in [daily.md](daily.md).
 
 **Atmospheric pictures** (creator, 2026-10-28; at most one a level, 2026-10-29): one of each board's pictures, from board 3 on (none on an all-long board), is atmospheric, each in a clear square's place with the deal unchanged (`tools/levels/atmospheric.mts`). Per trip: Travel America 12 of 106, Japan 14 of 154, Italy 14 of 160, American West 14 of 172, France 14 of 168, Canada 14 of 176, Argentina 14 of 168, Australia 14 of 174, South Africa 14 of 169, UK & Ireland 14 of 174. The clear pictures they displaced: 137, of which 128 are on no board now, the stock trips 11 on take first (`tools/levels/atmospheric.json`).
 
-Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture comes back 15 boards later at the soonest (median 22). Every board made since 2026-10-25 keeps the rule: no picture on two of boards 1-13, none back within 15 boards; 0 of 417 returns are sooner than 15, on boards kept from before it.
+Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture comes back 15 boards later at the soonest (median 22). Every board made since 2026-10-25 keeps the rule: no picture on two of boards 1-13, none back within 15 boards; 0 of 418 returns are sooner than 15, on boards kept from before it.
 
 | picture | boards |
 |---|---|
@@ -479,7 +479,7 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | zinnia (2x2, zinnia) |  |
 | cosmos (2x2, cosmos) | 37, 53 |
 | morning-glory (2x2, morning glory) | 40, 58 |
-| air-plant (2x2, air plant) | 137 |
+| air-plant (2x2, air plant) | 119, 137 |
 | frangipani (2x2, frangipani) | 50 |
 | edelweiss (2x2, edelweiss) | 134 |
 | crocus (2x2, crocus) | 142 |
@@ -1118,7 +1118,7 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | hacienda (2x2, ranch house) | 95, 113 |
 | folly (2x2, rotunda) | 102 |
 | inglenook (2x2, inglenook) | 99 |
-| grand-stairway (2x2, grand stairway) | 94, 119 |
+| grand-stairway (2x2, grand stairway) FLAGGED: don't use |  |
 | hammam (2x2, hammam) | 99 |
 | boulevard (2x2, boulevard) | 93 |
 | metro-station (2x2, metro station) | 117 |
@@ -1263,7 +1263,7 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | bushbaby (2x2, bushbaby) |  |
 | secretary-bird (2x2, secretary bird) | 124 |
 | hornbill (2x2, toucan) | 140 |
-| aardvark (2x2, aardvark) | 146 |
+| aardvark (2x2, aardvark) | 94, 146 |
 | dung-beetle (2x2, dung beetle) | 127 |
 | weaverbird (2x2, weaverbird) | 135, 150 |
 | red-deer (2x2, red deer) | 130 |

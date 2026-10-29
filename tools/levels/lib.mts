@@ -101,13 +101,37 @@ export const familyOf = (id) => (byId.get(id) ?? destById.get(id) ?? itemById.ge
  * when the shapes differ (pick another drop).
  */
 /**
- * A kept board with each landmark on it swapped IN PLACE for a usable picture
- * of the same shape (so the deal, line and measures stay as they are): unseen
- * first (spacedCost), calm before busy, never one the no-repeat rule bans on
- * board i, and only where the board still meets its row's picture rules (fits).
+ * Does a board with clear picture `r` swapped in still meet its row's picture rules (pick.ts fits)? Judged
+ * on its clear pictures: an atmospheric picture (atmospheric.mts) is outside the row's rules (it may be
+ * busy, or one of the early ones), so it counts only as the swap above judges it: no family or word in
+ * common with `r`, and `r`'s album within a third and its medium within half of the board.
  */
-export function swappedInPlace(b, i, chosen, row, rule) {
-  if (!b.pictures.some((p) => isLandmark(p.id))) return b;
+function fitsBeside(all, spec, pictures, r) {
+  const isAtm = (q) => byId.get(q.id)?.look === "atmospheric";
+  const atm = pictures.filter(isAtm);
+  const cards = atm.reduce((n, q) => n + q.cols * q.rows, 0);
+  if (!fits(all, { ...spec, count: spec.count - atm.length, cards: [spec.cards[0] - cards, spec.cards[1] - cards] }, pictures.filter((q) => !isAtm(q)))) return false;
+  if (!atm.length) return true;
+  const n = pictures.length;
+  const others = pictures.filter((q) => q.id !== r.id).map((q) => byId.get(q.id) ?? destById.get(q.id) ?? { id: q.id });
+  const words = wordsOf(r);
+  for (const a of atm.map((q) => byId.get(q.id))) if ((a.family ?? a.id) === (r.family ?? r.id) || wordsOf(a).some((x) => words.some((y) => sameWord(x, y)))) return false;
+  if (r.album && others.filter((q) => q.album === r.album).length >= Math.ceil(n / 3)) return false;
+  if (r.medium && others.filter((q) => q.medium === r.medium).length >= Math.ceil(n / 2)) return false;
+  return true;
+}
+
+/**
+ * A kept board with each landmark on it (or each picture `out` names: a
+ * flagged one with no remake, route) swapped IN PLACE for a usable clear
+ * picture of the same shape (so the deal, line and measures stay as they
+ * are): unseen first (spacedCost), calm before busy, never one the no-repeat
+ * rule bans on board i, never an atmospheric one (atmospheric.mts: at most one
+ * a level), and only where the board still meets its row's picture rules
+ * (fits). With `orNull`, null where no picture fits (else it throws).
+ */
+export function swappedInPlace(b, i, chosen, row, rule, out = isLandmark, orNull = false) {
+  if (!b.pictures.some((p) => out(p.id))) return b;
   const all = [...catalogue, ...destinations];
   const spec = { ...specOf(row), keep: undefined };
   const banned = rule ? bannedOn(chosen, i, rule) : new Set();
@@ -115,12 +139,13 @@ export function swappedInPlace(b, i, chosen, row, rule) {
   const costOf = (r) => (seen.get(r.id) ?? 0) + (r.busy ?? 0);
   const pictures = [...b.pictures];
   for (const [k, p] of b.pictures.entries()) {
-    if (!isLandmark(p.id)) continue;
+    if (!out(p.id)) continue;
     const cands = usable
-      .filter((r) => r.cols === p.cols && r.rows === p.rows && !banned.has(r.id) && !pictures.some((q) => q.id === r.id))
+      .filter((r) => r.cols === p.cols && r.rows === p.rows && r.look !== "atmospheric" && !r.landmark && !banned.has(r.id) && !pictures.some((q) => q.id === r.id))
       .sort((a, c) => costOf(a) - costOf(c) || (a.id < c.id ? -1 : 1));
-    const r = cands.find((r) => fits(all, spec, pictures.map((q, j) => (j === k ? { id: r.id, cols: r.cols, rows: r.rows } : q))));
-    if (!r) throw new Error(`${b.id}: no picture can take landmark ${p.id}'s place within the board's rules`);
+    const r = cands.find((r) => fitsBeside(all, spec, pictures.map((q, j) => (j === k ? { id: r.id, cols: r.cols, rows: r.rows } : q)), r));
+    if (!r && orNull) return null;
+    if (!r) throw new Error(`${b.id}: no picture can take ${isLandmark(p.id) ? "landmark " : ""}${p.id}'s place within the board's rules`);
     pictures[k] = { id: r.id, cols: r.cols, rows: r.rows };
   }
   return { ...b, pictures, ...(b.axes?.families ? { axes: { ...b.axes, families: pictures.map((q) => familyOf(q.id)) } } : {}) };
@@ -764,6 +789,17 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
       for (const q of same.pictures) uses.set(q.id, (uses.get(q.id) ?? 0) + 1);
       chosen[i] = same.pictures;
       levels[i] = same;
+      return;
+    }
+    // no remake: a clear picture of each one's shape in its place, where the row's picture rules and the
+    // no-repeat rule allow (swappedInPlace): the deal, line and par unchanged, so a board with a destination too
+    const swapped = swappedInPlace(levels[i], i, chosen, plan[i] ?? {}, rule, (id) => flags.has(id), true);
+    if (swapped) {
+      console.log(`${b.id}: ${b.pictures.map((p, k) => (p.id !== swapped.pictures[k].id ? `${p.id} -> ${swapped.pictures[k].id}` : "")).filter(Boolean).join(", ")} in place (flagged, no remake); the deal and line unchanged`);
+      for (const q of b.pictures) uses.set(q.id, uses.get(q.id) - 1);
+      for (const q of swapped.pictures) uses.set(q.id, (uses.get(q.id) ?? 0) + 1);
+      chosen[i] = swapped.pictures;
+      levels[i] = swapped;
       return;
     }
     if (plan[i]?.destination) throw new Error(`${b.id}: uses flagged ${bad.join(", ")}, and the makers cannot re-deal a board with a destination yet; drop the flagged picture for it, or swap it by hand in the plan`);

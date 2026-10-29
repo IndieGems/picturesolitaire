@@ -37,7 +37,7 @@ import { join } from "node:path";
 import { random } from "../../src/game/rules.ts";
 import { hashId } from "../../src/game/levels/generate.ts";
 import { fits, pick } from "../../src/game/levels/pick.ts";
-import { byId, catalogue, catchUp, clearOrder, dealBoard, flaggedOn, itemById, itemClash, onSchedule, REMAKES, remadeInPlace, reserveLandmarks, root, swapSets, tallyText, usable, usesOf, writeBoards } from "./lib.mts";
+import { byId, catalogue, catchUp, clearOrder, dealBoard, flaggedOn, flags, itemById, itemClash, onSchedule, REMAKES, remadeInPlace, reserveLandmarks, root, swapSets, tallyText, usable, usesOf, writeBoards } from "./lib.mts";
 import { RULES_FROM, rowOn, SUITCASE_FROM, SUITCASE_WEEK, WEEK } from "./daily-plan.mts";
 import { CURRENT, LAST_BEFORE_T9, SPARES } from "./campaign-plan.mts";
 import { schedule } from "./suitcase.mts";
@@ -195,6 +195,35 @@ levels.forEach((l, k) => {
     for (const p of same.pictures) uses.set(p.id, (uses.get(p.id) ?? 0) + 1);
     levels[k] = same;
     return;
+  }
+  // no remake: on a board of squares (a day from RULES_FROM), each flagged picture gives way IN PLACE to
+  // another square of today's rules that clashes with nothing, the least used first (as 1b below): the
+  // deal, line and par unchanged
+  if (l.date >= RULES_FROM && l.pictures.every((p) => p.cols === 2 && p.rows === 2)) {
+    const it = l.item && itemById.get(l.item.id);
+    const row = rowOn(l.date);
+    const n = it ? row.count - 1 : row.count;
+    const spec = { count: n, alike: [], cards: [n * 4, n * 4], sizes: [4], vary: true, busyMost: row.busyMost, liveMost: row.liveMost };
+    const near = around(k, 3);
+    let pictures = l.pictures;
+    for (const [j, p] of l.pictures.entries()) {
+      if (!flags.has(p.id)) continue;
+      const others = pictures.filter((q, i) => i !== j && q.id !== it?.id);
+      const swap = CURRENT_SQUARES.filter((c) => !(it && clashes(it, c)) && !near.has(c.id) && !pictures.some((q) => q.id === c.id) && fits(catalogue, spec, [...others, { id: c.id, cols: 2, rows: 2 }]))
+        .sort((a, b) => (uses.get(a.id) ?? 0) - (uses.get(b.id) ?? 0) || (a.id < b.id ? -1 : 1))[0];
+      if (!swap) {
+        pictures = null;
+        break;
+      }
+      pictures = pictures.map((q, i) => (i === j ? { id: swap.id, cols: 2, rows: 2 } : q));
+    }
+    if (pictures) {
+      console.log(`${l.id}: ${l.pictures.map((p, j) => (p.id !== pictures[j].id ? `${p.id} -> ${pictures[j].id}` : "")).filter(Boolean).join(", ")} in place (flagged, no remake); the deal and line unchanged`);
+      for (const p of l.pictures) uses.set(p.id, uses.get(p.id) - 1);
+      for (const p of pictures) uses.set(p.id, (uses.get(p.id) ?? 0) + 1);
+      levels[k] = { ...l, pictures, ...(l.axes?.families ? { axes: { ...l.axes, families: pictures.map((q) => (byId.get(q.id) ?? itemById.get(q.id))?.family ?? q.id) } } : {}) };
+      return;
+    }
   }
   console.log(`${l.id}: uses flagged ${bad.join(", ")}; re-dealing it`);
   for (const p of l.pictures) uses.set(p.id, uses.get(p.id) - 1);
