@@ -1,0 +1,33 @@
+{
+  "note": "The soundtrack items sold on the Cosmetics screen (the creator, 2026-10-29): cosmetic platform items a player buys once for Coins, never traded, never written by the game. The one place a track's slug, id, title and price live; read by src/net/tracks.ts (the game) and tools/server/make-config.mts (the items and the cosmetics catalog in the game config). The slugs are Audio's (public/audio/<slug>.*); the id is made once from the slug by make-config and never changes once uploaded. `trip`: the trip in src/content/levels/trips.json the track belongs to. Every player's own track, track-sunny-day, is no item.",
+  "tracks": [
+    {
+      "slug": "track-paris-cafe",
+      "id": "78aee497-13c8-5624-a008-9560840fb02f",
+      "title": "Paris Café",
+      "trip": "t5",
+      "price": 500
+    },
+    {
+      "slug": "track-japanese-garden",
+      "id": "0a58b3a3-0328-5361-8b22-5a7a023bff3a",
+      "title": "Japanese Garden",
+      "trip": "t2",
+      "price": 500
+    },
+    {
+      "slug": "track-buenos-aires-tango",
+      "id": "c29f2f0b-2d19-5b60-92de-337b61691a76",
+      "title": "Buenos Aires Tango",
+      "trip": "t7",
+      "price": 500
+    },
+    {
+      "slug": "track-celtic-folk",
+      "id": "0e245df7-77d6-5afd-a3ea-e3d95ba62165",
+      "title": "Celtic Folk",
+      "trip": "t10",
+      "price": 500
+    }
+  ]
+}

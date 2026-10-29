@@ -29,9 +29,12 @@ export interface Table {
    * time; "suitcase" with month `month`'s full Daily Suitcase (src/net/suitcase.ts; its entry
    * is written by tools/server/make-config.mts from Levels' suitcases.json); "none" is an
    * uploaded table no month awards any more, its id and item kept for a later event
-   * (Winter Market, creator 2026-10-28).
+   * (Winter Market, creator 2026-10-28); "shop" is sold on the Cosmetics screen for `price`
+   * Coins, once per player (src/net/cosmetics.ts; creator 2026-10-29). Only a shop table is sold.
    */
-  award: "onboarding" | "suitcase" | "none";
+  award: "onboarding" | "suitcase" | "none" | "shop";
+  /** A shop table's Coins price as written into the config; the screen shows the config's (src/net/cosmetics.ts). */
+  price?: number;
   board?: string;
   month?: string;
   /**

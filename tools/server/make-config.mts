@@ -2,7 +2,9 @@
 // one progression per campaign and challenge board, the daily challenge, and the
 // daily result board. It replaces the block between the two "server:" marker
 // lines in gem-backend-game-config.yaml (appending it the first time), and
-// writes docs/coins.md, the table of what each board pays and the hourly maths.
+// writes docs/coins.md, the table of what each board pays and the hourly maths. It also writes
+// the table and soundtrack items (src/net/tables.json, src/net/tracks.json) and, in its own
+// marked block in the catalogs list, the Cosmetics screen's catalog of Coins offers.
 //
 //   node tools/server/make-config.mts
 //
@@ -108,11 +110,62 @@ const markSlug = (month) => `suitcase_prize_${month.replace("-", "_")}`;
     console.error(`make-config: ${twin.slug} is an item in src/net/tables.json and also src/net/suitcase-ids.json's builtInTable, every player's own. Name the new built-in table there.`);
     process.exit(1);
   }
+  // a table added by hand (a shop table) gets its id here, made once from its slug and kept
+  doc.tables = doc.tables.map((t) => (t.id ? t : { slug: t.slug, id: uuid5(`table:${t.slug}`), ...t }));
   if (JSON.stringify(doc) !== before) {
     writeFileSync(file, JSON.stringify(doc, null, 2) + "\n");
-    console.log("config: src/net/tables.json gains or updates the suitcase tables");
+    console.log("config: src/net/tables.json gains or updates the suitcase or shop tables");
   }
   TABLES = doc.tables;
+}
+
+// THE COSMETICS SCREEN (the creator, 2026-10-29): the tables with award "shop" (src/net/tables.json)
+// and the soundtracks (src/net/tracks.json), each bought once for Coins through the "cosmetics"
+// catalog written below. A track's id is made once from its slug and kept. ONLY a shop table or a
+// track carries a price, and only they get an offer: the event tables (the suitcase's, Winter
+// Market, the onboarding keepsake) are never sold.
+const TRACKS_PATH = join(root, "src/net/tracks.json");
+/** The soundtrack items (src/net/tracks.json). */
+let TRACKS = [];
+{
+  if (existsSync(TRACKS_PATH)) {
+    const doc = JSON.parse(readFileSync(TRACKS_PATH, "utf8"));
+    const before = JSON.stringify(doc);
+    doc.tracks = doc.tracks.map((t) => (t.id ? t : { slug: t.slug, id: uuid5(`track:${t.slug}`), ...t }));
+    if (JSON.stringify(doc) !== before) {
+      writeFileSync(TRACKS_PATH, JSON.stringify(doc, null, 2) + "\n");
+      console.log("config: src/net/tracks.json gains ids");
+    }
+    TRACKS = doc.tracks;
+  }
+  // the game standard's Coins prices: 100 to 10,000
+  const priced = (p) => Number.isInteger(p) && p >= 100 && p <= 10_000;
+  const bad = [
+    ...TABLES.filter((t) => (t.award === "shop" ? !priced(t.price) : t.price !== undefined)).map((t) =>
+      t.award === "shop" ? `${t.slug} is sold (award "shop") but its price ${t.price} is not a whole number of Coins from 100 to 10,000` : `${t.slug} has a price but award "${t.award}": only a shop table is sold`,
+    ),
+    ...TRACKS.filter((t) => !priced(t.price)).map((t) => `${t.slug}: its price ${t.price} is not a whole number of Coins from 100 to 10,000`),
+    ...TRACKS.filter((t) => !/^track-[a-z0-9-]+$/.test(t.slug) || TABLES.some((x) => x.slug === t.slug)).map((t) => `${t.slug}: a track's slug is "track-<name>" and no table's`),
+  ];
+  if (bad.length) {
+    console.error(`make-config: the Cosmetics screen's items:\n  ${bad.join("\n  ")}`);
+    process.exit(1);
+  }
+}
+/** Every item the cosmetics catalog sells, in screen order: the shop tables, then the tracks. */
+const SOLD = [...TABLES.filter((t) => t.award === "shop").map((t) => ({ ...t, kind: "table" })), ...TRACKS.map((t) => ({ ...t, kind: "track" }))];
+{
+  // the game sends each item's slug as the `id` of these events: every item for sale needs declaring
+  const text = readFileSync(CONFIG, "utf8");
+  for (const id of ["cosmetic_previewed", "cosmetic_bought"]) {
+    const at = text.indexOf(`- id: ${id}\n`);
+    const block = at < 0 ? "" : text.slice(at, text.indexOf("\n  - id:", at + 1));
+    const missing = SOLD.filter((t) => !block.includes(`"${t.slug}"`)).map((t) => t.slug);
+    if (SOLD.length && (at < 0 || missing.length)) {
+      console.error(`make-config: analytics event ${id} ${at < 0 ? "is not declared" : `does not declare the item${missing.length > 1 ? "s" : ""} ${missing.join(", ")}`} (gem-backend-game-config.yaml, analytics_events)`);
+      process.exit(1);
+    }
+  }
 }
 {
   // the suitcase's events are recorded by the checker under a declared month: every month needs declaring
@@ -274,6 +327,24 @@ if (TABLES.length) {
     if (t.icon) y.push(`    icon: ${t.icon}`);
   }
 }
+if (TRACKS.length) {
+  y.push("# The soundtracks the player can own (src/net/tracks.json): cosmetic, bought once for Coins");
+  y.push("# through the cosmetics catalog, never traded, never written by the game.");
+  if (!TABLES.length) y.push("items:");
+  for (const t of TRACKS) {
+    const icon = `tools/art/items/${t.slug}.png`;
+    y.push(`  - id: ${t.id}`);
+    y.push(`    slug: ${t.slug}`);
+    y.push(`    display_name: ${JSON.stringify(t.title)}`);
+    y.push("    item_type: item");
+    y.push("    category: cosmetic");
+    y.push("    fungible: true");
+    y.push("    stack_size: 1");
+    y.push("    transfer_policy: none");
+    y.push("    client_writable: false");
+    if (existsSync(join(root, icon))) y.push(`    icon: ${icon}`);
+  }
+}
 if (MONTHS.length) {
   y.push("# The suitcase items (src/content/levels/suitcases.json): a copy held per day packed, spares");
   y.push("# swapped by the checker; cosmetic, never traded, never written by the game.");
@@ -300,6 +371,63 @@ const a = text.indexOf(BEGIN);
 const b = text.indexOf(END);
 if (a >= 0 && b > a) text = text.slice(0, a) + block + text.slice(b + END.length);
 else text = text.replace(/\n*$/, "\n\n") + block + "\n";
+
+// the cosmetics catalog: its own marked block at the end of the catalogs list (written there the
+// first time, before the comments that head the next section)
+{
+  const C_BEGIN = "  # >>> cosmetics: generated by tools/server/make-config.mts from src/net/tables.json and src/net/tracks.json; do not edit by hand";
+  const C_END = "  # <<< cosmetics";
+  const c = [C_BEGIN];
+  if (SOLD.length) {
+    c.push("  # THE COSMETICS SCREEN (the creator, 2026-10-29): each shop table and soundtrack bought once");
+    c.push("  # for Coins, the same direct platform order as a helper. A buy grants one copy; max_uses 1 and");
+    c.push("  # the item's stack_size 1 refuse a second buy, a double press or a resend after a timeout");
+    c.push("  # before anything is charged. The event tables have no offer here, and none anywhere else.");
+    c.push(`  - id: ${uuid5("catalog:cosmetics")}`);
+    c.push("    slug: cosmetics");
+    c.push("    display_name: Cosmetics");
+    c.push("    recipes:");
+    SOLD.forEach((t, i) => {
+      c.push(`      - id: ${uuid5(`recipe:buy-${t.slug}`)}`);
+      c.push(`        slug: buy-${t.slug}`);
+      c.push("        recipe_type: purchase");
+      c.push(`        display_name: ${JSON.stringify(t.title)}`);
+      c.push("        max_uses: 1");
+      c.push(`        sort_order: ${i + 1}`);
+      c.push("        grants:");
+      c.push(`          - { type: item_grant, item_definition_slug: ${t.slug}, quantity: 1 }`);
+      c.push("        platform_prices:");
+      c.push(`          - { currency: ARCADE_TICKETS, price: ${t.price} }`);
+    });
+  }
+  c.push(C_END);
+  const ca = text.indexOf(C_BEGIN);
+  const cb = text.indexOf(C_END);
+  if (ca >= 0 && cb > ca) text = text.slice(0, ca) + c.join("\n") + text.slice(cb + C_END.length);
+  else {
+    const start = text.indexOf("\ncatalogs:\n");
+    if (start < 0) {
+      console.error("make-config: gem-backend-game-config.yaml has no catalogs section (the helpers' catalog) to put the cosmetics catalog in");
+      process.exit(1);
+    }
+    const lines = text.slice(start + 1).split("\n");
+    let at = lines.findIndex((l, i) => i > 0 && /^[a-z_]+:/.test(l));
+    if (at < 0) at = lines.length;
+    while (at > 1 && (lines[at - 1].startsWith("#") || lines[at - 1].trim() === "")) at--;
+    lines.splice(at, 0, ...c);
+    text = text.slice(0, start + 1) + lines.join("\n");
+  }
+  // no event table is sold, here or by any other offer in the catalogs
+  const from = text.indexOf("\ncatalogs:\n");
+  const rest = text.slice(from + 1).split("\n");
+  const upto = rest.findIndex((l, i) => i > 0 && /^[a-z_]+:/.test(l));
+  const catalogs = rest.slice(0, upto < 0 ? undefined : upto).join("\n");
+  const sold = TABLES.filter((t) => t.award !== "shop" && (catalogs.includes(`item_definition_slug: ${t.slug}`) || catalogs.includes(t.id)));
+  if (sold.length) {
+    console.error(`make-config: ${sold.map((t) => t.slug).join(", ")} ${sold.length > 1 ? "are" : "is"} offered in a catalog, but only a shop table is sold (the event tables stay unpurchasable)`);
+    process.exit(1);
+  }
+}
 writeFileSync(CONFIG, text);
 
 // ---------------------------------------------------------------- docs/coins.md
