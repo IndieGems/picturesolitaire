@@ -18,6 +18,7 @@
 import { t } from "./i18n";
 import { closed, cornerKey, opened } from "./dialogs";
 import { buyFrom, el, helperPic, priceButton, refusalWords, type BuyAnswer, type HelperKind, type Pack, type Shop } from "./helper-shop";
+import { shopStats } from "./board-stats";
 
 /** The rows, in the order of the board's helper buttons. */
 const ORDER: readonly HelperKind[] = ["undo", "hint", "shuffle"];
@@ -88,7 +89,7 @@ export function createHomeShop(shop: Shop) {
     if (busy) return;
     busy = true;
     for (const x of ORDER) delete said[x];
-    const answer: BuyAnswer = await buyFrom(shop, b, k, pack);
+    const answer: BuyAnswer = await buyFrom(shop, b, k, pack, "home");
     busy = false;
     if (veil.hidden) return;
     said[k] = answer === "ok" ? { text: t(`shop.got.${k}`, { count: pack }), good: true } : { text: refusalWords(shop, k, pack, answer), good: false };
@@ -107,6 +108,7 @@ export function createHomeShop(shop: Shop) {
       draw();
       veil.hidden = false;
       opened(veil, close);
+      shopStats.opened("home");
     },
     close,
     isOpen: (): boolean => !veil.hidden,

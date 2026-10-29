@@ -365,6 +365,7 @@ const mercyNote = createMercyNote({ hint: helperBtns.hint.btn, layer: boardScree
 type MercyBoard = BoardHandle & { grantFree?: (k: HelperKind, n?: number) => void };
 const tries = createTries({
   counted: () => (play?.kind === "campaign" && !isPractice(play) ? boardNumber(play.level) : null),
+  daily: () => play?.kind === "daily" && !isPractice(play),
   pictures: () => board?.pictures().length ?? 0,
   grant: (n) => (board as MercyBoard | null)?.grantFree?.("hint", n),
   announce: (n) => {

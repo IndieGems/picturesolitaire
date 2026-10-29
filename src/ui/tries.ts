@@ -18,10 +18,14 @@
 //
 // Campaign boards only: never practice, a lesson, the dev menu, the daily or a challenge
 // (app.ts's `counted`). The counts follow the player (the guide save's `tries`).
+//
+// The day's daily (not practice: app.ts's `daily`) has tries too, for its player numbers alone
+// (daily_started, daily_ended: board-stats.ts): they start and end exactly as a campaign try's,
+// with no attempt count and no mercy help.
 
 import { on } from "../events";
 import { keepTries, savedTries } from "./guide-save";
-import { boardStats, type Spent } from "./board-stats";
+import { boardStats, dailyStats, type Spent } from "./board-stats";
 import type { HelperKind } from "./stock";
 
 /** Mercy help's steps: stuck tries at one board, and the free Hints each later try starts with. */
@@ -38,6 +42,8 @@ export function mercyFor(n: number): number {
 }
 
 type Try = {
+  /** A campaign board's try, or the day's daily (its numbers only: n, attempt and the rest unused). */
+  lane: "campaign" | "daily";
   n: number;
   attempt: number;
   spent: Spent;
@@ -55,6 +61,8 @@ type Try = {
 type Deps = {
   /** The campaign board in play, as its number, when its tries count; null otherwise. */
   counted(): number | null;
+  /** The board in play is the day's daily, not practice. */
+  daily(): boolean;
   /** How many pictures the board in play deals. */
   pictures(): number;
   /** The board pays `n` Hints this try (its grantFree). */
@@ -73,7 +81,8 @@ export function createTries(d: Deps) {
     end();
     const n = d.counted();
     if (n === null) {
-      cur = null;
+      cur = d.daily() ? { lane: "daily", n: 0, attempt: 0, spent: { hint: 0, undo: 0, shuffle: 0 }, stuck: false, mercy: false, free: 0, cleared: 0, pictures: 0, ended: false } : null;
+      if (cur) dailyStats.started();
       d.changed();
       return;
     }
@@ -81,7 +90,7 @@ export function createTries(d: Deps) {
     const attempt = (saved.boards[n] ?? 0) + 1;
     keepTries({ ...saved, boards: { ...saved.boards, [n]: attempt } });
     const free = mercyFor(n);
-    cur = { n, attempt, spent: { hint: 0, undo: 0, shuffle: 0 }, stuck: false, mercy: free > 0, free, cleared: 0, pictures: d.pictures(), ended: false };
+    cur = { lane: "campaign", n, attempt, spent: { hint: 0, undo: 0, shuffle: 0 }, stuck: false, mercy: free > 0, free, cleared: 0, pictures: d.pictures(), ended: false };
     boardStats.started(n, attempt);
     if (free > 0) {
       d.grant(free);
@@ -94,6 +103,7 @@ export function createTries(d: Deps) {
   function end(): void {
     if (!cur || cur.ended) return;
     cur.ended = true;
+    if (cur.lane === "daily") return dailyStats.ended(cur.stuck ? "lost" : "quit");
     const left = Math.max(0, cur.pictures - cur.cleared);
     if (cur.stuck) {
       boardStats.lost(cur.n, cur.mercy, cur.attempt, left, cur.spent);
@@ -132,6 +142,7 @@ export function createTries(d: Deps) {
     won(): void {
       if (!cur || cur.ended) return;
       cur.ended = true;
+      if (cur.lane === "daily") return dailyStats.ended("won");
       cur.free = 0;
       boardStats.won(cur.n, cur.mercy, cur.attempt, cur.spent);
       const saved = savedTries();

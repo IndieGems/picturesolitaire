@@ -12,6 +12,7 @@
 // so "no Coins" is no sign of one (who can challenge a friend: src/net/friends.ts).
 
 import { helpers, HELPER_CAP, type BuyAnswer, type HelperKind, type Pack, type SpendAnswer } from "../net/helpers";
+import { shopStats, type ShopWhere } from "./board-stats";
 
 export type { BuyAnswer, HelperKind, Pack, SpendAnswer };
 /** Board 1's travel kit, as the checker grants it (one copy, the checker's own: Server's helpers.ts). */
@@ -29,6 +30,20 @@ const said = () => {
 };
 /** The config's prices as they stand (Server's config v28): what the pretend charges unless told otherwise. */
 const PRETEND_PRICES: Prices = { 1: { undo: 100, hint: 150, shuffle: 250 }, 3: { undo: 270, hint: 400, shuffle: 675 } };
+
+/** The purchase itself: the platform's, or the pretend's. */
+async function buyNow(k: HelperKind, pack: Pack): Promise<BuyAnswer> {
+  if (!pretend) return helpers.buy(k, pack);
+  const price = pretend.prices?.[pack][k];
+  if (price === undefined) return "failed";
+  if (!stock.fits(k, pack)) return "full";
+  await new Promise((r) => setTimeout(r, 500));
+  if (pretend.coins < price) return "short";
+  pretend.coins -= price;
+  pretend.counts[k] += pack;
+  said();
+  return "ok";
+}
 
 export const stock = {
   cap: HELPER_CAP,
@@ -51,18 +66,16 @@ export const stock = {
     said();
     return Promise.resolve("spent");
   },
-  /** Buy one or a pack of 3 with Coins, from the Buy press; the stock is read again before it answers. */
-  async buy(k: HelperKind, pack: Pack = 1): Promise<BuyAnswer> {
-    if (!pretend) return helpers.buy(k, pack);
-    const price = pretend.prices?.[pack][k];
-    if (price === undefined) return "failed";
-    if (!stock.fits(k, pack)) return "full";
-    await new Promise((r) => setTimeout(r, 500));
-    if (pretend.coins < price) return "short";
-    pretend.coins -= price;
-    pretend.counts[k] += pack;
-    said();
-    return "ok";
+  /**
+   * Buy one or a pack of 3 with Coins, from the Buy press in shop `where`; the stock is read again
+   * before it answers. A purchase the platform took is counted then (helper_bought, board-stats.ts),
+   * at the price it was offered at.
+   */
+  async buy(k: HelperKind, pack: Pack = 1, where?: ShopWhere): Promise<BuyAnswer> {
+    const price = stock.price(k, pack);
+    const answer = await buyNow(k, pack);
+    if (answer === "ok" && where) shopStats.bought(where, k, pack, price);
+    return answer;
   },
   /** Hear when a count, a price or the player's Coins change. Returns the unsubscribe. */
   onChange(fn: () => void): () => void {

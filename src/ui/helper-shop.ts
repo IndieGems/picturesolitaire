@@ -28,6 +28,7 @@
 import { t } from "./i18n";
 import { closed, cornerKey, opened } from "./dialogs";
 import { sayPrice } from "./coin";
+import { shopStats, type ShopWhere } from "./board-stats";
 
 export type HelperKind = "undo" | "hint" | "shuffle";
 export type Pack = 1 | 3;
@@ -47,8 +48,8 @@ export interface Shop {
   fits(k: HelperKind, pack?: Pack): boolean;
   /** The most of one helper a player can carry. */
   cap: number;
-  /** Buy one or a pack; the stock is read again before it answers. */
-  buy(k: HelperKind, pack?: Pack): Promise<BuyAnswer>;
+  /** Buy one or a pack from shop `where`; the stock is read again before it answers (a purchase taken is counted: helper_bought). */
+  buy(k: HelperKind, pack?: Pack, where?: ShopWhere): Promise<BuyAnswer>;
 }
 
 /** Art's pictures of each helper, one and a pack of 3 (public/art/helper-*.webp, 192 px). */
@@ -91,14 +92,14 @@ export function priceButton(shop: Shop, k: HelperKind, pack: Pack, cls: string, 
   return b;
 }
 
-/** Runs a purchase from its button: "Buying…" while it goes, then the answer. One at a time. */
-export async function buyFrom(shop: Shop, b: HTMLButtonElement, k: HelperKind, pack: Pack): Promise<BuyAnswer> {
+/** Runs a purchase from its button in shop `where`: "Buying…" while it goes, then the answer. One at a time. */
+export async function buyFrom(shop: Shop, b: HTMLButtonElement, k: HelperKind, pack: Pack, where: ShopWhere): Promise<BuyAnswer> {
   b.setAttribute("aria-busy", "true");
   b.disabled = true;
   const words = b.querySelector(".buy-words");
   const was = words ? [...words.childNodes] : [];
   if (words) words.textContent = t("shop.buying");
-  const answer = await shop.buy(k, pack).catch((): BuyAnswer => "failed");
+  const answer = await shop.buy(k, pack, where).catch((): BuyAnswer => "failed");
   b.removeAttribute("aria-busy");
   b.disabled = false;
   if (words) words.replaceChildren(...was);
@@ -166,7 +167,7 @@ export function createRunOut(shop: Shop, bought: (k: HelperKind) => void) {
     if (busy) return;
     busy = true;
     say.textContent = "";
-    const answer = await buyFrom(shop, btn, kind, pack);
+    const answer = await buyFrom(shop, btn, kind, pack, "run_out");
     busy = false;
     if (veil.hidden) return;
     if (answer === "ok") {
@@ -191,6 +192,7 @@ export function createRunOut(shop: Shop, bought: (k: HelperKind) => void) {
       draw();
       veil.hidden = false;
       opened(veil, close);
+      shopStats.opened("run_out");
     },
     close,
     /** Is it up? */

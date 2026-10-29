@@ -16,29 +16,66 @@
 // only those taken from the player's stock (a mercy Hint or a lesson's use is not). Levels
 // reads tries per win as started over won, and quits by board.
 //
+// The shops and the daily (release review GSR-005, 2026-10-28; declared by Server the same day,
+// with the funnels buying, first_session and daily_try):
+//
+//   shop_opened    where                       as home's Shop or the run-out panel opens
+//   helper_bought  where, helper, pack ("1"/"3")  price (the Coins charged for the whole pack)
+//                                              only once the platform has taken the purchase
+//                                              (stock.ts buy), never on the press
+//   daily_started  (none)                      each try at the day's board, Restarts included
+//   daily_ended    result (won, lost, quit)    one per try, ended as a campaign try is
+//                                              (tries.ts); a practice daily sends nothing
+//
 // track() only queues: the SDK sends on a timer and on the way out of the page, and the game
 // when the page hides or the Arcade pauses it (gem.ts). Unframed (the play-test tool) nothing
 // is sent; the dev server keeps the last events for checks (__ps.stats).
 
 import { gem, sendAnalyticsNow } from "../gem";
-import type { HelperKind } from "./stock";
+import type { HelperKind, Pack } from "./stock";
 
 export type Spent = Record<HelperKind, number>;
+/** Which shop: home's Shop, or the run-out panel over a board. */
+export type ShopWhere = "home" | "run_out";
 
 /** The last events, for the dev server's checks (never in a build). */
 export const recentStats: { name: string; props: Record<string, string | number> }[] = [];
 
-function send(name: string, n: number, props: Record<string, string | number>): void {
-  const board = Math.round(n);
-  if (!(board >= 1 && board <= 1000)) return; // outside the declared range: refused anyway
-  // a dimension, so a string (see above)
-  props = { board: String(board), ...props };
+/** One event, never awaited. */
+function track(name: string, props: Record<string, string | number> = {}): void {
   gem.analytics.track(name, props);
   if (import.meta.env.DEV) {
     recentStats.push({ name, props });
     if (recentStats.length > 40) recentStats.shift();
   }
 }
+
+function send(name: string, n: number, props: Record<string, string | number>): void {
+  const board = Math.round(n);
+  if (!(board >= 1 && board <= 1000)) return; // outside the declared range: refused anyway
+  // a dimension, so a string (see above)
+  track(name, { board: String(board), ...props });
+}
+
+export const shopStats = {
+  opened(where: ShopWhere): void {
+    track("shop_opened", { where });
+  },
+  /** Bought, as the platform answered: `price` is what the whole purchase cost. */
+  bought(where: ShopWhere, helper: HelperKind, pack: Pack, price: number | null): void {
+    // pack is a dimension, so a string; the price a measure, sent when it was known
+    track("helper_bought", { where, helper, pack: String(pack), ...(price !== null ? { price: Math.round(price) } : {}) });
+  },
+};
+
+export const dailyStats = {
+  started(): void {
+    track("daily_started");
+  },
+  ended(result: "won" | "lost" | "quit"): void {
+    track("daily_ended", { result });
+  },
+};
 
 const all = (s: Spent): number => s.hint + s.undo + s.shuffle;
 const yesNo = (b: boolean): string => (b ? "yes" : "no");
