@@ -239,6 +239,30 @@ analytics_events:
     dimensions:
       action: { values: ["shared", "challenge_sent", "challenge_not_sent", "opened_challenge", "opened_share", "challenge_won", "challenge_lost", "challenge_tied"] }
       kind: { values: ["board", "daily"] }
+  # THE HELPER SHOP AND THE DAILY (release report GSR-005; names agreed with UI, 2026-10-28), sent by
+  # the game. `where`: home's Shop, or the shop the run-out panel opens. helper_bought is sent only
+  # once the platform confirmed the purchase; `price` is the Coins charged for it in all (a pack's total).
+  - id: shop_opened
+    description: "The helper shop opened: from home's Shop, or from the panel shown when a helper has run out."
+    sources: [client]
+    dimensions:
+      where: { values: ["home", "run_out"] }
+  - id: helper_bought
+    description: "A helper bought for Coins, confirmed by the platform: which helper, one or a pack of 3, from which shop, and the Coins charged in all."
+    sources: [client]
+    dimensions:
+      helper: { values: ["hint", "undo", "shuffle"] }
+      pack: { values: ["1", "3"] }
+      where: { values: ["home", "run_out"] }
+    measures: { price: int }
+  - id: daily_started
+    description: "A try at the daily puzzle opened (a restart sends another)."
+    sources: [client]
+  - id: daily_ended
+    description: "A try at the daily puzzle ended: won, lost (stuck) or quit. One per try."
+    sources: [client]
+    dimensions:
+      result: { values: ["won", "lost", "quit"] }
 
 analytics_funnels:
   # How far players get: from opening the game to each milestone board won.
@@ -259,6 +283,22 @@ analytics_funnels:
   # A try that ends in a win.
   - id: board_try
     steps: [board_started, board_won]
+  # Buying (GSR-005): a shop opened, then a helper bought. `--by where` splits home from run-out.
+  - id: buying
+    steps: [shop_opened, helper_bought]
+  # A new player's way to the shop: the guided first board won, the shop opened, a first helper
+  # bought. A funnel of its own, so campaign_reach's history keeps its step names.
+  - id: first_session
+    steps:
+      - gem_session_start
+      - { event: board_won, where: { board: 1 } }
+      - shop_opened
+      - helper_bought
+  # A daily try that ends in a win.
+  - id: daily_try
+    steps:
+      - daily_started
+      - { event: daily_ended, where: { result: won } }
 
 # FRIEND CHALLENGES (docs/friend-challenges.md; the creator, 2026-10-28): the line a friend's Arcade
 # inbox shows, sent by src/net/friends.ts with gem.friends.challenge. The friend's Play launches the
