@@ -168,6 +168,13 @@ Each picture ships at the size it is drawn, in three files, all WebP made from t
 
 ## Style menu (`medium`)
 
+**A style and its subject belong together** (creator, 2026-10-29). A style tied to a period or a place draws
+subjects of that period and place, unless the mix is the point: a ukiyo-e print shows Edo Japan, and a
+hand-coloured lithograph shows the 19th-century America or Europe it came from. The first Sleigh Ride broke this.
+Its ukiyo-e prompt drew a woman in a kimono driving a Western cutter sleigh behind a draught horse, and woodblock
+prints predate horse sleighs in Japan. So a prompt names the period and place of its people, clothes and things
+when the style has one.
+
 | word | what it looks like |
 | --- | --- |
 | photo | studio product shot on a plain backdrop, close portrait, macro of food or an object (never a flower, below) |
