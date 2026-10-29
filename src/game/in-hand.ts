@@ -196,10 +196,14 @@ function soon(): void {
 const forGood = (err: unknown): boolean =>
   err instanceof GemApiError && (err.reason === "too_large" || err.reason === "invalid" || err.reason === "not_found");
 
-/** Write now (the page hides, a pause, the game closing; or the wait is over). */
-async function write(timeoutMs = 10_000): Promise<void> {
+/**
+ * Write now (the wait is over; or `closing`: the page hides, a pause, the game closing, which
+ * try once even while the platform asked for a pause, since there may be no later: a win
+ * closed at once must not leave its board behind to be offered again).
+ */
+async function write(timeoutMs = 10_000, closing = false): Promise<void> {
   if (!framed || stored === undefined || !current) return; // the read writes what waited; nothing said yet: the slot stays
-  if (Date.now() < holdUntil) return soon(); // the platform asked for a pause
+  if (!closing && Date.now() < holdUntil) return soon(); // the platform asked for a pause
   if (writing) {
     dirty = true;
     return;
@@ -256,7 +260,7 @@ if (framed) {
   });
   const now = () => {
     dirty = true;
-    void write(4000);
+    void write(4000, true);
   };
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") now();
@@ -267,7 +271,7 @@ if (framed) {
   });
   onWillTerminate((graceMs) => {
     dirty = true;
-    void write(Math.max(1000, graceMs - 500));
+    void write(Math.max(1000, graceMs - 500), true);
   });
   onOnline((up) => {
     if (!up) return;
