@@ -2582,6 +2582,7 @@ items:
     stack_size: 1
     transfer_policy: none
     client_writable: false
+    icon: tools/art/items/table-paris-cafe.png
   - id: fec52e3d-6565-549a-b1e9-741863c016a3
     slug: table-kyoto-blossom
     display_name: "Kyoto Blossom table"
@@ -2591,6 +2592,7 @@ items:
     stack_size: 1
     transfer_policy: none
     client_writable: false
+    icon: tools/art/items/table-kyoto-blossom.png
   - id: aea75911-9d00-59d4-9da3-c4f02ddc883e
     slug: table-buenos-aires
     display_name: "Buenos Aires table"
@@ -2600,6 +2602,7 @@ items:
     stack_size: 1
     transfer_policy: none
     client_writable: false
+    icon: tools/art/items/table-buenos-aires.png
   - id: 498c421c-1ec3-5eed-a5e0-d6744d57b3a4
     slug: table-irish-coast
     display_name: "Irish Coast table"
@@ -2609,6 +2612,7 @@ items:
     stack_size: 1
     transfer_policy: none
     client_writable: false
+    icon: tools/art/items/table-irish-coast.png
 # The soundtracks the player can own (src/net/tracks.json): cosmetic, bought once for Coins
 # through the cosmetics catalog, never traded, never written by the game.
   - id: 78aee497-13c8-5624-a008-9560840fb02f

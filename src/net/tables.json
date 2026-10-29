@@ -80,28 +80,32 @@
       "id": "10825cd5-34a6-5a9c-b4e0-6fba1600d51c",
       "title": "Paris Café table",
       "award": "shop",
-      "price": 2000
+      "price": 2000,
+      "icon": "tools/art/items/table-paris-cafe.png"
     },
     {
       "slug": "table-kyoto-blossom",
       "id": "fec52e3d-6565-549a-b1e9-741863c016a3",
       "title": "Kyoto Blossom table",
       "award": "shop",
-      "price": 2000
+      "price": 2000,
+      "icon": "tools/art/items/table-kyoto-blossom.png"
     },
     {
       "slug": "table-buenos-aires",
       "id": "aea75911-9d00-59d4-9da3-c4f02ddc883e",
       "title": "Buenos Aires table",
       "award": "shop",
-      "price": 2000
+      "price": 2000,
+      "icon": "tools/art/items/table-buenos-aires.png"
     },
     {
       "slug": "table-irish-coast",
       "id": "498c421c-1ec3-5eed-a5e0-d6744d57b3a4",
       "title": "Irish Coast table",
       "award": "shop",
-      "price": 2000
+      "price": 2000,
+      "icon": "tools/art/items/table-irish-coast.png"
     }
   ]
 }

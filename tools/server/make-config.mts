@@ -110,8 +110,13 @@ const markSlug = (month) => `suitcase_prize_${month.replace("-", "_")}`;
     console.error(`make-config: ${twin.slug} is an item in src/net/tables.json and also src/net/suitcase-ids.json's builtInTable, every player's own. Name the new built-in table there.`);
     process.exit(1);
   }
-  // a table added by hand (a shop table) gets its id here, made once from its slug and kept
+  // a table added by hand (a shop table) gets its id here, made once from its slug and kept, and
+  // its icon once Art's tools/art/items/<slug>.png is in
   doc.tables = doc.tables.map((t) => (t.id ? t : { slug: t.slug, id: uuid5(`table:${t.slug}`), ...t }));
+  for (const t of doc.tables) {
+    const icon = `tools/art/items/${t.slug}.png`;
+    if (!t.icon && existsSync(join(root, icon))) t.icon = icon;
+  }
   if (JSON.stringify(doc) !== before) {
     writeFileSync(file, JSON.stringify(doc, null, 2) + "\n");
     console.log("config: src/net/tables.json gains or updates the suitcase or shop tables");
