@@ -1,9 +1,8 @@
 // The background music: one calm loop under the whole game, which steps back
-// while a picture's flourish or the win cue plays. The player's table picks
-// the track (MUSIC.tables in src/audio/sounds.ts: Winter Dusk keeps the snowy
-// evening, every other table plays the sunny one); choosing another table
-// crossfades to its track. Only the player's own choice counts: a board that
-// wears a table of its own (a Souvenir's) leaves the music as it is. The
+// while a picture's flourish or the win cue plays. The player's chosen
+// soundtrack picks the track (src/ui/tracks.ts, chosenTrack(), by the ids in
+// MUSIC.ids in src/audio/sounds.ts; the sunny one until they choose), never
+// the table (creator, 2026-10-29); choosing another crossfades to it. The
 // Cosmetics screen's try-out (tryTrack) plays another track in its place
 // until it is ended.
 //
@@ -18,14 +17,14 @@
 // If memory on low-end phones becomes a problem, stream it from an <audio>
 // element instead.
 
-import { chosenTable, onTableChange } from "../ui/tables";
+import { chosenTrack, onTrackChange } from "../ui/tracks";
 import { ctx, forget, load, musicBus, musicFile, onMixChange, setMusicLevel, setMusicTrack } from "./engine";
 import { MUSIC, type MusicName } from "./sounds";
 
 /** The track tried on the Cosmetics screen (tryTrack), in place of the chosen one; null: none. */
 let tried: MusicName | null = null;
-/** The track to play now: the one being tried, else the player's table's own, else the sunny one. */
-const trackNow = (): MusicName => tried ?? MUSIC.tables[chosenTable()] ?? "music";
+/** The track to play now: the one being tried, else the player's chosen one (an unknown id: the sunny one). */
+const trackNow = (): MusicName => tried ?? MUSIC.ids[chosenTrack()] ?? "music";
 /** The file to play now: that track, or the take the Sound Tuning editor picks for it. */
 const fileNow = (): string => musicFile(trackNow());
 
@@ -128,11 +127,11 @@ export async function tryTrack(id: string | null): Promise<boolean> {
   return play(fileNow(), TRY_FADE);
 }
 
-// Another table chosen, or another take picked in the Sound Tuning editor:
-// swap to its track, crossfading. (A table change that leaves the track as it
-// was, such as a Souvenir's table showing, changes nothing.) Music that never
-// got going (a failed load) tries again here.
-onTableChange(() => {
+// Another track chosen, or another take picked in the Sound Tuning editor:
+// swap to it, crossfading. (A call that leaves the track as it was changes
+// nothing; while a track is tried, a new choice waits for the try to end.)
+// Music that never got going (a failed load) tries again here.
+onTrackChange(() => {
   if (started && playing?.file !== fileNow()) void play(fileNow(), 2.5);
 });
 onMixChange(() => {

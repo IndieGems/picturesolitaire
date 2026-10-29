@@ -9,9 +9,9 @@
 // and it has no Mute; Keep on it says the creator prefers it.
 
 export const SOUNDS = [
-  { name: "music", label: "Music (in the game)", moment: "The background music, looping under the whole game: a sunny afternoon, on every table but Winter Dusk. In its original key (G), the one the game plays.", kind: "music" },
+  { name: "music", label: "Sunny Day music (in the game)", moment: "The background music every player has, looping under the whole game until they choose another soundtrack: a sunny afternoon. In its original key (G), the one the game plays.", kind: "music" },
   { name: "music-c", label: "Music moved to C (listen only, not in the game)", moment: "The same sunny track moved up to C, so it never rubs against the picture harp. You chose the original key instead; this one is kept only to listen to, and the game never plays it.", kind: "music", file: "bed-day-c", dir: "takes", preview: true },
-  { name: "winter", label: "Winter Dusk music", moment: "The background music while the player has chosen the Winter Dusk table (December's suitcase prize): the snowy evening.", kind: "music" },
+  { name: "winter", label: "Winter Dusk soundtrack", moment: "A soundtrack that comes with the Winter Dusk table (December's suitcase prize): the snowy evening. Once chosen on the Cosmetics screen it plays under the whole game.", kind: "music" },
   { name: "paris-cafe", label: "Paris Café soundtrack", moment: "A soundtrack the player buys on the Cosmetics screen (500 Coins), from the France trip: a café accordion over guitar and bass, a slow waltz. Once chosen it plays under the whole game.", kind: "music" },
   { name: "japanese-garden", label: "Japanese Garden soundtrack", moment: "A soundtrack the player buys on the Cosmetics screen (500 Coins), from the Japan trip: koto and shakuhachi flute over a soft pad, a sunlit garden. Once chosen it plays under the whole game.", kind: "music" },
   { name: "buenos-aires-tango", label: "Buenos Aires Tango soundtrack", moment: "A soundtrack the player buys on the Cosmetics screen (500 Coins), from the Argentina trip: bandoneon and violin over piano and plucked bass, a gentle tango. Once chosen it plays under the whole game.", kind: "music" },

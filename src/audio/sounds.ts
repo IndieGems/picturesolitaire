@@ -123,13 +123,13 @@ export const LOAD_ORDER: EffectName[] = [
 
 /**
  * The background music's tracks, each a row of the Sound Tuning editor:
- * "music", the sunny daytime track every table plays unless it has its own,
- * "winter", today's snowy-evening track, the Winter Dusk table's, and the
- * four Cosmetics soundtracks a player buys (creator, 2026-10-29).
+ * "music", the sunny daytime track every player has (Sunny Day, the default),
+ * "winter", the snowy evening, owned with the Winter Dusk table, and the four
+ * Cosmetics soundtracks a player buys (creator, 2026-10-29).
  */
 export type MusicName = "music" | "winter" | "paris-cafe" | "japanese-garden" | "buenos-aires-tango" | "celtic-folk";
 
-/** The background music: one calm loop under the whole game, chosen by the player's table. */
+/** The background music: one calm loop under the whole game, the player's chosen soundtrack (src/audio/music.ts). */
 export const MUSIC = {
   /**
    * "music": a sunny afternoon (guitar, felt piano, airy strings, flute), 72 bpm, in G major as
@@ -158,8 +158,6 @@ export const MUSIC = {
     "track-buenos-aires-tango": "buenos-aires-tango",
     "track-celtic-folk": "celtic-folk",
   } as Record<string, MusicName>,
-  /** A table with a track of its own, by the table's id (src/ui/tables.ts); fetched only while it is chosen. */
-  tables: { "table-winter-dusk": "winter" } as Record<string, MusicName>,
   /** Level of the music bus: well under the effects. */
   gain: 0.3,
   /** Seconds of the loop's end crossfaded into its start. */
