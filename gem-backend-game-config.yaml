@@ -4,9 +4,9 @@
 
 save_schemas:
   # The UI's own slot (src/ui/progress.ts): presentation state the server does not
-  # decide (which onboarding steps the player has seen). Its old campaign fields
-  # (level, won, restored, best) are read ONCE by the win checker, to take in
-  # progress made before "progress" below existed; nothing else reads them.
+  # decide (which onboarding steps the player has seen). The player writes it, so
+  # nothing in it ever becomes progress: the win checker reads only "progress" below
+  # (release report GSR-006, checker 0.1.28), and any old campaign fields here are inert.
   - key: campaign
     access_self_read: true
     access_self_write: true
@@ -46,6 +46,19 @@ save_schemas:
     access_game_server_read: true
     access_game_server_write: false
     max_size_bytes: 4096
+  # The level in hand (Gameplay, release report GSR-014): one board, so it reopens where
+  # the player left it after the Arcade ends a parked session. Presentation state the
+  # player writes, never progress: no server code reads it. It holds the board's line
+  # from the deal, and the resumed win claims that whole line, which the checker replays
+  # from its own deal and pays once (tools/server/vectors.mts holds it to that). A shuffle
+  # carries its board and stacks (100-300 bytes on a 6x6), so a long board with three
+  # shuffles is 3-4 KB; 64 KiB is about 2,500 moves.
+  - key: resume
+    access_self_read: true
+    access_self_write: true
+    access_game_server_read: true
+    access_game_server_write: false
+    max_size_bytes: 65536
 
 # THE HELPERS (creator, 2026-10-27; AGENTS.md): Hint, Undo and Shuffle are the
 # player's own stock, carried from board to board, at most 10 of each, never in
