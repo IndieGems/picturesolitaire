@@ -54,6 +54,24 @@ export interface BoardPicture {
   item?: string;
 }
 
+/**
+ * A board in play, as a later session carries it on (GSR-014, the creator's
+ * "Yes, offer to resume": a parked session the Arcade ended loses nothing).
+ * `line` is every action from the deal, exactly what board:solved will claim,
+ * so a resumed win still replays on the server from the deal and pays once;
+ * a shuffle keeps the board and stacks it made, so it comes back as it was.
+ * `ms` is the time shown so far; `plans`, the hint lines proved since the
+ * opening (after a shuffle, or a Hint's search), so Hint follows them again
+ * without a search; `free`, the try's mercy helpers not used yet. The
+ * helpers already used were spent from the Arcade and are never counted here.
+ */
+export interface BoardKept {
+  line: Action[];
+  ms: number;
+  plans: { at: number; line: Move[] }[];
+  free: Partial<Record<keyof HelperCounts, number>>;
+}
+
 /** What the screens hold of an open board (agreed with the UI member). */
 export interface BoardHandle {
   /**
@@ -102,6 +120,14 @@ export interface BoardHandle {
    */
   guide(mode: "line" | "hold" | null): void;
   pictures(): BoardPicture[];
+  /**
+   * The board in play as another session can carry it on (openBoard's
+   * `resume`; src/game/in-hand.ts keeps it in the player's save): null once it
+   * is solved, or when there is nothing to carry (no action played yet).
+   */
+  kept(): BoardKept | null;
+  /** This opening carries on a kept board (openBoard's `resume` replayed): its moves, time and stacks as left. */
+  readonly resumed: boolean;
   destroy(): void;
   /**
    * The dev menu's controls (src/board/dev.ts): win now, step through the
@@ -275,8 +301,21 @@ const keep: HTMLImageElement[] = [];
  * Open a board in `host`: campaign board `which` (from 1), or any board given
  * whole (a challenge or the daily deal, from src/game/levels.ts), of any size.
  * Events name the board by its campaign number, or else by its id.
+ *
+ * `resume`: a board kept from another session (BoardHandle.kept()), carried
+ * on where it was left: its line is replayed from this deal, and the board
+ * opens as the player left it (moves, time, stacks, a shuffle's mix) instead
+ * of being dealt. A line that does not replay on this deal, or that already
+ * wins, is ignored and the board is dealt fresh; `resumed` says which.
+ * `freeAllowed`: the most free uses of each helper the screens' rule could
+ * have given that try (mercy help: its announced Hints); the kept board's own
+ * count of unused ones is believed only up to it, and none without it.
  */
-export function openBoard(host: HTMLElement, which: number | Level): BoardHandle {
+export function openBoard(
+  host: HTMLElement,
+  which: number | Level,
+  opts: { resume?: BoardKept | null; freeAllowed?: Partial<Record<keyof HelperCounts, number>> } = {},
+): BoardHandle {
   loadTuning();
   mountDefs();
   const lvl = typeof which === "number" ? levelOf(which) : which;
@@ -340,6 +379,58 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   const freeLeft = new Map<keyof HelperCounts, number>();
   /** The opening position, which a lesson's stored shuffle is for. */
   const openingState = lvl.shuffle ? start(deal).state : null;
+  /**
+   * The kept board this opening carries on (opts.resume, replayed on this
+   * deal), until it is put on the board in place of the deal (reopening):
+   * the states before each action (Undo's history), the actions, where they
+   * lead, and the hint lines. Null: dealt fresh.
+   */
+  let carry = opts.resume ? replayKept(opts.resume) : null;
+  const resumed = !!carry;
+  // the try's free uses not used yet, believed only up to what the screens' rule could have given
+  // (the save is the player's to write: a larger number is never true)
+  if (carry && opts.resume) {
+    for (const k of ["undo", "hint", "shuffle"] as const) {
+      const n = Math.min(Math.floor(Number(opts.resume.free?.[k]) || 0), Math.floor(Number(opts.freeAllowed?.[k]) || 0));
+      if (n > 0) freeLeft.set(k, n);
+    }
+  }
+  /** `kept` replayed from the deal; null if any action does not apply here, or the line already wins (or is a lesson's). */
+  function replayKept(kept: BoardKept): { history: State[]; actions: Action[]; state: State; plans: { at: number; line: Move[] }[] } | null {
+    if (lvl.shuffle || lvl.lesson || !Array.isArray(kept.line) || !kept.line.length) return null;
+    const isCell = (n: unknown) => Number.isInteger(n) && (n as number) >= 0 && (n as number) < deal.cols * deal.rows;
+    const asMove = (a: unknown): Move | null => {
+      const m = a as Partial<Move> | null;
+      return m && isCell(m.from) && isCell(m.to) ? { from: m.from!, to: m.to! } : null;
+    };
+    try {
+      let s = start(deal).state;
+      const hist: State[] = [];
+      const acts: Action[] = [];
+      for (const raw of kept.line) {
+        const sh = raw as Partial<Shuffle> | null;
+        const a: Action | null = sh && sh.shuffle === true
+          ? Array.isArray(sh.board) && Array.isArray(sh.stacks) && sh.stacks.every(Array.isArray)
+            ? { shuffle: true, board: sh.board.map(Number), stacks: sh.stacks.map((st) => st.map(Number)) }
+            : null
+          : asMove(raw);
+        const out = a && ("shuffle" in a ? arrange(s, a) : move(s, a));
+        if (!a || !out) return null;
+        hist.push(s);
+        acts.push(a);
+        s = out.state;
+      }
+      if (isWon(s)) return null;
+      const extra = (Array.isArray(kept.plans) ? kept.plans : []).flatMap((p) => {
+        const line = Array.isArray(p?.line) ? p.line.map(asMove) : [];
+        return Number.isInteger(p?.at) && p.at >= 1 && p.at <= acts.length && line.length && line.every(Boolean) ? [{ at: p.at, line: line as Move[] }] : [];
+      });
+      return { history: hist, actions: acts, state: s, plans: [...freshPlans(), ...extra] };
+    } catch (err) {
+      console.warn("[board] the kept board did not replay; dealt fresh", err);
+      return null;
+    }
+  }
   let busy = 0;
   /** The dev menu is playing the board: the player's hand is held off it. */
   let driven = false;
@@ -348,16 +439,17 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   let pendingRestart = false;
   /** A destination's postcard on show (src/board/reveal.ts): a tap skips it. */
   let reveal: Reveal | null = null;
-  /** The destination has been revealed on this opening of the board: a repeat is the short one. */
-  let revealedOnce = false;
-  /** The item has been finished on this opening of the board (suitcase:item's again). */
-  let itemOnce = false;
+  /** The destination has been revealed on this opening of the board (or before, on a kept board carried on): a repeat is the short one. */
+  let revealedOnce = !!carry && destPic >= 0 && carry.state.cleared.includes(destPic);
+  /** The item has been finished on this opening of the board, or on the kept board carried on (suitcase:item's again). */
+  let itemOnce = !!carry && itemPic >= 0 && carry.state.cleared.includes(itemPic);
   /** suitcase:item is being sent (takeItem() may answer), and whether it was answered. */
   let itemAsking = false;
   let itemTaken = false;
   /** The opening deal has played: the clock may run. */
   let opened = false;
-  let activeMs = 0;
+  /** The time on the board so far: a kept board's carries on from what it showed. */
+  let activeMs = carry && opts.resume ? Math.max(0, Math.min(Math.round(Number(opts.resume.ms) || 0), 99 * 3_600_000)) : 0;
   let since: number | null = null;
   /** The win, as a claim needs it, from the moment the rules say the board is won (board:solved). */
   let solved: GameEvents["board:solved"] | null = null;
@@ -1618,6 +1710,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     clearTimeout(stuckCheck);
     setStuck(false);
     try {
+      carry = null;
       history = [];
       actions = [];
       plans = freshPlans();
@@ -1649,6 +1742,24 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     state = opened.state;
     await show(opened.steps);
     shown = state;
+  }
+
+  /**
+   * A kept board put back as it was left (openBoard's resume), in place of
+   * the deal: its cards fade in where they lay, and Undo goes back through
+   * the moves before the break as through any others.
+   */
+  async function reopening(): Promise<void> {
+    const c = carry!;
+    carry = null;
+    history = c.history;
+    actions = c.actions;
+    plans = c.plans;
+    state = c.state;
+    shown = state;
+    redrawAll(state);
+    for (const v of live) v.el.style.opacity = "0";
+    await Promise.all(live.map((v) => tween(TUNING.slideMs, (t) => (v.el.style.opacity = String(t)))));
   }
 
   // ---------------------------------------------------------------- helpers
@@ -1889,8 +2000,10 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
   // ---------------------------------------------------------------- open
 
   applyLayout();
-  drawStacks(state);
-  queueMicrotask(() => emit("board:start", { level: name }));
+  // a kept board shows its own stacks (as left) while its pictures come, its cards then put back where they lay
+  if (carry) shown = { ...carry.state, board: carry.state.board.map(() => EMPTY) };
+  drawStacks(shown);
+  queueMicrotask(() => emit("board:start", { level: name, resumed }));
   changed();
   busy++;
   void (async () => {
@@ -1923,7 +2036,7 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
     if (destroyed) return;
     busy--;
     relayout();
-    await run2(opening);
+    await run2(carry ? reopening : opening);
     opened = true;
     if (onScreenNow()) clockOn();
     // the next board's pictures, quietly, once this one is dealt
@@ -2056,6 +2169,20 @@ export function openBoard(host: HTMLElement, which: number | Level): BoardHandle
       }
       relight();
     },
+    kept() {
+      if (solved || won || destroyed) return null;
+      const line = carry ? carry.actions : actions;
+      if (!line.length) return null;
+      const known = carry ? carry.plans : plans;
+      return {
+        line: line.map((a) => ("shuffle" in a ? { shuffle: true as const, board: [...a.board], stacks: a.stacks.map((st) => [...st]) } : { from: a.from, to: a.to })),
+        ms: Math.round(activeMs + (since !== null ? performance.now() - since : 0)),
+        // the level's own line is the level's; only the lines proved since are the board's to carry
+        plans: known.slice(freshPlans().length).map((p) => ({ at: p.at, line: p.line.map((m) => ({ from: m.from, to: m.to })) })),
+        free: Object.fromEntries([...freeLeft].filter(([, n]) => n > 0)),
+      };
+    },
+    resumed,
     // a destination is its whole postcard here (the win card shows the place, not the window)
     pictures: () => pics.map((p, i) => ({
       id: p.id, src: art[i]!.url, cols: art[i]!.cols, rows: art[i]!.rows, ...(i === itemPic ? { item: lvl.item!.id } : {}),

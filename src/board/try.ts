@@ -2,7 +2,8 @@
 // with plain helper buttons and every event logged. Dev only; never built.
 import { openBoard } from "./index.ts";
 import { on, type GameEvents } from "../events";
-import { lessonLevel, loadChallenges, loadExperiments, loadLevel, loadSouvenir, type Level } from "../game/levels.ts";
+import { lessonLevel, loadChallenges, loadDaily, loadExperiments, loadLevel, loadSouvenir, type Level } from "../game/levels.ts";
+import type { BoardKept } from "./index.ts";
 import { TUNING } from "./tuning.ts";
 import { library } from "virtual:ps-content";
 
@@ -25,6 +26,9 @@ if (x) level = (await loadExperiments()).find((l) => l.id === x) ?? level;
 // ?lesson=shuffle: a lesson's staged board (src/content/levels/lessons.json)
 const lesson = q.get("lesson");
 if (lesson === "shuffle") level = (await lessonLevel(lesson)) ?? undefined;
+// ?daily=2026-11-03: that date's daily board (its week of the pool)
+const day = q.get("daily");
+if (day) level = (await loadDaily(day)) ?? undefined;
 // ?souvenir=t1: that trip's Souvenir board (src/content/levels/souvenirs.json)
 const souvenir = q.get("souvenir");
 if (souvenir) level = (await loadSouvenir(souvenir)) ?? undefined;
@@ -52,7 +56,9 @@ if (q.has("item")) {
 // a campaign board by its number (its trip loaded first), so the board preloads the next one
 const n = Number(q.get("level") ?? 1);
 if (!level) await loadLevel(n);
-const board = openBoard(host, level ?? n);
+// ?resume=<a kept board's JSON (board.kept())>: that board carried on (a session coming back), mercy's 2 free Hints allowed
+const resume = q.get("resume");
+const board = openBoard(host, level ?? n, resume ? { resume: JSON.parse(resume) as BoardKept, freeAllowed: { hint: 2 } } : {});
 const log: string[] = [];
 const names: (keyof GameEvents)[] = ["piece:lift", "piece:cancel", "piece:move", "piece:merge", "piece:split", "picture:complete", "picture:clear", "cards:fall", "stack:deal", "stack:nope", "column:land", "helper:undo", "helper:hint", "helper:shuffle", "board:restart", "board:won", "board:solved", "board:start", "board:changed", "board:stuck", "board:unstuck", "helper:refused", "destination:reveal", "destination:done", "suitcase:item"];
 for (const n of names) on(n, (p) => log.push(`${n} ${JSON.stringify(p)}`));

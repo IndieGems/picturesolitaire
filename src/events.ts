@@ -121,8 +121,12 @@ export interface GameEvents {
    * still said it.
    */
   "board:solved": { level: string; moves: number; ms: number; line: Action[] };
-  /** A board opened and play can begin. */
-  "board:start": { level: string };
+  /**
+   * A board opened and play can begin. `resumed`: it carries on a board kept
+   * from another session (openBoard's resume), with its moves and time as left,
+   * rather than a fresh deal: not a new try.
+   */
+  "board:start": { level: string; resumed: boolean };
   /**
    * A hard or super hard board's banner just appeared over it (UI, once per
    * opening of a marked board; never on restart). Sound plays its sting.
