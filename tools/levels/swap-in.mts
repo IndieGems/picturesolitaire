@@ -4,7 +4,8 @@
 // pictures (creator, 2026-10-29, via the lead and Art b8c92e6): the campaign 1-150 and the challenge
 // route, no daily (check.mts keeps pictures new to the catalogue out of them).
 // Run: node tools/levels/swap-in.mts <batch> [--after <id>] [--medium <medium>] [--dry]
-//      node tools/levels/swap-in.mts <batch> --pairs <file> [--dry]   (PAIRS, below)
+//      node tools/levels/swap-in.mts <batch> --pairs <file> [--keep OLD,OLD...] [--dry]   (PAIRS, below;
+//      --keep: olds the creator keeps, their pairs dropped)
 //   <batch>       the batch's name in the record (ink)
 //   --after ID    the batch: catalogue pictures after ID that are on no level and not flagged ...
 //   --medium M    ... and of that medium (ink); at least one of the two
@@ -202,7 +203,9 @@ console.log(`wrote ${lanes.map((l) => l.file).join(" and ")} and tools/levels/sw
 
 /** PAIRS (the header): each old picture's new one in its place on the campaign and the challenge route. */
 function swapPairs() {
-  const pairs = JSON.parse(readFileSync(join(root, pairsFile), "utf8")).swaps;
+  const keep = new Set((arg("--keep") ?? "").split(",").filter(Boolean));
+  const pairs = JSON.parse(readFileSync(join(root, pairsFile), "utf8")).swaps.filter((p) => !keep.has(p.old));
+  if (keep.size) console.log(`kept by the creator, their pairs dropped: ${[...keep].join(", ")}`);
   const swaps = [];
   const skipped = [];
   /** Brought-back pictures each level has given way so far (its row's oldLeast is that much lower). */
@@ -254,7 +257,7 @@ function swapPairs() {
     writeBoards(join(dir, lane.file), board, lane.levels, extra);
   }
   const record = existsSync(RECORD) ? JSON.parse(readFileSync(RECORD, "utf8")) : { batches: {} };
-  record.batches[batch] = { pairs: pairsFile, swaps, skipped, displaced: [...new Set(swaps.map((s) => s.clear))].sort(), freed: [] };
+  record.batches[batch] = { pairs: pairsFile, ...(keep.size ? { kept: [...keep] } : {}), swaps, skipped, displaced: [...new Set(swaps.map((s) => s.clear))].sort(), freed: [] };
   writeFileSync(RECORD, `${JSON.stringify({ note: record.note, batches: record.batches }, null, 1)}\n`);
   console.log(`wrote ${lanes.map((l) => l.file).join(" and ")} and tools/levels/swap-ins.json`);
 }
