@@ -1,0 +1,325 @@
+{
+ "//": "People swaps (creator, 2026-10-29, via the lead): each old people picture, turned away or framed like its neighbours (the lookalike bun-and-blue-top women in profile, men from behind), is replaced on its levels by a new one of the same shape, so deals stay unchanged. The olds stay in the library, unflagged. orchestra-flautist is atmospheric: it may only go where its level has no other atmospheric picture. New pictures sit after drone in the catalogue, so they cannot go into dailies from RULES_FROM; those dailies keep the old picture.",
+ "swaps": [
+  {
+   "old": "milliner",
+   "new": "sculptor",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "dressmaker",
+   "new": "upholsterer",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "florist",
+   "new": "greengrocer",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "tailor",
+   "new": "butcher-stall",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "weaver",
+   "new": "plaiting-hair",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "hairdresser",
+   "new": "kitchen-dance",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "washing-line",
+   "new": "broom-doorway",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "apple-ladder",
+   "new": "prize-marrow",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "plein-air",
+   "new": "crayons",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "mosaic-artist",
+   "new": "bartender",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "basket-weaver",
+   "new": "armchair-nap",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "dog-groomer",
+   "new": "vet-puppy",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "shepherd-lambs",
+   "new": "hayfield-farmer",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "hiker",
+   "new": "snowy-lane",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "pier-fishing",
+   "new": "crab-catch",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "ice-fisher",
+   "new": "beach-dog",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "fly-fisher",
+   "new": "gondolier",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "thatcher",
+   "new": "hilltop-dusk",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "milking",
+   "new": "big-boots",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "gaucho",
+   "new": "meadow-daydream",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "rope-sailor",
+   "new": "cafe-regular",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "fence-cowboy",
+   "new": "wall-balance",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "glassblower",
+   "new": "jazz-drummer",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "violin-maker",
+   "new": "toddler-lift",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "cellist",
+   "new": "orchestra-flautist",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "wok-chef",
+   "new": "birthday-tea",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "photographer",
+   "new": "bus-window",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "golfer",
+   "new": "finish-line",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "cabinetmaker",
+   "new": "mechanic",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "cooper",
+   "new": "garden-secret",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "bricklayer",
+   "new": "leaf-jump",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "tennis-player",
+   "new": "basketball-dunk",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "lantern-maker",
+   "new": "windowsill-peek",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "surf-lifesaver",
+   "new": "football-boot",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "scuba-diver",
+   "new": "cartwheel",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "paddleboarder",
+   "new": "hill-roll",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "watering-garden",
+   "new": "baby-rug",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "dog-walker",
+   "new": "rain-coat",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  {
+   "old": "window-cleaner",
+   "new": "tree-climb",
+   "shape": [
+    1,
+    2
+   ]
+  },
+  {
+   "old": "rower-scull",
+   "new": "rowing-family",
+   "shape": [
+    2,
+    1
+   ]
+  }
+ ]
+}

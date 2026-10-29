@@ -40655,6 +40655,35 @@
       "busy": 0
     },
     {
+      "id": "crab-catch",
+      "album": "people",
+      "title": "The Catch",
+      "medium": "photo",
+      "file": "pictures/people/crab-catch.webp",
+      "board": "pictures/people/crab-catch-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "green",
+        "red",
+        "blue"
+      ],
+      "subjects": [
+        "crab catch",
+        "rock pool"
+      ],
+      "family": "crab-catch",
+      "busy": 0
+    },
+    {
       "id": "gondolier",
       "album": "people",
       "title": "Gondolier",
