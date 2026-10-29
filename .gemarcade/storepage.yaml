@@ -1,46 +1,524 @@
 # storepage.yaml — store-page schema v3 (scaffolded by `gemctl store init`).
 # Art: built by tools/art/store.py (hero/, borders/); the hover loop is video/preview.mp4.
 # Check with `gemctl store upload --dry-run`. Nothing here is uploaded until someone runs the upload.
+# Copy in the 12 Arcade locales (release review GSR-003, 2026-10-29): the words follow
+# locales/glossary.md, shared with the game's text ("level", never "board"). The title is the
+# game's name and stays English everywhere. A later pass translates only the fields that changed.
 
 schema_version: 3
 
 title: "Picture Passport"
 
-tagline: "Piece the world together"
+tagline:
+  en: "Piece the world together"
+  de: "Setz die Welt zusammen"
+  es: "Arma el mundo pieza a pieza"
+  fr: "Le monde, pièce par pièce"
+  it: "Il mondo, pezzo per pezzo"
+  ja: "世界をつなぎ合わせよう"
+  ko: "세계를 한 조각씩 맞춰 봐요"
+  pl: "Złóż świat w całość"
+  pt-BR: "Monte o mundo peça por peça"
+  ru: "Соберите мир по кусочкам"
+  tr: "Dünyayı parça parça birleştir"
+  zh-Hans: "一块块拼出整个世界"
 
-short_description: "Swap scattered cards until each picture is whole. Every board hides a real place, from Iguazú Falls to a giant banana: finish it and it unfolds into a postcard. Travel the world trip by trip and fill your passport, with no timers."
+short_description:
+  en: "Swap scattered cards until each picture is whole. Every level hides a real place, from Iguazú Falls to a giant banana: finish it and it unfolds into a painted postcard. Travel the world trip by trip and fill your passport, with no timers."
+  de: "Tausche verstreute Karten, bis jedes Bild vollständig ist. Jedes Level versteckt einen echten Ort, von den Iguazú-Wasserfällen bis zu einer Riesenbanane: Setz es zusammen, und es entfaltet sich zur gemalten Postkarte. Bereise die Welt Etappe für Etappe und füll deinen Reisepass, ohne Zeitlimit."
+  es: "Intercambia cartas dispersas hasta completar cada imagen. Cada nivel esconde un lugar real, desde las cataratas del Iguazú hasta un plátano gigante: complétalo y se despliega en una postal pintada. Recorre el mundo viaje a viaje y llena tu pasaporte, sin cronómetros."
+  fr: "Échangez les cartes éparpillées jusqu'à reconstituer chaque image. Chaque niveau cache un lieu réel, des chutes d'Iguazú à une banane géante : terminez-le et il se déplie en carte postale peinte. Parcourez le monde voyage après voyage et remplissez votre passeport, sans chrono."
+  it: "Scambia le carte sparse finché ogni immagine è completa. Ogni livello nasconde un luogo reale, dalle cascate dell'Iguazú a una banana gigante: completalo e si apre in una cartolina dipinta. Gira il mondo un viaggio alla volta e riempi il tuo passaporto, senza timer."
+  ja: "散らばったカードを入れ替えて、絵を完成させよう。どのレベルにも実在の場所が隠れています。イグアスの滝から巨大バナナまで、完成させると絵画風の絵はがきが広がります。旅をひとつずつめぐって、パスポートを埋めよう。時間制限はありません。"
+  ko: "흩어진 카드를 바꿔 가며 그림을 완성하세요. 모든 레벨에는 실제 장소가 숨어 있어요. 이구아수 폭포부터 거대한 바나나까지, 완성하면 회화풍 엽서로 펼쳐져요. 여행을 하나씩 떠나며 여권을 채워 보세요. 시간 제한은 없어요."
+  pl: "Zamieniaj rozrzucone karty, aż każdy obraz będzie cały. Każdy poziom kryje prawdziwe miejsce, od wodospadów Iguazú po gigantycznego banana: ułóż je, a rozłoży się w malowaną pocztówkę. Podróżuj po świecie etap po etapie i zapełniaj paszport, bez limitu czasu."
+  pt-BR: "Troque as cartas espalhadas até completar cada imagem. Cada nível esconde um lugar real, das Cataratas do Iguaçu a uma banana gigante: complete-o e ele se abre em um cartão-postal pintado. Viaje pelo mundo uma viagem de cada vez e encha seu passaporte, sem cronômetro."
+  ru: "Меняйте местами разбросанные карты, пока каждая картинка не станет целой. На каждом уровне спрятано реальное место, от водопадов Игуасу до гигантского банана: соберите его, и оно развернётся в живописную открытку. Путешествуйте по миру и заполняйте паспорт, без всяких таймеров."
+  tr: "Dağınık kartların yerlerini değiştirerek her resmi tamamla. Her seviyede gerçek bir yer saklı; Iguazú Şelaleleri'nden dev bir muza kadar. Tamamladığında tablo gibi bir kartpostal olarak açılır. Dünyayı gezi gezi dolaş ve pasaportunu doldur, süre sınırı olmadan."
+  zh-Hans: "交换散落的卡牌，直到每幅画完整呈现。每一关都藏着一个真实的地方，从伊瓜苏瀑布到一根巨型香蕉：完成它，就会展开成一张绘画风明信片。一段段旅行环游世界，集满你的护照，没有时间限制。"
 
-description: |
-  ## Piece the pictures together
+description:
+  en: |
+    ## Piece the pictures together
 
-  Cards from several pictures lie scattered across the table. Drag one card onto another to swap them, or tap one and then the other. When a card meets its true neighbour, the two join into one piece and move together. Finish a picture and it clears, and new cards drop in from the stacks above.
+    Cards from several pictures lie scattered across the table. Drag one card onto another to swap them, or tap one and then the other. When a card meets its true neighbour, the two join into one piece and move together. Finish a picture and it clears, and new cards drop in from the stacks above.
 
-  ## A real place on every board
+    ## A real place on every level
 
-  Each board hides one destination. Finish it and it unfolds into a postcard of the whole place, with its name: famous sights like Mont-Saint-Michel and the Sydney Harbour Bridge, hidden gems like Hutt Lagoon's pink lake, and roadside wonders like Lucy the Elephant.
+    Each level hides one destination. Finish it and it unfolds into a painted postcard of the whole place, with its name: famous sights like Mont-Saint-Michel and the Sydney Harbour Bridge, hidden gems like Hutt Lagoon's pink lake, and roadside wonders like Lucy the Elephant.
 
-  ## Travel the world
+    ## Travel the world
 
-  Boards come in trips of 15: America, Japan, Italy, the American West, France, Canada, Argentina, Australia, South Africa, the UK and Ireland, and more. Finish a trip and your passport gets its stamp. Boards grow as you go, from small tables to big 5×5 and 6×6 finales.
+    Levels come in trips of 15: America, Japan, Italy, the American West, France, Canada, Argentina, Australia, South Africa, and the UK and Ireland. Finish a trip and your passport gets its stamp. Levels grow as you go, from small grids to big 5×5 and 6×6 finales.
 
-  ## Pack the monthly suitcase
+    ## A Souvenir after every trip
 
-  Every month brings a themed suitcase to fill, like November's Ski Trip. Each day's puzzle hides one travel item: finish it and it's packed. Items come back on different days, so spares are never wasted: swap three for one you're missing. Fill the suitcase to win that month's themed table.
+    Each stamp opens a Souvenir: a bonus level themed on the trip you just finished, like Japan's woodblock prints or France's Impressionist paintings. Win it to add its sticker to your passport.
 
-  ## Play at your own pace
+    ## Pack the monthly suitcase
 
-  - **No timers and no move limits.** Every board can be won without help, and Restart is always free.
-  - **Hard and super hard boards are marked**, with easier boards in between.
-  - **Helpers when you want them.** Start with a travel kit of Undos, Hints and Shuffles. Earn more on hard boards, at the end of each trip and from the daily puzzle, or buy them with Coins.
-  - **A daily puzzle**: the same board for everyone, every day.
+    Every month brings a themed suitcase to fill, like November's Ski Trip. Each day's puzzle hides one travel item: finish it and it's packed. Items come back on different days, so spares are never wasted: swap three for one you're missing. Fill the suitcase to win that month's themed table.
+
+    ## Challenge a friend
+
+    After a level or the daily puzzle, challenge an Arcade friend to beat your moves on the same level, or share a link with anyone. They can play it even before they reach it on their own trip.
+
+    ## Play at your own pace
+
+    - **No timers and no move limits.** Every level can be won without help, and Restart is always free.
+    - **Hard and super hard levels are marked**, with easier levels in between.
+    - **Helpers when you want them.** Start with a travel kit of Undos, Hints and Shuffles. Earn more on hard levels, at the end of each trip and from the daily puzzle, or buy them with Coins.
+    - **A daily puzzle**: the same level for everyone, every day.
+
+  de: |
+    ## Setz die Bilder zusammen
+
+    Karten aus mehreren Bildern liegen verstreut auf dem Tisch. Zieh eine Karte auf eine andere, um die beiden zu tauschen, oder tippe erst die eine und dann die andere an. Trifft eine Karte auf ihren echten Nachbarn, verbinden sich die beiden zu einem Teil und bewegen sich gemeinsam. Ist ein Bild fertig, verschwindet es, und neue Karten rücken von den Stapeln darüber nach.
+
+    ## Ein echter Ort in jedem Level
+
+    Jedes Level versteckt ein Reiseziel. Setzt du es zusammen, entfaltet es sich zu einer gemalten Postkarte des ganzen Ortes, mit seinem Namen: berühmte Sehenswürdigkeiten wie der Mont-Saint-Michel und die Sydney Harbour Bridge, Geheimtipps wie der rosa See der Hutt Lagoon und Kuriositäten am Straßenrand wie die Elefantin Lucy.
+
+    ## Reise um die Welt
+
+    Die Level kommen in Reisen zu je 15: Amerika, Japan, Italien, der amerikanische Westen, Frankreich, Kanada, Argentinien, Australien, Südafrika sowie Großbritannien & Irland. Schließ eine Reise ab, und dein Reisepass bekommt seinen Stempel. Die Level wachsen mit, von kleinen Rastern bis zu großen Finalleveln mit 5×5 und 6×6 Karten.
+
+    ## Ein Souvenir nach jeder Reise
+
+    Jeder Stempel öffnet ein Souvenir: ein Bonuslevel zum Thema der Reise, die du gerade beendet hast, etwa japanische Holzschnitte oder Gemälde des französischen Impressionismus. Gewinne es, und sein Sticker kommt in deinen Reisepass.
+
+    ## Pack den Monatskoffer
+
+    Jeden Monat gibt es einen Themenkoffer zu füllen, etwa den „Skiurlaub“ im November. Das Rätsel jedes Tages versteckt einen Reisegegenstand: Löst du es, ist er eingepackt. Gegenstände kommen an anderen Tagen wieder, deshalb ist kein doppelter verschwendet: Tausche drei gegen einen, der dir noch fehlt. Füll den Koffer, um den Thementisch des Monats zu gewinnen.
+
+    ## Fordere Freunde heraus
+
+    Nach einem Level oder dem Tagesrätsel kannst du Arcade-Freunde herausfordern, deine Züge im selben Level zu schlagen, oder einen Link mit allen teilen, die du willst. Sie können es spielen, noch bevor sie es auf ihrer eigenen Reise erreichen.
+
+    ## Spiel in deinem Tempo
+
+    - **Keine Zeitlimits und keine Zuglimits.** Jedes Level ist ohne Hilfe zu schaffen, und Neustart ist immer kostenlos.
+    - **Schwere und superschwere Level sind markiert**, mit leichteren Leveln dazwischen.
+    - **Hilfen, wenn du sie willst.** Du startest mit einem Reiseset aus Rückgängig, Tipp und Mischen. Mehr davon bekommst du in schweren Leveln, am Ende jeder Reise und durch das Tagesrätsel, oder du kaufst sie mit Münzen.
+    - **Ein Tagesrätsel**: jeden Tag dasselbe Level für alle.
+
+  es: |
+    ## Une las imágenes
+
+    Hay cartas de varias imágenes repartidas por la mesa. Arrastra una carta sobre otra para intercambiarlas, o toca una y luego la otra. Cuando una carta encuentra a su verdadera vecina, las dos se unen en una sola pieza y se mueven juntas. Completa una imagen y desaparece, y caen cartas nuevas desde los montones de arriba.
+
+    ## Un lugar real en cada nivel
+
+    Cada nivel esconde un destino. Complétalo y se despliega en una postal pintada del lugar entero, con su nombre: lugares famosos como el Mont-Saint-Michel y el puente de la bahía de Sídney, joyas escondidas como el lago rosa de la laguna Hutt y curiosidades de carretera como la elefanta Lucy.
+
+    ## Viaja por el mundo
+
+    Los niveles llegan en viajes de 15: Estados Unidos, Japón, Italia, el Oeste americano, Francia, Canadá, Argentina, Australia, Sudáfrica, y Reino Unido e Irlanda. Termina un viaje y tu pasaporte recibe su sello. Los niveles crecen a medida que avanzas, desde cuadrículas pequeñas hasta grandes finales de 5×5 y 6×6.
+
+    ## Un Recuerdo después de cada viaje
+
+    Cada sello abre un Recuerdo: un nivel extra dedicado al viaje que acabas de terminar, como los grabados japoneses en madera o la pintura impresionista francesa. Gánalo para añadir su pegatina a tu pasaporte.
+
+    ## Llena la maleta del mes
+
+    Cada mes trae una maleta temática que llenar, como el Viaje de esquí de noviembre. El puzle de cada día esconde un objeto de viaje: complétalo y quedará guardado. Los objetos vuelven otros días, así que los repetidos nunca se desperdician: cambia tres por uno que te falte. Llena la maleta para ganar la mesa temática de ese mes.
+
+    ## Reta a un amigo
+
+    Después de un nivel o del puzle diario, reta a un amigo del Arcade a superar tus movimientos en el mismo nivel, o comparte un enlace con quien quieras. Podrá jugarlo incluso antes de llegar a él en su propio viaje.
+
+    ## Juega a tu ritmo
+
+    - **Sin cronómetros ni límite de movimientos.** Todos los niveles se pueden ganar sin ayuda, y Reiniciar siempre es gratis.
+    - **Los niveles difíciles y superdifíciles están marcados**, con niveles más fáciles entre ellos.
+    - **Ayudas cuando las quieras.** Empieza con un kit de viaje de Deshacer, Pista y Mezclar. Consigue más en los niveles difíciles, al final de cada viaje y con el puzle diario, o cómpralas con monedas.
+    - **Un puzle diario**: el mismo nivel para todos, cada día.
+
+  fr: |
+    ## Reconstituez les images
+
+    Des cartes de plusieurs images sont éparpillées sur la table. Faites glisser une carte sur une autre pour les échanger, ou touchez l'une puis l'autre. Quand une carte rencontre sa vraie voisine, les deux se joignent en une seule pièce et se déplacent ensemble. Terminez une image et elle disparaît, puis de nouvelles cartes tombent des piles du dessus.
+
+    ## Un lieu réel à chaque niveau
+
+    Chaque niveau cache une destination. Terminez-la et elle se déplie en une carte postale peinte du lieu entier, avec son nom : des sites célèbres comme le Mont-Saint-Michel et le Harbour Bridge de Sydney, des trésors cachés comme le lac rose de Hutt Lagoon, et des curiosités du bord de la route comme l'éléphante Lucy.
+
+    ## Faites le tour du monde
+
+    Les niveaux forment des voyages de 15 : États-Unis, Japon, Italie, Ouest américain, France, Canada, Argentine, Australie, Afrique du Sud, et Royaume-Uni et Irlande. Terminez un voyage et votre passeport reçoit son tampon. Les niveaux grandissent au fil du jeu, des petites grilles jusqu'aux grandes finales en 5×5 et 6×6.
+
+    ## Un Souvenir après chaque voyage
+
+    Chaque tampon ouvre un Souvenir : un niveau bonus sur le thème du voyage que vous venez de terminer, comme les estampes japonaises ou la peinture impressionniste française. Gagnez-le pour coller son autocollant dans votre passeport.
+
+    ## Remplissez la valise du mois
+
+    Chaque mois apporte une valise à thème à remplir, comme les Vacances au ski de novembre. Le puzzle de chaque jour cache un objet de voyage : terminez-le et il est rangé. Les objets reviennent d'autres jours, donc les doubles ne sont jamais perdus : échangez-en trois contre celui qui vous manque. Remplissez la valise pour gagner la table à thème du mois.
+
+    ## Défiez un ami
+
+    Après un niveau ou le puzzle du jour, défiez un ami de l'Arcade de battre votre nombre de coups sur le même niveau, ou partagez un lien avec qui vous voulez. Il peut y jouer avant même de l'atteindre dans son propre voyage.
+
+    ## Jouez à votre rythme
+
+    - **Pas de chrono ni de limite de coups.** Chaque niveau peut être gagné sans aide, et Recommencer est toujours gratuit.
+    - **Les niveaux difficiles et très difficiles sont signalés**, avec des niveaux plus faciles entre eux.
+    - **Des bonus quand vous voulez.** Commencez avec un kit de voyage de bonus : Annuler, Indice et Mélanger. Gagnez-en plus dans les niveaux difficiles, à la fin de chaque voyage et avec le puzzle du jour, ou achetez-les avec des pièces.
+    - **Un puzzle du jour** : le même niveau pour tous, chaque jour.
+
+  it: |
+    ## Ricomponi le immagini
+
+    Le carte di diverse immagini sono sparse sul tavolo. Trascina una carta su un'altra per scambiarle, oppure tocca prima l'una e poi l'altra. Quando una carta incontra la sua vera vicina, le due si uniscono in un solo pezzo e si muovono insieme. Completa un'immagine e sparisce, e nuove carte scendono dalle pile in alto.
+
+    ## Un luogo reale in ogni livello
+
+    Ogni livello nasconde una destinazione. Completala e si apre in una cartolina dipinta dell'intero luogo, con il suo nome: luoghi famosi come Mont-Saint-Michel e il Sydney Harbour Bridge, gioielli nascosti come il lago rosa di Hutt Lagoon e stranezze lungo la strada come l'elefantessa Lucy.
+
+    ## Gira il mondo
+
+    I livelli sono raccolti in viaggi da 15: America, Giappone, Italia, Ovest americano, Francia, Canada, Argentina, Australia, Sudafrica, e Regno Unito e Irlanda. Finisci un viaggio e il tuo passaporto riceve il suo timbro. I livelli crescono man mano, dalle griglie piccole fino ai grandi finali 5×5 e 6×6.
+
+    ## Un Souvenir dopo ogni viaggio
+
+    Ogni timbro apre un Souvenir: un livello bonus a tema con il viaggio appena concluso, come le stampe giapponesi su legno o la pittura impressionista francese. Vincilo per aggiungere il suo adesivo al tuo passaporto.
+
+    ## Riempi la valigia del mese
+
+    Ogni mese arriva una valigia a tema da riempire, come la Settimana bianca di novembre. Il puzzle di ogni giorno nasconde un oggetto da viaggio: completalo e finisce in valigia. Gli oggetti tornano in altri giorni, quindi i doppioni non vanno mai sprecati: scambiane tre con uno che ti manca. Riempi la valigia per vincere il tavolo a tema del mese.
+
+    ## Sfida un amico
+
+    Dopo un livello o il puzzle del giorno, sfida un amico dell'Arcade a battere le tue mosse sullo stesso livello, oppure condividi un link con chi vuoi. Potrà giocarlo anche prima di arrivarci nel suo viaggio.
+
+    ## Gioca al tuo ritmo
+
+    - **Niente timer e nessun limite di mosse.** Ogni livello si può vincere senza aiuti, e Ricomincia è sempre gratis.
+    - **I livelli difficili e difficilissimi sono segnalati**, con livelli più facili nel mezzo.
+    - **Aiuti quando vuoi.** Inizi con un kit da viaggio di aiuti: Annulla, Suggerimento e Mescola. Ne guadagni altri nei livelli difficili, alla fine di ogni viaggio e con il puzzle del giorno, oppure li compri con le monete.
+    - **Un puzzle del giorno**: lo stesso livello per tutti, ogni giorno.
+
+  ja: |
+    ## 絵をつなぎ合わせよう
+
+    テーブルには、いくつもの絵のカードがばらばらに並んでいます。カードを別のカードにドラッグすると、2枚が入れ替わります。1枚ずつ順にタップしても入れ替えられます。正しいとなりのカードと並ぶと、2枚はひとつのピースにつながり、一緒に動きます。絵が完成すると消え、上の山札から新しいカードが落ちてきます。
+
+    ## どのレベルにも本物の場所
+
+    各レベルには目的地がひとつ隠れています。完成させると、その場所全体を描いた絵画風の絵はがきが、名前とともに広がります。モン・サン＝ミシェルやシドニー・ハーバーブリッジのような名所、ハット・ラグーンのピンクの湖のような穴場、象のルーシーのような道ばたの珍スポットまで。
+
+    ## 世界をめぐろう
+
+    レベルは15ずつの旅にまとまっています。アメリカ、日本、イタリア、アメリカ西部、フランス、カナダ、アルゼンチン、オーストラリア、南アフリカ、イギリスとアイルランド。旅を終えると、パスポートにスタンプが押されます。進むにつれてレベルは大きくなり、小さなマス目から5×5や6×6の大きなフィナーレまで登場します。
+
+    ## 旅のあとにはおみやげ
+
+    スタンプをもらうたびに、おみやげが開きます。終えたばかりの旅をテーマにしたボーナスレベルで、日本なら木版画、フランスなら印象派の絵画といった具合です。クリアすると、そのステッカーをパスポートに貼れます。
+
+    ## 毎月のスーツケースを満たそう
+
+    毎月、テーマつきのスーツケースが登場します。たとえば11月は「スキー旅行」。毎日のパズルには旅の持ち物がひとつ隠れていて、クリアするとスーツケースに入ります。持ち物は別の日にもまた出てくるので、ダブったものもむだになりません。3つを、足りないもの1つと交換できます。スーツケースがいっぱいになると、その月のテーマのテーブルがもらえます。
+
+    ## フレンドに挑戦
+
+    レベルやデイリーパズルのあとで、Arcadeのフレンドに「同じレベルで自分の手数を超えてみて」と挑戦したり、だれにでもリンクをシェアしたりできます。相手は、自分の旅でそのレベルにたどり着く前でも遊べます。
+
+    ## 自分のペースで
+
+    - **時間制限も手数制限もなし。** どのレベルもアイテムなしでクリアでき、「やり直す」はいつでも無料です。
+    - **むずかしいレベルと超むずかしいレベルには印がつきます。** そのあいだには、やさしいレベルがはさまります。
+    - **アイテムは使いたいときに。** 「元に戻す」「ヒント」「シャッフル」が入った旅のキットでスタート。むずかしいレベル、旅の終わり、デイリーパズルでもらえるほか、コインで買うこともできます。
+    - **デイリーパズル**：毎日、全員が同じレベルに挑戦します。
+
+  ko: |
+    ## 그림을 맞춰 보세요
+
+    테이블 위에 여러 그림의 카드가 흩어져 있어요. 카드를 다른 카드 위로 끌어 놓으면 서로 자리가 바뀌고, 한 장씩 차례로 탭해도 바꿀 수 있어요. 카드가 진짜 이웃 카드를 만나면 두 장이 한 조각으로 합쳐져 함께 움직여요. 그림을 완성하면 사라지고, 위쪽 더미에서 새 카드가 내려와요.
+
+    ## 모든 레벨에 실제 장소가
+
+    각 레벨에는 여행지가 하나씩 숨어 있어요. 완성하면 그곳 전체를 그린 회화풍 엽서가 이름과 함께 펼쳐져요. 몽생미셸과 시드니 하버 브리지 같은 명소, 헛 라군의 분홍 호수 같은 숨은 명소, 코끼리 루시 같은 길가의 별난 볼거리까지 만나 보세요.
+
+    ## 세계를 여행하세요
+
+    레벨은 15개씩 여행으로 묶여 있어요. 미국, 일본, 이탈리아, 미국 서부, 프랑스, 캐나다, 아르헨티나, 호주, 남아프리카, 영국과 아일랜드. 여행을 마치면 여권에 스탬프가 찍혀요. 진행할수록 레벨이 커져서, 작은 격자부터 5×5와 6×6의 큰 피날레까지 이어져요.
+
+    ## 여행이 끝나면 기념품
+
+    스탬프를 받을 때마다 기념품이 열려요. 방금 마친 여행을 테마로 한 보너스 레벨로, 일본은 목판화, 프랑스는 인상파 그림 같은 식이에요. 클리어하면 그 스티커를 여권에 붙일 수 있어요.
+
+    ## 매달 여행 가방을 채우세요
+
+    매달 테마가 있는 여행 가방이 찾아와요. 11월은 '스키 여행'이에요. 매일의 퍼즐에는 여행 물품이 하나씩 숨어 있고, 클리어하면 가방에 담겨요. 물품은 다른 날에도 다시 나오니 중복된 것도 버릴 일이 없어요. 세 개를 모자란 물품 하나와 바꿀 수 있어요. 가방을 가득 채우면 그달의 테마 테이블을 받아요.
+
+    ## 친구에게 도전
+
+    레벨이나 데일리 퍼즐을 마친 뒤, Arcade 친구에게 같은 레벨에서 내 수를 이겨 보라고 도전하거나, 누구에게나 링크를 공유할 수 있어요. 친구는 자기 여행에서 그 레벨에 닿기 전이라도 플레이할 수 있어요.
+
+    ## 내 속도대로
+
+    - **시간 제한도, 이동 횟수 제한도 없어요.** 모든 레벨은 아이템 없이 클리어할 수 있고, 다시 시작은 언제나 무료예요.
+    - **어려움과 매우 어려움 레벨은 표시돼요.** 그 사이사이에 쉬운 레벨이 있어요.
+    - **아이템은 원할 때.** 되돌리기, 힌트, 섞기가 든 여행 키트로 시작해요. 어려운 레벨, 여행의 끝, 데일리 퍼즐에서 더 얻거나 코인으로 살 수 있어요.
+    - **데일리 퍼즐**: 매일 모두가 같은 레벨에 도전해요.
+
+  pl: |
+    ## Układaj obrazy
+
+    Na stole leżą rozrzucone karty z kilku obrazów. Przeciągnij kartę na inną, aby je zamienić, albo dotknij jednej, a potem drugiej. Gdy karta trafi na swojego prawdziwego sąsiada, obie łączą się w jeden kawałek i poruszają się razem. Gotowy obraz znika, a ze stosów u góry spadają nowe karty.
+
+    ## Prawdziwe miejsce na każdym poziomie
+
+    Każdy poziom kryje jeden cel podróży. Ułóż go, a rozłoży się w malowaną pocztówkę całego miejsca, z jego nazwą: słynne zabytki, takie jak Mont-Saint-Michel i Sydney Harbour Bridge, ukryte perełki, jak różowe jezioro Hutt Lagoon, i przydrożne osobliwości, jak słonica Lucy.
+
+    ## Podróżuj po świecie
+
+    Poziomy tworzą podróże po 15: Ameryka, Japonia, Włochy, Zachód USA, Francja, Kanada, Argentyna, Australia, Afryka Południowa oraz Wielka Brytania i Irlandia. Ukończ podróż, a w paszporcie pojawi się pieczątka. Poziomy rosną w miarę gry, od małych siatek po wielkie finały 5×5 i 6×6.
+
+    ## Pamiątka po każdej podróży
+
+    Każda pieczątka otwiera Pamiątkę: poziom bonusowy poświęcony właśnie ukończonej podróży, na przykład japońskie drzeworyty albo francuskie obrazy impresjonistów. Wygraj go, aby wkleić jego naklejkę do paszportu.
+
+    ## Spakuj walizkę miesiąca
+
+    Co miesiąc czeka tematyczna walizka do zapełnienia, na przykład listopadowy „Wyjazd na narty”. Łamigłówka każdego dnia kryje jeden przedmiot podróżny: ułóż ją, a trafi on do walizki. Przedmioty wracają w inne dni, więc duplikaty nigdy się nie marnują: wymień trzy na jeden, którego brakuje. Zapełnij walizkę, aby zdobyć tematyczny stół tego miesiąca.
+
+    ## Wyzwij znajomego
+
+    Po poziomie lub łamigłówce dnia wyzwij znajomego z Arcade, by pobił twoją liczbę ruchów na tym samym poziomie, albo udostępnij link komukolwiek. Znajomy może zagrać w ten poziom, zanim jeszcze dotrze do niego w swojej podróży.
+
+    ## Graj we własnym tempie
+
+    - **Bez limitu czasu i bez limitu ruchów.** Każdy poziom da się wygrać bez pomocy, a „Od nowa” jest zawsze za darmo.
+    - **Poziomy trudne i bardzo trudne są oznaczone**, a między nimi są łatwiejsze.
+    - **Pomoce, kiedy chcesz.** Zaczynasz z podróżnym zestawem pomocy: Cofnij, Podpowiedź i Tasuj. Więcej zdobędziesz na trudnych poziomach, na końcu każdej podróży i w łamigłówce dnia, albo kupisz je za monety.
+    - **Łamigłówka dnia**: ten sam poziom dla wszystkich, każdego dnia.
+
+  pt-BR: |
+    ## Monte as imagens
+
+    Cartas de várias imagens estão espalhadas pela mesa. Arraste uma carta sobre outra para trocá-las, ou toque em uma e depois na outra. Quando uma carta encontra sua verdadeira vizinha, as duas se juntam em uma só peça e se movem juntas. Complete uma imagem e ela some, e novas cartas caem das pilhas de cima.
+
+    ## Um lugar real em cada nível
+
+    Cada nível esconde um destino. Complete-o e ele se abre em um cartão-postal pintado do lugar inteiro, com o nome: pontos famosos como o Mont-Saint-Michel e a Ponte da Baía de Sydney, joias escondidas como o lago cor-de-rosa de Hutt Lagoon e curiosidades de beira de estrada como a Elefanta Lucy.
+
+    ## Viaje pelo mundo
+
+    Os níveis vêm em viagens de 15: Estados Unidos, Japão, Itália, Oeste americano, França, Canadá, Argentina, Austrália, África do Sul, e Reino Unido e Irlanda. Termine uma viagem e seu passaporte ganha o carimbo. Os níveis crescem à medida que você avança, de grades pequenas a grandes finais 5×5 e 6×6.
+
+    ## Uma Lembrança depois de cada viagem
+
+    Cada carimbo abre uma Lembrança: um nível bônus com o tema da viagem que você acabou de terminar, como as xilogravuras japonesas ou a pintura impressionista francesa. Vença-o para colar o adesivo dele no seu passaporte.
+
+    ## Arrume a mala do mês
+
+    Todo mês traz uma mala temática para encher, como a Viagem de esqui de novembro. O quebra-cabeça de cada dia esconde um item de viagem: complete-o e o item vai para a mala. Os itens voltam em outros dias, então os repetidos nunca são desperdiçados: troque três por um que esteja faltando. Encha a mala para ganhar a mesa temática do mês.
+
+    ## Desafie um amigo
+
+    Depois de um nível ou do quebra-cabeça do dia, desafie um amigo do Arcade a bater suas jogadas no mesmo nível, ou compartilhe um link com quem quiser. Ele pode jogar mesmo antes de chegar a esse nível na própria viagem.
+
+    ## Jogue no seu ritmo
+
+    - **Sem cronômetro e sem limite de jogadas.** Todo nível pode ser vencido sem ajuda, e Reiniciar é sempre grátis.
+    - **Os níveis difíceis e superdifíceis são marcados**, com níveis mais fáceis entre eles.
+    - **Ajudas quando quiser.** Comece com um kit de viagem com Desfazer, Dica e Embaralhar. Ganhe mais nos níveis difíceis, no fim de cada viagem e no quebra-cabeça do dia, ou compre com moedas.
+    - **Um quebra-cabeça do dia**: o mesmo nível para todos, todo dia.
+
+  ru: |
+    ## Собирайте картинки
+
+    На столе разбросаны карты из нескольких картинок. Перетащите одну карту на другую, чтобы поменять их местами, или коснитесь сначала одной, а потом другой. Когда карта встречает своего настоящего соседа, они соединяются в одну деталь и двигаются вместе. Готовая картинка исчезает, а из стопок сверху падают новые карты.
+
+    ## Реальное место на каждом уровне
+
+    На каждом уровне спрятано одно место назначения. Соберите его, и оно развернётся в живописную открытку с этим местом целиком и его названием: знаменитые достопримечательности вроде Мон-Сен-Мишель и моста Харбор-Бридж в Сиднее, скрытые жемчужины вроде розового озера лагуны Хатт и придорожные диковинки вроде слонихи Люси.
+
+    ## Путешествуйте по миру
+
+    Уровни собраны в путешествия по 15: Америка, Япония, Италия, Американский Запад, Франция, Канада, Аргентина, Австралия, Южная Африка, а также Великобритания и Ирландия. Завершите путешествие, и в паспорте появится штамп. Уровни растут по ходу игры: от маленьких сеток до больших финалов 5×5 и 6×6.
+
+    ## Сувенир после каждого путешествия
+
+    Каждый штамп открывает Сувенир: бонусный уровень на тему только что завершённого путешествия, например японские гравюры на дереве или картины французских импрессионистов. Пройдите его и вклейте наклейку в паспорт.
+
+    ## Соберите чемодан месяца
+
+    Каждый месяц приносит тематический чемодан, который нужно заполнить, например ноябрьский «Лыжный отдых». Головоломка каждого дня прячет один дорожный предмет: решите её, и он отправится в чемодан. Предметы возвращаются в другие дни, поэтому повторы не пропадают: обменяйте три на тот, которого не хватает. Заполните чемодан, чтобы получить тематический стол этого месяца.
+
+    ## Вызов другу
+
+    После уровня или головоломки дня бросьте вызов другу из Arcade: пусть попробует пройти тот же уровень за меньшее число ходов. Или поделитесь ссылкой с кем угодно. Друг может сыграть, даже если ещё не дошёл до этого уровня в своём путешествии.
+
+    ## Играйте в своём темпе
+
+    - **Никаких таймеров и ограничений на ходы.** Любой уровень можно пройти без бонусов, а «Заново» всегда бесплатно.
+    - **Сложные и очень сложные уровни отмечены**, а между ними идут уровни полегче.
+    - **Бонусы, когда они нужны.** Вы начинаете с дорожным набором: Отмена, Подсказка и Перемешать. Ещё больше можно получить на сложных уровнях, в конце каждого путешествия и за головоломку дня или купить за монеты.
+    - **Головоломка дня**: каждый день один и тот же уровень для всех.
+
+  tr: |
+    ## Resimleri birleştir
+
+    Masada birkaç resmin kartları dağınık hâlde duruyor. Yerlerini değiştirmek için bir kartı diğerinin üstüne sürükle ya da önce birine, sonra diğerine dokun. Bir kart gerçek komşusuyla buluşunca ikisi tek bir parça olarak birleşir ve birlikte hareket eder. Tamamlanan resim kaybolur ve yukarıdaki destelerden yeni kartlar düşer.
+
+    ## Her seviyede gerçek bir yer
+
+    Her seviye bir varış noktası saklar. Onu tamamladığında, yerin tamamını gösteren tablo gibi bir kartpostal adıyla birlikte açılır: Mont-Saint-Michel ve Sidney Liman Köprüsü gibi ünlü yerler, Hutt Lagünü'nün pembe gölü gibi saklı cennetler ve Fil Lucy gibi yol kenarı tuhaflıkları.
+
+    ## Dünyayı gez
+
+    Seviyeler 15'lik gezilerde gelir: Amerika, Japonya, İtalya, Amerikan Batısı, Fransa, Kanada, Arjantin, Avustralya, Güney Afrika ile Birleşik Krallık ve İrlanda. Bir geziyi bitirdiğinde pasaportuna damgası basılır. Seviyeler ilerledikçe büyür; küçük ızgaralardan büyük 5×5 ve 6×6 finallere kadar.
+
+    ## Her geziden sonra bir Hatıra
+
+    Her damga bir Hatıra açar: az önce bitirdiğin geziye adanmış bir bonus seviye, örneğin Japon ağaç baskıları ya da Fransız empresyonist tabloları. Onu kazan ve çıkartmasını pasaportuna yapıştır.
+
+    ## Ayın bavulunu hazırla
+
+    Her ay doldurulacak temalı bir bavul gelir, örneğin kasımdaki “Kayak Tatili”. Her günün bulmacası bir seyahat eşyası saklar: bulmacayı çöz, eşya bavula girsin. Eşyalar başka günlerde yeniden çıkar, bu yüzden fazlalar asla boşa gitmez: üç tanesini eksik olan bir eşyayla takas et. Bavulu doldur ve o ayın temalı masasını kazan.
+
+    ## Arkadaşına meydan oku
+
+    Bir seviyeyi ya da günün bulmacasını bitirdikten sonra bir Arcade arkadaşına aynı seviyede hamle sayını geçmesi için meydan oku ya da bağlantıyı istediğin kişiyle paylaş. Arkadaşın, o seviyeye kendi gezisinde ulaşmadan da oynayabilir.
+
+    ## Kendi hızında oyna
+
+    - **Süre sınırı yok, hamle sınırı yok.** Her seviye yardım almadan kazanılabilir ve Yeniden başla her zaman ücretsizdir.
+    - **Zor ve çok zor seviyeler işaretlidir**, aralarında daha kolay seviyeler vardır.
+    - **İstediğinde yardımlar.** Geri Al, İpucu ve Karıştır'dan oluşan bir seyahat setiyle başlarsın. Zor seviyelerde, her gezinin sonunda ve günün bulmacasından daha fazlasını kazan ya da jetonla satın al.
+    - **Günün bulmacası**: Her gün herkes için aynı seviye.
+
+  zh-Hans: |
+    ## 拼合图画
+
+    桌面上散落着来自几幅图画的卡牌。把一张卡牌拖到另一张上即可交换，也可以先点一张、再点另一张。当卡牌碰到真正的相邻卡牌时，两张会合成一块，一起移动。拼完一幅画后它会消失，上方的牌堆会落下新的卡牌。
+
+    ## 每一关都有真实的地方
+
+    每一关都藏着一个目的地。完成它，就会展开成一张描绘整个地方的绘画风明信片，并附上地名：有圣米歇尔山和悉尼海港大桥这样的著名景点，有赫特潟湖粉色湖水这样的小众秘境，还有大象露西这样的路边奇观。
+
+    ## 环游世界
+
+    关卡以每 15 关为一段旅行：美国、日本、意大利、美国西部、法国、加拿大、阿根廷、澳大利亚、南非，以及英国和爱尔兰。完成一段旅行，护照上就会盖上印章。关卡会随着进度变大，从小网格一直到 5×5 和 6×6 的大型终局关卡。
+
+    ## 每段旅行后都有纪念品
+
+    每个印章都会开启一份纪念品：以刚刚完成的旅行为主题的奖励关卡，比如日本的木版画或法国的印象派绘画。赢下它，就能把它的贴纸贴进护照。
+
+    ## 装满每月的行李箱
+
+    每个月都有一个主题行李箱等你装满，比如十一月的“滑雪之旅”。每天的谜题都藏着一件旅行物品：完成谜题，物品就会装进箱子。物品会在不同的日子再次出现，所以重复的也不会浪费：三件可以换一件你还缺的。装满行李箱，就能赢得当月的主题桌面。
+
+    ## 挑战好友
+
+    完成一关或每日谜题后，你可以挑战一位 Arcade 好友，看谁能在同一关用更少的步数完成，也可以把链接分享给任何人。即使对方在自己的旅行中还没到那一关，也能先玩。
+
+    ## 按自己的节奏玩
+
+    - **没有时间限制，也没有步数限制。** 每一关都能不用道具完成，重新开始永远免费。
+    - **困难和超难关卡都有标记**，中间穿插着更轻松的关卡。
+    - **想用道具就用。** 一开始你就有一套旅行道具包：撤销、提示和洗牌。在困难关卡、每段旅行结束时和每日谜题中还能获得更多，也可以用金币购买。
+    - **每日谜题**：每天所有人玩同一关。
 
 feature_bullets:
-  - "Swap cards to piece together photographs and paintings"
-  - "A real place on every board, unfolding into a postcard when you finish it"
-  - "Famous sights, hidden gems and roadside oddities around the world"
-  - "Trips of 15 boards, each ending in a passport stamp"
-  - "No timers and no move limits: every board can be won without help"
-  - "A daily puzzle that fills a themed suitcase every month"
+  en:
+    - "Swap cards to piece together photographs and paintings"
+    - "A real place on every level, unfolding into a painted postcard when you finish it"
+    - "Famous sights, hidden gems and roadside oddities around the world"
+    - "Trips of 15 levels, each ending in a passport stamp and a Souvenir bonus level"
+    - "No timers and no move limits: every level can be won without help"
+    - "A daily puzzle that fills a themed suitcase every month"
+    - "Challenge a friend to beat your moves on the same level"
+  de:
+    - "Tausche Karten und setz Fotos und Gemälde zusammen"
+    - "Ein echter Ort in jedem Level, der sich zum Schluss zu einer gemalten Postkarte entfaltet"
+    - "Berühmte Sehenswürdigkeiten, Geheimtipps und Kuriositäten am Straßenrand aus aller Welt"
+    - "Reisen mit je 15 Leveln, jede mit einem Stempel im Reisepass und einem Souvenir als Bonuslevel"
+    - "Keine Zeitlimits und keine Zuglimits: Jedes Level ist ohne Hilfe zu schaffen"
+    - "Ein Tagesrätsel, das jeden Monat einen Themenkoffer füllt"
+    - "Fordere Freunde heraus, deine Züge im selben Level zu schlagen"
+  es:
+    - "Intercambia cartas para completar fotografías y pinturas"
+    - "Un lugar real en cada nivel, que se despliega en una postal pintada al completarlo"
+    - "Lugares famosos, joyas escondidas y curiosidades de carretera de todo el mundo"
+    - "Viajes de 15 niveles, cada uno con un sello en el pasaporte y un Recuerdo como nivel extra"
+    - "Sin cronómetros ni límite de movimientos: todos los niveles se pueden ganar sin ayuda"
+    - "Un puzle diario que llena una maleta temática cada mes"
+    - "Reta a un amigo a superar tus movimientos en el mismo nivel"
+  fr:
+    - "Échangez des cartes pour reconstituer photos et peintures"
+    - "Un lieu réel à chaque niveau, qui se déplie en carte postale peinte une fois terminé"
+    - "Sites célèbres, trésors cachés et curiosités du bord de la route du monde entier"
+    - "Des voyages de 15 niveaux, chacun conclu par un tampon dans le passeport et un niveau bonus Souvenir"
+    - "Pas de chrono ni de limite de coups : chaque niveau peut être gagné sans aide"
+    - "Un puzzle du jour qui remplit une valise à thème chaque mois"
+    - "Défiez un ami de battre votre nombre de coups sur le même niveau"
+  it:
+    - "Scambia le carte per ricomporre fotografie e dipinti"
+    - "Un luogo reale in ogni livello, che si apre in una cartolina dipinta quando lo completi"
+    - "Luoghi famosi, gioielli nascosti e stranezze lungo la strada in tutto il mondo"
+    - "Viaggi da 15 livelli, ognuno chiuso da un timbro sul passaporto e da un livello bonus Souvenir"
+    - "Niente timer e nessun limite di mosse: ogni livello si può vincere senza aiuti"
+    - "Un puzzle del giorno che riempie una valigia a tema ogni mese"
+    - "Sfida un amico a battere le tue mosse sullo stesso livello"
+  ja:
+    - "カードを入れ替えて、写真や絵画を完成させよう"
+    - "どのレベルにも本物の場所。完成させると絵画風の絵はがきが広がります"
+    - "世界中の名所、穴場、道ばたの珍スポット"
+    - "15レベルでひとつの旅。最後にはパスポートのスタンプと、おみやげのボーナスレベル"
+    - "時間制限も手数制限もなし。どのレベルもアイテムなしでクリアできます"
+    - "デイリーパズルで、毎月テーマつきのスーツケースを満たそう"
+    - "フレンドに挑戦して、同じレベルで手数を競おう"
+  ko:
+    - "카드를 바꿔 사진과 그림을 완성하세요"
+    - "모든 레벨에 실제 장소가 숨어 있고, 완성하면 회화풍 엽서로 펼쳐져요"
+    - "세계 곳곳의 명소, 숨은 명소, 길가의 별난 볼거리"
+    - "15개 레벨로 이루어진 여행, 끝에는 여권 스탬프와 기념품 보너스 레벨"
+    - "시간 제한도, 이동 횟수 제한도 없어요. 모든 레벨은 아이템 없이 클리어할 수 있어요"
+    - "매달 테마 여행 가방을 채우는 데일리 퍼즐"
+    - "친구에게 도전해 같은 레벨에서 수를 겨뤄 보세요"
+  pl:
+    - "Zamieniaj karty i układaj zdjęcia oraz obrazy"
+    - "Prawdziwe miejsce na każdym poziomie, które po ułożeniu rozkłada się w malowaną pocztówkę"
+    - "Słynne zabytki, ukryte perełki i przydrożne osobliwości z całego świata"
+    - "Podróże po 15 poziomów, każda zakończona pieczątką w paszporcie i bonusowym poziomem Pamiątka"
+    - "Bez limitu czasu i ruchów: każdy poziom da się wygrać bez pomocy"
+    - "Łamigłówka dnia, która co miesiąc zapełnia tematyczną walizkę"
+    - "Wyzwij znajomego, by pobił twoją liczbę ruchów na tym samym poziomie"
+  pt-BR:
+    - "Troque cartas para montar fotografias e pinturas"
+    - "Um lugar real em cada nível, que se abre em um cartão-postal pintado quando você o completa"
+    - "Pontos famosos, joias escondidas e curiosidades de beira de estrada pelo mundo"
+    - "Viagens de 15 níveis, cada uma terminando com um carimbo no passaporte e um nível bônus Lembrança"
+    - "Sem cronômetro e sem limite de jogadas: todo nível pode ser vencido sem ajuda"
+    - "Um quebra-cabeça do dia que enche uma mala temática todo mês"
+    - "Desafie um amigo a bater suas jogadas no mesmo nível"
+  ru:
+    - "Меняйте карты местами и собирайте фотографии и картины"
+    - "Реальное место на каждом уровне, которое в конце разворачивается в живописную открытку"
+    - "Знаменитые достопримечательности, скрытые жемчужины и придорожные диковинки со всего мира"
+    - "Путешествия по 15 уровней, каждое завершается штампом в паспорте и бонусным уровнем «Сувенир»"
+    - "Никаких таймеров и ограничений на ходы: любой уровень можно пройти без бонусов"
+    - "Головоломка дня, которая каждый месяц наполняет тематический чемодан"
+    - "Бросьте вызов другу: пусть побьёт ваш результат по ходам на том же уровне"
+  tr:
+    - "Kartların yerini değiştir, fotoğrafları ve tabloları birleştir"
+    - "Her seviyede gerçek bir yer; tamamlayınca tablo gibi bir kartpostal olarak açılır"
+    - "Dünyanın dört bir yanından ünlü yerler, saklı cennetler ve yol kenarı tuhaflıkları"
+    - "15 seviyelik geziler; her biri bir pasaport damgası ve bir Hatıra bonus seviyesiyle biter"
+    - "Süre sınırı yok, hamle sınırı yok: her seviye yardım almadan kazanılabilir"
+    - "Her ay temalı bir bavulu dolduran günün bulmacası"
+    - "Arkadaşına aynı seviyede hamle sayını geçmesi için meydan oku"
+  zh-Hans:
+    - "交换卡牌，拼出照片和画作"
+    - "每一关都有一个真实的地方，完成后展开成一张绘画风明信片"
+    - "遍布世界的著名景点、小众秘境和路边奇观"
+    - "每段旅行 15 关，以护照印章和纪念品奖励关卡收尾"
+    - "没有时间限制，也没有步数限制：每一关都能不用道具完成"
+    - "每日谜题，每月装满一个主题行李箱"
+    - "挑战好友，在同一关比比谁的步数更少"
 
 # Played on phones (portrait) and desktop browsers throughout. Tablets: QA played every screen
 # at 768x1024, 820x1180 and 1024x1366 (portrait, touch) with no faults; on the largest the board
@@ -113,14 +591,86 @@ media:
   # hooks and each board played by its own proved line (the UI member, 2026-10-27).
   screenshots:
     - src: screenshots/01-home-france.jpg
-      alt: "Home screen on the sunny sky-blue table, under the Picture Passport title, on the France trip, stop 6 of 15. The first five stops show painted postcards of the cliffs of Étretat, Mont-Saint-Michel, the pink granite coast, the chapel oak of Allouville and Château de Chenonceau; the America trip's Souvenir waits beside the trip's name, with the Next stop button below."
+      alt:
+        en: "Home screen on the sunny sky-blue table, under the Picture Passport title, on the France trip, stop 6 of 15. The first five stops show painted postcards of the cliffs of Étretat, Mont-Saint-Michel, the pink granite coast, the chapel oak of Allouville and Château de Chenonceau; the America trip's Souvenir waits beside the trip's name, with the Next stop button below."
+        de: "Startbildschirm auf dem sonnigen himmelblauen Tisch, unter dem Titel Picture Passport, auf der Frankreich-Reise, Station 6 von 15. Die ersten fünf Stationen zeigen gemalte Postkarten der Klippen von Étretat, des Mont-Saint-Michel, der Côte de Granit Rose, der Kapelleneiche von Allouville und des Château de Chenonceau; das Souvenir der Amerika-Reise wartet neben dem Namen der Reise, darunter die Schaltfläche „Nächste Station“."
+        es: "Pantalla de inicio sobre la mesa soleada de color azul cielo, bajo el título Picture Passport, en el viaje por Francia, parada 6 de 15. Las cinco primeras paradas muestran postales pintadas de los acantilados de Étretat, el Mont-Saint-Michel, la costa de Granito Rosa, el roble capilla de Allouville y el castillo de Chenonceau; el Recuerdo del viaje por Estados Unidos espera junto al nombre del viaje, con el botón Siguiente parada debajo."
+        fr: "Écran d'accueil sur la table ensoleillée bleu ciel, sous le titre Picture Passport, pendant le voyage en France, étape 6 sur 15. Les cinq premières étapes montrent des cartes postales peintes des falaises d'Étretat, du Mont-Saint-Michel, de la côte de Granit rose, du chêne-chapelle d'Allouville et du château de Chenonceau ; le Souvenir du voyage aux États-Unis attend à côté du nom du voyage, avec le bouton Étape suivante en dessous."
+        it: "Schermata iniziale sul tavolo soleggiato azzurro cielo, sotto il titolo Picture Passport, nel viaggio in Francia, tappa 6 di 15. Le prime cinque tappe mostrano cartoline dipinte delle scogliere di Étretat, di Mont-Saint-Michel, della Costa di Granito Rosa, della quercia cappella di Allouville e del castello di Chenonceau; il Souvenir del viaggio in America aspetta accanto al nome del viaggio, con il pulsante Prossima tappa sotto."
+        ja: "晴れた空色のテーブルに表示されたホーム画面。Picture Passportのタイトルの下で、フランスの旅の15か所中6か所目。最初の5か所には、エトルタの断崖、モン・サン＝ミシェル、ピンク花崗岩海岸、アルーヴィルの礼拝堂の樫、シュノンソー城の絵画風の絵はがきが並び、旅の名前の横ではアメリカの旅のおみやげが待っています。下には「次の目的地」ボタン。"
+        ko: "맑은 하늘색 테이블 위의 홈 화면. Picture Passport 제목 아래, 프랑스 여행 15곳 중 6번째 장소예요. 처음 다섯 곳에는 에트르타 절벽, 몽생미셸, 분홍 화강암 해안, 알루빌의 예배당 참나무, 슈농소성의 회화풍 엽서가 있고, 여행 이름 옆에서 미국 여행의 기념품이 기다려요. 아래에는 다음 장소 버튼이 있어요."
+        pl: "Ekran główny na słonecznym, błękitnym stole, pod tytułem Picture Passport, w podróży po Francji, przystanek 6 z 15. Pierwsze pięć przystanków pokazuje malowane pocztówki klifów Étretat, Mont-Saint-Michel, Wybrzeża Różowego Granitu, dębu-kaplicy w Allouville i zamku Chenonceau; Pamiątka z podróży po Ameryce czeka obok nazwy podróży, a pod spodem jest przycisk Następny przystanek."
+        pt-BR: "Tela inicial na mesa ensolarada azul-celeste, sob o título Picture Passport, na viagem pela França, parada 6 de 15. As cinco primeiras paradas mostram cartões-postais pintados das falésias de Étretat, do Mont-Saint-Michel, da Costa de Granito Rosa, do carvalho-capela de Allouville e do Castelo de Chenonceau; a Lembrança da viagem pelos Estados Unidos espera ao lado do nome da viagem, com o botão Próxima parada embaixo."
+        ru: "Главный экран на солнечном небесно-голубом столе, под названием Picture Passport, в путешествии по Франции, остановка 6 из 15. Первые пять остановок показывают живописные открытки со скалами Этрета, Мон-Сен-Мишель, Розовым гранитным берегом, дубом-часовней в Аллувиле и замком Шенонсо; Сувенир путешествия по Америке ждёт рядом с названием путешествия, а внизу кнопка «Следующая остановка»."
+        tr: "Güneşli gök mavisi masada ana ekran; Picture Passport başlığının altında, Fransa gezisinde, 15 duraktan 6'ncısı. İlk beş durakta Étretat kayalıkları, Mont-Saint-Michel, Pembe Granit Kıyısı, Allouville şapel meşesi ve Chenonceau Şatosu'nun tablo gibi kartpostalları var; Amerika gezisinin Hatırası gezinin adının yanında bekliyor, altında Sonraki durak düğmesi."
+        zh-Hans: "晴朗天蓝色桌面上的主屏幕，位于 Picture Passport 标题下方，正在法国之旅的第 6 站（共 15 站）。前五站展示了埃特勒塔悬崖、圣米歇尔山、粉红花岗岩海岸、阿卢维尔礼拜堂橡树和舍农索城堡的绘画风明信片；美国之旅的纪念品在旅行名称旁等待，下方是“下一站”按钮。"
     - src: screenshots/02-board-mid-play.jpg
-      alt: "A 4 by 5 board in play on the sunny table. Picture cards fill the grid under stacks of face-up cards, and one picture, a red handcar, is partly joined into a larger piece. Restart, Undo, Hint and Shuffle buttons sit below."
+      alt:
+        en: "A 4 by 5 level in play on the sunny table. Picture cards fill the grid under stacks of face-up cards, and one picture, a red handcar, is partly joined into a larger piece. Restart, Undo, Hint and Shuffle buttons sit below."
+        de: "Ein 4×5-Level im Spiel auf dem sonnigen Tisch. Bildkarten füllen das Raster unter Stapeln offener Karten, und ein Bild, eine rote Draisine, ist teilweise zu einem größeren Teil verbunden. Darunter liegen die Schaltflächen Neustart, Rückgängig, Tipp und Mischen."
+        es: "Un nivel de 4 por 5 en juego sobre la mesa soleada. Las cartas con imágenes llenan la cuadrícula bajo montones de cartas boca arriba, y una imagen, una dresina roja, está parcialmente unida en una pieza más grande. Debajo están los botones Reiniciar, Deshacer, Pista y Mezclar."
+        fr: "Un niveau de 4 sur 5 en cours sur la table ensoleillée. Des cartes d'images remplissent la grille sous des piles de cartes face visible, et une image, une draisine rouge, est en partie assemblée en une plus grande pièce. Les boutons Recommencer, Annuler, Indice et Mélanger sont en dessous."
+        it: "Un livello 4 per 5 in corso sul tavolo soleggiato. Le carte illustrate riempiono la griglia sotto pile di carte scoperte, e un'immagine, un carrello ferroviario rosso, è in parte unita in un pezzo più grande. Sotto ci sono i pulsanti Ricomincia, Annulla, Suggerimento e Mescola."
+        ja: "晴れたテーブルでプレイ中の4×5のレベル。表向きのカードの山の下で絵のカードがマス目を埋め、赤い手こぎトロッコの絵が一部つながって大きなピースになっています。下には「やり直す」「元に戻す」「ヒント」「シャッフル」のボタン。"
+        ko: "맑은 테이블에서 플레이 중인 4×5 레벨. 앞면이 보이는 카드 더미 아래로 그림 카드가 격자를 채우고, 빨간 핸드카 그림 하나가 일부 합쳐져 큰 조각이 되어 있어요. 아래에는 다시 시작, 되돌리기, 힌트, 섞기 버튼이 있어요."
+        pl: "Poziom 4 na 5 w trakcie gry na słonecznym stole. Karty z obrazami wypełniają siatkę pod stosami odkrytych kart, a jeden obraz, czerwona drezyna, jest częściowo połączony w większy kawałek. Pod spodem są przyciski Od nowa, Cofnij, Podpowiedź i Tasuj."
+        pt-BR: "Um nível 4 por 5 em andamento na mesa ensolarada. Cartas com imagens preenchem a grade sob pilhas de cartas viradas para cima, e uma imagem, um trole ferroviário vermelho, está parcialmente unida em uma peça maior. Embaixo ficam os botões Reiniciar, Desfazer, Dica e Embaralhar."
+        ru: "Уровень 4 на 5 в процессе игры на солнечном столе. Карты с картинками заполняют сетку под стопками открытых карт, а одна картинка, красная дрезина, частично собрана в более крупную деталь. Внизу кнопки «Заново», «Отмена», «Подсказка» и «Перемешать»."
+        tr: "Güneşli masada oynanan 4'e 5'lik bir seviye. Resimli kartlar, açık kart destelerinin altındaki ızgarayı dolduruyor; bir resim, kırmızı bir drezin, kısmen daha büyük bir parçaya birleşmiş. Altta Yeniden başla, Geri Al, İpucu ve Karıştır düğmeleri var."
+        zh-Hans: "在晴朗桌面上进行中的 4×5 关卡。图画卡牌铺满网格，上方是翻开的牌堆，其中一幅画（一辆红色轨道手摇车）已部分拼成更大的一块。下方是重新开始、撤销、提示和洗牌按钮。"
     - src: screenshots/03-postcard-mont-saint-michel.jpg
-      alt: "A finished destination unfolded into a painted postcard of Mont-Saint-Michel that covers the board, with its name and Normandy, France above it."
+      alt:
+        en: "A finished destination unfolded into a painted postcard of Mont-Saint-Michel that covers the level, with its name and Normandy, France above it."
+        de: "Ein fertiges Reiseziel, entfaltet zu einer gemalten Postkarte des Mont-Saint-Michel, die das Level bedeckt, darüber sein Name und „Normandie, Frankreich“."
+        es: "Un destino completado, desplegado en una postal pintada del Mont-Saint-Michel que cubre el nivel, con su nombre y Normandía, Francia encima."
+        fr: "Une destination terminée, dépliée en une carte postale peinte du Mont-Saint-Michel qui couvre le niveau, avec son nom et Normandie, France au-dessus."
+        it: "Una destinazione completata, aperta in una cartolina dipinta di Mont-Saint-Michel che copre il livello, con il suo nome e Normandia, Francia sopra."
+        ja: "完成した目的地が、レベル全体をおおうモン・サン＝ミシェルの絵画風の絵はがきに広がり、上には名前と「フランス・ノルマンディー」の文字。"
+        ko: "완성된 여행지가 레벨을 덮는 몽생미셸의 회화풍 엽서로 펼쳐지고, 위에는 이름과 프랑스 노르망디가 적혀 있어요."
+        pl: "Ukończony cel podróży rozłożony w malowaną pocztówkę Mont-Saint-Michel, która zakrywa poziom, a nad nią nazwa i Normandia, Francja."
+        pt-BR: "Um destino completo, aberto em um cartão-postal pintado do Mont-Saint-Michel que cobre o nível, com o nome e Normandia, França acima."
+        ru: "Собранное место назначения развернулось в живописную открытку с Мон-Сен-Мишель, закрывающую уровень, а над ней название и «Нормандия, Франция»."
+        tr: "Tamamlanan bir varış noktası, seviyeyi kaplayan tablo gibi bir Mont-Saint-Michel kartpostalına açılmış; üstünde adı ve Normandiya, Fransa yazıyor."
+        zh-Hans: "完成的目的地展开成一张覆盖整个关卡的圣米歇尔山绘画风明信片，上方是地名和“法国诺曼底”。"
     - src: screenshots/04-passport-stamp.jpg
-      alt: "The passport open at the American West trip: its stamp, 15 of 15 places visited, a button to play its Souvenir, and painted postcards of Bixby Bridge, Emerald Bay and Mono Lake."
+      alt:
+        en: "The passport open at the American West trip: its stamp, 15 of 15 places visited, a button to play its Souvenir, and painted postcards of Bixby Bridge, Emerald Bay and Mono Lake."
+        de: "Der Reisepass, aufgeschlagen bei der Reise durch den amerikanischen Westen: ihr Stempel, 15 von 15 besuchten Orten, eine Schaltfläche, um ihr Souvenir zu spielen, und gemalte Postkarten der Bixby Bridge, der Emerald Bay und des Mono Lake."
+        es: "El pasaporte abierto en el viaje por el Oeste americano: su sello, 15 de 15 lugares visitados, un botón para jugar su Recuerdo y postales pintadas del puente Bixby, Emerald Bay y el lago Mono."
+        fr: "Le passeport ouvert au voyage Ouest américain : son tampon, 15 lieux visités sur 15, un bouton pour jouer son Souvenir, et des cartes postales peintes du pont Bixby, d'Emerald Bay et du lac Mono."
+        it: "Il passaporto aperto sul viaggio Ovest americano: il suo timbro, 15 luoghi visitati su 15, un pulsante per giocare il suo Souvenir e cartoline dipinte del Bixby Bridge, di Emerald Bay e del lago Mono."
+        ja: "アメリカ西部の旅のページを開いたパスポート。スタンプ、15か所中15か所訪問済みの表示、おみやげで遊ぶボタン、ビクスビー・ブリッジ、エメラルド・ベイ、モノ湖の絵画風の絵はがき。"
+        ko: "미국 서부 여행 페이지를 펼친 여권. 스탬프, 15곳 중 15곳 방문, 기념품을 플레이하는 버튼, 그리고 빅스비 브리지, 에메랄드 베이, 모노 호의 회화풍 엽서."
+        pl: "Paszport otwarty na podróży Zachód USA: jej pieczątka, 15 z 15 odwiedzonych miejsc, przycisk do zagrania w jej Pamiątkę oraz malowane pocztówki mostu Bixby, Emerald Bay i jeziora Mono."
+        pt-BR: "O passaporte aberto na viagem Oeste americano: o carimbo, 15 de 15 lugares visitados, um botão para jogar a Lembrança e cartões-postais pintados da Ponte Bixby, de Emerald Bay e do Lago Mono."
+        ru: "Паспорт, открытый на путешествии «Американский Запад»: его штамп, 15 из 15 посещённых мест, кнопка, чтобы сыграть его Сувенир, и живописные открытки с мостом Биксби, заливом Эмералд-Бей и озером Моно."
+        tr: "Amerikan Batısı gezisinde açık pasaport: damgası, 15 yerden 15'i ziyaret edildi, Hatırasını oynamak için bir düğme ve Bixby Köprüsü, Emerald Koyu ile Mono Gölü'nün tablo gibi kartpostalları."
+        zh-Hans: "护照翻到美国西部之旅：它的印章、已到访 15/15 个地方、一个玩它的纪念品关卡的按钮，以及比克斯比大桥、翡翠湾和莫诺湖的绘画风明信片。"
     - src: screenshots/05-board-6x6.jpg
-      alt: "A 6 by 6 board marked Super hard, with thirty-six picture cards and a carousel horse partly pieced together."
+      alt:
+        en: "A 6 by 6 level marked Super hard, with thirty-six picture cards and a carousel horse partly pieced together."
+        de: "Ein 6×6-Level mit der Markierung Superschwer, mit sechsunddreißig Bildkarten und einem Karussellpferd, das teilweise zusammengesetzt ist."
+        es: "Un nivel de 6 por 6 marcado como Superdifícil, con treinta y seis cartas con imágenes y un caballo de carrusel parcialmente montado."
+        fr: "Un niveau de 6 sur 6 marqué Très difficile, avec trente-six cartes d'images et un cheval de manège en partie reconstitué."
+        it: "Un livello 6 per 6 segnato come Difficilissimo, con trentasei carte illustrate e un cavallo da giostra in parte ricomposto."
+        ja: "「超むずかしい」の印がついた6×6のレベル。36枚の絵のカードがあり、メリーゴーラウンドの木馬が一部つながっています。"
+        ko: "매우 어려움 표시가 붙은 6×6 레벨. 그림 카드 36장이 있고 회전목마 말이 일부 맞춰져 있어요."
+        pl: "Poziom 6 na 6 oznaczony jako Bardzo trudny, z trzydziestoma sześcioma kartami z obrazami i częściowo ułożonym konikiem z karuzeli."
+        pt-BR: "Um nível 6 por 6 marcado como Superdifícil, com trinta e seis cartas com imagens e um cavalo de carrossel parcialmente montado."
+        ru: "Уровень 6 на 6 с отметкой «Очень сложный», с тридцатью шестью картами и частично собранной лошадкой с карусели."
+        tr: "Çok zor olarak işaretlenmiş 6'ya 6'lık bir seviye; otuz altı resimli kart ve kısmen birleştirilmiş bir atlıkarınca atı."
+        zh-Hans: "标记为超难的 6×6 关卡，有三十六张图画卡牌，一匹旋转木马已部分拼好。"
     - src: screenshots/06-win-card.jpg
-      alt: "The win card for a hard board: a finished painting of a lavender field beside the board's other pictures, 35 moves in 3 minutes, plus 40 Coins, one Undo and one Hint."
+      alt:
+        en: "The win card for a hard level: a finished painting of a lavender field beside the level's other pictures, 35 moves in 3 minutes, plus 40 Coins, one Undo and one Hint."
+        de: "Die Gewinnkarte eines schweren Levels: ein fertiges Gemälde eines Lavendelfelds neben den anderen Bildern des Levels, 35 Züge in 3 Minuten, dazu 40 Münzen, ein Rückgängig und ein Tipp."
+        es: "La tarjeta de victoria de un nivel difícil: una pintura terminada de un campo de lavanda junto a las demás imágenes del nivel, 35 movimientos en 3 minutos, más 40 monedas, un Deshacer y una Pista."
+        fr: "La carte de victoire d'un niveau difficile : une peinture terminée d'un champ de lavande à côté des autres images du niveau, 35 coups en 3 minutes, plus 40 pièces, un Annuler et un Indice."
+        it: "La schermata di vittoria di un livello difficile: un dipinto completato di un campo di lavanda accanto alle altre immagini del livello, 35 mosse in 3 minuti, più 40 monete, un Annulla e un Suggerimento."
+        ja: "むずかしいレベルのクリア画面。完成したラベンダー畑の絵がそのレベルのほかの絵と並び、35手・3分、さらに40コイン、「元に戻す」1つ、「ヒント」1つ。"
+        ko: "어려움 레벨의 승리 카드. 완성된 라벤더 밭 그림이 그 레벨의 다른 그림들 옆에 있고, 35수 3분, 그리고 40코인, 되돌리기 1개, 힌트 1개."
+        pl: "Karta wygranej trudnego poziomu: ukończony obraz pola lawendy obok pozostałych obrazów poziomu, 35 ruchów w 3 minuty, a do tego 40 monet, jedno Cofnij i jedna Podpowiedź."
+        pt-BR: "A tela de vitória de um nível difícil: uma pintura completa de um campo de lavanda ao lado das outras imagens do nível, 35 jogadas em 3 minutos, mais 40 moedas, um Desfazer e uma Dica."
+        ru: "Карточка победы сложного уровня: готовая картина с лавандовым полем рядом с другими картинками уровня, 35 ходов за 3 минуты, а также 40 монет, одна Отмена и одна Подсказка."
+        tr: "Zor bir seviyenin kazanma kartı: seviyenin diğer resimlerinin yanında tamamlanmış bir lavanta tarlası tablosu, 3 dakikada 35 hamle, ayrıca 40 jeton, bir Geri Al ve bir İpucu."
+        zh-Hans: "困难关卡的胜利卡：完成的薰衣草田画作和该关的其他图画并排，3 分钟 35 步，另得 40 金币、一个撤销和一个提示。"
