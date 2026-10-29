@@ -11,6 +11,11 @@ the plan's `suffix.close` is the prompt ending for these rules.
 
 ## Rules for one picture
 
+- **Checked card by card before it ships, anatomy first** (creator, 2026-10-29: Horse Fair's dapple-grey
+  had a leg at an impossible angle, the generator's commonest slip). At full size, count every animal's
+  legs and tail and every person's arms, hands and fingers, and look at how each leg meets the body and the
+  ground. A rearing or galloping horse goes wrong most often, so prefer a walk or trot. Then check the cards:
+  no two alike, none only background, and no lettering anywhere.
 - **Portrait cards.** A card is a 3:4 cell, 384x512 px. A picture of c x r cards is
   (3c):(4r): a 2x2 is 3:4 (768x1024). Compose for that frame.
 - **Tall and wide pictures** (1x2 is 3:8, 2x1 is 3:2) are composed for their shape: a tall
