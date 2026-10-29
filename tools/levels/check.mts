@@ -89,7 +89,7 @@ import { along, CAREFUL, careless, chain, orderTraps, READABLE, reader, traps, u
 import { BIG, dealFor, deadFirstMoves, doomingFirstClears } from "../../src/game/levels/generate.ts";
 import { byId, clearOrder, destById, flags, itemById, itemClash, LESSON_MOVES, souvenirById, souvenirPictures } from "./lib.mts";
 import { CURRENT, DISTINCT, LAST_BEFORE_T9, MARKS, MAY_TRAP, SPACING, SPARES, TRIPS } from "./campaign-plan.mts";
-import { ATMOS_DAILY_FROM, FIRST as ATMOS_FIRST, isAtmospheric, MOST as ATMOS_MOST, MOST_BOARDS, shareOf, takesAtmospheric } from "./atmospheric.mts";
+import { FIRST as ATMOS_FIRST, isAtmospheric, MOST as ATMOS_MOST, MOST_BOARDS, shareOf, takesAtmospheric } from "./atmospheric.mts";
 import { RULES_FROM, SUITCASE_FROM } from "./daily-plan.mts";
 import { monthOf, monthsTo } from "./make-suitcases.mts";
 import { scheduleProblem } from "./suitcase.mts";
@@ -420,8 +420,8 @@ for (const file of files) {
         }
       }
       // and at most one a level in every other lane but the Souvenirs (creator, 2026-10-29; atmospheric.mts
-      // fewerAtmospheric): the challenge route, the dev menu's, the lesson and the dailies from ATMOS_DAILY_FROM
-      else if (!souvenirBoard && (l.date === undefined || l.date >= ATMOS_DAILY_FROM)) {
+      // fewerAtmospheric): the challenge route, the dev menu's, the lesson and the dailies, the played days too
+      else if (!souvenirBoard) {
         const atmos = l.pictures.filter((p) => isAtmospheric(catalogue.get(p.id))).length;
         if (atmos > ATMOS_MOST) fail(`${atmos} atmospheric pictures; a level takes at most ${ATMOS_MOST} (its maker swaps the rest in place: atmospheric.mts fewerAtmospheric)`);
       }

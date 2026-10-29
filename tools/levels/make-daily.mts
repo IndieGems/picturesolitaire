@@ -41,7 +41,7 @@ import { byId, catalogue, catchUp, clearOrder, dealBoard, flaggedOn, itemById, i
 import { RULES_FROM, rowOn, SUITCASE_FROM, SUITCASE_WEEK, WEEK } from "./daily-plan.mts";
 import { CURRENT, LAST_BEFORE_T9, SPARES } from "./campaign-plan.mts";
 import { schedule } from "./suitcase.mts";
-import { isAtmospheric } from "./atmospheric.mts";
+import { fewerAtmospheric, isAtmospheric } from "./atmospheric.mts";
 
 const FILE = join(root, "src/content/levels/daily.json");
 const BOARD = { cols: 4, rows: 5 };
@@ -255,6 +255,30 @@ if (redays.length) {
     for (const p of levels[k].pictures) uses.set(p.id, (uses.get(p.id) ?? 0) + 1);
     console.log(`${levels[k].id}: re-dealt as ${levels[k].axes.role}, ${levels[k].pictures.length} pictures (${levels[k].pictures.map((p) => p.id).join(", ")}), careless ${levels[k].axes.careless}`);
   }
+}
+
+// at most one atmospheric picture a day (creator, 2026-10-29; atmospheric.mts fewerAtmospheric): the extras
+// give way IN PLACE to clear pictures, the deal, line and par unchanged; none on a board within three days
+// either side, none the day's item rules out, and a day from RULES_FROM takes only its own rules' squares.
+// The played days (1 August to 27 October) too, on the creator's word ("Fix them too", 2026-10-29); Server
+// keeps each old version, so a win on it still pays
+{
+  const near = (k, id) => levels.slice(Math.max(0, k - 3), k + 4).some((l) => l.pictures.some((q) => q.id === id));
+  const ownRules = new Set(CURRENT_SQUARES.map((p) => p.id));
+  const fewer = fewerAtmospheric(levels, {
+    allowed: (k, r) => {
+      const it = levels[k].item && itemById.get(levels[k].item.id);
+      return !near(k, r.id) && !(it && clashes(it, r)) && (levels[k].date < RULES_FROM || ownRules.has(r.id));
+    },
+  });
+  if (fewer.short.length) throw new Error(`no clear picture fits in place of ${fewer.short.join(", ")}`);
+  fewer.levels.forEach((l, k) => {
+    if (l === levels[k]) return;
+    for (const q of levels[k].pictures) uses.set(q.id, uses.get(q.id) - 1);
+    for (const q of l.pictures) uses.set(q.id, (uses.get(q.id) ?? 0) + 1);
+    levels[k] = l;
+  });
+  for (const w of fewer.swaps) console.log(`${w.level}: ${w.atmospheric} -> ${w.clear} in place (at most one atmospheric a level); the deal and line unchanged`);
 }
 
 // 2. new days, the least-used pictures caught up over all of them

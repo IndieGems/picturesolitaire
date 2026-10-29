@@ -61,4 +61,4 @@ back within 3 days (`tools/levels/suitcase.mts`, seeded by the month alone).
 | Friday | 9 | none | 4 | 36-36 | 0 | any | 65%-90% | 65-89% | 21.0 |
 | Saturday | 9 | none | 4 | 36-36 | 0 | any | 70%-95% | 70-95% | 20.9 |
 
-Every picture's appearances in the pool: 0 to 16 (mean 2.1); no picture is on two boards within three days.
+Every picture's appearances in the pool: 0 to 16 (mean 1.9); no picture is on two boards within three days.

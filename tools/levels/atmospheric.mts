@@ -44,11 +44,6 @@ export const FIRST = 2;
 export const MOST = 1;
 /** How many of a campaign board's n pictures are atmospheric: lo..hi. One, whatever n (MOST). */
 export const shareOf = (n) => ({ lo: 1, hi: MOST });
-/**
- * The dailies held to MOST: those from this date. The days before were dealt before the rule and are
- * played (make-daily.mts never changes a played day without the creator's word).
- */
-export const ATMOS_DAILY_FROM = "2026-10-28";
 /** A board that takes atmospheric pictures: from FIRST, and with squares (no all-long board). */
 /** No atmospheric picture is on more boards than this (lead, 2026-10-28: pictures rarely repeat). */
 export const MOST_BOARDS = 2;
