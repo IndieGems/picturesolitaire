@@ -31,7 +31,7 @@ import { makeDev, type BoardDev } from "./dev.ts";
 import { revealPostcard, type Reveal } from "./reveal.ts";
 import { TUNING, applyTuning } from "./tuning.ts";
 import {
-  addRing, backImage, cellAt, drawPiece, drawRing, drawStack, edgesOf, keyOf, layout, mountDefs, nearestCell, place,
+  addRing, backImage, cellAt, drawPiece, drawRing, drawStack, edgesOf, keyOf, layout, mountDefs, nearestCell, place, radiusOf,
   type Art, type Geometry, type PieceView, type StackView,
 } from "./view.ts";
 
@@ -489,6 +489,7 @@ export function openBoard(
 
   function applyLayout(): void {
     plane.style.cssText = `left:${geo.left}px;top:${geo.top}px;width:${geo.width}px;height:${geo.height}px;--s:${geo.s}px`;
+    plane.classList.toggle("flat", TUNING.flat);
     if (tilt) plane.style.transform = `perspective(${Math.round(geo.height * 3.4)}px) rotateX(${TUNING.tiltDegrees}deg)`;
     for (const el of [slotsEl, cardsEl, fxEl]) el.style.cssText = `left:${geo.gridX}px;top:${geo.gridY}px`;
     stacksEl.replaceChildren();
@@ -504,7 +505,7 @@ export function openBoard(
     for (let cell = 0; cell < geo.cols * geo.rows; cell++) {
       const el = document.createElement("div");
       el.className = "bd-cell";
-      el.style.cssText = `left:${(cell % geo.cols) * (geo.s + geo.g)}px;top:${Math.floor(cell / geo.cols) * (geo.sh + geo.g)}px;width:${geo.s}px;height:${geo.sh}px;border-radius:${Math.round(geo.s * 0.14)}px`;
+      el.style.cssText = `left:${(cell % geo.cols) * (geo.s + geo.g)}px;top:${Math.floor(cell / geo.cols) * (geo.sh + geo.g)}px;width:${geo.s}px;height:${geo.sh}px;border-radius:${Math.round(radiusOf(geo.s))}px`;
       slotsEl.append(el);
     }
   }
@@ -858,7 +859,7 @@ export function openBoard(
       const by = v.oy + Math.ceil(geo.s * 0.16);
       const bw = (Math.max(...cells.map((c) => c % geo.cols)) - Math.min(...cells.map((c) => c % geo.cols)) + 1) * (geo.s + geo.g) - geo.g;
       const bh = (Math.max(...cells.map((c) => Math.floor(c / geo.cols))) - Math.min(...cells.map((c) => Math.floor(c / geo.cols))) + 1) * (geo.sh + geo.g) - geo.g;
-      glow.style.cssText = `left:${bx}px;top:${by}px;width:${bw}px;height:${bh}px;border-radius:${Math.round(geo.s * 0.16)}px;opacity:0`;
+      glow.style.cssText = `left:${bx}px;top:${by}px;width:${bw}px;height:${bh}px;border-radius:${Math.round(TUNING.flat ? radiusOf(geo.s) : geo.s * 0.16)}px;opacity:0`;
       cardsEl.insertBefore(glow, cardsEl.firstChild);
       // twinkles: half over the picture, half just round its edge, each a short flash
       const twinkles: Promise<void>[] = [];
@@ -1064,7 +1065,7 @@ export function openBoard(
       cover = document.createElement("div");
       cover.className = "bd-cover";
       cover.style.backgroundImage = backImage(backUrl);
-      cover.style.cssText += `;left:${m}px;top:${m}px;width:${geo.s}px;height:${geo.sh}px;border-radius:${Math.round(geo.s * 0.14)}px`;
+      cover.style.cssText += `;left:${m}px;top:${m}px;width:${geo.s}px;height:${geo.sh}px;border-radius:${Math.round(radiusOf(geo.s))}px`;
       v.el.append(cover);
     }
     placeXY(v, skx, sky);

@@ -104,3 +104,15 @@
   background: rgba(6, 10, 16, var(--shade, 0));
 }
 .bd-postcard-rim { position: absolute; inset: 0; pointer-events: none; }
+
+/* the flat look (TUNING.flat; the creator, 2026-10-29, after Jigsaw Drop): each card
+   the picture alone, edge to edge with hairline gaps, a thin light edge (--card-edge)
+   and no frame, lip or shadow, so nothing on the board reads as a button. Only a
+   lifted piece keeps a soft shadow, to stand clear of the cards under it. The panel
+   behind the board is the screens' (.board-host). */
+.bd-line { fill: none; stroke: var(--card-edge, rgba(255, 255, 255, 0.92)); }
+.bd-plane.flat .bd-piece svg, .bd-plane.flat .bd-back { filter: none; }
+.bd-plane.flat .bd-piece.lifted svg { filter: drop-shadow(0 calc(var(--s) * 0.05) calc(var(--s) * 0.06) rgba(8, 14, 22, 0.35)); }
+.bd-plane.flat .bd-cell { background: rgba(255, 255, 255, 0.10); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16); }
+.bd-plane.flat .bd-stack .bd-back { box-shadow: 0 -1px 0 rgba(6, 10, 16, 0.45), inset 0 0 0 1px var(--card-edge, rgba(255, 255, 255, 0.92)); }
+.bd-plane.flat .bd-slot { border-color: rgba(255, 255, 255, 0.35); }

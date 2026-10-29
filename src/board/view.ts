@@ -91,6 +91,63 @@ export const cardAspect = () => (Number.isFinite(TUNING.cardAspect) ? Math.min(2
  * next card or only backs (`_peek`), so the switch never resizes the board.
  */
 export function layout(w: number, h: number, cols: number, rows: number, _peek = 0): Geometry {
+  return TUNING.flat ? layoutFlat(w, h, cols, rows) : layoutFramed(w, h, cols, rows);
+}
+
+/** The flat look's gap between cards, in whole CSS px. */
+const hairline = () => Math.max(1, Math.round(Number.isFinite(TUNING.hairline) ? TUNING.hairline : 4));
+
+/**
+ * A card's corner radius at `s` px wide: the flat look's small one (TUNING.corner,
+ * at least 3 px), or the frosted frame's. Board, stacks, rings and glow alike.
+ */
+export const radiusOf = (s: number): number => (TUNING.flat ? Math.max(3, s * TUNING.corner) : s * 0.14);
+
+/**
+ * The flat look: the grid as wide as the box allows less sidePad each side,
+ * hairline gaps, and each stack a full card on top of its column (its face
+ * the next card, the cards under it an edge each above it), flatStackGap of a
+ * card's height over the grid. Cards as big as the width or the height allow.
+ */
+function layoutFlat(w: number, h: number, cols: number, rows: number): Geometry {
+  const pad = Math.max(0, TUNING.sidePad);
+  const g = hairline();
+  const A = cardAspect();
+  const most = Math.max(0, Math.round(TUNING.stackEdges));
+  const step = Math.max(0, TUNING.stackEdge);
+  const least = Math.max(1, TUNING.stackEdgeMin);
+  const gap = Math.max(0, TUNING.flatStackGap);
+  const vpad = 6;
+  // in card heights: the rows, the stack's face, its gap and its edges (each at least `least` px)
+  const avail = h - 2 * vpad - (rows - 1) * g;
+  let shH = avail / (rows + 1 + gap + most * step);
+  if (most && shH * step < least) shH = (avail - most * least) / (rows + 1 + gap);
+  const byW = (w - 2 * pad - (cols - 1) * g) / cols;
+  const s = Math.max(24, Math.floor(Math.min(byW, shH * A, cardCap())));
+  const sh = Math.round(s / A);
+  const k = dpr();
+  const edge = Math.max(least, Math.round(sh * step * k) / k);
+  const stackH = sh + Math.ceil(most * edge);
+  const gridY = stackH + Math.max(4, Math.round(sh * gap));
+  const width = cols * s + (cols - 1) * g;
+  const height = gridY + rows * sh + (rows - 1) * g;
+  return {
+    cols, rows, s, sh, g,
+    gridX: 0, gridY,
+    width, height,
+    left: Math.round((w - width) / 2),
+    top: Math.max(0, Math.round((h - height) / 2)),
+    stackH,
+    face: s,
+    faceH: sh,
+    faceTop: stackH - sh,
+    fan: Math.round(sh * 0.2),
+    edge,
+    edges: Math.min(most, Math.floor((stackH - sh + 0.001) / edge)),
+  };
+}
+
+function layoutFramed(w: number, h: number, cols: number, rows: number): Geometry {
   const pad = Math.max(10, Math.min(18, w * 0.035));
   const G = TUNING.gutter;
   const A = cardAspect();
@@ -207,7 +264,7 @@ export function drawPiece(geo: Geometry, art: Art[], cells: readonly number[], c
 
 /** A single card face, `size` px wide and `sizeH` tall, at the top-left of its own element (a stack's upcoming card). */
 export function drawFace(size: number, sizeH: number, card: Card, art: Art[], pictures: readonly Picture[]): HTMLDivElement {
-  const g = Math.max(2, Math.round(size * TUNING.gutter));
+  const g = TUNING.flat ? hairline() : Math.max(2, Math.round(size * TUNING.gutter));
   const b = box([[0, 0]], size, g, sizeH);
   const m = Math.ceil(size * 0.16);
   const el = svgCard([[0, 0]], card, 0, 1, size, sizeH, g, art, pictures, b, m);
@@ -220,12 +277,14 @@ function svgCard(
   art: Art[], pictures: readonly Picture[], b: { x: number; y: number; w: number; h: number }, m: number,
 ): HTMLDivElement {
   const L = loops(xy, s, g, sh);
+  const flat = TUNING.flat;
   // the frame (tools/art/chrome-spec.md): the picture's window sits `rim` inside
-  // the outline, its corners concentric with the outline's
-  const rim = Math.max(TUNING.frameMin, s * TUNING.frame);
-  const R = s * 0.14;
+  // the outline, its corners concentric with the outline's. Flat: the window is
+  // the outline itself, and a thin light edge is stroked just inside it
+  const rim = flat ? 0 : Math.max(TUNING.frameMin, s * TUNING.frame);
+  const R = radiusOf(s);
   const outer = path(L, R, R);
-  const inner = path(inset(L, rim), Math.max(1, R - rim), R + rim);
+  const inner = flat ? outer : path(inset(L, rim), Math.max(1, R - rim), R + rim);
   const pic = card0 >> 5;
   const a = art[pic]!;
   const [x0, y0] = xyOf(pictures, card0);
@@ -244,13 +303,26 @@ function svgCard(
   el.className = "bd-piece";
   el.style.width = `${W}px`;
   el.style.height = `${H}px`;
+  const image = `<image href="${a.url}" x="${imgX.toFixed(2)}" y="${imgY.toFixed(2)}" width="${(a.cols * (s + g)).toFixed(2)}" height="${(a.rows * (sh + g)).toFixed(2)}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${id})"/>`;
+  if (flat) {
+    // one picture inside one edge, however many cards: a plain card under it until it loads
+    const e = Math.max(0.5, TUNING.edgePx);
+    const line = path(inset(L, e / 2), Math.max(0.5, R - e / 2), R + e / 2);
+    el.innerHTML =
+      `<svg xmlns="${SVGNS}" width="${W}" height="${H}" viewBox="${b.x - m} ${b.y - m} ${W} ${H}">` +
+      `<defs><clipPath id="${id}"><path d="${outer}"/></clipPath></defs>` +
+      `<path class="bd-body" d="${outer}" fill="#dfe6ee"/>` + image +
+      `<path class="bd-line" d="${line}" stroke-width="${e}"/>` +
+      `</svg>`;
+    return el;
+  }
   el.innerHTML =
     `<svg xmlns="${SVGNS}" width="${W}" height="${H}" viewBox="${b.x - m} ${b.y - m} ${W} ${H}">` +
     `<defs><clipPath id="${id}"><path d="${inner}"/></clipPath></defs>` +
     `<g class="bd-body"><path d="${outer}" transform="translate(0 ${(s * 0.035).toFixed(2)})" fill="url(#bd-lip)"/>` +
     `<path d="${outer}" fill="url(#bd-rim)"/>` +
     `<path d="${outer}" fill="none" stroke="url(#bd-hi)" stroke-width="1.2"/></g>` +
-    `<image href="${a.url}" x="${imgX.toFixed(2)}" y="${imgY.toFixed(2)}" width="${(a.cols * (s + g)).toFixed(2)}" height="${(a.rows * (sh + g)).toFixed(2)}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${id})"/>` +
+    image +
     `<path d="${inner}" fill="none" stroke="#8b97a8" stroke-width="1"/>` +
     `</svg>`;
   return el;
@@ -266,7 +338,8 @@ export function ringPath(geo: Geometry, cells: readonly number[]): SVGPathElemen
   const xy = cells.map((c) => [c % geo.cols, (c / geo.cols) | 0] as [number, number]);
   const out = Math.max(2, s * 0.06);
   const p = document.createElementNS(SVGNS, "path");
-  p.setAttribute("d", path(inset(loops(xy, s, g, sh), -out), s * 0.14 + out, Math.max(1, s * 0.14 - out)));
+  const R = radiusOf(s);
+  p.setAttribute("d", path(inset(loops(xy, s, g, sh), -out), R + out, Math.max(1, R - out)));
   p.setAttribute("class", "bd-ring");
   p.setAttribute("stroke-width", Math.max(3, s * 0.065).toFixed(2));
   return p;
@@ -356,7 +429,7 @@ export function drawStack(
   const { face, faceH, faceTop, s, fan } = geo;
   sv.el.replaceChildren();
   const x0 = Math.round((s - face) / 2);
-  const radius = `${Math.round(face * 0.16)}px`;
+  const radius = `${Math.round(TUNING.flat ? radiusOf(face) : face * 0.16)}px`;
   if (!stack.length) {
     const slot = document.createElement("div");
     slot.className = "bd-slot";

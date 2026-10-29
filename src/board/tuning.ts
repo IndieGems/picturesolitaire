@@ -16,8 +16,25 @@ export const TUNING = {
    * The screens read this too (the win card, the albums), at draw time.
    */
   cardAspect: 0.75,
-  /** The gap between cards. */
+  /** The gap between cards (the framed look; the flat one's is hairline). */
   gutter: 0.08,
+  /**
+   * The flat look (the creator, 2026-10-29, after Jigsaw Drop's 6x6: our Level
+   * 30 had too much gutter and side room, and the frames read as buttons): the
+   * board fills the width (sidePad CSS px each side) with hairline gaps
+   * (hairline CSS px); each card is the picture with a thin light edge
+   * (edgePx CSS px, stroked inside the outline, var(--card-edge)) and small
+   * corners (corner of a card's width, at least 3 px), with no frame, lip or
+   * shadow; joined cards are one picture inside one edge. Each stack is a full
+   * card wide on top of its column, flatStackGap of a card's height above the
+   * grid. false: the frosted frames (frame, gutter, stackRow, stackGap).
+   */
+  flat: false,
+  sidePad: 8,
+  hairline: 4,
+  edgePx: 1.5,
+  corner: 0.07,
+  flatStackGap: 0.12,
   /**
    * The pale frosted frame round every picture, board and stacks alike: its
    * width as a fraction of a card, never under frameMin CSS px. Thin by the
