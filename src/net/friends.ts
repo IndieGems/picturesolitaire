@@ -33,6 +33,7 @@
 
 import { FriendChallengeError, platformIconUrl, text, type PlayerText } from "@indiegems/gem-web-sdk/sdk";
 import { gem, onArcadePause, sendAnalyticsNow } from "../gem";
+import { heard, held } from "./pace";
 import { gem as declared } from "../../package.json";
 
 /** The templates' keys in the game config. */
@@ -106,8 +107,15 @@ export async function listFriends(): Promise<FriendRow[]> {
  * where the Arcade offers challenges; a read that fails leaves the last answer.
  */
 export function watchFriends(): void {
+  // at most one read out, and one a minute (src/net/pace.ts: none inside the platform's wait)
+  let last = 0;
   const read = () => {
-    if (challengesOffered()) listFriends().catch((err: unknown) => console.info("[friends] the list did not load:", err));
+    if (!challengesOffered() || reading > 0 || Date.now() - last < 60_000 || held() > 0) return;
+    last = Date.now();
+    listFriends().catch((err: unknown) => {
+      heard(err);
+      console.info("[friends] the list did not load:", err);
+    });
   };
   void gem.frame?.settled(10_000).then(read);
   onArcadePause((paused) => {

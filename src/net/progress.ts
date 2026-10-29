@@ -18,7 +18,8 @@
 //   - the first screen waits about a second at most (waitForProgress): every
 //     launch is a new web address with no device copy, so until the record lands
 //     progress() is the empty record with `known: false`, and the screen redraws
-//     when it lands. A failed read is tried again with a backoff, and at once when
+//     when it lands. A failed read is tried again on a wait that grows (src/net/pace.ts:
+//     never under the platform's retry-after, at most 5 minutes, never while hidden), and when
 //     the connection or the page comes back;
 //   - a won board shows at once: claimWin() holds the win here and progress()
 //     applies it over the server's record until the checker answers; its verdict
@@ -30,6 +31,7 @@
 import { gem } from "../gem";
 import { levelCount } from "../game/levels";
 import { onOnline, suspect } from "../ui/online";
+import { backoff, heard, held as platformWait, whenDue } from "./pace";
 import { noAnswer, refusalOf } from "./no-answer";
 
 export interface Progress {
@@ -64,7 +66,6 @@ const held = new Map<string, HeldWin>();
 const listeners = new Set<() => void>();
 let reading = false;
 let tries = 0;
-let timer: number | undefined;
 
 let landed!: () => void;
 /** Resolves once the server's record has been read this session (at once unframed). */
@@ -160,10 +161,24 @@ export function answered(claimId: string, record: unknown, refused: boolean): vo
 
 // ---------------------------------------------------------------- reading the record
 
+/** The one read waiting to try again (src/net/pace.ts). */
+let again: (() => void) | null = null;
+
+/** Read again in `ms` (one waiting read at a time). */
+function readLater(ms: number): void {
+  again?.();
+  again = whenDue(ms, () => {
+    again = null;
+    void read();
+  });
+}
+
 async function read(): Promise<void> {
   if (known || reading || !framed) return;
+  if (platformWait() > 0) return readLater(platformWait());
   reading = true;
-  clearTimeout(timer);
+  again?.();
+  again = null;
   try {
     await gem.awaitIdentity(10_000);
     let record: unknown = null;
@@ -180,8 +195,9 @@ async function read(): Promise<void> {
     }
   } catch (err) {
     if (noAnswer(err)) suspect();
+    heard(err);
     console.warn(`[progress] the record could not be read: ${refusalOf(err)}`);
-    timer = window.setTimeout(() => void read(), Math.min(30_000, 2000 * 2 ** tries++));
+    readLater(backoff(++tries, 2000));
   } finally {
     reading = false;
   }
@@ -194,14 +210,13 @@ export function loadProgress(): void {
   void import("./claims").then((m) => m.resumeClaims());
   void import("./helpers").then((m) => m.loadHelpers());
   void import("./suitcase").then((m) => m.loadSuitcase());
+  // the connection back asks at once (inside any wait the platform named); a page shown again
+  // asks when its wait is over (whenDue), never sooner
   onOnline((up) => {
     if (up && !known) {
       tries = 0;
       void read();
     }
-  });
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible" && !known) void read();
   });
 }
 

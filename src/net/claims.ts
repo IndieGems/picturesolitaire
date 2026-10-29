@@ -11,9 +11,12 @@
 // its word"; "Every game is played online"):
 //   - nothing played is dropped for want of a connection: a claim made offline,
 //     or before the Arcade's bridge is up, is held and sent once it is;
-//   - it is sent again until the checker answers, with a backoff, and at once
-//     when the connection comes back or the page is shown again; one claim
-//     waiting on a retry never holds up the others;
+//   - it is sent again until the checker answers, paced by src/net/pace.ts: a
+//     "not now" from the platform (busy, rate limited, no answer) holds the whole
+//     queue on one wait that grows (never under its retry-after, at most 5
+//     minutes), nothing is asked again while the page is hidden, and the
+//     connection's return sends what waited on it; a claim the function cannot
+//     take yet (a board it does not know) waits alone and holds up no other;
 //   - resending is safe: a board pays once, ever, and a daily result once a
 //     day, whatever the device sends (the platform's state, not ours, decides);
 //   - the verdict is the server's: "paid" (coins: what landed now), "kept" (a
@@ -45,6 +48,7 @@ import { dealHash } from "./deal-hash";
 import { nextToSend, trimHeld } from "./held-wins";
 import { helpers, type Gift, type HelperKind } from "./helpers";
 import { noAnswer, refusalOf } from "./no-answer";
+import { backoff, heard, held, notNow, whenDue } from "./pace";
 import { answered, hold, type HeldWin } from "./progress";
 import { accept as acceptSuitcase, suitcase, type Suitcase } from "./suitcase";
 import { tableOf } from "./tables";
@@ -127,6 +131,10 @@ const SLOT = "claims";
 const listeners = new Set<(v: Verdict) => void>();
 let pumping = false;
 let timer: number | undefined;
+/** "Not now" answers in a row, across the queue (src/net/pace.ts grows the wait from it). */
+let failing = 0;
+/** performance.now() before which no claim is sent: the platform's "not now" holds them all. */
+let pauseUntil = 0;
 
 /** Hear every verdict as it lands (for a HUD, analytics). Returns the unsubscribe. */
 export function onVerdict(fn: (v: Verdict) => void): () => void {
@@ -211,18 +219,31 @@ function settle(h: Held, answer: Verdict, record: unknown = null): void {
   for (const fn of [...listeners]) fn(v);
 }
 
-/** Wait, then try again: soon for a busy platform, slowly for a function that does not know the board yet. */
-function later(h: Held, slow = false): void {
+/**
+ * Wait, then try again. "platform": the platform said not now (busy, rate limited, or no answer
+ * at all), which holds the WHOLE queue on one wait that grows with each in a row; "own": this
+ * claim alone (the checker's "order", a function that failed on it); "slow": a function that does
+ * not know the board yet. Every wait is src/net/pace.ts's: grown, capped at 5 minutes, and never
+ * under the platform's retry-after (`err`, when it named one).
+ */
+function later(h: Held, how: "platform" | "own" | "slow", err?: unknown): void {
   h.tries++;
-  const base = slow ? 30_000 : 2000;
-  h.notBefore = performance.now() + Math.min(slow ? 300_000 : 60_000, base * 2 ** Math.min(h.tries - 1, 6));
+  if (err !== undefined) heard(err);
+  const now = performance.now();
+  if (how === "platform") {
+    pauseUntil = now + backoff(++failing, 2000);
+    h.notBefore = pauseUntil;
+  } else {
+    h.notBefore = now + backoff(h.tries, how === "slow" ? 30_000 : 2000);
+  }
 }
 
+/** The next send, while the page is shown (a hidden page asks nothing again: showing it pumps). */
 function schedule(): void {
   clearTimeout(timer);
   if (!queue.length || document.visibilityState === "hidden") return;
-  const next = Math.min(...queue.map((h) => h.notBefore));
-  timer = window.setTimeout(() => void pump(), Math.max(50, next - performance.now()));
+  const next = Math.max(pauseUntil, Math.min(...queue.map((h) => h.notBefore)));
+  timer = window.setTimeout(() => void pump(), Math.max(50, next - performance.now(), held()));
 }
 
 /**
@@ -250,18 +271,23 @@ async function send(h: Held): Promise<void> {
       if (err.retryable || err.code === "function_not_published" || err.code === "function_failed") {
         if (err.code === "function_failed" && h.tries >= 3) return settle(h, { status: "refused", lane, board, reason: "function_failed" });
         if (!leaving) console.warn(`[claims] ${lane} ${board}: ${err.code}, trying again`);
-        return later(h, err.code === "function_not_published");
+        return later(h, err.code === "function_not_published" ? "slow" : err.code === "function_failed" ? "own" : "platform", err);
       }
       console.error(`[claims] ${lane} ${board}: ${err.code}`, (err as GemFunctionError).functionMessage ?? "");
       return settle(h, { status: "refused", lane, board, reason: err.code ?? "function_error" });
     }
     // no answer at all: the connection may have gone
     suspect();
-    return later(h);
+    return later(h, "platform", err);
   }
   const status = answer.status;
-  // "order": an earlier campaign win is still on its way; it goes first, this one follows soon
-  if (status === "retry") return later(h, answer.reason === "unknown_deal" || answer.reason === "config");
+  // "order": an earlier campaign win is still on its way; it goes first, this one follows soon.
+  // "platform": the checker's own calls were refused for now, which holds the queue as ours would.
+  if (status === "retry") {
+    if (answer.reason === "unknown_deal" || answer.reason === "config") return later(h, "slow");
+    return later(h, answer.reason === "platform" ? "platform" : "own");
+  }
+  failing = 0;
   if (status === "paid" || status === "kept" || status === "late") {
     const items = Array.isArray(answer.items) ? answer.items.filter((i): i is string => typeof i === "string").map(tableOf) : [];
     // the server granted what this device's cached inventory cannot know: read it afresh next time
@@ -316,11 +342,13 @@ async function pump(): Promise<void> {
     try {
       await gem.awaitIdentity(10_000);
     } catch {
-      for (const h of queue) later(h);
+      pauseUntil = performance.now() + backoff(++failing, 2000);
       return;
     }
     for (;;) {
       const now = performance.now();
+      // the platform said not now: nothing goes until its wait is over
+      if (now < pauseUntil || held() > 0) break;
       // oldest first; a campaign win behind an earlier held one would only be answered "order"
       const due = nextToSend(queue, now);
       if (!due || !online()) break;
@@ -344,16 +372,38 @@ let writing = false;
 let rewrite = false;
 /** The held count last warned about as more than the slot keeps. */
 let trimmedWarned = 0;
+/** The list the slot holds (JSON, as persist() writes it): an unchanged list is not written again. */
+let kept: string | null = null;
+/** Failed writes in a row, and the one write waiting to try again (src/net/pace.ts). */
+let persistFails = 0;
+let persistRetry: (() => void) | null = null;
+let resumeRetry: (() => void) | null = null;
 /** The page is going: a request it cuts short is no fault worth a warning (keepalive sends carry on). */
 let leaving = false;
 
-/** Keep the unanswered claims in the player's "claims" slot (one writer; the latest list wins). */
-async function persist(): Promise<void> {
+/** Try writing the slot again in `ms` (one waiting write at a time; it writes the latest list). */
+function persistLater(ms: number): void {
+  persistRetry?.();
+  persistRetry = whenDue(ms, () => {
+    persistRetry = null;
+    void persist();
+  });
+}
+
+/**
+ * Keep the unanswered claims in the player's "claims" slot (one writer; the latest list wins).
+ * A list the slot holds already is not written again. A "not now" is tried again on a wait that
+ * grows (src/net/pace.ts), never inline and never while the page is hidden; `closing` (the page
+ * hidden, closed or about to be) tries once even while the platform asked for a wait, since there
+ * may be no later for a win only this page holds.
+ */
+async function persist(closing = false): Promise<void> {
   if (!framed || !resumed) return;
   if (writing) {
     rewrite = true;
     return;
   }
+  if (!closing && held() > 0) return persistLater(held());
   writing = true;
   try {
     do {
@@ -365,17 +415,22 @@ async function persist(): Promise<void> {
         console.warn(`[claims] ${all.length} wins waiting: the ${claims.length} that fit are kept for a restart (all are sent while the game is open)`);
       }
       if (!claims.length && !storedAny) break;
+      const text = JSON.stringify(claims);
+      if (text === kept) break; // the slot holds this list already
       try {
         await gem.me.saves.put(SLOT, { v: 1, claims }, { timeoutMs: 10_000 });
         storedAny = claims.length > 0;
+        kept = text;
+        persistFails = 0;
       } catch (err) {
         if (leaving) break; // the page cut its own upload short; the claim itself went with keepalive
         console.warn(`[claims] could not keep the unanswered claims: ${refusalOf(err)}`);
-        if (!noAnswer(err)) break; // a refusal will not change by asking again
-        suspect();
-        rewrite = true;
-        if (!online()) break; // the connection's return writes them (onOnline)
-        await new Promise((r) => setTimeout(r, 3000));
+        if (!notNow(err)) break; // a refusal will not change by asking again
+        heard(err);
+        if (noAnswer(err)) suspect();
+        // the connection's return writes them (onOnline); otherwise once more, after a growing wait
+        if (online()) persistLater(backoff(++persistFails, 5000));
+        break;
       }
     } while (rewrite);
   } finally {
@@ -396,6 +451,14 @@ function storedClaim(x: unknown): x is { id: string; body: Record<string, unknow
  */
 export async function resumeClaims(): Promise<void> {
   if (!framed || resumed || resuming) return;
+  if (held() > 0) {
+    resumeRetry?.();
+    resumeRetry = whenDue(held(), () => {
+      resumeRetry = null;
+      void resumeClaims();
+    });
+    return;
+  }
   resuming = true;
   try {
     await gem.awaitIdentity(10_000);
@@ -406,6 +469,7 @@ export async function resumeClaims(): Promise<void> {
       if (noAnswer(err) || (err as { reason?: string }).reason !== "not_found") throw err;
     }
     const list = Array.isArray(stored?.claims) ? stored.claims.filter(storedClaim) : [];
+    kept = stored ? JSON.stringify(list.map((c) => ({ id: c.id, body: c.body, effect: c.effect }))) : null;
     // older than anything won since this start: ahead of it in the queue, in the order kept
     const older: Held[] = [];
     for (const c of list) {
@@ -421,18 +485,28 @@ export async function resumeClaims(): Promise<void> {
     void pump();
   } catch (err) {
     if (noAnswer(err)) suspect();
+    heard(err);
     console.warn(`[claims] the unanswered claims could not be read: ${refusalOf(err)}`);
-    window.setTimeout(() => void resumeClaims(), Math.min(30_000, 2000 * 2 ** resumeTries++));
+    resumeRetry?.();
+    resumeRetry = whenDue(backoff(++resumeTries, 2000), () => {
+      resumeRetry = null;
+      void resumeClaims();
+    });
   } finally {
     resuming = false;
   }
 }
 
-/** The page is going (hidden, closed, or the Arcade is about to close it): send and keep everything now. */
+/**
+ * The page is going (hidden, closed, or the Arcade is about to close it): one pass. A win never
+ * sent yet goes now (keepalive outlives the page), unless the platform asked for a wait; one that
+ * was tried already waits its turn, kept in the slot for the next start. The slot is written
+ * once, if its list changed.
+ */
 function flushNow(): void {
-  for (const h of queue) h.notBefore = 0;
+  if (performance.now() >= pauseUntil && held() === 0) for (const h of queue) if (h.tries === 0) h.notBefore = 0;
   void pump();
-  void persist();
+  void persist(true);
 }
 
 if (framed) {
@@ -440,7 +514,10 @@ if (framed) {
   onOnline((up) => {
     if (!up) return;
     if (!resumed) void resumeClaims();
-    for (const h of queue) h.notBefore = 0;
+    // what waited on the connection goes now, though never inside a wait the platform named
+    failing = 0;
+    pauseUntil = performance.now() + held();
+    for (const h of queue) h.notBefore = Math.min(h.notBefore, pauseUntil);
     void pump();
     void persist();
   });

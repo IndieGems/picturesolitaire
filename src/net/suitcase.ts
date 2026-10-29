@@ -30,6 +30,7 @@ import IDS from "./suitcase-ids.json";
 import { currentDaily, onDailyChange } from "./daily";
 import { helpers, type HelperKind } from "./helpers";
 import { noAnswer, refusalOf } from "./no-answer";
+import { backoff, heard as hearRefusal, whenDue } from "./pace";
 import { onOnline, suspect } from "../ui/online";
 
 export type SuitItem = { id: string; title: string };
@@ -69,7 +70,7 @@ let shelf: Suitcase[] = [];
 let prize: { month: string; helpers: Record<HelperKind, number> } | null = null;
 let reading: Promise<void> | null = null;
 let tries = 0;
-let timer: number | undefined;
+let again: (() => void) | null = null;
 
 const say = (): void => {
   for (const fn of [...heard]) fn();
@@ -136,10 +137,13 @@ async function read(): Promise<void> {
     say();
   } catch (err) {
     if (noAnswer(err)) suspect();
+    hearRefusal(err);
     console.warn(`[suitcase] could not be read: ${refusalOf(err)}`);
-    tries++;
-    clearTimeout(timer);
-    timer = window.setTimeout(() => void refresh(), Math.min(300_000, 5000 * 2 ** Math.min(tries, 6)));
+    again?.();
+    again = whenDue(backoff(++tries, 5000), () => {
+      again = null;
+      void refresh();
+    });
   } finally {
     reading = null;
   }

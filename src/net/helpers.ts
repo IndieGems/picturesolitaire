@@ -7,8 +7,10 @@
 //
 //   count(k) > 0?  act  spend(k)   a use is taken AFTER the act, so Undo stays instant:
 //                                  the count drops at once and the platform takes it behind,
-//                                  one at a time. No answer: kept and sent again (from the
-//                                  "spends" slot after a restart too), never dropped. "none":
+//                                  one at a time. No answer, or the platform's "not now"
+//                                  (rate_limited, unavailable): kept and sent again on a wait
+//                                  that grows (src/net/pace.ts; never while hidden), and from the
+//                                  "spends" slot after a restart too, never dropped. "none":
 //                                  the platform had none left (spent on another device); the
 //                                  count is read again and the act stands.
 //   buy(k, pack)                   one, or a pack of 3, for Coins: the platform's direct
@@ -26,6 +28,7 @@ import { gem } from "../gem";
 import { onOnline } from "../ui/online";
 import IDS from "./helper-ids.json";
 import { noAnswer, refusalOf } from "./no-answer";
+import { backoff, heard, held, notNow, whenDue } from "./pace";
 
 export type HelperKind = "hint" | "undo" | "shuffle";
 export type SpendAnswer = "spent" | "held" | "none";
@@ -75,9 +78,16 @@ let coins: number | null = null;
 let known = !framed;
 let sending = false;
 let tries = 0;
-let timer: number | undefined;
+/** The one send waiting to try again (src/net/pace.ts). */
+let retry: (() => void) | null = null;
 /** The "spends" slot holds owed uses (written only when one had to wait, and cleared after). */
 let stored = false;
+/** What the slot holds (JSON): an unchanged list is not written again. */
+let keptDoc: string | null = null;
+/** The last stock read, and the one out now with another asked behind it: a burst of verdicts reads once or twice. */
+let lastRead = 0;
+let refreshing: Promise<void> | null = null;
+let refreshAgain = false;
 const listeners = new Set<() => void>();
 const changed = (): void => {
   for (const fn of [...listeners]) fn();
@@ -127,11 +137,26 @@ async function readCoins(): Promise<void> {
   }
 }
 
-/** Read the stock again (after a checker answer, a buy, a resume). */
-async function refresh(fresh = true): Promise<void> {
-  if (!framed) return;
-  await Promise.all([readStock(fresh), readCoins()]);
-  changed();
+/** Read the stock again (after a checker answer, a buy, a resume): one read at a time, and one more behind it at most. */
+function refresh(fresh = true): Promise<void> {
+  if (!framed) return Promise.resolve();
+  if (refreshing) {
+    refreshAgain = true;
+    return refreshing;
+  }
+  refreshing = (async () => {
+    try {
+      do {
+        refreshAgain = false;
+        lastRead = Date.now();
+        await Promise.all([readStock(fresh), readCoins()]);
+        changed();
+      } while (refreshAgain && held() === 0);
+    } finally {
+      refreshing = null;
+    }
+  })();
+  return refreshing;
 }
 
 // ------------------------------------------------------------------ spending
@@ -142,10 +167,14 @@ const count = (k: HelperKind): number => Math.max(0, stock[k] - owed.filter((o) 
 async function keep(): Promise<void> {
   if (!framed || (!owed.length && !stored)) return;
   const doc = { v: 1, owed: Object.fromEntries(KINDS.map((k) => [k, owed.filter((o) => o === k).length])), total: { ...stock } };
+  const text = JSON.stringify(doc.owed);
+  if (text === keptDoc) return; // the slot holds these already
   try {
     await gem.me.saves.put(SLOT, doc, { timeoutMs: 10_000 });
     stored = owed.length > 0;
+    keptDoc = text;
   } catch (err) {
+    heard(err);
     console.warn(`[helpers] the unsent uses could not be kept: ${refusalOf(err)}`);
   }
 }
@@ -158,8 +187,10 @@ function answer(kind: HelperKind, a: SpendAnswer): void {
 /** Send the owed uses, one at a time, oldest first. */
 async function pump(): Promise<void> {
   if (sending || !owed.length) return;
+  if (held() > 0) return pumpLater(held());
   sending = true;
-  clearTimeout(timer);
+  retry?.();
+  retry = null;
   try {
     while (owed.length) {
       const kind = owed[0]!;
@@ -171,7 +202,7 @@ async function pump(): Promise<void> {
         tries = 0;
         answer(kind, "spent");
       } catch (err) {
-        if (!noAnswer(err)) {
+        if (!notNow(err)) {
           // the platform's word: none left (or no such use). The act stands; the count is read again.
           console.warn(`[helpers] a ${kind} use was refused: ${refusalOf(err)}`);
           owed.shift();
@@ -180,15 +211,17 @@ async function pump(): Promise<void> {
           changed();
           continue;
         }
+        heard(err);
         // no answer: it may have landed. A total one lower says it did; otherwise send it again.
-        if ((await readStock(true)) && stock[kind] <= before - 1) {
+        // (A "not now" refusal says it did not run: nothing to read.)
+        if (noAnswer(err) && (await readStock(true)) && stock[kind] <= before - 1) {
           owed.shift();
           answer(kind, "spent");
           continue;
         }
         answer(kind, "held");
         void keep();
-        timer = window.setTimeout(() => void pump(), Math.min(30_000, 2000 * 2 ** tries++));
+        pumpLater(backoff(++tries, 2000));
         return;
       }
     }
@@ -197,6 +230,15 @@ async function pump(): Promise<void> {
     sending = false;
     changed();
   }
+}
+
+/** Send again in `ms`, while the page is shown (one waiting send at a time). */
+function pumpLater(ms: number): void {
+  retry?.();
+  retry = whenDue(ms, () => {
+    retry = null;
+    void pump();
+  });
 }
 
 /** After a restart: uses an earlier session could not send, less any that landed since. */
@@ -209,6 +251,7 @@ async function resume(): Promise<void> {
     return;
   }
   if (!doc?.owed) return;
+  keptDoc = JSON.stringify(doc.owed);
   for (const k of KINDS) {
     const n = Math.max(0, Math.floor(Number(doc.owed[k]) || 0));
     if (!n) continue;
@@ -295,8 +338,10 @@ export async function loadHelpers(): Promise<void> {
     if (!known) void refresh(false);
     void pump();
   });
+  // hidden: keep what waits (once; an unchanged list is not written again). Shown again: read the
+  // stock, unless it was read in the last 15 s or the platform asked for a wait (src/net/pace.ts)
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") void keep();
-    else void refresh();
+    else if (Date.now() - lastRead > 15_000 && held() === 0) void refresh();
   });
 }

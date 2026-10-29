@@ -13,7 +13,10 @@
 //     GUESS (the device's own date, `guessed: true`) and calls onDailyChange
 //     when the platform's date lands. A result played on a guess is still
 //     sent with it: the win checker says whether it was the player's day.
-//   - unframed (a plain tab) the device's date stands in, guessed.
+//   - unframed (a plain tab) the device's date stands in, guessed;
+//   - a read that fails is asked again on a wait that grows (src/net/pace.ts: never under the
+//     platform's retry-after, at most 5 minutes, never while hidden); until then today()
+//     answers with what it knows, or the guess, without asking.
 // The board for the date is the levels member's rule: loadDaily(date) in
 // src/game/levels.ts. Never send periodStartAt or periodEndsAt to anyone:
 // they give the player's time zone away.
@@ -21,6 +24,7 @@
 import { gem } from "../gem";
 import { onOnline, suspect } from "../ui/online";
 import { noAnswer, refusalOf } from "./no-answer";
+import { backoff, heard, held, whenDue } from "./pace";
 
 /** The daily challenge's slug and id in the game config (functions/checker/src/lib.rs has the same). */
 export const DAILY_SLUG = "daily_picture";
@@ -61,6 +65,10 @@ const changes = new Set<(d: DailyToday) => void>();
 let known: (DailyToday & { key: string }) | null = null;
 let reading: Promise<DailyToday | null> | null = null;
 let timer: number | undefined;
+/** Failed reads in a row; no read before `notBefore` (Date.now()); the one read waiting to try again. */
+let fails = 0;
+let notBefore = 0;
+let again: (() => void) | null = null;
 
 function guess(): DailyToday {
   const d = new Date();
@@ -87,6 +95,7 @@ async function read(): Promise<DailyToday | null> {
     const list = await gem.challenges.list();
     const c = list.find((x) => x.slug === DAILY_SLUG || x.id === DAILY_ID);
     if (!c?.periodLocalDate) return null; // this channel's config has no daily (yet)
+    fails = 0;
     const next = { date: c.periodLocalDate, endsAt: c.periodEndsAt * 1000, guessed: false, key: `${id.playerId}/${id.channel}` };
     const was = known;
     known = next;
@@ -99,7 +108,15 @@ async function read(): Promise<DailyToday | null> {
     return plain(next);
   } catch (err) {
     if (noAnswer(err)) suspect();
+    heard(err);
     console.warn(`[daily] the day could not be read: ${refusalOf(err)}`);
+    const wait = backoff(++fails, 5000);
+    notBefore = Date.now() + wait;
+    again?.();
+    again = whenDue(wait, () => {
+      again = null;
+      void refresh();
+    });
     return null;
   } finally {
     reading = null;
@@ -107,6 +124,8 @@ async function read(): Promise<DailyToday | null> {
 }
 
 function refresh(): Promise<DailyToday | null> {
+  // inside a wait (a failed read's, or the platform's): answer without asking
+  if (!reading && (Date.now() < notBefore || held() > 0)) return Promise.resolve(null);
   reading ??= read();
   return reading;
 }
