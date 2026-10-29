@@ -98,23 +98,35 @@ are clear pictures, square and made at high quality. The creator found medium no
 
 ## People
 
-**Most people pictures show the face** (creator, 2026-10-29): front-on or three-quarter,
-toward the viewer, and eye contact is allowed. A profile or a back view is the exception,
-about 1 in 5 people pictures at most. This replaced the 2026-10-25 rule (candid, in
-profile, from behind), which overcorrected: the library's people lean away from the
-camera (the shepherd, the window cleaner, the rower, the milliner, the dressmaker), so
-new ones face out.
+**People pictures vary, in facing and in framing** (creator, 2026-10-29). Many show the
+face (front-on, three-quarter, glancing off-frame, eye contact allowed) beside profiles
+and backs. There's no quota and no swapping out every turned-away picture: the goal is
+variety. Earlier rules each overcorrected. "Candid, in profile, from behind" (2026-10-25)
+turned the library's people away from the camera: the shepherd, the window cleaner, the
+rower, the milliner, the dressmaker. Then the first pilot of faces was framed alike, face
+top-left and torso up.
 
+- **Vary the set-up, never the same one twice running:** a figure small in a big
+  landscape or sky; two people together, touching or interacting; seen from above or
+  from below; full-length standing; a close crop with the person off-centre, cut by the
+  frame's edge; someone at work inside their shop, kitchen or workshop; layered depth,
+  a person in front with others or a scene behind; a playful moment (a piggyback, a
+  dance, a splash). One or two torso-up portraits are fine in the mix.
+- **The setting gives every card something of its own:** a face, hands, an object, a
+  part of the place. No card is only skin, only sky or one even texture.
 - **What still has to go is the AI look:** the same tilted head and posed camera smile
-  on everyone (the 2026-10-25 complaint about the chef, the cowboy and the painter). Vary
-  the expression (concentration, a laugh, a neutral look, glancing up mid-task), the age,
-  the face and the framing. Hands doing something are still a good subject.
-- **Nothing glossy, airbrushed, plastic or doll-like:** ordinary features of the person's
-  own age. A cartoon or ink person is held to the same rules, and so is a painted one.
-- The plan's `suffix.ink-people` is the ending for a pen-and-ink person facing out.
-  `suffix.candid` and `suffix.ink-candid` carry the old profile and back-view wording, so
-  use them only for the exceptions (and they are what every person before 2026-10-29 was
-  made with).
+  on everyone (the 2026-10-25 complaint about the chef, the cowboy and the painter).
+  Vary the expression (concentration, a laugh, a neutral look, glancing up mid-task),
+  the age and the people. Nothing glossy, airbrushed, plastic or doll-like. A cartoon,
+  ink or painted person is held to the same rules.
+- **Examples are words, never inputs.** The creator's example photos and paintings
+  show the variety. Like Jigsaw Drop's, they are described in a prompt and never given
+  to the generator, and their compositions are never copied.
+- Prompt endings: `suffix.people-scene` for a person in a set-up of its own (the prompt
+  gives the framing); `suffix.people` for a torso-up portrait with the face in one
+  quarter; `suffix.ink-people` for pen and ink; `suffix.candid` and `suffix.ink-candid`
+  for a profile or back view (and they are what every person before 2026-10-29 was made
+  with).
 - Flagged for the look and replaced (2026-10-25): chef, cowboy, painter, apple-orchard,
   yellow-raincoat, bubbles, greenhouse, canal-bicycle, and blue-headscarf (too close to
   Vermeer's *Girl with a Pearl Earring*: never copy a real artwork).
