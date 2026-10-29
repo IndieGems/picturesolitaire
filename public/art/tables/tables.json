@@ -41,7 +41,8 @@
       "particleFrame": 64,
       "particleFrames": 4,
       "base": "#1d130f",
-      "panel": "#835949"
+      "panel": "#835949",
+      "border": "autumn-study"
     },
     {
       "id": "table-ski-lodge",

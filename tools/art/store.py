@@ -426,7 +426,9 @@ def square_tile():
 BORDERS = {"sunny-day": "store-sunny-day-border", "ski-lodge": "store-ski-lodge-border", "winter-dusk": "store-winter-dusk-border",
            # the Cosmetics tables (2026-10-29): each scene with its middle band cleared, as Sunny Day's
            "paris-cafe": "store-paris-cafe-border", "kyoto-blossom": "store-kyoto-blossom-border",
-           "buenos-aires": "store-buenos-aires-border", "irish-coast": "store-irish-coast-border"}
+           "buenos-aires": "store-buenos-aires-border", "irish-coast": "store-irish-coast-border",
+           # Autumn Study (creator, 2026-10-29: it had none, so the Arcade's bars showed on PC/TV); its table is unchanged
+           "autumn-study": "store-autumn-study-border"}
 
 
 def save(im, rel, out, q=92):
