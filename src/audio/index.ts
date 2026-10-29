@@ -13,6 +13,8 @@ import { devProbe, fileOf, load, play, refreshMix, wireEngine, type Voice } from
 import { duckMusic, startMusic } from "./music";
 import { LOAD_ORDER } from "./sounds";
 
+export { tryTrack } from "./music";
+
 let started: Promise<void> | null = null;
 let rest = false;
 

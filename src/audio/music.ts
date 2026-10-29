@@ -3,7 +3,9 @@
 // the track (MUSIC.tables in src/audio/sounds.ts: Winter Dusk keeps the snowy
 // evening, every other table plays the sunny one); choosing another table
 // crossfades to its track. Only the player's own choice counts: a board that
-// wears a table of its own (a Souvenir's) leaves the music as it is.
+// wears a table of its own (a Souvenir's) leaves the music as it is. The
+// Cosmetics screen's try-out (tryTrack) plays another track in its place
+// until it is ended.
 //
 // The loop point is made here rather than in the file: the last few seconds
 // of the track are crossfaded into its first few, and the loop runs from the
@@ -20,16 +22,23 @@ import { chosenTable, onTableChange } from "../ui/tables";
 import { ctx, forget, load, musicBus, musicFile, onMixChange, setMusicLevel, setMusicTrack } from "./engine";
 import { MUSIC, type MusicName } from "./sounds";
 
-/** The track the player's table plays: its own, else the sunny one. */
-const trackNow = (): MusicName => MUSIC.tables[chosenTable()] ?? "music";
+/** The track tried on the Cosmetics screen (tryTrack), in place of the chosen one; null: none. */
+let tried: MusicName | null = null;
+/** The track to play now: the one being tried, else the player's table's own, else the sunny one. */
+const trackNow = (): MusicName => tried ?? MUSIC.tables[chosenTable()] ?? "music";
 /** The file to play now: that track, or the take the Sound Tuning editor picks for it. */
 const fileNow = (): string => musicFile(trackNow());
+
+/** Seconds a try-out crossfades over, to the tried track and back. */
+const TRY_FADE = 1.5;
 
 const duck = ctx.createGain();
 duck.connect(musicBus);
 let started = false;
 /** What is playing: its file and its own fader, for a swap to fade out. */
 let playing: { file: string; source: AudioBufferSourceNode; fader: GainNode } | null = null;
+/** Counts play() calls: only the latest one may start its file (the latest wish wins). */
+let wish = 0;
 /** Each decoded track's loop start, once its join is made (made once: it changes the samples). */
 const loops = new WeakMap<AudioBuffer, number>();
 
@@ -51,10 +60,23 @@ function makeLoop(buffer: AudioBuffer, seconds: number): number {
   return n / buffer.sampleRate;
 }
 
-/** Start `file` looping, fading in over `fadeIn` s; whatever played before fades out over the same time. */
+/**
+ * Start `file` looping, fading in over `fadeIn` s; whatever played before
+ * fades out over the same time. True once it plays (or already was); false if
+ * it failed to load, or a later call, or another track, came first.
+ */
 async function play(file: string, fadeIn: number): Promise<boolean> {
+  const mine = ++wish;
+  if (playing?.file === file) {
+    setMusicTrack(trackNow());
+    return true;
+  }
   const buffer = await load(file);
-  if (!buffer || file !== fileNow()) return false; // failed, or the table or the mix moved on meanwhile
+  if (!buffer || mine !== wish || file !== fileNow()) {
+    // Overtaken while it loaded (a quick run of Try presses): let its ~30 MB go.
+    if (buffer && file !== playing?.file && file !== fileNow()) forget(file);
+    return false;
+  }
   const loopStart = makeLoop(buffer, MUSIC.crossfade);
   const source = ctx.createBufferSource();
   source.buffer = buffer;
@@ -87,17 +109,34 @@ export async function startMusic(): Promise<void> {
   if (started) return;
   started = true;
   setMusicLevel(MUSIC.gain);
-  if (!(await play(fileNow(), MUSIC.fadeIn)) && !playing) started = false; // a later call may try again
+  await play(fileNow(), MUSIC.fadeIn);
+}
+
+/**
+ * The Cosmetics screen's try-out (UI, through src/sound.ts): play the
+ * soundtrack `id` (MUSIC.ids; an unknown id is the sunny one) in place of the
+ * chosen one, or, with null, go back to the chosen one, crossfading. Starts the
+ * music if it had not started. True once it plays; false if it failed to load
+ * or something else was asked for first.
+ */
+export async function tryTrack(id: string | null): Promise<boolean> {
+  tried = id === null ? null : (MUSIC.ids[id] ?? "music");
+  if (!started) {
+    started = true;
+    setMusicLevel(MUSIC.gain);
+  }
+  return play(fileNow(), TRY_FADE);
 }
 
 // Another table chosen, or another take picked in the Sound Tuning editor:
 // swap to its track, crossfading. (A table change that leaves the track as it
-// was, such as a Souvenir's table showing, changes nothing.)
+// was, such as a Souvenir's table showing, changes nothing.) Music that never
+// got going (a failed load) tries again here.
 onTableChange(() => {
-  if (started && playing && playing.file !== fileNow()) void play(fileNow(), 2.5);
+  if (started && playing?.file !== fileNow()) void play(fileNow(), 2.5);
 });
 onMixChange(() => {
-  if (started && playing && playing.file !== fileNow()) void play(fileNow(), 1.5);
+  if (started && playing?.file !== fileNow()) void play(fileNow(), 1.5);
 });
 
 /**

@@ -104,6 +104,20 @@ export function homeWhole(): void {
   void audioCode().then((code) => code?.loadRest().catch((err) => console.warn("[sound] the game's sounds did not load", err)));
 }
 
+/**
+ * The Cosmetics screen's try-out (UI, agreed 2026-10-29): play the soundtrack
+ * `id` ("track-paris-cafe"; src/audio/sounds.ts, MUSIC.ids) in place of the
+ * chosen one, crossfading, until tryTrack(null) brings the chosen one back.
+ * Resolves true once it plays (fading in, after a first try's ~600 KB fetch),
+ * false if it failed to load or another call came first. Obeys the mute and
+ * the Arcade's Music switch like all sound; safe before the sound has loaded.
+ */
+export function tryTrack(id: string | null): Promise<boolean> {
+  return audioCode()
+    .then((code) => (code ? code.tryTrack(id) : false))
+    .catch(() => false);
+}
+
 /** Step 1 once the first screen has been drawn and the page is idle. */
 function startAudioWhenIdle(): void {
   const go = () => void audioCode();
