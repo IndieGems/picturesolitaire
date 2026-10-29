@@ -73,25 +73,48 @@ those 171 and any new one the lead asks for.
   titles and subjects before it is drawn: a library picture of the same thing (a
   watermill, a boathouse, the northern lights) rules it out. Subjects and ids avoid the
   suitcase items' words (Levels' `itemClash`).
-- **The usual rules hold:** people candid and small, from behind or in profile; no real
+- **The usual rules hold:** people small in the scene and never posed; no real
   landmark; no writing; all ages.
 - The plan's `suffix.atmos` (and `atmos-photo` for photographs) is the prompt ending.
 
+## Pen and ink
+
+The creator loved Jigsaw Drop's opening level, and few of our pictures matched it
+(2026-10-29, `design/references/jigsaw-drop-opening-pen-and-ink.png`: the woman at the
+mirror, the running dog, the Edwardian picnic). So about 60 pictures (`"medium": "ink"`)
+are clear pictures, square and made at high quality. The creator found medium noisier.
+
+- **Three looks, varied within:** a vintage storybook (ink with hatching and a soft
+  watercolour wash), a mid-century magazine (ink with flat colour and halftone shading)
+  and a mid-century comic panel (bold outlines, cross-hatching, halftone dots).
+- **Calm, everyday or charming subjects:** people at work or at leisure, animals,
+  objects, food, vehicles and small scenes, each with one readable subject on a calm
+  background.
+- **Each quarter differs.** The first Pram's two bottom cards were both wheels, so a
+  prompt places a distinct part in each quarter, and the plan's `ink` endings say so.
+- **The style is described in words only.** Never give Jigsaw Drop's pictures to the
+  generator, and never reuse their compositions or characters.
+- The endings are `suffix.ink`, `suffix.ink-people` and `suffix.ink-candid` (People, below).
+
 ## People
 
-Jigsaw Drop's people read as real because nobody poses: level 16's painted Madonna looks
-down, level 17's farmer is bent over his pumpkins
-(`design/references/jigsaw-drop-level-16-all-square.png`, `-17-all-long.png`).
+**Most people pictures show the face** (creator, 2026-10-29): front-on or three-quarter,
+toward the viewer, and eye contact is allowed. A profile or a back view is the exception,
+about 1 in 5 people pictures at most. This replaced the 2026-10-25 rule (candid, in
+profile, from behind), which overcorrected: the library's people lean away from the
+camera (the shepherd, the window cleaner, the rower, the milliner, the dressmaker), so
+new ones face out.
 
-- **Candid, at work, absorbed:** in profile, from behind, from the side, looking down at
-  their hands or away, or small in a scene. Hands doing something are a good subject.
-- **Never** the posed camera smile, eyes to the viewer, a tilted head, or a face dead
-  centre and symmetric. Nothing glossy, airbrushed, plastic or doll-like: ordinary
-  features and real skin. A cartoon person is held to the same rules.
-- **Same tests for a painting:** a Renaissance-style figure looks down at a book or a
-  child; an impressionist crowd is busy with its day.
-- The plan's `suffix.candid` (the `close` ending plus these rules) is the prompt ending for
-  a picture with a person in it.
+- **What still has to go is the AI look:** the same tilted head and posed camera smile
+  on everyone (the 2026-10-25 complaint about the chef, the cowboy and the painter). Vary
+  the expression (concentration, a laugh, a neutral look, glancing up mid-task), the age,
+  the face and the framing. Hands doing something are still a good subject.
+- **Nothing glossy, airbrushed, plastic or doll-like:** ordinary features of the person's
+  own age. A cartoon or ink person is held to the same rules, and so is a painted one.
+- The plan's `suffix.ink-people` is the ending for a pen-and-ink person facing out.
+  `suffix.candid` and `suffix.ink-candid` carry the old profile and back-view wording, so
+  use them only for the exceptions (and they are what every person before 2026-10-29 was
+  made with).
 - Flagged for the look and replaced (2026-10-25): chef, cowboy, painter, apple-orchard,
   yellow-raincoat, bubbles, greenhouse, canal-bicycle, and blue-headscarf (too close to
   Vermeer's *Girl with a Pearl Earring*: never copy a real artwork).
@@ -172,8 +195,8 @@ Mix the subjects on a board; never theme a whole board.
   a cup of coffee, a bowl of cherries, a pretzel.
 - **Flowers and plants:** one bloom or one bunch, close: lotus, sunflower, lilies on a
   dark ground, a cactus in flower, a tulip, a rose.
-- **People, candid:** a beekeeper lifting a frame, a glassblower turning a gather, a cook
-  over a flaming wok, a hiker from behind, a cellist with eyes closed, hands knitting.
+- **People, faces shown:** a beekeeper lifting a frame, a glassblower turning a gather, a
+  cook over a flaming wok, a cellist with eyes closed, a grocer glancing up from the scales.
 - **Places, made close:** one landmark, a door, a facade, a mountain peak, a cottage,
   a bridge.
 - **Animals:** single animals in varied styles, about a tenth of the library (a fox, a
