@@ -170,7 +170,7 @@ Each picture ships at the size it is drawn, in three files, all WebP made from t
 
 | word | what it looks like |
 | --- | --- |
-| photo | studio product shot on a plain backdrop, close portrait, macro of a flower or food |
+| photo | studio product shot on a plain backdrop, close portrait, macro of food or an object (never a flower, below) |
 | render | glossy 3D, like an animated film: toy-like objects and soft clay materials |
 | low-poly | flat-shaded triangle facets |
 | flat | flat vector illustration with bold shapes, no outlines and light grain |
@@ -205,8 +205,10 @@ Mix the subjects on a board; never theme a whole board.
   a windmill.
 - **Food:** an ice-cream cone, a slice of cake, macarons, a watermelon slice, lemons,
   a cup of coffee, a bowl of cherries, a pretzel.
-- **Flowers and plants:** one bloom or one bunch, close: lotus, sunflower, lilies on a
-  dark ground, a cactus in flower, a tulip, a rose.
+- **No new flower pictures** (creator, 2026-10-29: the library has far too many, and the
+  creator is flagging the less attractive ones). Never make a picture whose sole subject
+  is a flower or a kind of flower. Flowers within a scene are fine: a meadow, a market
+  stall, a garden behind people.
 - **People, faces shown:** a beekeeper lifting a frame, a glassblower turning a gather, a
   cook over a flaming wok, a cellist with eyes closed, a grocer glancing up from the scales.
 - **Places, made close:** one landmark, a door, a facade, a mountain peak, a cottage,
