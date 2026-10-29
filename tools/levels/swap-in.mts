@@ -32,7 +32,8 @@
 // RULES_FROM), so its levels and their spacing are the old one's. A pair is skipped whole where the new
 // picture is flagged or not the old one's shape; on one level, where the new one has a family or word in
 // common with the level's other pictures, would put a second atmospheric picture on it, or misses the
-// level's picture rules (lib.mts fitsBeside where the level meets its row, else looseFits). The olds stay
+// level's picture rules (lib.mts fitsBeside where the level meets its row, else looseFits), but for a
+// brought-back picture of trips 9 and 10 giving way, which lowers that level's minimum (lead). The olds stay
 // in the library, and are no preferred stock for trip 11 (they are the framings the swap moved off).
 // The record, tools/levels/swap-ins.json: each batch's swaps, `displaced` and `freed` (displaced and on
 // no campaign board now), which campaign-plan.mts FREED adds to trip 11's stock. Deterministic.
@@ -204,6 +205,8 @@ function swapPairs() {
   const pairs = JSON.parse(readFileSync(join(root, pairsFile), "utf8")).swaps;
   const swaps = [];
   const skipped = [];
+  /** Brought-back pictures each level has given way so far (its row's oldLeast is that much lower). */
+  const backGone = new Map();
   for (const { old, new: id } of pairs) {
     const o = byId.get(old);
     const r = byId.get(id);
@@ -226,18 +229,24 @@ function swapPairs() {
         if (others.some((q) => fam(q) === fam(r) || wordsOf(q).some((x) => words.some((y) => sameWord(x, y))))) return skipped.push({ level: l.id, old, new: id, why: "a family or word in common with the level" });
         if (isAtmospheric(r) && others.some((q) => isAtmospheric(q))) return skipped.push({ level: l.id, old, new: id, why: "a second atmospheric picture" });
         const row = lane.row(i);
-        const spec = row && { ...specOf(row), keep: undefined };
-        const ok = row && fitsBeside(all, spec, l.pictures, o) ? fitsBeside(all, spec, next, r) : looseFits(l.pictures, j, r);
+        // a brought-back picture (trips 9 and 10: the row's `old`, at least `oldLeast`) given way to a pair's
+        // new one lowers that level's minimum by one (lead, 2026-10-29, for the people swap: people variety
+        // and fewer repeats come first)
+        const backOut = row?.old ? (backGone.get(l.id) ?? 0) + (row.old.has(old) ? 1 : 0) : 0;
+        const spec = row && { ...specOf(row), keep: undefined, ...(row.oldLeast !== undefined ? { oldLeast: row.oldLeast - backOut } : {}) };
+        const ok = row && fitsBeside(all, { ...spec, ...(row.oldLeast !== undefined ? { oldLeast: row.oldLeast - (backGone.get(l.id) ?? 0) } : {}) }, l.pictures, o) ? fitsBeside(all, spec, next, r) : looseFits(l.pictures, j, r);
         if (!ok) return skipped.push({ level: l.id, old, new: id, why: "the level's picture rules" });
         const families = l.axes?.families ? l.axes.families.map((f, k) => (k === j ? fam(r) : f)) : undefined;
         lane.levels[i] = { ...l, pictures: next, ...(families ? { axes: { ...l.axes, families } } : {}) };
-        swaps.push({ lane: lane.name, level: l.id, clear: old, picture: id });
+        swaps.push({ lane: lane.name, level: l.id, clear: old, picture: id, ...(row?.old?.has(old) ? { broughtBack: true } : {}) });
+        if (row?.old?.has(old)) backGone.set(l.id, (backGone.get(l.id) ?? 0) + 1);
       });
     }
   }
   for (const s of swaps) console.log(`${s.level}: ${s.clear} -> ${s.picture} in place; the deal and line unchanged`);
   for (const k of skipped) console.log(`skipped ${k.level ? `${k.level}: ` : ""}${k.old} -> ${k.new}: ${k.why}`);
   const levelsChanged = new Set(swaps.map((s) => s.level));
+  if (backGone.size) console.log(`brought-back pictures given way (each level's minimum lowered by as many): ${[...backGone].map(([lv, n]) => `${lv} by ${n}`).join(", ")}`);
   console.log(`${swaps.length} swaps on ${levelsChanged.size} levels (${lanes.map((ln) => `${ln.name} ${new Set(swaps.filter((s) => s.lane === ln.name).map((s) => s.level)).size}`).join(", ")}); ${skipped.length} skipped`);
   if (dry) return;
   for (const lane of lanes) {
