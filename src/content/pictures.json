@@ -39759,6 +39759,64 @@
       ],
       "family": "ink-bird-table",
       "busy": 1
+    },
+    {
+      "id": "prize-marrow",
+      "album": "people",
+      "title": "Prize Marrow",
+      "medium": "painting",
+      "file": "pictures/people/prize-marrow.webp",
+      "board": "pictures/people/prize-marrow-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "green",
+        "red",
+        "cream"
+      ],
+      "subjects": [
+        "prize marrow",
+        "gardener"
+      ],
+      "family": "prize-marrow",
+      "busy": 0
+    },
+    {
+      "id": "mechanic",
+      "album": "people",
+      "title": "The Mechanic",
+      "medium": "photo",
+      "file": "pictures/people/mechanic.webp",
+      "board": "pictures/people/mechanic-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "blue",
+        "red",
+        "silver"
+      ],
+      "subjects": [
+        "mechanic",
+        "motorbike"
+      ],
+      "family": "mechanic",
+      "busy": 0
     }
   ],
   "destinations": [
