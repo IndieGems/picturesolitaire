@@ -7,7 +7,9 @@
 //    games on src/game/rules.ts, and writes every state and some claims;
 // 2. the Rust port replays them (functions/checker/tests/vectors.rs) and must
 //    reach every state, and give every claim the expected verdict;
-// 3. the progress record's rules (functions/checker/tests/progress.rs).
+// 3. the progress record's rules (functions/checker/tests/progress.rs);
+// 4. what a win pays (tests/pay.rs), and the Daily Suitcase (tests/suitcase.rs): on hold, so a
+//    daily win grants none of its items, a swap and a prize are shut, and the switch is off.
 // Run it after any change to src/game/rules.ts, the Shuffle helper, the level
 // files, or functions/checker/src. Needs Rust (cargo) for this machine.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
@@ -28,7 +30,7 @@ try {
   if (ts.status !== 0) throw new Error("the TypeScript side could not write the vectors");
   const rust = spawnSync(
     "cargo",
-    ["test", "--release", "--quiet", "--manifest-path", join(root, "functions/checker/Cargo.toml"), "--test", "vectors", "--test", "progress", "--", "--nocapture"],
+    ["test", "--release", "--quiet", "--manifest-path", join(root, "functions/checker/Cargo.toml"), "--test", "vectors", "--test", "progress", "--test", "pay", "--test", "suitcase", "--", "--nocapture"],
     { stdio: "inherit", env: { ...process.env, VECTORS: vectors } },
   );
   if (rust.error) throw rust.error;

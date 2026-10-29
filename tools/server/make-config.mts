@@ -207,10 +207,17 @@ y.push("        - mode: on_complete");
 y.push(`          amount: ${DAILY_COINS}`);
 y.push("          target: { platform_currency_slug: ARCADE_TICKETS }");
 if (MONTHS.length) {
+  // the event's one switch (src/net/suitcase-ids.json `on`): off, the challenge, its marks and the
+  // items stay declared (a player's items stay put) but the Arcade shows no "Daily Suitcase"
+  const on = SUITCASE.on === true;
   y.push("  # THE DAILY SUITCASE, the monthly event (docs/daily-suitcase.md): the Arcade shows this");
   y.push("  # challenge; the win checker keeps its meter at the month's items held (the day's item");
   y.push("  # is packed by the daily's first win, a swap adds one). It pays nothing itself: a full");
   y.push("  # suitcase's table and helpers are the checker's own order, once (the marks below).");
+  if (!on) {
+    y.push("  # ON HOLD (the creator, 2026-10-29; src/net/suitcase-ids.json \"on\": false): not displayed,");
+    y.push("  # and the checker moves no meter, packs and swaps nothing and pays no prize.");
+  }
   y.push(`  - id: ${SUITCASE.event.id}`);
   y.push(`    slug: ${SUITCASE.event.slug}`);
   y.push(`    display_name: "Daily Suitcase"`);
@@ -218,7 +225,7 @@ if (MONTHS.length) {
   y.push("    config:");
   y.push(`      completion_threshold: ${MONTHS[0].items.length}`);
   y.push("      reset_schedule: { type: monthly, boundary: local }");
-  y.push("      platform_display: challenge");
+  if (on) y.push("      platform_display: challenge");
   y.push("  # Each month's suitcase paid: moved to 1 by the checker in the same order as its table and");
   y.push("  # helpers, so it lands with them or not at all, once.");
   for (const m of MONTHS) {

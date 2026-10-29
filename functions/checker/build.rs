@@ -225,8 +225,10 @@ fn main() {
     if unmarked > 0 {
         println!("cargo:warning=suitcase: {unmarked} scheduled daily boards do not name their item yet (packing goes by the date all the same)");
     }
+    // the event's one switch: anything but true (missing, mistyped) is off, which grants nothing
+    let on = fixed["on"].as_bool() == Some(true);
     let suitcases = json!({
-        "event": fixed["event"], "prize": fixed["prize"], "spares": fixed["spares"],
+        "on": on, "event": fixed["event"], "prize": fixed["prize"], "spares": fixed["spares"],
         "stack": fixed["stack"], "shelf": fixed["shelf"], "months": months,
     });
     fs::write(Path::new(&env::var("OUT_DIR").unwrap()).join("suitcases.json"), suitcases.to_string()).unwrap();

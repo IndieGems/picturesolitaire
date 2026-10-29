@@ -30,6 +30,9 @@
 //! "want"} swaps 3 spares for a missing item of the month running now; {"v":1,"what":"suitcase"}
 //! reads the month's suitcase and the shelf. A suitcase found full and unpaid, by any of the
 //! three, pays its prize (the month's table and helpers) in an order of its own, once.
+//! ON HOLD (the creator, 2026-10-29): while src/net/suitcase-ids.json says `"on": false`, a
+//! daily win packs nothing, a swap answers "closed" and the read answers an empty suitcase
+//! ("off": true), and no prize is paid, whatever is held (suitcase::on gates each one).
 //!
 //! Who pays is always the player who called (get-context), never anyone the
 //! input names. Every progression this writes has `function_may_grant: true`:
@@ -358,8 +361,10 @@ mod function {
         }
         // the date is the platform's (the player's own day), so the nonce keys one daily a day
         // the day's first win pays the day's helper (pay::daily_gift), with the day's mark, and
-        // packs the day's suitcase item (suitcase.rs) from the counts read just before
-        let pack = suitcase::day(&date);
+        // packs the day's suitcase item (suitcase.rs) from the counts read just before; while the
+        // event is off (suitcase::on) there is no pack, nothing of it is read, and only the
+        // daily's own reward is paid
+        let pack = suitcase::to_pack(&date);
         let mut before: Option<Vec<u32>> = None;
         let paid = pay_win(
             player,
@@ -368,10 +373,8 @@ mod function {
             &format!("daily:{date}"),
             pay::daily_gift(&date),
             &mut || {
-                let Some((m, at)) = pack else { return Ok(Vec::new()) };
-                let c = suitcase::counts(m, &items_held(player)?);
-                let ops = suitcase::pack(m, at, &c, &date);
-                before = Some(c);
+                let (ops, c) = suitcase::daily_extras(&date, || items_held(player))?;
+                before = c;
                 Ok(ops)
             },
             kit,
@@ -461,10 +464,11 @@ mod function {
     /// A full month's prize, unless its mark says it is paid: Ok(Some(what landed of each
     /// helper)) when it is paid now, Ok(None) when it was paid before. Err: not paid yet.
     fn settle_prize(player: &str, m: suitcase::Month) -> Result<Option<Value>, Value> {
+        // the event off: no prize, however full the suitcase held
+        let Some(o) = suitcase::prize(m) else { return Err(json!({ "v": 1, "status": "closed", "off": true })) };
         if value_of(player, suitcase::mark(m))? >= 1.0 {
             return Ok(None);
         }
-        let o = suitcase::prize(m);
         let body = json!({ "source": "reward", "nonce": o.nonce, "operations": o.operations });
         let res = api("POST", format!("/v1/inventory/players/{player}/orders"), Some(body)).map_err(|e| {
             host::log(LogLevel::Warn, &format!("order {}: no answer: {e}", o.nonce));
@@ -518,6 +522,10 @@ mod function {
     /// {"v":1,"what":"swap","month":"2026-11","want":"item-2026-11-04"}: 3 spares for that item.
     fn swap(game: &str, player: &str, input: &Value) -> Value {
         let refused = |why: &str| json!({ "v": 1, "status": "refused", "reason": why });
+        if !suitcase::on() {
+            // on hold: nothing is swapped (the game's "closed": not this month's)
+            return json!({ "v": 1, "status": "closed", "off": true, "month": input["month"] });
+        }
         let (Some(name), Some(want)) = (input["month"].as_str(), input["want"].as_str()) else { return refused("bad_swap") };
         let Some(m) = suitcase::month(name) else { return refused("unknown_month") };
         let Some(at) = suitcase::slot(m, want) else { return refused("unknown_item") };
@@ -535,6 +543,7 @@ mod function {
             };
             let o = match suitcase::swap(m, &c, at) {
                 Ok(o) => o,
+                Err(suitcase::No::Off) => return json!({ "v": 1, "status": "closed", "off": true, "month": name }),
                 Err(no) => {
                     let status = if no == suitcase::No::Has { "has" } else { "short" };
                     return json!({ "v": 1, "status": status, "suitcase": suitcase::state(m, &c, paid_of(player, m, &c)) });
@@ -589,6 +598,11 @@ mod function {
             Ok(d) => d,
             Err(v) => return v,
         };
+        if !suitcase::on() {
+            // on hold: no suitcase and no shelf, and nothing is read or paid (the items held stay
+            // put). `today` keeps a build from before the switch from asking again and again.
+            return json!({ "v": 1, "status": "suitcase", "off": true, "today": today, "current": null, "past": [], "helpers": pay::none(), "gifts": [], "prizes": [] });
+        }
         let rows = match items_held(player) {
             Ok(r) => r,
             Err(v) => return v,

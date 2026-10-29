@@ -16,6 +16,12 @@
 //! only in the month running now. The month of a date is the schedule's: the month whose days
 //! hold it (Levels' src/content/levels/suitcases.json, compiled in by build.rs).
 //!
+//! THE SWITCH (src/net/suitcase-ids.json `on`, compiled in by build.rs; the creator, 2026-10-29:
+//! the event is on hold until after release, when it may return for VIP members only). Off, the
+//! three ways the event pays are shut here, whatever the player holds: a daily packs nothing
+//! (to_pack, daily_extras), a swap is refused (swap: No::Off), and no prize is paid (prize: None).
+//! pack, swap_order and prize_order are the mechanics behind those gates, kept for its return.
+//!
 //! Nonces: the pack rides the daily's ("daily:<date>"); a swap's is built from the counts it was
 //! decided from, so two swaps decided from the same counts land once (the second is refused and
 //! decided again from fresh counts), which keeps a race from taking a first copy; the prize's is
@@ -30,6 +36,11 @@ use crate::pay::{self, Order};
 fn data() -> &'static Value {
     static DATA: OnceLock<Value> = OnceLock::new();
     DATA.get_or_init(|| serde_json::from_str(include_str!(concat!(env!("OUT_DIR"), "/suitcases.json"))).expect("suitcases.json"))
+}
+
+/// The event's one switch: true only when src/net/suitcase-ids.json says `"on": true`.
+pub fn on() -> bool {
+    data()["on"].as_bool() == Some(true)
 }
 
 /// One month's suitcase, as build.rs compiled it.
@@ -108,6 +119,24 @@ pub fn current(today: &str) -> Option<Month> {
     day(today).map(|(m, _)| m)
 }
 
+/// The day's item a daily's first win on `date` packs (its month and slot): None while the event
+/// is off, or when no month holds the date.
+pub fn to_pack(date: &str) -> Option<(Month, usize)> {
+    if !on() {
+        return None;
+    }
+    day(date)
+}
+
+/// The event's part of a daily's first win on `date`: the operations that win's one order adds,
+/// and the counts they were decided from (to read its receipt by). Nothing while the event is off
+/// or no month holds the date, and then `held` (the player's item rows) is never read.
+pub fn daily_extras<E>(date: &str, held: impl FnOnce() -> Result<Vec<Value>, E>) -> Result<(Vec<Value>, Option<Vec<u32>>), E> {
+    let Some((m, at)) = to_pack(date) else { return Ok((Vec::new(), None)) };
+    let c = counts(m, &held()?);
+    Ok((pack(m, at, &c, date), Some(c)))
+}
+
 /// The shelf: the months whose every day is before `today`, newest first, at most `shelf`.
 pub fn past(today: &str) -> Vec<Month> {
     let mut shelf: Vec<Month> = months().iter().filter(|m| !ends(m).is_empty() && ends(m) < today).collect();
@@ -160,6 +189,7 @@ fn meter(n: u32, reason: String) -> Value {
 }
 
 /// The day's item packed: what the daily's first-win order adds, from the counts read before it.
+/// The mechanics: the checker reaches it only through daily_extras, which the switch gates.
 pub fn pack(m: Month, at: usize, before: &[u32], date: &str) -> Vec<Value> {
     let mut after = before.to_vec();
     after[at] = (after[at] + 1).min(stack());
@@ -210,11 +240,21 @@ pub enum No {
     Has,
     /// Fewer than `spares` spares.
     Short,
+    /// The event is off: nothing is swapped.
+    Off,
 }
 
 /// A swap of `spares` spares for the item in slot `want`, as one order (the month's meter moves
-/// with it). Err: why not.
+/// with it). Err: why not, No::Off whenever the event is off.
 pub fn swap(m: Month, c: &[u32], want: usize) -> Result<Order, No> {
+    if !on() {
+        return Err(No::Off);
+    }
+    swap_order(m, c, want)
+}
+
+/// The swap's mechanics, behind swap's switch.
+pub fn swap_order(m: Month, c: &[u32], want: usize) -> Result<Order, No> {
     if c[want] > 0 {
         return Err(No::Has);
     }
@@ -230,8 +270,17 @@ pub fn swap(m: Month, c: &[u32], want: usize) -> Result<Order, No> {
 }
 
 /// A full suitcase's prize, once: the month's mark, its table (unless a stand-in shows the
-/// built-in one) and the helpers, clamped at the cap.
-pub fn prize(m: Month) -> Order {
+/// built-in one) and the helpers, clamped at the cap. None while the event is off, however full
+/// the suitcase a player holds.
+pub fn prize(m: Month) -> Option<Order> {
+    if !on() {
+        return None;
+    }
+    Some(prize_order(m))
+}
+
+/// The prize's mechanics, behind prize's switch.
+pub fn prize_order(m: Month) -> Order {
     let why = format!("suitcase {}: full", name(m));
     let mut ops = vec![pay::mark(mark(m), why.clone())];
     if let Some(t) = m["table"]["uuid"].as_str() {

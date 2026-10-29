@@ -2286,6 +2286,8 @@ progressions:
   # challenge; the win checker keeps its meter at the month's items held (the day's item
   # is packed by the daily's first win, a swap adds one). It pays nothing itself: a full
   # suitcase's table and helpers are the checker's own order, once (the marks below).
+  # ON HOLD (the creator, 2026-10-29; src/net/suitcase-ids.json "on": false): not displayed,
+  # and the checker moves no meter, packs and swaps nothing and pays no prize.
   - id: f9849a15-3e7b-454e-a177-d7d6396cc911
     slug: suitcase
     display_name: "Daily Suitcase"
@@ -2293,7 +2295,6 @@ progressions:
     config:
       completion_threshold: 10
       reset_schedule: { type: monthly, boundary: local }
-      platform_display: challenge
   # Each month's suitcase paid: moved to 1 by the checker in the same order as its table and
   # helpers, so it lands with them or not at all, once.
   - id: 6c878ad1-81eb-5d81-918e-a36346cd8da4

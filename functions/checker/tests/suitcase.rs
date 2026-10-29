@@ -1,6 +1,7 @@
 // THE DAILY SUITCASE (src/suitcase.rs): which item a date packs, the swap's choice of spares,
 // the prize's one order, and the ids, held to Levels' src/content/levels/suitcases.json and
-// to the game config.
+// to the game config. The event is ON HOLD (the creator, 2026-10-29): the first tests hold the
+// switch off and every way it pays shut; the rest test the mechanics behind it, for its return.
 
 use checker::suitcase::{self, No};
 use serde_json::{json, Value};
@@ -20,6 +21,76 @@ fn first() -> suitcase::Month {
 
 fn held(m: suitcase::Month, copies: &[(usize, u64)]) -> Vec<Value> {
     copies.iter().map(|(i, q)| json!({ "item_definition_id": suitcase::uuid(m, *i), "quantity": q, "instance_id": format!("i{i}") })).collect()
+}
+
+/// Every date some month's schedule holds, and the day before the first and after the last.
+fn every_date() -> Vec<String> {
+    let mut dates: Vec<String> = suitcase::months().iter().flat_map(|m| m["days"].as_object().unwrap().keys().cloned()).collect();
+    dates.sort();
+    dates.extend(["2026-10-31".to_string(), "2099-01-01".to_string()]);
+    dates
+}
+
+/// A player holding everything: every item of every month, with spares (a team account on dev).
+fn holding_everything() -> Vec<Value> {
+    suitcase::months()
+        .iter()
+        .flat_map(|m| (0..suitcase::items(m).len()).map(move |i| json!({ "item_definition_id": suitcase::uuid(m, i), "quantity": 5 })))
+        .collect()
+}
+
+#[test]
+fn the_event_is_on_hold() {
+    // the creator, 2026-10-29: until after release, when it may return for VIP members only.
+    // Turning it back on is a decision of theirs: change this test in the same commit.
+    assert!(!suitcase::on(), "src/net/suitcase-ids.json turns the Daily Suitcase on, but it is on hold");
+    assert_eq!(read("src/net/suitcase-ids.json")["on"], json!(false), "the switch is written out, false");
+}
+
+#[test]
+fn a_daily_win_grants_no_item_while_the_event_is_off() {
+    if suitcase::on() {
+        return; // the_event_is_on_hold says why it should be off
+    }
+    let event = suitcase::event().0;
+    let marks: Vec<&str> = suitcase::months().iter().map(|m| suitcase::mark(m)).collect();
+    for date in every_date() {
+        assert!(suitcase::to_pack(&date).is_none(), "{date} packs an item");
+        let mut asked = false;
+        let (ops, before) = suitcase::daily_extras(&date, || -> Result<Vec<Value>, ()> {
+            asked = true;
+            Ok(holding_everything())
+        })
+        .unwrap();
+        assert!(ops.is_empty() && before.is_none(), "{date}: the daily's first win adds {ops:?}");
+        assert!(!asked, "{date}: the player's items are read for an event that is off");
+        // the daily's first win, as the checker orders it: its own mark and its own helper, and
+        // nothing of the event (no item, no meter, no prize mark, no table)
+        let o = checker::pay::order(checker::DAILY_ID, &format!("daily {date}"), &format!("daily:{date}"), true, checker::pay::daily_gift(&date), ops, false).unwrap();
+        assert!(o.operations.iter().all(|op| op["type"] != "item_grant" && op["type"] != "item_remove"), "{date}: {:?}", o.operations);
+        assert!(o.operations.iter().all(|op| op["progression_definition_id"] != event && !marks.iter().any(|k| op["progression_definition_id"] == *k)), "{date}: {:?}", o.operations);
+        assert_eq!(o.operations[0]["progression_definition_id"], checker::DAILY_ID, "{date}: the daily's own mark");
+        assert!(!o.gifts.contains(&"suitcase"), "{date}");
+        if checker::pay::daily_gift(&date).is_some() {
+            assert_eq!(o.gifts, vec!["daily"], "{date}: the daily's own first-win helper stays");
+            assert!(o.operations.iter().any(|op| op["type"] == "currency_grant"), "{date}: the daily's own first-win helper stays");
+        }
+    }
+}
+
+#[test]
+fn no_swap_and_no_prize_while_the_event_is_off() {
+    if suitcase::on() {
+        return;
+    }
+    for m in suitcase::months() {
+        // a full suitcase with spares, as a team account may hold: still no prize
+        assert_eq!(suitcase::prize(m), None, "{}'s prize", suitcase::name(m));
+        // spares enough for a missing item: still no swap
+        let mut c = vec![5; suitcase::items(m).len()];
+        c[3] = 0;
+        assert_eq!(suitcase::swap(m, &c, 3).unwrap_err(), No::Off, "{}", suitcase::name(m));
+    }
 }
 
 #[test]
@@ -107,7 +178,7 @@ fn a_swap_takes_three_spares_biggest_stacks_first_for_a_missing_item() {
     // spares: slot 0 has 2, slot 2 has 1, slot 5 has 2 (5 in all); slot 7 is missing
     let c = vec![3, 1, 2, 0, 1, 3, 1, 0, 1, 1];
     assert_eq!(suitcase::take(&c, 3), Some(vec![2, 0, 0, 0, 0, 1, 0, 0, 0, 0]));
-    let o = suitcase::swap(m, &c, 7).unwrap();
+    let o = suitcase::swap_order(m, &c, 7).unwrap();
     let removed: Vec<(String, u64)> = o.operations.iter().filter(|op| op["type"] == "item_remove").map(|op| (op["item_definition_id"].as_str().unwrap().into(), op["quantity"].as_u64().unwrap())).collect();
     assert_eq!(removed, vec![(suitcase::uuid(m, 0).into(), 2), (suitcase::uuid(m, 5).into(), 1)]);
     assert!(o.operations.iter().filter(|op| op["type"] == "item_remove").all(|op| op["overflow"] == "fail"));
@@ -124,28 +195,28 @@ fn a_swap_takes_three_spares_biggest_stacks_first_for_a_missing_item() {
 #[test]
 fn a_swap_is_refused_for_an_item_held_or_too_few_spares() {
     let m = first();
-    assert_eq!(suitcase::swap(m, &[2, 2, 1, 0, 0, 0, 0, 0, 0, 0], 3).unwrap_err(), No::Short);
-    assert_eq!(suitcase::swap(m, &[4, 0, 0, 0, 0, 0, 0, 0, 0, 0], 0).unwrap_err(), No::Has);
-    assert!(suitcase::swap(m, &[4, 0, 0, 0, 0, 0, 0, 0, 0, 0], 1).is_ok());
+    assert_eq!(suitcase::swap_order(m, &[2, 2, 1, 0, 0, 0, 0, 0, 0, 0], 3).unwrap_err(), No::Short);
+    assert_eq!(suitcase::swap_order(m, &[4, 0, 0, 0, 0, 0, 0, 0, 0, 0], 0).unwrap_err(), No::Has);
+    assert!(suitcase::swap_order(m, &[4, 0, 0, 0, 0, 0, 0, 0, 0, 0], 1).is_ok());
 }
 
 #[test]
 fn two_swaps_decided_from_the_same_counts_share_a_nonce() {
     let m = first();
     let c = vec![2, 2, 2, 0, 0, 0, 0, 0, 0, 0];
-    let a = suitcase::swap(m, &c, 3).unwrap();
-    let b = suitcase::swap(m, &c, 4).unwrap();
+    let a = suitcase::swap_order(m, &c, 3).unwrap();
+    let b = suitcase::swap_order(m, &c, 4).unwrap();
     assert_eq!(a.nonce, b.nonce, "the second is refused, and decided again from fresh counts");
     let fresh = vec![1, 1, 1, 1, 0, 0, 0, 0, 0, 0];
-    assert_ne!(suitcase::swap(m, &[4, 1, 1, 1, 0, 0, 0, 0, 0, 0], 4).unwrap().nonce, a.nonce);
-    assert_eq!(suitcase::swap(m, &fresh, 4).unwrap_err(), No::Short);
+    assert_ne!(suitcase::swap_order(m, &[4, 1, 1, 1, 0, 0, 0, 0, 0, 0], 4).unwrap().nonce, a.nonce);
+    assert_eq!(suitcase::swap_order(m, &fresh, 4).unwrap_err(), No::Short);
 }
 
 #[test]
 fn the_prize_is_one_order_of_the_months_mark_its_table_and_the_helpers() {
     let ids = read("src/net/suitcase-ids.json");
     for m in suitcase::months() {
-        let o = suitcase::prize(m);
+        let o = suitcase::prize_order(m);
         assert_eq!(o.nonce, format!("prize:{}", suitcase::name(m)));
         assert_eq!(o.gifts, vec!["suitcase"]);
         assert_eq!(o.operations[0]["type"], "progression_max");

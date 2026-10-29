@@ -20,6 +20,9 @@
 // not carry the month itself (claims.ts hands the ones that do to accept()). A read that gets no
 // answer is tried again with a backoff, and at once when the connection comes back.
 // Unframed (a plain tab, the play-test tool) there is no platform: no suitcase.
+// ON HOLD (the creator, 2026-10-29): while src/net/suitcase-ids.json says `"on": false` nothing
+// here asks the checker (which would answer an empty suitcase and swap nothing): current() is
+// null, past() empty, swap() "closed".
 
 import { gem } from "../gem";
 import SCHEDULE from "../content/levels/suitcases.json";
@@ -58,6 +61,8 @@ type Month = { month: string; theme: string; table?: string; tableTitle?: string
 const MONTHS = (SCHEDULE as unknown as { months: Month[] }).months;
 
 const framed = window.self !== window.top;
+/** The event's one switch (src/net/suitcase-ids.json): off, the checker is never asked. */
+const on = (IDS as { on?: boolean }).on === true;
 const heard = new Set<() => void>();
 let now: Suitcase | null = null;
 let shelf: Suitcase[] = [];
@@ -142,7 +147,7 @@ async function read(): Promise<void> {
 
 /** Read the suitcase again (at most one read at a time). */
 function refresh(): Promise<void> {
-  if (!framed) return Promise.resolve();
+  if (!framed || !on) return Promise.resolve();
   reading ??= read();
   return reading;
 }
@@ -152,6 +157,7 @@ function refresh(): Promise<void> {
  * any other daily answer (a resend, a late finish) reads the suitcase again.
  */
 export function accept(answer: Record<string, unknown>): void {
+  if (!on) return;
   if (answer.suitcase && typeof answer.suitcase === "object") {
     const s = view(answer.suitcase, currentDaily().date);
     if (s && (!now || now.month === s.month)) now = s;
@@ -175,6 +181,7 @@ export const suitcase = {
     return () => void heard.delete(fn);
   },
   async swap(want: string): Promise<SwapAnswer> {
+    if (!on) return "closed";
     if (!framed || !now) return "failed";
     const month = now.month;
     try {
@@ -212,11 +219,11 @@ export const suitcase = {
 
 /** Read the suitcase as the game starts (src/net/progress.ts calls it), and keep it current. */
 export async function loadSuitcase(): Promise<void> {
-  if (!framed) return;
+  if (!framed || !on) return;
   await refresh();
 }
 
-if (framed) {
+if (framed && on) {
   onDailyChange(() => void refresh());
   onOnline((up) => {
     if (up && tries > 0) void refresh();
