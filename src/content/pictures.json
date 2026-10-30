@@ -48388,6 +48388,115 @@
       "cutout": "pictures/items/item-halloween-2026-07-cutout.webp"
     },
     {
+      "id": "item-halloween-2026-08",
+      "event": "halloween-2026",
+      "slot": 8,
+      "album": "items",
+      "title": "Kronborg Castle",
+      "medium": "render",
+      "file": "pictures/items/item-halloween-2026-08.webp",
+      "board": "pictures/items/item-halloween-2026-08-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "cream",
+        "green",
+        "blue"
+      ],
+      "subjects": [
+        "kronborg castle",
+        "castle",
+        "cannons",
+        "ghost",
+        "moon"
+      ],
+      "family": "item-halloween-2026-08",
+      "busy": 0,
+      "cutout": "pictures/items/item-halloween-2026-08-cutout.webp"
+    },
+    {
+      "id": "item-halloween-2026-09",
+      "event": "halloween-2026",
+      "slot": 9,
+      "album": "items",
+      "title": "New Orleans",
+      "medium": "render",
+      "file": "pictures/items/item-halloween-2026-09.webp",
+      "board": "pictures/items/item-halloween-2026-09-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "coral",
+        "teal",
+        "black"
+      ],
+      "subjects": [
+        "new orleans",
+        "french quarter",
+        "balcony",
+        "trumpet",
+        "gas lantern",
+        "ghost",
+        "moon"
+      ],
+      "family": "item-halloween-2026-09",
+      "busy": 0,
+      "cutout": "pictures/items/item-halloween-2026-09-cutout.webp"
+    },
+    {
+      "id": "item-halloween-2026-10",
+      "event": "halloween-2026",
+      "slot": 10,
+      "album": "items",
+      "title": "Hound Tor",
+      "medium": "render",
+      "file": "pictures/items/item-halloween-2026-10.webp",
+      "board": "pictures/items/item-halloween-2026-10-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "grey",
+        "purple",
+        "green"
+      ],
+      "subjects": [
+        "hound tor",
+        "tor",
+        "ghost hound",
+        "hound",
+        "heather",
+        "ghost",
+        "moon"
+      ],
+      "family": "item-halloween-2026-10",
+      "busy": 0,
+      "cutout": "pictures/items/item-halloween-2026-10-cutout.webp"
+    },
+    {
       "id": "item-2026-11-01",
       "month": "2026-11",
       "slot": 1,

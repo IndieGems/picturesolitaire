@@ -72,6 +72,12 @@ ITEMS = {
     "item-halloween-2026-05": ("miniature", "the Flying Dutchman, the legendary ghost ship of the Cape of Good Hope: an old seventeenth-century Dutch sailing ship with tall masts and glowing, tattered pale green sails, riding a curling dark wave, a small rocky headland with a tiny white lighthouse beside it", ("#245a66", "#163a43"), "render"),
     "item-halloween-2026-06": ("miniature", "Kappabuchi pool in Tono, Japan, where kappa water imps are said to live: a small clear stream winding between mossy stones under green leaves, a bamboo fishing rod leaning over it with a fresh cucumber dangling on its line, and a small friendly green kappa with a little water dish on its head and a turtle shell peeking curiously out of the water; no shrine, no gate, no statue", ("#5b3a4f", "#3b2533"), "render"),
     "item-halloween-2026-07": ("miniature", "Frankenstein Castle in Germany's Odenwald hills, home of an alchemist's legend and a famous Halloween party: a ruined medieval stone castle on a wooded hilltop with two square battlemented towers, a string of little glowing lanterns across its walls and a small zigzag of lightning above", ("#6a3b2a", "#43251a"), "render"),
+    # The last three (creator, 2026-10-30, of four offered, when events became 30-level packs with 10 items): Kronborg,
+    # Hamlet's Elsinore (a play's ghost, no real tragedy); New Orleans's French Quarter (a street, no one building, no
+    # cemetery, church or voodoo); Hound Tor on Dartmoor (natural granite, the ghostly-hound legend; no prehistoric stones).
+    "item-halloween-2026-08": ("miniature", "Kronborg Castle at Elsinore in Denmark, Hamlet's castle: a grand Renaissance castle of pale sandstone with tall slender green copper spires and steep green copper roofs, square corner towers around a courtyard, thick grassy ramparts with a few small old black cannons on the battlements above a little strip of sea, and a small glowing pale-blue ghostly king with a crown and a long cloak walking the battlements, the ghost of Hamlet's father", ("#2a4d6e", "#18304a"), "render"),
+    "item-halloween-2026-09": ("miniature", "a corner of the French Quarter in New Orleans, America's most haunted city: a two-storey old townhouse painted soft coral with teal shutters on its tall windows and lacy black wrought-iron balconies hung with ferns in baskets, two glowing gas lanterns beside the door, a little brass trumpet resting on a chair on the balcony, a cobbled pavement; the friendly ghost leans on the balcony railing; no church, no cemetery, no signs", ("#6b2f45", "#44192b"), "render"),
+    "item-halloween-2026-10": ("miniature", "Hound Tor on Dartmoor in England, the misty moor of the legend of the ghostly hound: a craggy hilltop of big stacked rounded grey granite boulders rising out of purple heather and golden gorse, wisps of low mist, and a big glowing pale-green ghostly hound with a friendly face and a wagging tail, four legs and one tail, standing proudly on top of the rocks; no standing stones, no graves", ("#4a5a3a", "#2e3a24"), "render"),
     # November 2026: Ski Trip
     "item-2026-11-01": ("photo", "a pair of ski goggles with a mirrored orange-to-blue lens and a striped elastic strap", ("#cfe3f2", "#9fc0dc"), "photo"),
     "item-2026-11-02": ("watercolour", "a knitted red and white bobble hat with a big fluffy white bobble on top", ("#f6efe2", "#e6d8c0"), "watercolour"),
@@ -103,6 +109,8 @@ PAL = {
     "item-halloween-2026-03": ["grey", "amber", "blue"], "item-halloween-2026-04": ["cream", "grey", "green"],
     "item-halloween-2026-05": ["green", "teal", "white"], "item-halloween-2026-06": ["green", "grey"],
     "item-halloween-2026-07": ["grey", "amber", "rust"],
+    "item-halloween-2026-08": ["cream", "green", "blue"], "item-halloween-2026-09": ["coral", "teal", "black"],
+    "item-halloween-2026-10": ["grey", "purple", "green"],
     "item-2026-11-01": ["orange", "blue", "black"], "item-2026-11-02": ["red", "white"], "item-2026-11-03": ["mustard", "teal", "cream"],
     "item-2026-11-04": ["red", "silver"], "item-2026-11-05": ["navy", "white"], "item-2026-11-06": ["red", "cream", "green"],
     "item-2026-11-07": ["pink", "white"], "item-2026-11-08": ["white", "silver"], "item-2026-11-09": ["red", "yellow", "black"],

@@ -152,6 +152,73 @@
    "prompt": "A little painted miniature diorama, like a handmade souvenir model standing on its own small rounded island of earth and moss, at dusk: a soft painted 3D finish, chunky simple shapes, smooth shading, crisp clean edges, warm glowing lights, spooky but friendly and cheerful. A big round pumpkin-orange full moon stands just behind it as part of the model, and one small round friendly white ghost with two dot eyes floats beside it. The miniature: Frankenstein Castle in Germany's Odenwald hills, home of an alchemist's legend and a famous Halloween party: a ruined medieval stone castle on a wooded hilltop with two square battlemented towers, a string of little glowing lanterns across its walls and a small zigzag of lightning above. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
+   "id": "item-halloween-2026-08",
+   "event": "halloween-2026",
+   "slot": 8,
+   "title": "Kronborg Castle",
+   "subjects": [
+    "kronborg castle",
+    "castle",
+    "cannons",
+    "ghost",
+    "moon"
+   ],
+   "medium": "render",
+   "busy": 0,
+   "palette": [
+    "cream",
+    "green",
+    "blue"
+   ],
+   "prompt": "A little painted miniature diorama, like a handmade souvenir model standing on its own small rounded island of earth and moss, at dusk: a soft painted 3D finish, chunky simple shapes, smooth shading, crisp clean edges, warm glowing lights, spooky but friendly and cheerful. A big round pumpkin-orange full moon stands just behind it as part of the model, and one small round friendly white ghost with two dot eyes floats beside it. The miniature: Kronborg Castle at Elsinore in Denmark, Hamlet's castle: a grand Renaissance castle of pale sandstone with tall slender green copper spires and steep green copper roofs, square corner towers around a courtyard, thick grassy ramparts with a few small old black cannons on the battlements above a little strip of sea, and a small glowing pale-blue ghostly king with a crown and a long cloak walking the battlements, the ghost of Hamlet's father. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
+  {
+   "id": "item-halloween-2026-09",
+   "event": "halloween-2026",
+   "slot": 9,
+   "title": "New Orleans",
+   "subjects": [
+    "new orleans",
+    "french quarter",
+    "balcony",
+    "trumpet",
+    "gas lantern",
+    "ghost",
+    "moon"
+   ],
+   "medium": "render",
+   "busy": 0,
+   "palette": [
+    "coral",
+    "teal",
+    "black"
+   ],
+   "prompt": "A little painted miniature diorama, like a handmade souvenir model standing on its own small rounded island of earth and moss, at dusk: a soft painted 3D finish, chunky simple shapes, smooth shading, crisp clean edges, warm glowing lights, spooky but friendly and cheerful. A big round pumpkin-orange full moon stands just behind it as part of the model, and one small round friendly white ghost with two dot eyes floats beside it. The miniature: a corner of the French Quarter in New Orleans, America's most haunted city: a two-storey old townhouse painted soft coral with teal shutters on its tall windows and lacy black wrought-iron balconies hung with ferns in baskets, two glowing gas lanterns beside the door, a little brass trumpet resting on a chair on the balcony, a cobbled pavement; the friendly ghost leans on the balcony railing; no church, no cemetery, no signs. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
+  {
+   "id": "item-halloween-2026-10",
+   "event": "halloween-2026",
+   "slot": 10,
+   "title": "Hound Tor",
+   "subjects": [
+    "hound tor",
+    "tor",
+    "ghost hound",
+    "hound",
+    "heather",
+    "ghost",
+    "moon"
+   ],
+   "medium": "render",
+   "busy": 0,
+   "palette": [
+    "grey",
+    "purple",
+    "green"
+   ],
+   "prompt": "A little painted miniature diorama, like a handmade souvenir model standing on its own small rounded island of earth and moss, at dusk: a soft painted 3D finish, chunky simple shapes, smooth shading, crisp clean edges, warm glowing lights, spooky but friendly and cheerful. A big round pumpkin-orange full moon stands just behind it as part of the model, and one small round friendly white ghost with two dot eyes floats beside it. The miniature: Hound Tor on Dartmoor in England, the misty moor of the legend of the ghostly hound: a craggy hilltop of big stacked rounded grey granite boulders rising out of purple heather and golden gorse, wisps of low mist, and a big glowing pale-green ghostly hound with a friendly face and a wagging tail, four legs and one tail, standing proudly on top of the rocks; no standing stones, no graves. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
+  {
    "id": "item-2026-11-01",
    "month": "2026-11",
    "slot": 1,
@@ -264,7 +331,7 @@
     "pink",
     "white"
    ],
-   "prompt": "A 1960s pop-art comic illustration with bold black outlines and halftone dots on the object: a pair of fluffy pink earmuffs on a curved white headband. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+   "prompt": "A 1960s pop-art comic illustration with bold black outlines, flat bright colour blocks and smooth shading, no halftone dots: a pair of fluffy pink earmuffs on a curved white headband. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2026-11-08",

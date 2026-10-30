@@ -24,7 +24,7 @@
 //   p-<trip id>.bin        per trip (src/content/levels/trips.json): its postcards' passport copies,
 //                          and its Souvenir's sticker (docs/souvenirs.md).
 //   b-s<n>.bin             a Souvenir board's copies (src/content/levels/souvenirs.json), like any board.
-//   s-<event id>.bin       per two-week VIP event (src/content/levels/events.json, docs/vip.md): its 7 item
+//   s-<event id>.bin       per VIP event (src/content/levels/events.json, docs/vip.md): its 10 item
 //                          cut-outs, for its suitcase screen (s-halloween-2026); an item in no event keeps
 //                          its month's pack, s-<yyyy-mm>.bin, as the monthly suitcase had.
 // A picture on no board is not shipped. public/ and the dev server are untouched: they serve the
