@@ -45,9 +45,18 @@ So everything here is built now, in the main game, behind one switch that is **o
    - Event tables stay event prizes: VIP wears the sold Cosmetics, not other events' prizes.
    - Buying for keeps stays open to VIPs.
 
+**Players without VIP see locked doors** (the creator, 2026-10-30, after Untangled): the archive and
+the event wear a padlock and a gold VIP tag, and a tap opens a full screen of what's inside with Back
+and "VIP is coming soon". There is no buy button until the platform can both sell VIP to a game and
+say who holds it (gem-development#2119): a buyer must never stay locked. Untangled (`../yarn`:
+`src/vip.ts`, `showVip`) is the model. The dev toggle is kept in the save, so it holds across reloads.
+
+**Events after Halloween** (until the cadence is set): Ski Trip from 1 Nov 2026 and Winter Market
+from 1 Dec, two weeks each, with 7 of each month's 10 items. Halloween runs 15–28 Oct 2026 and its
+7 items are famous haunted places (the creator), painted postcards.
+
 Not now (the creator, 2026-10-30): a VIP-only table or soundtrack, a VIP passport.
 
-Open, to ask the platform:
-- How a game reads VIP (client and server).
-- Whether a game may say "free for VIP" on its own screens.
-- Whether a "Get VIP" button (`gem.store.showOffer`) belongs on a locked archive.
+Open with the platform: reading who holds VIP, client and server (gem-development#2119; SDK 17.0.0
+added `gem.store.showOffer` for the card). Still to ask: whether a game may say "free for VIP" on
+its own screens.
