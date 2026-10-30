@@ -129,6 +129,9 @@ top-left and torso up.
   frame's edge; someone at work inside their shop, kitchen or workshop; layered depth,
   a person in front with others or a scene behind; a playful moment (a piggyback, a
   dance, a splash). One or two torso-up portraits are fine in the mix.
+- **A healthy mix of all races** (creator, 2026-10-30, after the new-library pilot): the
+  earlier push for many more people of colour, particularly African Americans, has done its
+  work, so new people pictures mix every background, each true to the style's culture and period.
 - **The setting gives every card something of its own:** a face, hands, an object, a
   part of the place. No card is only skin, only sky or one even texture.
 - **What still has to go is the AI look:** the same tilted head and posed camera smile
@@ -139,7 +142,8 @@ top-left and torso up.
 - **Examples are words, never inputs.** The creator's example photos and paintings
   show the variety. Like Jigsaw Drop's, they are described in a prompt and never given
   to the generator, and their compositions are never copied.
-- Prompt endings: `suffix.people-scene` for a person in a set-up of its own (the prompt
+- Prompt endings: `suffix.crisp-people` for a person in the clean look (2026-10-30 on);
+  `suffix.people-scene` for a person in a set-up of its own (the prompt
   gives the framing); `suffix.people` for a torso-up portrait with the face in one
   quarter; `suffix.ink-people` for pen and ink; `suffix.candid` and `suffix.ink-candid`
   for a profile or back view (and they are what every person before 2026-10-29 was made

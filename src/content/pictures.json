@@ -41369,6 +41369,346 @@
       ],
       "family": "limes",
       "busy": 0
+    },
+    {
+      "id": "manatee",
+      "album": "animals",
+      "title": "Manatee",
+      "medium": "cel",
+      "file": "pictures/animals/manatee.webp",
+      "board": "pictures/animals/manatee-board.webp",
+      "cols": 2,
+      "rows": 1,
+      "px": [
+        768,
+        512
+      ],
+      "boardPx": [
+        480,
+        320
+      ],
+      "palette": [
+        "grey",
+        "turquoise",
+        "green"
+      ],
+      "subjects": [
+        "manatee"
+      ],
+      "family": "manatee",
+      "busy": 0
+    },
+    {
+      "id": "black-panther",
+      "album": "animals",
+      "title": "Panther",
+      "medium": "deco",
+      "file": "pictures/animals/black-panther.webp",
+      "board": "pictures/animals/black-panther-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "black",
+        "gold",
+        "emerald"
+      ],
+      "subjects": [
+        "panther"
+      ],
+      "family": "black-panther",
+      "busy": 0
+    },
+    {
+      "id": "toaster",
+      "album": "food",
+      "title": "Toaster",
+      "medium": "render",
+      "file": "pictures/food/toaster.webp",
+      "board": "pictures/food/toaster-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "chrome",
+        "cream",
+        "red"
+      ],
+      "subjects": [
+        "toaster",
+        "toast"
+      ],
+      "family": "toaster",
+      "busy": 0
+    },
+    {
+      "id": "gumbo",
+      "album": "food",
+      "title": "Gumbo",
+      "medium": "photo",
+      "file": "pictures/food/gumbo.webp",
+      "board": "pictures/food/gumbo-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "brown",
+        "white",
+        "green"
+      ],
+      "subjects": [
+        "gumbo"
+      ],
+      "family": "gumbo",
+      "busy": 0
+    },
+    {
+      "id": "pinata",
+      "album": "food",
+      "title": "Piñata",
+      "medium": "papercut",
+      "file": "pictures/food/pinata.webp",
+      "board": "pictures/food/pinata-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "pink",
+        "orange",
+        "turquoise"
+      ],
+      "subjects": [
+        "piñata"
+      ],
+      "family": "pinata",
+      "busy": 0
+    },
+    {
+      "id": "daruma",
+      "album": "food",
+      "title": "Daruma",
+      "medium": "print",
+      "file": "pictures/food/daruma.webp",
+      "board": "pictures/food/daruma-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "red",
+        "gold",
+        "black"
+      ],
+      "subjects": [
+        "daruma"
+      ],
+      "family": "daruma",
+      "busy": 0
+    },
+    {
+      "id": "longcase-clock",
+      "album": "food",
+      "title": "Grandfather Clock",
+      "medium": "photo",
+      "file": "pictures/food/longcase-clock.webp",
+      "board": "pictures/food/longcase-clock-board.webp",
+      "cols": 1,
+      "rows": 2,
+      "px": [
+        384,
+        1024
+      ],
+      "boardPx": [
+        240,
+        640
+      ],
+      "palette": [
+        "walnut",
+        "brass",
+        "cream"
+      ],
+      "subjects": [
+        "grandfather clock"
+      ],
+      "family": "longcase-clock",
+      "busy": 0
+    },
+    {
+      "id": "nouveau-lamp",
+      "album": "food",
+      "title": "Glass Lamp",
+      "medium": "stained-glass",
+      "file": "pictures/food/nouveau-lamp.webp",
+      "board": "pictures/food/nouveau-lamp-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "amber",
+        "green",
+        "blue"
+      ],
+      "subjects": [
+        "lamp"
+      ],
+      "family": "nouveau-lamp",
+      "busy": 0
+    },
+    {
+      "id": "aviator",
+      "album": "people",
+      "title": "Aviator",
+      "medium": "retro",
+      "file": "pictures/people/aviator.webp",
+      "board": "pictures/people/aviator-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "red",
+        "brown",
+        "sky blue"
+      ],
+      "subjects": [
+        "aviator",
+        "biplane"
+      ],
+      "family": "aviator",
+      "busy": 0
+    },
+    {
+      "id": "backyard-grill",
+      "album": "people",
+      "title": "Backyard Grill",
+      "medium": "cel",
+      "file": "pictures/people/backyard-grill.webp",
+      "board": "pictures/people/backyard-grill-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "red",
+        "black",
+        "green"
+      ],
+      "subjects": [
+        "barbecue",
+        "grill"
+      ],
+      "family": "backyard-grill",
+      "busy": 0
+    },
+    {
+      "id": "steel-pan",
+      "album": "people",
+      "title": "Steel Pan",
+      "medium": "photo",
+      "file": "pictures/people/steel-pan.webp",
+      "board": "pictures/people/steel-pan-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "chrome",
+        "yellow",
+        "red"
+      ],
+      "subjects": [
+        "steel pan",
+        "pannist"
+      ],
+      "family": "steel-pan",
+      "busy": 0
+    },
+    {
+      "id": "chrome-diner",
+      "album": "architecture",
+      "title": "Diner",
+      "medium": "cel",
+      "file": "pictures/architecture/chrome-diner.webp",
+      "board": "pictures/architecture/chrome-diner-board.webp",
+      "cols": 2,
+      "rows": 2,
+      "px": [
+        768,
+        1024
+      ],
+      "boardPx": [
+        480,
+        640
+      ],
+      "palette": [
+        "chrome",
+        "red",
+        "turquoise"
+      ],
+      "subjects": [
+        "diner"
+      ],
+      "family": "chrome-diner",
+      "busy": 0
     }
   ],
   "destinations": [
