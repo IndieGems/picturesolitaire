@@ -138,7 +138,27 @@ function shownInOrder() {
   return groups(shown).flatMap((g) => g.pictures);
 }
 
+// The newest batch of pictures (the catalogue's `batch`, a date-first label Art writes on each new
+// picture, e.g. "2026-10-30 new library") shows first as a group of its own, so the creator can review
+// it in one place (the creator, 2026-10-30). Its pictures leave their album groups while it is the
+// newest; an older batch's pictures go back to their albums.
+const newestBatch = () => lib.pictures.map((p) => p.batch).filter((b) => typeof b === "string" && b).sort().pop() ?? "";
+const batchLabel = (b) => {
+  const m = /^(\d{4})-(\d{2})-(\d{2})\s*(.*)$/.exec(b);
+  if (!m) return `New: ${b}`;
+  const when = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])).toLocaleDateString(undefined, { day: "numeric", month: "short", timeZone: "UTC" });
+  return `New, ${when}${m[4] ? `: ${m[4]}` : ""}`;
+};
+
 function groups(list) {
+  const batch = newestBatch();
+  const fresh = batch ? list.filter((p) => p.batch === batch) : [];
+  const head = fresh.length ? [{ key: `batch:${batch}`, title: batchLabel(batch), all: lib.pictures.filter((p) => p.batch === batch).length, pictures: flaggedLast(fresh) }] : [];
+  if (batch) list = list.filter((p) => p.batch !== batch);
+  return [...head, ...groupsBy(list)];
+}
+
+function groupsBy(list) {
   if (view.group === "family") {
     // real families by name, then the pictures with no look-alike
     const keys = [...new Set(lib.pictures.map(familyOf))].sort((a, b) => (a === SOLO) - (b === SOLO) || familyName(a).localeCompare(familyName(b)));
