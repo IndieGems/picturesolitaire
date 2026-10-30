@@ -92,6 +92,12 @@ const ratioWords = (a) => {
   return a.toFixed(2);
 };
 const isFlagged = (p) => p.flag?.flagged === true;
+// Don't-use pictures sort to the bottom of every group (the creator, 2026-10-30). While a picture is
+// open the order holds still (`sunk`, frozen at opening), so flagging one never makes Next skip
+// ahead; it moves down when the sheet closes.
+let sunk = null;
+const sinks = (p) => (sunk ? sunk.has(p.id) : isFlagged(p));
+const flaggedLast = (ps) => [...ps.filter((p) => !sinks(p)), ...ps.filter(sinks)];
 const imgUrl = (p, big = false) => {
   if (!big && p.thumbV) return `/${p.thumb}?v=${p.thumbV}`;
   if (p.fileV) return `/${p.file}?v=${p.fileV}`;
@@ -124,12 +130,12 @@ function groups(list) {
   if (view.group === "family") {
     // real families by name, then the pictures with no look-alike
     const keys = [...new Set(lib.pictures.map(familyOf))].sort((a, b) => (a === SOLO) - (b === SOLO) || familyName(a).localeCompare(familyName(b)));
-    return keys.map((k) => ({ key: k, title: familyName(k), all: lib.pictures.filter((p) => familyOf(p) === k).length, pictures: list.filter((p) => familyOf(p) === k) })).filter((g) => g.pictures.length);
+    return keys.map((k) => ({ key: k, title: familyName(k), all: lib.pictures.filter((p) => familyOf(p) === k).length, pictures: flaggedLast(list.filter((p) => familyOf(p) === k)) })).filter((g) => g.pictures.length);
   }
   const albums = [...lib.albums];
   // a picture whose album the catalogue does not list still shows, under its own album id
   for (const p of lib.pictures) if (!albums.some((a) => a.id === p.album)) albums.push({ id: p.album, title: words(p.album) });
-  return albums.map((a) => ({ key: a.id, title: a.title, all: lib.pictures.filter((p) => p.album === a.id).length, pictures: list.filter((p) => p.album === a.id) })).filter((g) => g.pictures.length);
+  return albums.map((a) => ({ key: a.id, title: a.title, all: lib.pictures.filter((p) => p.album === a.id).length, pictures: flaggedLast(list.filter((p) => p.album === a.id)) })).filter((g) => g.pictures.length);
 }
 
 // ---------------------------------------------------------------------------
@@ -250,6 +256,7 @@ let noteTimer = 0;
 
 function openDetail(id) {
   if (view.open && view.open !== id) flushNote();
+  if (!view.open) sunk = new Set(lib.pictures.filter(isFlagged).map((p) => p.id));
   view.open = id;
   writeHash();
   noteDirty = false;
@@ -266,6 +273,8 @@ function closeDetail() {
   view.open = "";
   writeHash();
   $("detail").hidden = true;
+  sunk = null;
+  drawGrid();
   const back = document.querySelector(`.tile[data-id="${CSS.escape(lastOpened)}"]`);
   back?.focus({ preventScroll: false });
 }
