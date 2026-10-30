@@ -10,13 +10,13 @@
 //   no-longer-usable picture gives way; the plan's item for the level goes on (in the spot of a picture
 //   its stored line finishes neither first nor last), is changed, or comes off; a picture clashing with
 //   the item gives way. A level not made yet, or whose row changed, is dealt afresh.
-//   Pictures (events.mts): clear, current, no landmark, none flagged or moved off, the least used across
-//   every other level first (so pictures on no level come in first), none twice within an event; the
+//   Pictures (events.mts): clear, current, no landmark, none flagged, moved off or marked to redraw, the
+//   least used across every other level first (so pictures on no level come in first), none twice within an event; the
 //   row's picture rules (one a family, varied, nothing busy 2, at most one or two busy).
 // Deterministic: the same plan, catalogue and level files give the same levels. Then check.mts proves them.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
-import { existsSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { random } from "../../src/game/rules.ts";
@@ -69,13 +69,19 @@ function main() {
   const others = readdirSync(dir)
     .filter((f) => f.endsWith(".json") && !NOT_OTHERS.has(f))
     .flatMap((f) => readBoards(join(dir, f)));
-  /** Every picture's uses across every level, the events' made so far included: the least used go first. */
-  const uses = usesOf(others.map((l) => l.pictures));
+  const shipped = new Map(readBoards(LEVELS_FILE).map((l) => [l.id, l]));
+  /** Every picture's uses across every level, every event level already made included (each one's own
+   * taken off while it is made again or mended): the least used go first. */
+  const uses = usesOf([...others, ...shipped.values()].map((l) => l.pictures));
   const use = (id) => uses.get(id) ?? 0;
-  /** The pictures an event level may take: clear, current, usable (no landmark, none flagged), none Art moved off. */
+  /** The pictures an event level may keep: clear, current, usable (no landmark, none flagged), none Art moved off. */
   const POOL = usable.filter((p) => !isAtmospheric(p) && !CURRENT.has(p.id) && !MOVED_OFF.has(p.id));
   const allowed = new Set(POOL.map((p) => p.id));
-  const shipped = new Map(readBoards(LEVELS_FILE).map((l) => [l.id, l]));
+  // and the ones it may take afresh: none the creator marked to redraw (src/content/picture-redraws.json;
+  // Art's to-do list: a redraw keeps its id, so one already on a level stays)
+  const redrawFile = join(root, "src/content/picture-redraws.json");
+  const redraw = new Set(Object.entries(existsSync(redrawFile) ? JSON.parse(readFileSync(redrawFile, "utf8")).pictures ?? {} : {}).filter(([, v]) => v?.redraw).map(([id]) => id));
+  const FRESH = POOL.filter((p) => !redraw.has(p.id));
   const levels = [];
   const notes = [];
 
@@ -96,6 +102,7 @@ function main() {
       const lib = (q) => byId.get(q.id) ?? q;
 
       let l = shipped.get(id);
+      if (l) for (const q of l.pictures) uses.set(q.id, use(q.id) - 1);
       const same = l && l.axes?.role === row.role && l.cols === cols && l.rows === rows && l.pictures.length === row.count;
       if (same) {
         // KEPT: mended in place
@@ -104,7 +111,7 @@ function main() {
         const swapOut = (j, why) => {
           const was = pictures[j];
           const othersOn = pictures.filter((_, i) => i !== j && pictures[i].id !== it?.id);
-          const swap = POOL.filter((c) => c.cols === was.cols && c.rows === was.rows && !inEvent.has(c.id) && !pictures.some((q) => q.id === c.id) && !clash(c) && fits(catalogue, spec, [...othersOn, { id: c.id, cols: c.cols, rows: c.rows }]))
+          const swap = FRESH.filter((c) => c.cols === was.cols && c.rows === was.rows && !inEvent.has(c.id) && !pictures.some((q) => q.id === c.id) && !clash(c) && fits(catalogue, spec, [...othersOn, { id: c.id, cols: c.cols, rows: c.rows }]))
             .sort((a, b) => isFlower(a) - isFlower(b) || use(a.id) - use(b.id) || hashId(`${id}~${a.id}`) - hashId(`${id}~${b.id}`))[0];
           if (!swap) throw new Error(`${id}: no picture of its shape can take ${was.id}'s place (${why})`);
           notes.push(`${id}: ${was.id} -> ${swap.id} in place (${why}); the deal and line unchanged`);
@@ -135,7 +142,7 @@ function main() {
         // DEALT afresh: pictures picked, a deal on the row's targets (a safe start unless the row may trap).
         // A deal reads the pictures' shapes only (generate.ts dealFor), so another set of pictures deals
         // the same: a row that finds no deal searches further seeds instead, SEEDS at a time
-        const pool = POOL.filter((c) => row.sizes.includes(c.cols * c.rows) && !inEvent.has(c.id) && !clash(c));
+        const pool = FRESH.filter((c) => row.sizes.includes(c.cols * c.rows) && !inEvent.has(c.id) && !clash(c));
         const avoid = new Map(pool.map((c) => [c.id, use(c.id)]));
         const picked = pick(pool, spec, avoid, new Set(), random(hashId(id) >>> 0));
         if (!picked) throw new Error(`${id}: no pictures fit the level's row${it ? ` beside item ${it.id}` : ""}`);

@@ -51,8 +51,10 @@ event.
     last on the stored line, nothing beside it sharing its family or a word;
   - the dailies carry no item (lifted in place, 2026-10-30) and stay under today's rules from
     1 September 2026.
-  - Now: Haunted Holiday from 15 Oct 2026 (ten haunted places), Ski Trip from 1 Nov and Winter Market
-    from 1 Dec (each month's ten items).
+  - Now (the creator, 2026-10-30: a new event every two weeks): Haunted Holiday from 15 Oct 2026 (ten
+    haunted places), Ski Trip from 1 Nov, Grand Train Journey from 15 Nov, Winter Market from 1 Dec,
+    Northern Lights from 15 Dec and Carnival from 1 Jan 2027 (the last three on stand-ins until Art's
+    items are drawn: an everyday build warns, a release build fails).
 - **Server:**
   - packs the day's item in the daily claim's one order, on the player's own day, first win only;
   - the swap: 3 spares for one missing item, checked on the server;
