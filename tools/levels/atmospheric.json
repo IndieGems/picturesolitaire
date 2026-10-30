@@ -231,8 +231,8 @@
   ],
   "c44": [
    {
-    "clear": "seashells",
-    "atmospheric": "dawn-market-wagons"
+    "clear": "snowmobile",
+    "atmospheric": "glacial-lake-tents"
    }
   ],
   "c45": [
@@ -471,8 +471,8 @@
   ],
   "c87": [
    {
-    "clear": "vineyard",
-    "atmospheric": "threshing-day"
+    "clear": "pretzel",
+    "atmospheric": "village-downpour"
    }
   ],
   "c88": [
@@ -938,13 +938,13 @@
   "sandcastle",
   "scabious",
   "sea-glass",
-  "seashells",
   "sextant",
   "shearer",
   "shell-grotto",
   "shooting-stars",
   "signal-box",
   "snorkel-mask",
+  "snowmobile",
   "stag-beetle",
   "stepping-stones",
   "suitcase",
@@ -962,7 +962,6 @@
   "trapeze",
   "tree-house",
   "turf-house",
-  "vineyard",
   "watermill",
   "windsock",
   "yarrow",
@@ -1006,7 +1005,6 @@
   "focaccia",
   "fruit-seller",
   "gaillardia",
-  "garden-fountain",
   "gazebo",
   "giant-lily-pads",
   "glass-arcade",
@@ -1060,11 +1058,11 @@
   "sandcastle",
   "scabious",
   "sea-glass",
-  "seashells",
   "shell-grotto",
   "shooting-stars",
   "signal-box",
   "snorkel-mask",
+  "snowmobile",
   "stag-beetle",
   "stepping-stones",
   "suitcase",
@@ -1073,7 +1071,6 @@
   "swing-ride",
   "tiled-stairs",
   "torch-ginger",
-  "tortoise",
   "town-square",
   "toymaker",
   "trapeze",

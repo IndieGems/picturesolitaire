@@ -171,7 +171,7 @@ daily puzzle in [daily.md](daily.md).
 | 149 | Loch Ness and Urquhart Castle | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 49% | 2 | 41 |
 | 150 | Edinburgh Castle | super (marked super) | 19 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 6x6 | 76 (40) | 0 | 4 | 15% | 3 | 75 |
 
-**Atmospheric pictures** (creator, 2026-10-28; at most one a level, 2026-10-29): one of each board's pictures, from board 3 on (none on an all-long board), is atmospheric, each in a clear square's place with the deal unchanged (`tools/levels/atmospheric.mts`). Per trip: Travel America 12 of 106, Japan 14 of 154, Italy 14 of 160, American West 14 of 172, France 14 of 168, Canada 14 of 176, Argentina 14 of 168, Australia 14 of 174, South Africa 14 of 169, UK & Ireland 14 of 174. The clear pictures they displaced: 137, of which 112 are on no board now, the stock trips 11 on take first (`tools/levels/atmospheric.json`).
+**Atmospheric pictures** (creator, 2026-10-28; at most one a level, 2026-10-29): one of each board's pictures, from board 3 on (none on an all-long board), is atmospheric, each in a clear square's place with the deal unchanged (`tools/levels/atmospheric.mts`). Per trip: Travel America 12 of 106, Japan 14 of 154, Italy 14 of 160, American West 14 of 172, France 14 of 168, Canada 14 of 176, Argentina 14 of 168, Australia 14 of 174, South Africa 14 of 169, UK & Ireland 14 of 174. The clear pictures they displaced: 136, of which 110 are on no board now, the stock trips 11 on take first (`tools/levels/atmospheric.json`).
 
 Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture comes back 15 boards later at the soonest (median 21). Every board made since 2026-10-25 keeps the rule: no picture on two of boards 1-13, none back within 15 boards; 0 of 396 returns are sooner than 15, on boards kept from before it.
 
@@ -436,7 +436,7 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | tent (2x2, tent) | 23 |
 | castle (2x2, castle) |  |
 | igloo (2x2, igloo) | 27 |
-| pyramids (2x2, pyramids) |  |
+| pyramids (2x2, pyramids) FLAGGED: don't use |  |
 | greek-temple (2x2, greek temple) | 25, 121 |
 | torii (2x2, torii) |  |
 | yurt (2x2, yurt) |  |
@@ -456,7 +456,7 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | hedgehog (2x2, hedgehog) |  |
 | flamingo (2x2, flamingo) | 26 |
 | panda (2x2, panda) |  |
-| tortoise (2x2, tortoise) |  |
+| tortoise (2x2, tortoise) | 44 |
 | peacock (2x2, peacock) |  |
 | cow-nose (2x2, cow nose) |  |
 | rabbit (2x2, rabbit) | 22 |
@@ -464,7 +464,7 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | penguin (2x2, penguin) | 14, 123 |
 | chameleon (2x2, chameleon) | 14, 150 |
 | rooster (2x2, rooster) | 27, 135 |
-| heron (1x2, heron) |  |
+| heron (1x2, heron) | 36 |
 | hollyhocks (1x2, hollyhocks) |  |
 | whale (2x1, whale) |  |
 | otter (2x1, otter) |  |
@@ -602,7 +602,7 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | lantern-maker (2x2, lantern maker) |  |
 | mountain-biker (2x2, mountain biker) | 44 |
 | stilt-walker (1x2, stilt walker) | 51 |
-| pole-vaulter (1x2, pole vaulter) | 36 |
+| pole-vaulter (1x2, pole vaulter) FLAGGED: don't use |  |
 | rower-scull (2x1, rower scull) |  |
 | brass-compass (2x2, brass compass) | 50 |
 | helicopter (2x2, helicopter) | 52, 128 |
@@ -631,7 +631,7 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | teardrop-caravan (2x2, teardrop caravan) | 38, 55 |
 | dhow (2x2, dhow) | 50, 148 |
 | catamaran (2x2, catamaran) | 48, 142 |
-| snowmobile (2x2, snowmobile) | 44 |
+| snowmobile (2x2, snowmobile) |  |
 | monster-truck (2x2, monster truck) | 37, 54 |
 | unicycle (2x2, unicycle) | 45, 136 |
 | propeller-plane (2x2, propeller plane) | 34, 54 |
@@ -650,7 +650,7 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | viaduct (2x2, viaduct) | 38, 54 |
 | chimney-pots (2x2, chimney pots) |  |
 | library-shelves (2x2, library shelves) |  |
-| garden-fountain (2x2, garden fountain) |  |
+| garden-fountain (2x2, garden fountain) | 101 |
 | a-frame-cabin (2x2, a frame cabin) | 42 |
 | shepherds-hut (2x2, shepherds hut) | 129, 144 |
 | turf-house (2x2, turf house) | 14 |
@@ -1081,12 +1081,12 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | ripples (2x2, ripples) | 100, 116 |
 | reed-bed (2x2, tall grass) |  |
 | glowworm-cave (2x2, night sky) | 103 |
-| autumn-treetops (2x2, autumn treetops) |  |
+| autumn-treetops (2x2, autumn treetops) FLAGGED: don't use |  |
 | sunrays (2x2, sunrays) | 97, 114 |
 | monsoon-rain (2x2, monsoon rain) | 104, 119 |
 | mirage (2x2, outback) | 91, 110 |
 | waterspout (2x2, waterspout) | 97, 115 |
-| hedgerow (2x2, hedgerow) | 101 |
+| hedgerow (2x2, hedgerow) FLAGGED: don't use |  |
 | islet (2x2, islet) | 101, 120 |
 | windpump (1x2, windpump) | 111 |
 | chandelier (1x2, chandelier) | 96 |
@@ -1212,7 +1212,7 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | digger (2x2, construction) | 108 |
 | cement-mixer (2x2, construction) | 102 |
 | pirate-ship-ride (2x2, pirate ship ride) |  |
-| log-flume (2x2, log flume) |  |
+| log-flume (2x2, log flume) FLAGGED: don't use |  |
 | sleeping-bag (2x2, sleeping bag) | 92, 120 |
 | camping-stove (2x2, camping stove) |  |
 | beach-umbrella (2x2, beach umbrella) | 100, 115 |
@@ -1348,7 +1348,7 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | barn-dance (2x2, barn dance, atmospheric) | 137 |
 | luzzu-harbour (2x2, luzzu harbour, atmospheric) |  |
 | wild-ponies-heath (2x2, wild ponies heath, atmospheric) | 105 |
-| village-downpour (2x2, village downpour, atmospheric) |  |
+| village-downpour (2x2, village downpour, atmospheric) | 87 |
 | wedding-procession (2x2, wedding procession, atmospheric) | 115 |
 | drive-in-cinema (2x2, drive in cinema, atmospheric) | 93 |
 | stilt-fishermen (2x2, stilt fishermen, atmospheric) | 76 |
@@ -1386,7 +1386,7 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | post-bus (2x2, post bus, atmospheric) | 49 |
 | city-view-dusk (2x2, city view dusk, atmospheric) |  |
 | snowfall-bridge (2x2, snowfall bridge, atmospheric) |  |
-| dawn-market-wagons (2x2, dawn market wagons, atmospheric) | 44 |
+| dawn-market-wagons (2x2, dawn market wagons, atmospheric) FLAGGED: don't use |  |
 | peat-cutting (2x2, peat cutting, atmospheric) |  |
 | seawall-train (2x2, seawall train, atmospheric) | 71 |
 | mokoro-papyrus (2x2, mokoro papyrus, atmospheric) |  |
@@ -1459,7 +1459,7 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | ochre-sails-lagoon (2x2, ochre sails lagoon, atmospheric) | 23 |
 | gondola-lift (2x2, gondola lift, atmospheric) | 75 |
 | river-valley (2x2, river valley, atmospheric) | 5 |
-| glacial-lake-tents (2x2, glacial lake tents, atmospheric) |  |
+| glacial-lake-tents (2x2, glacial lake tents, atmospheric) | 44 |
 | fireworks-river (2x2, fireworks river, atmospheric) | 48 |
 | narrowboats-towpath (2x2, narrowboats towpath, atmospheric) | 130 |
 | layered-hills-dawn (2x2, layered hills dawn, atmospheric) | 13 |
@@ -1469,7 +1469,7 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | arcaded-street (2x2, arcaded street, atmospheric) |  |
 | andean-terraces (2x2, andean terraces, atmospheric) | 19 |
 | rooftops-laundry (2x2, rooftops laundry, atmospheric) | 91 |
-| threshing-day (2x2, threshing day, atmospheric) | 87 |
+| threshing-day (2x2, threshing day, atmospheric) FLAGGED: don't use |  |
 | winding-road-hills (2x2, winding road hills, atmospheric) | 121 |
 | street-musicians (2x2, street musicians, atmospheric) | 102 |
 | autumn-ploughing (2x2, autumn ploughing, atmospheric) | 124 |

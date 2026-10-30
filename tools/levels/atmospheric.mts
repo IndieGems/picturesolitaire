@@ -20,7 +20,7 @@
 //     destination's included); no word in common with any of its pictures (lib.mts sameWord, as the item
 //     rule: two atmospheric pictures on a board look different); album and medium within the picker's
 //     variety; on MOST_BOARDS boards at most, none on two of boards 1-DISTINCT and none back within
-//     SPACING boards either side; the
+//     SPACING boards either side; a busy-2 one last (creator, 2026-10-30: four flagged "Too busy"), the
 //     least used first (unseen first), then a hash. Every board is first given `lo`, then `target`, then
 //     (up to `hi`) one more for each busy clear square still on it.
 // Re-runnable: each run first puts back the clear pictures its record (atmospheric.json) says it took,
@@ -120,7 +120,9 @@ export function atmosphericPass(levels, { distinct, spacing }) {
       .map((p, j) => ({ p, j, e: byId.get(p.id) }))
       .filter(({ p, e }) => isSquare(p) && p.id !== destId && e && !isAtmospheric(e) && (!busyOnly || (e.busy ?? 0) >= 1))
       .sort((x, y) => (y.e.busy ?? 0) - (x.e.busy ?? 0) || uses.get(x.p.id) - uses.get(y.p.id) || hashId(`${l.id}:${x.p.id}`) - hashId(`${l.id}:${y.p.id}`));
-    const ranked = [...stock].sort((x, y) => (at.get(x.id)?.length ?? 0) - (at.get(y.id)?.length ?? 0) || hashId(`${l.id}~${x.id}`) - hashId(`${l.id}~${y.id}`));
+    // the busiest (busy 2) last (creator, 2026-10-30, flagging four atmospheric pictures "Too busy"), then the least used
+    const busiest = (c) => Number((c.busy ?? 0) >= 2);
+    const ranked = [...stock].sort((x, y) => busiest(x) - busiest(y) || (at.get(x.id)?.length ?? 0) - (at.get(y.id)?.length ?? 0) || hashId(`${l.id}~${x.id}`) - hashId(`${l.id}~${y.id}`));
     for (const { j } of places) {
       const a = ranked.find((c) => joins(i, j, c));
       if (!a) continue;
