@@ -32,7 +32,7 @@
 import { on } from "../events";
 import { t } from "./i18n";
 import { guideDone, waitForProgress } from "../net/progress";
-import { guideStep, guided, waitForGuideSave } from "./guide-save";
+import { guideStep, guided, holdForGuide, waitForGuideSave } from "./guide-save";
 
 export type GuideMode = "line" | "hold" | null;
 
@@ -263,6 +263,8 @@ export function createGuide(d: Deps) {
         finishOwed = true;
         return;
       }
+      // the board's steps and tries are saved once, at its end (guide-save.ts)
+      holdForGuide(true);
       show(0);
     },
     /**
@@ -282,6 +284,7 @@ export function createGuide(d: Deps) {
       end();
       finishOwed = false;
       practice = false;
+      holdForGuide(false);
     },
     /** Is a step up right now? */
     active: () => step >= 0,
@@ -292,6 +295,7 @@ export function createGuide(d: Deps) {
       if (!finishOwed) return false;
       finishOwed = false;
       if (!practice) guided(GUIDE_FINISHED);
+      holdForGuide(false);
       return true;
     },
   };

@@ -39,8 +39,13 @@
 //     and the address is not held); the next waits for the page to be shown;
 //   - the connection back: a failed call is tried again then, 30 s after the last
 //     at the soonest.
+//   - the guided first board (guide.ts holdForGuide): its steps and its tries wait for
+//     its end (the finish card, or the player leaving the board), so the board writes
+//     once, not mid-board and again after the win (Server, 2026-10-30, from QA's call
+//     log: two writes, six requests); hiding, pausing or closing still gets its one
+//     try, and the hold gives way after PACE.guideHoldMs whatever happens.
 // Worst case, a refusing platform: about 4 calls in the first minute, then one in
-// 5 minutes; a healthy one with the guide played fast: 2 or 3 writes a minute.
+// 5 minutes; a healthy one with the guide played fast: one write at its end.
 
 import { GemApiError } from "@indiegems/gem-web-sdk/sdk";
 import { gem, onArcadePause, onWillTerminate } from "../gem";
@@ -72,6 +77,8 @@ const PACE = {
   closingMs: 3000,
   /** The connection back: a failed call goes again at once, if the last went at least this long ago. */
   onlineGapMs: 30_000,
+  /** The guided board's hold gives way after this long (a player idle mid-guide is still saved). */
+  guideHoldMs: 180_000,
 };
 
 /**
@@ -140,6 +147,17 @@ export function guided(step: number): void {
   mark();
 }
 
+/** The guided board is under way: no write before this (0: none held). */
+let holdUntil = 0;
+/**
+ * The guided first board started (true) or ended (false: its finish card, the player leaving it): while
+ * it is under way its steps and tries wait, and are written once at its end (or as the page hides).
+ */
+export function holdForGuide(on: boolean): void {
+  holdUntil = on ? Date.now() + PACE.guideHoldMs : 0;
+  if (!on) pump();
+}
+
 /** Hear when the guide's step changes (the account's copy landed). Returns the unsubscribe. */
 export function onGuideSave(fn: () => void): () => void {
   listeners.add(fn);
@@ -203,7 +221,7 @@ function room(now: number): number {
 function earliest(kind: "read" | "write", now: number): number {
   const at = Math.max(notBefore, now + held(), room(now));
   if (kind === "read") return at;
-  return Math.max(at, Math.min(lastChange + PACE.settleMs, firstChange + PACE.gatherMaxMs), lastWrite + PACE.gapMs);
+  return Math.max(at, Math.min(lastChange + PACE.settleMs, firstChange + PACE.gatherMaxMs), lastWrite + PACE.gapMs, holdUntil);
 }
 
 /** Make the next call if one is wanted and may go now; else wait for when it may (one wake-up at a time). */
