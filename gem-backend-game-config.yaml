@@ -2424,6 +2424,11 @@ progressions:
       reset_schedule: { type: monthly, boundary: local }
   # Each event's suitcase paid: moved to 1 by the checker in the same order as its table and
   # helpers, so it lands with them or not at all, once. The old months' marks stay declared.
+  - id: 790b73a6-ee85-5a9f-8375-7c2aa7dc8f1e
+    slug: suitcase_prize_halloween_2026
+    display_name: "Haunted Holiday suitcase full"
+    config:
+      completion_threshold: 1
   - id: 1d88131f-d2ab-5a92-9ce9-bfbf190cf694
     slug: suitcase_prize_ski_trip_2026
     display_name: "Ski Trip suitcase full"
@@ -3216,6 +3221,16 @@ items:
     transfer_policy: none
     client_writable: false
     icon: tools/art/items/table-irish-coast.png
+  - id: 0b998339-3b2d-59bc-a217-a712bfa43ef1
+    slug: table-pumpkin-porch
+    display_name: "Pumpkin Porch table"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 1
+    transfer_policy: none
+    client_writable: false
+    icon: tools/art/items/table-pumpkin-porch.png
 # The soundtracks the player can own (src/net/tracks.json): cosmetic, bought once for Coins
 # through the cosmetics catalog, never traded, never written by the game.
   - id: 78aee497-13c8-5624-a008-9560840fb02f
@@ -3260,6 +3275,69 @@ items:
     icon: tools/art/items/track-celtic-folk.png
 # The event items (src/content/levels/events.json, and the old months' kept): a copy held per
 # day packed, spares swapped by the checker; cosmetic, never traded, never written by the game.
+  - id: 6560d3ed-bd04-5bab-a848-a57c8001e71c
+    slug: item-halloween-2026-01
+    display_name: "Bran Castle"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: 9e0c055a-4069-579a-9378-8d26948213f6
+    slug: item-halloween-2026-02
+    display_name: "Sleepy Hollow Bridge"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: 085b0a39-602a-503f-912a-9ad7a9131cf3
+    slug: item-halloween-2026-03
+    display_name: "Edinburgh Old Town"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: a9ddfc65-1fa6-5145-a82f-86379c5fe45b
+    slug: item-halloween-2026-04
+    display_name: "Château de Brissac"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: 739ae2ce-8173-5d52-ac2a-b9908d52f45a
+    slug: item-halloween-2026-05
+    display_name: "Flying Dutchman"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: cc7546ff-afc4-54ac-a638-0d65cc8223f4
+    slug: item-halloween-2026-06
+    display_name: "Kappabuchi Pool"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: 9548c3e6-4737-515b-9860-8b41b6ae3bfb
+    slug: item-halloween-2026-07
+    display_name: "Frankenstein Castle"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
   - id: 6bd4759e-2705-5a7e-a95c-201fa7c3b17d
     slug: item-2026-11-01
     display_name: "Ski goggles"
