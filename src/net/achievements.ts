@@ -76,8 +76,8 @@ export const COUNTERS: readonly string[] = (DATA.counters as Source[]).map((c) =
 
 export const achievementById = (id: string): Achievement | undefined => ACHIEVEMENTS.find((a) => a.id === id);
 
-/** A counter's value in the server's record (0 before it is known, or on a record from before the counters: the next verified win sets them). */
-export const counterValue = (counter: string): number => serverCounts()?.[counter] ?? 0;
+/** A counter's value in the server's record (0 for a new player); null before the record is known, or on a record from before the counters (the next verified win sets them). */
+export const counterValue = (counter: string): number | null => serverCounts()?.[counter] ?? null;
 
 export interface Unlock {
   achievement: Achievement;
@@ -114,7 +114,7 @@ function tell(a: Achievement, points: number): void {
 /** A record landed or was replaced: note any threshold its counters crossed since the last. */
 function moved(): void {
   const now = serverCounts();
-  if (!now) return; // not known yet: no baseline to compare with (a record from before the counters reads as none)
+  if (!now) return; // not known yet, or a record from before the counters: no baseline to compare with
   if (last) {
     for (const a of ACHIEVEMENTS) {
       if ((last[a.counter] ?? 0) < a.at && a.at <= (now[a.counter] ?? 0) && !heardIds.has(a.id)) crossed.add(a.id);

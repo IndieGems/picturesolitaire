@@ -34,6 +34,7 @@ import { gem } from "../gem";
 import { levelCount } from "../game/levels";
 import { onOnline, suspect } from "../ui/online";
 import { backoff, heard, held as platformWait, whenDue } from "./pace";
+import ACHIEVEMENT_DATA from "./achievements.json";
 import { noAnswer, refusalOf } from "./no-answer";
 
 export interface Progress {
@@ -65,6 +66,8 @@ const framed = window.self !== window.top;
 const empty = (): Progress => ({ campaign: { next: 1, won: 0 }, challenge: {}, daily: {}, souvenir: {}, restored: [] });
 
 let server: Progress = empty();
+/** The server's record was a stored one (a player with a win), not the empty start of a new player. */
+let stored = false;
 let known = !framed;
 const held = new Map<string, HeldWin>();
 const listeners = new Set<() => void>();
@@ -141,8 +144,14 @@ export const guideDone = (): boolean => progress().campaign.next > 1;
 /** A Souvenir is won (its sticker shows) once its id is in the record: its best moves, or undefined. */
 export const souvenirBest = (id: string): number | undefined => progress().souvenir[id];
 export const dailyResult = (date: string): { moves: number; ms: number } | undefined => progress().daily[date];
-/** The achievements' counters in the server's record (never a held win's): none ({}) for a new player or a record from before them; null before the record landed. */
-export const serverCounts = (): Readonly<Record<string, number>> | null => (known ? (server.counts ?? {}) : null);
+/** Every counter at 0: a new player's (src/net/achievements.json's counters). */
+const NONE: Readonly<Record<string, number>> = Object.freeze(Object.fromEntries((ACHIEVEMENT_DATA.counters as { slug: string }[]).map((c) => [c.slug, 0])));
+/**
+ * The achievements' counters in the server's record (never a held win's), by counter slug: every
+ * one 0 for a new player (no record yet). null before the record landed, and for a record from
+ * before the counters (checker 0.1.35), which says nothing about them until the next verified win.
+ */
+export const serverCounts = (): Readonly<Record<string, number>> | null => (!known ? null : server.counts ? server.counts : stored ? null : NONE);
 
 // ---------------------------------------------------------------- held wins (src/net/claims.ts)
 
@@ -158,6 +167,7 @@ export function answered(claimId: string, record: unknown, refused: boolean): vo
   held.delete(claimId);
   if (record && typeof record === "object") {
     server = normal(record);
+    stored = true;
     if (!known) {
       known = true;
       landed();
@@ -198,6 +208,7 @@ async function read(): Promise<void> {
     }
     if (!known) {
       server = normal(record);
+      stored = record !== null && typeof record === "object";
       known = true;
       landed();
       changed();
