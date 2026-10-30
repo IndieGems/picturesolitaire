@@ -53,8 +53,7 @@ event.
     1 September 2026.
   - Now (the creator, 2026-10-30: a new event every two weeks): Haunted Holiday from 15 Oct 2026 (ten
     haunted places), Ski Trip from 1 Nov, Grand Train Journey from 15 Nov, Winter Market from 1 Dec,
-    Northern Lights from 15 Dec and Carnival from 1 Jan 2027 (the last three on stand-ins until Art's
-    items are drawn: an everyday build warns, a release build fails).
+    Northern Lights from 15 Dec and Carnival from 1 Jan 2027, ten drawn items each.
 - **Server:**
   - packs the day's item in the daily claim's one order, on the player's own day, first win only;
   - the swap: 3 spares for one missing item, checked on the server;

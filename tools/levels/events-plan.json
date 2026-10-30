@@ -12,7 +12,7 @@
   },
   {
    "id": "train-journey-2026",
-   "release": "2026-11-15", "items": []
+   "release": "2026-11-15", "items": ["item-train-journey-2026-01", "item-train-journey-2026-02", "item-train-journey-2026-03", "item-train-journey-2026-04", "item-train-journey-2026-05", "item-train-journey-2026-06", "item-train-journey-2026-07", "item-train-journey-2026-08", "item-train-journey-2026-09", "item-train-journey-2026-10"]
   },
   {
    "id": "winter-market-2026",
