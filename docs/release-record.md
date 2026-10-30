@@ -39,7 +39,7 @@ Dev: build 0.56.0 (9849bcb, Gem Web SDK 16.0.0), store page 11, config 42, check
   UI fixed 26 strings in 0c26f3e; three standard words with a faint second meaning stay (es Papaya, pl Samochodzik na pedały, de Blasloch). A native read is still owed at release (`TODO.md`).
 - GSR-007: the creator chose to put the release build (`npm run build:release`, no dev menu) on dev now, so the phone and new-player checks play what ships. On dev: web build 0.65.0 (3440890, all 517 boards proved afresh), store page 14, config 45, checker 0.1.34.
 - On test (the creator, 2026-10-30): checker 0.1.34, config 45, store page 14, then web build 0.65.0, in that order. Test is listed; release serves nothing.
-- After the second review (2026-10-30): **achievements**, 22 with six avatar icons, the unlock card, and the Passport's Achievements tab (`docs/achievements.md`). Dev has build 0.67.0 (2967aa6), config 48 and checker 0.1.35; test still has the candidate without them. Nothing unlocks before release, so the release review re-checks this feature.
+- After the second review (2026-10-30): **achievements**, 22 with six avatar icons, the unlock card, and the Passport's Achievements tab (`docs/achievements.md`). Dev and test (the creator, 2026-10-30) have build 0.67.0 (2967aa6), config 48, checker 0.1.35 and store page 14; the points budget is still unspent (0 of 1,000). Nothing unlocks before release, so the release review re-checks this feature.
 - GSR-018: the creator bought a soundtrack on dev; cosmetic_bought was counted, and the cosmetics funnel reached every step (the release reviewer read it).
 - Russian "монет" for Coins is correct: it is only ever read after a price. A price ending in 1, or in 2–4 outside 11–14, would need another form.
 
