@@ -134,7 +134,8 @@ function voice(buf, level, { rate = 1, pan = 0, when = 0 } = {}) {
 /** An effect at its game level, with this page's unsaved level and pitch; `take` overrides the picked one. */
 async function playEffect(name, take = takeOf(name)) {
   audio();
-  const def = data.levels.effects[name];
+  // A listen-only row that is not one of the game's sounds plays at its own `gain`.
+  const def = data.levels.effects[name] ?? { gain: data.sounds.find((x) => x.name === name)?.gain ?? 0.6, rate: 1 };
   const s = setting(name);
   const level = def.gain * (s.volume ?? 1) * mix.effects;
   const rate = def.rate * 2 ** ((s.pitch ?? 0) / 12);
@@ -365,6 +366,8 @@ function row(s) {
   li.querySelector(".name").textContent = s.label;
   // For listening only: the game never plays it, so nothing to mute or reset.
   if (s.preview) li.querySelector(".corner").hidden = true;
+  // A listen-only effect that is not the game's (a new sound's takes): nothing to tune yet.
+  if (s.preview && s.kind !== "music" && !data.levels.effects[s.name]) li.querySelector(".tune").hidden = true;
   // As generated: no loop to hear join, and nothing to keep or remake.
   if (s.raw) {
     li.querySelector(".join").closest(".row").hidden = true;

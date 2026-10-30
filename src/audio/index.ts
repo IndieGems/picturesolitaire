@@ -140,6 +140,10 @@ let packedAt = -Infinity;
 const MILESTONE_BOARDS = new Set(["1"]);
 const LATE_CUE = 2000;
 let milestoneAt = -Infinity;
+/** The milestone's cue, cut short if an unlock card covers its card. */
+let milestoneCue: Voice | null = null;
+/** When the last unlock card went up (performance.now ms). */
+let unlockAt = -Infinity;
 
 function milestone(): void {
   const asked = performance.now();
@@ -149,9 +153,32 @@ function milestone(): void {
   winCue?.fadeOut(0.3);
   winCue = null;
   void load(fileOf("milestone")).then((buffer) => {
-    if (!buffer || performance.now() - asked > LATE_CUE) return;
-    if (play("milestone")) duckMusic(0.15, 8, 3);
+    // Late, or an unlock card has covered the milestone's card meanwhile.
+    if (!buffer || performance.now() - asked > LATE_CUE || unlockAt >= asked) return;
+    milestoneCue = play("milestone");
+    if (milestoneCue) duckMusic(0.15, 8, 3);
   });
+}
+
+// --- Achievements ----------------------------------------------------------------
+//
+// An achievement's unlock card (UI's, src/ui/unlock.ts) says milestone:show
+// "achievement" as it goes up: in the place of a win card, or of the guide's
+// milestone card on board 1 (First Steps), after a trip's stamp is down, or
+// over home for one caught up later. One card holds every achievement a win
+// unlocked, so its sting plays once per card. The sting is in C, the picture
+// harp's key; whatever cue the covered card had (the win cue in E major, the
+// milestone's in D) gives way to it, as the screen does.
+
+function unlock(): void {
+  unlockAt = milestoneAt = performance.now();
+  flourish?.fadeOut(0.4);
+  flourish = null;
+  winCue?.fadeOut(0.3);
+  winCue = null;
+  milestoneCue?.fadeOut(0.4);
+  milestoneCue = null;
+  if (play("achievement")) duckMusic(0.3, 1.2, 1.5);
 }
 
 // --- Destinations ----------------------------------------------------------------
@@ -234,7 +261,7 @@ function listen(): void {
   on("board:start", ({ level }) => {
     if (MILESTONE_BOARDS.has(level)) void load(fileOf("milestone"));
   });
-  on("milestone:show", milestone);
+  on("milestone:show", ({ id }) => (id === "achievement" ? unlock() : milestone()));
   // A hard or super hard board's banner just appeared (UI, once per opening).
   on("board:mark", ({ mark }) => play(mark === "super" ? "supermark" : "hardmark"));
   // A trip's stamp lands on its passport page (UI, the instant it lands).

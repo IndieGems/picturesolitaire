@@ -51,4 +51,5 @@ export const SOUNDS = [
   { name: "stamp", label: "Passport stamp", moment: "A trip's last board is won and the player stamps the passport: the stamp lands on the trip's page." },
   { name: "sticker", label: "Souvenir sticker", moment: "A trip's Souvenir board is won and the player adds its sticker: it presses down onto the trip's passport page." },
   { name: "milestone", label: "Milestone", moment: "A milestone card with fireworks: today, finishing the guided start. Bigger than a board win, and plays instead of it." },
+  { name: "achievement", label: "Achievement unlocked", moment: "An achievement's card goes up with fireworks, in place of the win card (on the first board, over the guided start's card; after a trip's stamp is down; or over home for one caught up later): soft bells run up to a ringing high C. One sound per card, however many achievements it lists." },
 ];

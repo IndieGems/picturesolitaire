@@ -32,7 +32,8 @@ export type EffectName =
   | "packed"
   | "suitcase"
   | "stow"
-  | "sticker";
+  | "sticker"
+  | "achievement";
 
 export type EffectDef = {
   /** The file in public/audio/, when it is not the effect's own name. */
@@ -111,13 +112,18 @@ export const EFFECTS: Record<EffectName, EffectDef> = {
   // A Souvenir won: its sticker is patted onto the trip's passport page, with a
   // warm two-note marimba "da-DING" and glass pings. Smaller than the stamp.
   sticker: { gain: 0.5, jitter: 0, minGap: 1 },
+  // An achievement unlocked: its card goes up in the win card's place (src/ui/unlock.ts),
+  // with fireworks. Soft synth bells run up C4 G4 C5 E5 G5 to a ringing C6, 1.6 s, in the
+  // picture harp's key: the creator's pick of three (2026-10-30), over a steel pan run and
+  // a ukulele "ta-da". Unlike every other cue, so players learn "that's an achievement".
+  achievement: { gain: 0.7, jitter: 0, minGap: 1.5 },
 };
 
 /** The order effects load in: what a first move needs comes first. */
 export const LOAD_ORDER: EffectName[] = [
   "ui", "lift", "land", "slide", "merge", "split", "deal", "nope", "fall", "settle",
   "complete", "undo", "hint", "shuffle", "restart", "won", "fanfare", "hardmark", "supermark", "stamp",
-  "found", "packed", "suitcase", "sticker",
+  "found", "packed", "suitcase", "sticker", "achievement",
 ];
 // Not loaded up front: milestone.
 

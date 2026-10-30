@@ -67,6 +67,12 @@ const MUSIC = [
   // glockenspiel sparkle, its body ~1.8 s, the ring cut short. A touch quieter
   // than the win cue: it plays on every board.
   { name: "fanfare", src: "fanfare.mp3", start: 0, end: 2.6, fade: 0.8, lufs: -16 },
+  // An achievement unlocked (its card in the win card's place): soft synth bells
+  // run up C4 G4 C5 E5 G5 to a ringing C6 at 0.4 s, in the picture harp's key; a
+  // generated sound effect (2.5 s, stereo), its silent first 50 ms cut and its
+  // ring faded from 1.25 s. The creator's pick of three (2026-10-30). At the
+  // fanfare's loudness; sounds.ts sets it a little above.
+  { name: "achievement", src: "achievement.wav", start: 0.05, end: 1.65, fade: 0.4, lufs: -16 },
   // The bed: its own ending fade is cut; the game crossfades the last few
   // seconds into the start (src/audio/music.ts), so no loop point is baked in.
   { name: "bed", src: "bed.mp3", start: 0, end: 86.5, fade: 0.05, lufs: -20 },
