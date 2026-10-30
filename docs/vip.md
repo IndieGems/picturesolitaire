@@ -34,7 +34,10 @@ So everything here is built now, in the main game, behind one switch that is **o
    - Finding all 10 wins the event's table. Its levels pay the usual level Coins.
    - A VIP can play any event at any time; a new event arrives on the schedule (`events-plan.json`, every two weeks or as set), and old ones stay playable.
    - The dailies carry no event items.
-4. **The event archive** is simply every past event, still playable and winnable by VIPs. The first three are Haunted Holiday (10 famous haunted places), Ski Trip and Winter Market.
+4. **The event archive** is simply every past event, still playable and winnable by VIPs.
+   **The schedule** (the creator, 2026-10-30): a new event every two weeks, on the 1st and the 15th. Haunted Holiday
+   (15 Oct, the archive's first), Ski Trip (1 Nov), Grand Train Journey (15 Nov), Winter Market (1 Dec), Northern
+   Lights (15 Dec), Carnival (1 Jan 2027). Six in all; the themes come from `docs/daily-suitcase.md`'s approved list.
 5. **Every Cosmetic is wearable.**
    - A VIP can choose any table and soundtrack sold in Cosmetics.
    - What a player buys stays in their Arcade inventory, before VIP or during it.
