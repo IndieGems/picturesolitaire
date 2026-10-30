@@ -21,7 +21,7 @@ import { on } from "../events";
 import { t } from "./i18n";
 import { guideDone, waitForProgress } from "../net/progress";
 import { lessonSeen, learnt, waitForGuideSave } from "./guide-save";
-import type { GuideMode } from "./guide";
+import { placeBeside, type GuideMode } from "./guide";
 
 export type LessonName = "undo" | "shuffle";
 
@@ -61,7 +61,7 @@ export function createLessons(d: Deps) {
   const ring = document.createElement("div");
   ring.className = "guide-ring";
   const note = document.createElement("div");
-  note.className = "guide-note over";
+  note.className = "guide-note";
   note.setAttribute("role", "status");
   note.setAttribute("aria-live", "polite");
   const words = document.createElement("span");
@@ -108,10 +108,8 @@ export function createLessons(d: Deps) {
     set(shades[3]!, x1, y0, W - x1, y1 - y0);
     set(ring, x0, y0, x1 - x0, y1 - y0);
     set(round, x0, y0, x1 - x0, y1 - y0);
-    // the note just above the button, its arrow on it
-    note.style.bottom = `${a.bottom - r.top + 22}px`;
-    const n = note.getBoundingClientRect();
-    note.style.setProperty("--arrow-x", `${Math.min(n.width - 28, Math.max(28, r.left + r.width / 2 - n.left))}px`);
+    // the note right beside the button (above it), its tail on it: as the guide's (guide.ts placeBeside)
+    placeBeside(note, a, r, pad);
   }
   const relayout = () => requestAnimationFrame(layout);
   new ResizeObserver(relayout).observe(d.app);

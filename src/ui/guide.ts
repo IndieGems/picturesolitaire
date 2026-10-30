@@ -7,6 +7,10 @@
 //   3  Now tap the glowing card, then its spot.      done when that move lands
 //   4  Stuck? Tap Hint to see a good move.           done when Hint is pressed
 //
+// Each step's line stands right beside what it asks for (the creator, 2026-10-30): next to the lit
+// card, then the spot it goes to, then the Hint button, its tail pointing there; a bright cream box
+// (the creator's pick, the same day) that stands forward of the dimmed board.
+//
 // then free play to the end of the board, which ends on the guide's milestone
 // card (app.ts) in place of the usual win card.
 //
@@ -61,6 +65,28 @@ type Deps = {
   /** Is campaign board 1 still the board on screen? */
   stillHere: () => boolean;
 };
+
+/**
+ * Stand a guide's note right beside `f` (what it points at, in the page), inside the column `a`: above it
+ * where there is room, else below, centred on it within the column, its tail (.arrow) pointing at it,
+ * never over it. `pad`: the lit ring's room round `f`. The Undo and Shuffle lessons use it too.
+ */
+export function placeBeside(note: HTMLElement, a: DOMRect, f: DOMRect, pad = 0): void {
+  const gap = 16 + pad; // room for the tail, and the ring
+  const edge = 10;
+  const n = note.getBoundingClientRect();
+  const fx = f.left - a.left + f.width / 2;
+  const above = f.top - a.top - gap - edge;
+  const below = a.bottom - f.bottom - gap - edge;
+  const up = above >= n.height || above >= below;
+  const top = up ? f.top - a.top - gap - n.height : f.bottom - a.top + gap;
+  const left = Math.min(a.width - edge - n.width, Math.max(edge, fx - n.width / 2));
+  note.classList.toggle("above", up);
+  note.classList.toggle("below", !up);
+  note.style.left = `${Math.round(left)}px`;
+  note.style.top = `${Math.round(Math.max(edge, Math.min(a.height - edge - n.height, top)))}px`;
+  note.style.setProperty("--arrow-x", `${Math.round(Math.min(n.width - 24, Math.max(24, fx - left)))}px`);
+}
 
 export function createGuide(d: Deps) {
   const layer = document.createElement("div");
@@ -143,26 +169,16 @@ export function createGuide(d: Deps) {
   }
 
   /**
-   * The note sits over the helper row, clear of the board; if what it points at is
-   * down there, it goes over the top row instead. On the Hint step it stands just
-   * above Hint, its arrow on the button.
+   * The note stands right beside what the step points at (the creator, 2026-10-30: "very near what
+   * we are guiding the player to do"): the lit card, then, once it is lifted, the spot it goes to; on
+   * the Hint step the Hint button. Above it where there is room, else below it, centred on it within
+   * the column, its tail pointing at it; never over it.
    */
   function placeNote(a: DOMRect, r: DOMRect): void {
-    note.classList.remove("top", "over");
-    note.style.removeProperty("--arrow-x");
-    if (STEPS[step]!.board === "hold") {
-      note.classList.add("over");
-      note.style.bottom = `${a.bottom - r.top + 22}px`;
-      const n = note.getBoundingClientRect();
-      note.style.setProperty("--arrow-x", `${Math.min(n.width - 28, Math.max(28, r.left + r.width / 2 - n.left))}px`);
-      return;
-    }
-    note.style.removeProperty("bottom");
-    const lit = d.host.querySelector(".guide-target") ?? d.host.querySelector(".guide-lit");
-    if (!lit) return;
-    const l = lit.getBoundingClientRect();
-    const n = note.getBoundingClientRect();
-    if (l.bottom > n.top - 8 && l.top < n.bottom + 8) note.classList.add("top");
+    const hold = STEPS[step]!.board === "hold";
+    const focusEl = hold ? null : (d.host.querySelector(".guide-target") ?? d.host.querySelector(".guide-lit"));
+    const f = hold ? r : focusEl?.getBoundingClientRect();
+    if (f) placeBeside(note, a, f, hold ? 10 : 0);
   }
 
   /**

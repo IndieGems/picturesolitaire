@@ -78,12 +78,13 @@
   --row-bottom: calc(var(--gem-mid) + var(--row-h) / 2);
   --foot: max(12px, var(--safe-bottom), var(--reserved-bl-height), var(--reserved-br-height));
 
-  /* THE GUIDE's own colours (guide.ts), used nowhere else in the game: deep violet with white
-     type and a mint ring, the rest dimmed in violet-navy. Neither of the game's two materials:
-     the guide speaking, not a label of the game. The board draws its lit card in --guide-ring. */
-  --guide-hi: #4c2b92;
-  --guide-lo: #321769;
-  --guide-ink: #ffffff;
+  /* THE GUIDE's own colours (guide.ts), used nowhere else in the game: a bright cream note with deep
+     navy type and a gold edge (the creator's pick, 2026-10-30: the deep violet sat back too far), the
+     rest dimmed in violet-navy. Neither of the game's two materials: the guide speaking, not a label
+     of the game. The board draws its lit card in --guide-ring. */
+  --guide-hi: #fffdf6;
+  --guide-lo: #fff0cf;
+  --guide-ink: #1f2550;
   /* the lit card's ring and the Hint step's: warm gold with a white inner edge, unmissable on any table
      and the calm blue panel (the creator, 2026-10-30: the teal one vanished there) */
   --guide-ring: #ffb51f;
@@ -1044,25 +1045,24 @@ html.less-motion .guide-ring { animation: none; }
 .board-host.guiding :is(.bd-piece:not(.guide-lit):not(.guide-near):not(.lifted), .bd-stack, .bd-slot) { filter: brightness(0.38) saturate(0.8); }
 .board-host :is(.bd-piece, .bd-stack, .bd-slot) { transition: filter 0.25s ease; }
 html.less-motion .board-host :is(.bd-piece, .bd-stack, .bd-slot), html.less-motion .board-host.guiding { transition: none; }
-/* one short line in big type */
+/* one short line in big type, right beside what it points at (guide.ts placeNote), its tail on it */
 .guide-note {
-  position: absolute; left: 16px; right: 16px; bottom: calc(var(--foot) + 6px);
-  padding: 14px 18px; border-radius: 22px; text-align: center;
-  font: 600 20px/1.25 var(--round); color: var(--guide-ink);
+  position: absolute; left: 0; top: 0; width: max-content; max-width: min(320px, calc(100% - 20px));
+  padding: 13px 18px; border-radius: 20px; text-align: center; text-wrap: balance;
+  font: 700 20px/1.25 var(--round); color: var(--guide-ink);
   background: linear-gradient(180deg, var(--guide-hi), var(--guide-lo));
-  border: 2px solid var(--guide-ring); box-shadow: 0 10px 24px rgba(10, 4, 24, 0.5);
+  border: 3px solid var(--guide-ring);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85), 0 10px 26px rgba(10, 4, 24, 0.55), 0 0 22px rgba(255, 181, 31, 0.45);
   pointer-events: none;
 }
 @media (max-width: 380px) { .guide-note { font-size: 18px; } }
-/* what it points at is low on the board: the note goes over the top row instead (clear of the Gem's corner) */
-.guide-note.top { bottom: auto; top: max(6px, var(--safe-top)); left: var(--row-left); right: 12px; }
-/* standing over a button, its arrow on it */
-.guide-note .arrow { display: none; }
-.guide-note.over .arrow {
-  display: block; position: absolute; left: var(--arrow-x, 50%); bottom: -11px; width: 20px; height: 20px; margin-left: -10px;
+/* the tail: under the note pointing down at what is below it, or over it pointing up */
+.guide-note .arrow {
+  position: absolute; left: var(--arrow-x, 50%); width: 20px; height: 20px; margin-left: -10px;
   transform: rotate(45deg); background: var(--guide-lo);
-  border-right: 2px solid var(--guide-ring); border-bottom: 2px solid var(--guide-ring);
 }
+.guide-note.above .arrow { bottom: -12px; border-right: 3px solid var(--guide-ring); border-bottom: 3px solid var(--guide-ring); }
+.guide-note.below .arrow { top: -12px; background: var(--guide-hi); border-left: 3px solid var(--guide-ring); border-top: 3px solid var(--guide-ring); }
 .guide-note.nudge { animation: guide-nudge 0.4s ease; }
 @keyframes guide-nudge { 0%, 100% { translate: 0 0; } 30% { translate: 0 -8px; } 60% { translate: 0 2px; } }
 
