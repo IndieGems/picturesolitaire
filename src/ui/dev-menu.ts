@@ -36,7 +36,7 @@ import { on } from "../events";
 import { campaign, daily, experiments as experimentBoards } from "virtual:ps-content";
 import { levelCount, loadDaily, toLevel, type Stored } from "../game/levels";
 import { currentDaily } from "../net/daily";
-import { addToSettings, closeSettings } from "../settings-screen";
+import { addMenuRow, addToSettings, closeSettings } from "../settings-screen";
 import { loadChallenges, type Challenge } from "./challenge-data";
 import { shortDate } from "./format";
 import { markOf, markTag } from "./marks";
@@ -44,6 +44,8 @@ import type { BoardHandle, DevStep } from "./board-api";
 import type { Experiment, Play } from "./app";
 import { suitcases } from "./suitcase-data";
 import { EVENT_ON } from "./event-switch";
+import { pretending, pretendVip } from "../net/vip";
+import { keepChoice, readChoices } from "./choices";
 
 /** What vite.config.ts stamps in at build time (its `define`). */
 declare const __BUILD_INFO__: { version: string; sdk: string; commit: string; changed: boolean; built: string };
@@ -368,9 +370,23 @@ export function mountDevMenu(host: DevHost): DevMenu {
     everyPicture = on;
     host.showAll(on);
   });
+  // VIP (docs/vip.md): the platform cannot say who holds it yet, so on dev the server takes this
+  // switch's word (src/net/vip.ts); kept in the player's settings, so it holds across reloads and devices
+  const vipSwitch = toggle((on) => {
+    void pretendVip(on);
+    keepChoice("devVip", on ? "1" : "0");
+  });
+  vipSwitch.checked = pretending();
+  void readChoices().then((m) => {
+    if (m.get("devVip") !== "1" || pretending()) return;
+    vipSwitch.checked = true;
+    void pretendVip(true);
+  });
   const switches = el("section");
   switches.append(
     el("h3", "", "Switches"),
+    setting("Pretend I'm VIP", vipSwitch),
+    el("p", "dev-note", "Plays as a Gem Arcade VIP member: free helpers with a short rest, the daily archive, the event and its archive, every Cosmetic to wear. The server honours it on dev only. Kept across reloads."),
     setting("Endless helpers", endlessSwitch),
     el("p", "dev-note", "While it's on, every level you open is practice."),
     speedSet,
@@ -651,6 +667,8 @@ export function mountDevMenu(host: DevHost): DevMenu {
     dialog.showModal();
   });
   addToSettings(open);
+  // the gear goes inside the Arcade (src/settings-screen.ts): the Developer row is the Gem menu's then
+  addMenuRow({ id: "developer", label: () => "Developer", onSelect: () => open.click() });
 
   return {
     tag: () => el("span", "practice-tag", "Practice"),

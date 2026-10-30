@@ -81,6 +81,7 @@ import { createRunOut } from "./helper-shop";
 import { createHomeShop } from "./home-shop";
 import { createCosmetics } from "./cosmetics";
 import { createUnlocks } from "./unlock";
+import { watchTopRow } from "./top-row";
 import { pretendAchievements } from "./achievements-page";
 import { onUnlock } from "../net/achievements";
 import { pretendCosmetics, pretendState } from "./cosmetics-shop";
@@ -2385,6 +2386,8 @@ export async function startApp(): Promise<void> {
   for (const el of app.querySelectorAll<HTMLElement>(".top-pill")) keepFitted(el);
   // a two-line top row (a challenge, a daily, a friend's board, a Souvenir): each line on its own,
   // one line each, smaller if it must be, two lines only at 12 px (fit.ts, oneLine; style.css)
+  // a title the Arcade's corner (the Gem and the wallet) leaves too little room steps onto a line of its own
+  watchTopRow(app);
   keepFitted(pillName, true);
   keepFitted(pillPar, true);
   keepFitted(stuckNote);

@@ -1,9 +1,18 @@
 // The game's own settings button (the gear at the right end of the top row, on
 // every screen) and the screen it opens.
 //
-// The Gem Arcade's menu never opens a game's settings: this button is the only
-// way a player reaches them, so it is always drawn, over every card too. Its
-// place is the top row's right end, level with the Arcade's Gem; the app's
+// INSIDE THE ARCADE THE GEAR GOES (the creator, 2026-10-29; the game standard, "A game's settings
+// are its own": the gear may go when the Gem menu reaches everything it did). The Gem menu has it
+// all: Volume in its Settings (src/menu-settings.ts), the mute and vibration in its quick row
+// (src/sound.ts reports the mute and follows the Arcade's; vibration starts from the Arcade's
+// recommended value, src/settings.ts; Music and Sound are onAudioChannels, src/gem.ts). The screen
+// has no action of a player's to put in the menu; on the dev channel the creator's Developer row
+// goes there (addMenuRow, src/ui/dev-menu.ts). So while gem.setMenu answers true, html.arcade-menu
+// hides the gear on every screen, and Back takes the top row's right end (src/ui/style.css,
+// --gear-room); it is asked again when the bridge comes up and when the language changes. Under
+// an embedder with no menu, and in a plain tab, the gear stays, with its screen.
+//
+// Its place is the top row's right end, level with the Arcade's Gem; the app's
 // stylesheet (src/ui/style.css, #settings-button) puts it there and moves it in
 // beside whatever the Arcade keeps in that corner. Back sits just left of it.
 //
@@ -16,10 +25,10 @@
 // The Arcade's Gem menu lists Volume too, as a mirror of this screen
 // (src/menu-settings.ts); this screen stays, for every embedder that draws none.
 
-import { gem } from "./gem";
+import { gem, onFrameState } from "./gem";
 import { isMuted, onMutedChange, setMuted } from "./sound";
 import { choose, loadSettings, onSettingsChange, setting } from "./settings";
-import { liveAttr, liveText, t } from "./ui/i18n";
+import { liveAttr, liveText, onLocaleChange, t } from "./ui/i18n";
 import { ICONS } from "./ui/icons";
 import { cornerKey } from "./ui/dialogs";
 import { startMenuSettings } from "./menu-settings";
@@ -33,6 +42,26 @@ let screenEl: HTMLDialogElement | null = null;
 /** Put `el` in the settings screen, above Close. */
 export function addToSettings(el: HTMLElement): void {
   extra.append(el);
+}
+
+/** A row of the game's own in the Arcade's Gem menu: its label in the player's language, asked each time it is offered. */
+export type MenuRow = { id: string; label: () => string; onSelect: () => void };
+const menuRows: MenuRow[] = [];
+
+/**
+ * Offer the Arcade's menu the game's rows (at most four; none for a player today), and hide the
+ * gear while it answers that it has a menu (html.arcade-menu). Again on every change of the bridge
+ * and of the language.
+ */
+function offerMenu(): void {
+  const on = gem.setMenu({ items: menuRows.slice(0, 4).map((r) => ({ id: r.id, label: r.label(), onSelect: r.onSelect })) });
+  document.documentElement.classList.toggle("arcade-menu", on);
+}
+
+/** Add a row of the game's own to the Arcade's menu (the creator's Developer row, on the dev channel). */
+export function addMenuRow(row: MenuRow): void {
+  menuRows.push(row);
+  offerMenu();
 }
 
 /** Close the settings screen if it is open. */
@@ -115,4 +144,14 @@ export function mountSettings(parent: HTMLElement = document.body): void {
   render();
   void loadSettings();
   startMenuSettings();
+  // the Arcade's menu holds the settings: the gear goes while it says it has one
+  offerMenu();
+  onFrameState(offerMenu);
+  onLocaleChange(offerMenu);
+  // THE PLAYER'S GEMS AND COINS, drawn by the Arcade beside its Gem on every screen (the creator,
+  // 2026-10-30, as Untangled): asked once, held by the SDK until the Arcade connects and sent again on
+  // every reconnect. The game draws no balance of its own; every top row lays out around the corner
+  // they take (gem.viewport.reserved, --gem-reserved-*: style.css's --row-left, --row-right), and a
+  // win's Coins fly to them (src/net/claims.ts, cueCoins).
+  gem.setWalletVisible(true, { only: ["GEMS", "ARCADE_TICKETS"] });
 }

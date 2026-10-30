@@ -71,6 +71,10 @@
   --row-left: max(12px, var(--safe-left), calc(var(--reserved-tl-width) + 8px));
   --row-right: max(12px, var(--safe-right), calc(var(--reserved-tr-width) + 8px));
   --pair-gap: 16px; /* Back and the gear, a fingertip apart */
+  /* the room the gear and its gap take at the top row's right end: none where the Arcade's Gem menu
+     holds the settings (html.arcade-menu, src/settings-screen.ts), so Back takes the right end */
+  --gear-room: calc(var(--btn) + var(--pair-gap));
+  --gear-solo: calc(var(--btn) + 12px);
   --row-bottom: calc(var(--gem-mid) + var(--row-h) / 2);
   --foot: max(12px, var(--safe-bottom), var(--reserved-bl-height), var(--reserved-br-height));
 
@@ -184,18 +188,18 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
   position: absolute; z-index: 2;
   top: calc(var(--gem-mid) - var(--row-h) / 2); height: var(--row-h);
   left: var(--row-left);
-  right: calc(var(--row-right) + var(--btn) + var(--pair-gap) + var(--btn) + 12px);
+  right: calc(var(--row-right) + var(--gear-room) + var(--btn) + 12px);
   display: flex; align-items: center; justify-content: center; padding: 0 16px;
   font: 600 20px/1 var(--round); letter-spacing: 0.01em; white-space: nowrap; overflow: hidden;
 }
 .top-back {
   position: absolute; z-index: 2;
   top: calc(var(--gem-mid) - var(--btn) / 2);
-  right: calc(var(--row-right) + var(--btn) + var(--pair-gap));
+  right: calc(var(--row-right) + var(--gear-room));
 }
 /* the gear (src/settings-screen.ts): the row's right end, on every screen, over every card */
 /* home's note of a win from last time that paid (app.ts): in the top row beside the gear (home has no Back) */
-.home-note { right: calc(var(--row-right) + var(--btn) + 12px); gap: 8px; font-size: 15px; animation: coins-in 0.35s ease-out both; }
+.home-note { right: calc(var(--row-right) + var(--gear-solo)); gap: 8px; font-size: 15px; animation: coins-in 0.35s ease-out both; }
 .home-note[hidden] { display: none; }
 .home-note .coin { width: 20px; height: 20px; }
 html.less-motion .home-note { animation: none; }
@@ -209,6 +213,9 @@ html.less-motion .home-note { animation: none; }
   right: var(--row-right);
 }
 #settings-button :is(svg, .ico) { width: 28px; height: 28px; }
+/* inside the Arcade, its Gem menu holds the settings: no gear on any screen, Back at the right end */
+html.arcade-menu #settings-button { display: none; }
+html.arcade-menu { --gear-room: 0px; --gear-solo: 0px; }
 
 /* ---------- home (home.ts): the title, the trip's itinerary, Next stop, and the dock ---------- */
 
@@ -1556,3 +1563,18 @@ html.less-motion .unlock-card .medal { animation: none; }
 .ach-row.locked .ach-points { color: var(--ink-soft); }
 /* not checked just now (the platform said nothing): plain, neither earned nor locked */
 .ach-row.unknown .medal { filter: saturate(0.6); opacity: 0.8; }
+
+/* ---------- THE TOP ROW, WHEN THE ARCADE'S CORNER LEAVES A TITLE TOO LITTLE ROOM (top-row.ts) ----------
+   The probe sits where a title would; html.row-tight steps every title onto a line of its own under the
+   Gem and its wallet, the column's full width, and moves the screen below it down (--row-bottom). */
+.top-row-probe {
+  position: absolute; visibility: hidden; pointer-events: none; height: 1px;
+  top: 0; left: var(--row-left); right: calc(var(--row-right) + var(--gear-room) + var(--btn) + 12px);
+}
+html.row-tight .screen:has(> .top-pill:not([hidden])) {
+  --row-bottom: calc(var(--gem-mid) + var(--row-h) / 2 + 8px + 44px);
+}
+html.row-tight .top-pill {
+  top: calc(var(--gem-mid) + var(--row-h) / 2 + 8px); height: 44px; max-width: none;
+  left: max(12px, var(--safe-left)); right: max(12px, var(--safe-right));
+}

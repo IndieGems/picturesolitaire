@@ -19,7 +19,7 @@
 // `npm run preview` open through `gemctl serve`. Opened unframed it never
 // connects, so the game has no player, no saves and no config.
 
-import { createGem, type GemPrefs } from "@indiegems/gem-web-sdk/sdk";
+import { createGem, type FrameState, type GemPrefs } from "@indiegems/gem-web-sdk/sdk";
 
 /** The Arcade's Music and Sound switches (its Gem menu's quick row). */
 export type AudioChannels = { music: boolean; sounds: boolean };
@@ -28,6 +28,7 @@ const prefsHandlers = new Set<(prefs: GemPrefs) => void>();
 const pauseHandlers = new Set<(paused: boolean) => void>();
 const channelHandlers = new Set<(channels: AudioChannels) => void>();
 const terminateHandlers = new Set<(graceMs: number) => void>();
+const stateHandlers = new Set<(state: FrameState) => void>();
 
 export const gem = createGem({
   // No `allowedEmbedders`. The SDK always allows the Gem Arcade's website and
@@ -72,7 +73,19 @@ export const gem = createGem({
   onWillTerminate: (notice) => {
     for (const handler of terminateHandlers) handler(notice.graceMs);
   },
+
+  // The bridge came up, or went down: the Arcade's menu is offered again once it is up
+  // (src/settings-screen.ts). Handed to every `onFrameState`; it touches nothing but that list.
+  onStateChange: (state) => {
+    for (const handler of stateHandlers) handler(state);
+  },
 });
+
+/** Run `handler(state)` whenever the bridge to the Arcade comes up or goes down. Returns the unsubscribe. */
+export function onFrameState(handler: (state: FrameState) => void): () => void {
+  stateHandlers.add(handler);
+  return () => stateHandlers.delete(handler);
+}
 
 /** Run `handler(graceMs)` when the Arcade is about to close the game. Returns the unsubscribe. */
 export function onWillTerminate(handler: (graceMs: number) => void): () => void {

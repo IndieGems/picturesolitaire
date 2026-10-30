@@ -1,7 +1,9 @@
 // THE PLAYER'S CHOICES THAT FOLLOW THEM: which table, which soundtrack (the Cosmetics screen,
 // cosmetics.ts; the creator, 2026-10-29). Kept with the player's own settings, gem.me.settings
 // (AGENTS.md's table: "a difficulty, a level counter" follow the player), under the keys "table"
-// and "track"; only what the player chose is ever written, never a default.
+// and "track", and "tableOwned" and "trackOwned" (the latest of each the player owns, for a VIP's
+// borrowed choice to fall back to: docs/vip.md); only what the player chose is ever written, never a
+// default.
 //
 // ONE READ FOR BOTH: the boot asks for the player's settings once (gem.me.settings.list()), and
 // tables.ts and tracks.ts share it, so the track added no call to the boot. A read that gets no
@@ -20,7 +22,8 @@ import { noAnswer, refusalOf } from "../net/no-answer";
 import { backoff, heard, held, notNow, whenDue } from "../net/pace";
 import { onOnline, suspect } from "./online";
 
-export type ChoiceKey = "table" | "track";
+/** `devVip`: the dev menu's "Pretend I'm VIP", kept so it holds across reloads and devices (written only by a build with the menu). */
+export type ChoiceKey = "table" | "track" | "tableOwned" | "trackOwned" | "devVip";
 
 /** Framed by the platform: another origin's frame. The play-test tool's frame is this page's own origin, with nothing behind it (as src/net/helpers.ts reads it). */
 const framed = ((): boolean => {

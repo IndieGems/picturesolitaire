@@ -9,7 +9,9 @@
 //   src/settings.ts) and applied at once, even while the menu holds the game
 //   paused. Anything we did not declare is ignored. (The table is chosen on the
 //   Cosmetics screen now, src/ui/cosmetics.ts, so the menu no longer lists it.)
-// - The gear and its screen stay: another embedder shows none of this.
+// - Inside the Arcade the gear goes while its menu answers (src/settings-screen.ts,
+//   offerMenu): this list, with the quick row's mute and vibration, is then how the
+//   player reaches every setting. Another embedder shows none of this: the gear stays.
 
 import { gem } from "./gem";
 import { choose, onSettingsChange, setting } from "./settings";
