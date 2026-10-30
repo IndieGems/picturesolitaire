@@ -49,8 +49,8 @@ and "VIP is coming soon". There is no buy button until the platform can both sel
 say who holds it (gem-development#2119): a buyer must never stay locked. Untangled (`../yarn`:
 `src/vip.ts`, `showVip`) is the model. The dev toggle is kept in the save, so it holds across reloads.
 
-**The daily's friends leaderboard** (the creator, 2026-10-30): fewest moves, ties to the earlier finish; only a
-helper-free win (no Hint, no Shuffle) posts a score, so VIPs' free hints never top it. A helped win still pays.
+**The daily's friends leaderboard** (the creator, 2026-10-30): fewest moves, ties to the earlier finish; every
+verified first win of the day posts, helpers or not (the creator's final word).
 
 Not now (the creator, 2026-10-30): a VIP-only table or soundtrack, a VIP passport.
 
