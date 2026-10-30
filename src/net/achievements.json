@@ -19,7 +19,8 @@
           "en": {
             "name": "First Steps",
             "desc": "Finish your first level."
-          }
+          },
+          "icon": "ach-first-steps"
         },
         {
           "slug": "finding-your-feet",
@@ -40,7 +41,8 @@
           "en": {
             "name": "Seasoned Traveller",
             "desc": "Finish 50 levels."
-          }
+          },
+          "icon": "ach-seasoned-traveller"
         },
         {
           "slug": "globetrotter",
@@ -51,7 +53,8 @@
           "en": {
             "name": "Globetrotter",
             "desc": "Finish 150 levels."
-          }
+          },
+          "icon": "ach-globetrotter"
         }
       ]
     },
@@ -168,7 +171,8 @@
           "en": {
             "name": "Full Suitcase",
             "desc": "Finish 10 Souvenir levels."
-          }
+          },
+          "icon": "ach-full-suitcase"
         }
       ]
     },
@@ -221,7 +225,8 @@
           "en": {
             "name": "Fearless",
             "desc": "Win 10 super hard levels."
-          }
+          },
+          "icon": "ach-fearless"
         }
       ]
     },
@@ -263,7 +268,8 @@
           "en": {
             "name": "Daily Devotee",
             "desc": "Win 30 daily puzzles."
-          }
+          },
+          "icon": "ach-daily-devotee"
         }
       ]
     }

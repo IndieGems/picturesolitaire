@@ -2478,6 +2478,8 @@ progressions:
                     points: 5
                     display_name: "First Steps"
                     description: "Finish your first level."
+                    rewards:
+                      - item: ach-first-steps   # an Arcade avatar icon, Art's (gemctl item upload)
             - level: 2   # finding-your-feet
               threshold: 10
               platform_grants:
@@ -2494,6 +2496,8 @@ progressions:
                     points: 25
                     display_name: "Seasoned Traveller"
                     description: "Finish 50 levels."
+                    rewards:
+                      - item: ach-seasoned-traveller   # an Arcade avatar icon, Art's (gemctl item upload)
             - level: 4   # globetrotter
               threshold: 150
               platform_grants:
@@ -2502,6 +2506,8 @@ progressions:
                     points: 75
                     display_name: "Globetrotter"
                     description: "Finish 150 levels."
+                    rewards:
+                      - item: ach-globetrotter   # an Arcade avatar icon, Art's (gemctl item upload)
   - id: 764d331a-ac00-50b3-b7b2-3bb79c9267a6
     slug: trips_stamped
     display_name: "Passport stamps"
@@ -2616,6 +2622,8 @@ progressions:
                     points: 40
                     display_name: "Full Suitcase"
                     description: "Finish 10 Souvenir levels."
+                    rewards:
+                      - item: ach-full-suitcase   # an Arcade avatar icon, Art's (gemctl item upload)
   - id: 630e6c93-925b-5368-965c-fcea503896d3
     slug: hard_levels_won
     display_name: "Hard levels won"
@@ -2658,6 +2666,8 @@ progressions:
                     points: 50
                     display_name: "Fearless"
                     description: "Win 10 super hard levels."
+                    rewards:
+                      - item: ach-fearless   # an Arcade avatar icon, Art's (gemctl item upload)
   - id: 120d5b2f-997e-5bee-817b-5252d606a5bc
     slug: dailies_won
     display_name: "Daily puzzles won"
@@ -2691,6 +2701,8 @@ progressions:
                     points: 40
                     display_name: "Daily Devotee"
                     description: "Win 30 daily puzzles."
+                    rewards:
+                      - item: ach-daily-devotee   # an Arcade avatar icon, Art's (gemctl item upload)
 
 # A daily result, posted by the function once it has replayed the win: the
 # player's first verified result of the day (one run id per player per date).

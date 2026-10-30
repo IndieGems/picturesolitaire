@@ -24,6 +24,7 @@
 // replays the win before it moves one.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
+import { spawnSync } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -195,7 +196,7 @@ const TRIPS = JSON.parse(readFileSync(join(root, "src/content/levels/trips.json"
 // made once from its slug, an achievement's once at random, and both are kept there for good. Only the
 // win checker writes a counter (functions/checker/src/count.rs): no client, recipe, loot table or
 // reward here may, or the platform's next write would unlock whatever value was stored.
-// The names and descriptions are UI's (locales/<lang>.json); the file's English stands in until then.
+// The names and descriptions are UI's (locales/<lang>.json, as committed); the file's English stands in until then.
 const ACH_PATH = join(root, "src/net/achievements.json");
 const LOCALES = ["de", "es", "fr", "it", "ja", "ko", "pl", "pt-BR", "ru", "tr", "zh-Hans"];
 /** What a counter may count (count.rs's Kind). */
@@ -241,10 +242,13 @@ let COUNTERS = [];
     process.exit(1);
   }
 }
-/** A locale file (locales/<name>.json), or nothing when there is none. */
+/**
+ * A locale file as UI COMMITTED it (locales/<name>.json at HEAD), or nothing when there is none:
+ * words still being written in the working tree never reach the config.
+ */
 const localeFile = (name) => {
-  const f = join(root, "locales", `${name}.json`);
-  return existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : {};
+  const r = spawnSync("git", ["show", `HEAD:locales/${name}.json`], { cwd: root, encoding: "utf8", maxBuffer: 64 << 20 });
+  return r.status === 0 ? JSON.parse(r.stdout) : {};
 };
 const STRINGS = Object.fromEntries(["en", ...LOCALES].map((l) => [l, { t: localeFile(l), names: localeFile(`names-${l}`) }]));
 /**
