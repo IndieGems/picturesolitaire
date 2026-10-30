@@ -421,8 +421,23 @@ if (EVENTS.length || RETIRED.length) {
   y.push("    config:");
   y.push("      completion_threshold: 10");
   y.push("      reset_schedule: { type: monthly, boundary: local }");
-  y.push("  # Each event's suitcase paid: moved to 1 by the checker in the same order as its table and");
-  y.push("  # helpers, so it lands with them or not at all, once. The old months' marks stay declared.");
+  if (SUITCASE.finds) {
+    const F = SUITCASE.finds;
+    y.push("  # EACH ITEM FOUND pays its Coins with it (the creator, 2026-10-30: 50 an item, 500 an event, paid as");
+    y.push("  # the items land; the platform pays at most 100 in one grant): the checker adds one here in the");
+    y.push("  # order that grants the item, once per item. Only the win checker writes it.");
+    y.push(`  - id: ${F.id}`);
+    y.push(`    slug: ${F.slug}`);
+    y.push(`    display_name: "Event items found"`);
+    y.push("    config:");
+    y.push("      function_may_grant: true");
+    y.push("      platform_grants:");
+    y.push("        - mode: on_add");
+    y.push(`          per_unit: ${F.coins}`);
+    y.push("          target: { platform_currency_slug: ARCADE_TICKETS }");
+  }
+  y.push("  # Each event's suitcase paid, and its Passport stamp: moved to 1 by the checker in the same order");
+  y.push("  # as its table, so it lands with it or not at all, once. The old months' marks stay declared.");
   for (const e of EVENTS) {
     y.push(`  - id: ${uuid5(`suitcase:prize:${e.id}`)}`);
     y.push(`    slug: ${markSlug(e.id)}`);
@@ -670,8 +685,19 @@ if (evs.length) {
   const avg = sum(evs) / evs.length;
   const per = EVENTS.filter((e) => (e.levels ?? []).length).map((e) => `${e.id} ${sum(evs.filter((r) => r.event === e.id))}`);
   md.push(`- Events (VIPs only, docs/vip.md): ${evs.length} levels, ${sum(evs)} Coins in all, once each, by the campaign's rule (${per.join(", ")}).`);
-  md.push(`  ${Math.round(avg)} a level: at 3 minutes a level about ${Math.round((avg * 60) / 3)} an hour, the campaign's rate, so the hourly figure`);
-  md.push("  stands; an event adds its total once, like a stretch of the campaign.");
+  md.push(`  ${Math.round(avg)} a level: at 3 minutes a level about ${Math.round((avg * 60) / 3)} an hour, the campaign's rate.`);
+  const F = SUITCASE.finds;
+  if (F) {
+    const items = EVENTS.reduce((n, e) => n + e.items.length, 0);
+    const perEvent = Math.round(sum(evs) / Math.max(1, EVENTS.filter((e) => (e.levels ?? []).length).length));
+    const bonus = F.coins * 10;
+    md.push(`- Event items (the creator, 2026-10-30): ${F.coins} Coins with each item found, once per item, ${bonus} an event`);
+    md.push(`  (${items} items, ${F.coins * items} in all), paid as each lands, never in one grant over the platform's 100. The`);
+    md.push("  prize for finding all 10 is the event's table and its Passport stamp, no Coins and no helpers. With");
+    md.push(`  its levels (about ${perEvent}), an event pays about ${perEvent + bonus} over its 30 levels: at 3 minutes a level,`);
+    md.push(`  about ${Math.round(((perEvent + bonus) * 60) / 90)} an hour while playing an event, inside the standard's 250 to 1,000. Two events a`);
+    md.push(`  month add ${2 * bonus} Coins of finds a month to a VIP who finishes both.`);
+  }
 } else {
   md.push("- Events: none dealt yet (Levels' src/content/levels/event-levels.json).");
 }

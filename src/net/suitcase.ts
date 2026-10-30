@@ -1,6 +1,6 @@
 // THE EVENTS, the platform's word: VIP content packs (docs/vip.md, the creator, 2026-10-30). Each event
-// is 30 levels of its own, with 10 items hidden one per level; finding all 10 wins the event's table
-// (and helpers), once. Open to a VIP from its release date on, for good: no deadline, no swap, no
+// is 30 levels of its own, with 10 items hidden one per level; each item found pays 50 Coins with it,
+// and finding all 10 wins the event's table and its Passport stamp, once (the creator, 2026-10-30). Open to a VIP from its release date on, for good: no deadline, no swap, no
 // spares, and nothing from the dailies. The screens (src/ui/suitcase.ts, through
 // src/ui/suitcase-data.ts) draw from events() and redraw on onChange.
 //
@@ -15,8 +15,8 @@
 //                            [] until read, unless VIP, or with the switch off
 //   suitcase.event(id)       one of them
 //   suitcase.upcoming()      the events announced but not released yet by the player's date (no VIP needed)
-//   suitcase.lastPrize()     a prize that landed since last asked ({ event, helpers }), once (its table is
-//                            in the level's verdict's `items`)
+//   suitcase.lastPrize()     a prize that landed since last asked ({ event }), once (its table is in the
+//                            level's verdict's `items`, and the verdict's `prize` names table and stamp)
 //   suitcase.refresh()       read again (when the events screen opens): from memory if the last read
 //                            was under 5 minutes ago (every verdict keeps it current), else one read,
 //                            one at a time, paced
@@ -34,7 +34,6 @@ import { gem } from "../gem";
 import EVENT_FILE from "../content/levels/events.json";
 import IDS from "./suitcase-ids.json";
 import { currentDaily, onDailyChange } from "./daily";
-import { helpers, type HelperKind } from "./helpers";
 import { noAnswer, refusalOf } from "./no-answer";
 import { backoff, heard as hearRefusal, whenDue } from "./pace";
 import { onOnline, suspect } from "../ui/online";
@@ -64,10 +63,14 @@ export type EventPack = {
   found: number;
   /** Every item found. */
   complete: boolean;
-  /** The prize is paid: the platform's word (the event's mark). */
+  /** The prize is paid, which is the event's Passport stamp: the platform's word (the event's mark). */
   paid: boolean;
-  /** What a full suitcase wins: the event's table (its slug; the built-in one while the event is a stand-in) and helpers. */
-  prize: { table: string; tableTitle?: string; helpers: Partial<Record<HelperKind, number>> };
+  /**
+   * What the event pays: its table (its slug; the built-in one while the event is a stand-in), won
+   * with the stamp by finding all 10, and `coins`, what its items pay in all as they are found (50
+   * each, in each finding level's verdict: `packed.coins`). No helpers.
+   */
+  prize: { table: string; tableTitle?: string; coins: number };
 };
 
 type EventData = {
@@ -95,7 +98,7 @@ const framed = ((): boolean => {
 const on = (IDS as { on?: boolean }).on === true;
 const heard = new Set<() => void>();
 let list: EventPack[] = [];
-let prize: { event: string; helpers: Record<HelperKind, number> } | null = null;
+let prize: { event: string } | null = null;
 let reading: Promise<void> | null = null;
 /** When the last read landed (Date.now()), 0 before one: a refresh within FRESH_MS answers from memory. */
 let readAt = 0;
@@ -118,7 +121,8 @@ function view(x: unknown): EventPack | null {
     if (typeof i.id === "string") got.set(i.id, i.found === true);
   }
   const items = e.items.map((it) => ({ id: it.id, title: it.title, level: it.level ?? null, found: got.get(it.id) === true }));
-  const p = (s.prize && typeof s.prize === "object" ? s.prize : {}) as { helpers?: Partial<Record<HelperKind, number>> };
+  const p = (s.prize && typeof s.prize === "object" ? s.prize : {}) as { coins?: unknown };
+  const finds = (IDS as { finds?: { coins?: number } }).finds?.coins ?? 0;
   return {
     id: e.id,
     theme: e.theme,
@@ -131,18 +135,15 @@ function view(x: unknown): EventPack | null {
     prize: {
       table: e.table ?? IDS.builtInTable,
       ...(e.tableTitle ? { tableTitle: e.tableTitle } : {}),
-      helpers: p.helpers ?? IDS.prize,
+      coins: typeof p.coins === "number" ? Math.max(0, Math.floor(p.coins)) : finds * items.length,
     },
   };
 }
 
-/** Note a prize that landed (the "suitcase" gift) and read the helper stock again. */
-function landed(event: string | undefined, gifts: unknown, got: unknown): void {
+/** Note a prize that landed (the "suitcase" gift): its table and stamp, no helpers. */
+function landed(event: string | undefined, gifts: unknown): void {
   if (!Array.isArray(gifts) || !gifts.includes("suitcase")) return;
-  const h = (got && typeof got === "object" ? got : {}) as Partial<Record<HelperKind, unknown>>;
-  const n = (v: unknown) => Math.max(0, Math.floor(Number(v) || 0));
-  prize = { event: event ?? list[0]?.id ?? "", helpers: { hint: n(h.hint), undo: n(h.undo), shuffle: n(h.shuffle) } };
-  void helpers.refresh();
+  prize = { event: event ?? list[0]?.id ?? "" };
 }
 
 /** Put an event the server answered with in its place. */
@@ -163,7 +164,7 @@ async function read(): Promise<void> {
     readAt = Date.now();
     list = (Array.isArray(a.events) ? a.events : []).map(view).filter((e): e is EventPack => e !== null);
     const ids = Array.isArray(a.prizes) ? (a.prizes as string[]) : [];
-    landed(ids[0], a.gifts, a.helpers);
+    landed(ids[0], a.gifts);
     say();
   } catch (err) {
     if (noAnswer(err)) suspect();
@@ -199,7 +200,7 @@ export function accept(answer: Record<string, unknown>): void {
   if (answer.suitcase && typeof answer.suitcase === "object") {
     const e = view(answer.suitcase);
     if (e) place(e);
-    landed(e?.id, answer.gifts, answer.helpers);
+    landed(e?.id, answer.gifts);
     say();
   } else if (answer.status === "refused") {
     void refresh(true);
@@ -216,7 +217,7 @@ export const suitcase = {
       .sort((a, b) => (a.release < b.release ? -1 : 1));
   },
   refresh: (): Promise<void> => refresh(),
-  lastPrize(): { event: string; helpers: Record<HelperKind, number> } | null {
+  lastPrize(): { event: string } | null {
     const p = prize;
     prize = null;
     return p;

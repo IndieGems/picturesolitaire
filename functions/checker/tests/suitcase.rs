@@ -119,10 +119,21 @@ fn counts_come_from_the_items_held_and_ignore_other_items() {
 }
 
 #[test]
-fn a_pack_grants_the_one_item_and_the_receipt_says_the_count_after() {
+fn a_pack_grants_the_one_item_and_its_coins_and_the_receipt_says_the_count_after() {
+    let ids = read("src/net/suitcase-ids.json");
     let e = first();
     let ops = suitcase::pack(e, 1, "x-01");
-    assert_eq!(ops.len(), 1);
+    assert_eq!(ops.len(), 2, "the item, and one more found (its Coins)");
+    assert_eq!(ops[1]["type"], "progression_add");
+    assert_eq!(ops[1]["progression_definition_id"], ids["finds"]["id"]);
+    assert_eq!(ops[1]["amount"], 1);
+    assert_eq!(suitcase::find_coins(), ids["finds"]["coins"].as_u64().unwrap());
+    assert!(suitcase::find_coins() <= 100, "one grant pays at most 100 (the platform's max_per_event)");
+    let receipt = vec![
+        json!({ "type": "platform_grant", "progression_definition_id": suitcase::finds_id(), "granted": 50, "requested": 50 }),
+        json!({ "type": "platform_grant", "progression_definition_id": "the-levels-own", "granted": 25, "requested": 25 }),
+    ];
+    assert_eq!(suitcase::coins_found(&receipt), 50, "only the find's grant");
     assert_eq!(ops[0]["type"], "item_grant");
     assert_eq!(ops[0]["item_definition_id"], suitcase::uuid(e, 1));
     assert_eq!(ops[0]["quantity"], 1);
@@ -134,20 +145,17 @@ fn a_pack_grants_the_one_item_and_the_receipt_says_the_count_after() {
 }
 
 #[test]
-fn the_prize_is_one_order_of_the_events_mark_its_table_and_the_helpers() {
-    let ids = read("src/net/suitcase-ids.json");
+fn the_prize_is_one_order_of_the_events_mark_and_its_table_and_no_helpers() {
     for e in suitcase::events() {
         let o = suitcase::prize_order(e);
         assert_eq!(o.nonce, format!("prize:{}", suitcase::name(e)));
         assert_eq!(o.gifts, vec!["suitcase"]);
-        assert_eq!(o.operations[0]["type"], "progression_max");
+        assert_eq!(o.operations[0]["type"], "progression_max", "the mark: the event's Passport stamp");
         assert_eq!(o.operations[0]["progression_definition_id"], suitcase::mark(e));
         let tables = o.operations.iter().filter(|op| op["type"] == "item_grant").count();
         assert_eq!(tables, if suitcase::table(e).is_some() { 1 } else { 0 });
-        let helpers: u64 = o.operations.iter().filter(|op| op["type"] == "currency_grant").map(|op| op["amount"].as_u64().unwrap()).sum();
-        let want: u64 = ["hint", "undo", "shuffle"].iter().map(|k| ids["prize"][k].as_u64().unwrap()).sum();
-        assert_eq!(helpers, want);
-        assert!(o.operations.iter().filter(|op| op["type"] == "currency_grant").all(|op| op["overflow"] == "clamp"));
+        assert!(o.operations.iter().all(|op| op["type"] != "currency_grant"), "no helpers: VIPs have them free");
+        assert_eq!(o.operations.len(), 1 + tables);
     }
 }
 
@@ -169,6 +177,8 @@ fn the_state_lists_the_levels_the_items_found_and_the_prize() {
     assert_eq!(s["found"], 2);
     assert_eq!(s["complete"], false);
     assert!(s.get("days").is_none() && s.get("counts").is_none(), "no days and no spares any more");
+    assert_eq!(s["prize"]["coins"], suitcase::find_coins() * suitcase::items(e).len() as u64, "the Coins its items pay in all");
+    assert!(s["prize"].get("helpers").is_none());
     assert_eq!(suitcase::state(e, &all(e, 1), true)["complete"], true);
 }
 
@@ -190,6 +200,8 @@ fn every_event_id_is_the_configs() {
         }
         assert!(config.contains(&format!("\"{}\"", suitcase::name(e))), "{} is a declared value of the event analytics' event", suitcase::name(e));
     }
+    let ids = read("src/net/suitcase-ids.json");
+    assert!(config.contains(&format!("- id: {}\n    slug: {}\n", ids["finds"]["id"].as_str().unwrap(), ids["finds"]["slug"].as_str().unwrap())), "the finds progression");
     for id in ["event_item", "event_complete"] {
         assert!(config.contains(&format!("  - id: {id}\n")), "the analytics event {id} is declared");
     }

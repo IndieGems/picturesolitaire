@@ -28,8 +28,13 @@ and leaves the hourly rate where it is.
 - Daily: 50 once a day, on top.
 - Souvenirs: 10 of 10 trips dealt, 350 Coins in all, once each (s1 20, s2 35, s3 30, s4 30, s5 40, s6 40, s7 40, s8 40, s9 35, s10 40).
 - Events (VIPs only, docs/vip.md): 180 levels, 4220 Coins in all, once each, by the campaign's rule (halloween-2026 695, ski-trip-2026 690, train-journey-2026 700, winter-market-2026 710, northern-lights-2026 705, carnival-2027 720).
-  23 a level: at 3 minutes a level about 469 an hour, the campaign's rate, so the hourly figure
-  stands; an event adds its total once, like a stretch of the campaign.
+  23 a level: at 3 minutes a level about 469 an hour, the campaign's rate.
+- Event items (the creator, 2026-10-30): 50 Coins with each item found, once per item, 500 an event
+  (60 items, 3000 in all), paid as each lands, never in one grant over the platform's 100. The
+  prize for finding all 10 is the event's table and its Passport stamp, no Coins and no helpers. With
+  its levels (about 703), an event pays about 1203 over its 30 levels: at 3 minutes a level,
+  about 802 an hour while playing an event, inside the standard's 250 to 1,000. Two events a
+  month add 1000 Coins of finds a month to a VIP who finishes both.
 - One-time: the onboarding prize. Replays and campaign boards past the last pay nothing.
 - **Still to measure**: real minutes per board once the creator has played some (the lead's
   note): if boards run much faster or slower than 2 to 4 minutes, change the rule here.

@@ -277,7 +277,7 @@ fn main() {
     }
     // the switch: anything but true (missing, mistyped) is off, which grants nothing
     let on = fixed["on"].as_bool() == Some(true);
-    let suitcases = json!({ "on": on, "prize": fixed["prize"], "events": events });
+    let suitcases = json!({ "on": on, "finds": fixed["finds"], "events": events });
     fs::write(Path::new(&env::var("OUT_DIR").unwrap()).join("suitcases.json"), suitcases.to_string()).unwrap();
 }
 

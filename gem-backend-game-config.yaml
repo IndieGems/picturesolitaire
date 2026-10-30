@@ -4236,8 +4236,20 @@ progressions:
     config:
       completion_threshold: 10
       reset_schedule: { type: monthly, boundary: local }
-  # Each event's suitcase paid: moved to 1 by the checker in the same order as its table and
-  # helpers, so it lands with them or not at all, once. The old months' marks stay declared.
+  # EACH ITEM FOUND pays its Coins with it (the creator, 2026-10-30: 50 an item, 500 an event, paid as
+  # the items land; the platform pays at most 100 in one grant): the checker adds one here in the
+  # order that grants the item, once per item. Only the win checker writes it.
+  - id: b4e6b838-1c85-4d66-9bee-74e2e7cdf093
+    slug: event_items_found
+    display_name: "Event items found"
+    config:
+      function_may_grant: true
+      platform_grants:
+        - mode: on_add
+          per_unit: 50
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  # Each event's suitcase paid, and its Passport stamp: moved to 1 by the checker in the same order
+  # as its table, so it lands with it or not at all, once. The old months' marks stay declared.
   - id: 790b73a6-ee85-5a9f-8375-7c2aa7dc8f1e
     slug: suitcase_prize_halloween_2026
     display_name: "Haunted Holiday suitcase full"

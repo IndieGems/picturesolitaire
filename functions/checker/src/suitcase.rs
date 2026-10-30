@@ -7,9 +7,13 @@
 //!   - each item is a game item (declared by the config): held or not is its count;
 //!   - an item is packed by a VIP's first verified win of its level, in that win's one order with the
 //!     level's Coins (the level's own progression says "first"), so it lands with them or not at all;
+//!   - each item found pays its Coins with it: one more on the event-items-found progression
+//!     (src/net/suitcase-ids.json `finds`, on_add, 50 a unit: the creator, 2026-10-30, 500 an event
+//!     paid as the items land, since the platform pays at most 100 in one grant), in the same order;
 //!   - all of an event's items held pays its prize once: the event's own mark (a progression,
-//!     threshold 1) moved to 1 in the same order as the event's table and the helpers, and the mark
-//!     is what says "paid". No flag of the game's own.
+//!     threshold 1, which is also its Passport stamp) moved to 1 in the same order as the event's
+//!     table, and the mark is what says "paid". No helpers (VIPs have them free), no flag of the
+//!     game's own.
 //! An event is open from its release date (the player's own date, the platform's) on, for good: no
 //! deadline, no window. No spares and no swap. The dailies carry no items.
 //!
@@ -44,9 +48,23 @@ pub fn open(vip: bool) -> bool {
 /// One event, as build.rs compiled it.
 pub type Event = &'static Value;
 
-/// What a full suitcase pays besides its table: { hint, undo, shuffle }.
-pub fn prize_helpers() -> &'static Value {
-    &data()["prize"]
+/// The event-items-found progression's id (src/net/suitcase-ids.json `finds`).
+pub fn finds_id() -> &'static str {
+    data()["finds"]["id"].as_str().unwrap_or_default()
+}
+
+/// The Coins one item found pays (its unit's worth on the finds progression).
+pub fn find_coins() -> u64 {
+    data()["finds"]["coins"].as_u64().unwrap_or(0)
+}
+
+/// The Coins a receipt's finds grants landed (`granted`, after any trim).
+pub fn coins_found(changes: &[Value]) -> i64 {
+    changes
+        .iter()
+        .filter(|ch| ch["type"] == "platform_grant" && ch["progression_definition_id"] == finds_id())
+        .map(|ch| ch["granted"].as_i64().unwrap_or(0))
+        .sum()
 }
 
 /// Every event, in release order.
@@ -148,16 +166,21 @@ pub fn complete(e: Event, c: &[u32]) -> bool {
     !items(e).is_empty() && found(c) as usize == items(e).len()
 }
 
-/// The level's item packed: what its first win's order adds. Its gates (VIP, released, the switch)
-/// are lib.rs's, before any of this is asked.
+/// The level's item packed, and its Coins: what the order that finds it adds. Its gates (VIP,
+/// released, the switch) are lib.rs's, before any of this is asked.
 pub fn pack(e: Event, at: usize, level: &str) -> Vec<Value> {
-    vec![json!({
+    let why = format!("event {} {level}: its item", name(e));
+    let mut ops = vec![json!({
         "type": "item_grant",
         "item_definition_id": uuid(e, at),
         "quantity": 1,
         "overflow": "clamp",
-        "reason": format!("event {} {level}: its item", name(e)),
-    })]
+        "reason": why,
+    })];
+    if !finds_id().is_empty() && find_coins() > 0 {
+        ops.push(json!({ "type": "progression_add", "progression_definition_id": finds_id(), "amount": 1, "reason": why }));
+    }
+    ops
 }
 
 /// The counts after an order: its receipt's item changes (quantity_after) over the counts
@@ -172,9 +195,9 @@ pub fn after(e: Event, before: &[u32], changes: &[Value]) -> Vec<u32> {
     c
 }
 
-/// A full suitcase's prize, once: the event's mark, its table (unless a stand-in shows the built-in
-/// one) and the helpers, clamped at the cap. None unless the events are open to this player, however
-/// full the suitcase they hold.
+/// A full suitcase's prize, once: the event's mark (its Passport stamp) and its table (unless a
+/// stand-in shows the built-in one). None unless the events are open to this player, however full
+/// the suitcase they hold.
 pub fn prize(e: Event, vip: bool) -> Option<Order> {
     if !open(vip) {
         return None;
@@ -189,17 +212,12 @@ pub fn prize_order(e: Event) -> Order {
     if let Some(t) = e["table"]["uuid"].as_str() {
         ops.push(json!({ "type": "item_grant", "item_definition_id": t, "quantity": 1, "overflow": "clamp", "reason": why }));
     }
-    for kind in pay::KINDS {
-        let n = prize_helpers()[kind].as_u64().unwrap_or(0);
-        if n > 0 {
-            ops.push(pay::grant(kind, n, why.clone()));
-        }
-    }
     Order { nonce: format!("prize:{}", name(e)), operations: ops, gifts: vec!["suitcase"] }
 }
 
 /// The event as the game reads it (src/net/suitcase.ts adds the titles): its levels in play order,
-/// its items with the level each is hidden in and whether it is found, and the prize.
+/// its items with the level each is hidden in and whether it is found, and the prize (its table, and
+/// the Coins its items pay in all, as they are found; `paid` is its stamp).
 pub fn state(e: Event, c: &[u32], paid: bool) -> Value {
     let list: Vec<Value> = items(e)
         .iter()
@@ -215,7 +233,7 @@ pub fn state(e: Event, c: &[u32], paid: bool) -> Value {
         "found": found(c),
         "complete": complete(e, c),
         "paid": paid,
-        "prize": { "table": table(e), "helpers": prize_helpers() },
+        "prize": { "table": table(e), "coins": find_coins() * items(e).len() as u64 },
     })
 }
 

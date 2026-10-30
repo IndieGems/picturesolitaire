@@ -95,8 +95,14 @@ interface Answered {
   helpers?: Record<HelperKind, number>;
   /** What they were given for: the kit (board 1's end, or the next win of a player past it), a hard board's first win, a trip's last board, the daily puzzle's first win of the day, a full Daily Suitcase (its helpers are in `helpers` too). */
   gifts?: Gift[];
-  /** Event levels only: the item hidden in this level, packed by its first win (1 held after it). A replay, or a level with no item, packs nothing. */
-  packed?: { item: string; count: number };
+  /**
+   * Event levels only: the item hidden in this level, packed by this win (1 held after it): its first
+   * win, or a later one while the item is not held (Levels moved items to levels already won). `coins`
+   * is what finding it paid (50, the creator's), also counted in this verdict's `coins`.
+   */
+  packed?: { item: string; count: number; coins: number };
+  /** Event levels only, on the win that found the event's last item: its prize, the table (its slug; null for a stand-in) and the event's Passport stamp (the event's id). */
+  prize?: { event: string; table: string | null; stamp: string };
   /** Event levels only, with `packed`: the event after it (src/net/suitcase.ts). */
   suitcase?: EventPack;
   /** Event levels only: the event's id. */
@@ -328,13 +334,16 @@ async function send(h: Held): Promise<void> {
     // the server granted what this device's cached inventory cannot know: read it afresh next time
     if (status === "paid" || items.length) gem.me.inventory.refresh();
     // the events follow the server's word too (an event level's pack carries its event after it)
-    let packed: { item: string; count: number } | undefined;
+    let packed: { item: string; count: number; coins: number } | undefined;
+    let prize: { event: string; table: string | null; stamp: string } | undefined;
     let pack: EventPack | undefined;
     if (lane === "event") {
       acceptSuitcase(answer);
-      const p = answer.packed as { item?: unknown; count?: unknown } | undefined;
+      const p = answer.packed as { item?: unknown; count?: unknown; coins?: unknown } | undefined;
+      const z = answer.prize as { event?: unknown; table?: unknown; stamp?: unknown } | undefined;
+      if (z && typeof z.event === "string") prize = { event: z.event, table: typeof z.table === "string" ? z.table : null, stamp: typeof z.stamp === "string" ? z.stamp : z.event };
       if (p && typeof p.item === "string") {
-        packed = { item: p.item, count: Math.max(1, Math.floor(Number(p.count) || 1)) };
+        packed = { item: p.item, count: Math.max(1, Math.floor(Number(p.count) || 1)), coins: Math.max(0, Math.floor(Number(p.coins) || 0)) };
         pack = typeof answer.event === "string" ? suitcase.event(answer.event) : undefined;
       }
     }
@@ -353,6 +362,7 @@ async function send(h: Held): Promise<void> {
       gifts: Array.isArray(answer.gifts) ? answer.gifts.filter((g): g is Gift => g === "kit" || g === "hard" || g === "stamp" || g === "daily" || g === "suitcase") : [],
       ...(packed ? { packed } : {}),
       ...(pack ? { suitcase: pack } : {}),
+      ...(prize ? { prize } : {}),
       ...(lane === "event" && typeof answer.event === "string" ? { event: answer.event } : {}),
       ...(unlocked.length ? { achievements: unlocked } : {}),
       ...(answer.archive === "paid" || answer.archive === "won_before" || answer.archive === "event_only" ? { archive: answer.archive } : {}),

@@ -1,14 +1,14 @@
 {
-  "note": "THE EVENT's fixed ids and sizes (docs/vip.md; docs/daily-suitcase.md), read by src/net/suitcase.ts, functions/checker/build.rs and tools/server/make-config.mts. The events (two weeks each, about 7 items, each twice), their tables and each day's item are Levels' (src/content/levels/events.json). Every other id is name-based (make-config's uuid5): an item 'suitcase:item:<item id>', an event's prize mark 'suitcase:prize:<event id>', an event's table 'table:<slug>' (src/net/tables.json). An id never changes once uploaded. `event` is the old monthly Arcade challenge, declared and written by nothing now (the Arcade cannot show a challenge to VIPs alone); `prize` is the helpers a full suitcase pays with its table, clamped at the cap; `spares` is what one swap takes; `stack` is the most copies of one item kept; `shelf` the most past events the game is told about; `builtInTable` is every player's own table, which is no item, so an event showing it (a stand-in) pays only the helpers. `on` is THE EVENT'S SWITCH, and on means ON FOR VIPS (the creator, 2026-10-30: the event returns two weeks long for Gem Arcade VIP members only): for anyone else, and for everyone while it is false, no player sees the event (src/ui), the checker packs no item, swaps nothing and pays no prize. Who is VIP is the checker's word (functions/checker/src/vip.rs): nobody on test and release until the platform can say. A function cannot read the game config, so the switch is this file, compiled into the checker. functions/checker/tests/suitcase.rs holds the shipped value.",
+  "note": "THE EVENTS' fixed ids and sizes (docs/vip.md), read by src/net/suitcase.ts, functions/checker/build.rs and tools/server/make-config.mts. The events (30 levels and 10 items each, one item hidden in each of 10 levels), their tables and items are Levels' (src/content/levels/events.json). Every other id is name-based (make-config's uuid5): an item 'suitcase:item:<item id>', an event's prize mark 'suitcase:prize:<event id>' (it is also the event's Passport stamp), an event's table 'table:<slug>' (src/net/tables.json). An id never changes once uploaded. `finds` is the progression each item found adds one to, which pays `coins` Coins with it (the creator, 2026-10-30: 50 with each item, 500 an event, paid as the items land: the platform pays at most 100 in one grant); a full suitcase pays its table and its stamp, and no helpers (VIPs have them free). `event` is the old monthly Arcade challenge, declared and written by nothing now; `spares`, `stack` and `shelf` are kept from the two-week events and read by nothing; `builtInTable` is every player's own table, which is no item, so an event showing it (a stand-in) pays no table. `on` is THE EVENTS' SWITCH, and on means ON FOR VIPS: for anyone else, and for everyone while it is false, no player sees an event (src/ui), the checker refuses an event level and pays no item, Coins or prize. Who is VIP is the checker's word (functions/checker/src/vip.rs): nobody on test and release until the platform can say. A function cannot read the game config, so the switch is this file, compiled into the checker. functions/checker/tests/suitcase.rs holds the shipped value.",
   "on": true,
+  "finds": {
+    "id": "b4e6b838-1c85-4d66-9bee-74e2e7cdf093",
+    "slug": "event_items_found",
+    "coins": 50
+  },
   "event": {
     "id": "f9849a15-3e7b-454e-a177-d7d6396cc911",
     "slug": "suitcase"
-  },
-  "prize": {
-    "hint": 2,
-    "undo": 2,
-    "shuffle": 1
   },
   "spares": 2,
   "stack": 31,

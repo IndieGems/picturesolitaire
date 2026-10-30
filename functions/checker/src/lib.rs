@@ -476,7 +476,7 @@ mod function {
             .filter(|ch| ch["type"] == "item" && ch["quantity_after"].as_i64().unwrap_or(0) > ch["quantity_before"].as_i64().unwrap_or(0))
             .filter_map(|ch| ch["item_definition_id"].as_str().map(str::to_string))
             .collect();
-        host::log(LogLevel::Info, &format!("event {}: full, prize paid, helpers {landed}, items {items:?}", suitcase::name(m)));
+        host::log(LogLevel::Info, &format!("event {}: full, prize paid (its table and stamp), items {items:?}", suitcase::name(m)));
         Ok(Some((landed, items)))
     }
 
@@ -569,7 +569,9 @@ mod function {
     }
 
     /// A VIP's win of an event level: its Coins once (its board progression, as a campaign board's),
-    /// and on that first win the item hidden in it, in the same one order; then, if every item of the
+    /// and on that first win the item hidden in it, in the same one order; a later win of a level
+    /// whose item is still not held packs it then, in an order of its own (an item can move to a level
+    /// already won: Levels' random placement, bfe50f2), once per item. Then, if every item of the
     /// event is held, its prize (settle_prize), once.
     fn event_win(game: &str, player: &str, win: &Win, e: suitcase::Event, kit: bool, vip: bool) -> Value {
         let Some(progression) = pay::board_id(&win.board) else {
@@ -595,6 +597,36 @@ mod function {
             Ok(g) => g,
             Err(v) => return v,
         };
+        // won before, its item not held: the item now (its own nonce: once per item, ever)
+        let mut fresh = g.first;
+        if let (Some(at), false) = (at, g.first) {
+            let c = match items_held(player) {
+                Ok(rows) => suitcase::counts(e, &rows),
+                Err(v) => return v,
+            };
+            if c[at] == 0 {
+                let nonce = format!("pack:{}:{}", suitcase::name(e), suitcase::items(e)[at]["id"].as_str().unwrap_or_default());
+                let body = json!({ "source": "reward", "nonce": nonce, "operations": suitcase::pack(e, at, &win.board) });
+                match api("POST", format!("/v1/inventory/players/{player}/orders"), Some(body)) {
+                    Ok(res) if (200..300).contains(&res.status) && res.body["status"] != "failed" => {
+                        g.changes = res.body["changes"].as_array().cloned().unwrap_or_default();
+                        // its Coins (the find's): counted with what this win paid
+                        g.coins += g.changes.iter().filter(|ch| ch["type"] == "platform_grant").map(|ch| ch["granted"].as_i64().unwrap_or(0)).sum::<i64>();
+                        before = Some(c);
+                        fresh = true;
+                    }
+                    Ok(res) if res.status == 409 => host::log(LogLevel::Info, &format!("order {nonce}: landed before")),
+                    Ok(res) => {
+                        host::log(LogLevel::Warn, &format!("order {nonce} answered {}: {}", res.status, res.body));
+                        return retry(if passing(res.status) { "platform" } else { "config" });
+                    }
+                    Err(e) => {
+                        host::log(LogLevel::Warn, &format!("order {nonce}: no answer: {e}"));
+                        return retry("platform");
+                    }
+                }
+            }
+        }
         // the item is told as `packed`, not among the tables and keepsakes `items` names
         let item_uuid = at.map(|i| suitcase::uuid(e, i));
         let mut items: Vec<String> = g.items.iter().filter(|i| Some(i.as_str()) != item_uuid).cloned().collect();
@@ -602,11 +634,12 @@ mod function {
             "v": 1, "status": "kept", "lane": "event", "board": win.board, "event": suitcase::name(e),
             "moves": win.moves, "coins": g.coins, "items": items,
         });
-        if let (Some(at), Some(c), true) = (at, before, g.first) {
+        if let (Some(at), Some(c), true) = (at, before, fresh) {
             // the order landed with the item in it
             let now = suitcase::after(e, &c, &g.changes);
             let level = suitcase::position(e, &win.board);
-            verdict["packed"] = json!({ "item": suitcase::items(e)[at]["id"], "count": now[at] });
+            // `coins`: what finding it paid (in the verdict's `coins` too, with the level's own)
+            verdict["packed"] = json!({ "item": suitcase::items(e)[at]["id"], "count": now[at], "coins": suitcase::coins_found(&g.changes) });
             let mut events = vec![suitcase::record(
                 player,
                 "event_item",
@@ -622,9 +655,11 @@ mod function {
                         if let Some((l, granted)) = landed {
                             add(&mut g.helpers, &l);
                             g.gifts.push("suitcase");
-                            // the prize's table (its own order): named on the win card with the rest
+                            // the prize's table (its own order): named on the win card with the rest,
+                            // and the prize itself: its table and the event's Passport stamp (its mark)
                             items.extend(granted);
                             verdict["items"] = json!(items);
+                            verdict["prize"] = json!({ "event": suitcase::name(e), "table": suitcase::table(e), "stamp": suitcase::name(e) });
                         }
                         if !suitcase::complete(e, &c) {
                             events.push(suitcase::record(player, "event_complete", suitcase::name(e), json!({ "event": suitcase::name(e) }), json!({ "level": level })));
