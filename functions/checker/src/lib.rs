@@ -52,10 +52,14 @@ pub mod pay;
 pub mod progress;
 pub mod rules;
 pub mod suitcase;
+pub mod vip;
 
 /// The daily challenge's progression (gem-backend-game-config.yaml): its id and slug.
 pub const DAILY_ID: &str = "6d1f3b0e-8a52-4c7e-9f14-2b6e0d9a7c31";
 pub const DAILY_SLUG: &str = "daily_picture";
+/// The daily archive's progression (gem-backend-game-config.yaml, make-config.mts has the same):
+/// one added per past day a VIP's first win pays, which pays that day's Coins (its on_add mapping).
+pub const ARCHIVE_ID: &str = "795d5832-be77-44b1-a949-6ae8ec1c629d";
 /// The run type the daily's results are posted as, and its board.
 pub const DAILY_RUN: &str = "daily_result";
 /// The save slot holding the player's progress, written only by this function. The only
@@ -107,6 +111,7 @@ mod function {
     use crate::pay;
     use crate::progress::{self, Wait};
     use crate::suitcase;
+    use crate::vip;
 
     struct Function;
 
@@ -314,23 +319,46 @@ mod function {
             .and_then(|c| c["period_local_date"].as_str().map(str::to_string)))
     }
 
-    /// Is the daily's date the player's own today (Ok(false)), or yesterday (Ok(true), late)? Err: the verdict.
-    fn daily_day(player: &str, win: &Win) -> Result<bool, Value> {
+    /// Which day a daily claim is for, as the platform dates the player's own days.
+    #[derive(Clone, Copy)]
+    enum Day {
+        /// The player's today.
+        Today,
+        /// Yesterday, for a player who is not VIP: recorded, unpaid.
+        Late,
+        /// A VIP's past day (vip.rs): its Coins if it is in the archive, its event item if it is an
+        /// event day (any past event's).
+        Past { coins: bool, event: Option<(suitcase::Event, usize)> },
+    }
+
+    /// The claim's day. Err: the verdict: a date after today ("wrong_day"); a past day for a player
+    /// who is not VIP ("vip_only", yesterday excepted); a VIP's day older than the archive and in no
+    /// event ("too_old").
+    fn daily_kind(player: &str, win: &Win, vip: bool) -> Result<Day, Value> {
         let date = win.date.clone().unwrap_or_default();
         let today = match daily_date(player, 0)? {
             Some(d) => d,
             None => return Err(retry("config")),
         };
+        let refused = |why: &str| json!({ "v": 1, "status": "refused", "reason": why, "lane": "daily", "board": win.board, "today": today });
         if date == today {
-            return Ok(false);
+            return Ok(Day::Today);
+        }
+        if date.as_str() > today.as_str() {
+            return Err(refused("wrong_day"));
+        }
+        if vip {
+            let coins = vip::in_archive(&date, &today);
+            let event = suitcase::to_pack(&date, true);
+            return if coins || event.is_some() { Ok(Day::Past { coins, event }) } else { Err(refused("too_old")) };
         }
         match daily_date(player, 1)? {
-            Some(d) if d == date => Ok(true),
-            _ => Err(json!({ "v": 1, "status": "refused", "reason": "wrong_day", "lane": "daily", "board": win.board, "today": today })),
+            Some(d) if d == date => Ok(Day::Late),
+            _ => Err(refused("vip_only")),
         }
     }
 
-    fn daily_win(game: &str, player: &str, win: &Win, late: bool, kit: bool) -> Value {
+    fn daily_win(game: &str, player: &str, win: &Win, late: bool, kit: bool, vip: bool) -> Value {
         let date = win.date.clone().unwrap_or_default();
 
         // the result, on the date's board (moves, then time); the first one a day stands
@@ -370,10 +398,10 @@ mod function {
         }
         // the date is the platform's (the player's own day), so the nonce keys one daily a day
         // the day's first win pays the day's helper (pay::daily_gift), with the day's mark, and
-        // packs the day's suitcase item (suitcase.rs) from the counts read just before; while the
-        // event is off (suitcase::on) there is no pack, nothing of it is read, and only the
-        // daily's own reward is paid
-        let pack = suitcase::to_pack(&date);
+        // packs the day's event item (suitcase.rs) from the counts read just before; unless the
+        // event is open to this player (switched on, and VIP) there is no pack, nothing of it is
+        // read, and only the daily's own reward is paid
+        let pack = suitcase::to_pack(&date, vip);
         let mut before: Option<Vec<u32>> = None;
         let paid = pay_win(
             player,
@@ -382,7 +410,7 @@ mod function {
             &format!("daily:{date}"),
             pay::daily_gift(&date),
             &mut || {
-                let (ops, c) = suitcase::daily_extras(&date, || items_held(player))?;
+                let (ops, c) = suitcase::daily_extras(&date, vip, || items_held(player))?;
                 before = c;
                 Ok(ops)
             },
@@ -404,12 +432,12 @@ mod function {
                 player,
                 "suitcase_item",
                 &date,
-                json!({ "month": suitcase::name(m) }),
-                json!({ "collected": suitcase::distinct(&now), "copies": now[at], "day": suitcase::day_of_month(&date) }),
+                json!({ "event": suitcase::name(m) }),
+                json!({ "collected": suitcase::distinct(&now), "copies": now[at], "day": suitcase::day_of_event(m, &date) }),
             )];
             let mut paid = false;
             if suitcase::complete(m, &now) {
-                match settle_prize(player, m) {
+                match settle_prize(player, m, vip) {
                     Ok(landed) => {
                         paid = true;
                         if let Some(l) = landed {
@@ -472,9 +500,9 @@ mod function {
 
     /// A full month's prize, unless its mark says it is paid: Ok(Some(what landed of each
     /// helper)) when it is paid now, Ok(None) when it was paid before. Err: not paid yet.
-    fn settle_prize(player: &str, m: suitcase::Month) -> Result<Option<Value>, Value> {
-        // the event off: no prize, however full the suitcase held
-        let Some(o) = suitcase::prize(m) else { return Err(json!({ "v": 1, "status": "closed", "off": true })) };
+    fn settle_prize(player: &str, m: suitcase::Event, vip: bool) -> Result<Option<Value>, Value> {
+        // the event not open to this player: no prize, however full the suitcase held
+        let Some(o) = suitcase::prize(m, vip) else { return Err(json!({ "v": 1, "status": "closed", "off": true })) };
         if value_of(player, suitcase::mark(m))? >= 1.0 {
             return Ok(None);
         }
@@ -495,9 +523,9 @@ mod function {
         Ok(Some(landed))
     }
 
-    fn complete_event(player: &str, m: suitcase::Month, by: &str, date: &str) -> Value {
-        let month = suitcase::name(m);
-        suitcase::record(player, "suitcase_complete", month, json!({ "month": month, "by": by }), json!({ "day": suitcase::day_of_month(date) }))
+    fn complete_event(player: &str, m: suitcase::Event, by: &str, date: &str) -> Value {
+        let id = suitcase::name(m);
+        suitcase::record(player, "suitcase_complete", id, json!({ "event": id, "by": by }), json!({ "day": suitcase::day_of_event(m, date) }))
     }
 
     /// The suitcase's numbers, from the server (analytics_events, sources: server). Never in the way of a verdict.
@@ -516,7 +544,7 @@ mod function {
     }
 
     /// Is a month's prize paid? Only a full suitcase's can be; a read that fails says no.
-    fn paid_of(player: &str, m: suitcase::Month, c: &[u32]) -> bool {
+    fn paid_of(player: &str, m: suitcase::Event, c: &[u32]) -> bool {
         suitcase::complete(m, c) && value_of(player, suitcase::mark(m)).map(|v| v >= 1.0).unwrap_or(false)
     }
 
@@ -528,29 +556,32 @@ mod function {
         }
     }
 
-    /// {"v":1,"what":"swap","month":"2026-11","want":"item-2026-11-04"}: 3 spares for that item.
-    fn swap(game: &str, player: &str, input: &Value) -> Value {
+    /// {"v":1,"what":"swap","event":"halloween-2026","want":"item-halloween-2026-04"}: `spares`
+    /// spares for that item, in an event that has begun (the one running, or a past one), for a VIP.
+    /// "month" is read for "event" from a build before the events.
+    fn swap(game: &str, player: &str, input: &Value, vip: bool) -> Value {
         let refused = |why: &str| json!({ "v": 1, "status": "refused", "reason": why });
-        if !suitcase::on() {
-            // on hold: nothing is swapped (the game's "closed": not this month's)
-            return json!({ "v": 1, "status": "closed", "off": true, "month": input["month"] });
+        let asked = if input["event"].is_string() { &input["event"] } else { &input["month"] };
+        if !suitcase::open(vip) {
+            // not open to this player (switched off, or not VIP): nothing is swapped
+            return json!({ "v": 1, "status": "closed", "off": true, "month": asked, "event": asked });
         }
-        let (Some(name), Some(want)) = (input["month"].as_str(), input["want"].as_str()) else { return refused("bad_swap") };
-        let Some(m) = suitcase::month(name) else { return refused("unknown_month") };
+        let (Some(name), Some(want)) = (asked.as_str(), input["want"].as_str()) else { return refused("bad_swap") };
+        let Some(m) = suitcase::event(name) else { return refused("unknown_event") };
         let Some(at) = suitcase::slot(m, want) else { return refused("unknown_item") };
         let today = match today_of(player) {
             Ok(d) => d,
             Err(v) => return v,
         };
-        if suitcase::current(&today).map(suitcase::name) != Some(name) {
-            return json!({ "v": 1, "status": "closed", "month": name, "today": today });
+        if !suitcase::begun(m, &today) {
+            return json!({ "v": 1, "status": "closed", "month": name, "event": name, "today": today });
         }
         for _ in 0..3 {
             let c = match items_held(player) {
                 Ok(rows) => suitcase::counts(m, &rows),
                 Err(v) => return v,
             };
-            let o = match suitcase::swap(m, &c, at) {
+            let o = match suitcase::swap(m, &c, at, vip) {
                 Ok(o) => o,
                 Err(suitcase::No::Off) => return json!({ "v": 1, "status": "closed", "off": true, "month": name }),
                 Err(no) => {
@@ -580,12 +611,12 @@ mod function {
                 player,
                 "suitcase_swap",
                 &o.nonce,
-                json!({ "month": name }),
-                json!({ "collected": suitcase::distinct(&now), "spares_left": suitcase::spare(&now), "day": suitcase::day_of_month(&today) }),
+                json!({ "event": name }),
+                json!({ "collected": suitcase::distinct(&now), "spares_left": suitcase::spare(&now), "day": suitcase::day_of_event(m, &today) }),
             )];
             let mut paid = false;
             if suitcase::complete(m, &now) {
-                if let Ok(landed) = settle_prize(player, m) {
+                if let Ok(landed) = settle_prize(player, m, vip) {
                     paid = true;
                     if let Some(l) = landed {
                         add(&mut helpers, &l);
@@ -600,16 +631,16 @@ mod function {
         json!({ "v": 1, "status": "failed" })
     }
 
-    /// {"v":1,"what":"suitcase"}: this month's suitcase and the shelf; a full one whose prize is
-    /// still unpaid is paid now (a few a call at most).
-    fn suitcase_read(player: &str) -> Value {
+    /// {"v":1,"what":"suitcase"}: the running event's suitcase and the archive of past events, for a
+    /// VIP; a full one whose prize is still unpaid is paid now (a few a call at most).
+    fn suitcase_read(player: &str, vip: bool) -> Value {
         let today = match today_of(player) {
             Ok(d) => d,
             Err(v) => return v,
         };
-        if !suitcase::on() {
-            // on hold: no suitcase and no shelf, and nothing is read or paid (the items held stay
-            // put). `today` keeps a build from before the switch from asking again and again.
+        if !suitcase::open(vip) {
+            // not open to this player: no suitcase and no archive, and nothing is read or paid (the
+            // items held stay put). `today` keeps a build from asking again and again.
             return json!({ "v": 1, "status": "suitcase", "off": true, "today": today, "current": null, "past": [], "helpers": pay::none(), "gifts": [], "prizes": [] });
         }
         let rows = match items_held(player) {
@@ -618,13 +649,13 @@ mod function {
         };
         let mut helpers = pay::none();
         let mut prizes: Vec<&str> = Vec::new();
-        let mut view = |m: suitcase::Month| -> Value {
+        let mut view = |m: suitcase::Event| -> Value {
             let c = suitcase::counts(m, &rows);
             let mut paid = false;
             if suitcase::complete(m, &c) {
                 paid = match value_of(player, suitcase::mark(m)) {
                     Ok(v) if v >= 1.0 => true,
-                    Ok(_) if prizes.len() < 3 => match settle_prize(player, m) {
+                    Ok(_) if prizes.len() < 3 => match settle_prize(player, m, vip) {
                         Ok(landed) => {
                             if let Some(l) = landed {
                                 add(&mut helpers, &l);
@@ -753,24 +784,152 @@ mod function {
         d
     }
 
+    /// A VIP's past day (Day::Past, vip.rs), whose payment the record already notes as owed: its
+    /// Coins (the archive's progression, one day more, which pays that day's Coins) if they are due,
+    /// and its event item if that is due, in one order of their own ("past:<date>"). Once the
+    /// platform confirms it landed, the record's owed mark is cleared. `in_archive`: the day is in
+    /// the archive (its Coins were due unless it had been won before).
+    #[allow(clippy::too_many_arguments)]
+    fn past_win(game: &str, player: &str, win: &Win, doc: &mut Value, in_archive: bool, coins: bool, pack: Option<(suitcase::Event, usize)>, vip: bool) -> Value {
+        let date = win.date.clone().unwrap_or_default();
+        let archive = if coins { "paid" } else if in_archive { "won_before" } else { "event_only" };
+        let mut verdict = json!({
+            "v": 1, "status": "kept", "lane": "daily", "board": win.board, "date": date, "moves": win.moves, "ms": win.ms,
+            "coins": 0, "items": [], "recorded": false, "first": false, "helpers": pay::none(), "gifts": [], "archive": archive,
+        });
+        let mut ops: Vec<Value> = Vec::new();
+        if coins {
+            ops.push(json!({ "type": "progression_add", "progression_definition_id": crate::ARCHIVE_ID, "amount": 1, "reason": format!("daily {date}: a past day, verified") }));
+        }
+        let mut before: Option<Vec<u32>> = None;
+        if let Some((e, at)) = pack {
+            match items_held(player) {
+                Ok(rows) => before = Some(suitcase::counts(e, &rows)),
+                Err(v) => return v,
+            }
+            ops.extend(suitcase::pack(e, at, &date));
+        }
+        if ops.is_empty() {
+            return verdict;
+        }
+        let nonce = format!("past:{date}");
+        let body = json!({ "source": "reward", "nonce": nonce, "operations": ops });
+        let res = match api("POST", format!("/v1/inventory/players/{player}/orders"), Some(body)) {
+            Ok(r) => r,
+            Err(e) => {
+                host::log(LogLevel::Warn, &format!("order {nonce}: no answer: {e}"));
+                return retry("platform");
+            }
+        };
+        let landed_before = res.status == 409;
+        if !landed_before && (!(200..300).contains(&res.status) || res.body["status"] == "failed") {
+            host::log(LogLevel::Warn, &format!("order {nonce} answered {}: {}", res.status, res.body));
+            return retry(if passing(res.status) { "platform" } else { "config" });
+        }
+        // it landed (now, or before this resend): owed no more
+        progress::settle(doc, &date);
+        if write_save(player, crate::PROGRESS, doc).is_err() {
+            host::log(LogLevel::Warn, &format!("{nonce}: paid, its owed mark waits for the next write (a resend finds it landed)"));
+        }
+        if landed_before {
+            host::log(LogLevel::Info, &format!("order {nonce}: landed before"));
+            return verdict;
+        }
+        let changes = res.body["changes"].as_array().cloned().unwrap_or_default();
+        let mut paid_coins = 0;
+        let mut items: Vec<String> = Vec::new();
+        for ch in &changes {
+            if ch["type"] == "platform_grant" {
+                paid_coins += ch["granted"].as_i64().unwrap_or(0);
+                host::log(LogLevel::Info, &format!("grant {nonce}: {} {} of {}{}", ch["outcome"], ch["granted"], ch["requested"], ch["reason"].as_str().map(|r| format!(" ({r})")).unwrap_or_default()));
+            }
+            if ch["type"] == "item" && ch["quantity_after"].as_i64().unwrap_or(0) > ch["quantity_before"].as_i64().unwrap_or(0) {
+                items.push(ch["item_definition_id"].as_str().unwrap_or_default().to_string());
+            }
+        }
+        verdict["coins"] = json!(paid_coins);
+        verdict["items"] = json!(items);
+        let mut helpers = pay::none();
+        let mut gifts: Vec<&str> = Vec::new();
+        if let (Some((e, at)), Some(c)) = (pack, before) {
+            let now = suitcase::after(e, &c, &changes);
+            verdict["packed"] = json!({ "item": suitcase::items(e)[at]["id"], "count": now[at] });
+            let mut events = vec![suitcase::record(
+                player,
+                "suitcase_item",
+                &date,
+                json!({ "event": suitcase::name(e) }),
+                json!({ "collected": suitcase::distinct(&now), "copies": now[at], "day": suitcase::day_of_event(e, &date) }),
+            )];
+            let mut paid = false;
+            if suitcase::complete(e, &now) {
+                match settle_prize(player, e, vip) {
+                    Ok(landed) => {
+                        paid = true;
+                        if let Some(l) = landed {
+                            add(&mut helpers, &l);
+                            gifts.push("suitcase");
+                        }
+                        if !suitcase::complete(e, &c) {
+                            events.push(complete_event(player, e, "pack", &date));
+                        }
+                    }
+                    Err(_) => host::log(LogLevel::Warn, &format!("suitcase {}: full, its prize waits for the next read", suitcase::name(e))),
+                }
+            }
+            verdict["suitcase"] = suitcase::state(e, &now, paid);
+            record(game, events);
+        }
+        let helped = pay::KINDS.iter().any(|k| helpers[*k].as_i64().unwrap_or(0) > 0);
+        verdict["status"] = json!(if paid_coins > 0 || !items.is_empty() || helped { "paid" } else { "kept" });
+        verdict["helpers"] = helpers;
+        verdict["gifts"] = json!(gifts);
+        verdict
+    }
+
     /// A verified win: the record first, then the payment, so a payment never
     /// lands without its progress, and a resent claim changes the record once.
-    fn verified(game: &str, player: &str, win: &Win, boards: u64) -> Value {
-        let late = match win.lane {
-            Lane::Daily => match daily_day(player, win) {
-                Ok(late) => late,
+    fn verified(game: &str, player: &str, win: &Win, boards: u64, vip: bool) -> Value {
+        let day = match win.lane {
+            Lane::Daily => match daily_kind(player, win, vip) {
+                Ok(d) => d,
                 Err(v) => return v,
             },
-            _ => false,
+            _ => Day::Today,
         };
         let (mut doc, stored) = match read_progress(player) {
             Ok(r) => r,
             Err(v) => return v,
         };
+        let date = win.date.clone().unwrap_or_default();
+        // what a VIP's past day owes, decided before this win is applied (its Coins if the archive
+        // shows it and it was never won; its event item if never packed), and what an earlier try
+        // of it still owes
+        let (mut past_coins, mut past_pack) = (false, None);
+        if let Day::Past { coins, event } = day {
+            let (owed_coins, owed_pack) = progress::owed(&doc, &date);
+            past_coins = (coins && doc["daily"].get(&date).is_none()) || owed_coins;
+            past_pack = event.filter(|(e, _)| owed_pack || !progress::packed(&doc, suitcase::name(e), &date));
+        }
+        // today's first win of an event day, for a VIP: its item is noted packed, so the archive
+        // never packs that day again
+        let packs_today = matches!(day, Day::Today) && win.lane == Lane::Daily && doc["daily"].get(&date).is_none();
         let changed = match progress::apply(&mut doc, win, win.claim_id.as_deref(), win.n, boards) {
             Err(Wait::Order) => return retry("order"),
             Ok(changed) => changed,
         };
+        if packs_today {
+            if let Some((e, _)) = suitcase::to_pack(&date, vip) {
+                progress::mark_packed(&mut doc, suitcase::name(e), &date);
+            }
+        }
+        if let Some((e, _)) = past_pack {
+            progress::mark_packed(&mut doc, suitcase::name(e), &date);
+        }
+        let owes = past_coins || past_pack.is_some();
+        if owes {
+            progress::owe(&mut doc, &date, past_coins, past_pack.is_some());
+        }
         // THE KIT is due once the player is past board 1 (this win included) and its mark
         // still reads 0: board 1's first win, or the next win of a player who was past it
         // before the kit existed. The record notes a mark read as 1, so it is read no more.
@@ -791,13 +950,15 @@ mod function {
         let counts = count::summary(&doc, count::plan());
         let recounted = doc["counts"] != counts;
         doc["counts"] = counts;
-        if changed || marked || recounted || !stored {
+        if changed || marked || recounted || owes || !stored {
             if let Err(v) = write_save(player, crate::PROGRESS, &doc) {
                 return v;
             }
         }
-        let mut verdict = match win.lane {
-            Lane::Daily => daily_win(game, player, win, late, kit),
+        let mut verdict = match (win.lane.clone(), day) {
+            // a past day pays no kit (it waits for the next win)
+            (Lane::Daily, Day::Past { coins, .. }) => past_win(game, player, win, &mut doc, coins, past_coins, past_pack, vip),
+            (Lane::Daily, d) => daily_win(game, player, win, matches!(d, Day::Late), kit, vip),
             _ => board_win(player, win, kit),
         };
         if verdict["status"] != "retry" {
@@ -812,6 +973,12 @@ mod function {
         verdict
     }
 
+    /// THE PLATFORM'S WORD ON VIP: None while the platform cannot say (SDK 17.0.0, docs/vip.md).
+    /// When it adds a read, this is the one function to change (vip::decide does the rest).
+    fn platform_vip(_player: &str) -> Option<bool> {
+        None
+    }
+
     impl Guest for Function {
         fn handle(input: Vec<u8>) -> Result<Vec<u8>, String> {
             let ctx = host::get_context();
@@ -822,18 +989,26 @@ mod function {
                 return Ok(json!({ "v": 1, "levels": claim::LEVELS }).to_string().into_bytes());
             }
             let asked = serde_json::from_slice::<Value>(&input).unwrap_or(Value::Null);
+            // VIP for this call (vip.rs): every answer below says it, so the game follows the server
+            let vip = vip::decide(&ctx.channel, &asked, platform_vip(&player));
+            let said = |mut v: Value| -> Result<Vec<u8>, String> {
+                v["vip"] = json!(vip);
+                Ok(v.to_string().into_bytes())
+            };
+            if asked["what"] == "vip" {
+                return said(json!({ "v": 1, "status": "vip" }));
+            }
             if asked["what"] == "suitcase" {
-                return Ok(suitcase_read(&player).to_string().into_bytes());
+                return said(suitcase_read(&player, vip));
             }
             if asked["what"] == "swap" {
-                return Ok(swap(&ctx.game_id, &player, &asked).to_string().into_bytes());
+                return said(swap(&ctx.game_id, &player, &asked, vip));
             }
-            if serde_json::from_slice::<Value>(&input).ok().and_then(|v| v.get("what").cloned()) == Some(json!("progress")) {
-                let verdict = match read_progress(&player) {
+            if asked["what"] == "progress" {
+                return said(match read_progress(&player) {
                     Ok((doc, _)) => json!({ "v": 1, "status": "progress", "progress": public(&doc) }),
                     Err(v) => v,
-                };
-                return Ok(verdict.to_string().into_bytes());
+                });
             }
             let data = claim::data();
             let verdict = match claim::check(&input, &data) {
@@ -844,10 +1019,10 @@ mod function {
                 }
                 Ok(win) => {
                     host::log(LogLevel::Info, &format!("won {} {} in {} moves, {} shuffles", win.lane.name(), win.board, win.moves, win.shuffles));
-                    verified(&ctx.game_id, &player, &win, data.campaign.len() as u64)
+                    verified(&ctx.game_id, &player, &win, data.campaign.len() as u64, vip)
                 }
             };
-            Ok(verdict.to_string().into_bytes())
+            said(verdict)
         }
     }
 

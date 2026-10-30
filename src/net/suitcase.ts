@@ -1,70 +1,81 @@
-// THE DAILY SUITCASE, the platform's word (docs/daily-suitcase.md; the creator, 2026-10-27). The
-// screens (src/ui/suitcase.ts, through src/ui/suitcase-data.ts) draw from current() and past() and
-// redraw on onChange. Everything in it is the server's: the win checker
-// (functions/checker/src/suitcase.rs) holds the counts as platform items, packs the day's item in
-// the daily's first win of the player's day, decides a swap, and pays a full suitcase's table and
-// helpers once (the month's own mark, never a flag of ours). This file adds only what the player
-// reads: the theme, the item titles and the slot order (Levels' src/content/levels/suitcases.json)
-// and the days left, from the platform's date for the daily (src/net/daily.ts), never the device's.
+// THE EVENT, the platform's word: two weeks of dailies for Gem Arcade VIP members (docs/vip.md; the
+// Daily Suitcase, docs/daily-suitcase.md, reshaped by the creator, 2026-10-30). The screens
+// (src/ui/suitcase.ts, through src/ui/suitcase-data.ts) draw from current() and past() and redraw on
+// onChange. Everything in it is the server's: the win checker (functions/checker/src/suitcase.rs)
+// holds the counts as platform items, packs a day's item on a VIP's first win of that day (today's,
+// or a past day's from the archive), decides a swap, and pays a full suitcase's table and helpers
+// once (the event's own mark, never a flag of ours). This file adds only what the player reads: the
+// theme, the item titles, the slot order and the days (Levels' src/content/levels/events.json) and
+// the days left, from the platform's date for the daily (src/net/daily.ts), never the device's.
 //
-//   suitcase.current()       this month's suitcase, or null (not read yet, or no event this month)
-//   suitcase.past()          the shelf: closed months, newest first, at most 12, empty ones too
-//   suitcase.swap(want)      3 spares (the server picks: biggest stacks first) for missing item `want`:
-//                            "ok" | "short" (fewer than 3 spares) | "has" (held already) |
-//                            "closed" (not this month's) | "failed" (no answer: try again later)
-//   suitcase.lastPrize()     a prize that landed since last asked ({ month, helpers }), once
-//   suitcase.onChange(fn)    hear any change. Returns the unsubscribe.
+//   suitcase.current()          the running event's suitcase, or null (not read yet, no event now,
+//                               or not VIP)
+//   suitcase.past()             the archive: past events, newest first, at most 12, empty ones too
+//   suitcase.swap(want, event?) 2 spares (the server picks: biggest stacks first) for missing item
+//                               `want`, in the running event or a past one (its id; the running one
+//                               when left out): "ok" | "short" (too few spares) | "has" (held
+//                               already) | "closed" (not open to this player, or not begun) |
+//                               "failed" (no answer: try again later)
+//   suitcase.lastPrize()        a prize that landed since last asked ({ month, helpers }), once
+//   suitcase.onChange(fn)       hear any change. Returns the unsubscribe.
 //
-// It is read from the checker ({"v":1,"what":"suitcase"}, which also pays a full suitcase found
-// unpaid) when the game starts, when the player's day turns, and after a daily verdict that does
-// not carry the month itself (claims.ts hands the ones that do to accept()). A read that gets no
-// answer is tried again with a backoff, and at once when the connection comes back.
-// Unframed (a plain tab, the play-test tool) there is no platform: no suitcase.
-// ON HOLD (the creator, 2026-10-29): while src/net/suitcase-ids.json says `"on": false` nothing
-// here asks the checker (which would answer an empty suitcase and swap nothing): current() is
-// null, past() empty, swap() "closed".
+// Only a VIP has the event (src/net/vip.ts; the checker decides, and answers "off" to anyone else):
+// it is read from the checker ({"v":1,"what":"suitcase"}, which also pays a full suitcase found
+// unpaid) when the game starts and the player is VIP, when VIP turns on, when the player's day
+// turns, and after a daily verdict that does not carry the event itself (claims.ts hands the ones
+// that do to accept()). A read that gets no answer is tried again with a backoff, and at once when
+// the connection comes back. Not VIP, or the switch off (src/net/suitcase-ids.json `on`), nothing
+// here asks: current() is null, past() empty, swap() "closed". Unframed (a plain tab, the play-test
+// tool) there is no platform: no suitcase.
 
 import { gem } from "../gem";
-import SCHEDULE from "../content/levels/suitcases.json";
+import EVENT_FILE from "../content/levels/events.json";
 import IDS from "./suitcase-ids.json";
 import { currentDaily, onDailyChange } from "./daily";
 import { helpers, type HelperKind } from "./helpers";
 import { noAnswer, refusalOf } from "./no-answer";
 import { backoff, heard as hearRefusal, whenDue } from "./pace";
 import { onOnline, suspect } from "../ui/online";
-import { heardVip, vipFields } from "./vip";
+import { heardVip, isVip, onVipChange, vipFields } from "./vip";
 
 export type SuitItem = { id: string; title: string };
 
 export type Suitcase = {
-  /** "2026-11": the month, on the player's own calendar. */
+  /** "halloween-2026": the event's id (events.json). Always set by this file; optional only while UI's preview (src/ui/suitcase-data.ts) still builds months. */
+  id?: string;
+  /** The same id, for screens written when an event was a month. */
   month: string;
   /** "Ski Trip". */
   theme: string;
-  /** The 10, in slot order. */
+  /** About 7, in slot order. */
   items: SuitItem[];
+  /** Each of its 14 days, "YYYY-MM-DD", and that day's item id (always set here, as `id`). */
+  days?: Record<string, string>;
   /** Copies held, by item id (absent: missing). */
   counts: Record<string, number>;
-  /** The month's last day, "2026-11-30". */
+  /** The event's first and last days (`start` always set here, as `id`). */
+  start?: string;
   ends: string;
-  /** Days left, today included; 0 for a closed month (the shelf). */
+  /** Days left, today included; 0 for a past event (the archive). */
   daysLeft: number;
-  /** All 10 are held. */
+  /** Every item is held. */
   complete: boolean;
-  /** What all 10 unlock: the month's table (its slug; the built-in one while a month is a stand-in) and helpers. */
+  /** What a full suitcase unlocks: the event's table (its slug; the built-in one while an event is a stand-in) and helpers. */
   prize: { table: string; tableTitle?: string; helpers: Partial<Record<HelperKind, number>> };
-  /** The prize is paid: the platform's word (the month's mark). */
+  /** The prize is paid: the platform's word (the event's mark). */
   paid: boolean;
 };
 
 export type SwapAnswer = "ok" | "short" | "has" | "closed" | "failed";
 
-type Month = { month: string; theme: string; table?: string; tableTitle?: string; items: SuitItem[]; days: Record<string, string> };
-const MONTHS = (SCHEDULE as unknown as { months: Month[] }).months;
+type EventData = { id: string; theme: string; table?: string; tableTitle?: string; start: string; end: string; items: SuitItem[]; days: Record<string, string> };
+const EVENTS = (EVENT_FILE as unknown as { events: EventData[] }).events;
 
 const framed = window.self !== window.top;
-/** The event's one switch (src/net/suitcase-ids.json): off, the checker is never asked. */
+/** The event's switch (src/net/suitcase-ids.json): on means on for VIPs. Off, the checker is never asked. */
 const on = (IDS as { on?: boolean }).on === true;
+/** Copies beyond the first that one swap takes. */
+export const SWAP_COST: number = (IDS as { spares?: number }).spares ?? 2;
 const heard = new Set<() => void>();
 let now: Suitcase | null = null;
 let shelf: Suitcase[] = [];
@@ -83,30 +94,33 @@ function daysBetween(a: string, b: string): number {
   return Math.round((at(b) - at(a)) / 86_400_000);
 }
 
-/** The server's month, with what the player reads added. Null for a month this build does not know. */
+/** The server's event, with what the player reads added. Null for an event this build does not know. */
 function view(x: unknown, today: string): Suitcase | null {
   const s = (x && typeof x === "object" ? x : {}) as Record<string, unknown>;
-  const m = MONTHS.find((mm) => mm.month === s.month);
-  if (!m) return null;
+  const id = typeof s.id === "string" ? s.id : s.month;
+  const e = EVENTS.find((ee) => ee.id === id);
+  if (!e) return null;
   const raw = (s.counts && typeof s.counts === "object" ? s.counts : {}) as Record<string, unknown>;
   const counts: Record<string, number> = {};
-  for (const it of m.items) {
+  for (const it of e.items) {
     const n = Math.floor(Number(raw[it.id]) || 0);
     if (n > 0) counts[it.id] = n;
   }
-  const ends = typeof s.ends === "string" && s.ends ? s.ends : Object.keys(m.days).sort().pop()!;
   const p = (s.prize && typeof s.prize === "object" ? s.prize : {}) as { helpers?: Partial<Record<HelperKind, number>> };
   return {
-    month: m.month,
-    theme: m.theme,
-    items: m.items.map((it) => ({ id: it.id, title: it.title })),
+    id: e.id,
+    month: e.id,
+    theme: e.theme,
+    items: e.items.map((it) => ({ id: it.id, title: it.title })),
+    days: { ...e.days },
     counts,
-    ends,
-    daysLeft: Math.max(0, daysBetween(today, ends) + 1),
+    start: e.start,
+    ends: e.end,
+    daysLeft: Math.max(0, daysBetween(today, e.end) + 1),
     complete: s.complete === true,
     prize: {
-      table: m.table ?? IDS.builtInTable,
-      ...(m.tableTitle ? { tableTitle: m.tableTitle } : {}),
+      table: e.table ?? IDS.builtInTable,
+      ...(e.tableTitle ? { tableTitle: e.tableTitle } : {}),
       helpers: p.helpers ?? IDS.prize,
     },
     paid: s.paid === true,
@@ -114,12 +128,18 @@ function view(x: unknown, today: string): Suitcase | null {
 }
 
 /** Note a prize that landed (helpers > 0 or the "suitcase" gift) and read the stock again. */
-function landed(month: string | undefined, gifts: unknown, got: unknown): void {
+function landed(event: string | undefined, gifts: unknown, got: unknown): void {
   if (!Array.isArray(gifts) || !gifts.includes("suitcase")) return;
   const h = (got && typeof got === "object" ? got : {}) as Partial<Record<HelperKind, unknown>>;
   const n = (v: unknown) => Math.max(0, Math.floor(Number(v) || 0));
-  prize = { month: month ?? now?.month ?? "", helpers: { hint: n(h.hint), undo: n(h.undo), shuffle: n(h.shuffle) } };
+  prize = { month: event ?? now?.id ?? "", helpers: { hint: n(h.hint), undo: n(h.undo), shuffle: n(h.shuffle) } };
   void helpers.refresh();
+}
+
+/** Put an event the server answered with in its place: the running one, or the archive's. */
+function place(s: Suitcase): void {
+  if (now && now.id === s.id) now = s;
+  else shelf = shelf.map((p) => (p.id === s.id ? s : p));
 }
 
 async function read(): Promise<void> {
@@ -134,8 +154,8 @@ async function read(): Promise<void> {
     tries = 0;
     now = a.current ? view(a.current, a.today) : null;
     shelf = Array.isArray(a.past) ? a.past.map((p) => view(p, a.today as string)).filter((p): p is Suitcase => p !== null) : [];
-    const months = Array.isArray(a.prizes) ? (a.prizes as string[]) : [];
-    landed(months[0], a.gifts, a.helpers);
+    const ids = Array.isArray(a.prizes) ? (a.prizes as string[]) : [];
+    landed(ids[0], a.gifts, a.helpers);
     say();
   } catch (err) {
     if (noAnswer(err)) suspect();
@@ -151,23 +171,23 @@ async function read(): Promise<void> {
   }
 }
 
-/** Read the suitcase again (at most one read at a time). */
+/** Read the suitcase again (at most one read at a time), for a VIP only. */
 function refresh(): Promise<void> {
-  if (!framed || !on) return Promise.resolve();
+  if (!framed || !on || !isVip()) return Promise.resolve();
   reading ??= read();
   return reading;
 }
 
 /**
- * A daily verdict (claims.ts): one that packed the day's item carries the month, after it;
- * any other daily answer (a resend, a late finish) reads the suitcase again.
+ * A daily verdict (claims.ts): one that packed a day's item carries its event, after it; any other
+ * daily answer (a resend, a late finish) reads the suitcase again.
  */
 export function accept(answer: Record<string, unknown>): void {
-  if (!on) return;
+  if (!on || !isVip()) return;
   if (answer.suitcase && typeof answer.suitcase === "object") {
     const s = view(answer.suitcase, currentDaily().date);
-    if (s && (!now || now.month === s.month)) now = s;
-    landed(s?.month, answer.gifts, answer.helpers);
+    if (s) place(s);
+    landed(s?.id, answer.gifts, answer.helpers);
     say();
   } else {
     void refresh();
@@ -186,13 +206,13 @@ export const suitcase = {
     heard.add(fn);
     return () => void heard.delete(fn);
   },
-  async swap(want: string): Promise<SwapAnswer> {
-    if (!on) return "closed";
-    if (!framed || !now) return "failed";
-    const month = now.month;
+  async swap(want: string, event?: string): Promise<SwapAnswer> {
+    if (!on || !isVip()) return "closed";
+    const id = event ?? now?.id;
+    if (!framed || !id) return "failed";
     try {
       await gem.awaitIdentity(10_000);
-      const a = (await gem.functions.invoke({ v: 1, what: "swap", month, want, ...vipFields() })).json() as Record<string, unknown>;
+      const a = (await gem.functions.invoke({ v: 1, what: "swap", event: id, month: id, want, ...vipFields() })).json() as Record<string, unknown>;
       heardVip(a);
       const status = a.status;
       if (status === "closed") {
@@ -201,10 +221,10 @@ export const suitcase = {
       }
       if (a.suitcase) {
         const s = view(a.suitcase, currentDaily().date);
-        if (s && now?.month === s.month) now = s;
+        if (s) place(s);
       }
       if (status === "ok") {
-        landed(month, a.gifts, a.helpers);
+        landed(id, a.gifts, a.helpers);
         say();
         return "ok";
       }
@@ -234,5 +254,15 @@ if (framed && on) {
   onDailyChange(() => void refresh());
   onOnline((up) => {
     if (up && tries > 0) void refresh();
+  });
+  // VIP on: read it; VIP off: none of it is the player's to see
+  onVipChange((vip) => {
+    if (vip) {
+      void refresh();
+    } else {
+      now = null;
+      shelf = [];
+      say();
+    }
   });
 }

@@ -15,8 +15,8 @@
       "id": "0509bc8d-f22b-5bb5-a24a-c9e93c642a75",
       "title": "Ski Lodge table",
       "award": "suitcase",
-      "month": "2026-11",
-      "icon": "tools/art/items/table-ski-lodge.png"
+      "icon": "tools/art/items/table-ski-lodge.png",
+      "event": "ski-trip-2026"
     },
     {
       "slug": "table-winter-market",
@@ -29,51 +29,45 @@
       "slug": "table-arctic-cabin",
       "id": "8c90751b-e919-5d81-a24a-bec0d0cb84bf",
       "title": "Arctic Cabin table",
-      "award": "suitcase",
-      "month": "2027-01"
+      "award": "none"
     },
     {
       "slug": "table-carnival",
       "id": "a872b829-18d1-5346-8dfe-5bd6e6edf540",
       "title": "Carnival table",
-      "award": "suitcase",
-      "month": "2027-02"
+      "award": "none"
     },
     {
       "slug": "table-flower-market",
       "id": "55cf8fa9-c5b5-521d-b10f-a42cb9facfe9",
       "title": "Flower Market table",
-      "award": "suitcase",
-      "month": "2027-03"
+      "award": "none"
     },
     {
       "slug": "table-blossom-picnic",
       "id": "4cf6826d-d0ac-560f-b642-9e621a52d88a",
       "title": "Blossom Picnic table",
-      "award": "suitcase",
-      "month": "2027-04"
+      "award": "none"
     },
     {
       "slug": "table-roadside-diner",
       "id": "af06c306-677c-5ba5-8244-d65d27b17aef",
       "title": "Roadside Diner table",
-      "award": "suitcase",
-      "month": "2027-05"
+      "award": "none"
     },
     {
       "slug": "table-island-terrace",
       "id": "992429f8-a991-5ac2-b96a-bc11296e9635",
       "title": "Island Terrace table",
-      "award": "suitcase",
-      "month": "2027-06"
+      "award": "none"
     },
     {
       "slug": "table-winter-dusk",
       "id": "681f5677-95d7-573d-ab58-9b3f3adc73fa",
       "title": "Winter Dusk table",
       "award": "suitcase",
-      "month": "2026-12",
-      "icon": "tools/art/items/table-winter-dusk.png"
+      "icon": "tools/art/items/table-winter-dusk.png",
+      "event": "winter-market-2026"
     },
     {
       "slug": "table-paris-cafe",

@@ -1,0 +1,365 @@
+{
+  "note": "THE OLD MONTHLY SUITCASES (Levels' suitcases.json until 2026-10-30), events no more (docs/vip.md): their items and prize marks stay declared in the game config, so no id is reused and a player keeps what they hold. Written once by tools/server/make-config.mts; never edit.",
+  "months": [
+    {
+      "month": "2026-11",
+      "items": [
+        {
+          "id": "item-2026-11-01",
+          "title": "Ski goggles"
+        },
+        {
+          "id": "item-2026-11-02",
+          "title": "Bobble hat"
+        },
+        {
+          "id": "item-2026-11-03",
+          "title": "Mittens"
+        },
+        {
+          "id": "item-2026-11-04",
+          "title": "Ski boots"
+        },
+        {
+          "id": "item-2026-11-05",
+          "title": "Nordic jumper"
+        },
+        {
+          "id": "item-2026-11-06",
+          "title": "Striped scarf"
+        },
+        {
+          "id": "item-2026-11-07",
+          "title": "Earmuffs"
+        },
+        {
+          "id": "item-2026-11-08",
+          "title": "Ice skates"
+        },
+        {
+          "id": "item-2026-11-09",
+          "title": "Fondue pot"
+        },
+        {
+          "id": "item-2026-11-10",
+          "title": "Hot-water bottle"
+        }
+      ]
+    },
+    {
+      "month": "2026-12",
+      "items": [
+        {
+          "id": "item-2026-12-01",
+          "title": "Glass bauble"
+        },
+        {
+          "id": "item-2026-12-02",
+          "title": "Wooden nutcracker"
+        },
+        {
+          "id": "item-2026-12-03",
+          "title": "Roasted chestnuts"
+        },
+        {
+          "id": "item-2026-12-04",
+          "title": "Hot cider"
+        },
+        {
+          "id": "item-2026-12-05",
+          "title": "Paper star lantern"
+        },
+        {
+          "id": "item-2026-12-06",
+          "title": "Carved reindeer"
+        },
+        {
+          "id": "item-2026-12-07",
+          "title": "Gift box"
+        },
+        {
+          "id": "item-2026-12-08",
+          "title": "Candle arch"
+        },
+        {
+          "id": "item-2026-12-09",
+          "title": "Knitted stocking"
+        },
+        {
+          "id": "item-2026-12-10",
+          "title": "Pine wreath"
+        }
+      ]
+    },
+    {
+      "month": "2027-01",
+      "items": [
+        {
+          "id": "item-2027-01-01",
+          "title": "Headlamp"
+        },
+        {
+          "id": "item-2027-01-02",
+          "title": "Trapper hat"
+        },
+        {
+          "id": "item-2027-01-03",
+          "title": "Wool socks"
+        },
+        {
+          "id": "item-2027-01-04",
+          "title": "Camera tripod"
+        },
+        {
+          "id": "item-2027-01-05",
+          "title": "Kuksa cup"
+        },
+        {
+          "id": "item-2027-01-06",
+          "title": "Cinnamon bun"
+        },
+        {
+          "id": "item-2027-01-07",
+          "title": "Kick-sled"
+        },
+        {
+          "id": "item-2027-01-08",
+          "title": "Felt slippers"
+        },
+        {
+          "id": "item-2027-01-09",
+          "title": "Pocket telescope"
+        },
+        {
+          "id": "item-2027-01-10",
+          "title": "Ice lantern"
+        }
+      ]
+    },
+    {
+      "month": "2027-02",
+      "items": [
+        {
+          "id": "item-2027-02-01",
+          "title": "Venetian mask"
+        },
+        {
+          "id": "item-2027-02-02",
+          "title": "Feather fan"
+        },
+        {
+          "id": "item-2027-02-03",
+          "title": "Tambourine"
+        },
+        {
+          "id": "item-2027-02-04",
+          "title": "Maracas"
+        },
+        {
+          "id": "item-2027-02-05",
+          "title": "Jester hat"
+        },
+        {
+          "id": "item-2027-02-06",
+          "title": "Party popper"
+        },
+        {
+          "id": "item-2027-02-07",
+          "title": "Sequinned shoes"
+        },
+        {
+          "id": "item-2027-02-08",
+          "title": "Bead necklaces"
+        },
+        {
+          "id": "item-2027-02-09",
+          "title": "Party horn"
+        },
+        {
+          "id": "item-2027-02-10",
+          "title": "Plumed tiara"
+        }
+      ]
+    },
+    {
+      "month": "2027-03",
+      "items": [
+        {
+          "id": "item-2027-03-01",
+          "title": "Wooden clogs"
+        },
+        {
+          "id": "item-2027-03-02",
+          "title": "Tulip bulbs"
+        },
+        {
+          "id": "item-2027-03-03",
+          "title": "Bicycle basket"
+        },
+        {
+          "id": "item-2027-03-04",
+          "title": "Garden trowel"
+        },
+        {
+          "id": "item-2027-03-05",
+          "title": "Flower bucket"
+        },
+        {
+          "id": "item-2027-03-06",
+          "title": "Stroopwafel"
+        },
+        {
+          "id": "item-2027-03-07",
+          "title": "Watering can"
+        },
+        {
+          "id": "item-2027-03-08",
+          "title": "Pinwheel"
+        },
+        {
+          "id": "item-2027-03-09",
+          "title": "Wellies"
+        },
+        {
+          "id": "item-2027-03-10",
+          "title": "Cheese wheel"
+        }
+      ]
+    },
+    {
+      "month": "2027-04",
+      "items": [
+        {
+          "id": "item-2027-04-01",
+          "title": "Furoshiki bundle"
+        },
+        {
+          "id": "item-2027-04-02",
+          "title": "Sakura mochi"
+        },
+        {
+          "id": "item-2027-04-03",
+          "title": "Kokeshi doll"
+        },
+        {
+          "id": "item-2027-04-04",
+          "title": "Sakura tea"
+        },
+        {
+          "id": "item-2027-04-05",
+          "title": "Geta sandals"
+        },
+        {
+          "id": "item-2027-04-06",
+          "title": "Wind chime"
+        },
+        {
+          "id": "item-2027-04-07",
+          "title": "Marble soda"
+        },
+        {
+          "id": "item-2027-04-08",
+          "title": "Carp streamer"
+        },
+        {
+          "id": "item-2027-04-09",
+          "title": "Kendama"
+        },
+        {
+          "id": "item-2027-04-10",
+          "title": "Taiyaki"
+        }
+      ]
+    },
+    {
+      "month": "2027-05",
+      "items": [
+        {
+          "id": "item-2027-05-01",
+          "title": "Folded map"
+        },
+        {
+          "id": "item-2027-05-02",
+          "title": "Aviator sunglasses"
+        },
+        {
+          "id": "item-2027-05-03",
+          "title": "Cool box"
+        },
+        {
+          "id": "item-2027-05-04",
+          "title": "Fuzzy dice"
+        },
+        {
+          "id": "item-2027-05-05",
+          "title": "Cassette tape"
+        },
+        {
+          "id": "item-2027-05-06",
+          "title": "Jerry can"
+        },
+        {
+          "id": "item-2027-05-07",
+          "title": "Dashboard dog"
+        },
+        {
+          "id": "item-2027-05-08",
+          "title": "Travel pillow"
+        },
+        {
+          "id": "item-2027-05-09",
+          "title": "Car keys"
+        },
+        {
+          "id": "item-2027-05-10",
+          "title": "Takeaway coffee"
+        }
+      ]
+    },
+    {
+      "month": "2027-06",
+      "items": [
+        {
+          "id": "item-2027-06-01",
+          "title": "Straw tote"
+        },
+        {
+          "id": "item-2027-06-02",
+          "title": "Espadrilles"
+        },
+        {
+          "id": "item-2027-06-03",
+          "title": "Worry beads"
+        },
+        {
+          "id": "item-2027-06-04",
+          "title": "Olive-oil bottle"
+        },
+        {
+          "id": "item-2027-06-05",
+          "title": "Sea sponge"
+        },
+        {
+          "id": "item-2027-06-06",
+          "title": "Fisherman's cap"
+        },
+        {
+          "id": "item-2027-06-07",
+          "title": "Painted plate"
+        },
+        {
+          "id": "item-2027-06-08",
+          "title": "Leather sandals"
+        },
+        {
+          "id": "item-2027-06-09",
+          "title": "Beach towel"
+        },
+        {
+          "id": "item-2027-06-10",
+          "title": "Shell necklace"
+        }
+      ]
+    }
+  ]
+}

@@ -175,10 +175,11 @@ fn main() {
     let counts = json!({ "counters": counters, "marks": marks, "trips": last });
     fs::write(Path::new(&env::var("OUT_DIR").unwrap()).join("counts.json"), counts.to_string()).unwrap();
 
-    // THE DAILY SUITCASE (OUT_DIR/suitcases.json, read by src/suitcase.rs): Levels' months
-    // (src/content/levels/suitcases.json) with each item's and each month's prize mark's id
-    // (name-based, exactly as make-config.mts writes them into the config), the month's table
-    // item (src/net/tables.json) unless it is the built-in table, and the fixed ids
+    // THE EVENT (OUT_DIR/suitcases.json, read by src/suitcase.rs; docs/vip.md): Levels' two-week
+    // events (src/content/levels/events.json; until it lands, the old months of suitcases.json, each
+    // read as one event named by its month) with each item's and each event's prize mark's id
+    // (name-based, exactly as make-config.mts writes them into the config), the event's table item
+    // (src/net/tables.json) unless it is the built-in table, and the fixed ids
     // (src/net/suitcase-ids.json). The schedule is the date's, so a day's item is the same
     // whichever version of its board was played. A daily board that names its item must name
     // its date's, and hold it as one of its own pictures (check.mts proves the same).
@@ -188,43 +189,57 @@ fn main() {
     // every player's own table is no item: one that is both would be paid for by nothing
     assert!(
         !table_items.iter().any(|t| t["slug"] == built_in),
-        "{built_in} is an item in src/net/tables.json and also src/net/suitcase-ids.json's builtInTable: a month showing it would pay no table"
+        "{built_in} is an item in src/net/tables.json and also src/net/suitcase-ids.json's builtInTable: an event showing it would pay no table"
     );
+    let events_file = levels.join("events.json");
     let schedule = levels.join("suitcases.json");
+    println!("cargo:rerun-if-changed={}", events_file.display());
     println!("cargo:rerun-if-changed={}", schedule.display());
-    let source: Vec<Value> = fs::read_to_string(&schedule)
-        .ok()
-        .map(|t| serde_json::from_str::<Value>(&t).unwrap_or_else(|e| panic!("{}: {e}", schedule.display())))
-        .and_then(|v| v["months"].as_array().cloned())
-        .unwrap_or_default();
+    let parse = |p: &Path| -> Option<Value> { fs::read_to_string(p).ok().map(|t| serde_json::from_str::<Value>(&t).unwrap_or_else(|e| panic!("{}: {e}", p.display()))) };
+    let source: Vec<Value> = match parse(&events_file) {
+        Some(v) => v["events"].as_array().cloned().unwrap_or_default(),
+        None => parse(&schedule)
+            .and_then(|v| v["months"].as_array().cloned())
+            .unwrap_or_default()
+            .into_iter()
+            .map(|mut m| {
+                let days = m["days"].as_object().cloned().unwrap_or_default();
+                m["id"] = m["month"].clone();
+                m["start"] = json!(days.keys().min());
+                m["end"] = json!(days.keys().max());
+                m
+            })
+            .collect(),
+    };
     let daily = read(&levels.join("daily.json"));
     let by_date: std::collections::HashMap<&str, &Value> =
         daily["levels"].as_array().into_iter().flatten().filter_map(|l| Some((l["date"].as_str()?, l))).collect();
-    let mut months: Vec<Value> = Vec::new();
+    let mut events: Vec<Value> = Vec::new();
     let mut unmarked = 0;
     for m in &source {
-        let month = m["month"].as_str().expect("a suitcase month names its month");
+        let id = m["id"].as_str().expect("an event names its id");
         let items: Vec<Value> = m["items"]
             .as_array()
-            .unwrap_or_else(|| panic!("suitcases.json {month}: no items"))
+            .unwrap_or_else(|| panic!("event {id}: no items"))
             .iter()
             .map(|i| {
-                let id = i["id"].as_str().unwrap_or_else(|| panic!("suitcases.json {month}: an item with no id"));
-                json!({ "id": id, "uuid": uuid5(&format!("suitcase:item:{id}")) })
+                let item = i["id"].as_str().unwrap_or_else(|| panic!("event {id}: an item with no id"));
+                json!({ "id": item, "uuid": uuid5(&format!("suitcase:item:{item}")) })
             })
             .collect();
-        let days = m["days"].as_object().unwrap_or_else(|| panic!("suitcases.json {month}: no days"));
+        let days = m["days"].as_object().unwrap_or_else(|| panic!("event {id}: no days"));
+        let (start, end) = (m["start"].as_str().unwrap_or_default(), m["end"].as_str().unwrap_or_default());
         for (date, item) in days {
             let item = item.as_str().unwrap_or_default();
-            assert!(date.starts_with(month), "suitcases.json {month}: {date} is not in the month");
-            assert!(items.iter().any(|i| i["id"] == item), "suitcases.json {month}: {date}'s item {item} is not one of the month's");
+            assert!(start <= date.as_str() && date.as_str() <= end, "event {id}: {date} is outside {start} to {end}");
+            assert!(items.iter().any(|i| i["id"] == item), "event {id}: {date}'s item {item} is not one of the event's");
             let Some(level) = by_date.get(date.as_str()) else { continue };
             match level["item"]["id"].as_str() {
                 Some(named) if named == item => assert!(
                     level["pictures"].as_array().into_iter().flatten().any(|p| p["id"] == item),
                     "daily {date}: its item {item} is not one of its pictures"
                 ),
-                Some(named) => panic!("daily {date}: its board's item is {named}, but suitcases.json says {item}"),
+                Some(named) => panic!("daily {date}: its board's item is {named}, but the event {id} says {item}"),
                 None => unmarked += 1,
             }
         }
@@ -235,10 +250,13 @@ fn main() {
             let t = table_items
                 .iter()
                 .find(|t| t["slug"] == slug)
-                .unwrap_or_else(|| panic!("suitcases.json {month}: its table {slug} is not in src/net/tables.json (node tools/server/make-config.mts adds it)"));
+                .unwrap_or_else(|| panic!("event {id}: its table {slug} is not in src/net/tables.json (node tools/server/make-config.mts adds it)"));
             json!({ "slug": slug, "uuid": t["id"] })
         };
-        months.push(json!({ "month": month, "items": items, "table": table, "mark": uuid5(&format!("suitcase:prize:{month}")), "days": days }));
+        events.push(json!({
+            "id": id, "theme": m["theme"], "start": start, "end": end, "items": items, "table": table,
+            "mark": uuid5(&format!("suitcase:prize:{id}")), "days": days,
+        }));
     }
     if unmarked > 0 {
         println!("cargo:warning=suitcase: {unmarked} scheduled daily boards do not name their item yet (packing goes by the date all the same)");
@@ -247,7 +265,7 @@ fn main() {
     let on = fixed["on"].as_bool() == Some(true);
     let suitcases = json!({
         "on": on, "event": fixed["event"], "prize": fixed["prize"], "spares": fixed["spares"],
-        "stack": fixed["stack"], "shelf": fixed["shelf"], "months": months,
+        "stack": fixed["stack"], "shelf": fixed["shelf"], "events": events,
     });
     fs::write(Path::new(&env::var("OUT_DIR").unwrap()).join("suitcases.json"), suitcases.to_string()).unwrap();
 }

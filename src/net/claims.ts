@@ -92,6 +92,13 @@ interface Answered {
   suitcase?: Suitcase;
   /** Platform achievements this win unlocked (release only), earlier wins' catch-ups included: by id (src/net/achievements.json), with the points credited. src/net/achievements.ts's onUnlock hears them. */
   achievements?: { id: string; points: number }[];
+  /**
+   * Daily only, a VIP's past day (docs/vip.md): "paid", its Coins paid now (`coins` is what landed);
+   * "won_before", won already, nothing more; "event_only", older than the archive, so only its event
+   * item (if not packed before). A past day for a player who is not VIP is refused "vip_only", and
+   * a VIP's day older than the archive and in no event "too_old".
+   */
+  archive?: "paid" | "won_before" | "event_only";
   /** Daily only: the date, the time the board shows, whether the result is on the day's board, whether it is this player's first of the day. */
   date?: string;
   ms?: number;
@@ -326,6 +333,7 @@ async function send(h: Held): Promise<void> {
       ...(packed ? { packed } : {}),
       ...(month ? { suitcase: month } : {}),
       ...(unlocked.length ? { achievements: unlocked } : {}),
+      ...(answer.archive === "paid" || answer.archive === "won_before" || answer.archive === "event_only" ? { archive: answer.archive } : {}),
     }, answer.progress);
   }
   console.warn(`[claims] ${lane} ${board} refused: ${String(answer.reason)}`);

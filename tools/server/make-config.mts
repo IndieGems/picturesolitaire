@@ -77,33 +77,45 @@ function uuid5(name) {
 }
 
 // THE DAILY SUITCASE (docs/daily-suitcase.md; functions/checker/src/suitcase.rs): Levels'
-// months (src/content/levels/suitcases.json) and the fixed ids (src/net/suitcase-ids.json).
-// Each month's table that is not the built-in one is a table item: its entry in
-// src/net/tables.json is added here (award "suitcase", the month), its id made once from its
-// slug and kept, its title and icon following Art's.
+// events (src/content/levels/events.json: two weeks each, for VIPs, docs/vip.md) and the fixed ids
+// (src/net/suitcase-ids.json). Each event's table that is not the built-in one is a table item: its
+// entry in src/net/tables.json is added here (award "suitcase", the event), its id made once from
+// its slug and kept, its title and icon following Art's. The old months (suitcases.json, kept as a
+// snapshot in src/net/suitcase-retired.json) are events no more, but their items and prize marks
+// stay declared: an id is never reused, and a player keeps what they hold.
 const SUITCASE = JSON.parse(readFileSync(join(root, "src/net/suitcase-ids.json"), "utf8"));
+const EVENTS_FILE = join(root, "src/content/levels/events.json");
+const EVENTS = existsSync(EVENTS_FILE) ? JSON.parse(readFileSync(EVENTS_FILE, "utf8")).events : [];
+const RETIRED_FILE = join(root, "src/net/suitcase-retired.json");
 const SCHEDULE = join(root, "src/content/levels/suitcases.json");
-const MONTHS = existsSync(SCHEDULE) ? JSON.parse(readFileSync(SCHEDULE, "utf8")).months : [];
-const markSlug = (month) => `suitcase_prize_${month.replace("-", "_")}`;
+if (!existsSync(RETIRED_FILE) && existsSync(SCHEDULE)) {
+  const months = JSON.parse(readFileSync(SCHEDULE, "utf8")).months.map((m) => ({ month: m.month, items: m.items }));
+  writeFileSync(RETIRED_FILE, JSON.stringify({ note: "THE OLD MONTHLY SUITCASES (Levels' suitcases.json until 2026-10-30), events no more (docs/vip.md): their items and prize marks stay declared in the game config, so no id is reused and a player keeps what they hold. Written once by tools/server/make-config.mts; never edit.", months }, null, 2) + "\n");
+  console.log("config: src/net/suitcase-retired.json keeps the old months' items (commit it)");
+}
+const RETIRED = existsSync(RETIRED_FILE) ? JSON.parse(readFileSync(RETIRED_FILE, "utf8")).months : [];
+const markSlug = (id) => `suitcase_prize_${id.replace(/-/g, "_")}`;
 {
   const file = join(root, "src/net/tables.json");
   const doc = JSON.parse(readFileSync(file, "utf8"));
   const before = JSON.stringify(doc);
-  for (const m of MONTHS) {
-    if (!m.table || m.table === SUITCASE.builtInTable) continue;
-    const title = /table$/i.test(m.tableTitle ?? "") ? m.tableTitle : `${m.tableTitle ?? m.theme} table`;
-    const icon = `tools/art/items/${m.table}.png`;
-    let t = doc.tables.find((x) => x.slug === m.table);
-    if (!t) doc.tables.push((t = { slug: m.table, id: uuid5(`table:${m.table}`) }));
-    Object.assign(t, { title, award: "suitcase", month: m.month });
+  for (const e of EVENTS) {
+    if (!e.table || e.table === SUITCASE.builtInTable) continue;
+    const title = /table$/i.test(e.tableTitle ?? "") ? e.tableTitle : `${e.tableTitle ?? e.theme} table`;
+    const icon = `tools/art/items/${e.table}.png`;
+    let t = doc.tables.find((x) => x.slug === e.table);
+    if (!t) doc.tables.push((t = { slug: e.table, id: uuid5(`table:${e.table}`) }));
+    Object.assign(t, { title, award: "suitcase", event: e.id });
+    delete t.month;
     if (existsSync(join(root, icon))) t.icon = icon;
   }
-  // a suitcase table no month names any more keeps its id and item, awarded by nothing (the creator,
+  // a suitcase table no event names any more keeps its id and item, awarded by nothing (the creator,
   // 2026-10-28: Winter Market, kept for a later winter event, when Winter Dusk took December)
   for (const t of doc.tables) {
-    if (t.award !== "suitcase" || MONTHS.some((m) => m.table === t.slug)) continue;
+    if (t.award !== "suitcase" || EVENTS.some((e) => e.table === t.slug)) continue;
     t.award = "none";
     delete t.month;
+    delete t.event;
   }
   // the built-in table is every player's: an item of it would be granted and never needed, and a
   // month showing it would pay no table (the checker's rule), so it must not be one
@@ -175,14 +187,14 @@ const SOLD = [...TABLES.filter((t) => t.award === "shop").map((t) => ({ ...t, ki
   }
 }
 {
-  // the suitcase's events are recorded by the checker under a declared month: every month needs declaring
+  // the event's analytics are recorded by the checker under a declared event: every event needs declaring
   const text = readFileSync(CONFIG, "utf8");
   for (const id of ["suitcase_item", "suitcase_swap", "suitcase_complete"]) {
     const at = text.indexOf(`- id: ${id}\n`);
     const block = at < 0 ? "" : text.slice(at, text.indexOf("\n  - id:", at + 1));
-    const missing = MONTHS.filter((m) => !block.includes(`"${m.month}"`)).map((m) => m.month);
+    const missing = EVENTS.filter((e) => !block.includes(`"${e.id}"`)).map((e) => e.id);
     if (at < 0 || missing.length) {
-      console.error(`make-config: analytics event ${id} ${at < 0 ? "is not declared" : `does not declare the month${missing.length > 1 ? "s" : ""} ${missing.join(", ")}`} (gem-backend-game-config.yaml, analytics_events)`);
+      console.error(`make-config: analytics event ${id} ${at < 0 ? "is not declared" : `does not declare the event${missing.length > 1 ? "s" : ""} ${missing.join(", ")}`} (gem-backend-game-config.yaml, analytics_events)`);
       process.exit(1);
     }
   }
@@ -378,29 +390,42 @@ y.push("      platform_grants:");
 y.push("        - mode: on_complete");
 y.push(`          amount: ${DAILY_COINS}`);
 y.push("          target: { platform_currency_slug: ARCADE_TICKETS }");
-if (MONTHS.length) {
-  // the event's one switch (src/net/suitcase-ids.json `on`): off, the challenge, its marks and the
-  // items stay declared (a player's items stay put) but the Arcade shows no "Daily Suitcase"
-  const on = SUITCASE.on === true;
-  y.push("  # THE DAILY SUITCASE, the monthly event (docs/daily-suitcase.md): the Arcade shows this");
-  y.push("  # challenge; the win checker keeps its meter at the month's items held (the day's item");
-  y.push("  # is packed by the daily's first win, a swap adds one). It pays nothing itself: a full");
-  y.push("  # suitcase's table and helpers are the checker's own order, once (the marks below).");
-  if (!on) {
-    y.push("  # ON HOLD (the creator, 2026-10-29; src/net/suitcase-ids.json \"on\": false): not displayed,");
-    y.push("  # and the checker moves no meter, packs and swaps nothing and pays no prize.");
-  }
+// THE DAILY ARCHIVE (docs/vip.md; functions/checker/src/lib.rs ARCHIVE_ID): a VIP's first win of a
+// past day in the archive adds one, which pays that day's Coins, as the day itself would have.
+const ARCHIVE_ID = "795d5832-be77-44b1-a949-6ae8ec1c629d";
+y.push("  # THE DAILY ARCHIVE (docs/vip.md): a VIP's first verified win of a past day in the archive (this");
+y.push("  # month and the two before, with a day of slack) adds one day here, which pays that day's Coins,");
+y.push("  # once (the checker's record says which days were paid). Only the win checker writes it.");
+y.push(`  - id: ${ARCHIVE_ID}`);
+y.push("    slug: daily_archive");
+y.push(`    display_name: "Past daily puzzles"`);
+y.push("    config:");
+y.push("      function_may_grant: true");
+y.push("      platform_grants:");
+y.push("        - mode: on_add");
+y.push(`          per_unit: ${DAILY_COINS}`);
+y.push("          target: { platform_currency_slug: ARCADE_TICKETS }");
+if (EVENTS.length || RETIRED.length) {
+  y.push("  # THE EVENT (docs/vip.md): two weeks of dailies, for VIPs only, so the Arcade never shows it (it");
+  y.push("  # cannot show a challenge to VIPs alone). This challenge stays declared and is written by nothing");
+  y.push("  # now; the checker packs the day's item, swaps and pays each event's prize once (the marks below).");
   y.push(`  - id: ${SUITCASE.event.id}`);
   y.push(`    slug: ${SUITCASE.event.slug}`);
   y.push(`    display_name: "Daily Suitcase"`);
   y.push(`    description: "Pack each day's travel item from the daily picture, until all {target} are in this month's suitcase."`);
   y.push("    config:");
-  y.push(`      completion_threshold: ${MONTHS[0].items.length}`);
+  y.push("      completion_threshold: 10");
   y.push("      reset_schedule: { type: monthly, boundary: local }");
-  if (on) y.push("      platform_display: challenge");
-  y.push("  # Each month's suitcase paid: moved to 1 by the checker in the same order as its table and");
-  y.push("  # helpers, so it lands with them or not at all, once.");
-  for (const m of MONTHS) {
+  y.push("  # Each event's suitcase paid: moved to 1 by the checker in the same order as its table and");
+  y.push("  # helpers, so it lands with them or not at all, once. The old months' marks stay declared.");
+  for (const e of EVENTS) {
+    y.push(`  - id: ${uuid5(`suitcase:prize:${e.id}`)}`);
+    y.push(`    slug: ${markSlug(e.id)}`);
+    y.push(`    display_name: ${JSON.stringify(`${e.theme} suitcase full`)}`);
+    y.push("    config:");
+    y.push("      completion_threshold: 1");
+  }
+  for (const m of RETIRED) {
     y.push(`  - id: ${uuid5(`suitcase:prize:${m.month}`)}`);
     y.push(`    slug: ${markSlug(m.month)}`);
     y.push(`    display_name: "Suitcase ${m.month} full"`);
@@ -501,12 +526,15 @@ if (TRACKS.length) {
     if (existsSync(join(root, icon))) y.push(`    icon: ${icon}`);
   }
 }
-if (MONTHS.length) {
-  y.push("# The suitcase items (src/content/levels/suitcases.json): a copy held per day packed, spares");
-  y.push("# swapped by the checker; cosmetic, never traded, never written by the game.");
+if (EVENTS.length || RETIRED.length) {
+  y.push("# The event items (src/content/levels/events.json, and the old months' kept): a copy held per");
+  y.push("# day packed, spares swapped by the checker; cosmetic, never traded, never written by the game.");
   if (!TABLES.length) y.push("items:");
-  for (const m of MONTHS) {
+  const seen = new Set();
+  for (const m of [...EVENTS, ...RETIRED]) {
     for (const it of m.items) {
+      if (seen.has(it.id)) continue;
+      seen.add(it.id);
       y.push(`  - id: ${uuid5(`suitcase:item:${it.id}`)}`);
       y.push(`    slug: ${it.id}`);
       y.push(`    display_name: ${JSON.stringify(it.title)}`);

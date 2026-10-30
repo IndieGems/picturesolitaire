@@ -1,9 +1,16 @@
 {
-  "note": "THE DAILY SUITCASE's fixed ids and sizes (docs/daily-suitcase.md), read by src/net/suitcase.ts, functions/checker/build.rs and tools/server/make-config.mts. The months, their 10 items, their tables and each day's item are Levels' (src/content/levels/suitcases.json). Every other id is name-based (make-config's uuid5): an item 'suitcase:item:<item id>', a month's prize mark 'suitcase:prize:<YYYY-MM>', a month's table 'table:<slug>' (src/net/tables.json). An id never changes once uploaded. `event` is the Arcade's monthly challenge (its meter is the number of distinct items held this month); `prize` is the helpers a full suitcase pays with its table, clamped at the cap; `spares` is what one swap takes; `stack` is the most copies of one item kept; `shelf` the most closed months the game is told about; `builtInTable` is every player's own table, which is no item, so a month showing it (a stand-in) pays only the helpers. `on` is THE EVENT'S ONE SWITCH (the creator, 2026-10-29: on hold until after release, when it may return for the Gem Arcade's VIP members only): false, and no player sees the event (src/ui/suitcase-data.ts), the checker packs no item, swaps nothing and pays no prize, not even for a full suitcase already held, and the config keeps the items, the marks and the monthly challenge but the Arcade does not show it (make-config). A function cannot read the game config, so the switch is this file, compiled into the checker; turning it back on is a new checker (tools/server/build.mts, upload.mts), config (make-config.mts) and game build. functions/checker/tests/suitcase.rs holds the shipped value to false.",
-  "on": false,
-  "event": { "id": "f9849a15-3e7b-454e-a177-d7d6396cc911", "slug": "suitcase" },
-  "prize": { "hint": 2, "undo": 2, "shuffle": 1 },
-  "spares": 3,
+  "note": "THE EVENT's fixed ids and sizes (docs/vip.md; docs/daily-suitcase.md), read by src/net/suitcase.ts, functions/checker/build.rs and tools/server/make-config.mts. The events (two weeks each, about 7 items, each twice), their tables and each day's item are Levels' (src/content/levels/events.json). Every other id is name-based (make-config's uuid5): an item 'suitcase:item:<item id>', an event's prize mark 'suitcase:prize:<event id>', an event's table 'table:<slug>' (src/net/tables.json). An id never changes once uploaded. `event` is the old monthly Arcade challenge, declared and written by nothing now (the Arcade cannot show a challenge to VIPs alone); `prize` is the helpers a full suitcase pays with its table, clamped at the cap; `spares` is what one swap takes; `stack` is the most copies of one item kept; `shelf` the most past events the game is told about; `builtInTable` is every player's own table, which is no item, so an event showing it (a stand-in) pays only the helpers. `on` is THE EVENT'S SWITCH, and on means ON FOR VIPS (the creator, 2026-10-30: the event returns two weeks long for Gem Arcade VIP members only): for anyone else, and for everyone while it is false, no player sees the event (src/ui), the checker packs no item, swaps nothing and pays no prize. Who is VIP is the checker's word (functions/checker/src/vip.rs): nobody on test and release until the platform can say. A function cannot read the game config, so the switch is this file, compiled into the checker. functions/checker/tests/suitcase.rs holds the shipped value.",
+  "on": true,
+  "event": {
+    "id": "f9849a15-3e7b-454e-a177-d7d6396cc911",
+    "slug": "suitcase"
+  },
+  "prize": {
+    "hint": 2,
+    "undo": 2,
+    "shuffle": 1
+  },
+  "spares": 2,
   "stack": 31,
   "shelf": 12,
   "builtInTable": "table-sunny-day"

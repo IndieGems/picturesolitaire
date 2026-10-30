@@ -315,22 +315,22 @@ analytics_events:
   # `month` is the suitcase's own; make-config refuses to run while a month in
   # src/content/levels/suitcases.json is not declared here. `day` is the day of that month.
   - id: suitcase_item
-    description: "The day's item packed by the daily's first win of the player's day: the month's items held after it, copies of that item, the day of the month."
+    description: "A VIP's event item packed by a first win of its day (today's, or a past day's): the event's items held after it, copies of that item, the day of the event (1 to 14)."
     sources: [server]
     dimensions:
-      month: { values: ["2026-11", "2026-12", "2027-01", "2027-02", "2027-03", "2027-04", "2027-05", "2027-06", "2027-07", "2027-08", "2027-09", "2027-10", "2027-11", "2027-12"] }
+      event: { values: ["halloween-2026", "ski-trip-2026", "winter-market-2026"] }
     measures: { collected: int, copies: int, day: int }
   - id: suitcase_swap
-    description: "Three spares swapped for a missing item: the month's items held after it, spares left, the day of the month."
+    description: "Two spares swapped for a missing item, by a VIP: the event's items held after it, spares left, the day of the event (0 after it)."
     sources: [server]
     dimensions:
-      month: { values: ["2026-11", "2026-12", "2027-01", "2027-02", "2027-03", "2027-04", "2027-05", "2027-06", "2027-07", "2027-08", "2027-09", "2027-10", "2027-11", "2027-12"] }
+      event: { values: ["halloween-2026", "ski-trip-2026", "winter-market-2026"] }
     measures: { collected: int, spares_left: int, day: int }
   - id: suitcase_complete
-    description: "A month's suitcase full, its table and helpers paid: by the day's pack or by a swap, on which day of the month."
+    description: "An event's suitcase full, its table and helpers paid: by a day's pack or by a swap, on which day of the event (0 after it)."
     sources: [server]
     dimensions:
-      month: { values: ["2026-11", "2026-12", "2027-01", "2027-02", "2027-03", "2027-04", "2027-05", "2027-06", "2027-07", "2027-08", "2027-09", "2027-10", "2027-11", "2027-12"] }
+      event: { values: ["halloween-2026", "ski-trip-2026", "winter-market-2026"] }
       by: { values: ["pack", "swap"] }
     measures: { day: int }
   # FRIEND CHALLENGES (docs/friend-challenges.md), sent by the game (src/net/friends.ts): a
@@ -2400,12 +2400,21 @@ progressions:
         - mode: on_complete
           amount: 50
           target: { platform_currency_slug: ARCADE_TICKETS }
-  # THE DAILY SUITCASE, the monthly event (docs/daily-suitcase.md): the Arcade shows this
-  # challenge; the win checker keeps its meter at the month's items held (the day's item
-  # is packed by the daily's first win, a swap adds one). It pays nothing itself: a full
-  # suitcase's table and helpers are the checker's own order, once (the marks below).
-  # ON HOLD (the creator, 2026-10-29; src/net/suitcase-ids.json "on": false): not displayed,
-  # and the checker moves no meter, packs and swaps nothing and pays no prize.
+  # THE DAILY ARCHIVE (docs/vip.md): a VIP's first verified win of a past day in the archive (this
+  # month and the two before, with a day of slack) adds one day here, which pays that day's Coins,
+  # once (the checker's record says which days were paid). Only the win checker writes it.
+  - id: 795d5832-be77-44b1-a949-6ae8ec1c629d
+    slug: daily_archive
+    display_name: "Past daily puzzles"
+    config:
+      function_may_grant: true
+      platform_grants:
+        - mode: on_add
+          per_unit: 50
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  # THE EVENT (docs/vip.md): two weeks of dailies, for VIPs only, so the Arcade never shows it (it
+  # cannot show a challenge to VIPs alone). This challenge stays declared and is written by nothing
+  # now; the checker packs the day's item, swaps and pays each event's prize once (the marks below).
   - id: f9849a15-3e7b-454e-a177-d7d6396cc911
     slug: suitcase
     display_name: "Daily Suitcase"
@@ -2413,8 +2422,18 @@ progressions:
     config:
       completion_threshold: 10
       reset_schedule: { type: monthly, boundary: local }
-  # Each month's suitcase paid: moved to 1 by the checker in the same order as its table and
-  # helpers, so it lands with them or not at all, once.
+  # Each event's suitcase paid: moved to 1 by the checker in the same order as its table and
+  # helpers, so it lands with them or not at all, once. The old months' marks stay declared.
+  - id: 1d88131f-d2ab-5a92-9ce9-bfbf190cf694
+    slug: suitcase_prize_ski_trip_2026
+    display_name: "Ski Trip suitcase full"
+    config:
+      completion_threshold: 1
+  - id: 00d3b390-7765-583c-8e76-b20d6d3e26f3
+    slug: suitcase_prize_winter_market_2026
+    display_name: "Winter Market suitcase full"
+    config:
+      completion_threshold: 1
   - id: 6c878ad1-81eb-5d81-918e-a36346cd8da4
     slug: suitcase_prize_2026_11
     display_name: "Suitcase 2026-11 full"
@@ -3239,8 +3258,8 @@ items:
     transfer_policy: none
     client_writable: false
     icon: tools/art/items/track-celtic-folk.png
-# The suitcase items (src/content/levels/suitcases.json): a copy held per day packed, spares
-# swapped by the checker; cosmetic, never traded, never written by the game.
+# The event items (src/content/levels/events.json, and the old months' kept): a copy held per
+# day packed, spares swapped by the checker; cosmetic, never traded, never written by the game.
   - id: 6bd4759e-2705-5a7e-a95c-201fa7c3b17d
     slug: item-2026-11-01
     display_name: "Ski goggles"
@@ -3304,33 +3323,6 @@ items:
     stack_size: 31
     transfer_policy: none
     client_writable: false
-  - id: 1b8861c2-c0bb-5263-91b2-16271787e2a4
-    slug: item-2026-11-08
-    display_name: "Ice skates"
-    item_type: item
-    category: cosmetic
-    fungible: true
-    stack_size: 31
-    transfer_policy: none
-    client_writable: false
-  - id: f68f49ee-7c9c-5b20-83f4-60d97f516ec7
-    slug: item-2026-11-09
-    display_name: "Fondue pot"
-    item_type: item
-    category: cosmetic
-    fungible: true
-    stack_size: 31
-    transfer_policy: none
-    client_writable: false
-  - id: 3752d5ab-f851-59f6-a535-bdd77c34afcf
-    slug: item-2026-11-10
-    display_name: "Hot-water bottle"
-    item_type: item
-    category: cosmetic
-    fungible: true
-    stack_size: 31
-    transfer_policy: none
-    client_writable: false
   - id: daf632a6-269d-5d1b-ae16-ac94d12b9ae3
     slug: item-2026-12-01
     display_name: "Glass bauble"
@@ -3388,6 +3380,33 @@ items:
   - id: fa8341b8-2390-55ca-b6c7-0ec8167878e9
     slug: item-2026-12-07
     display_name: "Gift box"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: 1b8861c2-c0bb-5263-91b2-16271787e2a4
+    slug: item-2026-11-08
+    display_name: "Ice skates"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: f68f49ee-7c9c-5b20-83f4-60d97f516ec7
+    slug: item-2026-11-09
+    display_name: "Fondue pot"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: 3752d5ab-f851-59f6-a535-bdd77c34afcf
+    slug: item-2026-11-10
+    display_name: "Hot-water bottle"
     item_type: item
     category: cosmetic
     fungible: true

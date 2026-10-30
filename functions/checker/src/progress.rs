@@ -17,6 +17,10 @@
 //!                                             trip's passport page (UI, 2026-10-28); absent until the first
 //!     "counts": { "levels_finished": 7, ... },  the achievements' counters as last set (count.rs,
 //!                                             written by lib.rs beside each win; derived, never read back)
+//!     "packed": { "halloween-2026": ["2026-10-15", ...] },  the event days whose item was packed for
+//!                                             this player (a VIP's), never pruned: so a past day packs once
+//!     "owed": { "2026-10-03": { "coins": true, "pack": false } },  a VIP's past day decided and not yet
+//!                                             confirmed paid (lib.rs, the archive): sent again, then cleared
 //!     "imported": { "from": "campaign" },   only on a record begun before 0.1.28 from an old device save; read by nothing
 //!     "seen": ["<claim id>", ...] }          the last claims applied, so a resent claim changes nothing
 
@@ -166,4 +170,47 @@ pub fn apply(doc: &mut Value, win: &Win, claim_id: Option<&str>, n: Option<u64>,
         seen.drain(..over);
     }
     Ok(true)
+}
+
+/// Was this event day's item packed for the player (the record's "packed")?
+pub fn packed(doc: &Value, event: &str, date: &str) -> bool {
+    doc["packed"][event].as_array().is_some_and(|d| d.iter().any(|x| x == date))
+}
+
+/// Note an event day's item as packed.
+pub fn mark_packed(doc: &mut Value, event: &str, date: &str) {
+    if packed(doc, event, date) {
+        return;
+    }
+    if !doc["packed"].is_object() {
+        doc["packed"] = json!({});
+    }
+    if !doc["packed"][event].is_array() {
+        doc["packed"][event] = json!([]);
+    }
+    doc["packed"][event].as_array_mut().expect("made a list").push(json!(date));
+}
+
+/// A past day's payment still owed: (its Coins, its item), as decided when its first win was applied.
+pub fn owed(doc: &Value, date: &str) -> (bool, bool) {
+    let o = &doc["owed"][date];
+    (o["coins"] == true, o["pack"] == true)
+}
+
+/// Note a past day's payment as owed, until the platform confirms it (settle).
+pub fn owe(doc: &mut Value, date: &str, coins: bool, pack: bool) {
+    if !doc["owed"].is_object() {
+        doc["owed"] = json!({});
+    }
+    doc["owed"][date] = json!({ "coins": coins, "pack": pack });
+}
+
+/// A past day's payment landed: owed no more.
+pub fn settle(doc: &mut Value, date: &str) {
+    if let Some(o) = doc["owed"].as_object_mut() {
+        o.remove(date);
+        if o.is_empty() {
+            doc.as_object_mut().map(|m| m.remove("owed"));
+        }
+    }
 }
