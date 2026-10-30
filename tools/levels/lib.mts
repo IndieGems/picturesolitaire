@@ -33,14 +33,16 @@ export const destById = new Map(destinations.map((d) => [d.id, d]));
 export const catalogue = CATALOGUE.pictures.filter((p) => !p.destination);
 export const byId = new Map(catalogue.map((p) => [p.id, p]));
 /**
- * THE DAILY SUITCASE (creator, 2026-10-27; docs/daily-suitcase.md; suitcase.mts): Art's `items`, each
- * month's ten item pictures (2x2, with `month`, `slot` and `title`), are never dealt as library
- * pictures: make-daily.mts places the day's item on its board. `suitcases` holds each month's theme
- * and table.
+ * THE EVENTS (creator, 2026-10-30; docs/vip.md, docs/daily-suitcase.md; events.mts): Art's `items`, the
+ * events' item pictures (2x2, with `month` or `event`, `slot` and `title`), are never dealt as library
+ * pictures: make-daily.mts places the day's item on its board. `suitcases` holds each drawn month's
+ * theme and table, `events` each event's with items of its own.
  */
 export const items = CATALOGUE.items ?? [];
 export const itemById = new Map(items.map((p) => [p.id, p]));
 export const themeOf = new Map((CATALOGUE.suitcases ?? []).map((t) => [t.month, t]));
+/** The events' themes (Art's `events`: { event, theme, table, tableTitle }), for an event with items of its own (events.mts). */
+export const eventThemeOf = new Map((CATALOGUE.events ?? []).map((t) => [t.event, t]));
 /**
  * THE SOUVENIRS (creator, 2026-10-28; docs/souvenirs.md; make-souvenirs.mts): Art's `souvenirPictures`,
  * each a Souvenir's own (`souvenir`: its trip's id), kept out of the library as items are, so no
@@ -49,7 +51,7 @@ export const themeOf = new Map((CATALOGUE.suitcases ?? []).map((t) => [t.month, 
 export const souvenirPictures = CATALOGUE.souvenirPictures ?? [];
 export const souvenirById = new Map(souvenirPictures.map((p) => [p.id, p]));
 /** A picture's words, for the item clash rule: its subjects and id (an item's subjects and title), lower case, 3 letters or more. */
-export const wordsOf = (p) => [...(p.subjects ?? []), p.month ? (p.title ?? "") : p.id].flatMap((s) => String(s).toLowerCase().split(/[^a-z]+/)).filter((w) => w.length >= 3);
+export const wordsOf = (p) => [...(p.subjects ?? []), p.month || p.event ? (p.title ?? "") : p.id].flatMap((s) => String(s).toLowerCase().split(/[^a-z]+/)).filter((w) => w.length >= 3);
 /** One word is the other, give or take a plural or a short ending (ski, skier; skate, skates; pot, pots). */
 export const sameWord = (a, b) => {
   const [s, l] = a.length <= b.length ? [a, b] : [b, a];

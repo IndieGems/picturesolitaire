@@ -63,19 +63,21 @@
 //   - a lesson board (lessons.json; make-lessons.mts), which opens stuck on
 //     purpose: its own proof instead of "not a dead end" and "the solver can
 //     win the deal" (checkLesson), and its line replays after its shuffle.
-//   - THE DAILY SUITCASE (creator, 2026-10-27; docs/daily-suitcase.md): a daily
-//     from daily-plan.mts SUITCASE_FROM carries its day's item (suitcases.json
-//     `days`), an item picture of that month (Art's `items`) in its pictures
-//     exactly once, 2x2 on a board of squares, with nothing beside it of its
-//     family or sharing a word with it (lib.mts itemClash), and
-//     its stored line finishes the item neither first nor last; that day is
-//     also readable, starts safe, and holds no landmark and no picture from
-//     before the clear ones. An item plays only as its day's item. And
-//     suitcases.json is exactly what make-suitcases.mts writes (each month's
-//     schedule seeded by the month alone; suitcase.mts scheduleProblem holds:
-//     each item 2-4 times, none with all its days in one week, none back
-//     within GAP days), month after month from FIRST_MONTH to the daily
-//     pool's last month.
+//   - THE EVENTS (creator, 2026-10-30; docs/vip.md, docs/daily-suitcase.md):
+//     a daily on one of an event's days carries that day's item (events.json
+//     `days`) in its pictures exactly once, 2x2 on a board of squares, with
+//     nothing beside it of its family or sharing a word with it (lib.mts
+//     itemClash), and its stored line finishes the item neither first nor
+//     last; a daily on no event's day carries no item. A daily from
+//     daily-plan.mts RULES_FROM is readable, starts safe, and holds no
+//     landmark and no picture from before the clear ones. An item plays only
+//     as its day's item. And events.json is exactly what make-events.mts
+//     writes from events-plan.json (in start order, never overlapping, an
+//     item in one event only; each event's schedule seeded by its id alone,
+//     events.mts eventProblem holding: 14 days, each item at least twice and
+//     in both weeks, its days at least APART apart), every day of it a daily
+//     of the pool from RULES_FROM. (suitcases.json, the monthly schedule it
+//     replaced, stays for Server's readers until Server drops it, unchecked.)
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
 import { createHash } from "node:crypto";
@@ -90,9 +92,8 @@ import { BIG, dealFor, deadFirstMoves, doomingFirstClears } from "../../src/game
 import { byId, clearOrder, destById, flags, itemById, itemClash, LESSON_MOVES, souvenirById, souvenirPictures } from "./lib.mts";
 import { CURRENT, DISTINCT, LAST_BEFORE_T9, MARKS, MAY_TRAP, SPACING, SPARES, TRIPS } from "./campaign-plan.mts";
 import { FIRST as ATMOS_FIRST, isAtmospheric, MOST as ATMOS_MOST, MOST_BOARDS, shareOf, takesAtmospheric } from "./atmospheric.mts";
-import { RULES_FROM, SUITCASE_FROM } from "./daily-plan.mts";
-import { monthOf, monthsTo } from "./make-suitcases.mts";
-import { scheduleProblem } from "./suitcase.mts";
+import { RULES_FROM } from "./daily-plan.mts";
+import { eventOf, eventProblem, PLAN as EVENT_PLAN, planProblem } from "./events.mts";
 import { SOUVENIR_BOARD, SOUVENIR_COUNT, souvenirId, souvenirOf } from "./make-souvenirs.mts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
@@ -109,15 +110,16 @@ if (unknown.length) {
   process.exit(2);
 }
 const files = args.filter((a) => !a.startsWith("--"));
-/** No files named: every boards file, and the checks across files (suitcases, souvenirs, trips) */
+/** No files named: every boards file, and the checks across files (events, souvenirs, trips) */
 const ALL = !files.length;
 const dir = join(root, "src/content/levels");
-// trips.json and suitcases.json are no boards files (each is checked on its own below)
-if (ALL) for (const f of readdirSync(dir).sort()) if (f.endsWith(".json") && f !== "trips.json" && f !== "suitcases.json") files.push(join(dir, f));
-// the Daily Suitcase's months (make-suitcases.mts): the day's item of each date
-const suitcasesFile = join(dir, "suitcases.json");
-const SUITCASES = existsSync(suitcasesFile) ? JSON.parse(readFileSync(suitcasesFile, "utf8")).months : [];
-const itemOfDay = new Map(SUITCASES.flatMap((m) => Object.entries(m.days)));
+// trips.json, events.json and suitcases.json are no boards files (trips and events are checked on their own below)
+const NOT_BOARDS = new Set(["trips.json", "events.json", "suitcases.json"]);
+if (ALL) for (const f of readdirSync(dir).sort()) if (f.endsWith(".json") && !NOT_BOARDS.has(f)) files.push(join(dir, f));
+// the VIP events (make-events.mts): the day's item of each date in an event
+const eventsFile = join(dir, "events.json");
+const EVENTS = existsSync(eventsFile) ? JSON.parse(readFileSync(eventsFile, "utf8")).events : [];
+const itemOfDay = new Map(EVENTS.flatMap((e) => Object.entries(e.days)));
 
 // the campaign's first trip, for the lessons (a lesson's pictures are none of its boards')
 const campaignFile = join(dir, "campaign.json");
@@ -322,11 +324,11 @@ for (const file of files) {
         const twice = bgs.find((b, k) => bgs.indexOf(b) !== k);
         if (twice) fail(`two pictures on the background colour ${twice} (Art: never two alike on a board)`);
       }
-      // the Daily Suitcase: a daily from SUITCASE_FROM hides its day's item (daily-plan.mts, make-daily.mts)
-      const suitcaseDay = l.date !== undefined && l.date >= SUITCASE_FROM;
-      // and a daily from RULES_FROM (28-31 October with no item) is made under the same rules
+      // the events: a daily on an event's day hides its day's item (events.json; make-daily.mts)
+      const eventDay = l.date !== undefined && itemOfDay.has(l.date);
+      // and every daily from RULES_FROM is made under today's rules, with an item or without
       const rulesDay = l.date !== undefined && l.date >= RULES_FROM;
-      if (l.item !== undefined && !suitcaseDay) fail(`an item on a board that is no daily from ${SUITCASE_FROM}`);
+      if (l.item !== undefined && !eventDay) fail(`an item on a board that is on no event's day (events.json)`);
       if (rulesDay) {
         if (l.pictures.some((p) => p.cols !== 2 || p.rows !== 2)) fail("a daily from RULES_FROM is a board of squares only (AGENTS.md: all 2x2 or all long; an item is a 2x2)");
         for (const p of l.pictures) {
@@ -335,14 +337,13 @@ for (const file of files) {
           if (SPARES.has(p.id) || (catalogue.has(p.id) && pictureOrder.get(p.id) > pictureOrder.get(LAST_BEFORE_T9))) fail(`${p.id} is one of trips 9 and 10's new pictures or spares, kept new to the campaign`);
         }
       }
-      if (suitcaseDay) {
+      if (eventDay) {
         const want = itemOfDay.get(l.date);
         const id = l.item?.id;
-        if (!want) fail(`no item for ${l.date} in suitcases.json (node tools/levels/make-suitcases.mts)`);
-        else if (id !== want) fail(`item ${id ?? "none"}, the day's item is ${want} (suitcases.json)`);
+        if (id !== want) fail(`item ${id ?? "none"}, the day's item is ${want} (events.json; node tools/levels/make-daily.mts places it)`);
+        if (!rulesDay) fail(`an event day before ${RULES_FROM}, today's rules' first day`);
         const it = id && itemById.get(id);
         if (id && !it) fail(`item ${id} is not in the catalogue's items`);
-        if (it && it.month !== l.date.slice(0, 7)) fail(`item ${id} is ${it.month}'s, the day is ${l.date}`);
         const times = l.pictures.filter((p) => p.id === id).length;
         if (times !== 1) fail(`item ${id} is in the pictures ${times} times, not once`);
         // nothing beside the item looks like it or shares a word with it (lib.mts itemClash; make-daily.mts swaps one out in place)
@@ -473,23 +474,28 @@ if (flaggedUses.length)
     `\nPictures flagged "don't use" are on ${new Set(flaggedUses.map((u) => u.board)).size} board(s):\n  ${flaggedUses.map((u) => u.line).join("\n  ")}\n` +
       `Re-deal them, keeping every other board as it is: node tools/levels/redeal.mts\n`,
   );
-// the Daily Suitcase's months: exactly what make-suitcases.mts writes, from FIRST_MONTH to the pool's last month
+// the events: exactly what make-events.mts writes from events-plan.json, every day a daily of the pool from RULES_FROM
 const dailyFile = join(dir, "daily.json");
 if (ALL && existsSync(dailyFile)) {
-  const pool = JSON.parse(readFileSync(dailyFile, "utf8")).levels;
+  const dates = new Set(JSON.parse(readFileSync(dailyFile, "utf8")).levels.map((l) => l.date));
   const bad = [];
-  const last = pool.at(-1)?.date.slice(0, 7);
-  const want = last && last >= SUITCASE_FROM.slice(0, 7) ? monthsTo(last) : [];
-  if (JSON.stringify(SUITCASES.map((m) => m.month)) !== JSON.stringify(want)) bad.push(`its months are ${SUITCASES.map((m) => m.month).join(", ") || "none"}, the daily pool needs ${want.join(", ") || "none"}`);
-  for (const m of SUITCASES) {
-    const problem = scheduleProblem(m.month, Object.values(m.days));
-    if (problem) bad.push(`${m.month}: ${problem}`);
-    if (JSON.stringify(m) !== JSON.stringify(monthOf(m.month))) bad.push(`${m.month} is not what make-suitcases.mts writes (re-run it: Art's themes, titles or the schedule changed)`);
+  const plan = planProblem();
+  if (plan) bad.push(`events-plan.json: ${plan}`);
+  else {
+    if (JSON.stringify(EVENTS.map((e) => e.id)) !== JSON.stringify(EVENT_PLAN.map((p) => p.id))) bad.push(`its events are ${EVENTS.map((e) => e.id).join(", ") || "none"}, the plan's ${EVENT_PLAN.map((p) => p.id).join(", ") || "none"} (node tools/levels/make-events.mts)`);
+    for (const e of EVENTS) {
+      const p = EVENT_PLAN.find((q) => q.id === e.id);
+      const problem = eventProblem(e.items.map((it) => it.id), Object.values(e.days));
+      if (problem) bad.push(`${e.id}: ${problem}`);
+      if (p && JSON.stringify(e) !== JSON.stringify(eventOf(p))) bad.push(`${e.id} is not what make-events.mts writes (re-run it: the plan, Art's themes or titles changed)`);
+      const off = Object.keys(e.days).filter((d) => !dates.has(d) || d < RULES_FROM);
+      if (off.length) bad.push(`${e.id}: ${off.join(", ")} ${off.length === 1 ? "is" : "are"} no daily of the pool from ${RULES_FROM} (make-daily.mts --to)`);
+    }
   }
   if (bad.length) {
     failed++;
-    console.error(`FAIL suitcases.json: ${bad.join("; ")}`);
-  } else if (SUITCASES.length) console.log(`suitcases: ${SUITCASES.length} months, ${SUITCASES[0].month} to ${SUITCASES.at(-1).month}${SUITCASES.some((m) => m.standIn) ? ` (stand-ins: ${SUITCASES.filter((m) => m.standIn).map((m) => m.month).join(", ")})` : ""}`);
+    console.error(`FAIL events.json: ${bad.join("; ")}`);
+  } else console.log(`events: ${EVENTS.length ? EVENTS.map((e) => `${e.id} ${e.start} to ${e.end}${e.standIn ? " (stand-in)" : ""}`).join(", ") : "none"}`);
 }
 // the Souvenirs: every trip whose Souvenir pictures Art has made has its board (make-souvenirs.mts)
 if (ALL && souvenirPictures.length) {

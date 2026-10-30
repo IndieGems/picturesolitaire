@@ -25,10 +25,9 @@ export const WEEK = [
 for (const row of WEEK) Object.assign(row, { vary: true, busyMost: 1 });
 
 /**
- * THE DAILY SUITCASE (creator, 2026-10-27; docs/daily-suitcase.md): from SUITCASE_FROM, every day is made
- * under today's rules and hides the day's item (suitcase.mts) as one of its pictures, so SUITCASE_WEEK
- * replaces WEEK for those days, and from RULES_FROM without an item (make-daily.mts --redeal-from 2026-11-01,
- * then --days for 28-31 October; the days before stay as played):
+ * TODAY'S RULES (creator, 2026-10-27, with the Daily Suitcase; docs/daily-suitcase.md): from RULES_FROM
+ * every day is made under them, SUITCASE_WEEK replacing WEEK, and a day of a VIP event (events.mts) hides
+ * the day's item as one of its pictures:
  *   - a 4x5 board of squares only (AGENTS.md: all 2x2 or all long, and the item is a 2x2); `count`
  *     includes the item;
  *   - READABLE, as an unmarked campaign board: a player who draws by the face-up cards wins 85% or more
@@ -40,13 +39,14 @@ for (const row of WEEK) Object.assign(row, { vary: true, busyMost: 1 });
  *   - the item opens mid-board on the stored line: never its first clear, never its last.
  * The weekly rhythm stays: gentle Monday and Thursday, the week's bite on Friday.
  */
-export const SUITCASE_FROM = "2026-11-01";
 /**
- * The first day made under SUITCASE_WEEK's rules (creator, 2026-10-28, playing that day's old-style board):
- * 28 to 31 October, the last old-style days still to come, were re-dealt under them with no item, as the
- * event starts on SUITCASE_FROM (make-daily.mts --days ... --played). Every day before stays as played.
+ * The first day made under SUITCASE_WEEK's rules. First 28 October (creator, 2026-10-28, playing that
+ * day's old-style board: 28 to 31 October re-dealt under them with no item); then 1 September (lead,
+ * 2026-10-30, docs/vip.md: VIPs play past days' dailies from about the last month, so every day from
+ * 1 September was re-dealt under today's rules, make-daily.mts --days ... --played; the game was not yet
+ * released, and Server keeps each old version). August stays as it was.
  */
-export const RULES_FROM = "2026-10-28";
+export const RULES_FROM = "2026-09-01";
 const ANY = [1, 99];
 const sq = (n) => ({ count: n, alike: [], sizes: [4], cards: [n * 4, n * 4], peek: 0, chain: ANY });
 export const SUITCASE_WEEK = [
