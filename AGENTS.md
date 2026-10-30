@@ -188,7 +188,9 @@ Arcade the gear goes** (the platform's ask, via the creator,
 2026-10-30, as in Untangled): every setting is mirrored into the
 Gem menu (`src/menu-settings.ts`), mute and vibration are its quick
 row, and the gear hides only while `gem.setMenu` answers true. In a
-plain tab or under another embedder it stays. Each
+plain tab or under another embedder it stays. The game asks the Arcade
+to draw the player's Gems and Coins (`gem.setWalletVisible`, the
+creator, 2026-10-30) and never draws a balance of its own. Each
 setting starts from the player's Arcade-wide default
 (`gem.prefs.recommended`) until they change it there, and their
 choice wins (`src/settings.ts`).
