@@ -13,7 +13,7 @@
 
 ## The travelogue (2026-10-25)
 
-- **Trip 11 and on.** Ten trips ship (boards 1–150, to the UK & Ireland); New Zealand is in reserve. The creator picks where. Their pictures come first from the clear pictures the atmospheric swap takes out of boards 1–150 (creator, 2026-10-28; Levels keeps the list), then new ones. Art's cap is $80 (raised 2026-10-29 for the pen-and-ink batch, at high quality: the creator found medium noisier), with about $63.93 spent before it. Later trips grow through 5×5 and 6×6 boards, within the readable and careful-player rules (`docs/difficulty-curve.md`).
+- **Trip 11 and on.** Ten trips ship (boards 1–150, to the UK & Ireland); New Zealand is in reserve. The creator picks where. Their pictures come first from the clear pictures the atmospheric swap takes out of boards 1–150 (creator, 2026-10-28; Levels keeps the list), then new ones. Art's cap is $90 (creator, 2026-10-30, for the "Redraw cleaner" passes; $80 from 2026-10-29 for the pen-and-ink batch), with about $78.39 spent by 2026-10-30. Later trips grow through 5×5 and 6×6 boards, within the readable and careful-player rules (`docs/difficulty-curve.md`).
 - **The challenge route and daily** still deal some landmark pictures (`"landmark": true`). Swap them out when those are redone under the new picture rules.
 - **The old albums' code** is unreachable from home; remove it, and the albums' catalogue fields, when the passport has settled.
 
