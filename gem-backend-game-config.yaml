@@ -339,13 +339,13 @@ analytics_events:
     description: "A VIP's event item packed by their first win of the level hiding it: the event's items found after it, and that level's place in the event (1 to 30)."
     sources: [server]
     dimensions:
-      event: { values: ["halloween-2026", "ski-trip-2026", "winter-market-2026"] }
+      event: { values: ["halloween-2026", "ski-trip-2026", "train-journey-2026", "winter-market-2026", "northern-lights-2026", "carnival-2027"] }
     measures: { found: int, level: int }
   - id: event_complete
     description: "An event's every item found, its table and helpers paid: the place in the event (1 to 30) of the level whose item was the last."
     sources: [server]
     dimensions:
-      event: { values: ["halloween-2026", "ski-trip-2026", "winter-market-2026"] }
+      event: { values: ["halloween-2026", "ski-trip-2026", "train-journey-2026", "winter-market-2026", "northern-lights-2026", "carnival-2027"] }
     measures: { level: int }
   # FRIEND CHALLENGES (docs/friend-challenges.md), sent by the game (src/net/friends.ts): a
   # challenge sent or not sent from the Arcade's sheet, a link shared, the game opened by either,
@@ -2988,6 +2988,306 @@ progressions:
         - mode: on_complete
           amount: 35
           target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 090ecd18-ba2a-5d80-9fdd-60257d0f3ee4
+    slug: board_train-journey-2026-01
+    display_name: "Stand-in level 1"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: bf176eb4-6383-5dbc-917d-cb968cbb479d
+    slug: board_train-journey-2026-02
+    display_name: "Stand-in level 2"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 15
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 2d405499-cc9b-5486-a6c5-251988c65729
+    slug: board_train-journey-2026-03
+    display_name: "Stand-in level 3"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 4950ff50-b410-5028-b595-a98eac611365
+    slug: board_train-journey-2026-04
+    display_name: "Stand-in level 4"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 3bb2b4cd-e05f-5874-908d-959599ab277d
+    slug: board_train-journey-2026-05
+    display_name: "Stand-in level 5"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 0e163390-5408-5c7f-89fc-6a1e4e51d814
+    slug: board_train-journey-2026-06
+    display_name: "Stand-in level 6"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 25ac3cb1-2b90-5e86-bd9b-1dcda69fb652
+    slug: board_train-journey-2026-07
+    display_name: "Stand-in level 7"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 2d605013-0e88-58b8-a4e9-a25c4520d64a
+    slug: board_train-journey-2026-08
+    display_name: "Stand-in level 8"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 3d2a6a3f-9784-5205-bd76-3bdb741d0747
+    slug: board_train-journey-2026-09
+    display_name: "Stand-in level 9"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 707846e0-7182-5cff-bfd9-03a842c6810f
+    slug: board_train-journey-2026-10
+    display_name: "Stand-in level 10"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: f62093b1-6714-5b7d-8c91-a666c460a8f9
+    slug: board_train-journey-2026-11
+    display_name: "Stand-in level 11"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 3fd28efc-9276-5c44-9bfa-afbb4640c04b
+    slug: board_train-journey-2026-12
+    display_name: "Stand-in level 12"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 43debcbc-9b3b-5ff3-8f4b-e72006557c07
+    slug: board_train-journey-2026-13
+    display_name: "Stand-in level 13"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: cde60ee8-9866-540f-b6fb-cd893f25bd69
+    slug: board_train-journey-2026-14
+    display_name: "Stand-in level 14"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 83b5416b-2220-5801-8556-c5fc6cede15b
+    slug: board_train-journey-2026-15
+    display_name: "Stand-in level 15"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 4e65831f-8602-5576-a007-7bc602b30e28
+    slug: board_train-journey-2026-16
+    display_name: "Stand-in level 16"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: d75493a4-e4b6-52d6-83e9-b4e37ad5fa14
+    slug: board_train-journey-2026-17
+    display_name: "Stand-in level 17"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 3e643646-7edb-51b7-8306-3b095e79ff41
+    slug: board_train-journey-2026-18
+    display_name: "Stand-in level 18"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 2f3b35a7-d5d6-5772-a6ff-3dc570d9f0cc
+    slug: board_train-journey-2026-19
+    display_name: "Stand-in level 19"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: ae044f73-9aed-5d26-b8a6-9b000528da44
+    slug: board_train-journey-2026-20
+    display_name: "Stand-in level 20"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: dba8f760-5277-5808-bae0-2949cae7277e
+    slug: board_train-journey-2026-21
+    display_name: "Stand-in level 21"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 3eb155b2-d829-5ec0-bd6e-52d2d6265685
+    slug: board_train-journey-2026-22
+    display_name: "Stand-in level 22"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: fd1a1456-4dd1-547d-84e4-e4e48a150ce9
+    slug: board_train-journey-2026-23
+    display_name: "Stand-in level 23"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: f7e3842c-5fea-5621-a524-c5977481425b
+    slug: board_train-journey-2026-24
+    display_name: "Stand-in level 24"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 6771e539-9d74-5bf0-9672-02639f4ccaa0
+    slug: board_train-journey-2026-25
+    display_name: "Stand-in level 25"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 293c6a59-5cca-54e4-ac3b-f654e9bf391f
+    slug: board_train-journey-2026-26
+    display_name: "Stand-in level 26"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 8f81da74-6cdc-5b12-9752-84c9dd28ccba
+    slug: board_train-journey-2026-27
+    display_name: "Stand-in level 27"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: b5d6886b-08d1-59c8-9a8d-a95f1250d977
+    slug: board_train-journey-2026-28
+    display_name: "Stand-in level 28"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: ddf9b324-b5e2-59e0-a4b7-5c2435e602b3
+    slug: board_train-journey-2026-29
+    display_name: "Stand-in level 29"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 1131b19f-6a7e-53f7-a94a-a593301542d6
+    slug: board_train-journey-2026-30
+    display_name: "Stand-in level 30"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 468f968a-512d-57fc-84b3-f291ed8f73b9
     slug: board_winter-market-2026-01
     display_name: "Winter Market level 1"
@@ -3288,6 +3588,606 @@ progressions:
         - mode: on_complete
           amount: 35
           target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 5e413066-95eb-52ec-8b00-883f78483d2d
+    slug: board_northern-lights-2026-01
+    display_name: "Northern Lights level 1"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 15
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: b852feca-101f-5df4-8b1e-62834b30f6aa
+    slug: board_northern-lights-2026-02
+    display_name: "Northern Lights level 2"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 15
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 4695b04e-1064-57c4-8f32-6d5ac9e66b08
+    slug: board_northern-lights-2026-03
+    display_name: "Northern Lights level 3"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 588e7671-c8ac-52e4-bd95-5ef1a4f4882d
+    slug: board_northern-lights-2026-04
+    display_name: "Northern Lights level 4"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 15
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: e91e79a1-a889-53cd-a363-2817ca12d3d1
+    slug: board_northern-lights-2026-05
+    display_name: "Northern Lights level 5"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: d784f605-7bcd-53ce-a822-2d507c7e6401
+    slug: board_northern-lights-2026-06
+    display_name: "Northern Lights level 6"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 04e0ace3-9a04-50cb-99f6-326c73c61c6f
+    slug: board_northern-lights-2026-07
+    display_name: "Northern Lights level 7"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 88f39596-0585-5d2d-b110-230379298963
+    slug: board_northern-lights-2026-08
+    display_name: "Northern Lights level 8"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 046362db-9cae-59d1-ad27-d401e3d7f43d
+    slug: board_northern-lights-2026-09
+    display_name: "Northern Lights level 9"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: a35baf71-cc01-5866-8a00-15a899f3fd2f
+    slug: board_northern-lights-2026-10
+    display_name: "Northern Lights level 10"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 47e2e449-8f57-5a84-bf28-ec604cc88346
+    slug: board_northern-lights-2026-11
+    display_name: "Northern Lights level 11"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 28312218-9704-55fd-9567-8f9da7dee3ad
+    slug: board_northern-lights-2026-12
+    display_name: "Northern Lights level 12"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: d5908335-449b-5a45-92c7-9b7b86c5e156
+    slug: board_northern-lights-2026-13
+    display_name: "Northern Lights level 13"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: d48cdab1-74b2-5ee2-8dd6-339f250403c0
+    slug: board_northern-lights-2026-14
+    display_name: "Northern Lights level 14"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 66773d17-bfe8-5ab1-ac6b-a4ba2b4673f3
+    slug: board_northern-lights-2026-15
+    display_name: "Northern Lights level 15"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 819683e0-99ac-500b-8063-15f3afcee1c9
+    slug: board_northern-lights-2026-16
+    display_name: "Northern Lights level 16"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: f3b643f4-4aa2-54ea-97a5-9b5052519c65
+    slug: board_northern-lights-2026-17
+    display_name: "Northern Lights level 17"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 6e73ea56-c185-5e8c-9e87-a616e2f9572b
+    slug: board_northern-lights-2026-18
+    display_name: "Northern Lights level 18"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: d38b25c2-a33f-5590-8a7f-0ec3273bfcd2
+    slug: board_northern-lights-2026-19
+    display_name: "Northern Lights level 19"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: f5573ff4-8c73-5ccf-8db9-c9c4babd9be7
+    slug: board_northern-lights-2026-20
+    display_name: "Northern Lights level 20"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 6627be71-288b-568e-b0d3-a6b74a8f6605
+    slug: board_northern-lights-2026-21
+    display_name: "Northern Lights level 21"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 3a377dca-f733-58e3-b4ef-96750195570c
+    slug: board_northern-lights-2026-22
+    display_name: "Northern Lights level 22"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 87f0db1f-d2b4-5713-b344-b1ab88f317d3
+    slug: board_northern-lights-2026-23
+    display_name: "Northern Lights level 23"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: c20f800d-ae2c-5343-b8ad-1bd74e55680b
+    slug: board_northern-lights-2026-24
+    display_name: "Northern Lights level 24"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 75767e7f-9b7d-550a-a36b-f2bf95bd0cf5
+    slug: board_northern-lights-2026-25
+    display_name: "Northern Lights level 25"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 703fce70-6ade-54ca-bfcd-945c41f32b78
+    slug: board_northern-lights-2026-26
+    display_name: "Northern Lights level 26"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 4f9bd873-fd23-5fd3-a3dd-198cb2e54cd3
+    slug: board_northern-lights-2026-27
+    display_name: "Northern Lights level 27"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: fb2c3c5c-60be-52f5-a6c2-9d64184e0217
+    slug: board_northern-lights-2026-28
+    display_name: "Northern Lights level 28"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 9bdf1559-e93c-5f49-993f-29f7e6d592f1
+    slug: board_northern-lights-2026-29
+    display_name: "Northern Lights level 29"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 7a379edb-fca9-5112-b47b-bb609ca30b58
+    slug: board_northern-lights-2026-30
+    display_name: "Northern Lights level 30"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: e4582e9c-1cf2-5dc8-8766-a40e1cabbc6f
+    slug: board_carnival-2027-01
+    display_name: "Carnival level 1"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 15
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: e2ed57bd-9269-5635-a8c7-022ef428a3fc
+    slug: board_carnival-2027-02
+    display_name: "Carnival level 2"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 15
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 29de527f-6414-59af-bce6-689e79205fba
+    slug: board_carnival-2027-03
+    display_name: "Carnival level 3"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 6854c32f-1ed0-5154-945a-79874f116003
+    slug: board_carnival-2027-04
+    display_name: "Carnival level 4"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 6036e93c-afb9-5b32-9714-75a6072adc52
+    slug: board_carnival-2027-05
+    display_name: "Carnival level 5"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 41882b2e-3355-57f8-a81b-8a78322ff85a
+    slug: board_carnival-2027-06
+    display_name: "Carnival level 6"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 45ba7649-3a87-58e4-85f4-4b234fd065b2
+    slug: board_carnival-2027-07
+    display_name: "Carnival level 7"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 5fe6f836-a106-5780-bf56-34139d330f42
+    slug: board_carnival-2027-08
+    display_name: "Carnival level 8"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 353e4c61-9b89-57b4-be76-404beedf0715
+    slug: board_carnival-2027-09
+    display_name: "Carnival level 9"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 487e48c5-88ec-56d5-b6d9-64aebfac6ebf
+    slug: board_carnival-2027-10
+    display_name: "Carnival level 10"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: a4efdfba-b849-53e9-b3df-3fcc8b02d06e
+    slug: board_carnival-2027-11
+    display_name: "Carnival level 11"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: fe122fce-399c-5332-89ab-14b3f55bd752
+    slug: board_carnival-2027-12
+    display_name: "Carnival level 12"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 60f3d232-4d92-5a7a-b0dd-a90bf1bf7fb5
+    slug: board_carnival-2027-13
+    display_name: "Carnival level 13"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 4d8880c3-f92e-5e3f-9788-7425dc5e2f79
+    slug: board_carnival-2027-14
+    display_name: "Carnival level 14"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 619332d6-d80f-5934-87cd-1512c2e261bd
+    slug: board_carnival-2027-15
+    display_name: "Carnival level 15"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 7f364fb7-7c52-5054-a112-6fd40ac18581
+    slug: board_carnival-2027-16
+    display_name: "Carnival level 16"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: c9ebb2e9-8d59-50ce-a6b9-9714c2842331
+    slug: board_carnival-2027-17
+    display_name: "Carnival level 17"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 65c8b409-ea2f-5055-95d5-fa17a2ab8498
+    slug: board_carnival-2027-18
+    display_name: "Carnival level 18"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: d00868ff-88c9-5dcb-b5eb-e650e9e89c60
+    slug: board_carnival-2027-19
+    display_name: "Carnival level 19"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 5701d8cf-20b4-5104-8e40-f0e6fe7e5c69
+    slug: board_carnival-2027-20
+    display_name: "Carnival level 20"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 701ce79d-9851-5aa5-b86d-60665ba35347
+    slug: board_carnival-2027-21
+    display_name: "Carnival level 21"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: cebeb808-2a74-5217-a538-171f7052167b
+    slug: board_carnival-2027-22
+    display_name: "Carnival level 22"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: c945235b-100d-59cf-83f0-28887a08cc17
+    slug: board_carnival-2027-23
+    display_name: "Carnival level 23"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 1f9bb53b-3592-5e95-8bc7-2f553e4e7dee
+    slug: board_carnival-2027-24
+    display_name: "Carnival level 24"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: e57998f9-cb3e-55da-b9fa-da0dc5b3e080
+    slug: board_carnival-2027-25
+    display_name: "Carnival level 25"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 061dc1a6-aa9e-58d7-961a-4f304dd1bf45
+    slug: board_carnival-2027-26
+    display_name: "Carnival level 26"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 34cfc26a-4fa7-5a2c-b47d-3ae55a5124cb
+    slug: board_carnival-2027-27
+    display_name: "Carnival level 27"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 5d3bb050-8e33-5aa5-89ac-5c794aa2edfa
+    slug: board_carnival-2027-28
+    display_name: "Carnival level 28"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: e7690937-78ac-5e24-a9f5-26a1f119c274
+    slug: board_carnival-2027-29
+    display_name: "Carnival level 29"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 3a70a6ae-69ac-5a33-b2ea-777fa72b91d4
+    slug: board_carnival-2027-30
+    display_name: "Carnival level 30"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
   # THE HELPER KIT: 3 of each helper, once ever, at the end of board 1 (the guided start),
   # or on the next win of a player already past it. The win checker pays it into the
   # helper currencies and sets this to 1 in the same order, so it is paid once or not at all.
@@ -3348,9 +4248,24 @@ progressions:
     display_name: "Ski Trip suitcase full"
     config:
       completion_threshold: 1
+  - id: 7ef4f280-3012-5fd6-bda4-673343efcedd
+    slug: suitcase_prize_train_journey_2026
+    display_name: "Stand-in suitcase full"
+    config:
+      completion_threshold: 1
   - id: 00d3b390-7765-583c-8e76-b20d6d3e26f3
     slug: suitcase_prize_winter_market_2026
     display_name: "Winter Market suitcase full"
+    config:
+      completion_threshold: 1
+  - id: 3d40bcb8-9cda-530d-88e9-3be18764056b
+    slug: suitcase_prize_northern_lights_2026
+    display_name: "Northern Lights suitcase full"
+    config:
+      completion_threshold: 1
+  - id: a8e9b7fc-7eb5-5629-9d77-f2f47815f3f4
+    slug: suitcase_prize_carnival_2027
+    display_name: "Carnival suitcase full"
     config:
       completion_threshold: 1
   - id: 6c878ad1-81eb-5d81-918e-a36346cd8da4

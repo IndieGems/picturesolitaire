@@ -29,13 +29,15 @@
       "slug": "table-arctic-cabin",
       "id": "8c90751b-e919-5d81-a24a-bec0d0cb84bf",
       "title": "Arctic Cabin table",
-      "award": "none"
+      "award": "suitcase",
+      "event": "northern-lights-2026"
     },
     {
       "slug": "table-carnival",
       "id": "a872b829-18d1-5346-8dfe-5bd6e6edf540",
       "title": "Carnival table",
-      "award": "none"
+      "award": "suitcase",
+      "event": "carnival-2027"
     },
     {
       "slug": "table-flower-market",
