@@ -3296,27 +3296,27 @@ items:
     stack_size: 31
     transfer_policy: none
     client_writable: false
-  - id: 1eca481d-0f3d-5ced-87f9-89e019563d5b
-    slug: item-2026-11-05
-    display_name: "Nordic jumper"
-    item_type: item
-    category: cosmetic
-    fungible: true
-    stack_size: 31
-    transfer_policy: none
-    client_writable: false
-  - id: 21cd4f3a-86eb-5cb0-b3c6-40dd0088d4c7
-    slug: item-2026-11-06
-    display_name: "Striped scarf"
-    item_type: item
-    category: cosmetic
-    fungible: true
-    stack_size: 31
-    transfer_policy: none
-    client_writable: false
   - id: 1424513f-8ae7-574a-81e3-aa8d1a7d0052
     slug: item-2026-11-07
     display_name: "Earmuffs"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: 1b8861c2-c0bb-5263-91b2-16271787e2a4
+    slug: item-2026-11-08
+    display_name: "Ice skates"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: f68f49ee-7c9c-5b20-83f4-60d97f516ec7
+    slug: item-2026-11-09
+    display_name: "Fondue pot"
     item_type: item
     category: cosmetic
     fungible: true
@@ -3335,15 +3335,6 @@ items:
   - id: c300ff72-f75c-530a-b788-55d0115d098a
     slug: item-2026-12-02
     display_name: "Wooden nutcracker"
-    item_type: item
-    category: cosmetic
-    fungible: true
-    stack_size: 31
-    transfer_policy: none
-    client_writable: false
-  - id: 7ad338b7-ed9c-5fc2-9ef5-f7e63c39a0a6
-    slug: item-2026-12-03
-    display_name: "Roasted chestnuts"
     item_type: item
     category: cosmetic
     fungible: true
@@ -3386,18 +3377,27 @@ items:
     stack_size: 31
     transfer_policy: none
     client_writable: false
-  - id: 1b8861c2-c0bb-5263-91b2-16271787e2a4
-    slug: item-2026-11-08
-    display_name: "Ice skates"
+  - id: 4a6e2f8b-c14b-5e0e-8a97-57e6c507a0aa
+    slug: item-2026-12-10
+    display_name: "Pine wreath"
     item_type: item
     category: cosmetic
     fungible: true
     stack_size: 31
     transfer_policy: none
     client_writable: false
-  - id: f68f49ee-7c9c-5b20-83f4-60d97f516ec7
-    slug: item-2026-11-09
-    display_name: "Fondue pot"
+  - id: 1eca481d-0f3d-5ced-87f9-89e019563d5b
+    slug: item-2026-11-05
+    display_name: "Nordic jumper"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: 21cd4f3a-86eb-5cb0-b3c6-40dd0088d4c7
+    slug: item-2026-11-06
+    display_name: "Striped scarf"
     item_type: item
     category: cosmetic
     fungible: true
@@ -3407,6 +3407,15 @@ items:
   - id: 3752d5ab-f851-59f6-a535-bdd77c34afcf
     slug: item-2026-11-10
     display_name: "Hot-water bottle"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: 7ad338b7-ed9c-5fc2-9ef5-f7e63c39a0a6
+    slug: item-2026-12-03
+    display_name: "Roasted chestnuts"
     item_type: item
     category: cosmetic
     fungible: true
@@ -3425,15 +3434,6 @@ items:
   - id: 8bace094-e781-5a1d-9256-cea358ed0776
     slug: item-2026-12-09
     display_name: "Knitted stocking"
-    item_type: item
-    category: cosmetic
-    fungible: true
-    stack_size: 31
-    transfer_policy: none
-    client_writable: false
-  - id: 4a6e2f8b-c14b-5e0e-8a97-57e6c507a0aa
-    slug: item-2026-12-10
-    display_name: "Pine wreath"
     item_type: item
     category: cosmetic
     fungible: true
