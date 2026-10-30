@@ -27,6 +27,10 @@
 // `souvenir:sticker` goes out at the touch, for its sound (agreed with Audio: the page still for
 // 550 ms, then 300 ms down, the way on 650 ms after). Less motion: it fades in, the sound with it.
 //
+// ACHIEVEMENTS (the creator, 2026-10-30): two tabs over the book, Stamps (the pages above) and
+// Achievements (achievements-page.ts, on the same paper page under the same cover). The passport opens
+// on Stamps; the stamp and sticker moments always play there, the tabs put away until they are over.
+//
 // Its top row is every screen's: the title on the left, Back then the gear at the right
 // end. A trip's stamp is Art's drawing, public/art/stamps/stamp-<trip id>.webp (300 px
 // square, drawn upright; the page tilts it); a trip with none yet, or one that does not
@@ -41,6 +45,7 @@ import { createViewer } from "./viewer";
 import { ensureTrip, resident } from "../packs";
 import { currentTrip, loadTripOf, placesOf, tripById, tripCount, tripDone, tripName, tripPlace, trips, type Place, type Trip } from "./trips";
 import { souvenirOf, souvenirOpen, souvenirWon, souvenirWords, stickerReady, stickerUrl } from "./souvenirs";
+import { createAchievementsPage } from "./achievements-page";
 
 type Nav = {
   /** Back: to home. */
@@ -160,17 +165,53 @@ export function createPassport(nav: Nav) {
   const turn = el("div", "pp-turn");
   turn.append(prev, where, next);
   page.append(turn, content);
+  // the Achievements tab's page: the same paper, under the same cover
+  const achievements = createAchievementsPage();
+  const achPage = el("section", "pp-page pp-ach");
+  achPage.hidden = true;
+  achPage.append(achievements.element);
+  book.append(achPage);
+
+  // the two tabs over the book: Stamps and Achievements (the shown one pressed in, as the Cosmetics screen's)
+  const tabs = el("div", "pp-tabs");
+  tabs.setAttribute("role", "tablist");
+  const tab = (which: "stamps" | "achievements") => {
+    const b = el("button", "btn pp-tab");
+    b.type = "button";
+    b.dataset.press = `passport.tab.${which}`;
+    b.setAttribute("role", "tab");
+    liveText(b, `passport.tab.${which}`);
+    b.addEventListener("click", () => showTab(which));
+    return b;
+  };
+  const stampsTab = tab("stamps");
+  const achTab = tab("achievements");
+  tabs.append(stampsTab, achTab);
+  let view: "stamps" | "achievements" = "stamps";
+  function showTab(which: "stamps" | "achievements"): void {
+    view = which;
+    for (const [b, on] of [[stampsTab, which === "stamps"], [achTab, which === "achievements"]] as const) {
+      b.classList.toggle("pressed", on);
+      b.setAttribute("aria-selected", String(on));
+    }
+    page.hidden = which !== "stamps";
+    achPage.hidden = which !== "achievements";
+    if (which === "achievements") achievements.show();
+    else achievements.hide();
+    scroll.scrollTop = 0;
+  }
 
   // the stamp moment's way on, under the book
   const foot = el("div", "pp-foot");
   foot.hidden = true;
 
   const scroll = el("div", "scroll");
-  scroll.append(book);
+  scroll.append(tabs, book);
   const screen = el("section", "screen menu-screen passport-screen");
   screen.hidden = true;
   liveAttr(screen, "aria-label", "passport.title");
   screen.append(pill, back, scroll, foot);
+  showTab("stamps");
 
   const viewer = createViewer();
 
@@ -350,6 +391,8 @@ export function createPassport(nav: Nav) {
   function open(trip?: Trip): void {
     settle();
     foot.hidden = true;
+    tabs.hidden = false;
+    showTab("stamps");
     const tr = trip ?? currentTrip();
     at = Math.max(0, tr ? trips.indexOf(tr) : 0);
     draw();
@@ -454,6 +497,11 @@ export function createPassport(nav: Nav) {
   return {
     screen,
     viewer: viewer.element,
+    /** Open on the Achievements tab. */
+    openAchievements(): void {
+      open();
+      showTab("achievements");
+    },
     /** Open at a trip's page (the one the player is on when none is named). */
     open,
     /**
@@ -466,6 +514,9 @@ export function createPassport(nav: Nav) {
       settle();
       landing = tr.id;
       foot.hidden = true;
+      // the moment plays on its trip's page, the tabs put away until it is over
+      showTab("stamps");
+      tabs.hidden = true;
       at = trips.indexOf(tr);
       draw();
       scroll.scrollTop = 0;
@@ -485,6 +536,8 @@ export function createPassport(nav: Nav) {
       settle();
       sticking = tr.id;
       foot.hidden = true;
+      showTab("stamps");
+      tabs.hidden = true;
       at = trips.indexOf(tr);
       draw();
       scroll.scrollTop = 0;
@@ -502,12 +555,14 @@ export function createPassport(nav: Nav) {
     /** The record changed (a board won, the account's copy landed): redraw the page up, unless a stamp or sticker is landing on it. */
     redraw(): void {
       if (!screen.hidden && !landing && !sticking && !timers.length) draw();
+      achievements.redraw();
     },
     /** Leaving the passport some other way (the board, the Arcade): any stamp moment ends where it is. */
     leave(): void {
       settle();
       foot.hidden = true;
       viewer.close();
+      achievements.hide();
     },
     closeViewer: viewer.close,
   };

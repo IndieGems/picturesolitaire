@@ -72,6 +72,8 @@ export interface DevHost {
    * the passport's stamp lands, then Stamped: Travel America and Up for a Challenge on one card.
    */
   showUnlock(kind: "icon" | "medal" | "stamp"): void;
+  /** The Passport's Achievements page: `mix`, some unlocked and counters part way (pretend); else the platform's own word. */
+  showAchievements(mix: boolean): void;
 }
 
 /** What the menu lends the screens back. */
@@ -560,10 +562,19 @@ export function mountDevMenu(host: DevHost): DevMenu {
     el("h3", "", "Show achievement card"),
     unlockRow,
     btn("dev-wide", "A trip's last level: the stamp, then 2 at once", () => showUnlock("stamp")),
+    (() => {
+      const r = el("div", "dev-row");
+      const page = (mix: boolean) => {
+        dialog.close();
+        host.showAchievements(mix);
+      };
+      r.append(btn("amber", "Achievements page: a mix", () => page(true)), btn("", "As the platform says", () => page(false)));
+      return r;
+    })(),
     el(
       "p",
       "dev-note",
-      "The card a player sees when an achievement unlocks: on dev and test none ever unlocks, so this is the only way to see it before release. Nothing is unlocked, saved or sent. Over a level with a move made, it waits for that level's end, as a player's would. An icon Art has not finished shows the medal in its place.",
+      "The card a player sees when an achievement unlocks: on dev and test none ever unlocks, so this is the only way to see it before release. Nothing is unlocked, saved or sent. Over a level with a move made, it waits for that level's end, as a player's would. The Passport's Achievements page with a mix shows 7 unlocked and the rest locked, part way along (pretend counters, this page only); As the platform says shows the page as a player on this channel sees it (here, none unlocked).",
     ),
   );
 

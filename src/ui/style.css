@@ -1518,3 +1518,41 @@ html.less-motion .pp-sticker { animation: none; }
 @keyframes medal-in { from { opacity: 0; transform: scale(0.5) rotate(-12deg); } }
 html.less-motion .unlock-card .medal { animation: none; }
 @media (prefers-reduced-motion: reduce) { .unlock-card .medal { animation: none; } }
+
+/* ---------- THE PASSPORT'S TABS AND ITS ACHIEVEMENTS PAGE (passport.ts, achievements-page.ts) ----------
+   Two tabs over the book (buttons, as the Cosmetics screen's: the shown one pressed in); the page is
+   the book's own paper. Everything on it is information: words on paper, glass chips, no lip. */
+.pp-tabs { display: flex; gap: 12px; max-width: 520px; margin: 0 auto 12px; }
+.pp-tabs[hidden] { display: none; }
+.btn.pp-tab { flex: 1 1 0; min-width: 0; min-height: 50px; padding: 0 12px; font-size: 18px; }
+.btn.pp-tab.pressed { color: var(--amber-lip); background: linear-gradient(180deg, #e6ecf3 0%, #d3dce7 100%); }
+.pp-page[hidden] { display: none; }
+.ach-page { display: flex; flex-direction: column; gap: 14px; }
+.ach-title { margin: 2px 4px 0; font: 600 25px/1.1 var(--round); }
+.ach-totals { display: flex; gap: 8px; }
+.ach-total { flex: 1 1 0; min-width: 0; padding: 8px 10px; border-radius: 16px; text-align: center; font: 600 15px/1.25 var(--round); color: var(--ink); }
+.ach-note { margin: 0 4px; font: 500 14px/1.3 var(--round); color: var(--ink-soft); }
+.ach-group { display: flex; flex-direction: column; gap: 8px; }
+.ach-group-name { margin: 4px 4px 0; font: 700 14px/1.2 var(--round); letter-spacing: 0.08em; text-transform: uppercase; color: rgb(var(--stamp-ink)); }
+.ach-list { display: flex; flex-direction: column; gap: 10px; }
+.ach-row { display: flex; align-items: flex-start; gap: 12px; padding: 8px 6px; border-top: 1px solid rgba(120, 100, 70, 0.16); }
+.ach-group .ach-row:first-child { border-top: 0; }
+.ach-pic { --m: 56px; position: relative; flex: none; width: var(--m); height: calc(var(--m) * 1.12); }
+.ach-words { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.ach-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin-top: 3px; }
+.ach-name { min-width: 0; font: 600 17px/1.2 var(--round); color: var(--ink); overflow-wrap: anywhere; }
+.ach-points { flex: none; padding: 3px 9px; border-radius: 999px; font: 600 13px/1.2 var(--round); color: var(--amber-lip); white-space: nowrap; }
+.ach-desc { font: 500 14px/1.3 var(--round); color: var(--ink-soft); overflow-wrap: anywhere; }
+.ach-progress { font: 600 13px/1.2 var(--round); color: var(--ink-soft); }
+.ach-bar { display: block; height: 6px; margin-top: 4px; border-radius: 999px; background: rgba(85, 101, 124, 0.18); overflow: hidden; }
+.ach-bar > i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--amber-hi), var(--amber-lo)); }
+/* unlocked: full colour and a tick on the medal */
+.ach-tick { position: absolute; right: -3px; top: calc(var(--m) - 20px); width: 22px; height: 22px; border-radius: 50%;
+  background: #2f9a62 center / 13px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.2 8.4 6.4 11.4 12.8 4.8' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  box-shadow: 0 0 0 2px #fbf8f1; }
+/* locked: dimmed, never hidden; its points in soft ink */
+.ach-row.locked .medal { filter: grayscale(1); opacity: 0.45; }
+.ach-row.locked .ach-name { color: var(--ink-soft); }
+.ach-row.locked .ach-points { color: var(--ink-soft); }
+/* not checked just now (the platform said nothing): plain, neither earned nor locked */
+.ach-row.unknown .medal { filter: saturate(0.6); opacity: 0.8; }

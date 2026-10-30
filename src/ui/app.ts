@@ -80,6 +80,7 @@ import { createRunOut } from "./helper-shop";
 import { createHomeShop } from "./home-shop";
 import { createCosmetics } from "./cosmetics";
 import { createUnlocks } from "./unlock";
+import { pretendAchievements } from "./achievements-page";
 import { onUnlock } from "../net/achievements";
 import { pretendCosmetics, pretendState } from "./cosmetics-shop";
 import { coinIcon, priceTag } from "./coin";
@@ -2427,6 +2428,11 @@ export async function startApp(): Promise<void> {
             }),
           );
         },
+        showAchievements: (mix) => {
+          closeSettings();
+          pretendAchievements(mix);
+          passportUi.openAchievements();
+        },
       });
     })().catch((err: unknown) => console.warn("[dev-menu] did not load", err));
   }
@@ -2489,6 +2495,11 @@ export async function startApp(): Promise<void> {
       unlocked: (slugs: string[]) => unlockUi.add(slugs.map((slug) => ({ slug }))),
       /** The unlock card for these slugs, again and again (past the once-a-session rule), once the screen can take it. */
       unlockCard: (slugs: string[]) => unlockUi.preview(slugs),
+      /** The Passport's Achievements page: `mix`, some unlocked and counters part way (pretend, this page only); else the platform's word. */
+      achievements(mix: boolean) {
+        pretendAchievements(mix);
+        passportUi.openAchievements();
+      },
       /** Board 1's finish card over the board in hand, as after its guided win (nothing is sent). */
       milestone() {
         if (!board || !play) return;
