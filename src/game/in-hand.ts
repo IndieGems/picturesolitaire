@@ -5,7 +5,7 @@
 // presentation state, never progress: no server code decides anything from it).
 //
 // What is kept: which play it is (a campaign board, the day's daily, a challenge, a
-// Souvenir), the level's id and its deal's hash (src/net/deal-hash.ts), and the board's own
+// Souvenir, a VIP event's level), the level's id and its deal's hash (src/net/deal-hash.ts), and the board's own
 // record (BoardHandle.kept(): every action from the deal, shuffles with the mix they made,
 // the time shown, the hint lines proved, the try's unused free helpers). A resumed board
 // replays that line from the deal (openBoard's resume), so its win claims the complete
@@ -91,13 +91,15 @@ export type KeptPlay =
   | { kind: "campaign"; level: number }
   | { kind: "daily"; date: string }
   | { kind: "challenge"; id: string }
-  | { kind: "souvenir"; trip: string };
+  | { kind: "souvenir"; trip: string }
+  /** A VIP event's level (docs/vip.md), by its id ("halloween-2026-13"; levels.ts loadEventLevel). */
+  | { kind: "event"; id: string };
 
 /** The record in the slot. */
 export interface InHand extends BoardKept {
   v: 1;
   play: KeptPlay;
-  /** The level's id ("c27", "d2026-11-03", "s1", "ch16"). */
+  /** The level's id ("c27", "d2026-11-03", "s1", "ch16", "halloween-2026-13"). */
   id: string;
   /** dealHash of the deal it was started on. */
   deal: string;
@@ -117,7 +119,8 @@ function asRecord(x: unknown): InHand | null {
     ((p.kind === "campaign" && Number.isInteger(p.level) && (p.level as number) >= 1) ||
       (p.kind === "daily" && typeof p.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(p.date)) ||
       (p.kind === "challenge" && typeof p.id === "string") ||
-      (p.kind === "souvenir" && typeof p.trip === "string"));
+      (p.kind === "souvenir" && typeof p.trip === "string") ||
+      (p.kind === "event" && typeof p.id === "string"));
   if (!r || r.v !== 1 || !playOk || typeof r.id !== "string" || typeof r.deal !== "string" || !Array.isArray(r.line) || !r.line.length) return null;
   return {
     v: 1,
