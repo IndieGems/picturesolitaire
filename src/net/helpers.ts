@@ -312,8 +312,34 @@ export const helpers = {
       return "failed";
     }
   },
-  /** Read the stock again. The game need not call it: every checker answer, the boot and a resume do. */
+  /** Read the stock again. The game need not call it: the boot, a resume, a buy and a page shown again do. */
   refresh: (): Promise<void> => refresh(),
+  /**
+   * A checker verdict's receipt (claims.ts): what landed of each helper (after the cap's clamp) and
+   * the Coins it paid, added to what was last read, with no read of our own (the platform's own
+   * word; the lead, 2026-10-30: a read after every win was two calls each). Before the first read
+   * there is nothing to add to: it reads instead.
+   */
+  credit(landed: Partial<Record<HelperKind, number>>, coinsPaid: number): void {
+    if (!framed) return;
+    if (!known) {
+      void refresh();
+      return;
+    }
+    let any = false;
+    for (const k of KINDS) {
+      const n = Math.max(0, Math.floor(Number(landed[k]) || 0));
+      if (n) {
+        stock[k] += n;
+        any = true;
+      }
+    }
+    if (coinsPaid > 0 && coins !== null) {
+      coins += coinsPaid;
+      any = true;
+    }
+    if (any) changed();
+  },
   /** Hear any change of counts, prices or what can be bought. Returns the unsubscribe. */
   onChange(fn: () => void): () => void {
     listeners.add(fn);

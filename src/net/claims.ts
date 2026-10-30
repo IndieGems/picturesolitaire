@@ -24,13 +24,18 @@
 //     "refused" (not a win the rules allow: nothing paid). The device keeps no
 //     "paid" flag; what a board has paid is the platform's progression
 //     ("board_<id>", read with gem.me.progressions.get).
-//   - a claim outlives the page: until it is answered it is kept in the
-//     player's own "claims" save slot (there is no browser storage: AGENTS.md),
-//     sent at once when the page is hidden or closed or the Arcade is about to
-//     close the game, and resumed at the next start (resumeClaims, which
-//     loadProgress starts). The slot is the device's word and needs no more:
-//     the checker replays every claim and applies each claim id once. A claim
-//     made offline reaches the slot when the connection is back.
+//   - a claim outlives the page: it is sent at once with keepalive (so a request
+//     already started finishes after the page closes), and while it WAITS it is
+//     kept in the player's own "claims" save slot (there is no browser storage:
+//     AGENTS.md): offline, held by the platform, sent again after a "not now",
+//     or still unanswered KEEP_AFTER_MS after it was made, and at once when the
+//     page is hidden or closed or the Arcade is about to close the game. It is
+//     resumed at the next start (resumeClaims, which loadProgress starts). A win
+//     answered in time never touches the slot (2026-10-30, the lead: the slot's
+//     two writes, three requests each, were most of a win's calls). The slot is
+//     the device's word and needs no more: the checker replays every claim and
+//     applies each claim id once. A claim made offline reaches the slot when the
+//     connection is back.
 //   - held wins go oldest first, and a campaign win waits while an earlier one
 //     is held: the checker answers "order" to a win ahead of the next position.
 //     This session sends every win it holds; the slot keeps as many as fit,
@@ -52,7 +57,7 @@ import { backoff, heard, held, notNow, whenDue } from "./pace";
 import { answered, hold, type HeldWin } from "./progress";
 import { accept as acceptSuitcase, suitcase, type EventPack } from "./suitcase";
 import { tableOf } from "./tables";
-import { heardVip, vipFields } from "./vip";
+import { heardVip, vipFields, vipReady } from "./vip";
 
 /**
  * "souvenir": the bonus board after a trip (docs/souvenirs.md), sent once its trip is stamped; no n, no date.
@@ -144,6 +149,8 @@ const framed = window.self !== window.top;
 const queue: Held[] = [];
 /** The save slot unanswered claims are kept in (game config, save_schemas). */
 const SLOT = "claims";
+/** A claim still unanswered this long after it was made is kept in the slot (most are answered in under a second). */
+const KEEP_AFTER_MS = 5000;
 const listeners = new Set<(v: Verdict) => void>();
 let pumping = false;
 let timer: number | undefined;
@@ -201,9 +208,14 @@ export function claimWin(claim: WinClaim): Promise<Verdict> {
   if (claim.n !== undefined) body.n = claim.n;
   return new Promise((resolve) => {
     queue.push({ id, lane: claim.lane, board: claim.board, effect, body, resolve, tries: 0, notBefore: 0 });
-    // kept first, sent at once: neither waits for the other, since waiting for the
-    // save (three round trips) would only widen the window in which a closing page loses the win
-    void persist();
+    // sent at once (keepalive: it outlives a closing page). Kept in the slot only if it has to wait:
+    // now, when it cannot go at once (offline, or the platform asked for a wait), else once it is
+    // still unanswered after KEEP_AFTER_MS; a page hidden or closed first keeps it at once (flushNow)
+    if (!online() || held() > 0 || performance.now() < pauseUntil) void persist();
+    else
+      window.setTimeout(() => {
+        if (queue.some((h) => h.id === id)) void persist();
+      }, KEEP_AFTER_MS);
     void pump();
   });
 }
@@ -229,8 +241,9 @@ function settle(h: Held, answer: Verdict, record: unknown = null): void {
   const v: Verdict = h.resumed ? { ...answer, resumed: true } : answer;
   // the server's word replaces the held win (a refusal just drops it)
   answered(h.id, record, v.status === "refused");
-  // a gift the checker paid is outside the SDK's snapshot: read the stock again
-  if (v.status !== "refused" && v.status !== "unframed") void helpers.refresh();
+  // what the checker paid is outside the SDK's snapshot: the verdict's receipt says what landed
+  // (helpers, Coins), so it is added to what was read, with no read of our own (helpers.credit)
+  if (v.status === "paid" || v.status === "kept" || v.status === "late") helpers.credit(v.helpers ?? {}, v.coins);
   h.resolve(v);
   for (const fn of [...listeners]) fn(v);
 }
@@ -244,6 +257,8 @@ function settle(h: Held, answer: Verdict, record: unknown = null): void {
  */
 function later(h: Held, how: "platform" | "own" | "slow", err?: unknown): void {
   h.tries++;
+  // it waits now: keep it for a restart (an unchanged list is not written again)
+  void persist();
   if (err !== undefined) heard(err);
   const now = performance.now();
   if (how === "platform") {
@@ -370,6 +385,9 @@ async function pump(): Promise<void> {
       pauseUntil = performance.now() + backoff(++failing, 2000);
       return;
     }
+    // the dev menu's pretend, kept from last time, goes with every claim (vipFields): an event
+    // level sent again at the start must not go before it is restored
+    await vipReady();
     for (;;) {
       const now = performance.now();
       // the platform said not now: nothing goes until its wait is over

@@ -17,13 +17,16 @@
 //   suitcase.upcoming()      the events announced but not released yet by the player's date (no VIP needed)
 //   suitcase.lastPrize()     a prize that landed since last asked ({ event, helpers }), once (its table is
 //                            in the level's verdict's `items`)
-//   suitcase.refresh()       read again now (when the events screen opens): one read at a time, paced
+//   suitcase.refresh()       read again (when the events screen opens): from memory if the last read
+//                            was under 5 minutes ago (every verdict keeps it current), else one read,
+//                            one at a time, paced
 //   suitcase.onChange(fn)    hear any change. Returns the unsubscribe.
 //
 // Read from the checker ({"v":1,"what":"suitcase"}, which also pays a full suitcase found unpaid)
-// when the game starts and the player is VIP, when VIP turns on, when the player's day turns (an
-// event may have been released), and after an event level's verdict that does not carry its event
-// (claims.ts hands the ones that do to accept()). A read that gets no answer is tried again with a
+// when the game starts (whoever the player is: the answer says VIP too, so src/net/vip.ts asks
+// nothing of its own), when VIP turns on, when the player's day turns (an event may have been
+// released), and after an event level is refused; a verdict that carries its event (claims.ts)
+// keeps it current with no read. A read that gets no answer is tried again with a
 // backoff, and at once when the connection comes back. Unframed (a plain tab, the play-test tool)
 // there is no platform: no events.
 
@@ -35,7 +38,7 @@ import { helpers, type HelperKind } from "./helpers";
 import { noAnswer, refusalOf } from "./no-answer";
 import { backoff, heard as hearRefusal, whenDue } from "./pace";
 import { onOnline, suspect } from "../ui/online";
-import { heardVip, isVip, onVipChange, vipFields } from "./vip";
+import { heardVip, isVip, onVipChange, vipFields, vipKnown, vipReady } from "./vip";
 
 export type EventItem = {
   id: string;
@@ -94,6 +97,9 @@ const heard = new Set<() => void>();
 let list: EventPack[] = [];
 let prize: { event: string; helpers: Record<HelperKind, number> } | null = null;
 let reading: Promise<void> | null = null;
+/** When the last read landed (Date.now()), 0 before one: a refresh within FRESH_MS answers from memory. */
+let readAt = 0;
+const FRESH_MS = 5 * 60_000;
 let tries = 0;
 let again: (() => void) | null = null;
 
@@ -154,6 +160,7 @@ async function read(): Promise<void> {
       throw new Error(`the checker answered ${String(a.status)} ${String(a.reason ?? "")}`);
     }
     tries = 0;
+    readAt = Date.now();
     list = (Array.isArray(a.events) ? a.events : []).map(view).filter((e): e is EventPack => e !== null);
     const ids = Array.isArray(a.prizes) ? (a.prizes as string[]) : [];
     landed(ids[0], a.gifts, a.helpers);
@@ -165,16 +172,20 @@ async function read(): Promise<void> {
     again?.();
     again = whenDue(backoff(++tries, 5000), () => {
       again = null;
-      void refresh();
+      void refresh(true);
     });
   } finally {
     reading = null;
   }
 }
 
-/** Read the events again (at most one read at a time), for a VIP only. */
-function refresh(): Promise<void> {
-  if (!framed || !on || !isVip()) return Promise.resolve();
+/**
+ * Read the events again (at most one read at a time): for a VIP, or while VIP is not known yet (the
+ * read says). `force` reads even within FRESH_MS of the last read (VIP turned on, a new day, a refusal).
+ */
+function refresh(force = false): Promise<void> {
+  if (!framed || !on || (!isVip() && vipKnown())) return Promise.resolve();
+  if (!force && !reading && readAt && Date.now() - readAt < FRESH_MS) return Promise.resolve();
   reading ??= read();
   return reading;
 }
@@ -191,7 +202,7 @@ export function accept(answer: Record<string, unknown>): void {
     landed(e?.id, answer.gifts, answer.helpers);
     say();
   } else if (answer.status === "refused") {
-    void refresh();
+    void refresh(true);
   }
 }
 
@@ -204,7 +215,7 @@ export const suitcase = {
       .map((e) => ({ id: e.id, theme: e.theme, release: releaseOf(e) }))
       .sort((a, b) => (a.release < b.release ? -1 : 1));
   },
-  refresh,
+  refresh: (): Promise<void> => refresh(),
   lastPrize(): { event: string; helpers: Record<HelperKind, number> } | null {
     const p = prize;
     prize = null;
@@ -216,22 +227,23 @@ export const suitcase = {
   },
 };
 
-/** Read the events as the game starts (src/net/progress.ts calls it), and keep them current. */
+/** Read the events as the game starts (src/net/progress.ts calls it), which says VIP too, and keep them current. */
 export async function loadSuitcase(): Promise<void> {
   if (!framed || !on) return;
-  await refresh();
+  await vipReady(); // the dev pretend kept from last time goes with this first read
+  await refresh(true);
 }
 
 if (framed && on) {
   // a new day may release an event
-  onDailyChange(() => void refresh());
+  onDailyChange(() => void refresh(true));
   onOnline((up) => {
-    if (up && tries > 0) void refresh();
+    if (up && tries > 0) void refresh(true);
   });
   // VIP on: read them; VIP off: none of it is the player's to see
   onVipChange((vip) => {
     if (vip) {
-      void refresh();
+      void refresh(true);
     } else {
       list = [];
       say();

@@ -15,8 +15,8 @@
 //     once (gem.me.progressions.get), and an achievement it shows unlocked is heard. One read per
 //     counter that crossed a threshold, never asked again, nothing while the platform asked for a
 //     wait (src/net/pace.ts). Crossings happen a couple of dozen times in the whole game.
-// On dev and test nothing ever unlocks (the platform answers "suppressed"), so nothing is heard there;
-// the compare's read still happens at each crossing.
+// On dev and test nothing ever unlocks (the platform answers "suppressed"), so nothing is heard there,
+// and the compare asks nothing there either (it could only find what is never there).
 //
 // THE STANDING, for the Passport's Achievements page (UI's): readStanding() says which achievements
 // the player holds. Call it when the page opens, never on a timer: one read of each counter's
@@ -139,6 +139,9 @@ async function compare(): Promise<void> {
   const todo = ACHIEVEMENTS.filter((a) => crossed.has(a.id));
   for (const a of todo) crossed.delete(a.id);
   try {
+    // dev and test unlock nothing (the platform suppresses it): no read can find an unlock there
+    const id = await gem.awaitIdentity(10_000).catch(() => null);
+    if (!id || id.channel !== "release") return;
     gem.me.inventory.refresh(); // the unlock happened on the server: the SDK's cache cannot know it
     for (const counter of new Set(todo.map((a) => a.counter))) {
       try {

@@ -24,6 +24,8 @@
 import { gem } from "../gem";
 import { noAnswer, refusalOf } from "./no-answer";
 import { backoff, heard as paced, held, whenDue } from "./pace";
+import { readChoices } from "../ui/choices";
+import IDS from "./suitcase-ids.json";
 
 /** Framed by the platform: another origin's frame (as src/net/helpers.ts). */
 const framed = ((): boolean => {
@@ -107,9 +109,38 @@ function later(ms: number): void {
   });
 }
 
-/** Ask the checker. Call once, at boot (src/net/progress.ts's loadProgress starts it). */
+let ready: Promise<void> | null = null;
+/**
+ * The dev menu's pretend as kept last time (the "devVip" choice, from the one shared read of the
+ * player's choices: no call of its own), restored before the first read and the first claim, so it
+ * goes with them and nothing is asked twice. At once in a release build.
+ */
+export function vipReady(): Promise<void> {
+  // never more than 3 s: the claims wait on it, and a read with no answer must not hold them
+  ready ??= !CAN_PRETEND || !framed
+    ? Promise.resolve()
+    : Promise.race([
+        readChoices()
+          .then((m) => {
+            if (m.get("devVip") === "1" && !pretend) {
+              pretend = true;
+              set(true, false);
+            }
+          })
+          .catch(() => {}),
+        new Promise<void>((r) => setTimeout(r, 3000)),
+      ]);
+  return ready;
+}
+
+/**
+ * Ask the checker. Call once, at boot (src/net/progress.ts's loadProgress starts it). While the
+ * events are on (src/net/suitcase-ids.json), their read at boot says VIP too (src/net/suitcase.ts,
+ * loadSuitcase), so this asks nothing of its own: one call where there were two.
+ */
 export function loadVip(): void {
-  void read();
+  if ((IDS as { on?: boolean }).on === true) return;
+  void vipReady().then(() => read());
 }
 
 /**
