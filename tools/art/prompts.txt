@@ -132,3 +132,11 @@ P = ("Edit only the masked middle band. Remove every object in it: every cup, pl
      "bird, instrument, cloth and petal. In their place continue the same {surf} seen from directly above, with the same colour, the "
      "same texture and bright sunny light, and {shade}, so the whole middle band is calm, open surface. Keep everything outside the "
      "band exactly as it is. No new objects, no text.")
+
+# Achievement icons (docs/achievements.md, 2026-10-30): six Arcade avatar icons, uploaded as items ach-<name> (512 PNG,
+# tools/art/items/), the game's own copies at public/art/achievements/<name>-icon.webp (256). tools/art/achievements.py
+# holds every prompt (PIN + subject + ROUND, --from .gemarcade/hero/key_art.jpg, 1024x1024 high). The creator chose
+# "landmark badges" from three directions drawn for Full Suitcase and Daily Devotee (A animal travellers: a kangaroo with a
+# stuffed pouch, a French rooster crowing; B landmark badges; C living landmarks: a striding Eiffel Tower, a yawning Fuji),
+# after a first set of travel objects on plain grounds read "lackluster". Landmarks checked against the picture rules:
+# Uluru dropped (sacred), the Eiffel Tower by day only (its night lighting is copyrighted).
