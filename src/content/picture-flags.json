@@ -21,10 +21,20 @@
       "note": "looks AI-made (the same tilt and smile); remade as apple-ladder",
       "date": "2026-10-25"
     },
+    "autumn-treetops": {
+      "flagged": true,
+      "note": "Too busy",
+      "date": "2026-10-30"
+    },
     "blue-headscarf": {
       "flagged": true,
       "note": "looks AI-made (the same tilt and smile); remade as book-reader",
       "date": "2026-10-25"
+    },
+    "bluebonnets": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-30"
     },
     "borage": {
       "flagged": true,
@@ -70,6 +80,11 @@
       "flagged": true,
       "note": "",
       "date": "2026-10-29"
+    },
+    "dawn-market-wagons": {
+      "flagged": true,
+      "note": "Too busy",
+      "date": "2026-10-30"
     },
     "dog-sled": {
       "flagged": true,
@@ -131,6 +146,11 @@
       "note": "Too busy",
       "date": "2026-10-29"
     },
+    "log-flume": {
+      "flagged": true,
+      "note": "no people in it, makes no sense to picture it",
+      "date": "2026-10-30"
+    },
     "moai": {
       "flagged": true,
       "note": "retired: the moai are sacred to the Rapa Nui (creator, 2026-10-28); remade as eagle-figurehead",
@@ -150,6 +170,26 @@
       "flagged": true,
       "note": "looks AI-made (the same tilt and smile); remade as plein-air",
       "date": "2026-10-25"
+    },
+    "pole-vaulter": {
+      "flagged": true,
+      "note": "anatomy weird",
+      "date": "2026-10-30"
+    },
+    "pyramids": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-30"
+    },
+    "quilter": {
+      "flagged": true,
+      "note": "its too strange that she is made of yarn",
+      "date": "2026-10-30"
+    },
+    "rocky-cove": {
+      "flagged": true,
+      "note": "Too busy",
+      "date": "2026-10-30"
     },
     "salvia": {
       "flagged": true,
@@ -175,6 +215,11 @@
       "flagged": true,
       "note": "",
       "date": "2026-10-29"
+    },
+    "threshing-day": {
+      "flagged": true,
+      "note": "Too busy",
+      "date": "2026-10-30"
     },
     "yellow-raincoat": {
       "flagged": true,
