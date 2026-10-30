@@ -165,6 +165,22 @@ export function createHome(nav: Nav, parts: Parts) {
   const stops = el("ol", "tr-stops");
   route.append(path, stops);
   itinerary.append(head, route);
+  /**
+   * The trip's name on its one line in the head, above the stub's tear: a size smaller where it will not
+   * fit ("Путешествие по Америке", "Wielka Brytania i Irlandia"); still too long, it wraps between words and
+   * the head grows, the tear's notches moving down with it. Measured, never guessed, at each draw and resize.
+   */
+  const fitTrip = (): void => {
+    tripLine.classList.remove("long", "wrap");
+    itinerary.style.removeProperty("--tear");
+    if (itinerary.hidden || !tripLine.clientWidth) return;
+    const over = () => tripLine.scrollWidth > tripLine.clientWidth + 1;
+    if (!over()) return;
+    tripLine.classList.add("long");
+    if (!over()) return;
+    tripLine.classList.add("wrap");
+    itinerary.style.setProperty("--tear", `${Math.ceil(head.scrollHeight)}px`);
+  };
 
   // ---- Next stop ----
   const playWords = el("b", "", t("home.nextStop"));
@@ -222,6 +238,7 @@ export function createHome(nav: Nav, parts: Parts) {
   }).observe(screen);
   // the dotted path follows the stops wherever the layout puts them
   new ResizeObserver(() => drawPath()).observe(route);
+  new ResizeObserver(() => fitTrip()).observe(head);
 
   /** The visited stops' postcards of the route drawn now, decoding (home appears whole once they are in). */
   let pictures: Promise<void>[] = [];
@@ -343,6 +360,7 @@ export function createHome(nav: Nav, parts: Parts) {
           ? t("home.allDone")
           : t("home.stop", { n: at + 1, all: places.length });
       itinerary.setAttribute("aria-label", waiting ? "" : `${tripLine.textContent}: ${countLine.textContent}`);
+      fitTrip();
       itinerary.classList.toggle("waiting", waiting);
       stops.replaceChildren(...places.map((p, k) => stop(p, tr, k, k === places.length - 1, waiting ? null : next)));
       stops.style.gridTemplateRows = `repeat(${Math.ceil(places.length / PER_ROW)}, auto)`;

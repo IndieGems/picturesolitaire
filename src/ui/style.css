@@ -258,7 +258,12 @@ html.arcade-menu { --gear-room: 0px; --gear-solo: 0px; }
 }
 .itinerary-head .ico { width: calc(30px * var(--k)); height: calc(30px * var(--k)); color: var(--amber-lip); }
 .itinerary-words { display: flex; flex-direction: column; gap: calc(3px * var(--k)); min-width: 0; }
-.itinerary-trip { font: 600 calc(21px * var(--k))/1.1 var(--round); }
+/* the trip's name: one line where it fits, a size smaller where not, wrapping between words (the head
+   growing, the tear's notches with it) only past that (home.ts measures it) */
+.itinerary-trip { font: 600 calc(21px * var(--k))/1.1 var(--round); white-space: nowrap; overflow: hidden; }
+.itinerary-trip.long { font-size: calc(17px * var(--k)); }
+.itinerary-trip.wrap { white-space: normal; overflow: visible; overflow-wrap: break-word; }
+.itinerary:has(.itinerary-trip.wrap) .itinerary-head { height: auto; min-height: var(--tear); padding-block: calc(6px * var(--k)); }
 .itinerary-count { font: 500 calc(14px * var(--k))/1.2 var(--round); color: var(--ink-soft); }
 .itinerary.waiting .itinerary-words { visibility: hidden; }
 
