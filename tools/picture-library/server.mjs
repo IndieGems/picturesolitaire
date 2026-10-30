@@ -13,6 +13,9 @@
 //   GET  /                   the page (index.html, app.js, style.css beside this file)
 //   GET  /api/library        the catalogue, each picture with where it is used and its flag
 //   GET  /api/stamp          a fingerprint of the files the library is made from
+//   GET  /api/version        { api }: what this server can save. The page asks at once, and says so
+//                            plainly when the server is older than it (a server started before an
+//                            endpoint the page uses existed keeps answering 404 until restarted)
 //   PUT  /api/flag           { id, flagged, note } -> src/content/picture-flags.json
 //   PUT  /api/redraw         { id, redraw, note }  -> src/content/picture-redraws.json
 //   GET  /pictures/<path>    the game's picture files (public/pictures/), thumbs included
@@ -65,6 +68,8 @@ const TYPES = {
   ".woff2": "font/woff2",
 };
 const NOTE_MAX = 200;
+/** What this server can save: 1 the flag, 2 the flag and the redraw mark. The page's API is in app.js. */
+const API = 2;
 
 class BadRequest extends Error {}
 
@@ -345,6 +350,7 @@ const server = createServer(async (req, res) => {
     if (req.method === "GET" && PAGE[route]) return sendFile(req, res, path.join(here, PAGE[route]));
     if (req.method === "GET" && route === "/api/library") return send(res, 200, await library());
     if (req.method === "GET" && route === "/api/stamp") return send(res, 200, { stamp: await stamp() });
+    if (req.method === "GET" && route === "/api/version") return send(res, 200, { api: API });
     if (req.method === "PUT" && route === "/api/flag") {
       // JSON only: a form posted from another page cannot send this without a preflight we never answer
       if (!String(req.headers["content-type"] ?? "").startsWith("application/json")) return send(res, 415, { error: "send JSON" });

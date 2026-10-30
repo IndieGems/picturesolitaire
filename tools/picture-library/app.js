@@ -17,6 +17,15 @@ const el = (tag, props = {}, ...kids) => {
 };
 
 const QUICK_NOTES = ["Too dark", "Looks AI-ish", "Too busy", "Hard to tell apart", "Cut lines spoil it", "Blurry"];
+/**
+ * What this page saves through the library's server: 2 is the flag and the redraw mark (server.mjs's API).
+ * A server started before then (it reads this page from disk, so the page can be newer than it) answers
+ * /api/version with a 404, or a smaller number: the page then says so at the top, before anything is
+ * marked (the creator, 2026-10-30, after marks that were never saved).
+ */
+const PAGE_API = 2;
+/** The server's word on what it can save: null until asked, 0 when it is too old to say. */
+let serverApi = null;
 const LANE_WORDS = { campaign: "Campaign", challenge: "Challenge route", daily: "Daily puzzle" };
 
 /** Palette words as the catalogue writes them, as colours to show. */
@@ -171,6 +180,16 @@ function drawFilters() {
 function drawNotes() {
   const notes = $("notes");
   notes.replaceChildren();
+  // the server is older than the page: marks for redraw cannot be saved until it is restarted
+  if (serverApi !== null && serverApi < PAGE_API)
+    notes.append(
+      el(
+        "p",
+        { class: "note alert stale" },
+        el("b", { text: "Redraw marks can't be saved yet." }),
+        " The Picture Library's server is older than this page. Ask for the library to be restarted, then reload this tab. Don't-use flags still save.",
+      ),
+    );
   for (const problem of lib.problems) notes.append(el("p", { class: "note", text: problem }));
   const stuck = lib.pictures.filter((p) => isFlagged(p) && p.usedTotal > 0);
   if (stuck.length) {
@@ -463,6 +482,9 @@ async function saveFlag(flagged, note) {
     }
     await refresh(true);
   } catch (e) {
+    // nothing changed: the switch goes back to what is saved, and the sheet says so plainly
+    const p = byId(id);
+    if (view.open === id) $("d-flagged").checked = p ? isFlagged(p) : false;
     saved.classList.add("err");
     saved.textContent = `Not saved: ${e.message}`;
   }
@@ -477,7 +499,11 @@ async function saveRedraw(redraw, note) {
     const res = await fetch("/api/redraw", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, redraw, note }) });
     const body = await res.json().catch(() => ({}));
     // a library server started before the switch existed: it needs one restart
-    if (res.status === 404) throw new Error("the library needs a restart for this switch (its server is older than the page)");
+    if (res.status === 404) {
+      serverApi = 0;
+      drawNotes();
+      throw new Error("the Picture Library's server is older than this page. Ask for the library to be restarted, then reload this tab.");
+    }
     if (!res.ok) throw new Error(body.error || `the library answered ${res.status}`);
     rdDirty = false;
     const p = byId(id);
@@ -491,6 +517,9 @@ async function saveRedraw(redraw, note) {
     }
     await refresh(true);
   } catch (e) {
+    // nothing changed: the switch goes back to what is saved, and the sheet says so plainly
+    const p = byId(id);
+    if (view.open === id) $("d-rd-on").checked = p ? isRedraw(p) : false;
     saved.classList.add("err");
     saved.textContent = `Not saved: ${e.message}`;
   }
@@ -620,14 +649,30 @@ addEventListener("hashchange", () => {
   $("detail").hidden = !view.open;
 });
 
+/** Ask the server what it can save (a 404 is a server older than the page). */
+async function checkServer() {
+  try {
+    const res = await fetch("/api/version", { cache: "no-store" });
+    serverApi = res.ok ? Number((await res.json()).api) || 0 : res.status === 404 ? 0 : serverApi;
+  } catch {
+    // not reachable just now: the count says so, and the next look asks again
+  }
+  if (lib) drawNotes();
+}
+
 readHash();
 if (view.open) $("detail").hidden = false;
+await checkServer();
 await refresh(true);
 if (view.open && byId(view.open)) drawDetail(true);
 // ask every few seconds while the library is in view; at once on coming back to it
 setInterval(() => {
   if (document.visibilityState === "visible") void refresh();
 }, 2500);
+// a restart while the page is open: the banner goes once the new server answers
+setInterval(() => {
+  if (document.visibilityState === "visible" && serverApi !== null && serverApi < PAGE_API) void checkServer();
+}, 15000);
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") void refresh();
 });
