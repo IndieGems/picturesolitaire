@@ -29,7 +29,7 @@ import { backoff, heard, held, whenDue } from "./pace";
 /** The daily challenge's slug and id in the game config (functions/checker/src/lib.rs has the same). */
 export const DAILY_SLUG = "daily_picture";
 const DAILY_ID = "6d1f3b0e-8a52-4c7e-9f14-2b6e0d9a7c31";
-/** The day's results board in the game config: fewest moves, then the quicker time. */
+/** The day's results board in the game config: fewest moves, a tie to whoever finished first (the earlier run). */
 export const DAILY_BOARD = "daily";
 
 export interface DailyToday {
@@ -139,7 +139,11 @@ export async function today(waitMs = 1000): Promise<DailyToday> {
   return got ?? (known ? plain(known) : guess());
 }
 
-/** The day's results among the player's friends (and themselves): `daysBack` 0 is today, 1 yesterday. */
+/**
+ * The day's results among the player's friends (and themselves): `daysBack` 0 is today, 1 yesterday.
+ * Unpaced, for the results screen written before the Daily page: new code reads dailyBoard()
+ * (src/net/daily-board.ts), which holds the board until the platform's next rendering.
+ */
 export async function standings(daysBack = 0): Promise<DailyStandings> {
   return rowsOf(await gem.leaderboards.friends(DAILY_BOARD, daysBack ? { periodsBack: daysBack } : {}));
 }
