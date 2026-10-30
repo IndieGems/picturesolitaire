@@ -82,8 +82,7 @@
 //     art (`standIn`) is a WARNING in an everyday build and a FAILURE in a
 //     release one (--full). A daily from daily-plan.mts RULES_FROM is
 //     readable, starts safe, and holds no landmark and no picture from before
-//     the clear ones. An item plays only as its level's item. (suitcases.json,
-//     the old monthly schedule, stays for UI's readers until they move, unchecked.)
+//     the clear ones. An item plays only as its level's item.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
 import { createHash } from "node:crypto";
@@ -119,8 +118,8 @@ const files = args.filter((a) => !a.startsWith("--"));
 /** No files named: every boards file, and the checks across files (events, souvenirs, trips) */
 const ALL = !files.length;
 const dir = join(root, "src/content/levels");
-// trips.json, events.json and suitcases.json are no boards files (trips and events are checked on their own below)
-const NOT_BOARDS = new Set(["trips.json", "events.json", "suitcases.json"]);
+// trips.json and events.json are no boards files (each is checked on its own below)
+const NOT_BOARDS = new Set(["trips.json", "events.json"]);
 if (ALL) for (const f of readdirSync(dir).sort()) if (f.endsWith(".json") && !NOT_BOARDS.has(f)) files.push(join(dir, f));
 // the VIP events (make-events.mts): each event's levels, and the item each item level hides
 const eventsFile = join(dir, "events.json");

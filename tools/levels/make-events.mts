@@ -30,7 +30,7 @@ import { EVENT_LEVELS, EVENT_MARKS, EVENT_MAY_TRAP, eventOf, ITEM_AT, levelId, P
 export const EVENTS_FILE = join(root, "src/content/levels/events.json");
 export const LEVELS_FILE = join(root, "src/content/levels/event-levels.json");
 /** The level files that are no boards, or are this maker's own. */
-const NOT_OTHERS = new Set(["trips.json", "events.json", "suitcases.json", "event-levels.json"]);
+const NOT_OTHERS = new Set(["trips.json", "events.json", "event-levels.json"]);
 
 /** The events file's text, one event a few lines so a diff shows what moved. */
 export function eventsText(plan = PLAN) {
