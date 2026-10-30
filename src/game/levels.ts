@@ -10,12 +10,12 @@
 // The game never imports those files whole (the first-load trim, UI's,
 // 2026-10-28): the build splits them (tools/content-split.mjs, virtual:ps-content),
 // so each trip, each week of dailies and each other list (challenge, Souvenirs,
-// lessons, experiments) is a chunk of its own, fetched on the first ask, and a
+// the VIP events' levels, lessons, experiments) is a chunk of its own, fetched on the first ask, and a
 // chunk has registered its boards' pictures (src/content.ts) by the time it
 // resolves. The source files, the level tools and the server's checker are
 // unchanged by it.
 
-import { campaign, challenge, daily, experiments as experimentLane, lessons as lessonLane, souvenirs as souvenirLane } from "virtual:ps-content";
+import { campaign, challenge, daily, eventLevels as eventLane, experiments as experimentLane, lessons as lessonLane, souvenirs as souvenirLane } from "virtual:ps-content";
 import type { Deal, Move, Picture, Shuffle } from "./rules.ts";
 import { dailyFor } from "./levels/daily.ts";
 
@@ -252,6 +252,54 @@ export function loadSouvenirs(): Promise<Souvenir[]> {
 /** Trip `trip`'s Souvenir ("t1"), or null when it has none (yet) or they cannot be loaded. */
 export async function loadSouvenir(trip: string): Promise<Souvenir | null> {
   return (await loadSouvenirs()).find((s) => s.trip === trip) ?? null;
+}
+
+// ---------------------------------------------------------------- the VIP events
+
+/**
+ * A level of a VIP event (docs/vip.md): each event is 30 levels of its own, ids "<event>-01" to
+ * "-30" (Levels' src/content/levels/event-levels.json). `event` is its event's id
+ * (src/content/levels/events.json), `number` its place in that event (1 to 30, play order), `item`
+ * the suitcase item hidden in it on 10 of the 30 (the board sends suitcase:item when that picture is
+ * finished, as on a daily), `par` the stored line's moves, `mark` a hard level's mark.
+ */
+export type EventLevel = Level & { event: string; par?: number; mark?: "hard" | "super" };
+type StoredEventLevel = Stored & { event?: unknown; par?: unknown; mark?: unknown };
+
+let eventLevels: Promise<EventLevel[]> | null = null;
+/**
+ * Every event's levels, in each event's play order (about 30 an event). Fetched apart from the
+ * boot, on the first ask (an event page opening), then kept; the chunk registers their pictures and
+ * their items' pictures as it loads. Rejects when it cannot be loaded (offline), and the next ask
+ * tries again. Empty while Levels' file is not in the tree yet.
+ */
+export function loadEventLevels(): Promise<EventLevel[]> {
+  eventLevels ??= eventLane().then((m) => {
+    const at = new Map<string, number>();
+    return (m.levels as unknown as StoredEventLevel[]).flatMap((l): EventLevel[] => {
+      if (typeof l.event !== "string") return [];
+      const n = (at.get(l.event) ?? 0) + 1;
+      at.set(l.event, n);
+      return [
+        {
+          ...toLevel(l, n),
+          event: l.event,
+          ...(typeof l.par === "number" ? { par: l.par } : {}),
+          ...(l.mark === "hard" || l.mark === "super" ? { mark: l.mark } : {}),
+        },
+      ];
+    });
+  });
+  eventLevels.catch((err: unknown) => {
+    console.warn("[levels] the event levels did not load", err);
+    eventLevels = null; // ask again next time
+  });
+  return eventLevels;
+}
+
+/** Event level `id` ("halloween-2026-13"), or null when there is no such level. Rejects as loadEventLevels does. */
+export async function loadEventLevel(id: string): Promise<EventLevel | null> {
+  return (await loadEventLevels()).find((l) => l.id === id) ?? null;
 }
 
 // ---------------------------------------------------------------- lessons

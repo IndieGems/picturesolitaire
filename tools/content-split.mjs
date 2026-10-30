@@ -13,6 +13,10 @@
 //                                     same weeks as Art's daily packs), { levels, start }: start is
 //                                     the week's first index in the whole pool
 //   souvenirs(), challenge(), lessons(), experiments()   each lane as stored, { levels }
+//   eventLevels()                     the VIP events' levels as stored, { levels }: every event's 30
+//                                     (docs/vip.md), each with its `event`, in play order; asked
+//                                     for only when an event page opens. An empty lane while Levels'
+//                                     file is not in the tree yet
 //   items[<yyyy-mm>]()                a month's Daily Suitcase items (its screen's ten slots)
 //   library()                         the whole picture list (the albums, the dev menu)
 //   catalogue                         the catalogue's small lists, sync: albums, suitcases, souvenirs
@@ -22,7 +26,7 @@
 // once a chunk has resolved, its boards can be drawn, and nothing else needs to know the split.
 // In the dev loop the same modules are served; a change to a source file reloads the page.
 
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url)).replace(/\\/g, "/");
@@ -36,7 +40,10 @@ const SRC = {
   lessons: `${ROOT}src/content/levels/lessons.json`,
   experiments: `${ROOT}src/content/levels/experiments.json`,
   events: `${ROOT}src/content/levels/events.json`,
+  eventLevels: `${ROOT}src/content/levels/event-levels.json`,
 };
+/** Lanes whose file may not be in the tree yet: an empty lane until it is, never a failed build. */
+const OPTIONAL = new Set(["eventLevels"]);
 const STORE = `${ROOT}src/content.ts`;
 const ID = "virtual:ps-content";
 // The interface's glyphs (Art's public/art/ui/icon-*.svg) as data URLs in the game's script, so home's
@@ -51,7 +58,7 @@ const ICON_DIR = `${ROOT}public/art/ui/`;
 const BOOT_ID = "virtual:ps-boot-words";
 const LOCALE_DIR = `${ROOT}locales/`;
 const BOOT_KEYS = ["boot.loading", "boot.failed", "game.title"];
-const LANES =["souvenirs", "challenge", "lessons", "experiments"];
+const LANES = ["souvenirs", "challenge", "lessons", "experiments", "eventLevels"];
 
 /** A daily's week: the Monday on or before its date (yyyy-mm-dd, UTC), as tools/art/packs.mjs names it. */
 function weekOf(date) {
@@ -151,7 +158,7 @@ export function contentSplit() {
       c.levels.push(l);
     });
 
-    const lanes = Object.fromEntries(LANES.map((k) => [k, json(k)]));
+    const lanes = Object.fromEntries(LANES.map((k) => [k, OPTIONAL.has(k) && !existsSync(SRC[k]) ? { levels: [] } : json(k)]));
     /** an event's id (or an old month) -> its items */
     itemGroup.clear();
     for (const ev of JSON.parse(readFileSync(SRC.events, "utf8")).events ?? []) for (const it of ev.items ?? []) itemGroup.set(it.id, ev.id);
@@ -202,7 +209,7 @@ export function contentSplit() {
   // ("trip-t1-<hash>.js"), unique in the build (tools/unique-names.mjs).
   const chunkId = (kind, key) => `${ID}/${kind}${key ? `-${key}` : ""}`;
   const parse = (id) => {
-    const m = /^\0virtual:ps-content\/(trip|daily|items|library|souvenirs|challenge|lessons|experiments)(?:-(.+))?$/.exec(id);
+    const m = /^\0virtual:ps-content\/(trip|daily|items|library|souvenirs|challenge|lessons|experiments|eventLevels)(?:-(.+))?$/.exec(id);
     return m && `${m[1]}:${m[2] ?? ""}`;
   };
 
@@ -235,7 +242,7 @@ export function contentSplit() {
         return `export default ${JSON.stringify(glyphs)};`;
       }
       if (!id.startsWith(`\0${ID}`)) return null;
-      for (const file of Object.values(SRC)) this.addWatchFile(file);
+      for (const file of Object.values(SRC)) if (existsSync(file)) this.addWatchFile(file);
       const c = read();
       if (id === `\0${ID}`) {
         const loaders = (kind, keys) =>

@@ -2,7 +2,7 @@
 // with plain helper buttons and every event logged. Dev only; never built.
 import { openBoard } from "./index.ts";
 import { on, type GameEvents } from "../events";
-import { lessonLevel, loadChallenges, loadDaily, loadExperiments, loadLevel, loadSouvenir, type Level } from "../game/levels.ts";
+import { lessonLevel, loadChallenges, loadDaily, loadEventLevel, loadExperiments, loadLevel, loadSouvenir, type Level } from "../game/levels.ts";
 import type { BoardKept } from "./index.ts";
 import { TUNING } from "./tuning.ts";
 import { library } from "virtual:ps-content";
@@ -32,6 +32,9 @@ if (day) level = (await loadDaily(day)) ?? undefined;
 // ?souvenir=t1: that trip's Souvenir board (src/content/levels/souvenirs.json)
 const souvenir = q.get("souvenir");
 if (souvenir) level = (await loadSouvenir(souvenir)) ?? undefined;
+// ?event=halloween-2026-02: a VIP event's level (src/content/levels/event-levels.json)
+const eventLevel = q.get("event");
+if (eventLevel) level = (await loadEventLevel(eventLevel)) ?? undefined;
 // ?dest=dest-grand-canyon&crop=2,2: the board's first 2x2 picture made that destination's window
 const dest = q.get("dest");
 if (dest) {

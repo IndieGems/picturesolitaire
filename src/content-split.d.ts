@@ -38,6 +38,8 @@ declare module "virtual:ps-content" {
   export const challenge: () => Promise<{ levels: StoredLevel[] }>;
   export const lessons: () => Promise<{ levels: StoredLevel[] }>;
   export const experiments: () => Promise<{ levels: StoredLevel[] }>;
+  /** The VIP events' levels (src/content/levels/event-levels.json), each with its `event`, in play order; empty while the file is not in the tree. */
+  export const eventLevels: () => Promise<{ levels: StoredLevel[] }>;
   /** The whole catalogue, registered (the albums, the dev menu). */
   export const library: () => Promise<Record<string, never>>;
   /** The catalogue's small lists, always here. */
