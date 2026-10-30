@@ -1,7 +1,7 @@
 // THE GAME'S CONTENT NAMES IN ENGLISH, keyed as the game looks their translations up, for the
 // translators: locales/names-en.json and locales/titles-en.json. The English itself stays where
 // it is written (Art's src/content/pictures.json and public/art/tables/tables.json, Levels'
-// src/content/levels/trips.json and suitcases.json) and is what the game shows when a language
+// src/content/levels/trips.json and events.json) and is what the game shows when a language
 // has no translation; these two files are only its snapshot, so a later translation pass can see
 // what changed (`git diff` on them, the gemctl:localization skill). They are never shipped.
 //
@@ -9,11 +9,11 @@
 //                      trip.<id>                          a trip's title ("Travel America")
 //                      destination.<id>.name / .place     a postcard's place and where it is
 //                      souvenir.<trip>.theme              a Souvenir's theme
-//                      suitcase.<yyyy-mm>.theme           a month's Daily Suitcase
+//                      suitcase.<event id>.theme          an event's theme (the VIP events)
 //                      table.<id>                         a table's name (the picker, a prize)
 //                      album.<id>                         an album's name
-//                      picture.<item id>                  a suitcase item's name
-//   titles-en.json   every other picture a player can meet (the levels' and the Souvenirs'):
+//                      picture.<item id>                  an event item's name
+//   titles-en.json   every other picture a player can meet (the levels', the events' and the Souvenirs'):
 //                      picture.<id>                       its title (the enlarged view, the win card)
 //
 //   node tools/i18n/content-en.mjs           write both
@@ -32,8 +32,7 @@ export const TITLES_EN = "locales/titles-en.json";
 export function contentEnglish() {
   const pictures = read("src/content/pictures.json");
   const trips = read("src/content/levels/trips.json").trips;
-  const suitcases = read("src/content/levels/suitcases.json").months ?? [];
-  // the two-week VIP events (docs/vip.md; Levels' events.json): a theme each, its prize table and its items
+  // the VIP events (docs/vip.md; Levels' events.json): a theme each, its prize table and its items
   const events = (read("src/content/levels/events.json").events ?? []).filter((e) => !e.standIn);
   const tables = read("public/art/tables/tables.json").tables ?? [];
   const names = {};
@@ -46,14 +45,13 @@ export function contentEnglish() {
   for (const s of pictures.souvenirs ?? []) names[`souvenir.${s.trip}.theme`] = s.theme;
   for (const t of tables) if (t.title) names[`table.${t.id}`] = t.title;
   // a prize or a Souvenir table not in the table list yet still shows its name
-  for (const s of [...(pictures.suitcases ?? []), ...(pictures.events ?? []), ...(pictures.souvenirs ?? []), ...suitcases, ...events])
+  for (const s of [...(pictures.suitcases ?? []), ...(pictures.events ?? []), ...(pictures.souvenirs ?? []), ...events])
     if (s.table && s.tableTitle && !names[`table.${s.table}`]) names[`table.${s.table}`] = s.tableTitle;
   for (const m of pictures.suitcases ?? []) names[`suitcase.${m.month}.theme`] = m.theme;
-  for (const m of suitcases) names[`suitcase.${m.month}.theme`] = m.theme;
   for (const e of events) names[`suitcase.${e.id}.theme`] = e.theme;
   for (const a of pictures.albums ?? []) names[`album.${a.id}`] = a.title;
   for (const it of pictures.items ?? []) names[`picture.${it.id}`] = it.title ?? it.id;
-  for (const m of [...suitcases, ...events]) for (const it of m.items ?? []) names[`picture.${it.id}`] ??= it.title;
+  for (const m of events) for (const it of m.items ?? []) names[`picture.${it.id}`] ??= it.title;
 
   // the pictures a player can meet: those the shipped levels deal (never the experiments, the dev
   // menu's), and every Souvenir picture; a destination's is its place's name, an item's is above

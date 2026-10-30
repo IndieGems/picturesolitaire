@@ -6,7 +6,7 @@
 //                              suitcase items, tables), fetched with it: home and the passport show them
 //   locales/titles-<lang>.json the pictures' titles, fetched once home is whole (warmTitles): only the
 //                              enlarged picture and the win card read them
-// The content's English stays in the content (pictures.json, trips.json, suitcases.json, tables.json),
+// The content's English stays in the content (pictures.json, trips.json, events.json, tables.json),
 // read through catalogue.ts and the others' `localized` lookups; tools/i18n/content-en.mjs snapshots it
 // for the translators, and tools/i18n/check.mjs checks every language against the English.
 //

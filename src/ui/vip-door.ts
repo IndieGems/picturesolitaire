@@ -3,7 +3,7 @@
 // tag; a tap opens this screen, what the door holds, big:
 //
 //   the archive   a strip of the last few days, as the calendar draws them, under the tag
-//   the event     its suitcase and its prize table, its name and how long it runs
+//   the event     its suitcase and its prize table, its name, and its levels and hidden items
 //
 // then the line "VIP is coming soon." where Get VIP will go: no game can open the Arcade's VIP card, or
 // read who holds VIP, yet (gem-development#2119), and a buyer must never stay locked out (vip-view.ts:
@@ -25,7 +25,7 @@ type Nav = {
 /** What a door holds. */
 export type VipDoor =
   | { kind: "archive"; today: string }
-  | { kind: "event"; title: string; art: string; table?: { name: string; thumb: string }; days: number };
+  | { kind: "event"; title: string; art: string; table?: { name: string; thumb: string }; levels: number; items: number };
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", text = ""): HTMLElementTagNameMap[K] {
   const e = document.createElement(tag);
@@ -97,7 +97,7 @@ export function createVipDoor(nav: Nav) {
     note.append(
       el("span", "vip-kicker", t("vip.kicker")),
       el("b", "vip-big", d.kind === "archive" ? t("archive.title") : d.title),
-      el("p", "", d.kind === "archive" ? t("vip.archiveLine") : t("vip.eventLine", { count: d.days })),
+      el("p", "", d.kind === "archive" ? t("vip.archiveLine") : t("vip.eventLine", { count: d.levels, items: d.items })),
     );
     if (d.kind === "event" && d.table) {
       const prize = el("div", "vip-prize");

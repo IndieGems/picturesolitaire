@@ -1271,25 +1271,10 @@ html.less-motion .mini-case.bump { animation: none; }
 /* a long word breaks only where the language hyphenates it ("Ear-muffs"), never mid-letter */
 .case-slots .slot-name { max-width: 100%; font: 600 12px/1.1 var(--round); overflow-wrap: break-word; -webkit-hyphens: auto; hyphens: auto; text-shadow: 0 1px 2px rgba(0, 30, 35, 0.6); }
 .case-slots .slot.missing .slot-name { color: rgba(242, 248, 248, 0.72); font-weight: 500; }
-.case-slots .slot-count {
-  position: absolute; top: -4px; right: -3px; min-width: 24px; height: 22px; padding: 0 5px; border-radius: 11px;
-  display: grid; place-items: center; font: 700 13px/1 var(--round); color: #fff;
-  background: linear-gradient(180deg, var(--amber-hi), var(--amber-lo)); box-shadow: 0 0 0 2px #4d7c81;
-}
 .case-slots .slot.arrived .item-pic { animation: badge-pop 0.5s ease-out; }
 html.less-motion .case-slots .slot.arrived .item-pic { animation: none; }
 
-/* the swap */
-.case-swap { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 20px; text-align: center; }
-.case-swap p { margin: 0; }
-.case-swap .swap-head { display: flex; flex-direction: column; gap: 2px; font: 500 14px/1.3 var(--round); color: var(--ink-soft); }
-.case-swap .swap-head b { color: var(--ink); font: 600 16px/1.2 var(--round); }
-.case-swap .swap-line { font: 600 14px/1.3 var(--round); color: var(--ink); }
-.case-swap .case-swap-btn { min-height: 52px; padding: 0 20px; font-size: 17px; max-width: 100%; white-space: normal; line-height: 1.15; }
-.case-swap .swap-say { font: 600 14px/1.3 var(--round); color: #2e7d5a; }
-.case-swap .swap-say:empty { display: none; }
-
-/* the prize: the month's table and its helpers */
+/* the prize: the event's table and its helpers */
 .case-prize { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 20px; }
 .case-prize .prize-table { flex: none; width: 72px; height: 72px; border-radius: 14px; overflow: hidden; background: rgba(0, 0, 0, 0.12); box-shadow: inset 0 0 0 2px var(--glass-line); }
 .case-prize .prize-table img { width: 100%; height: 100%; object-fit: cover; }
@@ -1301,11 +1286,11 @@ html.less-motion .case-slots .slot.arrived .item-pic { animation: none; }
 .case-prize .prize-tools :is(svg, .ico) { width: 20px; height: 20px; }
 .case-prize.won { box-shadow: inset 0 0 0 2.5px rgba(46, 125, 90, 0.55); }
 .case-prize .prize-words > .prize-note { color: #2e7d5a; font-weight: 600; }
-/* today's daily, under the suitcase: the button, and under it a note (the preview's) or, once won, when the next item comes */
+/* the event's main action, under the suitcase: Play level 13, or a line once every level is won */
 .suitcase-screen .case-play { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .suitcase-screen .btn.case-daily { width: auto; max-width: 100%; min-width: 240px; min-height: 56px; padding: 0 24px; font-size: 19px; white-space: normal; line-height: 1.15; }
 .case-play p.case-later { margin: 0; padding: 8px 16px; border-radius: 16px; text-align: center; font: 600 14px/1.3 var(--round); color: var(--ink); }
-/* how it works: information, four short numbered steps */
+/* how it works: information, short numbered steps */
 .case-how { padding: 12px 16px 14px; border-radius: 20px; }
 .case-how h2 { margin: 0 0 8px; text-align: center; font: 600 16px/1.2 var(--round); color: var(--ink); }
 .case-how ol { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; counter-reset: how; }
@@ -1315,7 +1300,7 @@ html.less-motion .case-slots .slot.arrived .item-pic { animation: none; }
   display: grid; place-items: center; font: 700 12px/1 var(--round); color: var(--ink); background: rgba(255, 255, 255, 0.5);
 }
 
-/* the shelf: past months, each a closed suitcase */
+/* the other events, each a closed suitcase; one still to come is information (glass) */
 .case-shelf h2 { margin: 6px 0 8px; text-align: center; font: 600 18px/1.2 var(--round); color: #eef3f9; }
 .case-shelf .shelf-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .btn.shelf-case { flex-direction: column; gap: 3px; min-height: 104px; padding: 10px 6px; border-radius: 18px; text-align: center; }
@@ -1324,6 +1309,32 @@ html.less-motion .case-slots .slot.arrived .item-pic { animation: none; }
 .shelf-case span { font: 500 12.5px/1.15 var(--round); color: var(--ink-soft); overflow-wrap: anywhere; }
 .shelf-case small { font: 600 12px/1.1 var(--round); color: var(--ink-soft); }
 .shelf-case.full small { color: #2e7d5a; }
+.shelf-case.soon { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: 104px; padding: 10px 6px; border-radius: 18px; text-align: center; color: var(--ink); }
+
+/* THE EVENT'S 30 LEVELS (suitcase.ts): a grid of buttons in play order, five to a row on a phone, six where
+   the column is wider; won ones green and ticked; a level hiding an item wears Art's small suitcase on its
+   corner until it is found, then the item itself; a hard one its short tag under the number */
+.case-levels { display: flex; flex-direction: column; gap: 8px; container-type: inline-size; }
+.case-levels h2 { margin: 0; font: 600 19px/1.2 var(--round); color: #fff; text-shadow: 0 1px 3px rgba(10, 30, 60, 0.55); }
+.case-level-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px 8px; padding-top: 6px; }
+@container (min-width: 430px) { .case-level-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.btn.case-level { position: relative; flex-direction: column; gap: 2px; min-width: 0; min-height: 58px; padding: 6px 2px; border-radius: 14px; }
+.btn.case-level .n { font: 700 20px/1 var(--round); color: var(--ink); }
+.btn.case-level.done { background: linear-gradient(180deg, #5fc28b 0%, #3f9e6b 100%); }
+.btn.case-level.done .n { color: #fff; }
+/* the tag may be a touch wider than a narrow tile ("Сложный"): it overlaps the gap, never the next tile */
+.btn.case-level .mark-tag { max-width: calc(100% + 8px); margin: 0 -4px; padding: 1px 3px; font-size: 12px; line-height: 1.1; letter-spacing: -0.01em; white-space: nowrap; }
+.btn.case-level .tick { position: absolute; right: 4px; bottom: 4px; width: 12px; height: 10px; fill: none; stroke: #fff; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+.case-level .lv-item { position: absolute; top: -9px; right: -7px; width: 28px; height: 28px; display: grid; place-items: center; pointer-events: none; }
+.case-level .lv-item .mini-case { width: 28px; height: 21px; filter: drop-shadow(0 1px 2px rgba(20, 30, 50, 0.45)); }
+.case-level .lv-item.found { border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px #3f9e6b, 0 1px 3px rgba(20, 30, 50, 0.4); overflow: hidden; }
+.case-level .lv-item .item-pic { width: 100%; height: 100%; }
+.case-level .lv-item .item-pic img { width: 100%; height: 100%; object-fit: cover; }
+.case-level .lv-item .item-pic.cutout img { object-fit: contain; padding: 2px; }
+.case-level .lv-item .item-pic.stand-in { display: grid; place-items: center; background: hsl(var(--hue, 200) 55% 62%); font: 700 13px/1 var(--round); color: #fff; }
+
+/* an event level's win card: the event and the level under the title */
+.win .card p.event-of { margin: -2px 0 0; font: 600 15px/1.3 var(--round); color: var(--ink-soft); }
 
 /* THE DAY'S ITEM, FOUND (item-found.ts): over the board screen, taking no touch (a tap skips it, caught
    before the board): the starburst, the item, its name, a small suitcase near the top */
@@ -1690,20 +1701,9 @@ html.row-tight .top-pill {
 .btn.arc-day.done { background: linear-gradient(180deg, #5fc28b 0%, #3f9e6b 100%); color: #fff; }
 .btn.arc-day.today { box-shadow: 0 0 0 3px var(--amber-hi), 0 3px 0 var(--lip); }
 .arc-day .n { position: relative; z-index: 1; }
-.arc-day .tick, .case-day .tick { position: absolute; right: 3px; bottom: 3px; width: 12px; height: 10px; fill: none; stroke: currentColor; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+.arc-day .tick { position: absolute; right: 3px; bottom: 3px; width: 12px; height: 10px; fill: none; stroke: currentColor; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
 .arc-count { margin: 0; padding: 8px 14px; border-radius: 14px; text-align: center; font: 600 15px/1.25 var(--round); color: var(--ink); }
 .btn.arc-play { align-self: center; min-width: 240px; min-height: 56px; font-size: 19px; }
-
-/* a past event's 14 days (suitcase.ts), each a button to its board */
-.case-days { display: flex; flex-direction: column; gap: 8px; }
-.case-days h2 { margin: 0; font: 600 19px/1.2 var(--round); color: #fff; text-shadow: 0 1px 3px rgba(10, 30, 60, 0.55); }
-.case-day-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 6px; }
-.btn.case-day { position: relative; min-height: 48px; padding: 4px 6px; font: 600 14px/1.1 var(--round); }
-.btn.case-day.done { background: linear-gradient(180deg, #5fc28b 0%, #3f9e6b 100%); color: #fff; }
-
-/* the event's 7 or so slots: four to a row, the last row centred */
-.case-slots { display: flex; flex-wrap: wrap; justify-content: center; }
-.case-slots .slot { flex: 0 0 calc(25% - 2px); }
 
 /* Cosmetics for a VIP (cosmetics.ts): owned or lent (information), and a lent one's price to keep it */
 .cz-mark { align-self: center; padding: 3px 10px; border-radius: 999px; font: 600 12px/1.2 var(--round); color: var(--ink-soft); }

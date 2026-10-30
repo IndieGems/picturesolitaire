@@ -56,13 +56,13 @@ import { ICONS, keepIcons, type IconName } from "./icons";
 import { firstScreen, screenChanged } from "./browser";
 import { online, onOnline, pretend, suspect } from "./online";
 import { learnt, lessonSeen, loadGuideSave } from "./guide-save";
-import { campaignNext, challengeBest, dailyResult, guideDone, hold, loadProgress, onProgress, progress, souvenirBest, waitForProgress } from "../net/progress";
+import { campaignNext, challengeBest, dailyResult, eventBest, guideDone, hold, loadProgress, onProgress, progress, souvenirBest, waitForProgress } from "../net/progress";
 import { createAlbums } from "./albums";
 import { createChallenges } from "./challenges";
 import { createGuide, type GuideMode } from "./guide";
 import { fireworks } from "./fireworks";
 import type { Challenge } from "./challenge-data";
-import { lessonLevel, level as campaignLevel, loadDaily, loadLevel, loadTrip, type Daily, type Level, type Souvenir } from "../game/levels";
+import { lessonLevel, level as campaignLevel, loadDaily, loadEventLevel, loadLevel, loadTrip, type Daily, type EventLevel, type Level, type Souvenir } from "../game/levels";
 import { createSouvenirTile, loadSouvenirList, onSouvenirs, souvenirOf, souvenirWords, stickerReady } from "./souvenirs";
 import { createDaily } from "./daily";
 import { clock, longDate, shortDate } from "./format";
@@ -91,10 +91,10 @@ import { CARRY_WAIT_MS, carryOnCard, carryOnFrom, keptPlayOf, readCarryOn, type 
 import { keepInHand, type InHand } from "../game/in-hand";
 import { createMercyNote } from "./mercy-note";
 import { recentStats } from "./board-stats";
-import { createSuitcase, packedOnCard } from "./suitcase";
+import { createSuitcase, eventTitle, packedOnCard, progressLine } from "./suitcase";
 import { eventShown } from "./event-switch";
 import { playItemFound } from "./item-found";
-import { held as heldOf, suitcases, type SuitItem } from "./suitcase-data";
+import { suitcases, type SuitItem } from "./suitcase-data";
 import { createLessons, type LessonName } from "./lessons";
 import { createHintNudge } from "./hint-nudge";
 import { createDestinationBanner, type Destination } from "./destination";
@@ -106,7 +106,7 @@ import { currentDaily, today as dailyToday } from "../net/daily";
 import { pretendVip } from "../net/vip";
 import { createVipDoor } from "./vip-door";
 import { createArchive } from "./daily-archive";
-import { forceVipSale, vipNow } from "./vip-view";
+import { forceVipSale } from "./vip-view";
 import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy, suitcaseItem } from "./catalogue";
 import { ensure, ensureSuitcase, fileUrl, resident, warmIndex } from "../packs";
 import { mountParticles, setWeather } from "./particles";
@@ -149,14 +149,12 @@ const dailyUi = createDaily({
   playDate: (date) => void playPastDay(date, { archive: true }),
   door: () => vipDoorUi.open({ kind: "archive", today: currentDaily().date }),
 });
-// the Daily Suitcase (suitcase.ts): the month's event the daily fills, its tile on home, its screen and shelf;
-// on hold behind one switch (event-switch.ts: the creator, 2026-10-29), so while it is off none of it shows
+// the events (suitcase.ts, docs/vip.md): VIP packs of 30 levels with 10 items hidden among them; home's strip,
+// each event's page and the other events; for VIPs only (event-switch.ts), a locked door for anyone else
 const suitcaseUi = createSuitcase({
   home: () => goHome(),
   show: () => show("suitcase"),
-  daily: () => dailyUi.state(),
-  playEvent: () => void playEventPuzzle(),
-  playDay: (date, event) => void playPastDay(date, { event }),
+  playLevel: (_event, level) => void playEventLevel(level),
   door: (d) => vipDoorUi.open(d),
 });
 // a locked VIP door's screen (vip-door.ts): what the daily archive or the event holds, "VIP is coming soon"
@@ -169,9 +167,9 @@ const archiveUi = createArchive({
   results: () => void dailyUi.openResults(),
 });
 /**
- * A past day's daily, from the archive's calendar or a past event's days (docs/vip.md): its board, its win
- * card's way back where it came from. Today's from the calendar plays as today's always does. A week that
- * would not load (offline) opens nothing, and the next tap asks again.
+ * A past day's daily, from the Daily page or the archive's calendar (docs/vip.md): its board, its win card's
+ * way back to the Daily page. Today's from the calendar plays as today's always does. A week that would not
+ * load (offline) opens nothing, and the next tap asks again.
  */
 async function playPastDay(date: string, from: DailyFrom): Promise<void> {
   const d = await loadDaily(date).catch(() => null);
@@ -179,15 +177,13 @@ async function playPastDay(date: string, from: DailyFrom): Promise<void> {
   openPlay(date === currentDaily().date && "archive" in from ? { kind: "daily", d } : { kind: "daily", d, from });
 }
 /**
- * The creator's event preview (the dev menu, suitcase-data.ts): the next November daily whose item the
- * pretend suitcase lacks, opened in practice (nothing saved or sent), so each win packs a new one.
+ * An event's level (its page's grid or its Play level button): Gameplay's loader brings the event boards in
+ * on the first ask; a file that would not load (offline) opens nothing, and the next tap asks again.
  */
-async function playEventPuzzle(): Promise<void> {
-  const next = suitcases.previewNextDay();
-  if (!next) return;
-  // its week would not load (offline): nothing opens, and the next tap asks again
-  const d = await loadDaily(next.date).catch(() => null);
-  if (d) openPlay({ kind: "daily", d, practice: true });
+async function playEventLevel(id: string): Promise<void> {
+  const e = await loadEventLevel(id).catch(() => null);
+  // the dev menu's stand-in events (outside a release build): their real boards, in practice, nothing sent
+  if (e) openPlay(suitcases.pretending() ? { kind: "event", e, practice: true } : { kind: "event", e });
 }
 // home (home.ts): the trip as an itinerary and its route, Next stop, and Daily, the passport, the month's event
 // and the Shop. The challenge route is no longer on home (the creator, 2026-10-27: "Remove Challenges from the
@@ -296,8 +292,8 @@ const friendCards = createFriendCards(app);
 // ---------- state ----------
 
 type Screen = "home" | "board" | "albums" | "album" | "passport" | "challenges" | "daily" | "suitcase" | "cosmetics" | "vip" | "archive";
-/** Where a past day's daily was opened from: the archive's calendar, or a past event's days (its id). */
-type DailyFrom = { archive: true } | { event: string };
+/** Where a past day's daily was opened from: the Daily page's days or the archive's calendar. */
+type DailyFrom = { archive: true };
 /**
  * A board to play: one of the campaign's, one on the challenge route, the day's, or one of the
  * dev menu's experiment boards (practice always).
@@ -311,6 +307,7 @@ export type Play = (
   | { kind: "lesson"; x: Level }
   | { kind: "oneoff"; o: OneOff }
   | { kind: "souvenir"; s: Souvenir }
+  | { kind: "event"; e: EventLevel }
 ) & {
   practice?: boolean;
   guide?: boolean;
@@ -346,6 +343,7 @@ const samePlay = (a: Play | null, b: Play): boolean => {
   if (a.kind === "experiment" || a.kind === "lesson") return a.x.id === (b as typeof a).x.id;
   if (a.kind === "oneoff") return a.o === (b as typeof a).o;
   if (a.kind === "souvenir") return a.s.id === (b as typeof a).s.id;
+  if (a.kind === "event") return a.e.id === (b as typeof a).e.id;
   return a.d.id === (b as typeof a).d.id;
 };
 
@@ -644,7 +642,7 @@ function openLevel(level: number): void {
 
 /** The level a play opens (the campaign's by its number, which goes round). */
 function levelOfPlay(p: Play): Level {
-  return p.kind === "campaign" ? campaignLevel(p.level) : p.kind === "challenge" ? p.c.level : p.kind === "daily" ? p.d : p.kind === "oneoff" ? p.o.level : p.kind === "souvenir" ? p.s : p.x;
+  return p.kind === "campaign" ? campaignLevel(p.level) : p.kind === "challenge" ? p.c.level : p.kind === "daily" ? p.d : p.kind === "oneoff" ? p.o.level : p.kind === "souvenir" ? p.s : p.kind === "event" ? p.e : p.x;
 }
 
 /**
@@ -768,7 +766,7 @@ function openLoaded(next: Play): void {
     resumedFree = carry ? Math.min(Math.floor(Number(carry.free?.hint) || 0), freeAllowed?.hint ?? 0) : 0;
     board = openBoard(
       host,
-      next.kind === "campaign" ? next.level : next.kind === "challenge" ? next.c.level : next.kind === "daily" ? next.d : next.kind === "oneoff" ? next.o.open : next.kind === "souvenir" ? next.s : next.x,
+      next.kind === "campaign" ? next.level : next.kind === "challenge" ? next.c.level : next.kind === "daily" ? next.d : next.kind === "oneoff" ? next.o.open : next.kind === "souvenir" ? next.s : next.kind === "event" ? next.e : next.x,
       carry ? { resume: carry, freeAllowed } : {},
     );
     // kept for the next session from here on, every level that may be carried on (in-hand.ts)
@@ -790,8 +788,8 @@ function openLoaded(next: Play): void {
     // board 2, not won before: the Undo lesson, after the first move; the lesson board: Shuffle's
     if (next.kind === "campaign" && next.level === 2 && !isPractice(next) && campaignNext() <= 2) void lessons.offerUndo();
     if (next.kind === "lesson") lessons.startShuffle();
-    // a daily with a suitcase item: the month's cut-outs come now, for its found moment (none while the event is off)
-    if (next.kind === "daily" && next.d.item && eventShown()) void ensureSuitcase(next.d.item.id.slice(5, 12)).catch(() => undefined);
+    // an event level hiding an item: the event's cut-outs come now, for its found moment (none while the events are not shown)
+    if (next.kind === "event" && next.e.item && eventShown()) void ensureSuitcase(next.e.event).catch(() => undefined);
   }
   show("board");
 }
@@ -814,6 +812,11 @@ const SIZE_BANNERS: Record<number, { seen: string; words: string }> = {
 };
 function bannersFor(p: Play): Banner[] {
   if (p.kind === "souvenir") return [{ cls: "souvenir", text: t("souvenir.banner") }];
+  // an event's hard levels (Levels marks them in the level data) say so as a campaign's do
+  if (p.kind === "event") {
+    const m = p.e.mark;
+    return m ? [{ cls: m, text: markWords(m), shown: () => emit("board:mark", { mark: m }) }] : [];
+  }
   if (p.kind !== "campaign") return [];
   const lvl = campaignLevel(p.level);
   const m = markOf(lvl);
@@ -850,7 +853,7 @@ function showBanners(list: Banner[]): void {
 /** The top row's information: the level; on a challenge or the daily, its name over the par and the moves so far. */
 function drawPill(): void {
   if (!play) return;
-  levelPill.classList.toggle("two", play.kind === "challenge" || play.kind === "daily" || play.kind === "oneoff" || play.kind === "souvenir");
+  levelPill.classList.toggle("two", play.kind === "challenge" || play.kind === "daily" || play.kind === "oneoff" || play.kind === "souvenir" || play.kind === "event");
   levelPill.classList.remove("stacked");
   // a practice board says so beside its name (the dev menu's tag: information, never a button)
   const tag = isPractice(play) ? dev?.tag() : null;
@@ -876,6 +879,16 @@ function drawPill(): void {
     pillName.textContent = t("souvenir.pill");
     if (tag) pillName.append(tag);
     pillPar.textContent = souvenirWords(play.s.trip).theme;
+    levelPill.replaceChildren(pillName, pillPar);
+    return;
+  }
+  // an event's level: "Level 13" (a hard one tagged) over the event's name
+  if (play.kind === "event") {
+    pillName.textContent = t("board.level", { level: play.e.number });
+    if (play.e.mark) pillName.append(" ", markTag(play.e.mark, true));
+    if (tag) pillName.append(tag);
+    const pack = suitcases.get(play.e.event);
+    pillPar.textContent = pack ? eventTitle(pack) : "";
     levelPill.replaceChildren(pillName, pillPar);
     return;
   }
@@ -1247,6 +1260,7 @@ type Win = (
   | { kind: "lesson"; moves: number; ms: number }
   | { kind: "oneoff"; o: OneOff; moves: number; ms: number }
   | { kind: "souvenir"; s: Souvenir; moves: number; ms: number; first: boolean }
+  | { kind: "event"; e: EventLevel; moves: number; ms: number; first: boolean }
 ) & {
   /** Helpers used on the winning try (a dare says how many). */
   helpers?: number;
@@ -1312,6 +1326,9 @@ on("board:solved", ({ moves, ms, line }) => {
   } else if (play.kind === "souvenir") {
     // a Souvenir's first win puts its sticker in the passport (the record, read before this win's claim)
     win = { kind: "souvenir", s: play.s, moves, ms, first: souvenirBest(play.s.id) === undefined };
+  } else if (play.kind === "event") {
+    // an event level's first win packs the item it hides (the record, read before this win's claim)
+    win = { kind: "event", e: play.e, moves, ms, first: eventBest(play.e.id) === undefined };
   } else if (play.kind === "challenge") {
     // any win clears a challenge board, over par too; the record keeps the fewer moves
     const before = challengeBest(play.c.id);
@@ -1331,7 +1348,7 @@ on("board:solved", ({ moves, ms, line }) => {
     return;
   }
   // the win checker judges, records and pays (src/net/claims.ts); the card never waits for it
-  const lvl = play.kind === "campaign" ? campaignLevel(play.level) : play.kind === "challenge" ? play.c.level : play.kind === "souvenir" ? play.s : play.d;
+  const lvl = play.kind === "campaign" ? campaignLevel(play.level) : play.kind === "challenge" ? play.c.level : play.kind === "souvenir" ? play.s : play.kind === "event" ? play.e : play.d;
   const verdict = claimWin({
     lane: play.kind,
     board: lvl.id,
@@ -1348,9 +1365,12 @@ on("board:solved", ({ moves, ms, line }) => {
     if (lastWin === win && !winVeil.hidden) {
       drawCoins(win);
       const line = winVeil.querySelector(".daily-line");
-      if (win.kind === "daily" && line) {
-        line.replaceChildren(dailyLine(win));
-        packedMoment(v, line as HTMLElement);
+      if (win.kind === "daily" && line) line.replaceChildren(dailyLine(win));
+      // an event level: the checker's word on it, and the item it packed flying in
+      const evLine = winVeil.querySelector<HTMLElement>(".event-line");
+      if (win.kind === "event" && evLine) {
+        evLine.replaceChildren(eventLine(win));
+        packedMoment(v, evLine);
       }
     }
   });
@@ -1391,21 +1411,21 @@ function unlockReady(): boolean {
 // that never arrived; once a session each. Several from one win reach the card together (unlock.ts).
 onUnlock((u) => unlockUi.add([{ slug: u.achievement.slug, points: u.points }]));
 
-// THE DAY'S ITEM (the Daily Suitcase, suitcase.ts): the board says when the day's item picture is finished
-// (suitcase:item, Gameplay's); on the day's first daily that is a moment of its own (item-found.ts: the item
+// AN EVENT LEVEL'S ITEM (suitcase.ts, docs/vip.md): the board says when the item's picture is finished
+// (suitcase:item, Gameplay's); on the level's first win that is a moment of its own (item-found.ts: the item
 // lifts off the board, big, its name, a starburst, then into a small suitcase), and once the checker's
-// verdict says the item was packed, its picture flies into a small suitcase on the win card. While the event is
-// off (event-switch.ts) neither happens: the item's picture finishes on the board as any other picture does.
-/** The day's item as the board drew it: its id and the board's copy of its picture, for the card's flight. */
+// verdict says the item was packed, its picture flies into a small suitcase on the win card. While the events
+// are not shown (event-switch.ts) neither happens: the item's picture finishes as any other picture does.
+/** The level's item as the board drew it: its id and the board's copy of its picture, for the card's flight. */
 let dayItem: { id: string; url: string } | null = null;
 on("suitcase:item", (e) => {
   if (!eventShown()) return;
-  // a practice daily counts only in the creator's event preview (the dev menu: nothing saved or sent)
-  if (!play || play.kind !== "daily" || (isPractice(play) && !suitcases.previewing()) || e.again) return;
+  // practice counts only in the dev menu's stand-in events (nothing saved or sent)
+  if (!play || play.kind !== "event" || (isPractice(play) && !suitcases.pretending()) || e.again) return;
   dayItem = { id: e.id, url: e.url };
-  // a replay of the day, or a finish after the first, packs nothing: no moment (the preview always has one)
-  if (dailyResult(play.d.date) && !suitcases.previewing()) return;
-  const it = suitcases.current()?.items.find((x) => x.id === e.id);
+  // a replay of a won level packs nothing: no moment
+  if (eventBest(play.e.id) !== undefined || suitcases.won(play.e.id)) return;
+  const it = suitcases.get(play.e.event)?.items.find((x) => x.id === e.id);
   const art = suitcaseItem(e.id);
   // Art's cut-out when it is in (the month's pack, fetched as the daily opened), else the board's copy
   const cutout = art?.cutout && resident(art.cutout) ? fileUrl(art.cutout) : "";
@@ -1413,39 +1433,44 @@ on("suitcase:item", (e) => {
   if (!src) return;
   // the board's piece hides at once: the moment's copy takes its place (the call must come inside this event)
   (board as (BoardHandle & { takeItem?: () => void }) | null)?.takeItem?.();
-  void playItemFound(boardScreen, { id: e.id, title: it?.title ?? art?.title ?? t("case.today"), src, cutout: !!cutout, from: e.rect });
+  void playItemFound(boardScreen, { id: e.id, title: it?.title ?? art?.title ?? "", src, cutout: !!cutout, from: e.rect });
 });
 /** Verdicts whose item has flown already (the card may hear one twice: open, then landed). */
 const flownItems = new WeakSet<Verdict>();
-/** The checker packed the day's item (its verdict's `packed`, Server's): the card's line says so and the item flies in. */
+/** The checker packed the level's item (its verdict's `packed` and `suitcase`, Server's): the card's line says so and the item flies in. */
 function packedMoment(v: Verdict, line: HTMLElement): void {
-  const p = (v as { packed?: { item: string; count: number } }).packed;
+  const said = v as { packed?: { item: string; count: number }; suitcase?: import("./suitcase-data").EventPack; event?: string; gifts?: string[]; items?: string[] };
+  const p = said.packed;
   if (v.status !== "paid" || !p || flownItems.has(v) || !eventShown()) return;
   flownItems.add(v);
-  const s = suitcases.current();
-  const it: SuitItem = s?.items.find((x) => x.id === p.item) ?? { id: p.item, title: suitcaseItem(p.item)?.title ?? t("case.today") };
-  // the suitcase's own counts may not have the new copy yet
-  const before = s ? heldOf(s) : 0;
-  const had = !!s && (s.counts[p.item] ?? 0) > 0;
-  const packed = had || p.count > 1 ? before : before + 1;
+  // the event as it stands after this win (the verdict's own), else as last read
+  const s = said.suitcase ?? (said.event ? suitcases.get(said.event) : null);
+  const found = s?.items.find((x) => x.id === p.item);
+  const it: SuitItem = found ?? { id: p.item, title: suitcaseItem(p.item)?.title ?? "" };
+  const packed = s ? s.items.filter((x) => x.found).length + (found && !found.found ? 1 : 0) : 1;
   // the 10th: the prize came with this claim (the verdict's gifts say "suitcase", Server's); its table is
   // named only if it LANDED (the verdict's items), as every reward on a card is
-  const full = (v as { gifts?: string[] }).gifts?.includes("suitcase")
-    ? { month: s?.month ?? "", table: !!s && ((v as { items?: string[] }).items ?? []).includes(s.prize.table), ...(s ? { prize: s.prize } : {}) }
-    : null;
-  packedOnCard(line, it, dayItem?.id === p.item ? dayItem.url : "", p.count, packed, s?.items.length ?? 10, full);
+  const full = said.gifts?.includes("suitcase") ? { event: s?.id ?? "", table: !!s && (said.items ?? []).includes(s.prize.table), ...(s ? { prize: s.prize } : {}) } : null;
+  packedOnCard(line, it, dayItem?.id === p.item ? dayItem.url : "", packed, s?.items.length ?? 10, full);
+}
+
+/** An event level's card line: the checker's refusal said plainly, else where the player is in the event. */
+function eventLine(w: Extract<Win, { kind: "event" }>): string {
+  const v = w.verdict;
+  if (v?.status === "refused") return t(v.reason === "vip_only" ? "case.refused.vipOnly" : v.reason === "not_released" ? "case.refused.notReleased" : "case.refused.other");
+  const s = suitcases.get(w.e.event);
+  return s ? progressLine(s) : "";
 }
 
 /** The daily card's plain line: the checker's word on the day wins over the device's (a day closed, or another finish first). */
 function dailyLine(w: Extract<Win, { kind: "daily" }>): string {
   const v = w.verdict;
-  // a past day's (the daily archive, a past event's days: docs/vip.md): the checker's word on that day
+  // a past day's (the daily archive: docs/vip.md): the checker's word on that day
   if (w.d.date !== currentDaily().date && (v?.status !== "late")) {
     const date = longDate(w.d.date); // inside a sentence: the month written out, never "24 окт.."
     const said = (v as { archive?: string; reason?: string } | undefined) ?? {};
     if (v?.status === "refused") return t(said.reason === "too_old" ? "daily.archiveOld" : "daily.notCounted");
     if (said.archive === "won_before") return t("daily.archiveBefore", { date });
-    if (said.archive === "event_only") return t("daily.archiveEventOnly", { date });
     return w.first ? t("daily.archiveCounted", { date }) : t("daily.archiveBefore", { date });
   }
   if (v?.status === "late") return t("daily.late");
@@ -1579,6 +1604,7 @@ function showWin(): void {
   const gallery = layoutGallery(board.pictures(), share);
   if (lastWin.kind === "oneoff") return void showOneOffWin(lastWin, gallery);
   if (lastWin.kind === "souvenir") return void showSouvenirWin(lastWin, gallery);
+  if (lastWin.kind === "event") return void showEventWin(lastWin, gallery);
   if (lastWin.kind === "challenge") return void showChallengeWin(lastWin, gallery);
   if (lastWin.kind === "daily") return void showDailyWin(lastWin, gallery, dare);
   if (lastWin.kind === "experiment") return void (import.meta.env.MODE !== "release" && showExperimentWin(lastWin, gallery));
@@ -1709,6 +1735,59 @@ function showMilestone(gallery: HTMLElement): void {
 }
 
 /**
+ * An event level's card (docs/vip.md): its pictures, the moves and the time, where the player is in the
+ * event, and the item it packed flying into the suitcase on a first win; every way off goes back to the
+ * event's page, which says what to play next.
+ */
+function showEventWin(w: Extract<Win, { kind: "event" }>, gallery: HTMLElement): void {
+  const event = w.e.event;
+  const toEvent = () =>
+    leaveTo("event-page", () => {
+      hideCard(winVeil);
+      board?.destroy();
+      host.replaceChildren();
+      board = null;
+      boardWon = false;
+      suitcaseUi.openEvent(event);
+    });
+  const pack = suitcases.get(event);
+  winVeil.replaceChildren(
+    h(
+      "div",
+      { class: "card event" },
+      cornerKey("back", t("win.event"), "win.eventBack", toEvent),
+      h("h2", {}, t("win.title")),
+      h("p", { class: "event-of" }, pack ? t("case.levelOf", { theme: eventTitle(pack), n: w.e.number }) : t("board.level", { level: w.e.number })),
+      gallery,
+      h(
+        "div",
+        { class: "stats" },
+        h("div", { class: "stat glass" }, h("b", {}, String(w.moves)), h("span", {}, t("win.moves"))),
+        h("div", { class: "stat glass" }, h("b", {}, clock(w.ms)), h("span", {}, t("win.time"))),
+      ),
+      h("p", { class: "daily-line event-line" }, eventLine(w)),
+      withClick(button("amber next", "win.event", t("win.event")), toEvent),
+    ),
+  );
+  showCard(winVeil, toEvent);
+  drawCoins(w);
+  // the verdict landed before the card: the item flies now
+  const line = winVeil.querySelector<HTMLElement>(".event-line");
+  if (w.verdict && line && !isPractice(w)) packedMoment(w.verdict, line);
+  // the dev menu's stand-in events: a practice level's first win packs its item into the stand-in, as the checker would
+  if (line && isPractice(w) && w.first && suitcases.pretending()) {
+    const r = suitcases.pretendWin(w.e.id);
+    if (r) {
+      const it: SuitItem = { id: r.item.id, title: r.item.title };
+      packedOnCard(line, it, dayItem?.id === it.id ? dayItem.url : "", r.pack.found, r.pack.items.length, r.pack.complete ? { event: r.pack.id, table: true, prize: r.pack.prize } : null);
+    } else {
+      const pack = suitcases.get(w.e.event);
+      if (pack) line.textContent = progressLine(pack);
+    }
+  }
+}
+
+/**
  * The daily's card: the pictures, the moves and the time (what the day's board ranks
  * by), and plainly whether this finish is the one that counts; then the day's results.
  */
@@ -1716,20 +1795,7 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement, 
   const line = isPractice(w) && dev ? dev.dailyLine : dailyLine(w);
   // practice: Next is the day after (the dev menu's), in place of the day's results
   const p = play;
-  // the creator's event preview: back to the suitcase, which now holds what this win packed
-  const preview = isPractice(w) && suitcases.previewing();
-  const after = preview
-    ? withClick(button("amber next", "case.backToCase", t("case.backToCase")), () =>
-        leaveTo("daily-case", () => {
-          hideCard(winVeil);
-          board?.destroy();
-          host.replaceChildren();
-          board = null;
-          boardWon = false;
-          suitcaseUi.open();
-        }),
-      )
-    : isPractice(w)
+  const after = isPractice(w)
     ? p && dev?.hasNext(p)
       ? withClick(button("amber next", "win.next", t("win.next"), icon("next")), () => leaveTo("daily-next", () => dev?.next(p)))
       : null
@@ -1745,8 +1811,7 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement, 
           void dailyUi.openResults();
         }),
       );
-  // every way off a daily's card goes back to the Daily page (the creator, 2026-10-30), its corner key too;
-  // a past event's day goes back to its event, and the creator's event preview home as before
+  // every way off a daily's card goes back to the Daily page (the creator, 2026-10-30), its corner key too
   const toPage = () =>
     leaveTo("daily-page", () => {
       hideCard(winVeil);
@@ -1754,15 +1819,14 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement, 
       host.replaceChildren();
       board = null;
       boardWon = false;
-      if (p?.kind === "daily" && p.from && "event" in p.from) suitcaseUi.open(p.from.event);
-      else void dailyUi.openPage();
+      void dailyUi.openPage();
     });
-  const toHome = preview || isPractice(w) ? () => leaveTo("daily-home", goHome) : toPage;
+  const toHome = isPractice(w) ? () => leaveTo("daily-home", goHome) : toPage;
   winVeil.replaceChildren(
     h(
       "div",
       { class: "card" },
-      preview || isPractice(w) ? cornerKey("home", t("win.home"), "win.home", toHome) : cornerKey("back", t("win.daily"), "win.dailyBack", toHome),
+      isPractice(w) ? cornerKey("home", t("win.home"), "win.home", toHome) : cornerKey("back", t("win.daily"), "win.dailyBack", toHome),
       h("h2", {}, t("win.title")),
       gallery,
       h(
@@ -1778,37 +1842,20 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement, 
   );
   showCard(winVeil, toHome);
   drawCoins(w);
-  // the verdict landed before the card: the day's item flies now
-  const dl = winVeil.querySelector<HTMLElement>(".daily-line");
-  if (w.verdict && dl && !isPractice(w)) packedMoment(w.verdict, dl);
-  // the creator's event preview: a practice daily's item packs into the pretend month, as a first win would
-  if (dl && isPractice(w) && dayItem) previewPacked(dl);
 }
 
-/** A past day's win card's way on (docs/vip.md): the archive's goes back to the Daily page (as every daily's), a past event's to its event. */
-function pastDayOn(from: DailyFrom): HTMLButtonElement {
-  const back = "archive" in from;
-  return withClick(button("amber next", back ? "win.daily" : "win.event", t(back ? "win.daily" : "win.event")), () =>
-    leaveTo(back ? "daily-page" : "daily-event", () => {
+/** A past day's win card's way on (docs/vip.md): back to the Daily page, as every daily's. */
+function pastDayOn(_from: DailyFrom): HTMLButtonElement {
+  return withClick(button("amber next", "win.daily", t("win.daily")), () =>
+    leaveTo("daily-page", () => {
       hideCard(winVeil);
       board?.destroy();
       host.replaceChildren();
       board = null;
       boardWon = false;
-      if ("archive" in from) void dailyUi.openPage();
-      else suitcaseUi.open(from.event);
+      void dailyUi.openPage();
     }),
   );
-}
-
-/** The event preview's pack (the dev menu): the day's item into the pretend month, its flight and, if 10th, the full moment. */
-function previewPacked(line: HTMLElement): void {
-  if (!dayItem) return;
-  const r = suitcases.previewPack(dayItem.id);
-  const s = suitcases.current();
-  if (!r || !s) return;
-  const it: SuitItem = s.items.find((x) => x.id === dayItem!.id) ?? { id: dayItem.id, title: t("case.today") };
-  packedOnCard(line, it, dayItem.url, r.count, heldOf(s), s.items.length, r.full ? { month: r.month, table: true, prize: s.prize } : null);
 }
 
 /** The Shuffle lesson's card: done, then on to board 4 (no claim, no Coins, no break: it is still the lesson). */
@@ -2023,6 +2070,10 @@ function carryWhere(p: Play): string {
   if (p.kind === "souvenir") {
     const w = souvenirWords(p.s.trip);
     return t("souvenir.wonTheme", { trip: w.trip, theme: w.theme });
+  }
+  if (p.kind === "event") {
+    const pack = suitcases.get(p.e.event);
+    return pack ? t("case.levelOf", { theme: eventTitle(pack), n: p.e.number }) : t("board.level", { level: p.e.number });
   }
   return "";
 }
@@ -2510,10 +2561,6 @@ export async function startApp(): Promise<void> {
           closeSettings();
           suitcaseUi.open();
         },
-        playEvent: () => {
-          closeSettings();
-          void playEventPuzzle();
-        },
         showUnlock: (kind) => {
           closeSettings();
           if (kind !== "stamp") return void unlockUi.preview([kind === "icon" ? "first-steps" : "up-for-a-challenge"]);
@@ -2634,12 +2681,17 @@ export async function startApp(): Promise<void> {
         if (screen === "home") offerCarryOn();
         return !!carryOn;
       },
-      /** The Daily Suitcase as if the platform said so ("default": the stand-in months; null: its own word), for this page only. */
-      suitcase(p?: Parameters<typeof suitcases.pretend>[0]) {
+      /** The events as a stand-in ("default": Haunted Holiday 12 levels in, Ski Trip 2; null: the platform's word), for this page only. */
+      suitcase(p?: "default" | null) {
         suitcases.pretend(p === undefined ? "default" : p);
         if (screen === "home") drawHome();
       },
-      openSuitcase: (month?: string) => suitcaseUi.open(month ?? null),
+      /** An event's page: the newest, or event `id`. */
+      openSuitcase: (id?: string) => suitcaseUi.open(id ?? null),
+      /** An event's level, as from its page (the stand-in's events play their real boards; the claim goes unframed). */
+      eventLevel: (id: string) => void playEventLevel(id),
+      /** The stand-in's level `id` won as a first win would (its item found), its page redrawn: nothing sent. */
+      pretendEventWin: (id: string) => suitcases.pretendWin(id),
       /** As if the game had been opened by this challenge or link (friends.ts's Launch): its card when home allows. */
       launch(link: Launch) {
         pendingLink = link;
@@ -2651,10 +2703,11 @@ export async function startApp(): Promise<void> {
       sticker: (trip: string) => momentOf(() => passportUi.sticker(trip, { label: t("home.nextStop"), icon: icon("next"), trailing: true, press: "passport.nextStop", go: goHome })),
       /** The friend_action events sent so far (friends.ts). */
       friendActions: () => recentFriendActions.slice(),
-      /** The daily card up now as if the checker had packed `item` (its count after): the flight, nothing sent. */
-      packed(item: string, count: number) {
-        const line = winVeil.querySelector<HTMLElement>(".daily-line");
-        if (line) packedMoment({ status: "paid", lane: "daily", board: "dev", moves: 0, coins: 0, packed: { item, count } } as unknown as Verdict, line);
+      /** The event level's card up now as if the checker had packed `item` (event `event`; `full`: the 10th, its prize with it): the flight, nothing sent. */
+      packed(item: string, event: string, full = false) {
+        const line = winVeil.querySelector<HTMLElement>(".event-line");
+        const s = suitcases.get(event);
+        if (line) packedMoment({ status: "paid", lane: "event", board: "dev", moves: 0, coins: 0, packed: { item, count: 1 }, event, ...(full && s ? { gifts: ["suitcase"], items: [s.prize.table] } : {}) } as unknown as Verdict, line);
       },
     };
     // ?restored=id,id shows those pictures as restored in the albums (never saved)

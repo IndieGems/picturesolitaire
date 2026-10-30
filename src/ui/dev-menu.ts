@@ -13,10 +13,9 @@
 //   Play any board     the campaign, the challenge route, any date of the daily pool
 //   Experiments        Levels' experiment boards (src/content/levels/experiments.json,
 //                      imported here only, so a release build drops it with the menu)
-//   Event preview      the Daily Suitcase as November will be, pretend and practice (the creator,
-//                      2026-10-27: "test November now"): suitcase-data.ts's preview; a practice
-//                      November daily finds and packs its item, a swap and the full moment play
-//                      against it; nothing is saved or sent
+//   Events             the newest event's page; a stand-in (suitcase-data.ts) that fills the page
+//                      where no platform answers, its levels played in practice (an item packed
+//                      into the stand-in by a first win); nothing is saved or sent
 //   Guided start       board 1's guide again, from its first step
 //
 // NEVER IN A RELEASE BUILD. app.ts imports this file only behind
@@ -64,10 +63,8 @@ export interface DevHost {
   cancelGuide(): void;
   /** The albums show every picture as restored (never saved), or go back to the record. */
   showAll(on: boolean): void;
-  /** Open the Daily Suitcase's screen (the event preview's). */
+  /** Open the newest event's page. */
   openSuitcase(): void;
-  /** Open the event preview's next puzzle (a November daily the pretend suitcase lacks the item of), in practice. */
-  playEvent(): void;
   /**
    * The achievement unlock card as a player sees it (achievements never unlock on dev or test): "icon",
    * First Steps with Art's icon; "medal", Up for a Challenge with its medal; "stamp", a trip's last level:
@@ -109,7 +106,7 @@ const WHY_NOT: Record<Extract<DevStep, { ok: false }>["reason"], string> = {
 };
 
 /** The lists of Play any board (the experiments have their own section). */
-type Kind = Exclude<Play["kind"], "experiment" | "lesson" | "oneoff" | "souvenir">;
+type Kind = Exclude<Play["kind"], "experiment" | "lesson" | "oneoff" | "souvenir" | "event">;
 const KINDS: Kind[] = ["campaign", "challenge", "daily"];
 const KIND_NAMES: Record<Kind, string> = { campaign: "Campaign", challenge: "Challenge", daily: "Daily" };
 
@@ -213,8 +210,8 @@ export function mountDevMenu(host: DevHost): DevMenu {
       const x = experiments?.[p.x.number - 1 + step];
       return x ? { kind: "experiment", x } : null;
     }
-    // the Shuffle lesson's board, a friend's one-off and a Souvenir stand alone
-    if (p.kind === "lesson" || p.kind === "oneoff" || p.kind === "souvenir") return null;
+    // the Shuffle lesson's board, a friend's one-off, a Souvenir and an event's level stand alone
+    if (p.kind === "lesson" || p.kind === "oneoff" || p.kind === "souvenir" || p.kind === "event") return null;
     const date = addDays(p.d.date, step);
     if (pool && (date < pool.first || date > pool.last)) return null;
     const d = await loadDaily(date).catch(() => null); // its week would not load: no neighbour now
@@ -227,7 +224,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     }
     if (p.kind === "challenge") return !!route[p.c.n - 1 + step];
     if (p.kind === "experiment") return !!experiments?.[p.x.number - 1 + step];
-    if (p.kind === "lesson" || p.kind === "oneoff" || p.kind === "souvenir" || !pool) return false;
+    if (p.kind === "lesson" || p.kind === "oneoff" || p.kind === "souvenir" || p.kind === "event" || !pool) return false;
     const date = addDays(p.d.date, step);
     return date >= pool.first && date <= pool.last;
   }
@@ -311,6 +308,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     if (p.kind === "experiment") return `Experiment ${p.x.number}: ${p.x.name}`;
     if (p.kind === "lesson") return "The Shuffle lesson";
     if (p.kind === "souvenir") return `The ${p.s.trip} Souvenir (${p.s.id})`;
+    if (p.kind === "event") return `Event level ${p.e.number} (${p.e.id})`;
     if (p.kind === "oneoff") return "board" in p.o.dare ? `A friend's level ${p.o.dare.board} (one-off)` : `A friend's daily, ${shortDate(p.o.dare.date)} (one-off)`;
     return `Daily, ${shortDate(p.d.date)}`;
   }
@@ -517,44 +515,36 @@ export function mountDevMenu(host: DevHost): DevMenu {
     );
   }
 
-  // the Daily Suitcase's event preview: pretend, practice, nothing saved or sent
+  // the events (docs/vip.md): with Pretend I'm VIP on, the real ones on dev; the stand-in shows a filled page anywhere
   const eventState = el("p", "dev-info glass");
   const drawEvent = () => {
-    const s = suitcases.previewing() ? suitcases.current() : null;
-    eventState.textContent = s
-      ? `On: ${s.theme}, ${s.items.filter((it) => (s.counts[it.id] ?? 0) > 0).length} of ${s.items.length} packed, ${s.items.reduce((n, it) => n + Math.max(0, (s.counts[it.id] ?? 0) - 1), 0)} spares.`
-      : EVENT_ON
-        ? "Off: the game shows the platform's event (none until 1 Nov: the tile previews it)."
-        : "Off. The event is on hold for players (src/net/suitcase-ids.json's \"on\"): no tile, no item moment, no suitcase. The preview still shows it here.";
+    const e = suitcases.newest();
+    eventState.textContent = suitcases.pretending()
+      ? `Stand-in on: ${suitcases.list().map((x) => `${x.theme} ${x.found}/${x.items.length}`).join(", ")}. Nothing is saved or sent.`
+      : e
+        ? `The platform's: ${suitcases.list().map((x) => `${x.theme} ${x.found}/${x.items.length}`).join(", ")}.`
+        : EVENT_ON
+          ? "None to show: events are for VIPs (Pretend I'm VIP, above), and the platform has said none yet."
+          : "Off: src/net/suitcase-ids.json's \"on\" is false, so no player sees an event.";
   };
   suitcases.onChange(drawEvent);
   drawEvent();
-  const startPreview = (kind: "start" | "almost") => {
-    suitcases.preview(kind);
-    dialog.close();
-    host.openSuitcase();
-  };
-  const eventRow = el("div", "dev-row");
-  eventRow.append(
-    btn("amber", "November, 7 of 10", () => startPreview("start")),
-    btn("", "Almost full, 9 of 10", () => startPreview("almost")),
-  );
   const eventSec = el("section");
   eventSec.append(
-    el("h3", "", "Event preview (practice)"),
+    el("h3", "", "Events"),
     eventState,
-    eventRow,
-    // the event page's own words, so the creator sees what players will
-    btn("dev-wide amber", "Play the Daily Puzzle!", () => {
-      if (!suitcases.previewing()) suitcases.preview("start");
+    btn("dev-wide amber", "Open the event page", () => {
       dialog.close();
-      host.playEvent();
+      host.openSuitcase();
     }),
-    btn("dev-wide", "Preview off", () => suitcases.preview(null)),
+    btn("dev-wide", "Stand-in events (look only)", () => {
+      suitcases.pretend(suitcases.pretending() ? null : "default");
+      drawEvent();
+    }),
     el(
       "p",
       "dev-note",
-      "A pretend November suitcase: nothing is saved or sent. Play the Daily Puzzle! opens the next November daily whose item the suitcase lacks, in practice: win it and the item flies in, then Back to suitcase. A swap works from the suitcase. Almost full is one item short of the full suitcase and the Ski Lodge table. While the preview is on, home's event tile opens it.",
+      "With Pretend I'm VIP on, the event page shows the platform's events and their levels play for real on dev. The stand-in fills the page with Haunted Holiday 12 levels in and Ski Trip 2 in, to look at; its levels still play their real boards, and nothing is saved or sent.",
     ),
   );
 
@@ -657,7 +647,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     void drawBuild();
     drawBoard();
     const p = host.now().play;
-    if (host.now().screen === "board" && p && p.kind !== "experiment" && p.kind !== "lesson" && p.kind !== "oneoff" && p.kind !== "souvenir") tab = p.kind;
+    if (host.now().screen === "board" && p && p.kind !== "experiment" && p.kind !== "lesson" && p.kind !== "oneoff" && p.kind !== "souvenir" && p.kind !== "event") tab = p.kind;
     endlessSwitch.checked = endless;
     picturesSwitch.checked = everyPicture;
     drawSpeed();
