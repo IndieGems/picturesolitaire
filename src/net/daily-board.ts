@@ -76,7 +76,15 @@ export interface DailyBoard {
 
 type Options = { daysBack?: number; par?: number };
 
-const framed = window.self !== window.top;
+/** Framed by the platform: another origin's frame (as src/net/vip.ts). The play-test tool's same-origin frame is a plain tab here, and gets the sample. */
+const framed = ((): boolean => {
+  if (window.self === window.top) return false;
+  try {
+    return window.parent.location.origin !== location.origin;
+  } catch {
+    return true;
+  }
+})();
 const CAN_SAMPLE = import.meta.env.MODE !== "release";
 /** The platform re-renders a viewer's friends board at most this often; until then a read answers the same. */
 const FALLBACK_CADENCE_S = 300;
