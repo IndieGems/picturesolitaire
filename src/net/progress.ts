@@ -230,6 +230,7 @@ export function loadProgress(): void {
   void import("./claims").then((m) => m.resumeClaims());
   void import("./helpers").then((m) => m.loadHelpers());
   void import("./suitcase").then((m) => m.loadSuitcase());
+  void import("./vip").then((m) => m.loadVip());
   // the connection back asks at once (inside any wait the platform named); a page shown again
   // asks when its wait is over (whenDue), never sooner
   onOnline((up) => {

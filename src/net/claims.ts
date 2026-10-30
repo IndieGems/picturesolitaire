@@ -52,6 +52,7 @@ import { backoff, heard, held, notNow, whenDue } from "./pace";
 import { answered, hold, type HeldWin } from "./progress";
 import { accept as acceptSuitcase, suitcase, type Suitcase } from "./suitcase";
 import { tableOf } from "./tables";
+import { heardVip, vipFields } from "./vip";
 
 /** "souvenir": the bonus board after a trip (docs/souvenirs.md), sent once its trip is stamped; no n, no date. */
 export type Lane = "campaign" | "challenge" | "daily" | "souvenir";
@@ -266,7 +267,7 @@ async function send(h: Held): Promise<void> {
   const { lane, board } = h;
   let answer: Record<string, unknown>;
   try {
-    answer = await invoke(h.body);
+    answer = await invoke({ ...h.body, ...vipFields() }); // the dev pretend as it is now, never stored with the claim
   } catch (err) {
     if (err instanceof GemApiError) {
       // the call reached the platform: decide from its code
@@ -282,6 +283,7 @@ async function send(h: Held): Promise<void> {
     suspect();
     return later(h, "platform", err);
   }
+  heardVip(answer);
   const status = answer.status;
   // "order": an earlier campaign win is still on its way; it goes first, this one follows soon.
   // "platform": the checker's own calls were refused for now, which holds the queue as ours would.

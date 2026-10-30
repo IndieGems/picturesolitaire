@@ -173,3 +173,30 @@ if (framed) {
     if (document.visibilityState === "visible" && known?.endsAt && Date.now() >= known.endsAt) void refresh();
   });
 }
+
+// ---------------------------------------------------------------- the archive (VIP, docs/vip.md)
+
+/** A "YYYY-MM-DD" date `n` days after `date` (n may be negative), in the calendar alone. */
+export function addDays(date: string, n: number): string {
+  const [y, m, d] = date.split("-").map(Number);
+  const t = new Date(Date.UTC(y!, m! - 1, d! + n));
+  return t.toISOString().slice(0, 10);
+}
+
+/**
+ * The archive of past dailies for a player whose date is `today` (the game standard: this month and
+ * the two before, counted in the player's own months): from the 1st of the month two before, to
+ * yesterday. The win checker pays a VIP's past day inside it, with a day of slack (the window of
+ * the day before also counts), and nothing older (functions/checker/src/vip.rs, archive_start).
+ */
+export function archiveWindow(today: string): { first: string; last: string } {
+  const [y, m] = today.split("-").map(Number);
+  const back = new Date(Date.UTC(y!, m! - 1 - 2, 1));
+  return { first: back.toISOString().slice(0, 10), last: addDays(today, -1) };
+}
+
+/** The archive's days for this player now, or null while the date is only the device's guess. */
+export function archiveDays(): { first: string; last: string } | null {
+  const d = currentDaily();
+  return d.guessed ? null : archiveWindow(d.date);
+}

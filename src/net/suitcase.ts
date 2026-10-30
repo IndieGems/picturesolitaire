@@ -32,6 +32,7 @@ import { helpers, type HelperKind } from "./helpers";
 import { noAnswer, refusalOf } from "./no-answer";
 import { backoff, heard as hearRefusal, whenDue } from "./pace";
 import { onOnline, suspect } from "../ui/online";
+import { heardVip, vipFields } from "./vip";
 
 export type SuitItem = { id: string; title: string };
 
@@ -124,7 +125,8 @@ function landed(month: string | undefined, gifts: unknown, got: unknown): void {
 async function read(): Promise<void> {
   try {
     await gem.awaitIdentity(10_000);
-    const a = (await gem.functions.invoke({ v: 1, what: "suitcase" })).json() as Record<string, unknown>;
+    const a = (await gem.functions.invoke({ v: 1, what: "suitcase", ...vipFields() })).json() as Record<string, unknown>;
+    heardVip(a);
     if (a.status !== "suitcase" || typeof a.today !== "string") {
       // "retry": the platform was busy, or this channel's config does not know the event yet
       throw new Error(`the checker answered ${String(a.status)} ${String(a.reason ?? "")}`);
@@ -190,7 +192,8 @@ export const suitcase = {
     const month = now.month;
     try {
       await gem.awaitIdentity(10_000);
-      const a = (await gem.functions.invoke({ v: 1, what: "swap", month, want })).json() as Record<string, unknown>;
+      const a = (await gem.functions.invoke({ v: 1, what: "swap", month, want, ...vipFields() })).json() as Record<string, unknown>;
+      heardVip(a);
       const status = a.status;
       if (status === "closed") {
         void refresh();
