@@ -21,3 +21,15 @@ export function shortDate(date: string): string {
     Date.UTC(y, m - 1, d),
   );
 }
+
+/**
+ * The same date with the month written out ("October 24", "24 октября"), for inside a sentence:
+ * a short month can end in its own full stop ("24 окт."), which a sentence's would double.
+ */
+export function longDate(date: string): string {
+  const [y, m, d] = date.split("-").map(Number);
+  if (!y || !m || !d) return date;
+  return new Intl.DateTimeFormat(document.documentElement.lang || "en", { month: "long", day: "numeric", timeZone: "UTC" }).format(
+    Date.UTC(y, m - 1, d),
+  );
+}

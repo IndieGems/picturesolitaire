@@ -19,7 +19,7 @@
 
 import { t } from "./i18n";
 import { closed, cornerKey, opened } from "./dialogs";
-import { shortDate } from "./format";
+import { longDate, shortDate } from "./format";
 import { eventShown } from "./event-switch";
 import { ICONS, type IconName } from "./icons";
 import {
@@ -289,7 +289,7 @@ export interface ChallengeView {
 export function challengeCard(v: ChallengeView, play: () => void, close: () => void): HTMLElement {
   const { dare, who } = v;
   const helpers = dare.helpers > 0 ? t("oneoff.theirHelpers", { name: whoStart(who), count: dare.helpers }) : t("oneoff.theirNoHelpers", { name: whoStart(who) });
-  const note = v.notYet ? t("oneoff.notYet", { date: shortDate(v.notYet) }) : v.answered ? t("oneoff.played") : v.peek ? t("oneoff.peek") : null;
+  const note = v.notYet ? t("oneoff.notYet", { date: longDate(v.notYet) }) : v.answered ? t("oneoff.played") : v.peek ? t("oneoff.peek") : null;
   return h(
     "div",
     { class: "card dare-card" },

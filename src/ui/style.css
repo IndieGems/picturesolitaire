@@ -959,7 +959,7 @@ html.less-motion .cz-eq i { animation: none; height: 10px; }
 .daily-you b { display: block; margin-top: 5px; font: 600 24px/1.1 var(--round); }
 .daily-note { max-width: 440px; margin: 0 auto 16px; text-align: center; font-size: 15px; font-weight: 600; color: #e9eef5; }
 .daily-head { max-width: 440px; margin: 8px auto 10px; text-align: center; font: 600 17px/1.2 var(--round); color: #e9eef5; }
-.daily-list { list-style: none; max-width: 440px; margin: 0 auto; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.daily-list { list-style: none; width: 100%; max-width: 440px; margin: 0 auto; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .daily-list li { display: flex; align-items: center; gap: 10px; min-height: 50px; padding: 6px 14px; border-radius: 18px; }
 .daily-list li.you { box-shadow: inset 0 0 0 2px var(--amber-hi); }
 .daily-list .rank { flex: none; width: 26px; text-align: center; font: 600 18px/1 var(--round); }
@@ -1625,16 +1625,35 @@ html.row-tight .top-pill {
 .vip-soon { margin: 0; padding: 10px 18px; border-radius: 16px; font: 700 17px/1.25 var(--round); color: #8a5a00; text-align: center; }
 .btn.vip-get { min-width: 220px; min-height: 54px; font-size: 19px; }
 
-/* home's Daily tile with the archive's badge on its corner (daily.ts), one place in the dock */
-.home .dock > .daily-slot { position: relative; flex: 1 1 0; min-width: 0; max-width: calc(150px * var(--k)); display: flex; }
-.home .dock > .daily-slot > .btn.tile-btn { flex: 1 1 auto; max-width: none; }
-.daily-slot:has(> .daily-btn[hidden]) { display: none; }
-.btn.round.archive-badge {
-  --size: 44px; position: absolute; z-index: 1; top: -20px; right: -12px; width: var(--size); height: var(--size); padding: 0;
-}
-.btn.round.archive-badge .arc-glyph { width: 22px; height: 22px; fill: none; stroke: currentColor; }
-.btn.round.archive-badge > .vip-tag { position: absolute; bottom: -9px; left: 50%; translate: -50% 0; padding: 2px 5px 2px 4px; font-size: 12px; }
-.btn.round.archive-badge > .vip-tag .vip-lock { width: 10px; height: 10px; }
+/* THE DAILY PAGE (daily.ts): today's puzzle, the past days (a VIP's strip and calendar, or the archive's
+   locked door), today's friends */
+.daily-screen .scroll { display: flex; flex-direction: column; gap: 14px; }
+.daily-today { width: min(100%, 440px); margin: 4px auto 0; padding: 16px 18px 18px; border-radius: 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.daily-today-head { margin: 0; font: 600 22px/1.2 var(--round); color: var(--ink); }
+.btn.daily-play { min-width: min(100%, 260px); min-height: 60px; font-size: 21px; }
+.daily-done { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.daily-done b { font: 700 20px/1.2 var(--round); color: #2f9a62; }
+.daily-done span { font: 600 22px/1.15 var(--round); color: var(--ink); }
+.daily-today .daily-note { margin: 0; color: var(--ink-soft); font-size: 14px; }
+.btn.daily-again { min-width: 200px; min-height: 48px; font-size: 17px; }
+.daily-archive, .daily-friends { width: min(100%, 440px); margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
+.daily-section-head { margin: 4px 4px 0; text-align: left; font: 600 18px/1.2 var(--round); color: #fff; text-shadow: 0 1px 3px rgba(10, 30, 60, 0.55); }
+.daily-strip { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.daily-day { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 0; min-height: 56px; padding: 6px 2px; border-radius: 12px; }
+.daily-day small { font: 600 12px/1 var(--round); color: var(--ink-soft); }
+.daily-day b { font: 700 18px/1 var(--round); color: var(--ink); }
+.btn.daily-day.done { background: linear-gradient(180deg, #5fc28b 0%, #3f9e6b 100%); }
+.btn.daily-day.done small, .btn.daily-day.done b { color: #fff; }
+.daily-day .tick { position: absolute; right: 3px; bottom: 3px; width: 12px; height: 10px; fill: none; stroke: #fff; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+.btn.daily-calendar { align-self: center; min-width: 220px; min-height: 48px; font-size: 17px; }
+/* the archive's locked door: the strip dimmed, the padlock and VIP tag, one line; a tap opens the door's screen */
+.daily-door { position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 12px 10px 14px; border-radius: 20px; cursor: pointer; font: inherit; color: var(--ink); }
+.daily-door .daily-strip { width: 100%; opacity: 0.55; }
+.daily-door .daily-door-tag { position: absolute; top: 34px; left: 50%; translate: -50% 0; }
+.daily-door-line { font: 600 15px/1.3 var(--round); color: var(--ink); }
+.daily-door:focus-visible { outline: 3px solid var(--amber-lo); outline-offset: 2px; }
+/* the dev channel's sample players, said to be samples */
+.daily-sample { margin: 0 4px; font: 600 13px/1.2 var(--round); color: #fff3c4; text-shadow: 0 1px 2px rgba(10, 30, 60, 0.55); }
 
 /* the event's strip above the dock (suitcase.ts): one wide button, the suitcase, its name and days */
 .btn.event-strip {

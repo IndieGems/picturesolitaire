@@ -65,7 +65,7 @@ import type { Challenge } from "./challenge-data";
 import { lessonLevel, level as campaignLevel, loadDaily, loadLevel, loadTrip, type Daily, type Level, type Souvenir } from "../game/levels";
 import { createSouvenirTile, loadSouvenirList, onSouvenirs, souvenirOf, souvenirWords, stickerReady } from "./souvenirs";
 import { createDaily } from "./daily";
-import { clock, shortDate } from "./format";
+import { clock, longDate, shortDate } from "./format";
 import { claimWin, cueCoins, onVerdict, type Verdict } from "../net/claims";
 import { KEEPSAKE } from "../net/keepsake";
 import { knownTable, startTables, tableChoiceRead, tableTitle, thumbOf, tryTable, warmThumbs, wearTable, type TryTable } from "./tables";
@@ -144,8 +144,10 @@ const dailyUi = createDaily({
   home: () => goHome(),
   show: () => show("daily"),
   play: (d) => openPlay({ kind: "daily", d }),
-  // the archive's badge: a VIP's calendar, or anyone else's locked door (docs/vip.md)
-  archive: () => (vipNow() ? archiveUi.open() : vipDoorUi.open({ kind: "archive", today: currentDaily().date })),
+  // the page's past days (docs/vip.md): a VIP's calendar and days, or anyone else's locked door
+  calendar: () => archiveUi.open(),
+  playDate: (date) => void playPastDay(date, { archive: true }),
+  door: () => vipDoorUi.open({ kind: "archive", today: currentDaily().date }),
 });
 // the Daily Suitcase (suitcase.ts): the month's event the daily fills, its tile on home, its screen and shelf;
 // on hold behind one switch (event-switch.ts: the creator, 2026-10-29), so while it is off none of it shows
@@ -200,7 +202,7 @@ const homeUi = createHome(
     cosmetics: () => cosmeticsUi.open(),
   },
   // the Shop once the first board is done (its travel kit is how a player first meets the helpers)
-  { note: homeNote, event: suitcaseUi.tile, daily: dailyUi.homeButton, archive: dailyUi.archiveBadge, souvenir: souvenirTile.tile, shopShown: () => guideDone() },
+  { note: homeNote, event: suitcaseUi.tile, daily: dailyUi.homeButton, souvenir: souvenirTile.tile, shopShown: () => guideDone() },
 );
 const home = homeUi.screen;
 
@@ -1439,7 +1441,7 @@ function dailyLine(w: Extract<Win, { kind: "daily" }>): string {
   const v = w.verdict;
   // a past day's (the daily archive, a past event's days: docs/vip.md): the checker's word on that day
   if (w.d.date !== currentDaily().date && (v?.status !== "late")) {
-    const date = shortDate(w.d.date);
+    const date = longDate(w.d.date); // inside a sentence: the month written out, never "24 окт.."
     const said = (v as { archive?: string; reason?: string } | undefined) ?? {};
     if (v?.status === "refused") return t(said.reason === "too_old" ? "daily.archiveOld" : "daily.notCounted");
     if (said.archive === "won_before") return t("daily.archiveBefore", { date });
@@ -1732,7 +1734,7 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement, 
       ? withClick(button("amber next", "win.next", t("win.next"), icon("next")), () => leaveTo("daily-next", () => dev?.next(p)))
       : null
     : p?.kind === "daily" && p.from
-    ? pastDayOn(p.from, w.d.date)
+    ? pastDayOn(p.from)
     : withClick(button("amber next", "win.results", t("win.results")), () =>
         leaveTo("daily-results", () => {
           hideCard(winVeil);
@@ -1743,12 +1745,24 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement, 
           void dailyUi.openResults();
         }),
       );
-  const toHome = () => leaveTo("daily-home", goHome);
+  // every way off a daily's card goes back to the Daily page (the creator, 2026-10-30), its corner key too;
+  // a past event's day goes back to its event, and the creator's event preview home as before
+  const toPage = () =>
+    leaveTo("daily-page", () => {
+      hideCard(winVeil);
+      board?.destroy();
+      host.replaceChildren();
+      board = null;
+      boardWon = false;
+      if (p?.kind === "daily" && p.from && "event" in p.from) suitcaseUi.open(p.from.event);
+      else void dailyUi.openPage();
+    });
+  const toHome = preview || isPractice(w) ? () => leaveTo("daily-home", goHome) : toPage;
   winVeil.replaceChildren(
     h(
       "div",
       { class: "card" },
-      cornerKey("home", t("win.home"), "win.home", toHome),
+      preview || isPractice(w) ? cornerKey("home", t("win.home"), "win.home", toHome) : cornerKey("back", t("win.daily"), "win.dailyBack", toHome),
       h("h2", {}, t("win.title")),
       gallery,
       h(
@@ -1771,17 +1785,17 @@ function showDailyWin(w: Extract<Win, { kind: "daily" }>, gallery: HTMLElement, 
   if (dl && isPractice(w) && dayItem) previewPacked(dl);
 }
 
-/** A past day's win card's way on (docs/vip.md): back to the calendar at its month, or to its past event. */
-function pastDayOn(from: DailyFrom, date: string): HTMLButtonElement {
+/** A past day's win card's way on (docs/vip.md): the archive's goes back to the Daily page (as every daily's), a past event's to its event. */
+function pastDayOn(from: DailyFrom): HTMLButtonElement {
   const back = "archive" in from;
-  return withClick(button("amber next", back ? "win.calendar" : "win.event", t(back ? "win.calendar" : "win.event")), () =>
-    leaveTo(back ? "daily-archive" : "daily-event", () => {
+  return withClick(button("amber next", back ? "win.daily" : "win.event", t(back ? "win.daily" : "win.event")), () =>
+    leaveTo(back ? "daily-page" : "daily-event", () => {
       hideCard(winVeil);
       board?.destroy();
       host.replaceChildren();
       board = null;
       boardWon = false;
-      if ("archive" in from) archiveUi.openAt(date);
+      if ("archive" in from) void dailyUi.openPage();
       else suitcaseUi.open(from.event);
     }),
   );
@@ -2585,8 +2599,10 @@ export async function startApp(): Promise<void> {
       vip: (on: boolean) => pretendVip(on),
       /** The daily archive's calendar (as a VIP's badge opens it). */
       archive: () => archiveUi.open(),
-      /** The locked door's screen for the archive (as a non-VIP's badge opens it). */
+      /** The locked door's screen for the archive (as a non-VIP's Daily page opens it). */
       door: () => vipDoorUi.open({ kind: "archive", today: currentDaily().date }),
+      /** The Daily page (its friends: Server's board, sample players on dev and in the play-test tool). */
+      dailyPage: () => void dailyUi.openPage(),
       /** The unlock card for these slugs, again and again (past the once-a-session rule), once the screen can take it. */
       unlockCard: (slugs: string[]) => unlockUi.preview(slugs),
       /** The Passport's Achievements page: `mix`, some unlocked and counters part way (pretend, this page only); else the platform's word. */

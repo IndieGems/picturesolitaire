@@ -490,7 +490,6 @@
   "passport.tab.achievements": "Достижения",
   "passport.tab.stamps": "Штампы",
   "archive.back": "Назад",
-  "archive.badge": "Архив головоломок",
   "archive.badgeLocked": "Архив головоломок: для участников VIP",
   "archive.day": "{{day}}: ещё не решена",
   "archive.dayDone": "{{day}}: решена",
@@ -540,5 +539,12 @@
   "vip.soon": "VIP скоро появится.",
   "vip.tag": "VIP",
   "win.calendar": "Календарь",
-  "win.event": "Назад к событию"
+  "win.event": "Назад к событию",
+  "daily.archiveLocked": "Играй в пропущенные дни с VIP.",
+  "daily.calendar": "Открыть календарь",
+  "daily.pastDays": "Прошлые дни",
+  "daily.played": "Решено ✓",
+  "daily.today": "Головоломка дня",
+  "win.daily": "Назад к головоломке дня",
+  "daily.sample": "Примеры игроков, пока не сыграет друг"
 }

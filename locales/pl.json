@@ -490,7 +490,6 @@
   "passport.tab.achievements": "Osiągnięcia",
   "passport.tab.stamps": "Pieczątki",
   "archive.back": "Wstecz",
-  "archive.badge": "Archiwum łamigłówek",
   "archive.badgeLocked": "Archiwum łamigłówek: dla członków VIP",
   "archive.day": "{{day}}: jeszcze nierozwiązana",
   "archive.dayDone": "{{day}}: rozwiązana",
@@ -540,5 +539,12 @@
   "vip.soon": "VIP już wkrótce.",
   "vip.tag": "VIP",
   "win.calendar": "Kalendarz",
-  "win.event": "Wróć do wydarzenia"
+  "win.event": "Wróć do wydarzenia",
+  "daily.archiveLocked": "Zagraj w przegapione dni z VIP.",
+  "daily.calendar": "Otwórz kalendarz",
+  "daily.pastDays": "Poprzednie dni",
+  "daily.played": "Rozwiązana ✓",
+  "daily.today": "Dzisiejsza łamigłówka",
+  "win.daily": "Wróć do łamigłówki dnia",
+  "daily.sample": "Przykładowi gracze, dopóki nie zagra znajomy"
 }

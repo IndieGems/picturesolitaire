@@ -15,9 +15,9 @@
 //   the event     a strip just above the dock (suitcase.ts: the two-week VIP event, or the next one
 //                 before it starts; locked, with the VIP tag, for a player who is not a VIP): the
 //                 creator's pick, 2026-10-30, since five tiles do not fit across a phone
-//   the dock      Daily (daily.ts; with the daily archive's calendar badge on its corner: the
-//                 creator's pick, 2026-10-30, the tile itself still plays today), the passport (a
-//                 booklet, with its count of stamps) and, once the first board is done, the Shop
+//   the dock      Daily (daily.ts: the Daily page, today's puzzle, the past days and today's
+//                 friends), the passport (a booklet, with its count of stamps) and, once the first
+//                 board is done, the Shop
 //                 (home-shop.ts: helpers, one or a pack of 3) and Cosmetics (cosmetics.ts: tables and
 //                 soundtracks; the creator, 2026-10-29), as up to four tiles
 //
@@ -72,8 +72,6 @@ type Parts = {
   event: HTMLElement;
   /** the day's board's button (daily.ts), hidden until the day's board is known */
   daily: HTMLElement;
-  /** the daily archive's calendar badge (daily.ts), on the Daily tile's corner */
-  archive: HTMLElement;
   /** a stamped trip's Souvenir still to play (souvenirs.ts), in the itinerary's head; hidden while there is none */
   souvenir: HTMLElement;
   /** Is the Shop on home (the first board done, so the helpers are known)? */
@@ -207,11 +205,8 @@ export function createHome(nav: Nav, parts: Parts) {
   cosmetics.hidden = true;
   cosmetics.addEventListener("click", () => nav.cosmetics());
   parts.daily.classList.add("tile-btn");
-  // the Daily tile with the archive's badge on its corner: one place in the dock
-  const dailySlot = el("div", "daily-slot");
-  dailySlot.append(parts.daily, parts.archive);
   const dock = el("div", "dock");
-  dock.append(dailySlot, passport, shop, cosmetics);
+  dock.append(parts.daily, passport, shop, cosmetics);
 
   const screen = el("section", "screen home");
   screen.setAttribute("aria-label", t("game.title"));
