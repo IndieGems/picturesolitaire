@@ -17,6 +17,15 @@
 //     wait (src/net/pace.ts). Crossings happen a couple of dozen times in the whole game.
 // On dev and test nothing ever unlocks (the platform answers "suppressed"), so nothing is heard there;
 // the compare's read still happens at each crossing.
+//
+// THE STANDING, for the Passport's Achievements page (UI's): readStanding() says which achievements
+// the player holds. Call it when the page opens, never on a timer: one read of each counter's
+// progression, in turn, one round at a time, from the SDK's cache unless an unlock was heard since
+// the last round (then the cache is dropped first), nothing while the platform asked for a wait
+// (src/net/pace.ts). A counter the player never moved holds nothing (locked, and known); a counter
+// whose read said nothing (achievementsUnavailable, no answer, or a wait) is `unknown`, and its rows
+// must show no locked state. An achievement heard this session counts as held whatever a read says.
+// onStanding(fn) hears each new standing: a round landing, or an unlock heard.
 
 import { gem } from "../gem";
 import DATA from "./achievements.json";
@@ -77,8 +86,8 @@ export interface Unlock {
 }
 
 const listeners = new Set<(u: Unlock) => void>();
-/** Heard this session: none is heard twice. */
-const heardIds = new Set<string>();
+/** Heard this session, with the points credited: none is heard twice. */
+const heardIds = new Map<string, number>();
 /** Thresholds a record crossed that no verdict has listed yet, by achievement id. */
 const crossed = new Set<string>();
 /** The counters as last seen in a record; null until one with counters is seen. */
@@ -90,7 +99,8 @@ let started = false;
 function tell(a: Achievement, points: number): void {
   crossed.delete(a.id);
   if (heardIds.has(a.id)) return;
-  heardIds.add(a.id);
+  heardIds.set(a.id, points);
+  heardSinceRound = true;
   for (const fn of [...listeners]) {
     try {
       fn({ achievement: a, points });
@@ -98,6 +108,7 @@ function tell(a: Achievement, points: number): void {
       console.warn("[achievements] a listener failed:", err);
     }
   }
+  if (standing) setStanding({ unlocked: new Map([...standing.unlocked, [a.id, points]]), unknown: standing.unknown });
 }
 
 /** A record landed or was replaced: note any threshold its counters crossed since the last. */
@@ -167,4 +178,103 @@ export function onUnlock(fn: (u: Unlock) => void): () => void {
   start();
   listeners.add(fn);
   return () => void listeners.delete(fn);
+}
+
+// ---------------------------------------------------------------- the standing (the Achievements page)
+
+export interface Standing {
+  /** Each achievement held (and not revoked), by id: the points it credited. */
+  unlocked: ReadonlyMap<string, number>;
+  /** Counters (by slug) whose read said nothing just now: show their rows neither locked nor unlocked. */
+  unknown: ReadonlySet<string>;
+}
+
+/** Framed by the platform: another origin's frame (as src/net/helpers.ts). The play-test tool's same-origin frame has no platform behind it. */
+const framed = ((): boolean => {
+  if (window.self === window.top) return false;
+  try {
+    return window.parent.location.origin !== location.origin;
+  } catch {
+    return true;
+  }
+})();
+let standing: Standing | null = null;
+let reading: Promise<Standing> | null = null;
+/** An unlock was heard since the last round began, so the SDK's cached progressions predate it. */
+let heardSinceRound = false;
+let dropCache = false;
+const standingListeners = new Set<(s: Standing) => void>();
+
+function setStanding(s: Standing): void {
+  standing = s;
+  for (const fn of [...standingListeners]) {
+    try {
+      fn(s);
+    } catch (err) {
+      console.warn("[achievements] a standing listener failed:", err);
+    }
+  }
+}
+
+async function round(): Promise<Standing> {
+  const unlocked = new Map<string, number>();
+  const unknown = new Set<string>();
+  if (!framed) {
+    for (const c of COUNTERS) unknown.add(c); // no platform to ask
+  } else {
+    if (dropCache) gem.me.inventory.refresh(); // an unlock was heard since: the cache predates it
+    dropCache = false;
+    for (const counter of COUNTERS) {
+      if (held() > 0) {
+        unknown.add(counter); // the platform asked for a wait: ask nothing more this round
+        continue;
+      }
+      try {
+        const p = await gem.me.progressions.get(counter);
+        if (!p) continue; // never written: nothing held on it, and that is known
+        if (p.achievementsUnavailable) {
+          unknown.add(counter);
+          continue;
+        }
+        for (const a of p.achievements ?? []) if (a.unlockedAt !== undefined && !a.revoked) unlocked.set(a.id, a.points);
+      } catch (err) {
+        heard(err);
+        unknown.add(counter);
+        console.warn(`[achievements] ${counter} could not be read: ${refusalOf(err)}`);
+      }
+    }
+  }
+  // heard this session: held, whatever a read (perhaps from before it) says
+  for (const [id, points] of heardIds) unlocked.set(id, points);
+  return { unlocked, unknown };
+}
+
+/**
+ * What the player holds, for the Achievements page: call when it opens, never on a timer. One
+ * round at a time (a call during one shares it); each counter read in turn through the SDK's cache.
+ */
+export function readStanding(): Promise<Standing> {
+  start();
+  if (reading) return reading;
+  if (heardSinceRound) dropCache = true;
+  heardSinceRound = false;
+  reading = round()
+    .then((s) => {
+      setStanding(s);
+      return s;
+    })
+    .finally(() => {
+      reading = null;
+    });
+  return reading;
+}
+
+/** The last standing read (with every unlock heard since), or null before the first round. */
+export const lastStanding = (): Standing | null => standing;
+
+/** Hear each new standing: a round landing, or an unlock heard after one. Returns the unsubscribe. */
+export function onStanding(fn: (s: Standing) => void): () => void {
+  start();
+  standingListeners.add(fn);
+  return () => void standingListeners.delete(fn);
 }
