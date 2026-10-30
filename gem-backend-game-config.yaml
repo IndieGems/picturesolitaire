@@ -2465,6 +2465,18 @@ progressions:
     slug: levels_finished
     display_name: "Levels finished"
     description: "Trip levels finished, each counted once."
+    localized:
+      de: { display_name: "Abgeschlossene Level", description: "Abgeschlossene Reise-Level, jedes nur einmal gezählt." }
+      es: { display_name: "Niveles completados", description: "Niveles de viaje completados; cada uno cuenta una vez." }
+      fr: { display_name: "Niveaux terminés", description: "Niveaux de voyage terminés, chacun compté une fois." }
+      it: { display_name: "Livelli completati", description: "Livelli dei viaggi completati, ognuno contato una volta." }
+      ja: { display_name: "クリアしたレベル", description: "クリアした旅のレベル。1つにつき1回だけ数えます。" }
+      ko: { display_name: "클리어한 레벨", description: "클리어한 여행 레벨 수예요. 레벨마다 한 번만 세요." }
+      pl: { display_name: "Ukończone poziomy", description: "Ukończone poziomy podróży, każdy liczony raz." }
+      pt-BR: { display_name: "Níveis concluídos", description: "Níveis de viagem concluídos, cada um contado uma vez." }
+      ru: { display_name: "Пройденные уровни", description: "Пройденные уровни путешествий, каждый считается один раз." }
+      tr: { display_name: "Geçilen seviyeler", description: "Geçilen gezi seviyeleri; her biri bir kez sayılır." }
+      zh-Hans: { display_name: "已完成关卡", description: "已完成的旅行关卡，每个只计一次。" }
     config:
       function_may_grant: true
       tracks:
@@ -2478,6 +2490,18 @@ progressions:
                     points: 5
                     display_name: "First Steps"
                     description: "Finish your first level."
+                    localized:
+                      de: { display_name: "Erste Schritte", description: "Schließe dein erstes Level ab." }
+                      es: { display_name: "Primeros pasos", description: "Completa tu primer nivel." }
+                      fr: { display_name: "Premiers pas", description: "Termine ton premier niveau." }
+                      it: { display_name: "Primi passi", description: "Completa il tuo primo livello." }
+                      ja: { display_name: "はじめの一歩", description: "はじめてレベルをクリアする。" }
+                      ko: { display_name: "첫걸음", description: "첫 레벨을 클리어하세요." }
+                      pl: { display_name: "Pierwsze kroki", description: "Ukończ swój pierwszy poziom." }
+                      pt-BR: { display_name: "Primeiros passos", description: "Complete seu primeiro nível." }
+                      ru: { display_name: "Первые шаги", description: "Пройди свой первый уровень." }
+                      tr: { display_name: "İlk Adımlar", description: "İlk seviyeni geç." }
+                      zh-Hans: { display_name: "迈出第一步", description: "完成你的第一个关卡。" }
                     rewards:
                       - item: ach-first-steps   # an Arcade avatar icon, Art's (gemctl item upload)
             - level: 2   # finding-your-feet
@@ -2488,6 +2512,18 @@ progressions:
                     points: 10
                     display_name: "Finding Your Feet"
                     description: "Finish 10 levels."
+                    localized:
+                      de: { display_name: "Fuß gefasst", description: "Schließe 10 Level ab." }
+                      es: { display_name: "Tomando el ritmo", description: "Completa 10 niveles." }
+                      fr: { display_name: "Le pied à l'étrier", description: "Termine 10 niveaux." }
+                      it: { display_name: "Prendere confidenza", description: "Completa 10 livelli." }
+                      ja: { display_name: "旅に慣れてきた", description: "レベルを10個クリアする。" }
+                      ko: { display_name: "적응 완료", description: "레벨 10개를 클리어하세요." }
+                      pl: { display_name: "Na dobrej drodze", description: "Ukończ 10 poziomów." }
+                      pt-BR: { display_name: "Pegando o jeito", description: "Complete 10 níveis." }
+                      ru: { display_name: "Входим во вкус", description: "Пройди 10 уровней." }
+                      tr: { display_name: "Alışmaya Başladın", description: "10 seviye geç." }
+                      zh-Hans: { display_name: "渐入佳境", description: "完成10个关卡。" }
             - level: 3   # seasoned-traveller
               threshold: 50
               platform_grants:
@@ -2496,6 +2532,18 @@ progressions:
                     points: 25
                     display_name: "Seasoned Traveller"
                     description: "Finish 50 levels."
+                    localized:
+                      de: { display_name: "Reiseprofi", description: "Schließe 50 Level ab." }
+                      es: { display_name: "Espíritu viajero", description: "Completa 50 niveles." }
+                      fr: { display_name: "Esprit voyageur", description: "Termine 50 niveaux." }
+                      it: { display_name: "Anima viaggiatrice", description: "Completa 50 livelli." }
+                      ja: { display_name: "ベテラン旅行者", description: "レベルを50個クリアする。" }
+                      ko: { display_name: "노련한 여행자", description: "레벨 50개를 클리어하세요." }
+                      pl: { display_name: "Podróżnicza dusza", description: "Ukończ 50 poziomów." }
+                      pt-BR: { display_name: "Viajante experiente", description: "Complete 50 níveis." }
+                      ru: { display_name: "Бывалый путешественник", description: "Пройди 50 уровней." }
+                      tr: { display_name: "Deneyimli Gezgin", description: "50 seviye geç." }
+                      zh-Hans: { display_name: "资深旅行家", description: "完成50个关卡。" }
                     rewards:
                       - item: ach-seasoned-traveller   # an Arcade avatar icon, Art's (gemctl item upload)
             - level: 4   # globetrotter
@@ -2506,12 +2554,36 @@ progressions:
                     points: 75
                     display_name: "Globetrotter"
                     description: "Finish 150 levels."
+                    localized:
+                      de: { display_name: "Globetrotter", description: "Schließe 150 Level ab." }
+                      es: { display_name: "Trotamundos", description: "Completa 150 niveles." }
+                      fr: { display_name: "Globe-trotter", description: "Termine 150 niveaux." }
+                      it: { display_name: "Giramondo", description: "Completa 150 livelli." }
+                      ja: { display_name: "世界旅行家", description: "レベルを150個クリアする。" }
+                      ko: { display_name: "세계 여행가", description: "레벨 150개를 클리어하세요." }
+                      pl: { display_name: "Obieżyświat", description: "Ukończ 150 poziomów." }
+                      pt-BR: { display_name: "Volta ao mundo", description: "Complete 150 níveis." }
+                      ru: { display_name: "Вокруг света", description: "Пройди 150 уровней." }
+                      tr: { display_name: "Dünya Gezgini", description: "150 seviye geç." }
+                      zh-Hans: { display_name: "环球旅行家", description: "完成150个关卡。" }
                     rewards:
                       - item: ach-globetrotter   # an Arcade avatar icon, Art's (gemctl item upload)
   - id: 764d331a-ac00-50b3-b7b2-3bb79c9267a6
     slug: trips_stamped
     display_name: "Passport stamps"
     description: "Trips finished, each with its passport stamp."
+    localized:
+      de: { display_name: "Reisepass-Stempel", description: "Abgeschlossene Reisen, jede mit ihrem Stempel im Reisepass." }
+      es: { display_name: "Sellos del pasaporte", description: "Viajes completados, cada uno con su sello en el pasaporte." }
+      fr: { display_name: "Tampons du passeport", description: "Voyages terminés, chacun avec son tampon dans le passeport." }
+      it: { display_name: "Timbri sul passaporto", description: "Viaggi completati, ognuno con il suo timbro sul passaporto." }
+      ja: { display_name: "パスポートのスタンプ", description: "クリアした旅の数。旅ごとにパスポートのスタンプがもらえます。" }
+      ko: { display_name: "여권 스탬프", description: "완료한 여행 수예요. 여행마다 여권 스탬프를 받아요." }
+      pl: { display_name: "Pieczątki w paszporcie", description: "Ukończone podróże, każda z pieczątką w paszporcie." }
+      pt-BR: { display_name: "Carimbos no passaporte", description: "Viagens concluídas, cada uma com seu carimbo no passaporte." }
+      ru: { display_name: "Штампы в паспорте", description: "Завершённые путешествия, каждое со своим штампом в паспорте." }
+      tr: { display_name: "Pasaport damgaları", description: "Bitirilen geziler; her biri pasaporta bir damga getirir." }
+      zh-Hans: { display_name: "护照印章", description: "已完成的旅行，每次都有一枚护照印章。" }
     config:
       function_may_grant: true
       tracks:
@@ -2524,7 +2596,19 @@ progressions:
                     id: 0fbcf317-2a71-4a56-a9dc-801ff8679151
                     points: 15
                     display_name: "Stamped: Travel America"
-                    description: "Finish the Travel America trip and get its passport stamp."
+                    description: "Get the Travel America stamp in your passport."
+                    localized:
+                      de: { display_name: "Gestempelt: Reise durch Amerika", description: "Hol dir den Stempel „Reise durch Amerika“ in deinen Reisepass." }
+                      es: { display_name: "Sellado: Viaje por Estados Unidos", description: "Consigue el sello de «Viaje por Estados Unidos» en tu pasaporte." }
+                      fr: { display_name: "Tamponné : Voyage aux États-Unis", description: "Obtiens le tampon « Voyage aux États-Unis » dans ton passeport." }
+                      it: { display_name: "Timbrato: Viaggio in America", description: "Ottieni il timbro «Viaggio in America» sul tuo passaporto." }
+                      ja: { display_name: "スタンプ獲得：アメリカの旅", description: "パスポートに「アメリカの旅」のスタンプを押す。" }
+                      ko: { display_name: "스탬프 획득: 미국 여행", description: "여권에 '미국 여행' 스탬프를 받으세요." }
+                      pl: { display_name: "Pieczątka: Podróż po Ameryce", description: "Zdobądź pieczątkę „Podróż po Ameryce” w paszporcie." }
+                      pt-BR: { display_name: "Carimbado: Viagem pelos Estados Unidos", description: "Ganhe o carimbo de “Viagem pelos Estados Unidos” no seu passaporte." }
+                      ru: { display_name: "Штамп: Путешествие по Америке", description: "Поставь в паспорт штамп «Путешествие по Америке»." }
+                      tr: { display_name: "Damgalandı: Amerika Gezisi", description: "Pasaportuna “Amerika Gezisi” damgasını al." }
+                      zh-Hans: { display_name: "已盖章：美国之旅", description: "在护照上盖上“美国之旅”印章。" }
             - level: 2   # stamped-t2
               threshold: 2
               platform_grants:
@@ -2532,7 +2616,19 @@ progressions:
                     id: 2fe500dd-8a78-41df-b81d-9767482dc955
                     points: 15
                     display_name: "Stamped: Japan"
-                    description: "Finish the Japan trip and get its passport stamp."
+                    description: "Get the Japan stamp in your passport."
+                    localized:
+                      de: { display_name: "Gestempelt: Japan", description: "Hol dir den Stempel „Japan“ in deinen Reisepass." }
+                      es: { display_name: "Sellado: Japón", description: "Consigue el sello de «Japón» en tu pasaporte." }
+                      fr: { display_name: "Tamponné : Japon", description: "Obtiens le tampon « Japon » dans ton passeport." }
+                      it: { display_name: "Timbrato: Giappone", description: "Ottieni il timbro «Giappone» sul tuo passaporto." }
+                      ja: { display_name: "スタンプ獲得：日本", description: "パスポートに「日本」のスタンプを押す。" }
+                      ko: { display_name: "스탬프 획득: 일본", description: "여권에 '일본' 스탬프를 받으세요." }
+                      pl: { display_name: "Pieczątka: Japonia", description: "Zdobądź pieczątkę „Japonia” w paszporcie." }
+                      pt-BR: { display_name: "Carimbado: Japão", description: "Ganhe o carimbo de “Japão” no seu passaporte." }
+                      ru: { display_name: "Штамп: Япония", description: "Поставь в паспорт штамп «Япония»." }
+                      tr: { display_name: "Damgalandı: Japonya", description: "Pasaportuna “Japonya” damgasını al." }
+                      zh-Hans: { display_name: "已盖章：日本", description: "在护照上盖上“日本”印章。" }
             - level: 3   # stamped-t3
               threshold: 3
               platform_grants:
@@ -2540,7 +2636,19 @@ progressions:
                     id: 422057ad-3cbc-4fc6-b252-7d9091b668be
                     points: 15
                     display_name: "Stamped: Italy"
-                    description: "Finish the Italy trip and get its passport stamp."
+                    description: "Get the Italy stamp in your passport."
+                    localized:
+                      de: { display_name: "Gestempelt: Italien", description: "Hol dir den Stempel „Italien“ in deinen Reisepass." }
+                      es: { display_name: "Sellado: Italia", description: "Consigue el sello de «Italia» en tu pasaporte." }
+                      fr: { display_name: "Tamponné : Italie", description: "Obtiens le tampon « Italie » dans ton passeport." }
+                      it: { display_name: "Timbrato: Italia", description: "Ottieni il timbro «Italia» sul tuo passaporto." }
+                      ja: { display_name: "スタンプ獲得：イタリア", description: "パスポートに「イタリア」のスタンプを押す。" }
+                      ko: { display_name: "스탬프 획득: 이탈리아", description: "여권에 '이탈리아' 스탬프를 받으세요." }
+                      pl: { display_name: "Pieczątka: Włochy", description: "Zdobądź pieczątkę „Włochy” w paszporcie." }
+                      pt-BR: { display_name: "Carimbado: Itália", description: "Ganhe o carimbo de “Itália” no seu passaporte." }
+                      ru: { display_name: "Штамп: Италия", description: "Поставь в паспорт штамп «Италия»." }
+                      tr: { display_name: "Damgalandı: İtalya", description: "Pasaportuna “İtalya” damgasını al." }
+                      zh-Hans: { display_name: "已盖章：意大利", description: "在护照上盖上“意大利”印章。" }
             - level: 4   # stamped-t4
               threshold: 4
               platform_grants:
@@ -2548,7 +2656,19 @@ progressions:
                     id: b7ffcbec-30e3-42b0-b45c-e37bd00048ab
                     points: 15
                     display_name: "Stamped: American West"
-                    description: "Finish the American West trip and get its passport stamp."
+                    description: "Get the American West stamp in your passport."
+                    localized:
+                      de: { display_name: "Gestempelt: Amerikanischer Westen", description: "Hol dir den Stempel „Amerikanischer Westen“ in deinen Reisepass." }
+                      es: { display_name: "Sellado: Oeste americano", description: "Consigue el sello de «Oeste americano» en tu pasaporte." }
+                      fr: { display_name: "Tamponné : Ouest américain", description: "Obtiens le tampon « Ouest américain » dans ton passeport." }
+                      it: { display_name: "Timbrato: Ovest americano", description: "Ottieni il timbro «Ovest americano» sul tuo passaporto." }
+                      ja: { display_name: "スタンプ獲得：アメリカ西部", description: "パスポートに「アメリカ西部」のスタンプを押す。" }
+                      ko: { display_name: "스탬프 획득: 미국 서부", description: "여권에 '미국 서부' 스탬프를 받으세요." }
+                      pl: { display_name: "Pieczątka: Zachód USA", description: "Zdobądź pieczątkę „Zachód USA” w paszporcie." }
+                      pt-BR: { display_name: "Carimbado: Oeste americano", description: "Ganhe o carimbo de “Oeste americano” no seu passaporte." }
+                      ru: { display_name: "Штамп: Американский Запад", description: "Поставь в паспорт штамп «Американский Запад»." }
+                      tr: { display_name: "Damgalandı: Amerikan Batısı", description: "Pasaportuna “Amerikan Batısı” damgasını al." }
+                      zh-Hans: { display_name: "已盖章：美国西部", description: "在护照上盖上“美国西部”印章。" }
             - level: 5   # stamped-t5
               threshold: 5
               platform_grants:
@@ -2556,7 +2676,19 @@ progressions:
                     id: 46db4c3e-5d45-4397-956b-9383a7728a56
                     points: 15
                     display_name: "Stamped: France"
-                    description: "Finish the France trip and get its passport stamp."
+                    description: "Get the France stamp in your passport."
+                    localized:
+                      de: { display_name: "Gestempelt: Frankreich", description: "Hol dir den Stempel „Frankreich“ in deinen Reisepass." }
+                      es: { display_name: "Sellado: Francia", description: "Consigue el sello de «Francia» en tu pasaporte." }
+                      fr: { display_name: "Tamponné : France", description: "Obtiens le tampon « France » dans ton passeport." }
+                      it: { display_name: "Timbrato: Francia", description: "Ottieni il timbro «Francia» sul tuo passaporto." }
+                      ja: { display_name: "スタンプ獲得：フランス", description: "パスポートに「フランス」のスタンプを押す。" }
+                      ko: { display_name: "스탬프 획득: 프랑스", description: "여권에 '프랑스' 스탬프를 받으세요." }
+                      pl: { display_name: "Pieczątka: Francja", description: "Zdobądź pieczątkę „Francja” w paszporcie." }
+                      pt-BR: { display_name: "Carimbado: França", description: "Ganhe o carimbo de “França” no seu passaporte." }
+                      ru: { display_name: "Штамп: Франция", description: "Поставь в паспорт штамп «Франция»." }
+                      tr: { display_name: "Damgalandı: Fransa", description: "Pasaportuna “Fransa” damgasını al." }
+                      zh-Hans: { display_name: "已盖章：法国", description: "在护照上盖上“法国”印章。" }
             - level: 6   # stamped-t6
               threshold: 6
               platform_grants:
@@ -2564,7 +2696,19 @@ progressions:
                     id: f762abf0-335a-4885-81e4-e6d9b21c035f
                     points: 15
                     display_name: "Stamped: Canada"
-                    description: "Finish the Canada trip and get its passport stamp."
+                    description: "Get the Canada stamp in your passport."
+                    localized:
+                      de: { display_name: "Gestempelt: Kanada", description: "Hol dir den Stempel „Kanada“ in deinen Reisepass." }
+                      es: { display_name: "Sellado: Canadá", description: "Consigue el sello de «Canadá» en tu pasaporte." }
+                      fr: { display_name: "Tamponné : Canada", description: "Obtiens le tampon « Canada » dans ton passeport." }
+                      it: { display_name: "Timbrato: Canada", description: "Ottieni il timbro «Canada» sul tuo passaporto." }
+                      ja: { display_name: "スタンプ獲得：カナダ", description: "パスポートに「カナダ」のスタンプを押す。" }
+                      ko: { display_name: "스탬프 획득: 캐나다", description: "여권에 '캐나다' 스탬프를 받으세요." }
+                      pl: { display_name: "Pieczątka: Kanada", description: "Zdobądź pieczątkę „Kanada” w paszporcie." }
+                      pt-BR: { display_name: "Carimbado: Canadá", description: "Ganhe o carimbo de “Canadá” no seu passaporte." }
+                      ru: { display_name: "Штамп: Канада", description: "Поставь в паспорт штамп «Канада»." }
+                      tr: { display_name: "Damgalandı: Kanada", description: "Pasaportuna “Kanada” damgasını al." }
+                      zh-Hans: { display_name: "已盖章：加拿大", description: "在护照上盖上“加拿大”印章。" }
             - level: 7   # stamped-t7
               threshold: 7
               platform_grants:
@@ -2572,7 +2716,19 @@ progressions:
                     id: 580fff2b-4d2b-412f-9dbe-6eee0977768f
                     points: 15
                     display_name: "Stamped: Argentina"
-                    description: "Finish the Argentina trip and get its passport stamp."
+                    description: "Get the Argentina stamp in your passport."
+                    localized:
+                      de: { display_name: "Gestempelt: Argentinien", description: "Hol dir den Stempel „Argentinien“ in deinen Reisepass." }
+                      es: { display_name: "Sellado: Argentina", description: "Consigue el sello de «Argentina» en tu pasaporte." }
+                      fr: { display_name: "Tamponné : Argentine", description: "Obtiens le tampon « Argentine » dans ton passeport." }
+                      it: { display_name: "Timbrato: Argentina", description: "Ottieni il timbro «Argentina» sul tuo passaporto." }
+                      ja: { display_name: "スタンプ獲得：アルゼンチン", description: "パスポートに「アルゼンチン」のスタンプを押す。" }
+                      ko: { display_name: "스탬프 획득: 아르헨티나", description: "여권에 '아르헨티나' 스탬프를 받으세요." }
+                      pl: { display_name: "Pieczątka: Argentyna", description: "Zdobądź pieczątkę „Argentyna” w paszporcie." }
+                      pt-BR: { display_name: "Carimbado: Argentina", description: "Ganhe o carimbo de “Argentina” no seu passaporte." }
+                      ru: { display_name: "Штамп: Аргентина", description: "Поставь в паспорт штамп «Аргентина»." }
+                      tr: { display_name: "Damgalandı: Arjantin", description: "Pasaportuna “Arjantin” damgasını al." }
+                      zh-Hans: { display_name: "已盖章：阿根廷", description: "在护照上盖上“阿根廷”印章。" }
             - level: 8   # stamped-t8
               threshold: 8
               platform_grants:
@@ -2580,7 +2736,19 @@ progressions:
                     id: c77a395f-ff89-434c-9b35-cea42d517eae
                     points: 15
                     display_name: "Stamped: Australia"
-                    description: "Finish the Australia trip and get its passport stamp."
+                    description: "Get the Australia stamp in your passport."
+                    localized:
+                      de: { display_name: "Gestempelt: Australien", description: "Hol dir den Stempel „Australien“ in deinen Reisepass." }
+                      es: { display_name: "Sellado: Australia", description: "Consigue el sello de «Australia» en tu pasaporte." }
+                      fr: { display_name: "Tamponné : Australie", description: "Obtiens le tampon « Australie » dans ton passeport." }
+                      it: { display_name: "Timbrato: Australia", description: "Ottieni il timbro «Australia» sul tuo passaporto." }
+                      ja: { display_name: "スタンプ獲得：オーストラリア", description: "パスポートに「オーストラリア」のスタンプを押す。" }
+                      ko: { display_name: "스탬프 획득: 호주", description: "여권에 '호주' 스탬프를 받으세요." }
+                      pl: { display_name: "Pieczątka: Australia", description: "Zdobądź pieczątkę „Australia” w paszporcie." }
+                      pt-BR: { display_name: "Carimbado: Austrália", description: "Ganhe o carimbo de “Austrália” no seu passaporte." }
+                      ru: { display_name: "Штамп: Австралия", description: "Поставь в паспорт штамп «Австралия»." }
+                      tr: { display_name: "Damgalandı: Avustralya", description: "Pasaportuna “Avustralya” damgasını al." }
+                      zh-Hans: { display_name: "已盖章：澳大利亚", description: "在护照上盖上“澳大利亚”印章。" }
             - level: 9   # stamped-t9
               threshold: 9
               platform_grants:
@@ -2588,7 +2756,19 @@ progressions:
                     id: b9595a98-4096-4513-acbf-ce64e111f049
                     points: 15
                     display_name: "Stamped: South Africa"
-                    description: "Finish the South Africa trip and get its passport stamp."
+                    description: "Get the South Africa stamp in your passport."
+                    localized:
+                      de: { display_name: "Gestempelt: Südafrika", description: "Hol dir den Stempel „Südafrika“ in deinen Reisepass." }
+                      es: { display_name: "Sellado: Sudáfrica", description: "Consigue el sello de «Sudáfrica» en tu pasaporte." }
+                      fr: { display_name: "Tamponné : Afrique du Sud", description: "Obtiens le tampon « Afrique du Sud » dans ton passeport." }
+                      it: { display_name: "Timbrato: Sudafrica", description: "Ottieni il timbro «Sudafrica» sul tuo passaporto." }
+                      ja: { display_name: "スタンプ獲得：南アフリカ", description: "パスポートに「南アフリカ」のスタンプを押す。" }
+                      ko: { display_name: "스탬프 획득: 남아프리카", description: "여권에 '남아프리카' 스탬프를 받으세요." }
+                      pl: { display_name: "Pieczątka: Afryka Południowa", description: "Zdobądź pieczątkę „Afryka Południowa” w paszporcie." }
+                      pt-BR: { display_name: "Carimbado: África do Sul", description: "Ganhe o carimbo de “África do Sul” no seu passaporte." }
+                      ru: { display_name: "Штамп: Южная Африка", description: "Поставь в паспорт штамп «Южная Африка»." }
+                      tr: { display_name: "Damgalandı: Güney Afrika", description: "Pasaportuna “Güney Afrika” damgasını al." }
+                      zh-Hans: { display_name: "已盖章：南非", description: "在护照上盖上“南非”印章。" }
             - level: 10   # stamped-t10
               threshold: 10
               platform_grants:
@@ -2596,11 +2776,35 @@ progressions:
                     id: 0bd04847-b0ca-43d5-b40d-1b9d1f8bb004
                     points: 15
                     display_name: "Stamped: UK & Ireland"
-                    description: "Finish the UK & Ireland trip and get its passport stamp."
+                    description: "Get the UK & Ireland stamp in your passport."
+                    localized:
+                      de: { display_name: "Gestempelt: Großbritannien & Irland", description: "Hol dir den Stempel „Großbritannien & Irland“ in deinen Reisepass." }
+                      es: { display_name: "Sellado: Reino Unido e Irlanda", description: "Consigue el sello de «Reino Unido e Irlanda» en tu pasaporte." }
+                      fr: { display_name: "Tamponné : Royaume-Uni et Irlande", description: "Obtiens le tampon « Royaume-Uni et Irlande » dans ton passeport." }
+                      it: { display_name: "Timbrato: Regno Unito e Irlanda", description: "Ottieni il timbro «Regno Unito e Irlanda» sul tuo passaporto." }
+                      ja: { display_name: "スタンプ獲得：イギリスとアイルランド", description: "パスポートに「イギリスとアイルランド」のスタンプを押す。" }
+                      ko: { display_name: "스탬프 획득: 영국과 아일랜드", description: "여권에 '영국과 아일랜드' 스탬프를 받으세요." }
+                      pl: { display_name: "Pieczątka: Wielka Brytania i Irlandia", description: "Zdobądź pieczątkę „Wielka Brytania i Irlandia” w paszporcie." }
+                      pt-BR: { display_name: "Carimbado: Reino Unido e Irlanda", description: "Ganhe o carimbo de “Reino Unido e Irlanda” no seu passaporte." }
+                      ru: { display_name: "Штамп: Великобритания и Ирландия", description: "Поставь в паспорт штамп «Великобритания и Ирландия»." }
+                      tr: { display_name: "Damgalandı: Birleşik Krallık ve İrlanda", description: "Pasaportuna “Birleşik Krallık ve İrlanda” damgasını al." }
+                      zh-Hans: { display_name: "已盖章：英国和爱尔兰", description: "在护照上盖上“英国和爱尔兰”印章。" }
   - id: c7176dad-ec41-54ae-944a-33b57ceb3723
     slug: souvenirs_finished
     display_name: "Souvenirs finished"
     description: "Souvenir levels finished, each counted once."
+    localized:
+      de: { display_name: "Abgeschlossene Souvenirs", description: "Abgeschlossene Souvenir-Level, jedes nur einmal gezählt." }
+      es: { display_name: "Recuerdos completados", description: "Niveles Recuerdo completados; cada uno cuenta una vez." }
+      fr: { display_name: "Souvenirs terminés", description: "Niveaux Souvenir terminés, chacun compté une fois." }
+      it: { display_name: "Souvenir completati", description: "Livelli Souvenir completati, ognuno contato una volta." }
+      ja: { display_name: "クリアしたおみやげ", description: "クリアしたおみやげレベル。1つにつき1回だけ数えます。" }
+      ko: { display_name: "클리어한 기념품 레벨", description: "클리어한 기념품 레벨 수예요. 레벨마다 한 번만 세요." }
+      pl: { display_name: "Ukończone Pamiątki", description: "Ukończone poziomy Pamiątka, każdy liczony raz." }
+      pt-BR: { display_name: "Lembranças concluídas", description: "Níveis Lembrança concluídos, cada um contado uma vez." }
+      ru: { display_name: "Пройденные «Сувениры»", description: "Пройденные уровни «Сувенир», каждый считается один раз." }
+      tr: { display_name: "Geçilen Hatıralar", description: "Geçilen Hatıra seviyeleri; her biri bir kez sayılır." }
+      zh-Hans: { display_name: "已完成纪念品", description: "已完成的纪念品关卡，每个只计一次。" }
     config:
       function_may_grant: true
       tracks:
@@ -2614,6 +2818,18 @@ progressions:
                     points: 5
                     display_name: "Something to Remember"
                     description: "Finish your first Souvenir level."
+                    localized:
+                      de: { display_name: "Schöne Erinnerung", description: "Schließe dein erstes Souvenir-Level ab." }
+                      es: { display_name: "Algo para recordar", description: "Completa tu primer nivel Recuerdo." }
+                      fr: { display_name: "Un souvenir à garder", description: "Termine ton premier niveau Souvenir." }
+                      it: { display_name: "Un ricordo da tenere", description: "Completa il tuo primo livello Souvenir." }
+                      ja: { display_name: "思い出の品", description: "はじめておみやげレベルをクリアする。" }
+                      ko: { display_name: "간직할 추억", description: "첫 기념품 레벨을 클리어하세요." }
+                      pl: { display_name: "Coś na pamiątkę", description: "Ukończ swój pierwszy poziom Pamiątka." }
+                      pt-BR: { display_name: "Algo para lembrar", description: "Complete seu primeiro nível Lembrança." }
+                      ru: { display_name: "На память", description: "Пройди свой первый уровень «Сувенир»." }
+                      tr: { display_name: "Unutulmaz Bir Hatıra", description: "İlk Hatıra seviyeni geç." }
+                      zh-Hans: { display_name: "值得纪念", description: "完成你的第一个纪念品关卡。" }
             - level: 2   # full-suitcase
               threshold: 10
               platform_grants:
@@ -2622,12 +2838,36 @@ progressions:
                     points: 40
                     display_name: "Full Suitcase"
                     description: "Finish 10 Souvenir levels."
+                    localized:
+                      de: { display_name: "Voller Koffer", description: "Schließe 10 Souvenir-Level ab." }
+                      es: { display_name: "Maleta llena", description: "Completa 10 niveles Recuerdo." }
+                      fr: { display_name: "Valise pleine", description: "Termine 10 niveaux Souvenir." }
+                      it: { display_name: "Valigia piena", description: "Completa 10 livelli Souvenir." }
+                      ja: { display_name: "おみやげでいっぱい", description: "おみやげレベルを10個クリアする。" }
+                      ko: { display_name: "가득 찬 여행 가방", description: "기념품 레벨 10개를 클리어하세요." }
+                      pl: { display_name: "Pełna walizka", description: "Ukończ 10 poziomów Pamiątka." }
+                      pt-BR: { display_name: "Mala cheia", description: "Complete 10 níveis Lembrança." }
+                      ru: { display_name: "Полный чемодан", description: "Пройди 10 уровней «Сувенир»." }
+                      tr: { display_name: "Dolu Bavul", description: "10 Hatıra seviyesi geç." }
+                      zh-Hans: { display_name: "满满一箱", description: "完成10个纪念品关卡。" }
                     rewards:
                       - item: ach-full-suitcase   # an Arcade avatar icon, Art's (gemctl item upload)
   - id: 630e6c93-925b-5368-965c-fcea503896d3
     slug: hard_levels_won
     display_name: "Hard levels won"
     description: "Hard and super hard levels won, each counted once."
+    localized:
+      de: { display_name: "Gewonnene schwere Level", description: "Gewonnene schwere und superschwere Level, jedes nur einmal gezählt." }
+      es: { display_name: "Niveles difíciles superados", description: "Niveles difíciles y superdifíciles superados; cada uno cuenta una vez." }
+      fr: { display_name: "Niveaux difficiles réussis", description: "Niveaux difficiles et très difficiles réussis, chacun compté une fois." }
+      it: { display_name: "Livelli difficili superati", description: "Livelli difficili e difficilissimi superati, ognuno contato una volta." }
+      ja: { display_name: "クリアしたむずかしいレベル", description: "クリアしたむずかしい・超むずかしいレベル。1つにつき1回だけ数えます。" }
+      ko: { display_name: "클리어한 어려운 레벨", description: "클리어한 어려운 레벨과 매우 어려운 레벨 수예요. 레벨마다 한 번만 세요." }
+      pl: { display_name: "Pokonane trudne poziomy", description: "Pokonane trudne i bardzo trudne poziomy, każdy liczony raz." }
+      pt-BR: { display_name: "Níveis difíceis vencidos", description: "Níveis difíceis e superdifíceis vencidos, cada um contado uma vez." }
+      ru: { display_name: "Пройденные сложные уровни", description: "Пройденные сложные и очень сложные уровни, каждый считается один раз." }
+      tr: { display_name: "Geçilen zor seviyeler", description: "Geçilen zor ve çok zor seviyeler; her biri bir kez sayılır." }
+      zh-Hans: { display_name: "已攻克困难关卡", description: "已攻克的困难和超难关卡，每个只计一次。" }
     config:
       function_may_grant: true
       tracks:
@@ -2641,10 +2881,34 @@ progressions:
                     points: 10
                     display_name: "Up for a Challenge"
                     description: "Win a hard level."
+                    localized:
+                      de: { display_name: "Herausforderung angenommen", description: "Gewinne ein schweres Level." }
+                      es: { display_name: "A por el reto", description: "Supera un nivel difícil." }
+                      fr: { display_name: "Défi relevé", description: "Réussis un niveau difficile." }
+                      it: { display_name: "Sfida accettata", description: "Supera un livello difficile." }
+                      ja: { display_name: "挑戦者", description: "むずかしいレベルをクリアする。" }
+                      ko: { display_name: "도전 정신", description: "어려운 레벨을 클리어하세요." }
+                      pl: { display_name: "Wyzwanie przyjęte", description: "Pokonaj trudny poziom." }
+                      pt-BR: { display_name: "Desafio aceito", description: "Vença um nível difícil." }
+                      ru: { display_name: "Вызов принят", description: "Пройди сложный уровень." }
+                      tr: { display_name: "Meydan Okumaya Hazır", description: "Zor bir seviyeyi geç." }
+                      zh-Hans: { display_name: "接受挑战", description: "攻克一个困难关卡。" }
   - id: 0df4e3ab-8ddd-52f2-892c-17b61f61ca54
     slug: super_hard_levels_won
     display_name: "Super hard levels won"
     description: "Super hard levels won, each counted once."
+    localized:
+      de: { display_name: "Gewonnene superschwere Level", description: "Gewonnene superschwere Level, jedes nur einmal gezählt." }
+      es: { display_name: "Niveles superdifíciles superados", description: "Niveles superdifíciles superados; cada uno cuenta una vez." }
+      fr: { display_name: "Niveaux très difficiles réussis", description: "Niveaux très difficiles réussis, chacun compté une fois." }
+      it: { display_name: "Livelli difficilissimi superati", description: "Livelli difficilissimi superati, ognuno contato una volta." }
+      ja: { display_name: "クリアした超むずかしいレベル", description: "クリアした超むずかしいレベル。1つにつき1回だけ数えます。" }
+      ko: { display_name: "클리어한 매우 어려운 레벨", description: "클리어한 매우 어려운 레벨 수예요. 레벨마다 한 번만 세요." }
+      pl: { display_name: "Pokonane bardzo trudne poziomy", description: "Pokonane bardzo trudne poziomy, każdy liczony raz." }
+      pt-BR: { display_name: "Níveis superdifíceis vencidos", description: "Níveis superdifíceis vencidos, cada um contado uma vez." }
+      ru: { display_name: "Пройденные очень сложные уровни", description: "Пройденные очень сложные уровни, каждый считается один раз." }
+      tr: { display_name: "Geçilen çok zor seviyeler", description: "Geçilen çok zor seviyeler; her biri bir kez sayılır." }
+      zh-Hans: { display_name: "已攻克超难关卡", description: "已攻克的超难关卡，每个只计一次。" }
     config:
       function_may_grant: true
       tracks:
@@ -2658,6 +2922,18 @@ progressions:
                     points: 20
                     display_name: "Nerves of Steel"
                     description: "Win a super hard level."
+                    localized:
+                      de: { display_name: "Nerven wie Drahtseile", description: "Gewinne ein superschweres Level." }
+                      es: { display_name: "Nervios de acero", description: "Supera un nivel superdifícil." }
+                      fr: { display_name: "Nerfs d'acier", description: "Réussis un niveau très difficile." }
+                      it: { display_name: "Nervi d'acciaio", description: "Supera un livello difficilissimo." }
+                      ja: { display_name: "鋼のメンタル", description: "超むずかしいレベルをクリアする。" }
+                      ko: { display_name: "강철 멘탈", description: "매우 어려운 레벨을 클리어하세요." }
+                      pl: { display_name: "Nerwy ze stali", description: "Pokonaj bardzo trudny poziom." }
+                      pt-BR: { display_name: "Nervos de aço", description: "Vença um nível superdifícil." }
+                      ru: { display_name: "Стальные нервы", description: "Пройди очень сложный уровень." }
+                      tr: { display_name: "Çelik Gibi Sinirler", description: "Çok zor bir seviyeyi geç." }
+                      zh-Hans: { display_name: "钢铁神经", description: "攻克一个超难关卡。" }
             - level: 2   # fearless
               threshold: 10
               platform_grants:
@@ -2666,12 +2942,36 @@ progressions:
                     points: 50
                     display_name: "Fearless"
                     description: "Win 10 super hard levels."
+                    localized:
+                      de: { display_name: "Furchtlos", description: "Gewinne 10 superschwere Level." }
+                      es: { display_name: "Sin miedo", description: "Supera 10 niveles superdifíciles." }
+                      fr: { display_name: "Sans peur", description: "Réussis 10 niveaux très difficiles." }
+                      it: { display_name: "Senza paura", description: "Supera 10 livelli difficilissimi." }
+                      ja: { display_name: "怖いものなし", description: "超むずかしいレベルを10個クリアする。" }
+                      ko: { display_name: "두려움 없는 도전자", description: "매우 어려운 레벨 10개를 클리어하세요." }
+                      pl: { display_name: "Bez strachu", description: "Pokonaj 10 bardzo trudnych poziomów." }
+                      pt-BR: { display_name: "Sem medo", description: "Vença 10 níveis superdifíceis." }
+                      ru: { display_name: "Без страха", description: "Пройди 10 очень сложных уровней." }
+                      tr: { display_name: "Korkusuz", description: "10 çok zor seviye geç." }
+                      zh-Hans: { display_name: "无所畏惧", description: "攻克10个超难关卡。" }
                     rewards:
                       - item: ach-fearless   # an Arcade avatar icon, Art's (gemctl item upload)
   - id: 120d5b2f-997e-5bee-817b-5252d606a5bc
     slug: dailies_won
     display_name: "Daily puzzles won"
     description: "Daily puzzles won, one a day."
+    localized:
+      de: { display_name: "Gewonnene Tagesrätsel", description: "Gewonnene Tagesrätsel, eines pro Tag." }
+      es: { display_name: "Puzles diarios ganados", description: "Puzles diarios ganados, uno por día." }
+      fr: { display_name: "Puzzles du jour réussis", description: "Puzzles du jour réussis, un par jour." }
+      it: { display_name: "Puzzle del giorno risolti", description: "Puzzle del giorno risolti, uno al giorno." }
+      ja: { display_name: "クリアしたデイリーパズル", description: "クリアしたデイリーパズル。1日1回まで数えます。" }
+      ko: { display_name: "클리어한 데일리 퍼즐", description: "클리어한 데일리 퍼즐 수예요. 하루에 한 번만 세요." }
+      pl: { display_name: "Rozwiązane łamigłówki dnia", description: "Rozwiązane łamigłówki dnia, jedna dziennie." }
+      pt-BR: { display_name: "Quebra-cabeças do dia resolvidos", description: "Quebra-cabeças do dia resolvidos, um por dia." }
+      ru: { display_name: "Решённые головоломки дня", description: "Решённые головоломки дня, одна в день." }
+      tr: { display_name: "Çözülen günün bulmacaları", description: "Çözülen günün bulmacaları; günde bir tane sayılır." }
+      zh-Hans: { display_name: "已完成每日谜题", description: "已完成的每日谜题，每天计一次。" }
     config:
       function_may_grant: true
       tracks:
@@ -2685,6 +2985,18 @@ progressions:
                     points: 5
                     display_name: "Daily Habit"
                     description: "Win your first daily puzzle."
+                    localized:
+                      de: { display_name: "Tägliche Gewohnheit", description: "Gewinne dein erstes Tagesrätsel." }
+                      es: { display_name: "Hábito diario", description: "Gana tu primer puzle diario." }
+                      fr: { display_name: "Rendez-vous quotidien", description: "Réussis ton premier puzzle du jour." }
+                      it: { display_name: "Abitudine quotidiana", description: "Risolvi il tuo primo puzzle del giorno." }
+                      ja: { display_name: "毎日の習慣", description: "はじめてデイリーパズルをクリアする。" }
+                      ko: { display_name: "매일의 습관", description: "첫 데일리 퍼즐을 클리어하세요." }
+                      pl: { display_name: "Codzienny nawyk", description: "Rozwiąż swoją pierwszą łamigłówkę dnia." }
+                      pt-BR: { display_name: "Hábito diário", description: "Resolva seu primeiro quebra-cabeça do dia." }
+                      ru: { display_name: "Ежедневная привычка", description: "Реши свою первую головоломку дня." }
+                      tr: { display_name: "Günlük Alışkanlık", description: "İlk kez günün bulmacasını çöz." }
+                      zh-Hans: { display_name: "每日习惯", description: "完成你的第一个每日谜题。" }
             - level: 2   # week-of-dailies
               threshold: 7
               platform_grants:
@@ -2693,6 +3005,18 @@ progressions:
                     points: 15
                     display_name: "Week of Dailies"
                     description: "Win 7 daily puzzles."
+                    localized:
+                      de: { display_name: "Eine Woche Rätsel", description: "Gewinne 7 Tagesrätsel." }
+                      es: { display_name: "Una semana de puzles", description: "Gana 7 puzles diarios." }
+                      fr: { display_name: "Une semaine de puzzles", description: "Réussis 7 puzzles du jour." }
+                      it: { display_name: "Una settimana di puzzle", description: "Risolvi 7 puzzle del giorno." }
+                      ja: { display_name: "パズルの1週間", description: "デイリーパズルを7回クリアする。" }
+                      ko: { display_name: "데일리 퍼즐 일주일", description: "데일리 퍼즐을 7번 클리어하세요." }
+                      pl: { display_name: "Tydzień łamigłówek", description: "Rozwiąż 7 łamigłówek dnia." }
+                      pt-BR: { display_name: "Uma semana de quebra-cabeças", description: "Resolva 7 quebra-cabeças do dia." }
+                      ru: { display_name: "Неделя головоломок", description: "Реши 7 головоломок дня." }
+                      tr: { display_name: "Bulmacalı Bir Hafta", description: "7 kez günün bulmacasını çöz." }
+                      zh-Hans: { display_name: "坚持一周", description: "完成7个每日谜题。" }
             - level: 3   # daily-devotee
               threshold: 30
               platform_grants:
@@ -2701,6 +3025,18 @@ progressions:
                     points: 40
                     display_name: "Daily Devotee"
                     description: "Win 30 daily puzzles."
+                    localized:
+                      de: { display_name: "Täglich dabei", description: "Gewinne 30 Tagesrätsel." }
+                      es: { display_name: "Fiel a la cita", description: "Gana 30 puzles diarios." }
+                      fr: { display_name: "Fidèle au rendez-vous", description: "Réussis 30 puzzles du jour." }
+                      it: { display_name: "Fedele all'appuntamento", description: "Risolvi 30 puzzle del giorno." }
+                      ja: { display_name: "デイリーの常連", description: "デイリーパズルを30回クリアする。" }
+                      ko: { display_name: "데일리 퍼즐 마니아", description: "데일리 퍼즐을 30번 클리어하세요." }
+                      pl: { display_name: "Codziennie na posterunku", description: "Rozwiąż 30 łamigłówek dnia." }
+                      pt-BR: { display_name: "Presença diária", description: "Resolva 30 quebra-cabeças do dia." }
+                      ru: { display_name: "Каждый день в деле", description: "Реши 30 головоломок дня." }
+                      tr: { display_name: "Her Gün Buradayım", description: "30 kez günün bulmacasını çöz." }
+                      zh-Hans: { display_name: "每日达人", description: "完成30个每日谜题。" }
                     rewards:
                       - item: ach-daily-devotee   # an Arcade avatar icon, Art's (gemctl item upload)
 
