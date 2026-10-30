@@ -23,7 +23,9 @@
 // HOW OFTEN IT CALLS (the lead, 2026-10-29: this slot's retries helped throttle the office's
 // shared address for an hour. The platform allows 120 save calls a minute per network
 // address, a whole office or household shares one, and a save is three requests):
-//   - while a board is played, at most one save a minute, and only when the board changed;
+//   - while a board is played, at most one save every three minutes (the lead, 2026-10-30, from
+//     QA's call log: once a minute was most of the game's calls during play; the closing saves
+//     below are the ones that matter, this is their safety net), and only when the board changed;
 //     a change first waits PACE.settleMs, so a board won quickly is never saved mid-play;
 //   - at once when it matters: the page hides, the Arcade pauses the game or is about to
 //     close it (one try each, only if the board or its clock moved), Back to home, a win, a
@@ -66,8 +68,8 @@ const SLOT = "resume";
  * raise them.
  */
 const PACE = {
-  /** While a board is played: at most one save in this long. */
-  playGapMs: 60_000,
+  /** While a board is played: at most one save in this long (the safety net behind the closing saves). */
+  playGapMs: 180_000,
   /** A change waits this long before its save (a board won sooner is never saved mid-play). */
   settleMs: 20_000,
   /** Whatever asks: at most `windowTries` calls (the read, a save, a delete) in any `windowMs`. */
