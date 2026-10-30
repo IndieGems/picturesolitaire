@@ -41396,7 +41396,8 @@
         "manatee"
       ],
       "family": "manatee",
-      "busy": 0
+      "busy": 0,
+      "batch": "2026-10-30 new library"
     },
     {
       "id": "black-panther",
@@ -41424,7 +41425,8 @@
         "panther"
       ],
       "family": "black-panther",
-      "busy": 0
+      "busy": 0,
+      "batch": "2026-10-30 new library"
     },
     {
       "id": "toaster",
@@ -41453,7 +41455,8 @@
         "toast"
       ],
       "family": "toaster",
-      "busy": 0
+      "busy": 0,
+      "batch": "2026-10-30 new library"
     },
     {
       "id": "gumbo",
@@ -41481,7 +41484,8 @@
         "gumbo"
       ],
       "family": "gumbo",
-      "busy": 0
+      "busy": 0,
+      "batch": "2026-10-30 new library"
     },
     {
       "id": "pinata",
@@ -41509,7 +41513,8 @@
         "piñata"
       ],
       "family": "pinata",
-      "busy": 0
+      "busy": 0,
+      "batch": "2026-10-30 new library"
     },
     {
       "id": "daruma",
@@ -41537,7 +41542,8 @@
         "daruma"
       ],
       "family": "daruma",
-      "busy": 0
+      "busy": 0,
+      "batch": "2026-10-30 new library"
     },
     {
       "id": "longcase-clock",
@@ -41565,7 +41571,8 @@
         "grandfather clock"
       ],
       "family": "longcase-clock",
-      "busy": 0
+      "busy": 0,
+      "batch": "2026-10-30 new library"
     },
     {
       "id": "nouveau-lamp",
@@ -41593,7 +41600,8 @@
         "lamp"
       ],
       "family": "nouveau-lamp",
-      "busy": 0
+      "busy": 0,
+      "batch": "2026-10-30 new library"
     },
     {
       "id": "aviator",
@@ -41622,7 +41630,8 @@
         "biplane"
       ],
       "family": "aviator",
-      "busy": 0
+      "busy": 0,
+      "batch": "2026-10-30 new library"
     },
     {
       "id": "backyard-grill",
@@ -41651,7 +41660,8 @@
         "grill"
       ],
       "family": "backyard-grill",
-      "busy": 0
+      "busy": 0,
+      "batch": "2026-10-30 new library"
     },
     {
       "id": "steel-pan",
@@ -41680,7 +41690,8 @@
         "pannist"
       ],
       "family": "steel-pan",
-      "busy": 0
+      "busy": 0,
+      "batch": "2026-10-30 new library"
     },
     {
       "id": "chrome-diner",
@@ -41708,7 +41719,8 @@
         "diner"
       ],
       "family": "chrome-diner",
-      "busy": 0
+      "busy": 0,
+      "batch": "2026-10-30 new library"
     }
   ],
   "destinations": [

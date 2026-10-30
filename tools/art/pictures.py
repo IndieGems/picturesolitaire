@@ -569,6 +569,10 @@ def cmd_catalogue():
             # A real, named place (lead, 2026-10-25): it belongs to a future trip as a destination,
             # so Levels keeps it off campaign boards (a build check holds it).
             pictures[-1]["landmark"] = True
+        if e.get("batch"):
+            # The batch a picture was made in, date first ("2026-10-30 new library"; lead, 2026-10-30): the Picture
+            # Library shows the newest batch as a group of its own at the top, for the creator's review.
+            pictures[-1]["batch"] = e["batch"]
         if e.get("look"):
             # "atmospheric" (creator, 2026-10-28): a landscape, a distant scene, impressionistic or
             # busier, about one per board; Levels counts them. Absent on every clear picture.
