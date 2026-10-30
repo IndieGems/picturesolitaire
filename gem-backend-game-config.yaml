@@ -2388,6 +2388,906 @@ progressions:
         - mode: on_complete
           amount: 40
           target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 5012b70e-915d-5ba1-900f-4583d2c6e3da
+    slug: board_halloween-2026-01
+    display_name: "Haunted Holiday level 1"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 49c1a499-97b3-522f-b940-9349a9427364
+    slug: board_halloween-2026-02
+    display_name: "Haunted Holiday level 2"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 15
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: b7257c11-373f-5e3f-a584-b3ed5a8496db
+    slug: board_halloween-2026-03
+    display_name: "Haunted Holiday level 3"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 993f5642-7e7c-56b6-be3e-68c91611b095
+    slug: board_halloween-2026-04
+    display_name: "Haunted Holiday level 4"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 272eee45-3f49-5162-8a07-54f51136c6a9
+    slug: board_halloween-2026-05
+    display_name: "Haunted Holiday level 5"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 98fe3cee-fd10-56f2-9252-f620e126ef3c
+    slug: board_halloween-2026-06
+    display_name: "Haunted Holiday level 6"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 80fbf227-c95a-51b5-9402-17c1dd21d04e
+    slug: board_halloween-2026-07
+    display_name: "Haunted Holiday level 7"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 220dfe27-c28d-59f2-9396-3aa498ffbe19
+    slug: board_halloween-2026-08
+    display_name: "Haunted Holiday level 8"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: aec2d3ad-ad1c-578c-a04c-3ab3d24d5df0
+    slug: board_halloween-2026-09
+    display_name: "Haunted Holiday level 9"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: aeebcceb-d1d2-5977-86f1-5efbb05736be
+    slug: board_halloween-2026-10
+    display_name: "Haunted Holiday level 10"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 149675c5-fd62-52b6-8bec-a5c1be5bfcdd
+    slug: board_halloween-2026-11
+    display_name: "Haunted Holiday level 11"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: ecf6de33-06e8-56d4-aaf1-b9d136d34739
+    slug: board_halloween-2026-12
+    display_name: "Haunted Holiday level 12"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 2d56e6b8-e5f7-5d47-8e3f-b856367a1b18
+    slug: board_halloween-2026-13
+    display_name: "Haunted Holiday level 13"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 0a8368dc-10cd-5819-9d1e-6f5b63bb1c1b
+    slug: board_halloween-2026-14
+    display_name: "Haunted Holiday level 14"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 19cf566e-c00e-5812-898d-eea4c5122b3f
+    slug: board_halloween-2026-15
+    display_name: "Haunted Holiday level 15"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: cb92918d-997a-52ba-8285-53f9046529dd
+    slug: board_halloween-2026-16
+    display_name: "Haunted Holiday level 16"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 5acdf104-6f19-58fc-8c84-e921f2d7c1ee
+    slug: board_halloween-2026-17
+    display_name: "Haunted Holiday level 17"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 270764e7-4b70-5731-8824-5aec38b53888
+    slug: board_halloween-2026-18
+    display_name: "Haunted Holiday level 18"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 350a9e5b-e765-5a11-8924-4fdb2f91bebc
+    slug: board_halloween-2026-19
+    display_name: "Haunted Holiday level 19"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 54c5c573-99b2-51ef-b9e6-e3927b3ed0ed
+    slug: board_halloween-2026-20
+    display_name: "Haunted Holiday level 20"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 98adeb03-f2bf-59da-8975-b0433f0127e9
+    slug: board_halloween-2026-21
+    display_name: "Haunted Holiday level 21"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 9fe45a2a-f8a8-5b72-8b86-fdbb892c29a7
+    slug: board_halloween-2026-22
+    display_name: "Haunted Holiday level 22"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: e5c2ba1f-c81f-54f0-abd0-5524fc7f31c4
+    slug: board_halloween-2026-23
+    display_name: "Haunted Holiday level 23"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 60a57a85-0c09-5d22-b32c-9f5d0bcc048d
+    slug: board_halloween-2026-24
+    display_name: "Haunted Holiday level 24"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: e381d090-c78e-5bfc-9f1a-f4c601b8af07
+    slug: board_halloween-2026-25
+    display_name: "Haunted Holiday level 25"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 325fe5c9-a0d6-53b9-879a-6c74a0707025
+    slug: board_halloween-2026-26
+    display_name: "Haunted Holiday level 26"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: ea43ad8d-60e6-598b-9aa7-cc823d9c5202
+    slug: board_halloween-2026-27
+    display_name: "Haunted Holiday level 27"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: d077fa9f-86a3-54e4-85a6-15d0fa7c669d
+    slug: board_halloween-2026-28
+    display_name: "Haunted Holiday level 28"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: cb28a793-18c0-5909-9f6e-7778fb0e1e1a
+    slug: board_halloween-2026-29
+    display_name: "Haunted Holiday level 29"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: bd5be693-6028-5a2b-bcec-b8b50fa2749f
+    slug: board_halloween-2026-30
+    display_name: "Haunted Holiday level 30"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 333eaf03-d783-5f19-8ea0-d62bc517a6cb
+    slug: board_ski-trip-2026-01
+    display_name: "Ski Trip level 1"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: a7a92310-1cfa-56b0-9534-757f90f86ef3
+    slug: board_ski-trip-2026-02
+    display_name: "Ski Trip level 2"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 15
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 1069b3de-f315-5fb1-8ba1-f894bb093204
+    slug: board_ski-trip-2026-03
+    display_name: "Ski Trip level 3"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: ef9813f3-84fa-5b9a-9ba0-dee725a105da
+    slug: board_ski-trip-2026-04
+    display_name: "Ski Trip level 4"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 5cf7b07d-a1b0-5a4a-8a84-871965179a81
+    slug: board_ski-trip-2026-05
+    display_name: "Ski Trip level 5"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 31400f19-7c73-5ee3-9e07-0fab5371c6d7
+    slug: board_ski-trip-2026-06
+    display_name: "Ski Trip level 6"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 1d865e09-7961-59e7-a424-a360825ef593
+    slug: board_ski-trip-2026-07
+    display_name: "Ski Trip level 7"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: f7cbef9c-fd78-5164-8196-95665940922b
+    slug: board_ski-trip-2026-08
+    display_name: "Ski Trip level 8"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: bfe75f6f-2afd-5771-8750-3222ed5d4c24
+    slug: board_ski-trip-2026-09
+    display_name: "Ski Trip level 9"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 27c464a7-00d1-5e84-a4f1-2caeeeedc7aa
+    slug: board_ski-trip-2026-10
+    display_name: "Ski Trip level 10"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 5223af13-d876-529d-8567-30deb4b5397e
+    slug: board_ski-trip-2026-11
+    display_name: "Ski Trip level 11"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: c6a8c4f7-d085-5d99-abca-3cc97f7487fb
+    slug: board_ski-trip-2026-12
+    display_name: "Ski Trip level 12"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: ef2f7a3f-029a-5e16-8237-ef1e879876e5
+    slug: board_ski-trip-2026-13
+    display_name: "Ski Trip level 13"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: a7cd0dce-ef65-5892-ac96-cbfdd4502a61
+    slug: board_ski-trip-2026-14
+    display_name: "Ski Trip level 14"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 59999696-33b6-58df-9fe0-6395cc8cdc7d
+    slug: board_ski-trip-2026-15
+    display_name: "Ski Trip level 15"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 1d6853e8-91c8-5d72-9256-20dc54fac6ed
+    slug: board_ski-trip-2026-16
+    display_name: "Ski Trip level 16"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: fb2a9318-85d5-5817-8e91-63ab40ab5ecf
+    slug: board_ski-trip-2026-17
+    display_name: "Ski Trip level 17"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: a3d32532-d1bc-5235-867b-af5d8a93eaf4
+    slug: board_ski-trip-2026-18
+    display_name: "Ski Trip level 18"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 2b412376-ed6a-5fdf-8f42-300bb23cfa25
+    slug: board_ski-trip-2026-19
+    display_name: "Ski Trip level 19"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 83e0a059-d551-5452-98a5-ddef12aa6561
+    slug: board_ski-trip-2026-20
+    display_name: "Ski Trip level 20"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 98d20b27-9fa3-5d15-8cf4-06a7bfc24e65
+    slug: board_ski-trip-2026-21
+    display_name: "Ski Trip level 21"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 7674853a-ca44-5dbe-88bc-e637daab9af7
+    slug: board_ski-trip-2026-22
+    display_name: "Ski Trip level 22"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 8bbd4636-127a-5c50-a1d0-cb95acae37fd
+    slug: board_ski-trip-2026-23
+    display_name: "Ski Trip level 23"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: d351e7ca-d9f0-5abd-a91b-6f28ecaae0f8
+    slug: board_ski-trip-2026-24
+    display_name: "Ski Trip level 24"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: b10f91de-4369-5468-9612-1a461a411602
+    slug: board_ski-trip-2026-25
+    display_name: "Ski Trip level 25"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 8069dcc2-2a71-5ee2-8a52-46aab9e47852
+    slug: board_ski-trip-2026-26
+    display_name: "Ski Trip level 26"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: a078ba3e-add3-5961-8106-764d1fba724e
+    slug: board_ski-trip-2026-27
+    display_name: "Ski Trip level 27"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 6e26feb8-123c-5297-ac14-86f44c87b084
+    slug: board_ski-trip-2026-28
+    display_name: "Ski Trip level 28"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: ad6fd6f0-1363-5597-8556-7fece10531bd
+    slug: board_ski-trip-2026-29
+    display_name: "Ski Trip level 29"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 9641b817-5c76-5892-a63c-b587f4fb6e06
+    slug: board_ski-trip-2026-30
+    display_name: "Ski Trip level 30"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 468f968a-512d-57fc-84b3-f291ed8f73b9
+    slug: board_winter-market-2026-01
+    display_name: "Winter Market level 1"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: b7ce21d4-5bc4-5952-b3d8-95f58c424af5
+    slug: board_winter-market-2026-02
+    display_name: "Winter Market level 2"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 15
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 46bdc55c-ca0a-56e8-8227-efd558efaf46
+    slug: board_winter-market-2026-03
+    display_name: "Winter Market level 3"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 57950829-4b1b-5fcb-8e07-744673278b1d
+    slug: board_winter-market-2026-04
+    display_name: "Winter Market level 4"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 8c30904e-89f8-572a-80bc-840915318f1f
+    slug: board_winter-market-2026-05
+    display_name: "Winter Market level 5"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 8c4c5d88-b38c-514b-ab46-d5465525e96a
+    slug: board_winter-market-2026-06
+    display_name: "Winter Market level 6"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 6fdf2fe0-3e02-57d4-b6a8-cf73695aa393
+    slug: board_winter-market-2026-07
+    display_name: "Winter Market level 7"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 0cdb7eac-194f-5f95-af21-c2b3bcb5a948
+    slug: board_winter-market-2026-08
+    display_name: "Winter Market level 8"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 4796dafe-53a3-55c4-ac40-718ebf61ca61
+    slug: board_winter-market-2026-09
+    display_name: "Winter Market level 9"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: c202b6f6-a4bc-55a3-9613-73548c649478
+    slug: board_winter-market-2026-10
+    display_name: "Winter Market level 10"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 82facab3-e81d-5ec8-89d6-df0e84d670cb
+    slug: board_winter-market-2026-11
+    display_name: "Winter Market level 11"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 48a1bd45-d437-54c6-94ab-db66a0378fbc
+    slug: board_winter-market-2026-12
+    display_name: "Winter Market level 12"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: c7159759-1e49-54ad-9097-1bd44a94284b
+    slug: board_winter-market-2026-13
+    display_name: "Winter Market level 13"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: d61ccced-89e4-5e9b-9243-69abcc4822d3
+    slug: board_winter-market-2026-14
+    display_name: "Winter Market level 14"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: f6089739-317b-599a-aabd-eff8a6b3ad31
+    slug: board_winter-market-2026-15
+    display_name: "Winter Market level 15"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 10
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 7e72bc80-8387-5bfe-a95a-75d69de01bc5
+    slug: board_winter-market-2026-16
+    display_name: "Winter Market level 16"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: ce0e4a4c-e660-567a-8c30-6d4de5e42deb
+    slug: board_winter-market-2026-17
+    display_name: "Winter Market level 17"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 996c836e-fb95-5f76-9943-0aadde8d32f9
+    slug: board_winter-market-2026-18
+    display_name: "Winter Market level 18"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 0eff7a0d-d06b-53e1-9be8-fe48c80755ed
+    slug: board_winter-market-2026-19
+    display_name: "Winter Market level 19"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 4cb5b41d-eeb4-5775-b82d-000d35b12156
+    slug: board_winter-market-2026-20
+    display_name: "Winter Market level 20"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: e5d07141-d333-50d2-8b79-acc794938444
+    slug: board_winter-market-2026-21
+    display_name: "Winter Market level 21"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 769a5237-7ea9-52fe-a76e-ce25fcf862ba
+    slug: board_winter-market-2026-22
+    display_name: "Winter Market level 22"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: e6ec1a61-5361-56b5-8737-58bbcb571ed0
+    slug: board_winter-market-2026-23
+    display_name: "Winter Market level 23"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: bb0292e5-3208-5a60-b02a-579301f35d57
+    slug: board_winter-market-2026-24
+    display_name: "Winter Market level 24"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 06aa8b3d-5abb-56ed-b05b-016cdfba90ad
+    slug: board_winter-market-2026-25
+    display_name: "Winter Market level 25"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 68f3bfa0-5048-5969-97f7-1e6de57bda39
+    slug: board_winter-market-2026-26
+    display_name: "Winter Market level 26"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 62b5a7c7-3edd-572f-97f5-491b04954392
+    slug: board_winter-market-2026-27
+    display_name: "Winter Market level 27"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 25
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: f6d4fe27-b5f2-5e6b-85c2-2380378317de
+    slug: board_winter-market-2026-28
+    display_name: "Winter Market level 28"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 0d7b5442-57d1-5fe7-826b-4597750f0c6a
+    slug: board_winter-market-2026-29
+    display_name: "Winter Market level 29"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 1210ef0f-4c47-580e-88b3-83d4580147b5
+    slug: board_winter-market-2026-30
+    display_name: "Winter Market level 30"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
   # THE HELPER KIT: 3 of each helper, once ever, at the end of board 1 (the guided start),
   # or on the next win of a player already past it. The win checker pays it into the
   # helper currencies and sets this to 1 in the same order, so it is paid once or not at all.
@@ -3355,6 +4255,33 @@ items:
     stack_size: 31
     transfer_policy: none
     client_writable: false
+  - id: 9cf76953-4695-58c0-a767-cee9c20c362f
+    slug: item-halloween-2026-08
+    display_name: "Kronborg Castle"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: db419f2c-22e8-5bce-ac36-ea51255c6bb9
+    slug: item-halloween-2026-09
+    display_name: "New Orleans"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: ad5a66b0-3929-5924-8095-1d7dbca312c4
+    slug: item-halloween-2026-10
+    display_name: "Hound Tor"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
   - id: 6bd4759e-2705-5a7e-a95c-201fa7c3b17d
     slug: item-2026-11-01
     display_name: "Ski goggles"
@@ -3391,6 +4318,24 @@ items:
     stack_size: 31
     transfer_policy: none
     client_writable: false
+  - id: 1eca481d-0f3d-5ced-87f9-89e019563d5b
+    slug: item-2026-11-05
+    display_name: "Nordic jumper"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: 21cd4f3a-86eb-5cb0-b3c6-40dd0088d4c7
+    slug: item-2026-11-06
+    display_name: "Striped scarf"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
   - id: 1424513f-8ae7-574a-81e3-aa8d1a7d0052
     slug: item-2026-11-07
     display_name: "Earmuffs"
@@ -3418,6 +4363,15 @@ items:
     stack_size: 31
     transfer_policy: none
     client_writable: false
+  - id: 3752d5ab-f851-59f6-a535-bdd77c34afcf
+    slug: item-2026-11-10
+    display_name: "Hot-water bottle"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
   - id: daf632a6-269d-5d1b-ae16-ac94d12b9ae3
     slug: item-2026-12-01
     display_name: "Glass bauble"
@@ -3430,6 +4384,15 @@ items:
   - id: c300ff72-f75c-530a-b788-55d0115d098a
     slug: item-2026-12-02
     display_name: "Wooden nutcracker"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: 7ad338b7-ed9c-5fc2-9ef5-f7e63c39a0a6
+    slug: item-2026-12-03
+    display_name: "Roasted chestnuts"
     item_type: item
     category: cosmetic
     fungible: true
@@ -3472,51 +4435,6 @@ items:
     stack_size: 31
     transfer_policy: none
     client_writable: false
-  - id: 4a6e2f8b-c14b-5e0e-8a97-57e6c507a0aa
-    slug: item-2026-12-10
-    display_name: "Pine wreath"
-    item_type: item
-    category: cosmetic
-    fungible: true
-    stack_size: 31
-    transfer_policy: none
-    client_writable: false
-  - id: 1eca481d-0f3d-5ced-87f9-89e019563d5b
-    slug: item-2026-11-05
-    display_name: "Nordic jumper"
-    item_type: item
-    category: cosmetic
-    fungible: true
-    stack_size: 31
-    transfer_policy: none
-    client_writable: false
-  - id: 21cd4f3a-86eb-5cb0-b3c6-40dd0088d4c7
-    slug: item-2026-11-06
-    display_name: "Striped scarf"
-    item_type: item
-    category: cosmetic
-    fungible: true
-    stack_size: 31
-    transfer_policy: none
-    client_writable: false
-  - id: 3752d5ab-f851-59f6-a535-bdd77c34afcf
-    slug: item-2026-11-10
-    display_name: "Hot-water bottle"
-    item_type: item
-    category: cosmetic
-    fungible: true
-    stack_size: 31
-    transfer_policy: none
-    client_writable: false
-  - id: 7ad338b7-ed9c-5fc2-9ef5-f7e63c39a0a6
-    slug: item-2026-12-03
-    display_name: "Roasted chestnuts"
-    item_type: item
-    category: cosmetic
-    fungible: true
-    stack_size: 31
-    transfer_policy: none
-    client_writable: false
   - id: 4d7a3b61-1dbf-52b1-ba1a-324de2e0864d
     slug: item-2026-12-08
     display_name: "Candle arch"
@@ -3529,6 +4447,15 @@ items:
   - id: 8bace094-e781-5a1d-9256-cea358ed0776
     slug: item-2026-12-09
     display_name: "Knitted stocking"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: 4a6e2f8b-c14b-5e0e-8a97-57e6c507a0aa
+    slug: item-2026-12-10
+    display_name: "Pine wreath"
     item_type: item
     category: cosmetic
     fungible: true

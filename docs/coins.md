@@ -27,7 +27,9 @@ and leaves the hourly rate where it is.
   At 4 minutes a board that is about 405 an hour; at 5 minutes 324.
 - Daily: 50 once a day, on top.
 - Souvenirs: 10 of 10 trips dealt, 350 Coins in all, once each (s1 20, s2 35, s3 30, s4 30, s5 40, s6 40, s7 40, s8 40, s9 35, s10 40).
-- Events: none dealt yet (Levels' src/content/levels/event-levels.json).
+- Events (VIPs only, docs/vip.md): 90 levels, 2095 Coins in all, once each, by the campaign's rule (halloween-2026 695, ski-trip-2026 690, winter-market-2026 710).
+  23 a level: at 3 minutes a level about 466 an hour, the campaign's rate, so the hourly figure
+  stands; an event adds its total once, like a stretch of the campaign.
 - One-time: the onboarding prize. Replays and campaign boards past the last pay nothing.
 - **Still to measure**: real minutes per board once the creator has played some (the lead's
   note): if boards run much faster or slower than 2 to 4 minutes, change the rule here.
@@ -216,3 +218,93 @@ and leaves the hourly rate where it is.
 | s8 | souvenir 8 | 16 | 40 |
 | s9 | souvenir 9 | 14 | 35 |
 | s10 | souvenir 10 | 14 | 40 |
+| halloween-2026-01 | event 1 | 11 | 10 |
+| halloween-2026-02 | event 2 | 14 | 15 |
+| halloween-2026-03 | event 3 | 17 | 20 |
+| halloween-2026-04 | event 4 | 11 | 10 |
+| halloween-2026-05 | event 5 | 17 | 20 |
+| halloween-2026-06 | event 6 | 8 | 10 |
+| halloween-2026-07 | event 7 | 21 | 25 |
+| halloween-2026-08 | event 8 | 23 | 25 |
+| halloween-2026-09 | event 9 | 19 | 20 |
+| halloween-2026-10 | event 10 | 21 | 25 |
+| halloween-2026-11 | event 11 | 26 | 30 |
+| halloween-2026-12 | event 12 | 16 | 20 |
+| halloween-2026-13 | event 13 | 24 | 25 |
+| halloween-2026-14 | event 14 | 23 | 25 |
+| halloween-2026-15 | event 15 | 9 | 10 |
+| halloween-2026-16 | event 16 | 23 | 25 |
+| halloween-2026-17 | event 17 | 27 | 30 |
+| halloween-2026-18 | event 18 | 18 | 20 |
+| halloween-2026-19 | event 19 | 24 | 25 |
+| halloween-2026-20 | event 20 | 26 | 30 |
+| halloween-2026-21 | event 21 | 20 | 20 |
+| halloween-2026-22 | event 22 | 26 | 30 |
+| halloween-2026-23 | event 23 | 28 | 30 |
+| halloween-2026-24 | event 24 | 21 | 25 |
+| halloween-2026-25 | event 25 | 27 | 30 |
+| halloween-2026-26 | event 26 | 20 | 20 |
+| halloween-2026-27 | event 27 | 26 | 30 |
+| halloween-2026-28 | event 28 | 27 | 30 |
+| halloween-2026-29 | event 29 | 23 | 25 |
+| halloween-2026-30 | event 30 | 31 | 35 |
+| ski-trip-2026-01 | event 31 | 10 | 10 |
+| ski-trip-2026-02 | event 32 | 13 | 15 |
+| ski-trip-2026-03 | event 33 | 16 | 20 |
+| ski-trip-2026-04 | event 34 | 11 | 10 |
+| ski-trip-2026-05 | event 35 | 17 | 20 |
+| ski-trip-2026-06 | event 36 | 7 | 10 |
+| ski-trip-2026-07 | event 37 | 22 | 25 |
+| ski-trip-2026-08 | event 38 | 25 | 30 |
+| ski-trip-2026-09 | event 39 | 20 | 20 |
+| ski-trip-2026-10 | event 40 | 22 | 25 |
+| ski-trip-2026-11 | event 41 | 24 | 25 |
+| ski-trip-2026-12 | event 42 | 17 | 20 |
+| ski-trip-2026-13 | event 43 | 23 | 25 |
+| ski-trip-2026-14 | event 44 | 25 | 30 |
+| ski-trip-2026-15 | event 45 | 7 | 10 |
+| ski-trip-2026-16 | event 46 | 23 | 25 |
+| ski-trip-2026-17 | event 47 | 25 | 30 |
+| ski-trip-2026-18 | event 48 | 19 | 20 |
+| ski-trip-2026-19 | event 49 | 24 | 25 |
+| ski-trip-2026-20 | event 50 | 24 | 25 |
+| ski-trip-2026-21 | event 51 | 22 | 25 |
+| ski-trip-2026-22 | event 52 | 23 | 25 |
+| ski-trip-2026-23 | event 53 | 28 | 30 |
+| ski-trip-2026-24 | event 54 | 22 | 25 |
+| ski-trip-2026-25 | event 55 | 29 | 30 |
+| ski-trip-2026-26 | event 56 | 20 | 20 |
+| ski-trip-2026-27 | event 57 | 22 | 25 |
+| ski-trip-2026-28 | event 58 | 28 | 30 |
+| ski-trip-2026-29 | event 59 | 23 | 25 |
+| ski-trip-2026-30 | event 60 | 30 | 35 |
+| winter-market-2026-01 | event 61 | 11 | 10 |
+| winter-market-2026-02 | event 62 | 12 | 15 |
+| winter-market-2026-03 | event 63 | 17 | 20 |
+| winter-market-2026-04 | event 64 | 11 | 10 |
+| winter-market-2026-05 | event 65 | 18 | 20 |
+| winter-market-2026-06 | event 66 | 6 | 10 |
+| winter-market-2026-07 | event 67 | 22 | 25 |
+| winter-market-2026-08 | event 68 | 23 | 25 |
+| winter-market-2026-09 | event 69 | 18 | 20 |
+| winter-market-2026-10 | event 70 | 22 | 25 |
+| winter-market-2026-11 | event 71 | 23 | 25 |
+| winter-market-2026-12 | event 72 | 20 | 20 |
+| winter-market-2026-13 | event 73 | 25 | 30 |
+| winter-market-2026-14 | event 74 | 25 | 30 |
+| winter-market-2026-15 | event 75 | 9 | 10 |
+| winter-market-2026-16 | event 76 | 23 | 25 |
+| winter-market-2026-17 | event 77 | 28 | 30 |
+| winter-market-2026-18 | event 78 | 17 | 20 |
+| winter-market-2026-19 | event 79 | 22 | 25 |
+| winter-market-2026-20 | event 80 | 27 | 30 |
+| winter-market-2026-21 | event 81 | 21 | 25 |
+| winter-market-2026-22 | event 82 | 25 | 30 |
+| winter-market-2026-23 | event 83 | 26 | 30 |
+| winter-market-2026-24 | event 84 | 21 | 25 |
+| winter-market-2026-25 | event 85 | 28 | 30 |
+| winter-market-2026-26 | event 86 | 21 | 25 |
+| winter-market-2026-27 | event 87 | 23 | 25 |
+| winter-market-2026-28 | event 88 | 27 | 30 |
+| winter-market-2026-29 | event 89 | 25 | 30 |
+| winter-market-2026-30 | event 90 | 32 | 35 |
