@@ -32,7 +32,9 @@ import { emit } from "../events";
 import { liveAttr, locale, named, t } from "./i18n";
 import { ICONS } from "./icons";
 import { eventDoor, eventShown, onEventShown } from "./event-switch";
-import { EVENT_LEVELS, scheduledEvent, suitcases, type EventItem, type EventPack, type SuitItem } from "./suitcase-data";
+import { EVENT_ITEM_COINS, EVENT_LEVELS, scheduledEvent, suitcases, type EventItem, type EventPack, type SuitItem } from "./suitcase-data";
+import { coinIcon } from "./coin";
+import { eventStamp } from "./passport";
 import { onProgress } from "../net/progress";
 import { loadEventLevels } from "../game/levels";
 import { vipTag, type VipDoor } from "./vip-door";
@@ -41,7 +43,6 @@ import { shortDate } from "./format";
 import { markTag } from "./marks";
 import { loadItems, suitcaseItem } from "./catalogue";
 import { ensureSuitcase, fileUrl } from "../packs";
-import type { HelperKind } from "./stock";
 
 type Nav = {
   home(): void;
@@ -70,7 +71,7 @@ export const themeName = (e: { id: string; theme: string }): string => named(`su
 export const eventTitle = (e: { id: string; theme: string }): string => capital(themeName(e));
 /** An item's name in the player's language, else its English. */
 export const itemName = (it: { id: string; title: string }): string => named(`picture.${it.id}`, it.title);
-const prizeTableName = (prize: EventPack["prize"], english: string): string => named(`table.${prize.table}`, english);
+const prizeTableName = (prize: Prize, english: string): string => named(`table.${prize.table}`, english);
 /** "4 of 10 found · 12 of 30 levels". */
 export const progressLine = (e: EventPack): string =>
   `${t("case.foundOf", { found: e.found, all: e.items.length })} · ${t("case.levelsOf", { won: suitcases.wonCount(e), count: e.levels.length || EVENT_LEVELS })}`;
@@ -100,6 +101,9 @@ function itemPic(it: SuitItem, missing: boolean): HTMLElement {
   return box;
 }
 
+/** An event's prize as the screens read it: its table (the stamp is the event's own; the Coins come with its items). */
+type Prize = { table: string; tableTitle?: string };
+
 /** The table every player has (tables.ts, the manifest's default: Sunny Day): never an event's prize. */
 const DEFAULT_TABLE = BUILT_IN_TABLE;
 
@@ -110,32 +114,11 @@ const ART = {
   small: `${import.meta.env.BASE_URL}art/suitcase-closed-small.webp`,
 };
 
-/** The helpers a prize pays, as small icons with their count (information). */
-function prizeTools(prize: EventPack["prize"]): HTMLElement {
-  const tools = el("span", "prize-tools");
-  for (const k of ["hint", "undo", "shuffle"] as HelperKind[]) {
-    const n = prize.helpers[k];
-    if (!n) continue;
-    const tool = el("span", "tool");
-    tool.innerHTML = ICONS[k];
-    tool.append(el("span", "", `×${n}`));
-    tool.setAttribute("aria-label", t(`win.gift.${k}`, { count: n }));
-    tools.append(tool);
-  }
-  return tools;
-}
-
-/** A full suitcase's prize on the win card: the event's table (if it landed) and its helpers. */
-function fullPrize(prize: EventPack["prize"], table: boolean): HTMLElement {
-  const row = el("span", "case-full");
-  const art = table && prize.table !== DEFAULT_TABLE ? knownTable(prize.table) : undefined;
-  if (art) {
-    const img = el("img");
-    Object.assign(img, { src: thumbOf(art), alt: "", draggable: false, decoding: "async" });
-    row.append(img, el("span", "full-table", t("case.tableName", { table: prizeTableName(prize, prize.tableTitle ?? art.title) })));
-  }
-  for (const tool of [...prizeTools(prize).children]) row.append(tool);
-  return row;
+/** Coins as "+50" and the Arcade's coin (information; read aloud as "50 Coins"). */
+function coinsChip(n: number, cls = ""): HTMLElement {
+  const chip = el("span", `find-coins${cls ? ` ${cls}` : ""}`); // never "coins-chip": the win card's own Coins chip is that
+  chip.append(el("b", "", `+${n.toLocaleString(locale())}`), coinIcon(20));
+  return chip;
 }
 
 /** A closed suitcase, Art's: the small one (a level's mark, the win card), or the strip's and the list's. */
@@ -198,7 +181,7 @@ export function createSuitcase(nav: Nav) {
       title: eventTitle(e),
       headline: sch.released ? t("case.nowPlaying", { theme: themeName(e) }) : t("case.comingSoonName", { theme: themeName(e) }),
       art: ART.closed,
-      ...(art ? { table: { name: prizeTableName({ table: e.table, helpers: {} }, e.tableTitle ?? art.title), thumb: thumbOf(art) } } : {}),
+      ...(art ? { table: { name: prizeTableName({ table: e.table }, e.tableTitle ?? art.title), thumb: thumbOf(art) } } : {}),
       levels: e.levels?.length || EVENT_LEVELS,
       items: e.items.length,
     });
@@ -300,7 +283,7 @@ export function createSuitcase(nav: Nav) {
   }
 
   /** How it works: short steps, information only. */
-  function howItWorks(e: { items: EventItem[]; levels: string[]; prize: EventPack["prize"] }): HTMLElement {
+  function howItWorks(e: { items: EventItem[]; levels: string[]; prize: Prize }): HTMLElement {
     const box = el("section", "case-how glass");
     const head = el("h2", "", t("case.how.title"));
     head.id = "case-how-title";
@@ -312,7 +295,8 @@ export function createSuitcase(nav: Nav) {
     for (const line of [
       t("case.how.levels", { count: e.levels.length || EVENT_LEVELS }),
       t("case.how.items", { count }),
-      table ? t("case.how.prizeTable", { count, table }) : t("case.how.prizeHelpers", { count }),
+      table ? t("case.how.prizeTable", { count, table }) : t("case.how.prizeStamp", { count }),
+      t("case.how.coins", { count: EVENT_ITEM_COINS }),
       t("case.how.keep"),
     ])
       steps.append(el("li", "", line));
@@ -320,25 +304,44 @@ export function createSuitcase(nav: Nav) {
     return box;
   }
 
-  function prize(e: { items: EventItem[]; prize: EventPack["prize"]; paid: boolean }): HTMLElement {
+  /**
+   * The prize (docs/vip.md): the event's table and its Passport stamp, for finding all 10, and the Coins
+   * its items pay as they are found ("50 Coins for every item found", "500 Coins found" once complete).
+   */
+  function prize(e: { id: string; theme: string; items: EventItem[]; prize: Prize; paid: boolean }): HTMLElement {
     const box = el("div", `case-prize glass${e.paid ? " won" : ""}`);
-    // an event whose table Art has not made yet names the built-in one (Server's): its prize is the helpers alone
+    box.append(el("b", "prize-head", e.paid ? t("case.prizeWon") : t("case.prizeHead", { count: e.items.length })));
+    const rows = el("div", "prize-rows");
+    // the table (an event whose table Art has not made yet names the built-in one: no table row)
     const own = e.prize.table !== DEFAULT_TABLE;
     const art = own ? knownTable(e.prize.table) : undefined;
-    const pic = el("span", "prize-table");
-    if (art) {
-      const img = el("img");
-      Object.assign(img, { src: thumbOf(art), alt: "", draggable: false, decoding: "async" });
-      pic.append(img);
+    if (own) {
+      const row = el("div", "prize-row");
+      const pic = el("span", "prize-table");
+      pic.setAttribute("aria-hidden", "true");
+      if (art) {
+        const img = el("img");
+        Object.assign(img, { src: thumbOf(art), alt: "", draggable: false, decoding: "async" });
+        pic.append(img);
+      }
+      row.append(pic, el("span", "", t("case.prizeTable", { table: prizeTableName(e.prize, e.prize.tableTitle ?? art?.title ?? "") })));
+      rows.append(row);
     }
-    pic.setAttribute("aria-hidden", "true");
-    const words = el("div", "prize-words");
-    words.append(el("b", "", e.paid ? t("case.prizeWon") : t("case.prizeHead", { count: e.items.length })));
-    words.append(el("span", "", own ? t("case.prizeTable", { table: prizeTableName(e.prize, e.prize.tableTitle ?? art?.title ?? "") }) : t("case.prizeHelpers")));
-    words.append(prizeTools(e.prize));
-    if (e.paid && own) words.append(el("span", "prize-note", t("case.prizeWhere")));
-    if (art) box.append(pic);
-    box.append(words);
+    // the stamp: Art's once won, its dashed outline until then
+    const stampRow = el("div", "prize-row");
+    const stamp = e.paid ? eventStamp(e.id, eventTitle(e)) : el("span", "prize-stamp-ring");
+    stamp.classList.add("prize-stamp");
+    stamp.setAttribute("aria-hidden", "true");
+    stampRow.append(stamp, el("span", "", t("case.prizeStamp")));
+    rows.append(stampRow);
+    // the Coins: with each item found
+    const coinRow = el("div", "prize-row prize-coins");
+    const each = EVENT_ITEM_COINS;
+    coinRow.append(el("span", "prize-coin", ""), el("span", "", e.items.length && e.items.every((i) => i.found) ? t("case.prizeCoinsAll", { count: each * e.items.length }) : t("case.prizeCoinsEach", { count: each })));
+    coinRow.firstElementChild!.append(coinIcon(28));
+    rows.append(coinRow);
+    box.append(rows);
+    if (e.paid && own) box.append(el("span", "prize-note", t("case.prizeWhere")));
     return box;
   }
 
@@ -413,7 +416,7 @@ export function createSuitcase(nav: Nav) {
       status.append(el("b", "", t("case.starts", { date: shortDate(next.release) })), " · ", el("span", "", t("case.previewWhy")));
       const items: EventItem[] = (data?.items ?? []).map((it) => ({ id: it.id, title: it.title, level: null, found: false }));
       suitcase.append(slots({ items }));
-      const preview = { items, levels: data?.levels ?? [], paid: false, prize: { table: data?.table ?? DEFAULT_TABLE, ...(data?.tableTitle ? { tableTitle: data.tableTitle } : {}), helpers: {} } };
+      const preview = { id: next.id, theme: next.theme, items, levels: data?.levels ?? [], paid: false, prize: { table: data?.table ?? DEFAULT_TABLE, ...(data?.tableTitle ? { tableTitle: data.tableTitle } : {}), coins: EVENT_ITEM_COINS * items.length } };
       parts.push(hero(t("case.eventTag"), t("case.comingSoonName", { theme: themeName(next) })), status, wrap, howItWorks(preview), prize(preview), comingSoon(next.id));
     }
     scroll.replaceChildren(...parts.filter((p): p is HTMLElement => !!p));
@@ -527,26 +530,28 @@ export function packedOnCard(
   url: string,
   packed: number,
   all: number,
-  /** The 10th: the event, whether its table landed with the prize (else the helpers alone are said), and the prize. */
-  full: { event: string; table: boolean; prize?: EventPack["prize"] } | null = null,
+  /** The 10th: the event, and what to do once it has landed (the finish card, app.ts). */
+  full: { event: string; done?: () => void } | null = null,
+  /** The Coins the item paid ("+50" beside the line; 0: none said). */
+  coins = EVENT_ITEM_COINS,
 ): void {
   const mini = miniCase("on-card");
-  const words = el("span", "packed-words", t("case.packedCard", { item: itemName(item), count: packed, all }));
+  const words = el("span", "packed-words");
+  const said = el("span", "", t("case.packedCard", { item: itemName(item), count: packed, all }));
+  words.append(said);
+  // the find's Coins at the end of the line, never on a line of its own
+  if (coins > 0) words.append(" ", coinsChip(coins, "packed-coins"));
   line.replaceChildren(mini, words);
   line.classList.add("packed");
-  // the 10th: the prize under the line (the table, if it landed, and the helpers), its place kept from
-  // the start so nothing on the card moves when it shows
-  const prizeRow = full?.prize ? fullPrize(full.prize, full.table) : null;
-  if (prizeRow) line.append(prizeRow);
-  /** It has landed: the latch (Audio's), and the full suitcase's word when this was the 10th. */
+  /** It has landed: the latch (Audio's), and the full suitcase's word when this was the 10th, then its card. */
   const landed = () => {
     mini.classList.add("bump");
     emit("suitcase:packed", { id: item.id, count: 1 });
     if (full) {
-      // with the prize row under it, the words are short: the row says the table and the helpers
-      words.textContent = prizeRow ? t("case.fullShort") : t(full.table ? "case.fullCard" : "case.fullHelpers");
-      prizeRow?.classList.add("shown");
+      said.textContent = t("case.fullShort");
       emit("suitcase:full", { month: full.event });
+      // a breath for the line to be read, then the event's own card over this one
+      window.setTimeout(() => full.done?.(), lessMotion() ? 300 : 900);
     }
   };
   // it takes off from its own picture in the card's gallery (the item and its picture share an id), else the card's middle

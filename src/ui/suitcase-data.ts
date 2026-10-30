@@ -19,9 +19,7 @@
 import { suitcase as platform, type EventItem, type EventPack } from "../net/suitcase";
 import { eventBest, onProgress } from "../net/progress";
 import { currentDaily } from "../net/daily";
-import IDS from "../net/suitcase-ids.json";
 import EVENT_FILE from "../content/levels/events.json";
-import type { HelperKind } from "./stock";
 import { eventShown, lookAtEvent } from "./event-switch";
 
 export type { EventItem, EventPack };
@@ -84,7 +82,8 @@ function packOf(e: EventData, won: number): { pack: EventPack; won: string[] } {
       found,
       complete,
       paid: complete,
-      prize: { table: e.table, ...(e.tableTitle ? { tableTitle: e.tableTitle } : {}), helpers: IDS.prize as Partial<Record<HelperKind, number>> },
+      // the prize: the table and the stamp (paid); its Coins came with the items (the platform's shape follows, whatever it holds besides)
+      prize: { table: e.table, ...(e.tableTitle ? { tableTitle: e.tableTitle } : {}), coins: EVENT_ITEM_COINS * items.length } as unknown as EventPack["prize"],
     },
     won: wonIds,
   };
@@ -131,7 +130,7 @@ export const suitcases = {
   /** The item hidden on level `id` of event `e`, if any. */
   itemOn: (e: EventPack, id: string): EventItem | null => e.items.find((it) => it.level === id) ?? null,
   /** A prize that landed since last asked, once; null otherwise. */
-  lastPrize: (): { event: string; helpers: Partial<Record<HelperKind, number>> } | null => (pretend || !eventShown() ? null : platform.lastPrize()),
+  lastPrize: (): { event: string } | null => (pretend || !eventShown() ? null : platform.lastPrize()),
   /** Read the platform's word again (the events page opening): paced and one at a time, Server's. */
   refresh(): void {
     if (!pretend && eventShown()) void platform.refresh();
@@ -181,4 +180,23 @@ export const suitcases = {
 export function eventNamed(id: string): { id: string; theme: string } | null {
   const e = suitcases.get(id) ?? EVENTS.find((x) => x.id === id);
   return e ? { id: e.id, theme: e.theme } : null;
+}
+
+/**
+ * The Coins an event item pays as it is found (the creator, 2026-10-30: 50 with each, 500 an event in all,
+ * because the Arcade pays at most 100 Coins at once), when the platform does not say. The event's prize
+ * itself is its table and its Passport stamp.
+ */
+export const EVENT_ITEM_COINS = 50;
+
+/** What event `id` pays: its table (and its title), and its Coins in all (its items'); the platform's once read, else Levels' schedule. */
+export function eventPrize(id: string): { table: string; tableTitle?: string; coins: number } | null {
+  const pack = suitcases.get(id);
+  const e = EVENTS.find((x) => x.id === id);
+  const table = pack?.prize.table ?? e?.table;
+  if (!table) return null;
+  const title = pack?.prize.tableTitle ?? e?.tableTitle;
+  const coins = (pack?.prize as { coins?: unknown } | undefined)?.coins;
+  const items = pack?.items.length ?? e?.items.length ?? 10;
+  return { table, ...(title ? { tableTitle: title } : {}), coins: typeof coins === "number" && coins > 0 ? coins : EVENT_ITEM_COINS * items };
 }

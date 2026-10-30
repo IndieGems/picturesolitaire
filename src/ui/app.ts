@@ -81,6 +81,7 @@ import { createRunOut } from "./helper-shop";
 import { createHomeShop } from "./home-shop";
 import { createCosmetics } from "./cosmetics";
 import { createUnlocks } from "./unlock";
+import { createEventFinish, type Finished } from "./event-finish";
 import { watchTopRow } from "./top-row";
 import { pretendAchievements } from "./achievements-page";
 import { onUnlock } from "../net/achievements";
@@ -94,7 +95,7 @@ import { recentStats } from "./board-stats";
 import { createSuitcase, eventTitle, packedOnCard, progressLine } from "./suitcase";
 import { eventShown } from "./event-switch";
 import { playItemFound } from "./item-found";
-import { eventNamed, suitcases, type SuitItem } from "./suitcase-data";
+import { EVENT_ITEM_COINS, eventNamed, eventPrize, suitcases, type SuitItem } from "./suitcase-data";
 import { createLessons, type LessonName } from "./lessons";
 import { createHintNudge } from "./hint-nudge";
 import { createDestinationBanner, type Destination } from "./destination";
@@ -284,8 +285,33 @@ const cosmeticsUi = createCosmetics({ home: () => goHome(), show: () => show("co
 // the unlock card (unlock.ts): an achievement the checker says unlocked, in the win card's place, once
 // the screen can take it (unlockReady); the cards under it wait out of sight (style.css, #app.unlocking)
 const unlockUi = createUnlocks({ ready: () => unlockReady(), changed: (up) => app.classList.toggle("unlocking", up) });
+// an event finished (event-finish.ts): its card, as the unlock card waits for a screen that can take it
+const finishUi = createEventFinish({
+  ready: () => unlockReady() && !unlockUi.up(),
+  changed: (up) => {
+    app.classList.toggle("unlocking", up);
+    if (!up) unlockUi.poke();
+  },
+  passport: () => {
+    hideCard(winVeil);
+    passportUi.openEvents();
+  },
+});
+// a prize the platform paid outside a level's card (a read that found a full suitcase unpaid, the game
+// reopened after a quick tap): its finish card on the screen the player is on. On a board the level's own
+// card carries it, after its item flies in (packedMoment), so it is left for that
+suitcases.onChange(() => {
+  if (screen === "board") return;
+  const p = suitcases.lastPrize();
+  if (p?.event) finishUi.add({ event: p.event });
+});
+/** The screen changed: the cards that wait for a moment (an achievement, an event finished) may come now. */
+const pokeCards = (): void => {
+  finishUi.poke();
+  unlockUi.poke();
+};
 
-app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, suitcaseUi.screen, vipDoorUi.screen, archiveUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, dareVeil, resumeVeil, runOut.element, homeShop.element, cosmeticsUi.screen, unlockUi.veil, offlineVeil);
+app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, suitcaseUi.screen, vipDoorUi.screen, archiveUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, dareVeil, resumeVeil, runOut.element, homeShop.element, cosmeticsUi.screen, unlockUi.veil, finishUi.veil, offlineVeil);
 // the win card's Challenge a friend and Share, and the friends sheet over it (friend-cards.ts)
 const friendCards = createFriendCards(app);
 
@@ -490,7 +516,7 @@ function show(next: Screen): void {
   winViewer.close();
   screenChanged();
   drawOffline();
-  unlockUi.poke();
+  pokeCards();
 }
 
 // ---------- home ----------
@@ -544,7 +570,7 @@ function settleHome(fonts: Promise<unknown>): void {
     if (homeSettled) return;
     homeSettled = true;
     // an unlock the checker reported for last session's win waited for home to be whole
-    unlockUi.poke();
+    pokeCards();
     // the music and the rest of the sounds (Audio's: the sound code and the click came at start)
     homeWhole();
     // the pictures' titles in the player's language (the enlarged picture, the win card's labels)
@@ -1373,6 +1399,11 @@ on("board:solved", ({ moves, ms, line }) => {
         packedMoment(v, evLine);
       }
     }
+    // the card left before the checker's word (a quick tap): an event finished still gets its card, on the next screen
+    if (win.kind === "event" && (lastWin !== win || winVeil.hidden)) {
+      const fin = finishedOf(v);
+      if (fin) finishUi.add(fin);
+    }
   });
 });
 
@@ -1395,6 +1426,8 @@ let stampDown = true;
 
 function unlockReady(): boolean {
   if (document.querySelector("dialog[open]")) return false;
+  // one card at a time: an event's finish, then what it unlocked
+  if (finishUi.up()) return false;
   if (screen === "home" && !homeSettled) return false;
   // the stamp first: from the win card that leads to it, until it is down
   const stamping = lastWin?.kind === "campaign" && !!lastWin.stamp && !stampDown;
@@ -1439,7 +1472,7 @@ on("suitcase:item", (e) => {
 const flownItems = new WeakSet<Verdict>();
 /** The checker packed the level's item (its verdict's `packed` and `suitcase`, Server's): the card's line says so and the item flies in. */
 function packedMoment(v: Verdict, line: HTMLElement): void {
-  const said = v as { packed?: { item: string; count: number }; suitcase?: import("./suitcase-data").EventPack; event?: string; gifts?: string[]; items?: string[] };
+  const said = v as { packed?: { item: string; count: number; coins?: number }; suitcase?: import("./suitcase-data").EventPack; event?: string };
   const p = said.packed;
   if (v.status !== "paid" || !p || flownItems.has(v) || !eventShown()) return;
   flownItems.add(v);
@@ -1448,10 +1481,25 @@ function packedMoment(v: Verdict, line: HTMLElement): void {
   const found = s?.items.find((x) => x.id === p.item);
   const it: SuitItem = found ?? { id: p.item, title: suitcaseItem(p.item)?.title ?? "" };
   const packed = s ? s.items.filter((x) => x.found).length + (found && !found.found ? 1 : 0) : 1;
-  // the 10th: the prize came with this claim (the verdict's gifts say "suitcase", Server's); its table is
-  // named only if it LANDED (the verdict's items), as every reward on a card is
-  const full = said.gifts?.includes("suitcase") ? { event: s?.id ?? "", table: !!s && (said.items ?? []).includes(s.prize.table), ...(s ? { prize: s.prize } : {}) } : null;
-  packedOnCard(line, it, dayItem?.id === p.item ? dayItem.url : "", packed, s?.items.length ?? 10, full);
+  // the 10th: the prize came with this claim (the verdict's gifts say "suitcase", Server's): once the item
+  // has flown in, the event's finish card (its table named only if it LANDED, the verdict's items)
+  const fin = finishedOf(v);
+  // the find's own Coins ("+50", Server's packed.coins), beside the line
+  packedOnCard(line, it, dayItem?.id === p.item ? dayItem.url : "", packed, s?.items.length ?? 10, fin ? { event: fin.event, done: () => finishUi.add(fin) } : null, typeof p.coins === "number" ? p.coins : EVENT_ITEM_COINS);
+}
+
+/**
+ * An event level's verdict that paid the event's prize (its "suitcase" gift and `prize`, Server's), as the
+ * finish card shows it: the table only if it LANDED (the verdict's items), and the last item's Coins; else null.
+ */
+function finishedOf(v: Verdict): Finished | null {
+  const said = v as { packed?: { coins?: number }; suitcase?: import("./suitcase-data").EventPack; event?: string; gifts?: string[]; items?: string[]; prize?: { event?: string; table?: string | null } };
+  if (v.status !== "paid" || !said.gifts?.includes("suitcase")) return null;
+  const event = said.prize?.event ?? said.event ?? said.suitcase?.id;
+  if (!event) return null;
+  const table = said.prize?.table ?? said.suitcase?.prize.table ?? eventPrize(event)?.table;
+  const landed = !!table && (said.items ?? []).includes(table);
+  return { event, ...(landed && table ? { table } : {}), ...(typeof said.packed?.coins === "number" ? { coins: said.packed.coins } : {}) };
 }
 
 /** An event level's card line: the checker's refusal said plainly, else where the player is in the event. */
@@ -1626,7 +1674,7 @@ function showWin(): void {
   // the stamp is down: what this win unlocked ("Stamped: <trip>") comes now, over the stamped page
   after.landed = () => {
     stampDown = true;
-    unlockUi.poke();
+    pokeCards();
   };
   // Next goes on, round to board 1 after the last (boardNumber); Home is the card's corner key
   const next = ended
@@ -1779,7 +1827,8 @@ function showEventWin(w: Extract<Win, { kind: "event" }>, gallery: HTMLElement):
     const r = suitcases.pretendWin(w.e.id);
     if (r) {
       const it: SuitItem = { id: r.item.id, title: r.item.title };
-      packedOnCard(line, it, dayItem?.id === it.id ? dayItem.url : "", r.pack.found, r.pack.items.length, r.pack.complete ? { event: r.pack.id, table: true, prize: r.pack.prize } : null);
+      const fin: Finished = { event: r.pack.id, table: r.pack.prize.table };
+      packedOnCard(line, it, dayItem?.id === it.id ? dayItem.url : "", r.pack.found, r.pack.items.length, r.pack.complete ? { event: r.pack.id, done: () => finishUi.add(fin) } : null);
     } else {
       const pack = suitcases.get(w.e.event);
       if (pack) line.textContent = progressLine(pack);
@@ -2331,7 +2380,7 @@ function showCard(veil: HTMLElement, escape?: () => void): void {
   screenChanged();
   drawOffline();
   // an unlock waiting for the level's card comes up in its place
-  unlockUi.poke();
+  pokeCards();
 }
 function hideCard(veil: HTMLElement): void {
   if (veil === winVeil) {
@@ -2340,7 +2389,7 @@ function hideCard(veil: HTMLElement): void {
   }
   veil.hidden = true;
   closed(veil);
-  unlockUi.poke();
+  pokeCards();
 }
 
 /** The "No connection" card: over everything but the board in hand, until the connection is back. */
@@ -2706,9 +2755,12 @@ export async function startApp(): Promise<void> {
       /** The event level's card up now as if the checker had packed `item` (event `event`; `full`: the 10th, its prize with it): the flight, nothing sent. */
       packed(item: string, event: string, full = false) {
         const line = winVeil.querySelector<HTMLElement>(".event-line");
-        const s = suitcases.get(event);
-        if (line) packedMoment({ status: "paid", lane: "event", board: "dev", moves: 0, coins: 0, packed: { item, count: 1 }, event, ...(full && s ? { gifts: ["suitcase"], items: [s.prize.table] } : {}) } as unknown as Verdict, line);
+        const table = eventPrize(event)?.table;
+        const prize = full && table ? { gifts: ["suitcase"], items: [table], prize: { event, table, stamp: event } } : {};
+        if (line) packedMoment({ status: "paid", lane: "event", board: "dev", moves: 0, coins: 50, packed: { item, count: 1, coins: 50 }, event, ...prize } as unknown as Verdict, line);
       },
+      /** The event finish card for `event` (its table, +500, its stamp landing), as after its 10th item: nothing sent. */
+      eventFinish: (event: string) => finishUi.preview(event),
     };
     // ?restored=id,id shows those pictures as restored in the albums (never saved)
     const fake = new URLSearchParams(location.search).get("restored");

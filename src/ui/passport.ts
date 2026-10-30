@@ -27,9 +27,15 @@
 // `souvenir:sticker` goes out at the touch, for its sound (agreed with Audio: the page still for
 // 550 ms, then 300 ms down, the way on 650 ms after). Less motion: it fades in, the sound with it.
 //
-// ACHIEVEMENTS (the creator, 2026-10-30): two tabs over the book, Stamps (the pages above) and
-// Achievements (achievements-page.ts, on the same paper page under the same cover). The passport opens
-// on Stamps; the stamp and sticker moments always play there, the tabs put away until they are over.
+// ACHIEVEMENTS (the creator, 2026-10-30): tabs over the book, Stamps (the pages above), Event stamps and
+// Achievements (achievements-page.ts), each on the same paper page under the same cover. The passport
+// opens on Stamps; the stamp and sticker moments always play there, the tabs put away until they are over.
+//
+// EVENT STAMPS (docs/vip.md, the creator, 2026-10-30: a finished event's prize is its table and its
+// stamp): every released event a VIP can play (suitcase-data.ts), newest first: a finished one's stamp
+// (Art's, public/art/stamps/stamp-<event id>.webp, with no lettering: its name is ours, under it, so it
+// is said in the player's language), an unfinished one an empty dashed ring with its name and how many
+// of its items are found; an event still to come, nothing. The finish card's See your passport opens it.
 //
 // Its top row is every screen's: the title on the left, Back then the gear at the right
 // end. A trip's stamp is Art's drawing, public/art/stamps/stamp-<trip id>.webp (300 px
@@ -46,6 +52,8 @@ import { ensureTrip, resident } from "../packs";
 import { currentTrip, loadTripOf, placesOf, tripById, tripCount, tripDone, tripName, tripPlace, trips, type Place, type Trip } from "./trips";
 import { souvenirOf, souvenirOpen, souvenirWon, souvenirWords, stickerReady, stickerUrl } from "./souvenirs";
 import { createAchievementsPage } from "./achievements-page";
+import { named } from "./i18n";
+import { suitcases } from "./suitcase-data";
 
 type Nav = {
   /** Back: to home. */
@@ -131,20 +139,42 @@ function stampReady(tr: Trip): Promise<void> {
 
 /** A trip's stamp: Art's drawing, or (none yet, or it does not load) the trip's name in an inked double ring. */
 function stampOf(tr: Trip): HTMLElement {
+  return inkedStamp(stampUrl(tr), tripName(tr), t("passport.stamped", { trip: tripName(tr) }));
+}
+
+/** A stamp from Art's drawing at `url`; none yet, or one that does not load: `name` in an inked double ring. */
+function inkedStamp(url: string, name: string, label: string): HTMLElement {
   const s = el("div", "pp-stamp art");
   s.setAttribute("role", "img");
-  s.setAttribute("aria-label", t("passport.stamped", { trip: tripName(tr) }));
+  s.setAttribute("aria-label", label);
   const img = el("img");
   img.alt = "";
   img.draggable = false;
   img.addEventListener("error", () => {
     s.classList.remove("art");
-    s.replaceChildren(el("i", "star"), el("b", "", tripName(tr)), el("i", "star"));
+    s.replaceChildren(el("i", "star"), el("b", "", name), el("i", "star"));
   }, { once: true });
-  img.src = stampUrl(tr);
+  img.src = url;
   s.append(img);
   return s;
 }
+
+/** Art's stamp for an event (docs/vip.md: a finished event's prize), public/art/stamps/stamp-<event id>.webp. */
+export const eventStampUrl = (id: string) => `${import.meta.env.BASE_URL}art/stamps/stamp-${id}.webp`;
+
+/** An event's stamp: Art's drawing, or its name in the inked ring (the finish card, the Event stamps page, the prize). */
+export function eventStamp(id: string, name: string): HTMLElement {
+  return inkedStamp(eventStampUrl(id), name, t("passport.eventStamped", { theme: name }));
+}
+
+/** The passport's tabs. */
+type Tab = "stamps" | "events" | "achievements";
+
+/** An event's name in the player's language (the locale's names list), with a capital. */
+const eventName = (e: { id: string; theme: string }): string => {
+  const s = named(`suitcase.${e.id}.theme`, e.theme);
+  return s.charAt(0).toLocaleUpperCase() + s.slice(1);
+};
 
 export function createPassport(nav: Nav) {
   const pill = liveText(el("div", "top-pill glass"), "passport.title");
@@ -171,11 +201,15 @@ export function createPassport(nav: Nav) {
   achPage.hidden = true;
   achPage.append(achievements.element);
   book.append(achPage);
+  // the Event stamps tab's page
+  const evPage = el("section", "pp-page pp-events");
+  evPage.hidden = true;
+  book.append(evPage);
 
-  // the two tabs over the book: Stamps and Achievements (the shown one pressed in, as the Cosmetics screen's)
+  // the tabs over the book: Stamps, Event stamps and Achievements (the shown one pressed in, as the Cosmetics screen's)
   const tabs = el("div", "pp-tabs");
   tabs.setAttribute("role", "tablist");
-  const tab = (which: "stamps" | "achievements") => {
+  const tab = (which: Tab) => {
     const b = el("button", "btn pp-tab");
     b.type = "button";
     b.dataset.press = `passport.tab.${which}`;
@@ -185,21 +219,46 @@ export function createPassport(nav: Nav) {
     return b;
   };
   const stampsTab = tab("stamps");
+  const evTab = tab("events");
   const achTab = tab("achievements");
-  tabs.append(stampsTab, achTab);
-  let view: "stamps" | "achievements" = "stamps";
-  function showTab(which: "stamps" | "achievements"): void {
+  tabs.append(stampsTab, evTab, achTab);
+  let view: Tab = "stamps";
+  function showTab(which: Tab): void {
     view = which;
-    for (const [b, on] of [[stampsTab, which === "stamps"], [achTab, which === "achievements"]] as const) {
+    for (const [b, on] of [[stampsTab, which === "stamps"], [evTab, which === "events"], [achTab, which === "achievements"]] as const) {
       b.classList.toggle("pressed", on);
       b.setAttribute("aria-selected", String(on));
     }
     page.hidden = which !== "stamps";
+    evPage.hidden = which !== "events";
     achPage.hidden = which !== "achievements";
     if (which === "achievements") achievements.show();
     else achievements.hide();
+    if (which === "events") drawEvents();
     scroll.scrollTop = 0;
   }
+
+  /** The Event stamps page: each released event's stamp, or its dashed ring and how far the player is. */
+  function drawEvents(): void {
+    const list = suitcases.list();
+    const head = el("h2", "pp-ev-head", t("passport.tab.events"));
+    if (!list.length) return void evPage.replaceChildren(head, el("p", "pp-ev-none", t("passport.eventsNone")));
+    const grid = el("div", "pp-ev-grid");
+    for (const e of list) {
+      const name = eventName(e);
+      const cell = el("div", `pp-ev${e.paid ? " won" : ""}`);
+      const spot = el("div", "pp-ev-spot");
+      if (e.paid) spot.append(eventStamp(e.id, name));
+      else spot.setAttribute("aria-hidden", "true");
+      cell.append(spot, el("b", "pp-ev-name", name), el("small", "pp-ev-line", e.paid ? t("passport.eventDone") : t("case.foundOf", { found: e.found, all: e.items.length })));
+      grid.append(cell);
+    }
+    evPage.replaceChildren(head, grid);
+  }
+  // the events read again (a prize landed, VIP came or went) while the page is up: drawn again
+  suitcases.onChange(() => {
+    if (!screen.hidden && view === "events") drawEvents();
+  });
 
   // the stamp moment's way on, under the book
   const foot = el("div", "pp-foot");
@@ -497,6 +556,11 @@ export function createPassport(nav: Nav) {
   return {
     screen,
     viewer: viewer.element,
+    /** Open on the Event stamps tab (an event's finish card, See your passport). */
+    openEvents(): void {
+      open();
+      showTab("events");
+    },
     /** Open on the Achievements tab. */
     openAchievements(): void {
       open();
@@ -569,7 +633,7 @@ export function createPassport(nav: Nav) {
 }
 
 /** The little sparkle round a landed stamp: the board's twinkle (style.css, .twinkle), a few at once. */
-function sparkles(): HTMLElement[] {
+export function sparkles(): HTMLElement[] {
   const at = [
     { x: -6, y: 18, s: 26, d: 0 },
     { x: 104, y: 10, s: 22, d: 0.08 },

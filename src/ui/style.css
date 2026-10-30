@@ -1280,17 +1280,19 @@ html.less-motion .mini-case.bump { animation: none; }
 html.less-motion .case-slots .slot.arrived .item-pic { animation: none; }
 
 /* the prize: the event's table and its helpers */
-.case-prize { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 20px; }
-.case-prize .prize-table { flex: none; width: 72px; height: 72px; border-radius: 14px; overflow: hidden; background: rgba(0, 0, 0, 0.12); box-shadow: inset 0 0 0 2px var(--glass-line); }
+.case-prize { display: flex; flex-direction: column; gap: 10px; padding: 12px 14px 14px; border-radius: 20px; }
+.case-prize .prize-head { font: 600 17px/1.15 var(--round); text-align: center; }
+.case-prize .prize-rows { display: flex; flex-direction: column; gap: 8px; }
+.case-prize .prize-row { display: flex; align-items: center; gap: 12px; min-height: 56px; font: 600 15px/1.25 var(--round); color: var(--ink); }
+.case-prize .prize-table { flex: none; width: 48px; height: 62px; border-radius: 10px; overflow: hidden; background: rgba(0, 0, 0, 0.12); box-shadow: inset 0 0 0 2px var(--glass-line); }
 .case-prize .prize-table img { width: 100%; height: 100%; object-fit: cover; }
-.case-prize .prize-words { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.case-prize .prize-words b { font: 600 17px/1.15 var(--round); }
-.case-prize .prize-words > span { font: 500 14px/1.25 var(--round); color: var(--ink-soft); }
-.case-prize .prize-tools { display: flex; gap: 12px; }
-.case-prize .prize-tools .tool { display: inline-flex; align-items: center; gap: 3px; font: 600 15px/1 var(--round); color: var(--ink); }
-.case-prize .prize-tools :is(svg, .ico) { width: 20px; height: 20px; }
+/* the stamp: Art's once won (the passport's look, smaller), a dashed ring until then */
+.case-prize .prize-stamp { flex: none; position: relative; width: 56px; height: 56px; }
+.case-prize .prize-stamp.pp-stamp { inset: auto; font-size: 9px; }
+.case-prize .prize-stamp-ring { border-radius: 50%; border: 2.5px dashed rgba(85, 101, 124, 0.5); background: rgba(255, 255, 255, 0.35); }
+.case-prize .prize-coin { flex: none; display: grid; place-items: center; width: 56px; height: 40px; }
 .case-prize.won { box-shadow: inset 0 0 0 2.5px rgba(46, 125, 90, 0.55); }
-.case-prize .prize-words > .prize-note { color: #2e7d5a; font-weight: 600; }
+.case-prize .prize-note { align-self: center; font: 600 14px/1.25 var(--round); color: #2e7d5a; }
 /* the event's main action, under the suitcase: Play level 13, or a line once every level is won */
 .suitcase-screen .case-play { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .suitcase-screen .btn.case-daily { width: auto; max-width: 100%; min-width: 240px; min-height: 56px; padding: 0 24px; font-size: 19px; white-space: normal; line-height: 1.15; }
@@ -1384,14 +1386,6 @@ html.less-motion .case-slots .slot.arrived .item-pic { animation: none; }
 .card .daily-line.packed { flex-wrap: wrap; row-gap: 6px; margin-top: 4px; margin-bottom: 8px; }
 .card .daily-line.packed .packed-words { flex: 0 1 auto; min-width: 0; }
 /* the 10th: the prize under the line, its place kept (invisible) until the item lands */
-.card .daily-line .case-full {
-  flex-basis: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: nowrap;
-  visibility: hidden; opacity: 0; transition: opacity 0.35s ease; font: 600 14px/1.2 var(--round); color: var(--ink); white-space: nowrap;
-}
-.card .daily-line .case-full.shown { visibility: visible; opacity: 1; }
-.card .daily-line .case-full img { width: 24px; height: 30px; object-fit: cover; border-radius: 6px; box-shadow: 0 2px 5px rgba(6, 12, 24, 0.35); }
-.card .daily-line .case-full .tool { display: inline-flex; align-items: center; gap: 1px; }
-.card .daily-line .case-full .tool :is(svg, .ico) { width: 18px; height: 18px; }
 .suitcase-screen p.case-note { margin: 0; text-align: center; font: 500 13px/1.3 var(--round); color: #e3eaf3; }
 .item-flight {
   position: fixed; z-index: 60; width: 74px; height: 74px; object-fit: cover; border-radius: 12px; pointer-events: none;
@@ -1526,8 +1520,8 @@ html.less-motion .pp-sticker { animation: none; }
    Information, so glass (the card) and plain words; its one button carries on. The card under it waits
    out of sight, with no second shade, so it never reads as a line stacked on that card. */
 .veil.unlock { z-index: 40; }
-#app.unlocking .veil:not(.unlock):not(.offline) { background: transparent; }
-#app.unlocking .veil:not(.unlock):not(.offline) > .card { visibility: hidden; }
+#app.unlocking .veil:not(.unlock):not(.event-finish):not(.offline) { background: transparent; }
+#app.unlocking .veil:not(.unlock):not(.event-finish):not(.offline) > .card { visibility: hidden; }
 .card.unlock-card { position: relative; width: min(360px, 100%); padding: 22px 20px 22px; }
 .card.unlock-card h2 { margin: 0 0 14px; }
 .unlock-items { display: flex; flex-direction: column; gap: 14px; margin: 0 0 20px; }
@@ -1737,3 +1731,45 @@ html.row-tight .top-pill {
 .cz-acts > .btn.cz-keep.shop-buy { width: auto; }
 /* a lent track: its buttons (Use, Keep it) on a row of their own, as a track for sale's */
 .cz-track.lent { grid-template-columns: 64px minmax(0, 1fr); grid-template-areas: "cover words" "acts acts" "say say"; }
+
+/* COINS AS "+50" WITH THE ARCADE'S COIN (suitcase.ts): an event item's, beside its line on the win card */
+.find-coins { display: inline-flex; align-items: center; gap: 4px; font: 700 17px/1 var(--round); color: var(--ink); white-space: nowrap; }
+.find-coins .coin-icon { width: 20px; height: 20px; }
+.daily-line.packed .packed-coins { margin-left: 4px; vertical-align: -3px; }
+
+/* AN EVENT FINISHED (event-finish.ts): its own card over the level's, the title, the event's line, the
+   stamp coming down into its ring, what was won (the table, the last item's Coins), Continue and the passport */
+.veil.event-finish { z-index: 40; }
+.card.finish-card { position: relative; width: min(360px, 100%); max-height: calc(100dvh - 24px); overflow-y: auto; overscroll-behavior: contain; padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 9px; text-align: center; }
+.card.finish-card h2 { margin: 0; }
+.finish-line { margin: 0; font: 600 16px/1.3 var(--round); color: var(--ink-soft); text-wrap: balance; }
+.finish-spot { flex: none; position: relative; width: 120px; height: 120px; margin: 2px 0; border-radius: 50%; border: 3px dashed rgba(85, 101, 124, 0.32); }
+.finish-spot:has(.pp-stamp) { border-color: transparent; }
+.finish-spot .pp-stamp { font-size: 15px; }
+.card.finish-card.thud { animation: pp-thud 0.34s ease-out; }
+.finish-stamped { margin: 0; font: 700 15px/1.25 var(--round); color: #2e7d5a; opacity: 0; transition: opacity 0.3s; }
+.finish-stamped.shown { opacity: 1; }
+.finish-prize { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: 100%; }
+.finish-row { display: flex; align-items: center; gap: 8px; min-height: 42px; padding: 4px 12px; border-radius: 14px; font: 600 15px/1.2 var(--round); color: var(--ink); }
+.finish-table { width: 28px; height: 36px; border-radius: 6px; object-fit: cover; box-shadow: 0 1px 4px rgba(6, 12, 24, 0.3); }
+.finish-coins b { font: 700 20px/1 var(--round); }
+.finish-coins .coin-icon { width: 28px; height: 28px; }
+.btn.finish-on { width: min(100%, 260px); min-height: 54px; font-size: 19px; }
+.btn.finish-passport { width: min(100%, 260px); min-height: 48px; font-size: 16px; }
+
+/* THE PASSPORT'S EVENT STAMPS (passport.ts): a stamp each, under it the event's own name (Art's stamps carry no
+   lettering, so the name is said in the player's language); an unfinished one a dashed ring and how far */
+.pp-events { padding: 16px 14px 20px; }
+.pp-ev-head { margin: 0 0 12px; text-align: center; font: 600 20px/1.2 var(--round); color: var(--ink); }
+.pp-ev-none { margin: 12px 0; text-align: center; font: 500 15px/1.35 var(--round); color: var(--ink-soft); }
+.pp-ev-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 10px; }
+.pp-ev { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+.pp-ev-spot { position: relative; width: min(120px, 100%); aspect-ratio: 1; border-radius: 50%; border: 3px dashed rgba(85, 101, 124, 0.35); }
+.pp-ev.won .pp-ev-spot { border-color: transparent; }
+.pp-ev-spot .pp-stamp { font-size: 12px; }
+.pp-ev-name { font: 700 15px/1.2 var(--round); color: var(--ink); overflow-wrap: break-word; max-width: 100%; }
+.pp-ev-line { font: 600 13px/1.2 var(--round); color: var(--ink-soft); }
+.pp-ev.won .pp-ev-line { color: #2e7d5a; }
+/* three tabs over the passport: a little smaller, so each fits its third */
+.pp-tabs:has(> :nth-child(3)) { gap: 8px; }
+.pp-tabs:has(> :nth-child(3)) .btn.pp-tab { padding: 4px 8px; font-size: 16px; line-height: 1.1; white-space: normal; }
