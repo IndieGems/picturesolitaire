@@ -30,14 +30,16 @@
       "id": "8c90751b-e919-5d81-a24a-bec0d0cb84bf",
       "title": "Arctic Cabin table",
       "award": "suitcase",
-      "event": "northern-lights-2026"
+      "event": "northern-lights-2026",
+      "icon": "tools/art/items/table-arctic-cabin.png"
     },
     {
       "slug": "table-carnival",
       "id": "a872b829-18d1-5346-8dfe-5bd6e6edf540",
       "title": "Carnival table",
       "award": "suitcase",
-      "event": "carnival-2027"
+      "event": "carnival-2027",
+      "icon": "tools/art/items/table-carnival.png"
     },
     {
       "slug": "table-flower-market",
@@ -110,6 +112,14 @@
       "award": "suitcase",
       "event": "halloween-2026",
       "icon": "tools/art/items/table-pumpkin-porch.png"
+    },
+    {
+      "slug": "table-dining-car",
+      "id": "8a3eeeb1-5248-5093-83ec-18fb189bc16f",
+      "title": "Dining Car table",
+      "award": "suitcase",
+      "event": "train-journey-2026",
+      "icon": "tools/art/items/table-dining-car.png"
     }
   ]
 }

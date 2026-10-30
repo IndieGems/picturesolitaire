@@ -2990,7 +2990,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 090ecd18-ba2a-5d80-9fdd-60257d0f3ee4
     slug: board_train-journey-2026-01
-    display_name: "Stand-in level 1"
+    display_name: "Grand Train Journey level 1"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3000,7 +3000,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: bf176eb4-6383-5dbc-917d-cb968cbb479d
     slug: board_train-journey-2026-02
-    display_name: "Stand-in level 2"
+    display_name: "Grand Train Journey level 2"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3010,7 +3010,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 2d405499-cc9b-5486-a6c5-251988c65729
     slug: board_train-journey-2026-03
-    display_name: "Stand-in level 3"
+    display_name: "Grand Train Journey level 3"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3020,7 +3020,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 4950ff50-b410-5028-b595-a98eac611365
     slug: board_train-journey-2026-04
-    display_name: "Stand-in level 4"
+    display_name: "Grand Train Journey level 4"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3030,7 +3030,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 3bb2b4cd-e05f-5874-908d-959599ab277d
     slug: board_train-journey-2026-05
-    display_name: "Stand-in level 5"
+    display_name: "Grand Train Journey level 5"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3040,7 +3040,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 0e163390-5408-5c7f-89fc-6a1e4e51d814
     slug: board_train-journey-2026-06
-    display_name: "Stand-in level 6"
+    display_name: "Grand Train Journey level 6"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3050,7 +3050,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 25ac3cb1-2b90-5e86-bd9b-1dcda69fb652
     slug: board_train-journey-2026-07
-    display_name: "Stand-in level 7"
+    display_name: "Grand Train Journey level 7"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3060,7 +3060,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 2d605013-0e88-58b8-a4e9-a25c4520d64a
     slug: board_train-journey-2026-08
-    display_name: "Stand-in level 8"
+    display_name: "Grand Train Journey level 8"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3070,7 +3070,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 3d2a6a3f-9784-5205-bd76-3bdb741d0747
     slug: board_train-journey-2026-09
-    display_name: "Stand-in level 9"
+    display_name: "Grand Train Journey level 9"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3080,7 +3080,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 707846e0-7182-5cff-bfd9-03a842c6810f
     slug: board_train-journey-2026-10
-    display_name: "Stand-in level 10"
+    display_name: "Grand Train Journey level 10"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3090,7 +3090,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: f62093b1-6714-5b7d-8c91-a666c460a8f9
     slug: board_train-journey-2026-11
-    display_name: "Stand-in level 11"
+    display_name: "Grand Train Journey level 11"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3100,7 +3100,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 3fd28efc-9276-5c44-9bfa-afbb4640c04b
     slug: board_train-journey-2026-12
-    display_name: "Stand-in level 12"
+    display_name: "Grand Train Journey level 12"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3110,7 +3110,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 43debcbc-9b3b-5ff3-8f4b-e72006557c07
     slug: board_train-journey-2026-13
-    display_name: "Stand-in level 13"
+    display_name: "Grand Train Journey level 13"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3120,7 +3120,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: cde60ee8-9866-540f-b6fb-cd893f25bd69
     slug: board_train-journey-2026-14
-    display_name: "Stand-in level 14"
+    display_name: "Grand Train Journey level 14"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3130,7 +3130,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 83b5416b-2220-5801-8556-c5fc6cede15b
     slug: board_train-journey-2026-15
-    display_name: "Stand-in level 15"
+    display_name: "Grand Train Journey level 15"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3140,7 +3140,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 4e65831f-8602-5576-a007-7bc602b30e28
     slug: board_train-journey-2026-16
-    display_name: "Stand-in level 16"
+    display_name: "Grand Train Journey level 16"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3150,7 +3150,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: d75493a4-e4b6-52d6-83e9-b4e37ad5fa14
     slug: board_train-journey-2026-17
-    display_name: "Stand-in level 17"
+    display_name: "Grand Train Journey level 17"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3160,7 +3160,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 3e643646-7edb-51b7-8306-3b095e79ff41
     slug: board_train-journey-2026-18
-    display_name: "Stand-in level 18"
+    display_name: "Grand Train Journey level 18"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3170,7 +3170,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 2f3b35a7-d5d6-5772-a6ff-3dc570d9f0cc
     slug: board_train-journey-2026-19
-    display_name: "Stand-in level 19"
+    display_name: "Grand Train Journey level 19"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3180,7 +3180,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: ae044f73-9aed-5d26-b8a6-9b000528da44
     slug: board_train-journey-2026-20
-    display_name: "Stand-in level 20"
+    display_name: "Grand Train Journey level 20"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3190,7 +3190,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: dba8f760-5277-5808-bae0-2949cae7277e
     slug: board_train-journey-2026-21
-    display_name: "Stand-in level 21"
+    display_name: "Grand Train Journey level 21"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3200,7 +3200,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 3eb155b2-d829-5ec0-bd6e-52d2d6265685
     slug: board_train-journey-2026-22
-    display_name: "Stand-in level 22"
+    display_name: "Grand Train Journey level 22"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3210,7 +3210,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: fd1a1456-4dd1-547d-84e4-e4e48a150ce9
     slug: board_train-journey-2026-23
-    display_name: "Stand-in level 23"
+    display_name: "Grand Train Journey level 23"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3220,7 +3220,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: f7e3842c-5fea-5621-a524-c5977481425b
     slug: board_train-journey-2026-24
-    display_name: "Stand-in level 24"
+    display_name: "Grand Train Journey level 24"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3230,7 +3230,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 6771e539-9d74-5bf0-9672-02639f4ccaa0
     slug: board_train-journey-2026-25
-    display_name: "Stand-in level 25"
+    display_name: "Grand Train Journey level 25"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3240,7 +3240,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 293c6a59-5cca-54e4-ac3b-f654e9bf391f
     slug: board_train-journey-2026-26
-    display_name: "Stand-in level 26"
+    display_name: "Grand Train Journey level 26"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3250,7 +3250,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 8f81da74-6cdc-5b12-9752-84c9dd28ccba
     slug: board_train-journey-2026-27
-    display_name: "Stand-in level 27"
+    display_name: "Grand Train Journey level 27"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3260,7 +3260,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: b5d6886b-08d1-59c8-9a8d-a95f1250d977
     slug: board_train-journey-2026-28
-    display_name: "Stand-in level 28"
+    display_name: "Grand Train Journey level 28"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3270,7 +3270,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: ddf9b324-b5e2-59e0-a4b7-5c2435e602b3
     slug: board_train-journey-2026-29
-    display_name: "Stand-in level 29"
+    display_name: "Grand Train Journey level 29"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -3280,7 +3280,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 1131b19f-6a7e-53f7-a94a-a593301542d6
     slug: board_train-journey-2026-30
-    display_name: "Stand-in level 30"
+    display_name: "Grand Train Journey level 30"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -4250,7 +4250,7 @@ progressions:
       completion_threshold: 1
   - id: 7ef4f280-3012-5fd6-bda4-673343efcedd
     slug: suitcase_prize_train_journey_2026
-    display_name: "Stand-in suitcase full"
+    display_name: "Grand Train Journey suitcase full"
     config:
       completion_threshold: 1
   - id: 00d3b390-7765-583c-8e76-b20d6d3e26f3
@@ -4957,6 +4957,7 @@ items:
     stack_size: 1
     transfer_policy: none
     client_writable: false
+    icon: tools/art/items/table-arctic-cabin.png
   - id: a872b829-18d1-5346-8dfe-5bd6e6edf540
     slug: table-carnival
     display_name: "Carnival table"
@@ -4966,6 +4967,7 @@ items:
     stack_size: 1
     transfer_policy: none
     client_writable: false
+    icon: tools/art/items/table-carnival.png
   - id: 55cf8fa9-c5b5-521d-b10f-a42cb9facfe9
     slug: table-flower-market
     display_name: "Flower Market table"
@@ -5062,6 +5064,16 @@ items:
     transfer_policy: none
     client_writable: false
     icon: tools/art/items/table-pumpkin-porch.png
+  - id: 8a3eeeb1-5248-5093-83ec-18fb189bc16f
+    slug: table-dining-car
+    display_name: "Dining Car table"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 1
+    transfer_policy: none
+    client_writable: false
+    icon: tools/art/items/table-dining-car.png
 # The soundtracks the player can own (src/net/tracks.json): cosmetic, bought once for Coins
 # through the cosmetics catalog, never traded, never written by the game.
   - id: 78aee497-13c8-5624-a008-9560840fb02f
@@ -5287,6 +5299,96 @@ items:
     stack_size: 31
     transfer_policy: none
     client_writable: false
+  - id: 714ccf7c-c326-5cc0-86fc-7e3bf968fa48
+    slug: item-train-journey-2026-01
+    display_name: "Pocket watch"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: 719ba2b0-2ec3-5aec-8739-022ca42f900f
+    slug: item-train-journey-2026-02
+    display_name: "Travel clock"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: 517fd39a-ea74-51bd-90c1-1576d2d5428a
+    slug: item-train-journey-2026-03
+    display_name: "Hat box"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: 4cb4ea75-8ebd-5370-b95e-8aff6b6155e9
+    slug: item-train-journey-2026-04
+    display_name: "Porcelain teacup"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: b7ca9060-0f10-51d4-a605-f9756687e4d0
+    slug: item-train-journey-2026-05
+    display_name: "Fountain pen"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: 05c9e63c-ad83-5764-a58b-0609163888e9
+    slug: item-train-journey-2026-06
+    display_name: "Opera glasses"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: 66a62919-7725-55dd-ade4-23792b669cf2
+    slug: item-train-journey-2026-07
+    display_name: "Luggage tag"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: 82945a74-2f0f-52e5-9824-6614f56be074
+    slug: item-train-journey-2026-08
+    display_name: "Ticket punch"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: df060b4a-30c7-5108-a004-bf8e611a266b
+    slug: item-train-journey-2026-09
+    display_name: "Silver cloche"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
+  - id: d660888b-dc44-51d3-bcd5-0ac135e59029
+    slug: item-train-journey-2026-10
+    display_name: "Bowler hat"
+    item_type: item
+    category: cosmetic
+    fungible: true
+    stack_size: 31
+    transfer_policy: none
+    client_writable: false
   - id: daf632a6-269d-5d1b-ae16-ac94d12b9ae3
     slug: item-2026-12-01
     display_name: "Glass bauble"
@@ -5424,7 +5526,7 @@ items:
     client_writable: false
   - id: a613159d-9da0-535c-ad52-d0c6a6b48685
     slug: item-2027-01-06
-    display_name: "Cinnamon bun"
+    display_name: "Snowshoes"
     item_type: item
     category: cosmetic
     fungible: true
