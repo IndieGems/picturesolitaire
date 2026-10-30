@@ -92,6 +92,8 @@ const ratioWords = (a) => {
   return a.toFixed(2);
 };
 const isFlagged = (p) => p.flag?.flagged === true;
+/** Marked to be redrawn cleaner (the creator, 2026-10-30): still in the game, on Art's to-do list. */
+const isRedraw = (p) => p.redraw?.redraw === true;
 // Don't-use pictures sort to the bottom of every group (the creator, 2026-10-30). While a picture is
 // open the order holds still (`sunk`, frozen at opening), so flagging one never makes Next skip
 // ahead; it moves down when the sheet closes.
@@ -110,6 +112,7 @@ function matches(p) {
   if (view.family && familyOf(p) !== view.family) return false;
   if (view.show === "flagged" && !isFlagged(p)) return false;
   if (view.show === "ok" && isFlagged(p)) return false;
+  if (view.show === "redraw" && !isRedraw(p)) return false;
   if (view.show === "unused" && p.usedTotal > 0) return false;
   if (view.show === "cropped" && !isCropped(p)) return false;
   if (view.find) {
@@ -192,6 +195,7 @@ function drawNotes() {
 function tile(p) {
   const url = imgUrl(p);
   const flagged = isFlagged(p);
+  const redraw = isRedraw(p);
   const meta = [sizeOf(p), mediumWord(p.medium)];
   const metaLine = el("span", { class: "meta", text: meta.join(" · ") + " · " });
   metaLine.append(
@@ -203,7 +207,13 @@ function tile(p) {
   );
   return el(
     "button",
-    { type: "button", class: `tile${flagged ? " flagged" : ""}`, "data-id": p.id, onclick: () => openDetail(p.id), title: flagged && p.flag.note ? `Don't use: ${p.flag.note}` : null },
+    {
+      type: "button",
+      class: `tile${flagged ? " flagged" : ""}${redraw ? " redraw" : ""}`,
+      "data-id": p.id,
+      onclick: () => openDetail(p.id),
+      title: [flagged && p.flag.note ? `Don't use: ${p.flag.note}` : "", redraw ? `Redraw${p.redraw.note ? `: ${p.redraw.note}` : ""}` : ""].filter(Boolean).join(" · ") || null,
+    },
     // the picture as the game shows it: its cards' shape, centre-cropped
     el(
       "span",
@@ -213,6 +223,7 @@ function tile(p) {
         { class: `shape ${windowAspect(p) >= 1 ? "wide" : "tall"}`, style: `--ar:${windowAspect(p)}` },
         url ? el("img", { src: url, alt: "", loading: "lazy", decoding: "async" }) : el("span", { class: "missing", text: "No picture file yet" }),
       ),
+      redraw ? el("span", { class: "badge-redraw", text: "Redraw" }) : null,
     ),
     el("span", { class: "name", text: p.title ?? p.id }),
     metaLine,
@@ -222,9 +233,10 @@ function tile(p) {
 function drawGrid() {
   const shown = lib.pictures.filter(matches);
   const flagged = lib.pictures.filter(isFlagged).length;
+  const redraws = lib.pictures.filter(isRedraw).length;
   const families = new Set(lib.pictures.map(familyOf).filter((f) => f !== SOLO)).size;
   $("count").textContent =
-    `${plural(lib.pictures.length, "picture")} · ${plural(lib.albums.length, "album")} · ${plural(families, "family", "families")} · ${flagged} flagged · cards ${ratioWords(cardAspect())}` +
+    `${plural(lib.pictures.length, "picture")} · ${plural(lib.albums.length, "album")} · ${plural(families, "family", "families")} · ${flagged} flagged · ${redraws} to redraw · cards ${ratioWords(cardAspect())}` +
     (shown.length !== lib.pictures.length ? ` · showing ${shown.length}` : "");
   const grid = $("grid");
   const sections = groups(shown).map((g) =>
@@ -253,14 +265,21 @@ function drawAll() {
 
 let noteDirty = false;
 let noteTimer = 0;
+let rdDirty = false;
+let rdTimer = 0;
 
 function openDetail(id) {
-  if (view.open && view.open !== id) flushNote();
+  if (view.open && view.open !== id) {
+    flushNote();
+    flushRedraw();
+  }
   if (!view.open) sunk = new Set(lib.pictures.filter(isFlagged).map((p) => p.id));
   view.open = id;
   writeHash();
   noteDirty = false;
+  rdDirty = false;
   $("d-saved").textContent = "";
+  $("d-rd-saved").textContent = "";
   $("detail").hidden = false;
   // each picture opens at its top
   document.querySelector(".sheet").scrollTop = 0;
@@ -270,6 +289,7 @@ function openDetail(id) {
 
 function closeDetail() {
   flushNote();
+  flushRedraw();
   view.open = "";
   writeHash();
   $("detail").hidden = true;
@@ -406,6 +426,16 @@ function drawDetail(fresh = false) {
     if (!saved.classList.contains("err") && !saved.dataset.just) saved.textContent = p.flag?.date ? `${flagged ? "Flagged" : "Unflagged"} on ${day(p.flag.date)}` : "";
   }
 
+  // the redraw mark: its own switch and note, saved the same way, never touching the flag
+  const redraw = isRedraw(p);
+  $("d-rd-on").checked = redraw;
+  const rdNote = $("d-rd-note");
+  if (fresh || (!rdDirty && rdNote !== document.activeElement)) rdNote.value = p.redraw?.note ?? "";
+  if (!rdDirty) {
+    const saved = $("d-rd-saved");
+    if (!saved.classList.contains("err") && !saved.dataset.just) saved.textContent = p.redraw?.date ? `${redraw ? "Marked" : "Unmarked"} on ${day(p.redraw.date)}` : "";
+  }
+
   const order = shownInOrder();
   const i = order.findIndex((q) => q.id === p.id);
   $("d-prev").disabled = i <= 0;
@@ -436,6 +466,40 @@ async function saveFlag(flagged, note) {
     saved.classList.add("err");
     saved.textContent = `Not saved: ${e.message}`;
   }
+}
+
+async function saveRedraw(redraw, note) {
+  const id = view.open;
+  const saved = $("d-rd-saved");
+  saved.classList.remove("err");
+  saved.textContent = "Saving…";
+  try {
+    const res = await fetch("/api/redraw", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, redraw, note }) });
+    const body = await res.json().catch(() => ({}));
+    // a library server started before the switch existed: it needs one restart
+    if (res.status === 404) throw new Error("the library needs a restart for this switch (its server is older than the page)");
+    if (!res.ok) throw new Error(body.error || `the library answered ${res.status}`);
+    rdDirty = false;
+    const p = byId(id);
+    if (p) {
+      p.redraw = body.redraw;
+      if (view.open === id) {
+        saved.textContent = redraw ? "Saved: marked for Art to redraw cleaner." : "Saved: no longer marked for redraw.";
+        saved.dataset.just = "1";
+        setTimeout(() => delete saved.dataset.just, 2500);
+      }
+    }
+    await refresh(true);
+  } catch (e) {
+    saved.classList.add("err");
+    saved.textContent = `Not saved: ${e.message}`;
+  }
+}
+
+function flushRedraw() {
+  if (!rdDirty) return;
+  clearTimeout(rdTimer);
+  void saveRedraw($("d-rd-on").checked, $("d-rd-note").value);
 }
 
 function flushNote() {
@@ -519,6 +583,22 @@ $("d-note").addEventListener("input", () => {
   noteTimer = setTimeout(flushNote, 700);
 });
 $("d-note").addEventListener("blur", flushNote);
+$("d-rd").addEventListener("submit", (e) => {
+  e.preventDefault();
+  flushRedraw();
+});
+$("d-rd-on").addEventListener("change", () => {
+  clearTimeout(rdTimer);
+  void saveRedraw($("d-rd-on").checked, $("d-rd-note").value);
+});
+$("d-rd-note").addEventListener("input", () => {
+  rdDirty = true;
+  $("d-rd-saved").classList.remove("err");
+  $("d-rd-saved").textContent = "…";
+  clearTimeout(rdTimer);
+  rdTimer = setTimeout(flushRedraw, 700);
+});
+$("d-rd-note").addEventListener("blur", flushRedraw);
 $("d-quick").replaceChildren(
   ...QUICK_NOTES.map((n) =>
     el("button", {

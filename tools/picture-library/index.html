@@ -29,6 +29,7 @@
             <option value="">Every picture</option>
             <option value="flagged">Flagged only</option>
             <option value="ok">Not flagged</option>
+            <option value="redraw">Marked for redraw</option>
             <option value="unused">In no board</option>
             <option value="cropped">Cropped to the card shape</option>
           </select>
@@ -65,6 +66,17 @@
               <div class="quick" id="d-quick"></div>
               <div class="flag-foot">
                 <span class="saved" id="d-saved" aria-live="polite"></span>
+              </div>
+            </form>
+            <form class="flag redraw" id="d-rd">
+              <label class="switch">
+                <input type="checkbox" id="d-rd-on" />
+                <span>Redraw cleaner</span>
+              </label>
+              <input id="d-rd-note" type="text" maxlength="200" placeholder="What's wrong? (optional)" aria-label="What's wrong" />
+              <p class="rd-why">Stays in the game. Art redraws the marked ones in the flat, smooth style.</p>
+              <div class="flag-foot">
+                <span class="saved" id="d-rd-saved" aria-live="polite"></span>
               </div>
             </form>
             <dl id="d-facts"></dl>

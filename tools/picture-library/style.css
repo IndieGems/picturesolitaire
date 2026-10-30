@@ -110,6 +110,15 @@ button, input, select { font: inherit; }
 .tile.flagged .shape img { opacity: 0.45; filter: grayscale(0.6); }
 .tile.flagged .name::before { content: "Don't use · "; color: var(--flag); font-weight: 600; }
 .tile .meta .redeal { color: var(--flag); }
+/* marked to be redrawn cleaner: a small badge on the picture's corner (still in the game) */
+.tile .frame { position: relative; }
+.tile .badge-redraw {
+  position: absolute; top: 6px; right: 6px; padding: 2px 8px; border-radius: 999px;
+  background: #3a8fd6; color: #fff; font-size: 12px; font-weight: 600; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+/* the redraw switch's box: blue, so it never reads as the don't-use one */
+.flag.redraw .switch input { accent-color: #3a8fd6; }
+.flag.redraw .rd-why { margin: 0; color: var(--paper-soft); font-size: 13px; }
 .empty { color: var(--paper-soft); padding: 30px 0; }
 
 /* ---- the picture, large ---- */
