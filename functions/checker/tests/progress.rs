@@ -48,6 +48,22 @@ fn a_souvenir_waits_for_its_trips_stamp_then_puts_its_sticker_in_the_record() {
 }
 
 #[test]
+fn an_event_level_keeps_its_fewest_moves_and_moves_no_campaign_position() {
+    // its gates (VIP, the event released) are lib.rs's, before the record is touched
+    let mut d = progress::empty();
+    let e = win(Lane::Event, "halloween-2026-04", 21, &["item-halloween-2026-01", "ev-b"]);
+    assert_eq!(apply(&mut d, &e, Some("k1"), None), Ok(true));
+    assert_eq!(d["event"], json!({ "halloween-2026-04": 21 }));
+    assert_eq!(d["campaign"], json!({ "next": 1, "won": 0 }));
+    assert!(d["restored"].as_array().unwrap().iter().any(|p| p == "ev-b"), "its pictures count as restored, as any board's");
+    assert_eq!(apply(&mut d, &e, Some("k1"), None), Ok(false), "a resend changes nothing");
+    apply(&mut d, &Win { moves: 25, ..e.clone() }, Some("k2"), None).unwrap();
+    apply(&mut d, &Win { moves: 18, ..e.clone() }, Some("k3"), None).unwrap();
+    assert_eq!(d["event"]["halloween-2026-04"], 18);
+    assert!(progress::normal(Some(json!({ "v": 1 }))).get("event").is_none());
+}
+
+#[test]
 fn a_campaign_win_moves_the_next_board_and_restores_its_pictures() {
     let mut d = progress::empty();
     assert_eq!(apply(&mut d, &win(Lane::Campaign, "c01", 7, &["a", "b"]), Some("k1"), Some(1)), Ok(true));

@@ -60,7 +60,13 @@ const KEEP = TABLES_FILE().find((t) => t.award === "onboarding");
 const ONBOARDING = { board: KEEP?.board ?? "c01", coins: KEEP?.coins ?? 100 };
 const DAILY_COINS = 50;
 // souvenir: the bonus board after each trip, in souvenirs.json (docs/souvenirs.md); paid as its trip's relief board (below)
-const LANES = { campaign: { label: "Campaign board", most: 40 }, challenge: { label: "Challenge board", most: 50 }, souvenir: { label: "Souvenir", most: 40, file: "souvenirs" } };
+// event: an event's 30 levels (docs/vip.md, VIP packs), in event-levels.json; paid by the campaign's rule, once each
+const LANES = {
+  campaign: { label: "Campaign board", most: 40 },
+  challenge: { label: "Challenge board", most: 50 },
+  souvenir: { label: "Souvenir", most: 40, file: "souvenirs" },
+  event: { label: "Event level", most: 40, file: "event-levels" },
+};
 
 /** A board's Coins, from the moves of its stored winning line. */
 export const coinsFor = (moves, most) => Math.max(10, Math.min(most, Math.round((moves * 1.1) / 5) * 5));
@@ -189,7 +195,7 @@ const SOLD = [...TABLES.filter((t) => t.award === "shop").map((t) => ({ ...t, ki
 {
   // the event's analytics are recorded by the checker under a declared event: every event needs declaring
   const text = readFileSync(CONFIG, "utf8");
-  for (const id of ["suitcase_item", "suitcase_swap", "suitcase_complete"]) {
+  for (const id of ["event_item", "event_complete"]) {
     const at = text.indexOf(`- id: ${id}\n`);
     const block = at < 0 ? "" : text.slice(at, text.indexOf("\n  - id:", at + 1));
     const missing = EVENTS.filter((e) => !block.includes(`"${e.id}"`)).map((e) => e.id);
@@ -328,7 +334,11 @@ for (const [lane, { label, most, file: name }] of Object.entries(LANES)) {
   JSON.parse(readFileSync(file, "utf8")).levels.forEach((l, i) => {
     const moves = l.line.length;
     const coins = l.id === ONBOARDING.board ? ONBOARDING.coins : lane === "souvenir" ? souvenirCoins(l, most) : coinsFor(moves, most);
-    rows.push({ lane, id: l.id, n: i + 1, label: `${label} ${i + 1}`, moves, coins, onboarding: l.id === ONBOARDING.board, ...(l.trip ? { trip: l.trip } : {}) });
+    // an event level is named by its event and its place in it ("Haunted Holiday level 4")
+    const ev = lane === "event" ? EVENTS.find((e) => (e.levels ?? []).includes(l.id)) : undefined;
+    if (lane === "event" && !ev) throw new Error(`make-config: event level ${l.id}: no event in events.json lists it`);
+    const name = ev ? `${ev.theme} level ${ev.levels.indexOf(l.id) + 1}` : `${label} ${i + 1}`;
+    rows.push({ lane, id: l.id, n: i + 1, label: name, moves, coins, onboarding: l.id === ONBOARDING.board, ...(l.trip ? { trip: l.trip } : {}), ...(ev ? { event: ev.id } : {}) });
   });
 }
 
@@ -406,9 +416,9 @@ y.push("        - mode: on_add");
 y.push(`          per_unit: ${DAILY_COINS}`);
 y.push("          target: { platform_currency_slug: ARCADE_TICKETS }");
 if (EVENTS.length || RETIRED.length) {
-  y.push("  # THE EVENT (docs/vip.md): two weeks of dailies, for VIPs only, so the Arcade never shows it (it");
-  y.push("  # cannot show a challenge to VIPs alone). This challenge stays declared and is written by nothing");
-  y.push("  # now; the checker packs the day's item, swaps and pays each event's prize once (the marks below).");
+  y.push("  # THE EVENTS (docs/vip.md): VIP packs of 30 levels each (their Coins: the board progressions");
+  y.push("  # above), with 10 items hidden one per level. This old challenge stays declared and is written by");
+  y.push("  # nothing; the checker packs a level's item on its first win and pays each event's prize once (the marks below).");
   y.push(`  - id: ${SUITCASE.event.id}`);
   y.push(`    slug: ${SUITCASE.event.slug}`);
   y.push(`    display_name: "Daily Suitcase"`);
@@ -529,8 +539,9 @@ if (TRACKS.length) {
   }
 }
 if (EVENTS.length || RETIRED.length) {
-  y.push("# The event items (src/content/levels/events.json, and the old months' kept): a copy held per");
-  y.push("# day packed, spares swapped by the checker; cosmetic, never traded, never written by the game.");
+  y.push("# The event items (src/content/levels/events.json, and the old months' kept): one held per item");
+  y.push("# found, granted by the checker on the first win of its level; cosmetic, never traded, never");
+  y.push("# written by the game.");
   if (!TABLES.length) y.push("items:");
   const seen = new Set();
   for (const m of [...EVENTS, ...RETIRED]) {
@@ -659,6 +670,16 @@ if (ch.length) {
 md.push(`- Daily: ${DAILY_COINS} once a day, on top.`);
 const sv = lane("souvenir");
 md.push(sv.length ? `- Souvenirs: ${sv.length} of ${TRIPS.length} trips dealt, ${sum(sv)} Coins in all, once each (${sv.map((r) => `${r.id} ${r.coins}`).join(", ")}).` : "- Souvenirs: none dealt yet (Levels' src/content/levels/souvenirs.json).");
+const evs = lane("event");
+if (evs.length) {
+  const avg = sum(evs) / evs.length;
+  const per = EVENTS.filter((e) => (e.levels ?? []).length).map((e) => `${e.id} ${sum(evs.filter((r) => r.event === e.id))}`);
+  md.push(`- Events (VIPs only, docs/vip.md): ${evs.length} levels, ${sum(evs)} Coins in all, once each, by the campaign's rule (${per.join(", ")}).`);
+  md.push(`  ${Math.round(avg)} a level: at 3 minutes a level about ${Math.round((avg * 60) / 3)} an hour, the campaign's rate, so the hourly figure`);
+  md.push("  stands; an event adds its total once, like a stretch of the campaign.");
+} else {
+  md.push("- Events: none dealt yet (Levels' src/content/levels/event-levels.json).");
+}
 md.push("- One-time: the onboarding prize. Replays and campaign boards past the last pay nothing.");
 md.push("- **Still to measure**: real minutes per board once the creator has played some (the lead's");
 md.push("  note): if boards run much faster or slower than 2 to 4 minutes, change the rule here.");
@@ -670,4 +691,4 @@ md.push("|---|---|---|---|");
 for (const r of rows) md.push(`| ${r.id} | ${r.lane} ${r.n} | ${r.moves} | ${r.coins}${r.onboarding ? " (onboarding prize)" : ""} |`);
 md.push("");
 writeFileSync(join(root, "docs/coins.md"), md.join("\n"));
-console.log(`config: ${rows.length} board progressions (${camp.length} campaign, ${ch.length} challenge, ${lane("souvenir").length} souvenir), the daily, its run type and board; docs/coins.md`);
+console.log(`config: ${rows.length} board progressions (${camp.length} campaign, ${ch.length} challenge, ${lane("souvenir").length} souvenir, ${lane("event").length} event), the daily, its run type and board; docs/coins.md`);

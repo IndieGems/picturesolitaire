@@ -159,6 +159,9 @@ pub enum Lane {
     Daily,
     /// The optional bonus board after a trip (docs/souvenirs.md): paid once, its sticker in the record.
     Souvenir,
+    /// One of an event's 30 levels (docs/vip.md): a VIP's, from its release on; paid once, its item
+    /// packed on its first win (lib.rs, suitcase.rs).
+    Event,
 }
 
 impl Lane {
@@ -168,6 +171,7 @@ impl Lane {
             Lane::Challenge => "challenge",
             Lane::Daily => "daily",
             Lane::Souvenir => "souvenir",
+            Lane::Event => "event",
         }
     }
 }
@@ -242,6 +246,7 @@ pub fn check(input: &[u8], data: &Data) -> Result<Win, Refusal> {
         Some("challenge") => Lane::Challenge,
         Some("daily") => Lane::Daily,
         Some("souvenir") => Lane::Souvenir,
+        Some("event") => Lane::Event,
         _ => return Err(bad("unknown lane")),
     };
     let board = c["board"].as_str().ok_or_else(|| bad("no board"))?.to_string();

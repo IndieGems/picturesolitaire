@@ -10,6 +10,7 @@
 //   progress().challenge[id]   best (fewest) moves on a cleared challenge board
 //   progress().daily[date]     the first verified result of that date { moves, ms }
 //   progress().souvenir[id]    best (fewest) moves on a Souvenir won ("s1"): its sticker (docs/souvenirs.md)
+//   progress().event[id]       best (fewest) moves on an event level won ("halloween-2026-04"; a VIP's, docs/vip.md)
 //   progress().restored        pictures of boards won
 //   progress().counts          the achievements' counters as the checker last set them, by counter slug
 //                              (src/net/achievements.ts); absent on a record from before checker 0.1.35
@@ -43,6 +44,8 @@ export interface Progress {
   daily: Record<string, { moves: number; ms: number }>;
   /** Souvenirs won, by id: best (fewest) moves. Won when present. */
   souvenir: Record<string, number>;
+  /** Event levels won (a VIP's, docs/vip.md), by id: best (fewest) moves. Won when present. */
+  event: Record<string, number>;
   restored: string[];
   /** The achievements' counters as the checker last set them (functions/checker/src/count.rs), by counter slug; absent on a record from before them. Held wins never change it. */
   counts?: Record<string, number>;
@@ -50,7 +53,7 @@ export interface Progress {
 
 /** What a won board would change, held until the checker answers. */
 export interface HeldWin {
-  lane: "campaign" | "challenge" | "daily" | "souvenir";
+  lane: "campaign" | "challenge" | "daily" | "souvenir" | "event";
   board: string;
   /** Campaign position. */
   n?: number;
@@ -63,7 +66,7 @@ export interface HeldWin {
 const SLOT = "progress";
 const framed = window.self !== window.top;
 
-const empty = (): Progress => ({ campaign: { next: 1, won: 0 }, challenge: {}, daily: {}, souvenir: {}, restored: [] });
+const empty = (): Progress => ({ campaign: { next: 1, won: 0 }, challenge: {}, daily: {}, souvenir: {}, event: {}, restored: [] });
 
 let server: Progress = empty();
 /** The server's record was a stored one (a player with a win), not the empty start of a new player. */
@@ -99,6 +102,7 @@ function normal(x: unknown): Progress {
     challenge: d.challenge && typeof d.challenge === "object" ? { ...d.challenge } : {},
     daily: d.daily && typeof d.daily === "object" ? { ...d.daily } : {},
     souvenir: d.souvenir && typeof d.souvenir === "object" ? { ...d.souvenir } : {},
+    event: d.event && typeof d.event === "object" ? { ...d.event } : {},
     restored: Array.isArray(d.restored) ? d.restored.filter((p): p is string => typeof p === "string") : [],
     ...(d.counts && typeof d.counts === "object"
       ? { counts: Object.fromEntries(Object.entries(d.counts).filter((e): e is [string, number] => Number.isInteger(e[1]) && e[1] >= 0)) }
@@ -113,7 +117,7 @@ function applyWin(p: Progress, w: HeldWin): void {
     const n = Math.min(w.n ?? p.campaign.next, end); // past the last board: a replay
     if (n > p.campaign.next) return; // an earlier win is still on its way
     p.campaign = { next: Math.min(Math.max(p.campaign.next, n + 1), end), won: p.campaign.won + 1 };
-  } else if (w.lane === "challenge" || w.lane === "souvenir") {
+  } else if (w.lane === "challenge" || w.lane === "souvenir" || w.lane === "event") {
     const best = p[w.lane][w.board];
     if (best === undefined || w.moves < best) p[w.lane][w.board] = w.moves;
   } else if (w.date && !p.daily[w.date]) {
@@ -143,6 +147,8 @@ export const isRestored = (pictureId: string): boolean => progress().restored.in
 export const guideDone = (): boolean => progress().campaign.next > 1;
 /** A Souvenir is won (its sticker shows) once its id is in the record: its best moves, or undefined. */
 export const souvenirBest = (id: string): number | undefined => progress().souvenir[id];
+/** An event level's best (fewest) moves, once won (a VIP's: the checker refuses anyone else's). */
+export const eventBest = (id: string): number | undefined => progress().event[id];
 export const dailyResult = (date: string): { moves: number; ms: number } | undefined => progress().daily[date];
 /** Every counter at 0: a new player's (src/net/achievements.json's counters). */
 const NONE: Readonly<Record<string, number>> = Object.freeze(Object.fromEntries((ACHIEVEMENT_DATA.counters as { slug: string }[]).map((c) => [c.slug, 0])));

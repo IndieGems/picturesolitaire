@@ -39,7 +39,7 @@ fn line_of(lane: &str, l: &Value) -> String {
 }
 
 /** (lane, its file in src/content/levels): tools/server/levels-hash.mts has the same list. */
-const LANES: [(&str, &str); 4] = [("campaign", "campaign"), ("challenge", "challenge"), ("daily", "daily"), ("souvenir", "souvenirs")];
+const LANES: [(&str, &str); 5] = [("campaign", "campaign"), ("challenge", "challenge"), ("daily", "daily"), ("souvenir", "souvenirs"), ("event", "event-levels")];
 
 fn compact(lane: &str, l: &Value) -> Value {
     json!({
@@ -134,9 +134,9 @@ fn main() {
     };
     let trips = read(&levels.join("trips.json"));
     let last: Vec<u64> = trips["trips"].as_array().into_iter().flatten().filter_map(|t| t["to"].as_u64()).collect();
-    for (lane, name) in [("campaign", "campaign"), ("challenge", "challenge"), ("souvenir", "souvenirs")] {
+    for (lane, name) in [("campaign", "campaign"), ("challenge", "challenge"), ("souvenir", "souvenirs"), ("event", "event-levels")] {
         let path = levels.join(format!("{name}.json"));
-        if lane == "souvenir" && !path.exists() {
+        if (lane == "souvenir" || lane == "event") && !path.exists() {
             continue;
         }
         let data = read(&path);
@@ -175,14 +175,14 @@ fn main() {
     let counts = json!({ "counters": counters, "marks": marks, "trips": last });
     fs::write(Path::new(&env::var("OUT_DIR").unwrap()).join("counts.json"), counts.to_string()).unwrap();
 
-    // THE EVENT (OUT_DIR/suitcases.json, read by src/suitcase.rs; docs/vip.md): Levels' two-week
-    // events (src/content/levels/events.json; until it lands, the old months of suitcases.json, each
-    // read as one event named by its month) with each item's and each event's prize mark's id
-    // (name-based, exactly as make-config.mts writes them into the config), the event's table item
-    // (src/net/tables.json) unless it is the built-in table, and the fixed ids
-    // (src/net/suitcase-ids.json). The schedule is the date's, so a day's item is the same
-    // whichever version of its board was played. A daily board that names its item must name
-    // its date's, and hold it as one of its own pictures (check.mts proves the same).
+    // THE EVENTS (OUT_DIR/suitcases.json, read by src/suitcase.rs; docs/vip.md): Levels' VIP packs,
+    // each 30 levels of its own (src/content/levels/events.json for the event, event-levels.json for
+    // its boards, the "event" lane above) with 10 items, each hidden in one of its levels. Compiled:
+    // each event's release date, its levels in play order, its items with their ids (name-based,
+    // exactly as make-config.mts writes them into the config) and the level each is in, its prize
+    // mark's id, its table item (src/net/tables.json) unless it is the built-in table, and the fixed
+    // ids (src/net/suitcase-ids.json). The dailies carry no items: one that still names one packs
+    // nothing (a warning here; Levels' check.mts refuses it).
     let fixed = read(&Path::new(&here).join("../../src/net/suitcase-ids.json"));
     let built_in = fixed["builtInTable"].as_str().expect("src/net/suitcase-ids.json names its builtInTable");
     let table_items = read(&tables_file)["tables"].as_array().cloned().unwrap_or_default();
@@ -192,56 +192,60 @@ fn main() {
         "{built_in} is an item in src/net/tables.json and also src/net/suitcase-ids.json's builtInTable: an event showing it would pay no table"
     );
     let events_file = levels.join("events.json");
-    let schedule = levels.join("suitcases.json");
+    let boards_file = levels.join("event-levels.json");
     println!("cargo:rerun-if-changed={}", events_file.display());
-    println!("cargo:rerun-if-changed={}", schedule.display());
+    println!("cargo:rerun-if-changed={}", boards_file.display());
     let parse = |p: &Path| -> Option<Value> { fs::read_to_string(p).ok().map(|t| serde_json::from_str::<Value>(&t).unwrap_or_else(|e| panic!("{}: {e}", p.display()))) };
-    let source: Vec<Value> = match parse(&events_file) {
-        Some(v) => v["events"].as_array().cloned().unwrap_or_default(),
-        None => parse(&schedule)
-            .and_then(|v| v["months"].as_array().cloned())
-            .unwrap_or_default()
-            .into_iter()
-            .map(|mut m| {
-                let days = m["days"].as_object().cloned().unwrap_or_default();
-                m["id"] = m["month"].clone();
-                m["start"] = json!(days.keys().min());
-                m["end"] = json!(days.keys().max());
-                m
-            })
-            .collect(),
-    };
-    let daily = read(&levels.join("daily.json"));
-    let by_date: std::collections::HashMap<&str, &Value> =
-        daily["levels"].as_array().into_iter().flatten().filter_map(|l| Some((l["date"].as_str()?, l))).collect();
+    let source: Vec<Value> = parse(&events_file).and_then(|v| v["events"].as_array().cloned()).unwrap_or_default();
+    let boards: Vec<Value> = parse(&boards_file).and_then(|v| v["levels"].as_array().cloned()).unwrap_or_default();
+    let board_of = |id: &str| boards.iter().find(|b| b["id"] == id);
     let mut events: Vec<Value> = Vec::new();
-    let mut unmarked = 0;
+    let mut every_item = std::collections::HashSet::new();
     for m in &source {
         let id = m["id"].as_str().expect("an event names its id");
+        // the release date (Levels' "release"; "start" from the first draft of the shape)
+        let release = m["release"].as_str().or(m["start"].as_str()).unwrap_or_else(|| panic!("event {id}: no release date"));
+        let level_ids: Vec<&str> = m["levels"].as_array().into_iter().flatten().filter_map(|l| l.as_str()).collect();
+        if level_ids.is_empty() && m["days"].is_object() {
+            // the two-week shape (events.json v2), until Levels' 30 levels land: an event with no levels
+            println!("cargo:warning=event {id}: still the two-week shape (days), no levels yet: nothing of it can be won");
+        }
+        for l in &level_ids {
+            let b = board_of(l).unwrap_or_else(|| panic!("event {id}: its level {l} is not in event-levels.json"));
+            assert!(b["event"] == id, "event-levels.json {l}: its event is {}, but {id} lists it", b["event"]);
+        }
+        let mut holding = std::collections::HashSet::new();
         let items: Vec<Value> = m["items"]
             .as_array()
             .unwrap_or_else(|| panic!("event {id}: no items"))
             .iter()
             .map(|i| {
                 let item = i["id"].as_str().unwrap_or_else(|| panic!("event {id}: an item with no id"));
-                json!({ "id": item, "uuid": uuid5(&format!("suitcase:item:{item}")) })
+                assert!(every_item.insert(item.to_string()), "item {item} is in two events");
+                let level = i["level"].as_str();
+                if let Some(level) = level {
+                    assert!(level_ids.contains(&level), "event {id}: its item {item} is in {level}, which is not one of its levels");
+                    assert!(holding.insert(level.to_string()), "event {id}: {level} holds two items");
+                    let b = board_of(level).expect("checked above");
+                    assert!(b["item"]["id"] == item, "event-levels.json {level}: its item is {}, but event {id} hides {item} there", b["item"]["id"]);
+                    assert!(
+                        b["pictures"].as_array().into_iter().flatten().any(|p| p["id"] == item),
+                        "event-levels.json {level}: its item {item} is not one of its pictures"
+                    );
+                } else if !level_ids.is_empty() {
+                    panic!("event {id}: its item {item} names no level");
+                }
+                json!({ "id": item, "uuid": uuid5(&format!("suitcase:item:{item}")), "level": level })
             })
             .collect();
-        let days = m["days"].as_object().unwrap_or_else(|| panic!("event {id}: no days"));
-        let (start, end) = (m["start"].as_str().unwrap_or_default(), m["end"].as_str().unwrap_or_default());
-        for (date, item) in days {
-            let item = item.as_str().unwrap_or_default();
-            assert!(start <= date.as_str() && date.as_str() <= end, "event {id}: {date} is outside {start} to {end}");
-            assert!(items.iter().any(|i| i["id"] == item), "event {id}: {date}'s item {item} is not one of the event's");
-            let Some(level) = by_date.get(date.as_str()) else { continue };
-            match level["item"]["id"].as_str() {
-                Some(named) if named == item => assert!(
-                    level["pictures"].as_array().into_iter().flatten().any(|p| p["id"] == item),
-                    "daily {date}: its item {item} is not one of its pictures"
-                ),
-                Some(named) => panic!("daily {date}: its board's item is {named}, but the event {id} says {item}"),
-                None => unmarked += 1,
+        // a level that names an item the event does not hide there
+        for l in &level_ids {
+            if let Some(named) = board_of(l).and_then(|b| b["item"]["id"].as_str()) {
+                assert!(holding.contains(*l), "event-levels.json {l}: it holds {named}, which event {id} does not hide there");
             }
+        }
+        if !level_ids.is_empty() && (level_ids.len() != 30 || items.len() != 10) {
+            println!("cargo:warning=event {id}: {} levels and {} items (the design is 30 and 10)", level_ids.len(), items.len());
         }
         let slug = m["table"].as_str().unwrap_or(built_in);
         let table = if slug == built_in {
@@ -254,19 +258,26 @@ fn main() {
             json!({ "slug": slug, "uuid": t["id"] })
         };
         events.push(json!({
-            "id": id, "theme": m["theme"], "start": start, "end": end, "items": items, "table": table,
-            "mark": uuid5(&format!("suitcase:prize:{id}")), "days": days,
+            "id": id, "theme": m["theme"], "release": release, "levels": level_ids, "items": items, "table": table,
+            "mark": uuid5(&format!("suitcase:prize:{id}")),
         }));
     }
-    if unmarked > 0 {
-        println!("cargo:warning=suitcase: {unmarked} scheduled daily boards do not name their item yet (packing goes by the date all the same)");
+    // every board of the lane is one of an event's
+    for b in &boards {
+        let l = b["id"].as_str().unwrap_or_default();
+        assert!(
+            events.iter().any(|e| e["levels"].as_array().is_some_and(|ls| ls.iter().any(|x| x == l))),
+            "event-levels.json {l}: no event in events.json lists it"
+        );
     }
-    // the event's one switch: anything but true (missing, mistyped) is off, which grants nothing
+    let daily = read(&levels.join("daily.json"));
+    let carrying = daily["levels"].as_array().into_iter().flatten().filter(|l| l["item"].is_object()).count();
+    if carrying > 0 {
+        println!("cargo:warning=events: {carrying} daily boards still name an item; a daily packs nothing now");
+    }
+    // the switch: anything but true (missing, mistyped) is off, which grants nothing
     let on = fixed["on"].as_bool() == Some(true);
-    let suitcases = json!({
-        "on": on, "event": fixed["event"], "prize": fixed["prize"], "spares": fixed["spares"],
-        "stack": fixed["stack"], "shelf": fixed["shelf"], "events": events,
-    });
+    let suitcases = json!({ "on": on, "prize": fixed["prize"], "events": events });
     fs::write(Path::new(&env::var("OUT_DIR").unwrap()).join("suitcases.json"), suitcases.to_string()).unwrap();
 }
 

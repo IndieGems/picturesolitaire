@@ -315,24 +315,38 @@ analytics_events:
   # `month` is the suitcase's own; make-config refuses to run while a month in
   # src/content/levels/suitcases.json is not declared here. `day` is the day of that month.
   - id: suitcase_item
-    description: "A VIP's event item packed by a first win of its day (today's, or a past day's): the event's items held after it, copies of that item, the day of the event (1 to 14)."
+    description: "Retired 2026-10-30 (events left the dailies; event_item replaces it): a VIP's event item packed by a first win of its day."
     sources: [server]
     dimensions:
       event: { values: ["halloween-2026", "ski-trip-2026", "winter-market-2026"] }
     measures: { collected: int, copies: int, day: int }
   - id: suitcase_swap
-    description: "Two spares swapped for a missing item, by a VIP: the event's items held after it, spares left, the day of the event (0 after it)."
+    description: "Retired 2026-10-30 (no swap any more): two spares swapped for a missing item, by a VIP."
     sources: [server]
     dimensions:
       event: { values: ["halloween-2026", "ski-trip-2026", "winter-market-2026"] }
     measures: { collected: int, spares_left: int, day: int }
   - id: suitcase_complete
-    description: "An event's suitcase full, its table and helpers paid: by a day's pack or by a swap, on which day of the event (0 after it)."
+    description: "Retired 2026-10-30 (event_complete replaces it): an event's suitcase full, by a day's pack or by a swap."
     sources: [server]
     dimensions:
       event: { values: ["halloween-2026", "ski-trip-2026", "winter-market-2026"] }
       by: { values: ["pack", "swap"] }
     measures: { day: int }
+  # THE EVENTS as level packs (docs/vip.md, 2026-10-30), recorded by the win checker: an item packed
+  # by a VIP's first win of the level hiding it, and an event's every item found (its table paid).
+  - id: event_item
+    description: "A VIP's event item packed by their first win of the level hiding it: the event's items found after it, and that level's place in the event (1 to 30)."
+    sources: [server]
+    dimensions:
+      event: { values: ["halloween-2026", "ski-trip-2026", "winter-market-2026"] }
+    measures: { found: int, level: int }
+  - id: event_complete
+    description: "An event's every item found, its table and helpers paid: the place in the event (1 to 30) of the level whose item was the last."
+    sources: [server]
+    dimensions:
+      event: { values: ["halloween-2026", "ski-trip-2026", "winter-market-2026"] }
+    measures: { level: int }
   # FRIEND CHALLENGES (docs/friend-challenges.md), sent by the game (src/net/friends.ts): a
   # challenge sent or not sent from the Arcade's sheet, a link shared, the game opened by either,
   # and the one-off board's result against the friend's moves. `kind` is a campaign board or a daily.
@@ -2412,9 +2426,9 @@ progressions:
         - mode: on_add
           per_unit: 50
           target: { platform_currency_slug: ARCADE_TICKETS }
-  # THE EVENT (docs/vip.md): two weeks of dailies, for VIPs only, so the Arcade never shows it (it
-  # cannot show a challenge to VIPs alone). This challenge stays declared and is written by nothing
-  # now; the checker packs the day's item, swaps and pays each event's prize once (the marks below).
+  # THE EVENTS (docs/vip.md): VIP packs of 30 levels each (their Coins: the board progressions
+  # above), with 10 items hidden one per level. This old challenge stays declared and is written by
+  # nothing; the checker packs a level's item on its first win and pays each event's prize once (the marks below).
   - id: f9849a15-3e7b-454e-a177-d7d6396cc911
     slug: suitcase
     display_name: "Daily Suitcase"
@@ -3275,8 +3289,9 @@ items:
     transfer_policy: none
     client_writable: false
     icon: tools/art/items/track-celtic-folk.png
-# The event items (src/content/levels/events.json, and the old months' kept): a copy held per
-# day packed, spares swapped by the checker; cosmetic, never traded, never written by the game.
+# The event items (src/content/levels/events.json, and the old months' kept): one held per item
+# found, granted by the checker on the first win of its level; cosmetic, never traded, never
+# written by the game.
   - id: 6560d3ed-bd04-5bab-a848-a57c8001e71c
     slug: item-halloween-2026-01
     display_name: "Bran Castle"

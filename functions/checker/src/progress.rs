@@ -17,10 +17,13 @@
 //!                                             trip's passport page (UI, 2026-10-28); absent until the first
 //!     "counts": { "levels_finished": 7, ... },  the achievements' counters as last set (count.rs,
 //!                                             written by lib.rs beside each win; derived, never read back)
-//!     "packed": { "halloween-2026": ["2026-10-15", ...] },  the event days whose item was packed for
-//!                                             this player (a VIP's), never pruned: so a past day packs once
+//!     "event": { "halloween-2026-04": 21 },  best (fewest) moves per event level won (docs/vip.md, a
+//!                                             VIP's): absent until the first
+//!     "packed": { "halloween-2026": ["2026-10-15", ...] },  from when events were dailies (until 0.1.40):
+//!                                             the days whose item was packed; kept, written by nothing now
 //!     "owed": { "2026-10-03": { "coins": true, "pack": false } },  a VIP's past day decided and not yet
 //!                                             confirmed paid (lib.rs, the archive): sent again, then cleared
+//!                                             ("pack" is always false now: a daily packs nothing)
 //!     "imported": { "from": "campaign" },   only on a record begun before 0.1.28 from an old device save; read by nothing
 //!     "seen": ["<claim id>", ...] }          the last claims applied, so a resent claim changes nothing
 
@@ -138,6 +141,16 @@ pub fn apply(doc: &mut Value, win: &Win, claim_id: Option<&str>, n: Option<u64>,
             let best = doc["souvenir"][&win.board].as_u64();
             if best.map_or(true, |b| (win.moves as u64) < b) {
                 doc["souvenir"][&win.board] = json!(win.moves);
+            }
+        }
+        Lane::Event => {
+            // an event level (VIP only, released: lib.rs decided before this is applied)
+            if !doc["event"].is_object() {
+                doc["event"] = json!({});
+            }
+            let best = doc["event"][&win.board].as_u64();
+            if best.map_or(true, |b| (win.moves as u64) < b) {
+                doc["event"][&win.board] = json!(win.moves);
             }
         }
         Lane::Daily => {

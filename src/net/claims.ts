@@ -50,12 +50,16 @@ import { helpers, type Gift, type HelperKind } from "./helpers";
 import { noAnswer, refusalOf } from "./no-answer";
 import { backoff, heard, held, notNow, whenDue } from "./pace";
 import { answered, hold, type HeldWin } from "./progress";
-import { accept as acceptSuitcase, suitcase, type Suitcase } from "./suitcase";
+import { accept as acceptSuitcase, suitcase, type EventPack } from "./suitcase";
 import { tableOf } from "./tables";
 import { heardVip, vipFields } from "./vip";
 
-/** "souvenir": the bonus board after a trip (docs/souvenirs.md), sent once its trip is stamped; no n, no date. */
-export type Lane = "campaign" | "challenge" | "daily" | "souvenir";
+/**
+ * "souvenir": the bonus board after a trip (docs/souvenirs.md), sent once its trip is stamped; no n, no date.
+ * "event": one of an event's 30 levels (docs/vip.md; board "halloween-2026-04"), a VIP's, from its
+ * release on: anyone else's is refused "vip_only", an unreleased one "not_released"; no n, no date.
+ */
+export type Lane = "campaign" | "challenge" | "daily" | "souvenir" | "event";
 
 export interface WinClaim {
   lane: Lane;
@@ -86,17 +90,19 @@ interface Answered {
   helpers?: Record<HelperKind, number>;
   /** What they were given for: the kit (board 1's end, or the next win of a player past it), a hard board's first win, a trip's last board, the daily puzzle's first win of the day, a full Daily Suitcase (its helpers are in `helpers` too). */
   gifts?: Gift[];
-  /** Daily only: the day's suitcase item this win packed, and the copies held after it. Only on the day's first win: a replay or a late finish packs nothing. */
+  /** Event levels only: the item hidden in this level, packed by its first win (1 held after it). A replay, or a level with no item, packs nothing. */
   packed?: { item: string; count: number };
-  /** Daily only, with `packed`: the month's suitcase after it (src/net/suitcase.ts). */
-  suitcase?: Suitcase;
+  /** Event levels only, with `packed`: the event after it (src/net/suitcase.ts). */
+  suitcase?: EventPack;
+  /** Event levels only: the event's id. */
+  event?: string;
   /** Platform achievements this win unlocked (release only), earlier wins' catch-ups included: by id (src/net/achievements.json), with the points credited. src/net/achievements.ts's onUnlock hears them. */
   achievements?: { id: string; points: number }[];
   /**
    * Daily only, a VIP's past day (docs/vip.md): "paid", its Coins paid now (`coins` is what landed);
-   * "won_before", won already, nothing more; "event_only", older than the archive, so only its event
-   * item (if not packed before). A past day for a player who is not VIP is refused "vip_only", and
-   * a VIP's day older than the archive and in no event "too_old".
+   * "won_before", won already, nothing more ("event_only" is never sent now: the dailies carry no
+   * event items). A past day for a player who is not VIP is refused "vip_only", and a VIP's day older
+   * than the archive "too_old".
    */
   archive?: "paid" | "won_before" | "event_only";
   /** Daily only: the date, the time the board shows, whether the result is on the day's board, whether it is this player's first of the day. */
@@ -306,15 +312,15 @@ async function send(h: Held): Promise<void> {
       .map((a) => ({ id: a.id, points: Math.max(0, Math.floor(Number(a.points) || 0)) }));
     // the server granted what this device's cached inventory cannot know: read it afresh next time
     if (status === "paid" || items.length) gem.me.inventory.refresh();
-    // the Daily Suitcase follows the server's word too (a pack carries the month after it)
+    // the events follow the server's word too (an event level's pack carries its event after it)
     let packed: { item: string; count: number } | undefined;
-    let month: Suitcase | undefined;
-    if (lane === "daily") {
+    let pack: EventPack | undefined;
+    if (lane === "event") {
       acceptSuitcase(answer);
       const p = answer.packed as { item?: unknown; count?: unknown } | undefined;
       if (p && typeof p.item === "string") {
         packed = { item: p.item, count: Math.max(1, Math.floor(Number(p.count) || 1)) };
-        month = suitcase.current() ?? undefined;
+        pack = typeof answer.event === "string" ? suitcase.event(answer.event) : undefined;
       }
     }
     return settle(h, {
@@ -331,12 +337,15 @@ async function send(h: Held): Promise<void> {
       helpers: landedOf(answer.helpers),
       gifts: Array.isArray(answer.gifts) ? answer.gifts.filter((g): g is Gift => g === "kit" || g === "hard" || g === "stamp" || g === "daily" || g === "suitcase") : [],
       ...(packed ? { packed } : {}),
-      ...(month ? { suitcase: month } : {}),
+      ...(pack ? { suitcase: pack } : {}),
+      ...(lane === "event" && typeof answer.event === "string" ? { event: answer.event } : {}),
       ...(unlocked.length ? { achievements: unlocked } : {}),
       ...(answer.archive === "paid" || answer.archive === "won_before" || answer.archive === "event_only" ? { archive: answer.archive } : {}),
     }, answer.progress);
   }
   console.warn(`[claims] ${lane} ${board} refused: ${String(answer.reason)}`);
+  // an event level refused (no longer VIP, not released): read the events again
+  if (lane === "event") acceptSuitcase(answer);
   return settle(h, { status: "refused", lane, board, reason: String(answer.reason ?? "unknown") });
 }
 

@@ -27,6 +27,7 @@ and leaves the hourly rate where it is.
   At 4 minutes a board that is about 405 an hour; at 5 minutes 324.
 - Daily: 50 once a day, on top.
 - Souvenirs: 10 of 10 trips dealt, 350 Coins in all, once each (s1 20, s2 35, s3 30, s4 30, s5 40, s6 40, s7 40, s8 40, s9 35, s10 40).
+- Events: none dealt yet (Levels' src/content/levels/event-levels.json).
 - One-time: the onboarding prize. Replays and campaign boards past the last pay nothing.
 - **Still to measure**: real minutes per board once the creator has played some (the lead's
   note): if boards run much faster or slower than 2 to 4 minutes, change the rule here.

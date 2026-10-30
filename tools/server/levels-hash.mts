@@ -12,9 +12,9 @@ import { fileURLToPath } from "node:url";
 import { dealHash } from "../../src/net/deal-hash.ts";
 
 export const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
-export const LANES = ["campaign", "challenge", "daily", "souvenir"];
+export const LANES = ["campaign", "challenge", "daily", "souvenir", "event"];
 /** The level file a lane's boards are in (src/content/levels/<file>.json). */
-export const fileOf = (lane: string): string => (lane === "souvenir" ? "souvenirs" : lane);
+export const fileOf = (lane: string): string => (lane === "souvenir" ? "souvenirs" : lane === "event" ? "event-levels" : lane);
 
 export function levelsHash(): string {
   const lines = [];
