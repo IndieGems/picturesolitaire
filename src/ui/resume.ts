@@ -4,7 +4,8 @@
 //
 //   at boot     the level kept last time (keptBoard: a save read, never waited on by home), as a
 //               play the game can open again: a campaign level the player has reached, the day's
-//               daily (that day only, by the platform's date), a challenge, a Souvenir; and only
+//               daily (that day only, by the platform's date), a challenge, a Souvenir, an event's
+//               level (a VIP's: VIP ended since lets it go); and only
 //               while it is still dealt as it was (fits). Anything else is let go (dropInHand).
 //   the offer   a small card over home once it is up with nothing over it (as a friend's challenge
 //               waits, app.ts): "Carry on?", where the level is ("Level 27 · Japan"), "It's just as
@@ -17,10 +18,12 @@
 //               one level in hand.
 
 import { dropInHand, fits, keptBoard, type InHand, type KeptPlay } from "../game/in-hand";
-import { loadDaily, loadLevel, loadSouvenir, type Level } from "../game/levels";
+import { loadDaily, loadEventLevel, loadLevel, loadSouvenir, type Level } from "../game/levels";
 import { loadChallenges } from "./challenge-data";
 import { today } from "../net/daily";
 import { campaignNext } from "../net/progress";
+import { isVip, onVipChange, vipKnown } from "../net/vip";
+import { eventShown } from "./event-switch";
 import { liveText, t } from "./i18n";
 import type { Play } from "./app";
 
@@ -69,8 +72,32 @@ async function playOf(p: KeptPlay): Promise<{ play: Play; level: Level } | null>
     const c = (await loadChallenges()).find((x) => x.id === p.id);
     return c ? { play: { kind: "challenge", c }, level: c.level } : null;
   }
+  if (p.kind === "event") {
+    // a VIP's alone (docs/vip.md): VIP ended since, the level is let go; no word on VIP yet (offline,
+    // slow), it is kept for the next session
+    if (!(await vipHeard(CARRY_WAIT_MS))) throw new Error("no word on VIP yet");
+    if (!eventShown()) return null;
+    const e = await loadEventLevel(p.id);
+    return e ? { play: { kind: "event", e }, level: e } : null;
+  }
   const s = await loadSouvenir(p.trip);
   return s ? { play: { kind: "souvenir", s }, level: s } : null;
+}
+
+/** The server's word on VIP has landed, or says yes already (the dev menu's Pretend too): true; `ms` went by without it: false. */
+function vipHeard(ms: number): Promise<boolean> {
+  if (vipKnown() || isVip()) return Promise.resolve(true);
+  return new Promise((done) => {
+    const timer = setTimeout(() => {
+      off();
+      done(vipKnown());
+    }, ms);
+    const off = onVipChange(() => {
+      clearTimeout(timer);
+      off();
+      done(true);
+    });
+  });
 }
 
 /** The play a board is kept as, when it may be carried on to another session; null for the rest. */
@@ -80,6 +107,7 @@ export function keptPlayOf(p: Play, guiding: boolean): KeptPlay | null {
   if (p.kind === "daily") return { kind: "daily", date: p.d.date };
   if (p.kind === "challenge") return { kind: "challenge", id: p.c.id };
   if (p.kind === "souvenir") return { kind: "souvenir", trip: p.s.trip };
+  if (p.kind === "event") return { kind: "event", id: p.e.id };
   return null; // a lesson, a friend's one-off, an experiment
 }
 
