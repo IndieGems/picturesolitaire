@@ -1465,3 +1465,9 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | beach-twirl (2x2, beach twirl) |  |
 | rolling-chapatis (2x2, rolling chapatis) |  |
 | learning-to-ride (2x2, learning to ride) | 6, 10, 15, 20 |
+| koi-pair (2x2, koi pair) |  |
+| french-horn (2x2, french horn) |  |
+| firefighter (2x2, firefighter) |  |
+| jukebox (2x2, jukebox) |  |
+| puffer-fish (2x2, puffer fish) |  |
+| limes (2x2, limes) |  |
