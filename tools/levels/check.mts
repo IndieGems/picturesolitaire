@@ -36,7 +36,11 @@
 //     always reachable, by that line);
 //   - a daily board: its id is "d" + its date, and dates run one a day;
 //   - no board uses a picture the creator flagged "don't use"
-//     (src/content/picture-flags.json; node tools/levels/redeal.mts re-deals them);
+//     (src/content/picture-flags.json; node tools/levels/redeal.mts re-deals them):
+//     a FAILURE in a release build (--full), only a loud WARNING in an everyday
+//     one (lead, 2026-10-30: the creator flags in the library while playing, and
+//     each flag on a used picture stopped their Play build), so a flagged picture
+//     never ships but never blocks a build in between;
 //   - the campaign: no picture on two of its first boards (campaign-plan.mts
 //     DISTINCT; AGENTS.md "Pictures rarely repeat");
 //   - every stack shows card backs: peek 0 (creator, 2026-10-25);
@@ -357,7 +361,8 @@ for (const file of files) {
       for (const p of l.pictures) {
         if (flags.has(p.id)) {
           const note = flags.get(p.id).note;
-          fail(`uses flagged picture ${p.id}`);
+          // a release build fails on it; an everyday build warns (below) and carries on
+          if (FULL) fail(`uses flagged picture ${p.id}`);
           flaggedUses.push({ board: l.id, line: `board ${l.id} uses flagged picture ${p.id}${note ? ` ("${note}")` : ""}` });
         }
         // a Souvenir's picture plays only on its own Souvenir (checked below)
@@ -469,9 +474,10 @@ for (const file of files) {
     }
   }
 }
+const flaggedBoards = new Set(flaggedUses.map((u) => u.board)).size;
 if (flaggedUses.length)
   console.error(
-    `\nPictures flagged "don't use" are on ${new Set(flaggedUses.map((u) => u.board)).size} board(s):\n  ${flaggedUses.map((u) => u.line).join("\n  ")}\n` +
+    `\n${FULL ? "FAIL" : "WARNING"}: pictures flagged "don't use" are on ${flaggedBoards} board(s)${FULL ? "; a release never ships one" : "; this build carries on, a release build (--full) fails on them"}:\n  ${flaggedUses.map((u) => u.line).join("\n  ")}\n` +
       `Re-deal them, keeping every other board as it is: node tools/levels/redeal.mts\n`,
   );
 // the events: exactly what make-events.mts writes from events-plan.json, every day a daily of the pool from RULES_FROM
@@ -529,4 +535,5 @@ if (ALL && existsSync(tripsFile)) {
 writeCache(kept, earlier);
 const memo = FULL ? `all ${proved} proved afresh (--full)` : `${proved} proved now, ${recalled} remembered from an earlier run of the same board and code; --full proves all afresh`;
 console.log(failed ? `${failed} of ${boards} boards FAILED (${memo})` : `all ${boards} boards proved: each line wins on the real rules with no helpers (${memo})`);
+if (!FULL && flaggedBoards) console.warn(`WARNING: ${flaggedBoards} board(s) use a flagged picture (listed above); a release build fails until node tools/levels/redeal.mts mends them`);
 process.exitCode = failed ? 1 : 0;
