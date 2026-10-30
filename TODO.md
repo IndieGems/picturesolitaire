@@ -7,6 +7,7 @@
   the VIP check, each month's suitcase art a month ahead (Art; none is made while it is
   held), and a framed check of the first live suitcase.
 - **Gem Web SDK 16.2.0 or later, after the release candidate.** The game is on 16.1.0. From 16.2.0, a save write that collides with newer saved data is refused as `save_conflict` unless it passes `overwrite`, a load can fail as `load_failed`, and writes get the SDK's own spacing (`minWriteIntervalMs`). Before the pin moves, Server and Gameplay handle both in every save path, `src/net/pace.ts`'s loops included.
+- **When VIP goes live: a lapsed VIP keeps what they earned.** Their event stamps still show on the Passport's Event stamps page and their won tables stay theirs, even though the events themselves lock (Server adds a read of earned stamps that doesn't need VIP; UI shows it).
 - **Before the "Get VIP" button goes on** (`VIP_SKU` in `src/ui/vip-view.ts`): move to SDK 17+ and call `gem.store.showOffer`, the Arcade's VIP sheet, not `purchase()`, which goes straight to checkout (gem-development#2119); that upgrade brings 16.2's save changes above. Also ask the platform whether a game may say "free" with VIP (Cosmetics' banner says it, the creator's ask).
 - **Build size:** 0.75.0 is 556 MB of the 1 GiB limit (860 of 2,000 files), with six VIP events at about
   13 MB each. Before more trips or months, Art de-duplicates pictures
