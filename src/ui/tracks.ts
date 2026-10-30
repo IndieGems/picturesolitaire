@@ -13,7 +13,12 @@
 //
 // Which track is CHOSEN is the player's setting and follows them (gem.me.settings "track",
 // choices.ts); only a choice they make is written. A chosen track they no longer own falls back to
-// the default. The first screen never waits for any of it; the music waits on trackChoiceRead,
+// the default.
+//
+// A VIP PLAYS ANY TRACK SOLD (docs/vip.md): the shop's four, owned or not (never Winter Dusk's, which
+// comes with its table, an event's prize). "track" keeps the latest choice, owned or borrowed;
+// "trackOwned" the latest one they own, which a borrowed choice falls back to once VIP ends (the free
+// track if none), the setting kept for VIP's return. The first screen never waits for any of it; the music waits on trackChoiceRead,
 // capped (src/audio/index.ts), so it does not start on the default and change a moment later.
 
 import { ownedTracks } from "../net/keepsake";
@@ -21,6 +26,7 @@ import { TRACKS } from "../net/tracks";
 import { keepChoice, readChoices } from "./choices";
 import { t } from "./i18n";
 import { ownedTableArts } from "./tables";
+import { onVip, vipNow } from "./vip-view";
 
 export type TrackKind = "free" | "table" | "shop";
 export interface TrackInfo {
@@ -36,6 +42,8 @@ export interface TrackInfo {
 /** The track every player has, and the one played before anything is read. */
 export const DEFAULT_TRACK = "track-sunny-day";
 const SETTING = "track";
+/** The latest track they chose that they own (a VIP's borrowed choice falls back to it). */
+const SETTING_OWNED = "trackOwned";
 
 export const TRACK_LIST: readonly TrackInfo[] = [
   { id: DEFAULT_TRACK, kind: "free" },
@@ -72,6 +80,40 @@ export async function ownedTrackIds(): Promise<Set<string>> {
 let chosen = DEFAULT_TRACK;
 /** The player chose a track this session: what the boot read finds later never overrides it. */
 let touched = false;
+/** The player's latest choice (null: none, the default); it may be borrowed, by a VIP. */
+let wanted: string | null = null;
+/** The latest track they chose that they own. */
+let ownedPick: string | null = null;
+let booted = false;
+
+/** A track this player is lent while VIP (sold, and not theirs): the Cosmetics screen marks it. */
+export async function lentTrack(id: string): Promise<boolean> {
+  return vipNow() && trackInfo(id)?.kind === "shop" && !(await ownedTrackIds()).has(id);
+}
+
+/** What this player may play now: one they own, or, while VIP, one sold. */
+async function playable(id: string): Promise<{ own: boolean } | undefined> {
+  if ((await ownedTrackIds()).has(id)) return { own: true };
+  return vipNow() && trackInfo(id)?.kind === "shop" ? { own: false } : undefined;
+}
+
+/** The track for the player's choices: the latest if they may play it, else the latest they own, else the default. */
+async function settleChoice(): Promise<string> {
+  if (wanted && (await playable(wanted))) return wanted;
+  if (ownedPick && (await playable(ownedPick))?.own) return ownedPick;
+  return DEFAULT_TRACK;
+}
+
+// VIP came or went: a borrowed track on, or back to one they own
+onVip(() => {
+  if (!booted) return;
+  void settleChoice().then((id) => {
+    if (id !== chosen) {
+      chosen = id;
+      changed();
+    }
+  });
+});
 const listeners = new Set<() => void>();
 const changed = (): void => {
   for (const fn of [...listeners]) fn();
@@ -93,26 +135,36 @@ export const trackChoiceRead: Promise<void> = new Promise((r) => (readSettled = 
 /** At boot: the player's chosen track, if they still own it; the default otherwise, or on no answer. */
 export async function startTracks(): Promise<void> {
   try {
-    const want = (await readChoices()).get(SETTING);
-    if (!want || want === DEFAULT_TRACK || touched) return;
-    if ((await ownedTrackIds()).has(want) && !touched) {
-      chosen = want;
+    const read = await readChoices();
+    if (touched) return;
+    wanted = read.get(SETTING) || null;
+    ownedPick = read.get(SETTING_OWNED) || null;
+    if (!wanted || wanted === DEFAULT_TRACK) return;
+    const id = await settleChoice();
+    if (id !== chosen && !touched) {
+      chosen = id;
       changed();
     }
   } catch (err) {
     console.warn("[tracks] the chosen track could not be read", err);
   } finally {
+    booted = true;
     readSettled();
   }
 }
 
-/** The player chose track `id` (one they own): the music changes over, and their choice is kept. */
+/** The player chose track `id` (one they own, or a VIP's sold one): the music changes over, and their choice is kept. */
 export async function chooseTrack(id: string): Promise<boolean> {
   touched = true;
-  if (!(await ownedTrackIds()).has(id)) return false;
+  const p = await playable(id);
+  if (!p) return false;
+  wanted = id;
+  if (p.own) ownedPick = id;
   if (id === chosen) return true;
   chosen = id;
   changed();
-  if (!devOwned) keepChoice(SETTING, id);
+  if (devOwned) return true;
+  keepChoice(SETTING, id);
+  if (p.own) keepChoice(SETTING_OWNED, id);
   return true;
 }

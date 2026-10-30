@@ -14,15 +14,21 @@
 // THE PICKER is the Cosmetics screen's Tables (cosmetics.ts; it left Settings, the creator,
 // 2026-10-29): the default and every table owned, then the shop's tables not yet bought (award
 // "shop" in Server's src/net/tables.json, shopTableArts), then any table marked `showLocked` that
-// is not owned, as information, with how to win it: Winter Dusk says "Fill December's suitcase"
-// (its month: Levels' suitcases.json). While the Daily Suitcase is on hold (event-switch.ts), a
-// table no suitcase can win is simply absent: an event's table shows only to its owners, and is
-// never sold.
+// is not owned, as information, with how to win it: Ski Lodge says "Fill the Ski Trip suitcase"
+// (its event: Levels' src/content/levels/events.json). While the event does not show (event-switch.ts:
+// off, or not a VIP), a table no suitcase can win is simply absent: an event's table shows only to its
+// owners, and is never sold.
 //
 // Which owned table is CHOSEN is the player's setting, and follows them
 // (gem.me.settings "table", choices.ts: one read with the track's, writes paced); only what they
 // chose is stored.
-// A chosen table they no longer own falls back to the default. The first
+// A chosen table they no longer own falls back to the default.
+//
+// A VIP WEARS ANY TABLE SOLD (docs/vip.md, the creator, 2026-10-30): the shop's tables, owned or not,
+// never an event's prize. "table" keeps the latest choice, owned or borrowed; "tableOwned" the latest
+// one they own. While VIP the latest choice shows; once VIP ends, a borrowed one falls back to their
+// latest owned choice (the default if none), the setting kept, so it comes back with VIP. Ownership
+// stays the platform inventory's: nothing here says what is owned. The first
 // screen never waits for any of it: it draws on the default and changes over
 // once the choice and the ownership have been read.
 //
@@ -39,8 +45,9 @@ import { gem } from "../gem";
 import { ownedTables } from "../net/keepsake";
 import { TABLES } from "../net/tables";
 import { keepChoice, readChoices } from "./choices";
-import SCHEDULE from "../content/levels/suitcases.json";
+import EVENT_FILE from "../content/levels/events.json";
 import { eventShown } from "./event-switch";
+import { onVip, vipNow } from "./vip-view";
 import { t } from "./i18n";
 
 export interface TableArt {
@@ -77,6 +84,8 @@ export interface TableArt {
 export const BUILT_IN_TABLE = "table-sunny-day";
 
 const SETTING = "table";
+/** The latest table they chose that they own (a VIP's borrowed choice falls back to it). */
+const SETTING_OWNED = "tableOwned";
 const url = (path: string) => new URL(`${import.meta.env.BASE_URL}${path}`, location.href).href;
 
 let manifest: Promise<{ default: string; tables: TableArt[] }> | null = null;
@@ -145,6 +154,12 @@ export function warmThumbs(): void {
 
 let chosen = BUILT_IN_TABLE;
 let fallback = BUILT_IN_TABLE;
+/** The player's latest choice, as read or made (null: none, the default); it may be borrowed, by a VIP. */
+let wanted: string | null = null;
+/** The latest table they chose that they own (null: none read or made). */
+let ownedPick: string | null = null;
+/** The boot's read of the choice is done: from then on, a change of VIP puts on what it allows. */
+let booted = false;
 /** The player chose a table this session: what the boot read finds later never overrides it. */
 let touched = false;
 const listeners = new Set<() => void>();
@@ -187,12 +202,48 @@ export async function shopTableArts(): Promise<TableArt[]> {
     .filter((a): a is TableArt => !!a && !a.souvenir);
 }
 
+/** A table this player is lent while VIP (sold, and not theirs): the Cosmetics screen marks it. */
+export async function lentTable(id: string): Promise<boolean> {
+  if (!vipNow()) return false;
+  const [mine, sold] = await Promise.all([ownedTableArts(), shopTableArts()]);
+  return !mine.some((a) => a.id === id) && sold.some((a) => a.id === id);
+}
+
+/** What this player may wear now: one they own, or, while VIP, one sold (never an event's prize). */
+async function wearable(id: string): Promise<{ art: TableArt; own: boolean } | undefined> {
+  const own = (await ownedTableArts()).find((a) => a.id === id);
+  if (own) return { art: own, own: true };
+  if (!vipNow()) return undefined;
+  const lent = (await shopTableArts()).find((a) => a.id === id);
+  return lent ? { art: lent, own: false } : undefined;
+}
+
+/** The table to show for the player's choices: the latest if they may wear it, else the latest they own, else the default. */
+async function settleChoice(): Promise<TableArt | undefined> {
+  const m = await loadManifest();
+  const first = wanted ? await wearable(wanted) : undefined;
+  if (first) return first.art;
+  const own = ownedPick ? await wearable(ownedPick) : undefined;
+  if (own?.own) return own.art;
+  return m.tables.find((x) => x.id === m.default);
+}
+
+// VIP came or went: what may be worn changes (a borrowed table on, or back to one they own)
+onVip(() => {
+  if (!booted) return;
+  void settleChoice().then((a) => {
+    if (a && a.id !== chosen) void apply(a);
+  });
+});
+
 /** A picker's row: a table to choose, or one shown locked with the month whose suitcase wins it ("2026-12"). */
-export type PickerTable = { art: TableArt; lockedMonth: string | null };
+export type PickerTable = { art: TableArt; lockedEvent: { id: string; theme: string } | null };
 
 /** The month whose suitcase wins table `id` (Levels' schedule), or null when no month does. */
-const prizeMonth = (id: string): string | null =>
-  ((SCHEDULE as { months: { month: string; table: string }[] }).months.find((m) => m.table === id)?.month ?? null);
+const prizeEvent = (id: string): { id: string; theme: string } | null => {
+  const e = (EVENT_FILE as { events: { id: string; theme: string; table: string; standIn?: boolean }[] }).events.find((x) => x.table === id && !x.standIn);
+  return e ? { id: e.id, theme: e.theme } : null;
+};
 
 /**
  * The picker's tables: the ones this player may choose (ownedTableArts), then each `showLocked` one
@@ -202,13 +253,13 @@ export async function pickerTables(): Promise<PickerTable[]> {
   const mine = await ownedTableArts();
   const have = new Set(mine.map((a) => a.id));
   // the event on hold: no suitcase wins a table, so none is shown to be won
-  if (!eventShown()) return mine.map((art) => ({ art, lockedMonth: null }));
+  if (!eventShown()) return mine.map((art) => ({ art, lockedEvent: null }));
   const m = await loadManifest();
   const locked = m.tables
     .filter((a) => a.showLocked && !a.souvenir && !have.has(a.id))
-    .map((art) => ({ art, lockedMonth: prizeMonth(art.id) }))
-    .filter((x): x is PickerTable & { lockedMonth: string } => x.lockedMonth !== null);
-  return [...mine.map((art) => ({ art, lockedMonth: null })), ...locked];
+    .map((art) => ({ art, lockedEvent: prizeEvent(art.id) }))
+    .filter((x): x is PickerTable & { lockedEvent: { id: string; theme: string } } => x.lockedEvent !== null);
+  return [...mine.map((art) => ({ art, lockedEvent: null })), ...locked];
 }
 
 /** The art of the table `id`, if the list has it. */
@@ -396,14 +447,16 @@ export async function startTables(): Promise<void> {
       void paint(builtIn);
       showBorder(builtIn);
     }
-    // the player's choice (one read with the track's, choices.ts): no player, or no answer, keeps the default
-    const want = pretendAll() ? m.default : ((await readChoices()).get(SETTING) ?? m.default);
+    // the player's choices (one read with the track's, choices.ts): no player, or no answer, keeps the default
+    const read = pretendAll() ? new Map<string, string>() : await readChoices();
     if (touched) return;
+    wanted = read.get(SETTING) || null;
+    ownedPick = read.get(SETTING_OWNED) || null;
     // the default is everyone's: no need to ask what is owned for it (the usual case, and the quick one)
-    const mine = want === m.default ? m.tables : await ownedTableArts();
-    const a = mine.find((x) => x.id === want) ?? m.tables.find((x) => x.id === m.default);
+    const a = !wanted || wanted === m.default ? m.tables.find((x) => x.id === m.default) : await settleChoice();
     if (a && !touched) await apply(a);
   } finally {
+    booted = true;
     choiceSettled();
   }
 }
@@ -416,15 +469,19 @@ let choiceSettled!: () => void;
  */
 export const tableChoiceRead: Promise<void> = new Promise((r) => (choiceSettled = r));
 
-/** The player chose a table (one they own): show it, and keep their choice. */
+/** The player chose a table (one they own, or a VIP's sold one): show it, and keep their choice. */
 export async function chooseTable(id: string): Promise<void> {
   touched = true;
-  const a = (await ownedTableArts()).find((x) => x.id === id);
-  if (!a || a.id === chosen) return;
+  const w = await wearable(id);
+  if (!w || w.art.id === chosen) return;
+  wanted = w.art.id;
+  if (w.own) ownedPick = w.art.id;
   // chosen on a board that wears its own (the settings over a Souvenir): theirs from now on, there too
   worn = null;
-  await apply(a);
-  if (!pretending()) keepChoice(SETTING, a.id);
+  await apply(w.art);
+  if (pretending()) return;
+  keepChoice(SETTING, w.art.id);
+  if (w.own) keepChoice(SETTING_OWNED, w.art.id);
 }
 
 /** The default table's id (the manifest's: the sunny day). */

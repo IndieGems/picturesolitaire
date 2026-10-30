@@ -24,6 +24,8 @@ import { ICONS } from "./icons";
 import { liveAttr, liveText, t } from "./i18n";
 import { clock, shortDate } from "./format";
 import { dailyResult } from "../net/progress";
+import { vipTag } from "./vip-door";
+import { onVip, vipNow } from "./vip-view";
 
 type Nav = {
   /** Back: to home. */
@@ -34,6 +36,8 @@ type Nav = {
   play(d: Daily): void;
   /** Home's Daily tile was pressed: true when something else took it (the month's suitcase opens instead, suitcase.ts). */
   tile?(): boolean;
+  /** The archive's badge was pressed: the calendar for a VIP, the locked door's screen for anyone else (app.ts). */
+  archive(): void;
 };
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", words = ""): HTMLElementTagNameMap[K] {
@@ -49,6 +53,10 @@ function btn(cls: string, press: string, words: string): HTMLButtonElement {
   return b;
 }
 
+/** The archive badge's glyph: a calendar page with its days, and a turn back round to past ones. */
+const ARCHIVE_GLYPH =
+  '<svg class="arc-glyph" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><path d="M8.5 13.5h.01M12 13.5h.01M15.5 13.5h.01M8.5 16.8h.01M12 16.8h.01"/></svg>';
+
 export function createDaily(nav: Nav) {
   // ---- home's button: in its place from the first frame (lead, 2026-10-28: on 4G it came ~2 s after
   // home and the dock's tiles moved over for it), its name shown and its line blank while the day and
@@ -63,6 +71,23 @@ export function createDaily(nav: Nav) {
   homeButton.setAttribute("aria-disabled", "true");
   homeButton.insertAdjacentHTML("afterbegin", ICONS.daily);
   homeButton.append(homeWords);
+  // the daily archive's way in (daily-archive.ts; the creator's pick, 2026-10-30): a round calendar badge
+  // on the tile's corner; for a player who is not a VIP, with the padlock and gold VIP tag (vip-door.ts)
+  const archiveBadge = el("button", "btn round archive-badge");
+  archiveBadge.type = "button";
+  archiveBadge.dataset.press = "home.archive";
+  archiveBadge.innerHTML = ARCHIVE_GLYPH;
+  archiveBadge.hidden = true;
+  const archiveLock = vipTag("badge-tag");
+  archiveBadge.append(archiveLock);
+  archiveBadge.addEventListener("click", () => nav.archive());
+  const drawBadge = () => {
+    const vip = vipNow();
+    archiveLock.hidden = vip;
+    archiveBadge.classList.toggle("locked", !vip);
+    archiveBadge.setAttribute("aria-label", vip ? t("archive.badge") : t("archive.badgeLocked"));
+  };
+  onVip(drawBadge);
 
   // ---- the results screen ----
   const pill = el("div", "top-pill glass");
@@ -106,6 +131,8 @@ export function createDaily(nav: Nav) {
   function drawHome(): void {
     if (!day) return; // not known yet: holding its place
     homeButton.hidden = !board;
+    archiveBadge.hidden = !board;
+    drawBadge();
     homeButton.classList.remove("holding");
     homeButton.removeAttribute("aria-disabled");
     if (!board) return;
@@ -186,6 +213,8 @@ export function createDaily(nav: Nav) {
 
   return {
     homeButton,
+    /** The daily archive's badge, for the Daily tile's corner. */
+    archiveBadge,
     screen,
     /** Ask the platform which day it is, and fetch that day's board (at boot, and when the save changes). */
     refresh,

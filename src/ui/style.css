@@ -1578,3 +1578,96 @@ html.row-tight .top-pill {
   top: calc(var(--gem-mid) + var(--row-h) / 2 + 8px); height: 44px; max-width: none;
   left: max(12px, var(--safe-left)); right: max(12px, var(--safe-right));
 }
+
+/* ---------- VIP (docs/vip.md): the gold tag of a locked door, its screen, the daily archive, the event's strip ---------- */
+/* the padlock and gold "VIP" tag (vip-door.ts vipTag): information on a door, never a button of its own */
+.vip-tag {
+  display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px 3px 6px; border-radius: 999px;
+  background: linear-gradient(180deg, #ffe08a, #e8a93a); color: #5a3a06; font: 700 12px/1 var(--round); letter-spacing: 0.04em;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 1px 3px rgba(60, 35, 0, 0.35);
+}
+.vip-tag[hidden] { display: none; }
+.vip-tag .vip-lock { flex: none; display: block; width: 12px; height: 12px; }
+.vip-tag .vip-lock > .ico { display: block; width: 100%; height: 100%; }
+.vip-tag.big { font-size: 15px; padding: 5px 12px 5px 9px; }
+.vip-tag.big .vip-lock { width: 16px; height: 16px; }
+
+/* the door's screen: what it holds, big, the tag across its foot; the note; "VIP is coming soon" */
+.vip-body { display: flex; flex-direction: column; align-items: center; gap: 14px; max-width: 460px; margin: 0 auto; }
+.vip-pic { position: relative; width: 100%; padding: 14px 12px 26px; border-radius: 22px; background: var(--glass); border: 1.5px solid var(--glass-line); display: grid; place-items: center; }
+.vip-pic .vip-art { width: min(70%, 240px); height: auto; filter: drop-shadow(0 6px 10px rgba(20, 30, 50, 0.35)); }
+.vip-pic > .vip-tag { position: absolute; bottom: -13px; left: 50%; translate: -50% 0; }
+.vip-days { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; width: 100%; }
+.vip-day { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 2px; border-radius: 12px; opacity: 0.7; }
+.vip-day small { font: 600 12px/1 var(--round); color: var(--ink-soft); }
+.vip-day b { font: 700 18px/1 var(--round); color: var(--ink); }
+.vip-note { width: 100%; padding: 14px 16px 16px; border-radius: 22px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.vip-kicker { font: 700 13px/1.2 var(--round); letter-spacing: 0.06em; text-transform: uppercase; color: #a26a10; }
+.vip-big { font: 600 24px/1.15 var(--round); color: var(--ink); overflow-wrap: anywhere; }
+.vip-note p { margin: 0; font: 500 15px/1.35 var(--round); color: var(--ink-soft); }
+.vip-prize { display: flex; align-items: center; gap: 10px; margin-top: 6px; font: 600 15px/1.25 var(--round); color: var(--ink); }
+.vip-prize img { width: 40px; height: 52px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 6px rgba(6, 12, 24, 0.3); }
+.vip-soon { margin: 0; padding: 10px 18px; border-radius: 16px; font: 700 17px/1.25 var(--round); color: #8a5a00; text-align: center; }
+.btn.vip-get { min-width: 220px; min-height: 54px; font-size: 19px; }
+
+/* home's Daily tile with the archive's badge on its corner (daily.ts), one place in the dock */
+.home .dock > .daily-slot { position: relative; flex: 1 1 0; min-width: 0; max-width: calc(150px * var(--k)); display: flex; }
+.home .dock > .daily-slot > .btn.tile-btn { flex: 1 1 auto; max-width: none; }
+.daily-slot:has(> .daily-btn[hidden]) { display: none; }
+.btn.round.archive-badge {
+  --size: 44px; position: absolute; z-index: 1; top: -20px; right: -12px; width: var(--size); height: var(--size); padding: 0;
+}
+.btn.round.archive-badge .arc-glyph { width: 22px; height: 22px; fill: none; stroke: currentColor; }
+.btn.round.archive-badge > .vip-tag { position: absolute; bottom: -9px; left: 50%; translate: -50% 0; padding: 2px 5px 2px 4px; font-size: 12px; }
+.btn.round.archive-badge > .vip-tag .vip-lock { width: 10px; height: 10px; }
+
+/* the event's strip above the dock (suitcase.ts): one wide button, the suitcase, its name and days */
+.btn.event-strip {
+  flex: none; position: relative; width: min(100%, calc(380px * var(--k))); min-height: calc(52px * var(--k));
+  display: flex; align-items: center; gap: 10px; padding: 6px 14px 6px 10px; border-radius: calc(20px * var(--k)); text-align: left;
+}
+.btn.event-strip[hidden] { display: none; }
+.event-strip .strip-art { flex: none; display: grid; place-items: center; width: calc(46px * var(--k)); height: calc(36px * var(--k)); }
+.event-strip .strip-art img { width: 100%; height: 100%; object-fit: contain; }
+.event-strip .strip-words { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.event-strip .strip-name { font: 600 calc(16px * var(--k))/1.15 var(--round); overflow-wrap: anywhere; }
+.event-strip .strip-line { font: 500 calc(13px * var(--k))/1.15 var(--round); color: var(--ink-soft); }
+.event-strip > .vip-tag { flex: none; }
+
+/* the daily archive's calendar (daily-archive.ts): one month a page, Monday first */
+.arc-body { display: flex; flex-direction: column; gap: 12px; max-width: 460px; margin: 0 auto; }
+.arc-nav { display: flex; align-items: center; gap: 8px; }
+.arc-nav .arc-month { flex: 1; margin: 0; text-align: center; font: 600 22px/1.15 var(--round); color: #fff; text-shadow: 0 1px 3px rgba(10, 30, 60, 0.55); }
+.arc-step { flex: none; width: 44px; height: 44px; }
+.btn.round.arc-step { --size: 44px; }
+.arc-step.prev .ico, .arc-step.prev svg { transform: rotate(180deg); }
+.arc-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.arc-wd { text-align: center; font: 700 13px/1 var(--round); color: #fff; text-shadow: 0 1px 2px rgba(10, 30, 60, 0.6); padding: 2px 0 4px; }
+.arc-day { position: relative; display: grid; place-items: center; min-width: 0; min-height: 44px; aspect-ratio: 1; padding: 0; border-radius: 12px; font: 700 16px/1 var(--round); }
+.arc-day.future { color: rgba(255, 255, 255, 0.6); text-shadow: 0 1px 2px rgba(10, 30, 60, 0.5); }
+.btn.arc-day.done { background: linear-gradient(180deg, #5fc28b 0%, #3f9e6b 100%); color: #fff; }
+.btn.arc-day.today { box-shadow: 0 0 0 3px var(--amber-hi), 0 3px 0 var(--lip); }
+.arc-day .n { position: relative; z-index: 1; }
+.arc-day .tick, .case-day .tick { position: absolute; right: 3px; bottom: 3px; width: 12px; height: 10px; fill: none; stroke: currentColor; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+.arc-count { margin: 0; padding: 8px 14px; border-radius: 14px; text-align: center; font: 600 15px/1.25 var(--round); color: var(--ink); }
+.btn.arc-play { align-self: center; min-width: 240px; min-height: 56px; font-size: 19px; }
+
+/* a past event's 14 days (suitcase.ts), each a button to its board */
+.case-days { display: flex; flex-direction: column; gap: 8px; }
+.case-days h2 { margin: 0; font: 600 19px/1.2 var(--round); color: #fff; text-shadow: 0 1px 3px rgba(10, 30, 60, 0.55); }
+.case-day-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 6px; }
+.btn.case-day { position: relative; min-height: 48px; padding: 4px 6px; font: 600 14px/1.1 var(--round); }
+.btn.case-day.done { background: linear-gradient(180deg, #5fc28b 0%, #3f9e6b 100%); color: #fff; }
+
+/* the event's 7 or so slots: four to a row, the last row centred */
+.case-slots { display: flex; flex-wrap: wrap; justify-content: center; }
+.case-slots .slot { flex: 0 0 calc(25% - 2px); }
+
+/* Cosmetics for a VIP (cosmetics.ts): owned or lent (information), and a lent one's price to keep it */
+.cz-mark { align-self: center; padding: 3px 10px; border-radius: 999px; font: 600 12px/1.2 var(--round); color: var(--ink-soft); }
+.cz-mark.lent { color: #8a5a00; background: linear-gradient(180deg, #fff2c8, #ffe29a); border-color: rgba(232, 169, 58, 0.6); }
+.cz-track .cz-words .cz-mark { align-self: flex-start; margin-top: 2px; }
+.btn.cz-keep.shop-buy { min-width: 0; width: 100%; min-height: 44px; font-size: 15px; }
+.cz-acts > .btn.cz-keep.shop-buy { width: auto; }
+/* a lent track: its buttons (Use, Keep it) on a row of their own, as a track for sale's */
+.cz-track.lent { grid-template-columns: 64px minmax(0, 1fr); grid-template-areas: "cover words" "acts acts" "say say"; }

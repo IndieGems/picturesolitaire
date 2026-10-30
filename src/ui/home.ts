@@ -12,13 +12,14 @@
 //                 A stamped trip's Souvenir still to play (souvenirs.ts) sits at the head's right
 //                 end, its sticker and "Souvenir": a button on the information (docs/souvenirs.md)
 //   Next stop     the amber button, with the board number under it
-//   the dock      Daily (daily.ts), the passport (a booklet, with its count of stamps), the month's
-//                 event (suitcase.ts: the Daily Suitcase, or the next one before it starts; in the
-//                 challenge route's old place, the creator, 2026-10-27: the route's code stays,
-//                 unreached from home) and, once the first board is done, the Shop (home-shop.ts:
-//                 helpers, one or a pack of 3) and Cosmetics (cosmetics.ts: tables and soundtracks;
-//                 the creator, 2026-10-29), as up to four tiles. The event is on hold (the creator,
-//                 2026-10-29: event-switch.ts), so players see four: Daily, Passport, Shop, Cosmetics
+//   the event     a strip just above the dock (suitcase.ts: the two-week VIP event, or the next one
+//                 before it starts; locked, with the VIP tag, for a player who is not a VIP): the
+//                 creator's pick, 2026-10-30, since five tiles do not fit across a phone
+//   the dock      Daily (daily.ts; with the daily archive's calendar badge on its corner: the
+//                 creator's pick, 2026-10-30, the tile itself still plays today), the passport (a
+//                 booklet, with its count of stamps) and, once the first board is done, the Shop
+//                 (home-shop.ts: helpers, one or a pack of 3) and Cosmetics (cosmetics.ts: tables and
+//                 soundtracks; the creator, 2026-10-29), as up to four tiles
 //
 // Every board won: the itinerary shows the trip of the board Play goes round to, every stop
 // visited and the stamp earned, and the button says Play again.
@@ -67,10 +68,12 @@ type Nav = {
 type Parts = {
   /** home's note of a win from last time (app.ts), in the top row */
   note: HTMLElement;
-  /** the month's event tile (suitcase.ts), hidden while there is no event to show */
+  /** the event's strip (suitcase.ts), above the dock, hidden while there is no event to show */
   event: HTMLElement;
   /** the day's board's button (daily.ts), hidden until the day's board is known */
   daily: HTMLElement;
+  /** the daily archive's calendar badge (daily.ts), on the Daily tile's corner */
+  archive: HTMLElement;
   /** a stamped trip's Souvenir still to play (souvenirs.ts), in the itinerary's head; hidden while there is none */
   souvenir: HTMLElement;
   /** Is the Shop on home (the first board done, so the helpers are known)? */
@@ -204,13 +207,15 @@ export function createHome(nav: Nav, parts: Parts) {
   cosmetics.hidden = true;
   cosmetics.addEventListener("click", () => nav.cosmetics());
   parts.daily.classList.add("tile-btn");
+  // the Daily tile with the archive's badge on its corner: one place in the dock
+  const dailySlot = el("div", "daily-slot");
+  dailySlot.append(parts.daily, parts.archive);
   const dock = el("div", "dock");
-  parts.event.classList.add("tile-btn");
-  dock.append(parts.daily, passport, parts.event, shop, cosmetics);
+  dock.append(dailySlot, passport, shop, cosmetics);
 
   const screen = el("section", "screen home");
   screen.setAttribute("aria-label", t("game.title"));
-  screen.append(parts.note, title, itinerary, play, dock);
+  screen.append(parts.note, title, itinerary, play, parts.event, dock);
 
   // a tablet's big column: home grows with it (style.css, --k), up to 1.7, never past what fits its height
   new ResizeObserver(() => {

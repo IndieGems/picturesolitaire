@@ -33,6 +33,8 @@ export function contentEnglish() {
   const pictures = read("src/content/pictures.json");
   const trips = read("src/content/levels/trips.json").trips;
   const suitcases = read("src/content/levels/suitcases.json").months ?? [];
+  // the two-week VIP events (docs/vip.md; Levels' events.json): a theme each, its prize table and its items
+  const events = (read("src/content/levels/events.json").events ?? []).filter((e) => !e.standIn);
   const tables = read("public/art/tables/tables.json").tables ?? [];
   const names = {};
   const titles = {};
@@ -44,13 +46,14 @@ export function contentEnglish() {
   for (const s of pictures.souvenirs ?? []) names[`souvenir.${s.trip}.theme`] = s.theme;
   for (const t of tables) if (t.title) names[`table.${t.id}`] = t.title;
   // a prize or a Souvenir table not in the table list yet still shows its name
-  for (const s of [...(pictures.suitcases ?? []), ...(pictures.souvenirs ?? []), ...suitcases])
+  for (const s of [...(pictures.suitcases ?? []), ...(pictures.events ?? []), ...(pictures.souvenirs ?? []), ...suitcases, ...events])
     if (s.table && s.tableTitle && !names[`table.${s.table}`]) names[`table.${s.table}`] = s.tableTitle;
   for (const m of pictures.suitcases ?? []) names[`suitcase.${m.month}.theme`] = m.theme;
   for (const m of suitcases) names[`suitcase.${m.month}.theme`] = m.theme;
+  for (const e of events) names[`suitcase.${e.id}.theme`] = e.theme;
   for (const a of pictures.albums ?? []) names[`album.${a.id}`] = a.title;
   for (const it of pictures.items ?? []) names[`picture.${it.id}`] = it.title ?? it.id;
-  for (const m of suitcases) for (const it of m.items ?? []) names[`picture.${it.id}`] ??= it.title;
+  for (const m of [...suitcases, ...events]) for (const it of m.items ?? []) names[`picture.${it.id}`] ??= it.title;
 
   // the pictures a player can meet: those the shipped levels deal (never the experiments, the dev
   // menu's), and every Souvenir picture; a destination's is its place's name, an item's is above

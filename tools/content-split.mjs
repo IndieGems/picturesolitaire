@@ -35,6 +35,7 @@ const SRC = {
   challenge: `${ROOT}src/content/levels/challenge.json`,
   lessons: `${ROOT}src/content/levels/lessons.json`,
   experiments: `${ROOT}src/content/levels/experiments.json`,
+  events: `${ROOT}src/content/levels/events.json`,
 };
 const STORE = `${ROOT}src/content.ts`;
 const ID = "virtual:ps-content";
@@ -66,7 +67,19 @@ function weekOf(date) {
  * pictures, read only by tools from pictures.json itself, so a chunk leaves it out.
  */
 const GAME_FIELDS = ["id", "file", "board", "boardPx", "px", "thumb", "thumbPx", "title", "name", "place", "cols", "rows", "album", "month", "cutout"];
-const slim = (e) => Object.fromEntries(GAME_FIELDS.filter((k) => e[k] !== undefined).map((k) => [k, e[k]]));
+/**
+ * A suitcase item's group, the key its screen loads it by (catalogue.ts loadItems): the two-week event whose
+ * items list holds it (Levels' src/content/levels/events.json; the VIP events, docs/vip.md), else Art's
+ * `event`, else its month (an item no event deals any more). Filled as the content is read.
+ */
+const itemGroup = new Map();
+const groupOf = (it) => itemGroup.get(it.id) ?? it.event ?? it.month ?? it.id.slice(5, 12);
+const slim = (e) => {
+  const out = Object.fromEntries(GAME_FIELDS.filter((k) => e[k] !== undefined).map((k) => [k, e[k]]));
+  // an item carries its group as its `month`, the field the game's catalogue groups by
+  if (typeof e.id === "string" && e.id.startsWith("item-")) out.month = groupOf(e);
+  return out;
+};
 /** A level's notes for the level designer, shown only by the dev menu: a release build leaves them out. */
 const NOTES = ["axes", "plan"];
 
@@ -139,10 +152,12 @@ export function contentSplit() {
     });
 
     const lanes = Object.fromEntries(LANES.map((k) => [k, json(k)]));
-    /** yyyy-mm -> the month's items */
+    /** an event's id (or an old month) -> its items */
+    itemGroup.clear();
+    for (const ev of JSON.parse(readFileSync(SRC.events, "utf8")).events ?? []) for (const it of ev.items ?? []) itemGroup.set(it.id, ev.id);
     const months = new Map();
     for (const it of pictures.items ?? []) {
-      const m = it.month ?? it.id.slice(5, 12);
+      const m = groupOf(it);
       (months.get(m) ?? months.set(m, []).get(m)).push(it);
     }
 

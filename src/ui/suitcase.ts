@@ -1,11 +1,13 @@
-// THE DAILY SUITCASE on screen (docs/daily-suitcase.md; the creator, 2026-10-27): the monthly event
-// the daily puzzle fills. Its record is the platform's (suitcase-data.ts, over Server's module):
+// THE EVENT on screen (docs/vip.md: two weeks, for VIPs only; docs/daily-suitcase.md): the event the
+// daily puzzle fills. Its record is the platform's (suitcase-data.ts, over Server's module):
 //
-//   the tile        home's dock, in the challenge route's old place (the creator, 2026-10-27:
-//                   "that button should be for the current event"): Art's closed suitcase, "Event"
-//                   and the theme under it ("Ski Trip"), in every state (the creator, 2026-10-28: the
-//                   count and the start date are the page's). It opens the suitcase.
-//   the suitcase    a screen of its own, from the tile: the month's 10 slots,
+//   the strip       home, just above the dock (the creator's pick, 2026-10-30: five tiles do not fit
+//                   across a phone): Art's closed suitcase, "Event · Ski Trip", and its days left or
+//                   when it starts. It opens the suitcase. For a player who is not a VIP it wears the
+//                   padlock and gold VIP tag, and opens the locked door's screen (vip-door.ts) with the
+//                   event's suitcase and prize table, never the suitcase itself.
+//   the suitcase    a screen of its own, from the strip: the event's 7 or so slots (each item turns
+//                   up twice in its 14 dailies),
 //                   each the item's picture once packed (with "×2", "×3" for spare copies) or its
 //                   outline while missing; under them today's daily, "Play the Daily Puzzle!" (the
 //                   creator, 2026-10-28: the event has no puzzles of its own, the daily is how items
@@ -14,8 +16,11 @@
 //                   swap for it, checked on the server; with no spares, only once one is tapped), how
 //                   it works (four short steps, glass), the prize (the month's table and a few
 //                   helpers, paid once by the platform), and the shelf.
-//   the shelf       past months, each a closed suitcase with how many were packed; a tap opens it
-//                   to look at, never to finish (no swap, no daily, no how it works).
+//   the archive     past events, newest first (Halloween's first), each a closed suitcase with how
+//                   many were packed; a tap opens it: its suitcase (the swap open, 2 spares), its prize,
+//                   and its 14 days, each a button that plays that day's board (won ones ticked): a VIP
+//                   can still fill it (the server packs a past day's item with no window, and pays a
+//                   past day's Coins only inside the daily archive's).
 //   the preview     before the event: the next month's suitcase, every slot an outline, when it
 //                   starts, how it works and its prize; no play (nothing packs yet) and no swap.
 //   the win card    the day's first daily win packs the day's item: once the checker's verdict says
@@ -35,8 +40,11 @@
 import { emit } from "../events";
 import { liveAttr, locale, named, t } from "./i18n";
 import { ICONS } from "./icons";
-import { eventShown } from "./event-switch";
-import { held, spares, suitcases, SWAP_COST, type SuitItem, type Suitcase, type SwapAnswer } from "./suitcase-data";
+import { eventDoor, eventShown, onEventShown } from "./event-switch";
+import { eventLength, held, scheduledEvent, spares, suitcases, SWAP_COST, type SuitItem, type Suitcase, type SwapAnswer } from "./suitcase-data";
+import { currentDaily } from "../net/daily";
+import { dailyResult, onProgress } from "../net/progress";
+import { vipTag, type VipDoor } from "./vip-door";
 import { BUILT_IN_TABLE, knownTable, thumbOf } from "./tables";
 import { shortDate } from "./format";
 
@@ -54,6 +62,10 @@ type Nav = {
   daily(): { done: boolean; go(): void } | null;
   /** The creator's event preview: open the next event puzzle, in practice (app.ts). */
   playEvent(): void;
+  /** A past event's day: play its daily (app.ts: its board, its win card's way back is this event). */
+  playDay(date: string, event: string): void;
+  /** A player who is not a VIP pressed the strip: the locked door's screen. */
+  door(d: VipDoor): void;
 };
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", text = ""): HTMLElementTagNameMap[K] {
@@ -73,7 +85,8 @@ export function monthName(m: string): string {
 /** A title or a label starts with a capital, whatever the language writes a month with ("ноябрь: …" reads "Ноябрь: …"). */
 const capital = (s: string): string => s.charAt(0).toLocaleUpperCase(locale()) + s.slice(1);
 /** "November: Ski Trip". */
-export const eventTitle = (s: Suitcase): string => capital(t("case.title", { month: monthName(s.month), theme: themeName(s) }));
+/** The event's title: its theme ("Ski Trip"); an event is two weeks now, not a month (docs/vip.md). */
+export const eventTitle = (s: Suitcase): string => capital(themeName(s));
 /** An item's name, a month's theme and a prize table's name in the player's language (the locale's names list), else their English. */
 export const itemName = (it: { id: string; title: string }): string => named(`picture.${it.id}`, it.title);
 export const themeName = (s: { month: string; theme: string }): string => named(`suitcase.${s.month}.theme`, s.theme);
@@ -144,17 +157,33 @@ export function miniCase(cls = "", big = false): HTMLElement {
 }
 
 export function createSuitcase(nav: Nav) {
-  // ---- home's tile, in the dock: the event (or the next one), a tap opens the suitcase ----
-  const tileName = el("span", "label");
-  const tileLine = el("small");
-  const caseArt = el("span", "booklet case-art");
+  // ---- home's strip, above the dock: the event (or the next one), a tap opens the suitcase ----
+  const tileName = el("b", "strip-name");
+  const tileLine = el("small", "strip-line");
+  const stripWords = el("span", "strip-words");
+  stripWords.append(tileName, tileLine);
+  const caseArt = el("span", "strip-art");
   caseArt.append(miniCase("", true));
-  const tile = el("button", "btn tile-btn event");
+  const lock = vipTag("strip-tag");
+  const tile = el("button", "btn event-strip");
   tile.type = "button";
   tile.dataset.press = "home.event";
   tile.hidden = true;
-  tile.append(caseArt, tileName, tileLine);
-  tile.addEventListener("click", () => open());
+  tile.append(caseArt, stripWords, lock);
+  tile.addEventListener("click", () => {
+    if (eventShown()) return open();
+    // not a VIP: the locked door, with the event's suitcase and prize
+    const next = scheduledEvent();
+    if (!next) return;
+    const art = next.e.table ? knownTable(next.e.table) : undefined;
+    nav.door({
+      kind: "event",
+      title: themeName({ month: next.e.id, theme: next.e.theme }),
+      art: ART.closed,
+      ...(art ? { table: { name: prizeTableName({ table: next.e.table, helpers: {} }, next.e.tableTitle ?? art.title), thumb: thumbOf(art) } } : {}),
+      days: eventLength(next.e),
+    });
+  });
 
   // ---- the screen ----
   const pill = el("div", "top-pill glass");
@@ -184,6 +213,10 @@ export function createSuitcase(nav: Nav) {
     } else nav.home();
   });
 
+  /** The day's date on the platform's calendar (a guess until it lands). */
+  const today = () => currentDaily().date;
+  /** Days left in a running event, today included, from Levels' schedule (a non-VIP's strip). */
+  const daysLeftOf = (end: string): number => Math.max(0, Math.round((Date.parse(`${end}T00:00:00Z`) - Date.parse(`${today()}T00:00:00Z`)) / 86_400_000) + 1);
   const shown = (): Suitcase | null =>
     viewing === UPCOMING ? (suitcases.upcoming()?.s ?? null) : viewing ? (suitcases.past().find((s) => s.month === viewing) ?? null) : suitcases.current();
 
@@ -250,12 +283,13 @@ export function createSuitcase(nav: Nav) {
     b.disabled = true;
     b.setAttribute("aria-busy", "true");
     b.textContent = t("case.swapping");
-    const answer: SwapAnswer = await suitcases.swap(it.id).catch((): SwapAnswer => "failed");
+    const on = shown();
+    const answer: SwapAnswer = await suitcases.swap(it.id, viewing && viewing !== UPCOMING ? (on?.id ?? viewing) : undefined).catch((): SwapAnswer => "failed");
     swapping = false;
     picked = answer === "ok" ? null : picked;
     said = answer === "ok" ? t("case.swapped", { item: itemName(it) }) : t(`case.refused.${answer}`);
-    // the swap that brought the 10th: the prize lands with it (Server pays, and says so once; the sting is Audio's)
-    const now = suitcases.current();
+    // the swap that brought the last: the prize lands with it (Server pays, and says so once; the sting is Audio's)
+    const now = shown();
     const prize = answer === "ok" ? suitcases.lastPrize() : null;
     if (answer === "ok" && (prize || now?.complete)) {
       // the table is said only once the platform holds it for the player (Server's `paid`: the month's table held)
@@ -328,6 +362,31 @@ export function createSuitcase(nav: Nav) {
     return box;
   }
 
+  /** A past event's 14 days, each a button that plays its board (won: ticked), in date order. */
+  function pastDays(s: Suitcase): HTMLElement | null {
+    const days = s.days ? Object.keys(s.days).sort() : [];
+    if (!days.length) return null;
+    const box = el("section", "case-days");
+    const head = el("h2", "", t("case.pastDays"));
+    const grid = el("div", "case-day-grid");
+    const fmt = new Intl.DateTimeFormat(locale(), { day: "numeric", month: "short", timeZone: "UTC" });
+    for (const date of days) {
+      const won = !!dailyResult(date);
+      const b = el("button", `btn case-day${won ? " done" : ""}`);
+      b.type = "button";
+      b.dataset.press = "case.day";
+      const [y, m, d] = date.split("-").map(Number);
+      const label = fmt.format(new Date(Date.UTC(y!, m! - 1, d!)));
+      b.append(el("span", "n", label));
+      if (won) b.insertAdjacentHTML("beforeend", `<svg class="tick" viewBox="0 0 40 32" aria-hidden="true"><path d="M5 17l10 10L36 4"/></svg>`);
+      b.setAttribute("aria-label", t(won ? "case.dayDone" : "case.day", { day: label }));
+      b.addEventListener("click", () => nav.playDay(date, s.id ?? s.month));
+      grid.append(b);
+    }
+    box.append(head, grid);
+    return box;
+  }
+
   /** How it works: four short steps, information only (the creator, 2026-10-28). */
   function howItWorks(s: Suitcase): HTMLElement {
     const box = el("section", "case-how glass");
@@ -354,11 +413,13 @@ export function createSuitcase(nav: Nav) {
     const box = el("div", "case-shelf");
     box.append(el("h2", "", t("case.shelf")));
     const row = el("div", "shelf-row");
+    const fmt = new Intl.DateTimeFormat(locale(), { day: "numeric", month: "short", timeZone: "UTC" });
     for (const s of past) {
       const b = el("button", `btn shelf-case${s.complete ? " full" : ""}`);
       b.type = "button";
       b.dataset.press = "case.shelf";
-      b.append(miniCase("", true), el("b", "", capital(monthName(s.month))), el("span", "", themeName(s)), el("small", "", t("case.packedOf", { count: held(s), all: s.items.length })));
+      const when = s.start ? fmt.format(new Date(`${s.start}T00:00:00Z`)) : "";
+      b.append(miniCase("", true), el("b", "", themeName(s)), el("span", "", when), el("small", "", t("case.packedOf", { count: held(s), all: s.items.length })));
       b.setAttribute("aria-label", `${eventTitle(s)}: ${t("case.packedOf", { count: held(s), all: s.items.length })}`);
       b.addEventListener("click", () => open(s.month));
       row.append(b);
@@ -378,7 +439,9 @@ export function createSuitcase(nav: Nav) {
       scroll.replaceChildren(el("p", "case-empty", t("case.none")));
       return;
     }
-    const open = !viewing && s.daysLeft > 0;
+    // the running event's, or a past one's (a VIP can still fill it: its days and the swap stay open)
+    const past = !!viewing && viewing !== UPCOMING;
+    const open = past || (!viewing && s.daysLeft > 0);
     pill.textContent = eventTitle(s);
     const status = el("p", "case-status glass");
     const next = viewing === UPCOMING ? suitcases.upcoming() : null;
@@ -387,7 +450,7 @@ export function createSuitcase(nav: Nav) {
       status.append(
         el("b", "", t("case.packedOf", { count: held(s), all: s.items.length })),
         " · ",
-        el("span", "", open ? t("case.daysLeft", { count: s.daysLeft }) : t("case.closed")),
+        el("span", "", past ? t("case.ended") : open ? t("case.daysLeftOf", { count: s.daysLeft, all: eventLength(s) }) : t("case.closed")),
       );
     const parts: (HTMLElement | null)[] = [status];
     // Art's open suitcase round the slots, its plain lining stretched to fit them (a 9-slice, style.css)
@@ -400,6 +463,8 @@ export function createSuitcase(nav: Nav) {
     // this month's (or the creator's preview of it, its puzzles in practice: the creator, 2026-10-27,
     // "let me play those puzzles and go through the whole process"): today's daily, under the suitcase
     if (!viewing) parts.push(play(s));
+    // a past event: its 14 days, each playable
+    if (past) parts.push(pastDays(s));
     // the swap, close under the slots it picks from; with no spares it waits for a pick (how it works,
     // next, says what spares are), so a new player reads how it works straight under the button
     if (open && !s.complete && (picked || spares(s) > 0)) parts.push(swapPanel(s));
@@ -410,14 +475,28 @@ export function createSuitcase(nav: Nav) {
     scroll.replaceChildren(...parts.filter((p): p is HTMLElement => !!p));
   }
 
-  /** Home's tile: "Event" and the theme, this month's or (before it starts) the next one's. */
+  /**
+   * Home's strip: "Event · Ski Trip", its days left (or when it starts). A VIP's is the platform's event
+   * (or the next one's preview); anyone else's is Levels' schedule, locked.
+   */
   function drawTile(): void {
-    const s = suitcases.current() ?? suitcases.upcoming()?.s ?? null;
-    tile.hidden = !s || !eventShown();
-    if (!s) return;
-    tileName.textContent = t("case.tile");
-    tileLine.textContent = themeName(s);
-    tile.setAttribute("aria-label", t("case.tileAria", { theme: themeName(s) }));
+    const vip = eventShown();
+    const s = vip ? (suitcases.current() ?? suitcases.upcoming()?.s ?? null) : null;
+    const sch = vip ? null : scheduledEvent();
+    tile.hidden = !eventDoor() || (vip ? !s : !sch);
+    lock.hidden = vip;
+    tile.classList.toggle("locked", !vip);
+    if (vip && s) {
+      const up = !suitcases.current() ? suitcases.upcoming() : null;
+      tileName.textContent = t("case.strip", { theme: themeName(s) });
+      tileLine.textContent = up ? t("case.starts", { date: shortDate(up.starts) }) : t("case.daysLeft", { count: s.daysLeft });
+      tile.setAttribute("aria-label", t("case.tileAria", { theme: themeName(s) }));
+    } else if (sch) {
+      const theme = themeName({ month: sch.e.id, theme: sch.e.theme });
+      tileName.textContent = t("case.strip", { theme });
+      tileLine.textContent = sch.running ? t("case.daysLeft", { count: daysLeftOf(sch.e.end) }) : t("case.starts", { date: shortDate(sch.e.start) });
+      tile.setAttribute("aria-label", t("case.tileLockedAria", { theme }));
+    }
   }
 
   /** Open the suitcase: this month's; before the event, the next one's preview; or a shelf month. */
@@ -437,6 +516,15 @@ export function createSuitcase(nav: Nav) {
 
   suitcases.onChange(() => {
     if (!swapping) draw();
+  });
+  // VIP came or went: the strip locks or opens; a VIP's screen up when VIP ends goes home
+  onEventShown(() => {
+    if (!screen.hidden && !eventShown()) return nav.home();
+    draw();
+  });
+  // a past day won: its tick
+  onProgress(() => {
+    if (!screen.hidden && viewing && viewing !== UPCOMING) draw();
   });
   drawTile();
 
