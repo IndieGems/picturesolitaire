@@ -1,8 +1,10 @@
 # The Daily Suitcase: the monthly event
 
-> **On hold** (creator, 2026-10-29): players don't see it, and the daily grants none of its items,
-> behind one switch. It may return after release for the Gem Arcade's VIP members only, once the
-> platform has a VIP system. The design below is kept for that.
+> **Now a two-week event for VIP members only** (creator, 2026-10-30; `docs/vip.md` overrides this
+> page where they differ): 14 days, about 7 items each turning up twice, a swap of 2 spares, the
+> table as prize, and an archive of past events starting with a Halloween event in October 2026.
+> It stays off for every player until the platform can say who holds VIP. The monthly design
+> below is the starting point.
 
 The creator's design (2026-10-27), worked out with the lead. The daily puzzle becomes the way
 players fill a themed suitcase, one month at a time. That month's suitcase is the game's monthly
