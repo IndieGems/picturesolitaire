@@ -24,7 +24,9 @@
 //   p-<trip id>.bin        per trip (src/content/levels/trips.json): its postcards' passport copies,
 //                          and its Souvenir's sticker (docs/souvenirs.md).
 //   b-s<n>.bin             a Souvenir board's copies (src/content/levels/souvenirs.json), like any board.
-//   s-<yyyy-mm>.bin        per month: the Daily Suitcase's 10 item cut-outs, for its screen.
+//   s-<event id>.bin       per two-week VIP event (src/content/levels/events.json, docs/vip.md): its 7 item
+//                          cut-outs, for its suitcase screen (s-halloween-2026); an item in no event keeps
+//                          its month's pack, s-<yyyy-mm>.bin, as the monthly suitcase had.
 // A picture on no board is not shipped. public/ and the dev server are untouched: they serve the
 // separate files, and the play-test tool, the Picture Library and Trips & Cases keep using them.
 //
@@ -34,7 +36,7 @@
 // <dist>/packs/index.json, read at boot (so kept small):
 //   {"boards":{<board id>:{"b":<pack>}},     each board's board copies
 //    "trips":{<trip id>:<pack>},             each trip's passport copies
-//    "suitcases":{<yyyy-mm>:<pack>}}         each month's item cut-outs
+//    "suitcases":{<event id>:<pack>}}        each event's item cut-outs (ensureSuitcase(<event id>))
 // <dist>/packs/full-index.json, read only when the enlarged view first opens (UI, 2026-10-28: the
 // list of every full picture was ~60 KB of the boot's 74 KB index):
 //   {"full":{<full chunk>:[<path>,...]}}     where each full picture is (each path in one chunk)
@@ -121,13 +123,20 @@ for (const sv of catalogue.souvenirs ?? []) {
   if (sv.sticker && index.trips[sv.trip]) add(index.trips[sv.trip], sv.sticker);
 }
 
-// A month's suitcase screen shows all 10 of its items at once: one pack a month, s-YYYY-MM, of
-// each item's cut-out (the object on transparency, for its slot and its silhouette), or its board
-// copy while it is still a stand-in.
+// An event's suitcase screen shows all its items at once: one pack an event, s-<event id>, of each
+// item's cut-out (the object on transparency, for its slot and its silhouette), or its board copy
+// while it is still a stand-in. The key is the events.json event whose items list holds the item
+// (UI, 2026-10-30: Ski Trip and Winter Market reuse 7 of their month's items), else the item's own
+// `event`, else its month (an item in no event, as the monthly suitcase had).
+const eventOf = new Map();
+for (const ev of read("src/content/levels/events.json").events ?? []) {
+  for (const it of ev.items ?? []) eventOf.set(it.id, ev.id);
+}
 for (const it of catalogue.items ?? []) {
-  const name = `s-${it.month}`;
+  const key = eventOf.get(it.id) ?? it.event ?? it.month;
+  const name = `s-${key}`;
   add(name, it.cutout ?? it.board ?? it.file);
-  index.suitcases[it.month] = name;
+  index.suitcases[key] = name;
 }
 
 const bufs = new Map(); // catalogue path -> bytes, read once
