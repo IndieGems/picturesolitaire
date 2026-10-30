@@ -448,9 +448,10 @@ mod function {
         Ok(rows)
     }
 
-    /// A full event's prize, unless its mark says it is paid: Ok(Some(what landed of each
-    /// helper)) when it is paid now, Ok(None) when it was paid before. Err: not paid yet.
-    fn settle_prize(player: &str, m: suitcase::Event, vip: bool) -> Result<Option<Value>, Value> {
+    /// A full event's prize, unless its mark says it is paid: Ok(Some((what landed of each helper,
+    /// the items it granted now: its table, by id))) when it is paid now, Ok(None) when it was paid
+    /// before. Err: not paid yet.
+    fn settle_prize(player: &str, m: suitcase::Event, vip: bool) -> Result<Option<(Value, Vec<String>)>, Value> {
         // the event not open to this player: no prize, however full the suitcase held
         let Some(o) = suitcase::prize(m, vip) else { return Err(json!({ "v": 1, "status": "closed", "off": true })) };
         if value_of(player, suitcase::mark(m))? >= 1.0 {
@@ -468,9 +469,15 @@ mod function {
             host::log(LogLevel::Warn, &format!("order {} answered {}: {}", o.nonce, res.status, res.body));
             return Err(retry(if passing(res.status) { "platform" } else { "config" }));
         }
-        let landed = pay::landed(res.body["changes"].as_array().map(|v| v.as_slice()).unwrap_or(&[]));
-        host::log(LogLevel::Info, &format!("event {}: full, prize paid, helpers {landed}", suitcase::name(m)));
-        Ok(Some(landed))
+        let changes = res.body["changes"].as_array().map(|v| v.as_slice()).unwrap_or(&[]);
+        let landed = pay::landed(changes);
+        let items: Vec<String> = changes
+            .iter()
+            .filter(|ch| ch["type"] == "item" && ch["quantity_after"].as_i64().unwrap_or(0) > ch["quantity_before"].as_i64().unwrap_or(0))
+            .filter_map(|ch| ch["item_definition_id"].as_str().map(str::to_string))
+            .collect();
+        host::log(LogLevel::Info, &format!("event {}: full, prize paid, helpers {landed}, items {items:?}", suitcase::name(m)));
+        Ok(Some((landed, items)))
     }
 
     /// The suitcase's numbers, from the server (analytics_events, sources: server). Never in the way of a verdict.
@@ -524,7 +531,7 @@ mod function {
                     Ok(v) if v >= 1.0 => true,
                     Ok(_) if prizes.len() < 3 => match settle_prize(player, e, vip) {
                         Ok(landed) => {
-                            if let Some(l) = landed {
+                            if let Some((l, _)) = landed {
                                 add(&mut helpers, &l);
                                 prizes.push(suitcase::name(e));
                             }
@@ -590,7 +597,7 @@ mod function {
         };
         // the item is told as `packed`, not among the tables and keepsakes `items` names
         let item_uuid = at.map(|i| suitcase::uuid(e, i));
-        let items: Vec<&String> = g.items.iter().filter(|i| Some(i.as_str()) != item_uuid).collect();
+        let mut items: Vec<String> = g.items.iter().filter(|i| Some(i.as_str()) != item_uuid).cloned().collect();
         let mut verdict = json!({
             "v": 1, "status": "kept", "lane": "event", "board": win.board, "event": suitcase::name(e),
             "moves": win.moves, "coins": g.coins, "items": items,
@@ -612,9 +619,12 @@ mod function {
                 match settle_prize(player, e, vip) {
                     Ok(landed) => {
                         paid = true;
-                        if let Some(l) = landed {
+                        if let Some((l, granted)) = landed {
                             add(&mut g.helpers, &l);
                             g.gifts.push("suitcase");
+                            // the prize's table (its own order): named on the win card with the rest
+                            items.extend(granted);
+                            verdict["items"] = json!(items);
                         }
                         if !suitcase::complete(e, &c) {
                             events.push(suitcase::record(player, "event_complete", suitcase::name(e), json!({ "event": suitcase::name(e) }), json!({ "level": level })));

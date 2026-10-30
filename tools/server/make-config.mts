@@ -82,23 +82,18 @@ function uuid5(name) {
   return `${x.slice(0, 8)}-${x.slice(8, 12)}-${x.slice(12, 16)}-${x.slice(16, 20)}-${x.slice(20, 32)}`;
 }
 
-// THE DAILY SUITCASE (docs/daily-suitcase.md; functions/checker/src/suitcase.rs): Levels'
-// events (src/content/levels/events.json: two weeks each, for VIPs, docs/vip.md) and the fixed ids
+// THE EVENTS (docs/vip.md; functions/checker/src/suitcase.rs): Levels' VIP packs
+// (src/content/levels/events.json: 30 levels and 10 items each) and the fixed ids
 // (src/net/suitcase-ids.json). Each event's table that is not the built-in one is a table item: its
 // entry in src/net/tables.json is added here (award "suitcase", the event), its id made once from
-// its slug and kept, its title and icon following Art's. The old months (suitcases.json, kept as a
-// snapshot in src/net/suitcase-retired.json) are events no more, but their items and prize marks
-// stay declared: an id is never reused, and a player keeps what they hold.
+// its slug and kept, its title and icon following Art's. The old monthly suitcases (a snapshot in
+// src/net/suitcase-retired.json, taken once from Levels' suitcases.json, since deleted) are events
+// no more, but their items and prize marks stay declared: an id is never reused, and a player keeps
+// what they hold.
 const SUITCASE = JSON.parse(readFileSync(join(root, "src/net/suitcase-ids.json"), "utf8"));
 const EVENTS_FILE = join(root, "src/content/levels/events.json");
 const EVENTS = existsSync(EVENTS_FILE) ? JSON.parse(readFileSync(EVENTS_FILE, "utf8")).events : [];
 const RETIRED_FILE = join(root, "src/net/suitcase-retired.json");
-const SCHEDULE = join(root, "src/content/levels/suitcases.json");
-if (!existsSync(RETIRED_FILE) && existsSync(SCHEDULE)) {
-  const months = JSON.parse(readFileSync(SCHEDULE, "utf8")).months.map((m) => ({ month: m.month, items: m.items }));
-  writeFileSync(RETIRED_FILE, JSON.stringify({ note: "THE OLD MONTHLY SUITCASES (Levels' suitcases.json until 2026-10-30), events no more (docs/vip.md): their items and prize marks stay declared in the game config, so no id is reused and a player keeps what they hold. Written once by tools/server/make-config.mts; never edit.", months }, null, 2) + "\n");
-  console.log("config: src/net/suitcase-retired.json keeps the old months' items (commit it)");
-}
 const RETIRED = existsSync(RETIRED_FILE) ? JSON.parse(readFileSync(RETIRED_FILE, "utf8")).months : [];
 const markSlug = (id) => `suitcase_prize_${id.replace(/-/g, "_")}`;
 {

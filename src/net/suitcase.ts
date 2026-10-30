@@ -15,7 +15,8 @@
 //                            [] until read, unless VIP, or with the switch off
 //   suitcase.event(id)       one of them
 //   suitcase.upcoming()      the events announced but not released yet by the player's date (no VIP needed)
-//   suitcase.lastPrize()     a prize that landed since last asked ({ event, helpers }), once
+//   suitcase.lastPrize()     a prize that landed since last asked ({ event, helpers }), once (its table is
+//                            in the level's verdict's `items`)
 //   suitcase.refresh()       read again now (when the events screen opens): one read at a time, paced
 //   suitcase.onChange(fn)    hear any change. Returns the unsubscribe.
 //
@@ -25,10 +26,6 @@
 // (claims.ts hands the ones that do to accept()). A read that gets no answer is tried again with a
 // backoff, and at once when the connection comes back. Unframed (a plain tab, the play-test tool)
 // there is no platform: no events.
-//
-// STILL HERE FOR UI'S CURRENT SCREENS until they move to events(): current() (the newest event),
-// past() (the others), the old Suitcase shape, SWAP_COST and swap() (which answers "closed": there is
-// no swap). Delete them once nothing imports them.
 
 import { gem } from "../gem";
 import EVENT_FILE from "../content/levels/events.json";
@@ -95,7 +92,7 @@ const framed = ((): boolean => {
 const on = (IDS as { on?: boolean }).on === true;
 const heard = new Set<() => void>();
 let list: EventPack[] = [];
-let prize: { event: string; month: string; helpers: Record<HelperKind, number> } | null = null;
+let prize: { event: string; helpers: Record<HelperKind, number> } | null = null;
 let reading: Promise<void> | null = null;
 let tries = 0;
 let again: (() => void) | null = null;
@@ -138,8 +135,7 @@ function landed(event: string | undefined, gifts: unknown, got: unknown): void {
   if (!Array.isArray(gifts) || !gifts.includes("suitcase")) return;
   const h = (got && typeof got === "object" ? got : {}) as Partial<Record<HelperKind, unknown>>;
   const n = (v: unknown) => Math.max(0, Math.floor(Number(v) || 0));
-  const id = event ?? list[0]?.id ?? "";
-  prize = { event: id, month: id, helpers: { hint: n(h.hint), undo: n(h.undo), shuffle: n(h.shuffle) } };
+  prize = { event: event ?? list[0]?.id ?? "", helpers: { hint: n(h.hint), undo: n(h.undo), shuffle: n(h.shuffle) } };
   void helpers.refresh();
 }
 
@@ -199,42 +195,6 @@ export function accept(answer: Record<string, unknown>): void {
   }
 }
 
-// ---------------------------------------------------------------- the old shape, for UI's current screens
-
-export type SuitItem = { id: string; title: string };
-export type Suitcase = {
-  id?: string;
-  month: string;
-  theme: string;
-  items: SuitItem[];
-  days?: Record<string, string>;
-  counts: Record<string, number>;
-  start?: string;
-  ends: string;
-  daysLeft: number;
-  complete: boolean;
-  prize: { table: string; tableTitle?: string; helpers: Partial<Record<HelperKind, number>> };
-  paid: boolean;
-};
-export type SwapAnswer = "ok" | "short" | "has" | "closed" | "failed";
-/** No swap any more (the screens never offer one: no item is held twice). */
-export const SWAP_COST: number = 2;
-
-const legacy = (e: EventPack): Suitcase => ({
-  id: e.id,
-  month: e.id,
-  theme: e.theme,
-  items: e.items.map((i) => ({ id: i.id, title: i.title })),
-  days: {},
-  counts: Object.fromEntries(e.items.filter((i) => i.found).map((i) => [i.id, 1])),
-  start: e.release,
-  ends: "",
-  daysLeft: 0,
-  complete: e.complete,
-  prize: e.prize,
-  paid: e.paid,
-});
-
 export const suitcase = {
   events: (): EventPack[] => list,
   event: (id: string): EventPack | undefined => list.find((e) => e.id === id),
@@ -245,7 +205,7 @@ export const suitcase = {
       .sort((a, b) => (a.release < b.release ? -1 : 1));
   },
   refresh,
-  lastPrize(): { event: string; month: string; helpers: Record<HelperKind, number> } | null {
+  lastPrize(): { event: string; helpers: Record<HelperKind, number> } | null {
     const p = prize;
     prize = null;
     return p;
@@ -253,14 +213,6 @@ export const suitcase = {
   onChange(fn: () => void): () => void {
     heard.add(fn);
     return () => void heard.delete(fn);
-  },
-  /** The old screens': the newest event, in the old shape. */
-  current: (): Suitcase | null => (list[0] ? legacy(list[0]) : null),
-  /** The old screens': the other events, in the old shape. */
-  past: (): Suitcase[] => list.slice(1).map(legacy),
-  /** No swap any more: always "closed". */
-  async swap(_want: string, _event?: string): Promise<SwapAnswer> {
-    return "closed";
   },
 };
 
