@@ -1330,8 +1330,8 @@ html.less-motion .case-slots .slot.arrived .item-pic { animation: none; }
 .vip-note .case-hero-tag { align-self: center; margin-bottom: 2px; }
 
 /* THE EVENT'S 30 LEVELS (suitcase.ts): a grid of buttons in play order, five to a row on a phone, six where
-   the column is wider; won ones green and ticked; a level hiding an item wears Art's small suitcase on its
-   corner until it is found, then the item itself; a hard one its short tag under the number */
+   the column is wider; won ones green and ticked; a won level that hid an item wears Art's small suitcase on
+   its corner (never before it is won: which levels hide one is a secret); a hard one its short tag */
 .case-levels { display: flex; flex-direction: column; gap: 8px; container-type: inline-size; }
 .case-levels h2 { margin: 0; font: 600 19px/1.2 var(--round); color: #fff; text-shadow: 0 1px 3px rgba(10, 30, 60, 0.55); }
 .case-level-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px 8px; padding-top: 6px; }
@@ -1345,11 +1345,6 @@ html.less-motion .case-slots .slot.arrived .item-pic { animation: none; }
 .btn.case-level .tick { position: absolute; right: 4px; bottom: 4px; width: 12px; height: 10px; fill: none; stroke: #fff; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
 .case-level .lv-item { position: absolute; top: -9px; right: -7px; width: 28px; height: 28px; display: grid; place-items: center; pointer-events: none; }
 .case-level .lv-item .mini-case { width: 28px; height: 21px; filter: drop-shadow(0 1px 2px rgba(20, 30, 50, 0.45)); }
-.case-level .lv-item.found { border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px #3f9e6b, 0 1px 3px rgba(20, 30, 50, 0.4); overflow: hidden; }
-.case-level .lv-item .item-pic { width: 100%; height: 100%; }
-.case-level .lv-item .item-pic img { width: 100%; height: 100%; object-fit: cover; }
-.case-level .lv-item .item-pic.cutout img { object-fit: contain; padding: 2px; }
-.case-level .lv-item .item-pic.stand-in { display: grid; place-items: center; background: hsl(var(--hue, 200) 55% 62%); font: 700 13px/1 var(--round); color: #fff; }
 
 /* an event level's win card: the event and the level under the title */
 .win .card p.event-of { margin: -2px 0 0; font: 600 15px/1.3 var(--round); color: var(--ink-soft); }

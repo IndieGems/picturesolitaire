@@ -13,8 +13,9 @@
 //                   missing), "Play level 13" (the first level not won yet, the page's main action), then
 //                   the past events as a row of cards, close under it so they are seen (the creator could
 //                   not find them at the page's foot), and "Coming soon: Ski Trip · Nov 1"; then the 30
-//                   levels as a grid (won ones ticked; a level hiding an item wears a small suitcase until
-//                   it is found, then the item itself; hard ones say so), how it works and the prize. Every
+//                   levels as a grid (won ones ticked; nothing tells which levels hide an item until one
+//                   is won: then it wears a small suitcase, the creator, 2026-10-30, "lets not show which
+//                   puzzles carry the suitcases"; hard ones say so), how it works and the prize. Every
 //                   level is open: tapping one plays it, and its win card comes back here. A past event
 //                   keeps its progress and stays winnable; the newest released is the one now playing.
 //   the preview     an event announced but not released yet (only while none is out): its suitcase in
@@ -145,11 +146,10 @@ export function miniCase(cls = "", big = false): HTMLElement {
   return c;
 }
 
-/** "Level 13" plus what the level holds, for a level button's name. */
-function levelLabel(n: number, won: boolean, item: EventItem | null): string {
-  if (item?.found) return t("case.levelFound", { n, item: itemName(item) });
+/** "Level 13" plus what it gave, for a level button's name: never whether a level not won yet hides an item. */
+function levelLabel(n: number, won: boolean, found: EventItem | null): string {
+  if (found) return t("case.levelFound", { n, item: itemName(found) });
   if (won) return t("case.levelWon", { n });
-  if (item) return t("case.levelItem", { n });
   return t("board.level", { level: n });
 }
 
@@ -275,21 +275,23 @@ export function createSuitcase(nav: Nav) {
     e.levels.forEach((id, i) => {
       const n = i + 1;
       const won = suitcases.won(id);
-      const item = suitcases.itemOn(e, id);
+      // which levels hide an item is a secret until each is won: only then its suitcase (the creator)
+      const hid = suitcases.itemOn(e, id);
+      const found = hid && (hid.found || won) ? hid : null;
       const mark = marks.get(id);
-      const b = el("button", `btn case-level${won ? " done" : ""}${item ? " has-item" : ""}${mark ? ` ${mark}` : ""}`);
+      const b = el("button", `btn case-level${won ? " done" : ""}${found ? " has-item" : ""}${mark ? ` ${mark}` : ""}`);
       b.type = "button";
       b.dataset.press = "case.level";
       b.dataset.level = id;
       b.append(el("b", "n", String(n)));
       if (mark) b.append(markTag(mark, true));
-      if (item) {
-        const badge = el("span", `lv-item${item.found ? " found" : ""}`);
-        badge.append(item.found ? itemPic(item, false) : miniCase());
+      if (found) {
+        const badge = el("span", "lv-item");
+        badge.append(miniCase());
         b.append(badge);
       }
       if (won) b.insertAdjacentHTML("beforeend", `<svg class="tick" viewBox="0 0 40 32" aria-hidden="true"><path d="M5 17l10 10L36 4"/></svg>`);
-      b.setAttribute("aria-label", `${levelLabel(n, won, item)}${mark ? `, ${markTag(mark).textContent}` : ""}`);
+      b.setAttribute("aria-label", `${levelLabel(n, won, found)}${mark ? `, ${markTag(mark).textContent}` : ""}`);
       b.addEventListener("click", () => nav.playLevel(e.id, id));
       grid.append(b);
     });
