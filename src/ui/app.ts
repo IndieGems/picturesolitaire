@@ -109,7 +109,7 @@ import { createVipDoor } from "./vip-door";
 import { createArchive } from "./daily-archive";
 import { forceVipSale } from "./vip-view";
 import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy, suitcaseItem } from "./catalogue";
-import { ensure, ensureSuitcase, fileUrl, resident, warmIndex } from "../packs";
+import { ensure, ensureSuitcase, fileUrl, holdBoard, resident, warmIndex } from "../packs";
 import { mountParticles, setWeather } from "./particles";
 import { boardFiles, levelCount, openBoard, type BoardHandle, type BoardPicture } from "./board-api";
 import type { DevMenu } from "./dev-menu";
@@ -737,6 +737,8 @@ function openPlay(next: Play): void {
   // already (fetched while the last card or home was up), else home's Play says "Opening…" meanwhile
   const lvl = levelOfPlay(next);
   const paths = boardPaths(lvl);
+  // the board on screen keeps its files, loaded already or not (its win card reads them again: packs.ts)
+  holdBoard(lvl.id, paths);
   if (!paths.every(resident)) {
     const at = ++packWait;
     const onHome = screen === "home";

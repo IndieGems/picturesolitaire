@@ -58,6 +58,14 @@ const loading = new Map<string, Promise<void>>();
 const recent: string[] = [];
 const wantedBy = new Map<string, Set<string>>();
 const KEEP = 6;
+/**
+ * The board on screen (holdBoard): its files are never let go while it is up, however many boards are
+ * asked for meanwhile. The board keeps drawing what it decoded, but its win card and the enlarged view
+ * read the files again (QA/the creator, 0.79.0: replaying the guided start, the win card's balloon was a
+ * broken image: board 1's files were resident, so opening it asked for nothing and it stayed the oldest,
+ * and the next board's prefetch as the card opened let its own picture go).
+ */
+let pinned: string | null = null;
 /** A pack's index is near its start: the first read asks for this much. */
 const HEAD_BYTES = 32 * 1024;
 /** Files in a shared pack this close together are read in one span (a gap costs less than a request). */
@@ -386,9 +394,10 @@ function remember(owner: string, paths: string[]): void {
     by.add(owner);
     wantedBy.set(p, by);
   }
-  // let go of what only boards long gone wanted (a trip's passport copies are kept)
-  while (recent.filter((o) => !o.startsWith("trip:")).length > KEEP) {
-    const old = recent.find((o) => !o.startsWith("trip:"))!;
+  // let go of what only boards long gone wanted (a trip's passport copies are kept, and the board on screen)
+  const going = () => recent.filter((o) => !o.startsWith("trip:") && o !== pinned);
+  while (going().length > KEEP) {
+    const old = going()[0]!;
     recent.splice(recent.indexOf(old), 1);
     for (const [p, by] of wantedBy) {
       by.delete(old);
@@ -399,6 +408,15 @@ function remember(owner: string, paths: string[]): void {
       urls.delete(p);
     }
   }
+}
+
+/**
+ * Board `board` is opening, its files `paths`: it is the newest asked for, and its files stay while it is
+ * up (until the next board opens), loaded already or not. Call it as every board opens.
+ */
+export function holdBoard(board: string, paths: string[]): void {
+  pinned = board;
+  remember(board, paths);
 }
 
 /**
