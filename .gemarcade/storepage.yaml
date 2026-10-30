@@ -557,6 +557,8 @@ media:
       src: borders/irish-coast.jpg
     - name: autumn-study
       src: borders/autumn-study.jpg
+    - name: pumpkin-porch
+      src: borders/pumpkin-porch.jpg
   # The desktop tile's hover loop: board 62 played on its own winning line, Mont-Saint-Michel's
   # picture finished and its postcard unfolding with the place's name, over the sunny side art
   # (tools/art/preview/; re-record when the board's look or the side art changes).

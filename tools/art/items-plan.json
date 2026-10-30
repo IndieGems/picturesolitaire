@@ -1,6 +1,156 @@
 {
- "//": "The Daily Suitcase's items (docs/daily-suitcase.md), read by tools/art/pictures.py into the catalogue's `items` and `suitcases`. An item's id never changes; `standin` is the library square it borrows until its own picture is drawn. `suitcases`: each month's theme and its table's id (public/art/tables/tables.json).",
+ "//": "The Daily Suitcase's items (docs/daily-suitcase.md), read by tools/art/pictures.py into the catalogue's `items` and `suitcases`. An item's id never changes; `standin` is the library square it borrows until its own picture is drawn. `suitcases`: each month's theme and its table's id (public/art/tables/tables.json). `events`: each two-week VIP event's theme and its table (docs/vip.md); its items carry `event` in place of `month`.",
  "items": [
+  {
+   "id": "item-halloween-2026-01",
+   "event": "halloween-2026",
+   "slot": 1,
+   "title": "Bran Castle",
+   "medium": "render",
+   "subjects": [
+    "bran castle",
+    "castle",
+    "bats",
+    "ghost",
+    "moon"
+   ],
+   "busy": 0,
+   "palette": [
+    "white",
+    "red",
+    "indigo"
+   ],
+   "prompt": "A little painted miniature diorama, like a handmade souvenir model standing on its own small rounded island of earth and moss, at dusk: a soft painted 3D finish, chunky simple shapes, smooth shading, crisp clean edges, warm glowing lights, spooky but friendly and cheerful. A big round pumpkin-orange full moon stands just behind it as part of the model, and one small round friendly white ghost with two dot eyes floats beside it. The miniature: Bran Castle in Romania, 'Dracula's Castle': a white-walled castle with steep red-tiled roofs and towers of different heights, perched on a steep rocky crag above a few dark pines, its small windows glowing warm, two little bats. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
+  {
+   "id": "item-halloween-2026-02",
+   "event": "halloween-2026",
+   "slot": 2,
+   "title": "Sleepy Hollow Bridge",
+   "medium": "render",
+   "subjects": [
+    "sleepy hollow bridge",
+    "bridge",
+    "jack-o'-lantern",
+    "pumpkin",
+    "ghost",
+    "moon"
+   ],
+   "busy": 0,
+   "palette": [
+    "orange",
+    "brown",
+    "green"
+   ],
+   "prompt": "A little painted miniature diorama, like a handmade souvenir model standing on its own small rounded island of earth and moss, at dusk: a soft painted 3D finish, chunky simple shapes, smooth shading, crisp clean edges, warm glowing lights, spooky but friendly and cheerful. A big round pumpkin-orange full moon stands just behind it as part of the model, and one small round friendly white ghost with two dot eyes floats beside it. The miniature: the little wooden bridge over a misty brook in Sleepy Hollow, from the legend of the Headless Horseman: a simple plank footbridge with a wooden rail among autumn trees in orange and gold, a glowing carved jack-o'-lantern and a black tricorn hat left on the bridge. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
+  {
+   "id": "item-halloween-2026-03",
+   "event": "halloween-2026",
+   "slot": 3,
+   "title": "Edinburgh Old Town",
+   "medium": "render",
+   "subjects": [
+    "edinburgh old town",
+    "close",
+    "street lamp",
+    "steps",
+    "ghost",
+    "moon"
+   ],
+   "busy": 0,
+   "palette": [
+    "grey",
+    "amber",
+    "blue"
+   ],
+   "prompt": "A little painted miniature diorama, like a handmade souvenir model standing on its own small rounded island of earth and moss, at dusk: a soft painted 3D finish, chunky simple shapes, smooth shading, crisp clean edges, warm glowing lights, spooky but friendly and cheerful. A big round pumpkin-orange full moon stands just behind it as part of the model, and one small round friendly white ghost with two dot eyes floats beside it. The miniature: a steep, narrow close in Edinburgh's Old Town: tall old grey stone tenement houses leaning close, worn stone steps climbing through a dark arched passage, one old iron street lamp glowing warm, cobbles. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
+  {
+   "id": "item-halloween-2026-04",
+   "event": "halloween-2026",
+   "slot": 4,
+   "title": "Château de Brissac",
+   "medium": "render",
+   "subjects": [
+    "château de brissac",
+    "castle",
+    "château",
+    "ghost",
+    "moon"
+   ],
+   "busy": 0,
+   "palette": [
+    "cream",
+    "grey",
+    "green"
+   ],
+   "prompt": "A little painted miniature diorama, like a handmade souvenir model standing on its own small rounded island of earth and moss, at dusk: a soft painted 3D finish, chunky simple shapes, smooth shading, crisp clean edges, warm glowing lights, spooky but friendly and cheerful. A big round pumpkin-orange full moon stands just behind it as part of the model, and one small round friendly white ghost with two dot eyes floats beside it. The miniature: the Chateau de Brissac in the Loire Valley, France's tallest chateau: two stout round medieval stone towers with machicolations flanking a tall cream-stone Renaissance central block with many tall windows and steep grey slate roofs; in one upper window a soft glowing green lady in a long gown, the Green Lady. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
+  {
+   "id": "item-halloween-2026-05",
+   "event": "halloween-2026",
+   "slot": 5,
+   "title": "Flying Dutchman",
+   "medium": "render",
+   "subjects": [
+    "flying dutchman",
+    "ghost ship",
+    "ship",
+    "lighthouse",
+    "ghost",
+    "moon"
+   ],
+   "busy": 0,
+   "palette": [
+    "green",
+    "teal",
+    "white"
+   ],
+   "prompt": "A little painted miniature diorama, like a handmade souvenir model standing on its own small rounded island of earth and moss, at dusk: a soft painted 3D finish, chunky simple shapes, smooth shading, crisp clean edges, warm glowing lights, spooky but friendly and cheerful. A big round pumpkin-orange full moon stands just behind it as part of the model, and one small round friendly white ghost with two dot eyes floats beside it. The miniature: the Flying Dutchman, the legendary ghost ship of the Cape of Good Hope: an old seventeenth-century Dutch sailing ship with tall masts and glowing, tattered pale green sails, riding a curling dark wave, a small rocky headland with a tiny white lighthouse beside it. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
+  {
+   "id": "item-halloween-2026-06",
+   "event": "halloween-2026",
+   "slot": 6,
+   "title": "Kappabuchi Pool",
+   "medium": "render",
+   "subjects": [
+    "kappabuchi pool",
+    "kappa",
+    "stream",
+    "cucumber",
+    "ghost",
+    "moon"
+   ],
+   "busy": 0,
+   "palette": [
+    "green",
+    "grey"
+   ],
+   "prompt": "A little painted miniature diorama, like a handmade souvenir model standing on its own small rounded island of earth and moss, at dusk: a soft painted 3D finish, chunky simple shapes, smooth shading, crisp clean edges, warm glowing lights, spooky but friendly and cheerful. A big round pumpkin-orange full moon stands just behind it as part of the model, and one small round friendly white ghost with two dot eyes floats beside it. The miniature: Kappabuchi pool in Tono, Japan, where kappa water imps are said to live: a small clear stream winding between mossy stones under green leaves, a bamboo fishing rod leaning over it with a fresh cucumber dangling on its line, and a small friendly green kappa with a little water dish on its head and a turtle shell peeking curiously out of the water; no shrine, no gate, no statue. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
+  {
+   "id": "item-halloween-2026-07",
+   "event": "halloween-2026",
+   "slot": 7,
+   "title": "Frankenstein Castle",
+   "medium": "render",
+   "subjects": [
+    "frankenstein castle",
+    "castle",
+    "lanterns",
+    "ghost",
+    "moon"
+   ],
+   "busy": 0,
+   "palette": [
+    "grey",
+    "amber",
+    "rust"
+   ],
+   "prompt": "A little painted miniature diorama, like a handmade souvenir model standing on its own small rounded island of earth and moss, at dusk: a soft painted 3D finish, chunky simple shapes, smooth shading, crisp clean edges, warm glowing lights, spooky but friendly and cheerful. A big round pumpkin-orange full moon stands just behind it as part of the model, and one small round friendly white ghost with two dot eyes floats beside it. The miniature: Frankenstein Castle in Germany's Odenwald hills, home of an alchemist's legend and a famous Halloween party: a ruined medieval stone castle on a wooded hilltop with two square battlemented towers, a string of little glowing lanterns across its walls and a small zigzag of lightning above. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
   {
    "id": "item-2026-11-01",
    "month": "2026-11",
@@ -798,6 +948,14 @@
    "theme": "Island Hopping",
    "table": "table-island-terrace",
    "tableTitle": "Island Terrace"
+  }
+ ],
+ "events": [
+  {
+   "event": "halloween-2026",
+   "theme": "Haunted Holiday",
+   "table": "table-pumpkin-porch",
+   "tableTitle": "Pumpkin Porch"
   }
  ]
 }

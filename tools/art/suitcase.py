@@ -1,5 +1,5 @@
-"""The Daily Suitcase's art (creator, 2026-10-27; docs/daily-suitcase.md): each month's 10 items,
-and the suitcase itself.
+"""The Daily Suitcase's art (creator, 2026-10-27; docs/daily-suitcase.md): each month's 10 items
+(and each two-week VIP event's 7, docs/vip.md), and the suitcase itself.
 
     python tools/art/suitcase.py prompt <item id>          print an item's full prompt
     python tools/art/suitcase.py gen <raw-dir> <id>...     submit items (gemforge, BILLS per id)
@@ -49,6 +49,12 @@ S = {
     "papercut": "A layered paper-cut craft object with soft shadows between the paper layers:",
     "pixel": "Clean pixel art with big square pixels and a small palette, no dithering:",
     "retro": "A mid-century travel-poster illustration with flat colour shapes and a gentle print texture:",
+    # Haunted Holiday's one style (the creator's pick, 2026-10-30): a souvenir-model miniature, so each place keeps its own outline
+    "miniature": ("A little painted miniature diorama, like a handmade souvenir model standing on its own small rounded island of "
+                  "earth and moss, at dusk: a soft painted 3D finish, chunky simple shapes, smooth shading, crisp clean edges, "
+                  "warm glowing lights, spooky but friendly and cheerful. A big round pumpkin-orange full moon stands just behind "
+                  "it as part of the model, and one small round friendly white ghost with two dot eyes floats beside it. The "
+                  "miniature:"),
 }
 END = (" One object only, centred, filling most of the frame, seen from the front at a slight angle from above."
        " No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a"
@@ -56,6 +62,16 @@ END = (" One object only, centred, filling most of the frame, seen from the fron
 
 # id: (style, the object in words, background top and bottom colours, medium for the catalogue)
 ITEMS = {
+    # Haunted Holiday, the first two-week VIP event (docs/vip.md; event "halloween-2026", 15-28 Oct 2026): famous haunted
+    # places (creator, 2026-10-30), each a little painted miniature at dusk, one style for the set. Vetted: no sacred
+    # sites, burial grounds, real tragedies or licensed buildings; looks described in words from facts, never a photo.
+    "item-halloween-2026-01": ("miniature", "Bran Castle in Romania, 'Dracula's Castle': a white-walled castle with steep red-tiled roofs and towers of different heights, perched on a steep rocky crag above a few dark pines, its small windows glowing warm, two little bats", ("#43386b", "#2a2347"), "render"),
+    "item-halloween-2026-02": ("miniature", "the little wooden bridge over a misty brook in Sleepy Hollow, from the legend of the Headless Horseman: a simple plank footbridge with a wooden rail among autumn trees in orange and gold, a glowing carved jack-o'-lantern and a black tricorn hat left on the bridge", ("#2f4a3f", "#1c2f28"), "render"),
+    "item-halloween-2026-03": ("miniature", "a steep, narrow close in Edinburgh's Old Town: tall old grey stone tenement houses leaning close, worn stone steps climbing through a dark arched passage, one old iron street lamp glowing warm, cobbles", ("#3b4a66", "#232e45"), "render"),
+    "item-halloween-2026-04": ("miniature", "the Chateau de Brissac in the Loire Valley, France's tallest chateau: two stout round medieval stone towers with machicolations flanking a tall cream-stone Renaissance central block with many tall windows and steep grey slate roofs; in one upper window a soft glowing green lady in a long gown, the Green Lady", ("#4d3a5e", "#30233d"), "render"),
+    "item-halloween-2026-05": ("miniature", "the Flying Dutchman, the legendary ghost ship of the Cape of Good Hope: an old seventeenth-century Dutch sailing ship with tall masts and glowing, tattered pale green sails, riding a curling dark wave, a small rocky headland with a tiny white lighthouse beside it", ("#245a66", "#163a43"), "render"),
+    "item-halloween-2026-06": ("miniature", "Kappabuchi pool in Tono, Japan, where kappa water imps are said to live: a small clear stream winding between mossy stones under green leaves, a bamboo fishing rod leaning over it with a fresh cucumber dangling on its line, and a small friendly green kappa with a little water dish on its head and a turtle shell peeking curiously out of the water; no shrine, no gate, no statue", ("#5b3a4f", "#3b2533"), "render"),
+    "item-halloween-2026-07": ("miniature", "Frankenstein Castle in Germany's Odenwald hills, home of an alchemist's legend and a famous Halloween party: a ruined medieval stone castle on a wooded hilltop with two square battlemented towers, a string of little glowing lanterns across its walls and a small zigzag of lightning above", ("#6a3b2a", "#43251a"), "render"),
     # November 2026: Ski Trip
     "item-2026-11-01": ("photo", "a pair of ski goggles with a mirrored orange-to-blue lens and a striped elastic strap", ("#cfe3f2", "#9fc0dc"), "photo"),
     "item-2026-11-02": ("watercolour", "a knitted red and white bobble hat with a big fluffy white bobble on top", ("#f6efe2", "#e6d8c0"), "watercolour"),
@@ -83,6 +99,10 @@ ITEMS = {
 
 # the colour words Levels' makers read (the catalogue's `palette`)
 PAL = {
+    "item-halloween-2026-01": ["white", "red", "indigo"], "item-halloween-2026-02": ["orange", "brown", "green"],
+    "item-halloween-2026-03": ["grey", "amber", "blue"], "item-halloween-2026-04": ["cream", "grey", "green"],
+    "item-halloween-2026-05": ["green", "teal", "white"], "item-halloween-2026-06": ["green", "grey"],
+    "item-halloween-2026-07": ["grey", "amber", "rust"],
     "item-2026-11-01": ["orange", "blue", "black"], "item-2026-11-02": ["red", "white"], "item-2026-11-03": ["mustard", "teal", "cream"],
     "item-2026-11-04": ["red", "silver"], "item-2026-11-05": ["navy", "white"], "item-2026-11-06": ["red", "cream", "green"],
     "item-2026-11-07": ["pink", "white"], "item-2026-11-08": ["white", "silver"], "item-2026-11-09": ["red", "yellow", "black"],
@@ -183,7 +203,7 @@ def items(raw, ids):
         if it["id"] in ITEMS and (out_dir / f"{it['id']}.webp").exists():
             style, what, (top, bottom), medium = ITEMS[it["id"]]
             it.pop("standin", None)
-            it.update({"medium": medium, "subjects": [it["title"].lower()], "busy": 0,
+            it.update({"medium": medium, "subjects": it["subjects"] if len(it.get("subjects") or []) > 1 else [it["title"].lower()], "busy": 0,
                        "palette": PAL[it["id"]], "prompt": prompt(it["id"])})
     P.ITEMS_PLAN.write_text(json.dumps(ip, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
 

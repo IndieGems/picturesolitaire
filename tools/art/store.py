@@ -428,7 +428,9 @@ BORDERS = {"sunny-day": "store-sunny-day-border", "ski-lodge": "store-ski-lodge-
            "paris-cafe": "store-paris-cafe-border", "kyoto-blossom": "store-kyoto-blossom-border",
            "buenos-aires": "store-buenos-aires-border", "irish-coast": "store-irish-coast-border",
            # Autumn Study (creator, 2026-10-29: it had none, so the Arcade's bars showed on PC/TV); its table is unchanged
-           "autumn-study": "store-autumn-study-border"}
+           "autumn-study": "store-autumn-study-border",
+           # Haunted Holiday's prize, the first VIP event's (2026-10-30): the porch's own corner props carried out to the edges
+           "pumpkin-porch": "store-pumpkin-porch-border"}
 
 
 def save(im, rel, out, q=92):

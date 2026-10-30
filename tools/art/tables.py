@@ -68,6 +68,9 @@ TABLES = {
     # dusk's snow strip instead of a particles file of its own.
     "ski-lodge": {"title": "Ski Lodge", "particles": "snow", "share": "winter-dusk"},
     "winter-market": {"title": "Winter Market", "particles": "snow", "share": "winter-dusk"},
+    # The two-week VIP events' prizes (docs/vip.md): Haunted Holiday's (halloween-2026, creator 2026-10-30), a candlelit
+    # autumn porch at golden hour; its leaves are Autumn Study's strip, shared.
+    "pumpkin-porch": {"title": "Pumpkin Porch", "particles": "leaves", "share": "autumn-study"},
     # The Cosmetics screen's four, 2,000 Coins each (creator, 2026-10-29, picked from concepts in design/concepts/tables/),
     # each paired with one of Audio's trip tracks; built as Sunny Day (scene -> table, the side art cleared in the middle).
     "paris-cafe": {"title": "Paris Café"},
@@ -76,7 +79,7 @@ TABLES = {
     "irish-coast": {"title": "Irish Coast"},
 }
 SHIPPED = ["sunny-day", "winter-dusk", "autumn-study", "ski-lodge", "winter-market",
-           "paris-cafe", "kyoto-blossom", "buenos-aires", "irish-coast"]  # the picker's order
+           "paris-cafe", "kyoto-blossom", "buenos-aires", "irish-coast", "pumpkin-porch"]  # the picker's order
 DEFAULT = "sunny-day"  # everyone's table (UI's code switched to it in 78c3623)
 # The plain panel a board sits on during a level (UI, 2026-10-29, the creator's pick after Jigsaw Drop): a calm
 # mid-tone of the table's own surface, under the cards' pale frames. A table not named here uses its `base` (the
@@ -202,8 +205,13 @@ def build():
             files = {k: f"art/tables/{tid}/{tid}-{v}" for k, v in
                      (("table", "table.webp"), ("stackBack", "stack-back.webp"), ("particles", "particles.webp"))}
             if "share" in t:  # another table's particles, as they are
-                other = TABLES[t["share"]]
-                files["particles"], frames, frame = other["files"]["particles"], 4, other["frame"]
+                other, oid = TABLES[t["share"]], t["share"]
+                if "files" in other:  # the winter dusk's original strip
+                    files["particles"], frames, frame = other["files"]["particles"], 4, other["frame"]
+                else:  # a built table's own strip, read for its frame count
+                    files["particles"], frame = f"art/tables/{oid}/{oid}-particles.webp", FRAME
+                    with Image.open(OUT / oid / f"{oid}-particles.webp") as strip:
+                        frames = strip.width // FRAME
             elif t.get("particles"):
                 frames, frame = particles(MASTERS / f"{tid}-particles.webp", d / f"{tid}-particles.webp"), FRAME
             else:  # no weather (a Souvenir's table): particles.ts draws none without a strip

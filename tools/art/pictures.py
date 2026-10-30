@@ -416,6 +416,8 @@ def items(p):
     makers never deal one as a library picture. Planned in tools/art/items-plan.json, ids
     item-YYYY-MM-NN that never change (Levels' schedules name them). Until its own picture is
     drawn, an item stands in with a library square's files (`standin`), which changes no deal.
+    A two-week VIP event's items (docs/vip.md, 2026-10-30) carry "event" in place of "month", with ids
+    item-<event>-NN (item-halloween-2026-01), and the event's theme and table are in `events`.
     `cutout` is the object alone on transparency, for the suitcase's slots and silhouettes."""
     lib = {e["id"]: e for e in p["pictures"]}
     out = []
@@ -430,7 +432,8 @@ def items(p):
         with Image.open(PUBLIC / board_rel(src)) as im:
             board_px = list(im.size)
         x = {
-            "id": e["id"], "month": e["month"], "slot": e["slot"], "album": "items", "title": e["title"],
+            "id": e["id"], **({"event": e["event"]} if "event" in e else {"month": e["month"]}), "slot": e["slot"],
+            "album": "items", "title": e["title"],
             "medium": src["medium"], "file": rel, "board": board_rel(src), "cols": 2, "rows": 2,
             "px": px, "boardPx": board_px,
             "palette": (e.get("palette") or []) if real else (src.get("palette") or p["families"][src.get("family") or src["id"]]["palette"]),
@@ -543,7 +546,8 @@ def cmd_catalogue():
             pictures[-1]["look"] = e["look"]
     used ={x["album"] for x in pictures}
     out = {"albums": [a for a in p["albums"] if a["id"] in used], "pictures": pictures,
-           "destinations": destinations(p), "items": items(p), "suitcases": items_plan()["suitcases"]}
+           "destinations": destinations(p), "items": items(p), "suitcases": items_plan()["suitcases"],
+           "events": items_plan().get("events", [])}
     out["souvenirPictures"] = souvenir_pictures()
     out["souvenirs"] = souvenir_records(out["souvenirPictures"])
     CATALOGUE.parent.mkdir(parents=True, exist_ok=True)

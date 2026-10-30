@@ -116,6 +116,19 @@
       "border": "irish-coast"
     },
     {
+      "id": "table-pumpkin-porch",
+      "title": "Pumpkin Porch",
+      "table": "art/tables/pumpkin-porch/pumpkin-porch-table.webp",
+      "stackBack": "art/tables/pumpkin-porch/pumpkin-porch-stack-back.webp",
+      "particles": "art/tables/autumn-study/autumn-study-particles.webp",
+      "thumb": "art/tables/pumpkin-porch/pumpkin-porch-thumb.webp",
+      "particleKind": "leaves",
+      "particleFrame": 64,
+      "particleFrames": 4,
+      "base": "#a96845",
+      "border": "pumpkin-porch"
+    },
+    {
       "id": "table-souvenir-america",
       "title": "Diner Counter",
       "table": "art/tables/souvenir-america/souvenir-america-table.webp",
