@@ -4,7 +4,13 @@
 // item's `item`: {"id"}, the id one of its own 2x2 pictures), and the events' details to
 // src/content/levels/events.json (v3: theme, table, release, the 30 level ids, the 10 items and the level
 // each hides on). Shape agreed with Server (2026-10-30), who compiles both into the win checker.
-// Run: node tools/levels/make-events.mts
+// Run: node tools/levels/make-events.mts [--freshen BATCH EVENT,EVENT,...]
+//   --freshen (lead, 2026-10-30: Art's 200 new pictures into the three newest events): every picture of
+//   Art's `batch` BATCH still on no level goes IN PLACE into the named events, each into one event only,
+//   about the same number each, taking the spot of a picture of its exact shape, the most repeated first
+//   (on the most levels of every lane): within the level's row rules (fits: one a family, album and style
+//   shares, busy), clashing with nothing beside the level's item, none twice in the event. The deal, line
+//   and par stay; check.mts re-proves each level. The other events are not touched.
 //   It KEEPS every level already made whose row is unchanged, mending it IN PLACE (a square or long
 //   picture of the same shape takes a picture's spot, so the deal, line and par stay): a flagged or
 //   no-longer-usable picture gives way; the plan's item for the level goes on (in the spot of a picture
@@ -188,6 +194,52 @@ function main() {
       }
       levels.push(l);
     }
+  }
+  // --freshen: Art's batch into the named events, in place of their most repeated pictures
+  const fAt = process.argv.indexOf("--freshen");
+  if (fAt > 0) {
+    const batch = process.argv[fAt + 1];
+    const targets = (process.argv[fAt + 2] ?? "").split(",").filter(Boolean);
+    for (const t of targets) if (!PLAN.some((p) => p.id === t)) throw new Error(`--freshen: ${t} is no event of the plan`);
+    const onAny = new Set([...others, ...levels].flatMap((l) => l.pictures.map((q) => q.id)));
+    const fresh = FRESH.filter((c) => c.batch === batch && !onAny.has(c.id));
+    if (!fresh.length) throw new Error(`--freshen: no picture of batch ${JSON.stringify(batch)} is on no level`);
+    const quota = Math.ceil(fresh.length / targets.length);
+    const taken = new Map(targets.map((t) => [t, 0]));
+    const eventPics = new Map(targets.map((t) => [t, new Set(levels.filter((l) => l.event === t).flatMap((l) => l.pictures.map((q) => q.id)))]));
+    // every swappable spot of the named events, the most repeated picture first (ties by hash, so the events interleave)
+    const spots = levels
+      .flatMap((l, li) => (targets.includes(l.event) ? l.pictures.map((q, j) => ({ li, j, id: q.id })) : []))
+      .filter(({ li, id }) => id !== levels[li].item?.id && byId.has(id))
+      .sort((a, b) => use(b.id) - use(a.id) || hashId(`fresh~${levels[a.li].id}~${a.id}`) - hashId(`fresh~${levels[b.li].id}~${b.id}`));
+    const left = new Set(fresh.map((c) => c.id));
+    let done = 0;
+    for (const { li, j } of spots) {
+      if (!left.size) break;
+      const l = levels[li];
+      if (taken.get(l.event) >= quota) continue;
+      const was = l.pictures[j];
+      const it = l.item ? itemById.get(l.item.id) : null;
+      const k = l.id.slice(-2) - 1;
+      const row = ROWS[k];
+      const n = row.count - (it ? 1 : 0);
+      const spec = { count: n, alike: [], cards: [n * row.sizes[0], n * row.sizes[0]], sizes: row.sizes, vary: true, busyMost: row.busyMost, liveMost: row.liveMost };
+      const othersOn = l.pictures.filter((q, i) => i !== j && q.id !== it?.id);
+      const c = fresh
+        .filter((c) => left.has(c.id) && c.cols === was.cols && c.rows === was.rows && !eventPics.get(l.event).has(c.id) && !(it && itemClash(it, c)) && fits(catalogue, spec, [...othersOn, { id: c.id, cols: c.cols, rows: c.rows }]))
+        .sort((a, b) => hashId(`${l.id}~${a.id}`) - hashId(`${l.id}~${b.id}`))[0];
+      if (!c) continue;
+      const pictures = l.pictures.map((q, i) => (i === j ? { id: c.id, cols: was.cols, rows: was.rows } : q));
+      levels[li] = { ...l, pictures, axes: { ...l.axes, families: pictures.map((q) => familyOf(q.id)) } };
+      notes.push(`${l.id}: ${was.id} (on ${use(was.id)} levels) -> ${c.id} in place (Art's new picture); the deal and line unchanged`);
+      uses.set(was.id, use(was.id) - 1);
+      uses.set(c.id, 1);
+      left.delete(c.id);
+      eventPics.get(l.event).add(c.id);
+      taken.set(l.event, taken.get(l.event) + 1);
+      done++;
+    }
+    console.log(`--freshen: ${done} of ${fresh.length} new pictures in place (${targets.map((t) => `${t} ${taken.get(t)}`).join(", ")})${left.size ? `; ${left.size} fit nowhere: ${[...left].join(", ")}` : ""}`);
   }
   writeBoards(LEVELS_FILE, "VIP event levels: each event's 30 levels of its own (docs/vip.md); made by tools/levels/make-events.mts (it keeps every level it has, mending one in place), checked by tools/levels/check.mts; par = moves in the stored line", levels);
   writeFileSync(EVENTS_FILE, eventsText());
