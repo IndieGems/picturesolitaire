@@ -183,8 +183,12 @@ only for a site of this game's own, and adds to those.
 - Leaving the game is the Arcade frame's: it draws Return to
 Arcade itself, so the game needs no exit control.
 - The game's settings are its own: `src/settings-screen.ts`
-draws the button, top-right, and the screen it opens. The
-Arcade's menu never opens them, so never hide that button. Each
+draws the gear, top-right, and the screen it opens. **Inside the
+Arcade the gear goes** (the platform's ask, via the creator,
+2026-10-30, as in Untangled): every setting is mirrored into the
+Gem menu (`src/menu-settings.ts`), mute and vibration are its quick
+row, and the gear hides only while `gem.setMenu` answers true. In a
+plain tab or under another embedder it stays. Each
 setting starts from the player's Arcade-wide default
 (`gem.prefs.recommended`) until they change it there, and their
 choice wins (`src/settings.ts`).
