@@ -28,15 +28,13 @@ So everything here is built now, in the main game, behind one switch that is **o
      current month and the two before it, counted in the player's own months.
    - Each past day pays its Coins once, the same as it would have on the day. The server pays
      nothing outside the window (with the standard's day of slack) and nothing to a non-VIP.
-3. **The event is two weeks, for VIPs only** (the creator's boss, 2026-10-30: no monthly events for
-   now). The Daily Suitcase (`docs/daily-suitcase.md`) is reshaped:
-   - 14 days, about 7 items, each turning up twice in that event's dailies.
-   - A swap takes 2 spares. The themed table is the prize.
-   - How often events run (back to back, or with gaps) is still open: a schedule file, not code.
-4. **The event archive.**
-   - VIPs can play past events: their 14 boards, their items and their prize table, still winnable.
-   - Starts with a **Halloween event** dated in October 2026, already over, so the archive has one
-     at launch.
+3. **Events are VIP content packs of their own** (the creator, 2026-10-30, replacing events in the dailies):
+   - Each event is **30 levels of its own**, never the dailies, made from library pictures: pictures on no other level first, and none twice within an event.
+   - Each has **10 items, one hidden in each of 10 of its levels**, spread across the 30, so an item never repeats and there is no swap.
+   - Finding all 10 wins the event's table. Its levels pay the usual level Coins.
+   - A VIP can play any event at any time; a new event arrives on the schedule (`events-plan.json`, every two weeks or as set), and old ones stay playable.
+   - The dailies carry no event items.
+4. **The event archive** is simply every past event, still playable and winnable by VIPs. The first three are Haunted Holiday (10 famous haunted places), Ski Trip and Winter Market.
 5. **Every Cosmetic is wearable.**
    - A VIP can choose any table and soundtrack sold in Cosmetics.
    - What a player buys stays in their Arcade inventory, before VIP or during it.
@@ -51,9 +49,8 @@ and "VIP is coming soon". There is no buy button until the platform can both sel
 say who holds it (gem-development#2119): a buyer must never stay locked. Untangled (`../yarn`:
 `src/vip.ts`, `showVip`) is the model. The dev toggle is kept in the save, so it holds across reloads.
 
-**Events after Halloween** (until the cadence is set): Ski Trip from 1 Nov 2026 and Winter Market
-from 1 Dec, two weeks each, with 7 of each month's 10 items. Halloween runs 15–28 Oct 2026 and its
-7 items are famous haunted places (the creator), painted postcards.
+**The daily's friends leaderboard** (the creator, 2026-10-30): fewest moves, ties to the earlier finish; only a
+helper-free win (no Hint, no Shuffle) posts a score, so VIPs' free hints never top it. A helped win still pays.
 
 Not now (the creator, 2026-10-30): a VIP-only table or soundtrack, a VIP passport.
 
