@@ -31,8 +31,9 @@ So everything here is built now, in the main game, behind one switch that is **o
 3. **Events are VIP content packs of their own** (the creator, 2026-10-30, replacing events in the dailies):
    - Each event is **30 levels of its own**, never the dailies, made from library pictures: pictures on no other level first, and none twice within an event.
    - Each has **10 items, one hidden in each of 10 of its levels**, spread across the 30, so an item never repeats and there is no swap.
-   - Finding all 10 wins the event's table, **500 Coins** and the event's **stamp in the Passport** (its own "Event
-     stamps" page), once (the creator, 2026-10-30: helpers mean nothing to a VIP, so none). Its levels pay the usual
+   - Each item found pays **50 Coins** (500 an event; the Arcade caps one payout at 100, so no lump at the end), and
+     finding all 10 wins the event's table and its **stamp in the Passport** (its own "Event stamps" page), once
+     (the creator, 2026-10-30: helpers mean nothing to a VIP, so none). Its levels pay the usual
      level Coins.
    - Which levels hide items is never shown: a won item level wears a suitcase. Items sit on seeded random levels
      (`itemLevels` in `events-plan.json`), at least one in levels 1–5, never on 25 or 30.
