@@ -9,6 +9,7 @@ checklist's own reports go to `release-readiness/` (not committed).
 | Date | Who | What |
 | --- | --- | --- |
 | 2026-10-29 | the creator | Both music beds (`audio/bed-day.mp3`, the sunny default, and `audio/bed.mp3`, Winter Dusk's) have no sung or spoken words. The creator heard both in Sound Tuning on 2026-10-28. (GSR-008, item 1) |
+| 2026-10-29 | the creator | All six soundtracks have no words (second review). Paris Café was then remade as a vibraphone waltz, Take B, picked by the creator in Sound Tuning (3440890); the creator confirmed the new track has no words either. |
 
 ## Decisions from the first release review (GSR-2026-10-29-43c7b45)
 
@@ -36,7 +37,8 @@ Dev: build 0.56.0 (9849bcb, Gem Web SDK 16.0.0), store page 11, config 42, check
   - 18 possible double meanings or misreadings, among them zh 大香蕉 and 奥特曼, ru Сосати, ko 벙어리장갑 and 난쟁이, ja ホットサイダー, pt-BR Perereca, and es Conchas;
   - one English word left in German.
   UI fixed 26 strings in 0c26f3e; three standard words with a faint second meaning stay (es Papaya, pl Samochodzik na pedały, de Blasloch). A native read is still owed at release (`TODO.md`).
-- GSR-007: the creator chose to put the release build (`npm run build:release`, no dev menu) on dev now, so the phone and new-player checks play what ships.
+- GSR-007: the creator chose to put the release build (`npm run build:release`, no dev menu) on dev now, so the phone and new-player checks play what ships. On dev: web build 0.65.0 (3440890, all 517 boards proved afresh), store page 14, config 45, checker 0.1.34.
+- GSR-018: the creator bought a soundtrack on dev; cosmetic_bought was counted, and the cosmetics funnel reached every step (the release reviewer read it).
 - Russian "монет" for Coins is correct: it is only ever read after a price. A price ending in 1, or in 2–4 outside 11–14, would need another form.
 
 ## Still owed by people, not agents
