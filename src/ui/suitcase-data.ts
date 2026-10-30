@@ -67,7 +67,7 @@ const ALLOWED = import.meta.env.MODE !== "release";
 function packOf(e: EventData, won: number): { pack: EventPack; won: string[] } {
   const levels = e.levels?.length ? [...e.levels] : Array.from({ length: EVENT_LEVELS }, (_, i) => `${e.id}-${String(i + 1).padStart(2, "0")}`);
   const wonIds = levels.slice(0, won);
-  // Levels hides them on levels 2, 5, 8 … 29 (its own `level` where the file says)
+  // each on the level Levels hid it on (events.json, random per event, bfe50f2); a file without one, every third
   const items: EventItem[] = e.items.map((it, i) => {
     const level = it.level ?? levels[Math.min(levels.length - 1, 1 + i * 3)] ?? null;
     return { id: it.id, title: it.title, level, found: !!level && wonIds.includes(level) };
