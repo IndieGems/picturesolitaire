@@ -76,6 +76,7 @@ import { closed, cornerKey, opened } from "./dialogs";
 import { markAt, markOf, markTag, markWords, pretendMarks, type Mark } from "./marks";
 import { allDone, awaitingRecord, createHome, nextBoard, warmTripStamp } from "./home";
 import { KINDS, KIT, stock, type HelperKind } from "./stock";
+import { createHelperRest } from "./helper-cooldown";
 import { createRunOut } from "./helper-shop";
 import { createHomeShop } from "./home-shop";
 import { createCosmetics } from "./cosmetics";
@@ -393,7 +394,8 @@ const tries = createTries({
   pictures: () => board?.pictures().length ?? 0,
   grant: (n) => (board as MercyBoard | null)?.grantFree?.("hint", n),
   announce: (n) => {
-    if (screen === "board") mercyNote.show(n);
+    // a VIP's helpers are unlimited already: no free Hint to announce
+    if (screen === "board" && !rest.vip()) mercyNote.show(n);
   },
   changed: () => drawHelpers(),
 });
@@ -944,10 +946,20 @@ function toRoute(): void {
 // A press with some left acts at once (an Undo never waits on the network), and one is spent only once
 // the board says it acted and it was not free; a press with none left opens the run-out panel. Free:
 // the guided first board (before the travel kit comes), a lesson's lit button and its board, and the
-// creator's practice.
+// creator's practice. A Gem Arcade VIP's are free and unlimited, each button resting a moment after
+// use (helper-cooldown.ts, docs/vip.md), except on the guide's and a lesson's boards, free already.
+const rest = createHelperRest({
+  buttons: helperBtns,
+  here: () => !inGuidedStart() && play?.kind !== "lesson",
+  canUndo: () => canUndoNow,
+  redraw: () => {
+    drawHelpers();
+    drawStuck();
+  },
+});
 /** Every helper on this board costs nothing. */
 function freeHelpers(): boolean {
-  return inGuidedStart() || play?.kind === "lesson" || isPractice(play);
+  return inGuidedStart() || play?.kind === "lesson" || isPractice(play) || rest.vip();
 }
 /** The counts last drawn, so a count that grew (the kit, a gift, a purchase) gives its badge a pop. */
 const shown: Partial<Record<HelperKey, number>> = {};
@@ -956,6 +968,8 @@ function drawHelpers(): void {
   // mercy help: this try's free Hints, on the Hint badge in their own colour until used (tries.ts)
   const gifted = free ? 0 : tries.freeHints();
   for (const key of KINDS) {
+    // a VIP's: "VIP", or resting with the seconds left (helper-cooldown.ts)
+    if (rest.draw(key)) continue;
     const { btn, badge } = helperBtns[key];
     const left = stock.count(key);
     const given = key === "hint" ? gifted : 0;
@@ -988,6 +1002,8 @@ function drawHelpers(): void {
 /** A helper pressed (or just bought): it acts, or, with none left and nothing free, the run-out panel opens. */
 function pressHelper(k: HelperKey): void {
   if (!board || boardWon) return;
+  // a VIP's button resting after its last use takes no press
+  if (rest.resting(k)) return;
   const given = k === "hint" && tries.freeHints() > 0;
   if (!freeHelpers() && !given && lessons.lit() !== k && stock.count(k) <= 0) return void runOut.open(k);
   if (k === "undo") board.undo();
@@ -1000,6 +1016,12 @@ for (const k of KINDS) helperBtns[k].btn.addEventListener("click", () => pressHe
 // `free`), or the board costs nothing; a spend that got no answer is Server's to send again, and "none"
 // (another device used the last) is read again, the act standing
 const spendOn = (k: HelperKey) => (e: { lesson?: boolean; free?: boolean }) => {
+  // a VIP's: nothing spent, the button rests (a mercy Hint the board gave is used up all the same)
+  if (!e.lesson && rest.vip()) {
+    rest.used(k);
+    if (e.free) tries.usedFree();
+    return;
+  }
   if (e.lesson || freeHelpers()) return;
   if (e.free) return void tries.usedFree();
   void stock.spend(k);

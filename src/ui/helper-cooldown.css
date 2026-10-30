@@ -1,0 +1,31 @@
+/* A VIP's helper buttons (helper-cooldown.ts): "VIP" on the count badge, and after each use a rest,
+   a shadow swept round the button like a clock hand (Untangled's VIP hint) and the seconds left on
+   the badge. The button keeps its own material (style.css, .btn); the badge is the count's own. */
+
+/* the badge: "VIP", and while resting "VIP 8s" (one row, never wrapped) */
+.helper.vip .badge { display: inline-flex; align-items: center; gap: 4px; padding: 0 7px; white-space: nowrap; letter-spacing: 0.4px; }
+.helper.vip .badge .vip-wait { letter-spacing: 0; font-variant-numeric: tabular-nums; }
+
+/* the shadow: two half-planes, each clipped to its half of the face, turned about its centre by script */
+.helper .rest-sweep { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; pointer-events: none; opacity: 0; }
+.helper.cooling .rest-sweep { opacity: 1; }
+.helper .rest-sweep .half { position: absolute; top: 0; bottom: 0; width: 50%; overflow: hidden; }
+.helper .rest-sweep .half.right { left: 50%; }
+.helper .rest-sweep .half.left { left: 0; }
+.helper .rest-sweep .half i {
+  position: absolute; top: 50%; width: 120px; height: 240px; margin-top: -120px;
+  background: rgba(30, 42, 62, 0.55); will-change: transform;
+}
+.helper .rest-sweep .half.right i { left: 0; transform-origin: 0 50%; }
+.helper .rest-sweep .half.left i { right: 0; transform-origin: 100% 50%; }
+
+/* resting takes no press: the face stays up on its lip */
+.btn.helper.cooling { cursor: default; }
+.btn.helper.cooling:active {
+  transform: none;
+  box-shadow: inset 0 2px 0 #fff, inset 0 -2px 4px rgba(120, 140, 165, 0.25), 0 5px 0 var(--lip), 0 9px 14px rgba(6, 12, 24, 0.45);
+}
+
+/* ready again after a long rest: the badge's little pop */
+.helper.vip.ready .badge { animation: badge-pop 0.5s ease-out; }
+html.less-motion .helper.vip.ready .badge { animation: none; }

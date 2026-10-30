@@ -7,6 +7,16 @@
 
 export const TUNING = {
   // (the helpers are the player's own stock now, counted by the screens: no per-board numbers here)
+  /**
+   * A Gem Arcade VIP's helpers (docs/vip.md, perk 1): free and unlimited, so each button rests
+   * this long after it acted, a sweep and the seconds left on it (src/ui/helper-cooldown.ts), so it
+   * can't be pressed again and again. Undo's is short: undoing several moves in a row is ordinary
+   * play. A rest under vipRestCountMs shows the sweep alone, no seconds. Nobody else has a rest.
+   */
+  vipRestHintMs: 10_000,
+  vipRestShuffleMs: 10_000,
+  vipRestUndoMs: 1_000,
+  vipRestCountMs: 2_000,
 
   // --- layout (tools/art/chrome-spec.md)
   /**
