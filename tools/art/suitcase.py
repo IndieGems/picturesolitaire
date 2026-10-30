@@ -43,7 +43,7 @@ S = {
     "clay": "A soft clay 3D render, like a handmade stop-motion model:",
     "low-poly": "A low-poly 3D illustration built from flat-shaded triangular facets:",
     "flat": "A flat vector illustration with bold shapes, no outlines and a light grain:",
-    "pop": "A 1960s pop-art comic illustration with bold black outlines and halftone dots on the object:",
+    "pop": "A 1960s pop-art comic illustration with bold black outlines, flat bright colour blocks and smooth shading, no halftone dots:",
     "watercolour": "A loose, fresh watercolour painting with crisp edges:",
     "pastel": "A soft pastel and chalk drawing:",
     "papercut": "A layered paper-cut craft object with soft shadows between the paper layers:",

@@ -12,6 +12,12 @@ the plan's `suffix.close` is the prompt ending for these rules.
 ## Rules for one picture
 
 - **Clean and crisp by default** (creator, 2026-10-29, after a test against Jigsaw Drop, `design/references/jigsaw-drop-crisp-*.png`). Every new batch leans clean: a bright subject on a deep, plain ground, big simple shapes cropped close, smooth shading and little texture, in sharp photography, clean or cel-shaded illustration, smooth 3D render or flat vector. Heavy brush, paper or stitch texture (palette-knife and impressionist oil, watercolour, pastel, print, embroidery, mosaic) becomes an occasional accent. The test showed the softness is in the art, not the export: re-saving textured level copies at q84 with a sharpen looked the same at card size and weighed about 1.8x (+113 MB across the levels), so there is no mass re-export. The plan's `suffix.crisp` is the prompt ending. Crisp pictures are also lighter, about 33 KB a level copy against textured's ~64 KB.
+- **Shading is smooth, never dots or lines** (creator, 2026-10-30, `design/references/ours-ink-halftone-gritty.png`:
+  the pen-and-ink cobbler read gritty and busy at card size). Every style shades with flat colour blocks and smooth
+  colour and value transitions. Never halftone dots, screentone, hatching, cross-hatching or stipple, whatever the
+  medium imitates (a comic, a magazine, an engraving), and no paper grain or speckle in the shading. A prompt says so
+  in words ("smooth gradient shading, no halftone, hatching or stipple"). `tools/art/pictures.py restyle` redraws an
+  offender from a flat-colour study of itself, so its subject and composition are kept.
 - **Checked card by card before it ships, anatomy first** (creator, 2026-10-29: Horse Fair's dapple-grey
   had a leg at an impossible angle, the generator's commonest slip). At full size, count every animal's
   legs and tail and every person's arms, hands and fingers, and look at how each leg meets the body and the
@@ -90,9 +96,14 @@ The creator loved Jigsaw Drop's opening level, and few of our pictures matched i
 mirror, the running dog, the Edwardian picnic). So about 60 pictures (`"medium": "ink"`)
 are clear pictures, square and made at high quality. The creator found medium noisier.
 
-- **Three looks, varied within:** a vintage storybook (ink with hatching and a soft
-  watercolour wash), a mid-century magazine (ink with flat colour and halftone shading)
-  and a mid-century comic panel (bold outlines, cross-hatching, halftone dots).
+- **Three looks, varied within, all clean:** a vintage storybook (clean ink outlines over
+  flat blocks of soft colour), a mid-century magazine (clean outlines, flat colour fills)
+  and a mid-century comic panel (bold outlines, flat colour blocks), each shading with
+  smooth gradients on a plain, deep ground. The first batch (2026-10-29) shaded with hatching,
+  halftone dots and gritty washes, and the creator found it busy at card size (2026-10-30), so
+  56 of the 60 were redrawn by `pictures.py restyle` with their subjects and compositions kept.
+  The four kept (Badminton, Icing the Cake, Seesaw, Roadster) have only faint hatching that
+  vanishes at card size.
 - **Calm, everyday or charming subjects:** people at work or at leisure, animals,
   objects, food, vehicles and small scenes, each with one readable subject on a calm
   background.
@@ -188,7 +199,7 @@ when the style has one.
 | low-poly | flat-shaded triangle facets |
 | flat | flat vector illustration with bold shapes, no outlines and light grain |
 | retro | mid-century travel poster or advert art (no text), flat colour and print texture |
-| pop | 1960s comic pop art with black outlines and halftone dots |
+| pop | 1960s comic pop art with bold black outlines and flat bright colour, smooth shading (no halftone dots) |
 | painting | oil, classical or impressionist, on a calm dark or plain ground |
 | watercolour | loose washes with crisp edges and white paper showing |
 | gouache | flat, matte, opaque paint with soft hand-painted edges, like a mid-century picture book |

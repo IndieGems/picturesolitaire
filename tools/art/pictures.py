@@ -177,6 +177,33 @@ def study(im, colours, passes):
     return s.resize(im.size, Image.BICUBIC)
 
 
+# A library picture redrawn in a new rendering with its subject and composition kept (creator, 2026-10-30: the
+# pen-and-ink batch's halftone and hatching read gritty at card size; design/references/ours-ink-halftone-gritty.png).
+# As for postcards, the --from is a flat-colour study of the picture as it ships, so none of the old marks can be
+# copied; the prompt is the entry's own (its plan prompt already rewritten to the new rendering). High quality.
+RESTYLE = ("The FIRST picture is a flat-colour study of an illustration: only its shapes, framing and colours. Make the "
+           "finished illustration from it. Keep the study's composition exactly: the same view and framing, the same "
+           "subject, the same pose, gesture and direction of the face, the main shapes in the same positions and at the "
+           "same sizes, the same colours. Draw every surface clean and smooth, as described below. The illustration: ")
+
+
+def cmd_restyle(raw, ids):
+    p = plan()
+    Path(raw).mkdir(parents=True, exist_ok=True)
+    for pid in ids:
+        e = entry(p, pid)
+        src = Path(raw) / f"{pid}-study.png"
+        study(framed(e), 28, 2).save(src)
+        w, h = GEN_SIZE[(e["cols"], e["rows"])]
+        args = ["gemforge", "generate", "image", "--from", str(src), "--prompt", RESTYLE + full_prompt(p, e),
+                "--size", f"{w}x{h}", "--quality", "high", "--out", str(raw), "--name", pid, "--flat", "--no-wait", "--json"]
+        r = subprocess.run(args, capture_output=True, text=True, encoding="utf-8")
+        job = next((w for w in (r.stdout or "").replace('"', " ").split() if len(w) == 36 and w.count("-") == 4), None)
+        print(pid, job or " ".join((r.stdout or r.stderr).split())[:200], flush=True)
+        import time
+        time.sleep(3)
+
+
 def cmd_repaint(raw, ids, quality="medium"):
     p = plan()
     Path(raw).mkdir(parents=True, exist_ok=True)
@@ -308,7 +335,9 @@ BOARD_CELL = (240, 320)  # the board's copy, per card: ~2.7x a phone's ~90 CSS p
 # painted texture step down from q70 (BOARD_Q; creator, 2026-10-28: it looks the same as q74 at
 # card size, ~11% lighter).
 BOARD_Q = 70
-SMOOTH_MEDIA = {"flat", "low-poly", "deco", "stained-glass", "papercut", "render"}
+# Smooth media start their board copy at q84 (gradients band lower). Pen and ink joined (2026-10-30) when it was
+# redrawn in flat colour with smooth gradients; a hatched one still steps down to fit the budget.
+SMOOTH_MEDIA = {"flat", "low-poly", "deco", "stained-glass", "papercut", "render", "ink"}
 BOARD_BUDGET = 28 * 1024  # per card; tools/art/check-copies.mjs holds the build to it
 # A destination postcard's copy is a whole board of cards in one file: lighter per card, down to
 # q50 (lead, 2026-10-25: lighten it if the difference cannot be seen; at a big phone's 1.25x,
@@ -330,8 +359,8 @@ def make_board(e):
     out.parent.mkdir(parents=True, exist_ok=True)
     dest = "window" in e
     budget = (DEST_BOARD_BUDGET if dest else BOARD_BUDGET) * e["cols"] * e["rows"]
-    # Pen and ink's hatching and halftone dots are the densest detail in the library (its board copies
-    # average ~84 KB to the others' ~51 KB): it may step one notch further, to q54, which still reads at card size.
+    # Pen and ink's first batch (hatching and halftone dots) was the densest detail in the library (its board copies
+    # averaged ~84 KB to the others' ~51 KB): it may step one notch further, to q54, which still reads at card size.
     floor = 49 if dest else (51 if e["medium"] == "ink" else 55)
     for q in range(84 if e["medium"] in SMOOTH_MEDIA else BOARD_Q, floor, -4):
         im.save(out, "WEBP", quality=q, method=6)
@@ -653,6 +682,8 @@ if __name__ == "__main__":
         cmd_gen(rest[0], rest[1:])
     elif c == "repaint":
         cmd_repaint(rest[0], rest[1:])
+    elif c == "restyle":
+        cmd_restyle(rest[0], rest[1:])
     elif c == "process":
         cmd_process(rest[0], rest[1:])
     elif c == "export":
