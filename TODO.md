@@ -3,7 +3,7 @@
 - **Before 30 Jun 2027: extend the daily puzzle** (it now runs to 2027-06-30). Levels
   runs `make-daily.mts` for the new months, then Server rebuilds the checker.
 - **The monthly event, after release** (on hold, creator 2026-10-29): it may return for
-  the Gem Arcade's VIP members once that system exists. Then: the switch back on behind
+  the Gem Arcade's VIP members once that system exists. As of SDK 17.0.0 (2026-10-30), VIP is an Arcade Store pass: a game may show a "Get VIP" button that opens the Arcade's own offer sheet (`gem.store.showOffer`, the SDK's `docs/arcade-and-store.md` §10), but it **cannot tell whether a player holds VIP**, so a VIP-only event waits until the platform exposes that. Then: the switch back on behind
   the VIP check, each month's suitcase art a month ahead (Art; none is made while it is
   held), and a framed check of the first live suitcase.
 - **Gem Web SDK 16.2.0 or later, after the release candidate.** The game is on 16.1.0. From 16.2.0, a save write that collides with newer saved data is refused as `save_conflict` unless it passes `overwrite`, a load can fail as `load_failed`, and writes get the SDK's own spacing (`minWriteIntervalMs`). Before the pin moves, Server and Gameplay handle both in every save path, `src/net/pace.ts`'s loops included.
