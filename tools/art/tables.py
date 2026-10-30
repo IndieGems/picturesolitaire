@@ -71,6 +71,13 @@ TABLES = {
     # The two-week VIP events' prizes (docs/vip.md): Haunted Holiday's (halloween-2026, creator 2026-10-30), a candlelit
     # autumn porch at golden hour; its leaves are Autumn Study's strip, shared.
     "pumpkin-porch": {"title": "Pumpkin Porch", "particles": "leaves", "share": "autumn-study"},
+    # The next three events' prizes (lead, 2026-10-30, docs/vip.md 1fd60bc; themes approved 2026-10-27 in docs/daily-suitcase.md):
+    # Grand Train Journey's wood-panelled dining car with a brass lamp (no weather), Northern Lights' Arctic cabin windowsill with
+    # the aurora through the window (the winter dusk's snow, shared) and Carnival's crimson velvet and gold (its own confetti,
+    # drifting as "petals").
+    "dining-car": {"title": "Dining Car"},
+    "arctic-cabin": {"title": "Arctic Cabin", "particles": "snow", "share": "winter-dusk"},
+    "carnival": {"title": "Carnival", "particles": "petals"},
     # The Cosmetics screen's four, 2,000 Coins each (creator, 2026-10-29, picked from concepts in design/concepts/tables/),
     # each paired with one of Audio's trip tracks; built as Sunny Day (scene -> table, the side art cleared in the middle).
     "paris-cafe": {"title": "Paris Café"},
@@ -79,7 +86,8 @@ TABLES = {
     "irish-coast": {"title": "Irish Coast"},
 }
 SHIPPED = ["sunny-day", "winter-dusk", "autumn-study", "ski-lodge", "winter-market",
-           "paris-cafe", "kyoto-blossom", "buenos-aires", "irish-coast", "pumpkin-porch"]  # the picker's order
+           "paris-cafe", "kyoto-blossom", "buenos-aires", "irish-coast", "pumpkin-porch",
+           "dining-car", "arctic-cabin", "carnival"]  # the picker's order
 DEFAULT = "sunny-day"  # everyone's table (UI's code switched to it in 78c3623)
 # The plain panel a board sits on during a level (UI, 2026-10-29, the creator's pick after Jigsaw Drop): a calm
 # mid-tone of the table's own surface, under the cards' pale frames. A table not named here uses its `base` (the
@@ -90,6 +98,8 @@ PANELS = {
     "autumn-study": "#835949",
     "ski-lodge": "#875845",
     "winter-market": "#665e6e",
+    "dining-car": "#a54b27",  # its mahogany and Carnival's velvet lifted to 40% lightness, saturation held to 62%
+    "carnival": "#a52736",
     "souvenir-america": "#51737b",
     "souvenir-japan": "#894b43",
     "souvenir-italy": "#70605c",
@@ -271,7 +281,7 @@ def icon(name, pid):
     p = next(x for x in cat["pictures"] + cat.get("items", []) if x["id"] == pid)
     pic = Image.open(PUBLIC / p["file"]).convert("RGB")
     u = pic.width // p["cols"]
-    if p.get("month"):  # a suitcase item: its object whole, in the middle square
+    if p.get("month") or p.get("event"):  # a suitcase or event item: its object whole, in the middle square
         cell = pic.crop((0, (pic.height - pic.width) // 2, pic.width, (pic.height + pic.width) // 2))
     else:
         cell = pic.crop((0, u, u, 2 * u)) if p["rows"] > 1 else pic.crop((0, 0, u, u))

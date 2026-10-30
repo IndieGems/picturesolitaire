@@ -559,6 +559,12 @@ media:
       src: borders/autumn-study.jpg
     - name: pumpkin-porch
       src: borders/pumpkin-porch.jpg
+    - name: dining-car
+      src: borders/dining-car.jpg
+    - name: arctic-cabin
+      src: borders/arctic-cabin.jpg
+    - name: carnival
+      src: borders/carnival.jpg
   # The desktop tile's hover loop: board 62 played on its own winning line, Mont-Saint-Michel's
   # picture finished and its postcard unfolding with the place's name, over the sunny side art
   # (tools/art/preview/; re-record when the board's look or the side art changes).

@@ -219,6 +219,175 @@
    "prompt": "A little painted miniature diorama, like a handmade souvenir model standing on its own small rounded island of earth and moss, at dusk: a soft painted 3D finish, chunky simple shapes, smooth shading, crisp clean edges, warm glowing lights, spooky but friendly and cheerful. A big round pumpkin-orange full moon stands just behind it as part of the model, and one small round friendly white ghost with two dot eyes floats beside it. The miniature: Hound Tor on Dartmoor in England, the misty moor of the legend of the ghostly hound: a craggy hilltop of big stacked rounded grey granite boulders rising out of purple heather and golden gorse, wisps of low mist, and a big glowing pale-green ghostly hound with a friendly face and a wagging tail, four legs and one tail, standing proudly on top of the rocks; no standing stones, no graves. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
+   "id": "item-train-journey-2026-01",
+   "event": "train-journey-2026",
+   "slot": 1,
+   "title": "Pocket watch",
+   "subjects": [
+    "pocket watch"
+   ],
+   "medium": "photo",
+   "busy": 0,
+   "palette": [
+    "gold",
+    "white",
+    "green"
+   ],
+   "prompt": "A professional studio product photograph, crisp and true to life: an antique gold pocket watch with its hinged lid open, a plain white enamel dial with slim black hands and small dot markers instead of numbers, on a short gold chain. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
+  {
+   "id": "item-train-journey-2026-02",
+   "event": "train-journey-2026",
+   "slot": 2,
+   "title": "Travel clock",
+   "subjects": [
+    "travel clock"
+   ],
+   "medium": "render",
+   "busy": 0,
+   "palette": [
+    "red",
+    "brass",
+    "cream"
+   ],
+   "prompt": "A glossy 3D render, like a still from a polished animated film: a small 1920s folding travel clock in a red leather case with brass corners, its round cream dial with slim hands and plain tick marks instead of numbers. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
+  {
+   "id": "item-train-journey-2026-03",
+   "event": "train-journey-2026",
+   "slot": 3,
+   "title": "Hat box",
+   "subjects": [
+    "hat box"
+   ],
+   "medium": "render",
+   "busy": 0,
+   "palette": [
+    "pink",
+    "cream",
+    "black"
+   ],
+   "prompt": "A soft clay 3D render, like a handmade stop-motion model: a round vintage hat box in pale pink and cream stripes, its lid tied with a black satin ribbon in a bow. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
+  {
+   "id": "item-train-journey-2026-04",
+   "event": "train-journey-2026",
+   "slot": 4,
+   "title": "Porcelain teacup",
+   "subjects": [
+    "porcelain teacup"
+   ],
+   "medium": "photo",
+   "busy": 0,
+   "palette": [
+    "white",
+    "gold",
+    "blue"
+   ],
+   "prompt": "A close macro photograph, crisp, with true colours: a fine white bone-china teacup on its saucer with a gold rim and a delicate painted band of small blue flowers, hot tea steaming inside, a silver teaspoon on the saucer. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
+  {
+   "id": "item-train-journey-2026-05",
+   "event": "train-journey-2026",
+   "slot": 5,
+   "title": "Fountain pen",
+   "subjects": [
+    "fountain pen"
+   ],
+   "medium": "cel",
+   "busy": 0,
+   "palette": [
+    "black",
+    "gold",
+    "blue"
+   ],
+   "prompt": "A clean modern illustration like a still from an animated film, crisp edges and smooth soft gradient shading, no texture: a black lacquered fountain pen with a gold nib, a gold clip and gold bands, lying diagonally, a single drop of blue ink beside its nib; no writing. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
+  {
+   "id": "item-train-journey-2026-06",
+   "event": "train-journey-2026",
+   "slot": 6,
+   "title": "Opera glasses",
+   "subjects": [
+    "opera glasses"
+   ],
+   "medium": "render",
+   "busy": 0,
+   "palette": [
+    "pearl",
+    "brass",
+    "purple"
+   ],
+   "prompt": "A glossy 3D render, like a still from a polished animated film: a pair of mother-of-pearl and polished brass opera glasses with a slim folding gold handle. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
+  {
+   "id": "item-train-journey-2026-07",
+   "event": "train-journey-2026",
+   "slot": 7,
+   "title": "Luggage tag",
+   "subjects": [
+    "luggage tag"
+   ],
+   "medium": "flat",
+   "busy": 0,
+   "palette": [
+    "brown",
+    "brass",
+    "cream"
+   ],
+   "prompt": "A clean flat vector illustration with bold simple shapes, flat colours and crisp clean edges, no outlines, no grain, no texture: a brown leather luggage tag on a buckled leather strap with a brass buckle, its little window holding a blank cream card with no writing. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
+  {
+   "id": "item-train-journey-2026-08",
+   "event": "train-journey-2026",
+   "slot": 8,
+   "title": "Ticket punch",
+   "subjects": [
+    "ticket punch"
+   ],
+   "medium": "photo",
+   "busy": 0,
+   "palette": [
+    "silver",
+    "cream",
+    "red"
+   ],
+   "prompt": "A professional studio product photograph, crisp and true to life: a shiny chrome conductor's ticket punch, shaped like a pair of pliers with a small round punch in its jaws, beside a small plain cream railway ticket with a few round holes punched in it and no writing. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
+  {
+   "id": "item-train-journey-2026-09",
+   "event": "train-journey-2026",
+   "slot": 9,
+   "title": "Silver cloche",
+   "subjects": [
+    "silver cloche"
+   ],
+   "medium": "low-poly",
+   "busy": 0,
+   "palette": [
+    "silver",
+    "slate"
+   ],
+   "prompt": "A low-poly 3D illustration built from flat-shaded triangular facets: a polished silver dome cloche on a round silver platter, its lid lifted a little at one side with a wisp of steam escaping. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
+  {
+   "id": "item-train-journey-2026-10",
+   "event": "train-journey-2026",
+   "slot": 10,
+   "title": "Bowler hat",
+   "subjects": [
+    "bowler hat"
+   ],
+   "medium": "toy",
+   "busy": 0,
+   "palette": [
+    "black",
+    "red",
+    "caramel"
+   ],
+   "prompt": "Toy photography, a small handmade toy photographed close: a classic black felt bowler hat with a black ribbon band and a curled brim, a small folded red silk handkerchief beside it. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
+  },
+  {
    "id": "item-2026-11-01",
    "month": "2026-11",
    "slot": 1,
@@ -551,140 +720,334 @@
    "month": "2027-01",
    "slot": 1,
    "title": "Headlamp",
-   "standin": "prickly-pear"
+   "medium": "render",
+   "subjects": [
+    "headlamp"
+   ],
+   "busy": 0,
+   "palette": [
+    "blue",
+    "white",
+    "yellow"
+   ],
+   "prompt": "A glossy 3D render, like a still from a polished animated film: a headlamp on a wide elastic strap, its round lamp switched on and glowing with a warm white beam. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-01-02",
    "month": "2027-01",
    "slot": 2,
    "title": "Trapper hat",
-   "standin": "sea-holly"
+   "medium": "render",
+   "subjects": [
+    "trapper hat"
+   ],
+   "busy": 0,
+   "palette": [
+    "red",
+    "black",
+    "cream"
+   ],
+   "prompt": "A glossy 3D render, like a still from a polished animated film: a trapper hat in red-and-black buffalo-check wool with thick fluffy cream fur-lined ear flaps tied up on top. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-01-03",
    "month": "2027-01",
    "slot": 3,
    "title": "Wool socks",
-   "standin": "peaches"
+   "medium": "photo",
+   "subjects": [
+    "wool socks"
+   ],
+   "busy": 0,
+   "palette": [
+    "cream",
+    "red",
+    "grey"
+   ],
+   "prompt": "A professional studio product photograph, crisp and true to life: a pair of thick hand-knitted wool socks in cream, grey and red with a Nordic star pattern, laid crossed. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-01-04",
    "month": "2027-01",
    "slot": 4,
    "title": "Camera tripod",
-   "standin": "bananas"
+   "medium": "cel",
+   "subjects": [
+    "camera tripod"
+   ],
+   "busy": 0,
+   "palette": [
+    "brown",
+    "brass",
+    "black"
+   ],
+   "prompt": "A clean modern illustration like a still from an animated film, crisp edges and smooth soft gradient shading, no texture: a vintage camera on a three-legged wooden tripod with brass fittings, its legs spread wide. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-01-05",
    "month": "2027-01",
    "slot": 5,
    "title": "Kuksa cup",
-   "standin": "lychees"
+   "medium": "photo",
+   "subjects": [
+    "kuksa cup"
+   ],
+   "busy": 0,
+   "palette": [
+    "brown",
+    "red"
+   ],
+   "prompt": "A professional studio product photograph, crisp and true to life: a traditional Finnish kuksa, a hand-carved wooden cup from a birch burl with a loop handle, steaming hot berry drink inside. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-01-06",
    "month": "2027-01",
    "slot": 6,
-   "title": "Cinnamon bun",
-   "standin": "music-box"
+   "title": "Snowshoes",
+   "subjects": [
+    "snowshoes"
+   ],
+   "medium": "flat",
+   "busy": 0,
+   "palette": [
+    "brown",
+    "tan",
+    "blue"
+   ],
+   "prompt": "A clean flat vector illustration with bold simple shapes, flat colours and crisp clean edges, no outlines, no grain, no texture: a pair of traditional wooden-framed snowshoes with criss-cross rawhide lacing and leather bindings, crossed. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-01-07",
    "month": "2027-01",
    "slot": 7,
    "title": "Kick-sled",
-   "standin": "oasis"
+   "medium": "low-poly",
+   "subjects": [
+    "kick-sled"
+   ],
+   "busy": 0,
+   "palette": [
+    "red",
+    "silver"
+   ],
+   "prompt": "A low-poly 3D illustration built from flat-shaded triangular facets: a Scandinavian kick-sled seen from the side: a small red wooden seat with a low back at the front and a tall red handlebar rising behind it, both mounted on two long, thin, straight steel runners that stretch far out behind the seat, flat on the snow, much longer than the seat; not a rocking chair, no curved rockers. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-01-08",
    "month": "2027-01",
    "slot": 8,
    "title": "Felt slippers",
-   "standin": "black-sand-beach"
+   "medium": "render",
+   "subjects": [
+    "felt slippers"
+   ],
+   "busy": 0,
+   "palette": [
+    "grey",
+    "red"
+   ],
+   "prompt": "A soft clay 3D render, like a handmade stop-motion model: a pair of cosy grey felted wool slippers with a small red heart stitched on each toe. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-01-09",
    "month": "2027-01",
    "slot": 9,
    "title": "Pocket telescope",
-   "standin": "larch-forest"
+   "medium": "photo",
+   "subjects": [
+    "pocket telescope"
+   ],
+   "busy": 0,
+   "palette": [
+    "brass",
+    "brown"
+   ],
+   "prompt": "A close macro photograph, crisp, with true colours: a brass pocket telescope, fully extended, with a worn brown leather grip and a glinting lens. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-01-10",
    "month": "2027-01",
    "slot": 10,
    "title": "Ice lantern",
-   "standin": "rowboat-lake"
+   "medium": "photo",
+   "subjects": [
+    "ice lantern"
+   ],
+   "busy": 0,
+   "palette": [
+    "white",
+    "amber",
+    "blue"
+   ],
+   "prompt": "A close macro photograph, crisp, with true colours: an ice lantern: a hollow block of clear ice with a candle flame glowing warm inside it, frost along its rim. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-02-01",
    "month": "2027-02",
    "slot": 1,
    "title": "Venetian mask",
-   "standin": "kick-scooter"
+   "medium": "render",
+   "subjects": [
+    "venetian mask"
+   ],
+   "busy": 0,
+   "palette": [
+    "white",
+    "gold",
+    "red"
+   ],
+   "prompt": "A glossy 3D render, like a still from a polished animated film: a Venetian carnival mask covering the eyes, white and gold with red diamond patterns, a spray of red and gold feathers on one side. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-02-02",
    "month": "2027-02",
    "slot": 2,
    "title": "Feather fan",
-   "standin": "deck-chair"
+   "medium": "photo",
+   "subjects": [
+    "feather fan"
+   ],
+   "busy": 0,
+   "palette": [
+    "pink",
+    "gold"
+   ],
+   "prompt": "A professional studio product photograph, crisp and true to life: an elegant fan of fluffy pink ostrich feathers spread wide on a slim gold handle. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-02-03",
    "month": "2027-02",
    "slot": 3,
    "title": "Tambourine",
-   "standin": "ice-cream-van"
+   "medium": "pop",
+   "subjects": [
+    "tambourine"
+   ],
+   "busy": 0,
+   "palette": [
+    "tan",
+    "brass",
+    "rainbow"
+   ],
+   "prompt": "A 1960s pop-art comic illustration with bold black outlines, flat bright colour blocks and smooth shading, no halftone dots: a wooden tambourine with pairs of shiny brass jingles round its rim and colourful ribbons tied to it. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-02-04",
    "month": "2027-02",
    "slot": 4,
    "title": "Maracas",
-   "standin": "propeller-plane"
+   "medium": "render",
+   "subjects": [
+    "maracas"
+   ],
+   "busy": 0,
+   "palette": [
+    "yellow",
+    "green",
+    "red"
+   ],
+   "prompt": "A soft clay 3D render, like a handmade stop-motion model: a pair of maracas painted in bright stripes of yellow, green and red, crossed. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-02-05",
    "month": "2027-02",
    "slot": 5,
    "title": "Jester hat",
-   "standin": "viaduct"
+   "medium": "render",
+   "subjects": [
+    "jester hat"
+   ],
+   "busy": 0,
+   "palette": [
+    "purple",
+    "green",
+    "gold"
+   ],
+   "prompt": "A glossy 3D render, like a still from a polished animated film: a jester's hat with three floppy points in purple, green and gold, a little gold bell at the tip of each. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-02-06",
    "month": "2027-02",
    "slot": 6,
    "title": "Party popper",
-   "standin": "palace-window"
+   "medium": "flat",
+   "subjects": [
+    "party popper"
+   ],
+   "busy": 0,
+   "palette": [
+    "pink",
+    "yellow",
+    "blue"
+   ],
+   "prompt": "A clean flat vector illustration with bold simple shapes, flat colours and crisp clean edges, no outlines, no grain, no texture: a party popper cone in bright stripes bursting with curly streamers and confetti. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-02-07",
    "month": "2027-02",
    "slot": 7,
    "title": "Sequinned shoes",
-   "standin": "red-cabin"
+   "medium": "photo",
+   "subjects": [
+    "sequinned shoes"
+   ],
+   "busy": 0,
+   "palette": [
+    "gold",
+    "green"
+   ],
+   "prompt": "A close macro photograph, crisp, with true colours: a pair of sparkling gold sequinned high-heeled dance shoes with ankle straps. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-02-08",
    "month": "2027-02",
    "slot": 8,
    "title": "Bead necklaces",
-   "standin": "polar-bear"
+   "medium": "photo",
+   "subjects": [
+    "bead necklaces"
+   ],
+   "busy": 0,
+   "palette": [
+    "purple",
+    "green",
+    "gold"
+   ],
+   "prompt": "A professional studio product photograph, crisp and true to life: a tangle of shiny Mardi Gras bead necklaces in purple, green and gold. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-02-09",
    "month": "2027-02",
    "slot": 9,
    "title": "Party horn",
-   "standin": "snail"
+   "medium": "render",
+   "subjects": [
+    "party horn"
+   ],
+   "busy": 0,
+   "palette": [
+    "red",
+    "yellow",
+    "gold"
+   ],
+   "prompt": "A glossy 3D render, like a still from a polished animated film: a party horn noisemaker lying on its side: a long slim paper tube in bright red and yellow spiral stripes with a small white mouthpiece at the left end, flaring at the right end into a wide trumpet bell edged with a fringe of shiny gold foil; clearly a horn to blow, not a hat. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-02-10",
    "month": "2027-02",
    "slot": 10,
    "title": "Plumed tiara",
-   "standin": "kingfisher"
+   "medium": "photo",
+   "subjects": [
+    "plumed tiara"
+   ],
+   "busy": 0,
+   "palette": [
+    "gold",
+    "white",
+    "pink"
+   ],
+   "prompt": "A close macro photograph, crisp, with true colours: a sparkling carnival tiara of gold and rhinestones topped with tall white and pink feathers. One object only, centred, filling most of the frame, seen from the front at a slight angle from above. No text, letters, numbers, logos or brands anywhere. No background, no floor, no shadow: isolated on a transparent background."
   },
   {
    "id": "item-2027-03-01",
@@ -1023,6 +1386,12 @@
    "theme": "Haunted Holiday",
    "table": "table-pumpkin-porch",
    "tableTitle": "Pumpkin Porch"
+  },
+  {
+   "event": "train-journey-2026",
+   "theme": "Grand Train Journey",
+   "table": "table-dining-car",
+   "tableTitle": "Dining Car"
   }
  ]
 }

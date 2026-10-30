@@ -430,7 +430,9 @@ BORDERS = {"sunny-day": "store-sunny-day-border", "ski-lodge": "store-ski-lodge-
            # Autumn Study (creator, 2026-10-29: it had none, so the Arcade's bars showed on PC/TV); its table is unchanged
            "autumn-study": "store-autumn-study-border",
            # Haunted Holiday's prize, the first VIP event's (2026-10-30): the porch's own corner props carried out to the edges
-           "pumpkin-porch": "store-pumpkin-porch-border"}
+           "pumpkin-porch": "store-pumpkin-porch-border",
+           # The next three events' prizes (2026-10-30): the same recipe, the props cut out alone and carried straight out
+           "dining-car": "store-dining-car-border", "arctic-cabin": "store-arctic-cabin-border", "carnival": "store-carnival-border"}
 
 
 def save(im, rel, out, q=92):

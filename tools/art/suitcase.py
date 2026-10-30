@@ -49,6 +49,9 @@ S = {
     "papercut": "A layered paper-cut craft object with soft shadows between the paper layers:",
     "pixel": "Clean pixel art with big square pixels and a small palette, no dithering:",
     "retro": "A mid-century travel-poster illustration with flat colour shapes and a gentle print texture:",
+    # Clean styles for the events from Grand Train Journey on (creator, 2026-10-30: flat colour and smooth shading only)
+    "vector": "A clean flat vector illustration with bold simple shapes, flat colours and crisp clean edges, no outlines, no grain, no texture:",
+    "cel": "A clean modern illustration like a still from an animated film, crisp edges and smooth soft gradient shading, no texture:",
     # Haunted Holiday's one style (the creator's pick, 2026-10-30): a souvenir-model miniature, so each place keeps its own outline
     "miniature": ("A little painted miniature diorama, like a handmade souvenir model standing on its own small rounded island of "
                   "earth and moss, at dusk: a soft painted 3D finish, chunky simple shapes, smooth shading, crisp clean edges, "
@@ -100,6 +103,39 @@ ITEMS = {
     "item-2026-12-08": ("photo", "a wooden candle arch with seven small lit candles on top and, inside the arch, a cut-out of little snowy cottages and fir trees, with no church, no tower and no steeple", ("#24304a", "#151d30"), "photo"),
     "item-2026-12-09": ("pastel", "a knitted red and white holiday stocking with a snowflake pattern and a little loop to hang it", ("#f1e8d8", "#ddcfb6"), "pastel"),
     "item-2026-12-10": ("retro", "a round pine wreath with pine cones, red berries and a red bow at the bottom", ("#f4e6c9", "#e4cc9c"), "retro"),
+    # The VIP events from 15 Nov 2026 (lead, 2026-10-30; docs/vip.md 1fd60bc), themes from docs/daily-suitcase.md approved
+    # 2026-10-27: Grand Train Journey, Northern Lights (its Cinnamon bun drawn as Snowshoes: the library has Cinnamon
+    # Rolls), Carnival. Clean styles only; each item on its own deep, calm ground.
+    "item-train-journey-2026-01": ("photo", "an antique gold pocket watch with its hinged lid open, a plain white enamel dial with slim black hands and small dot markers instead of numbers, on a short gold chain", ("#2d4f45", "#1b332c"), "photo"),
+    "item-train-journey-2026-02": ("render", "a small 1920s folding travel clock in a red leather case with brass corners, its round cream dial with slim hands and plain tick marks instead of numbers", ("#2b3f63", "#1a2840"), "render"),
+    "item-train-journey-2026-03": ("clay", "a round vintage hat box in pale pink and cream stripes, its lid tied with a black satin ribbon in a bow", ("#2a5d63", "#183c40"), "render"),
+    "item-train-journey-2026-04": ("macro", "a fine white bone-china teacup on its saucer with a gold rim and a delicate painted band of small blue flowers, hot tea steaming inside, a silver teaspoon on the saucer", ("#6a2a3a", "#451a26"), "photo"),
+    "item-train-journey-2026-05": ("cel", "a black lacquered fountain pen with a gold nib, a gold clip and gold bands, lying diagonally, a single drop of blue ink beside its nib; no writing", ("#b8892f", "#8a6420"), "cel"),
+    "item-train-journey-2026-06": ("render", "a pair of mother-of-pearl and polished brass opera glasses with a slim folding gold handle", ("#4e2f5c", "#301c3a"), "render"),
+    "item-train-journey-2026-07": ("vector", "a brown leather luggage tag on a buckled leather strap with a brass buckle, its little window holding a blank cream card with no writing", ("#245a7a", "#163a52"), "flat"),
+    "item-train-journey-2026-08": ("photo", "a shiny chrome conductor's ticket punch, shaped like a pair of pliers with a small round punch in its jaws, beside a small plain cream railway ticket with a few round holes punched in it and no writing", ("#7a2e2a", "#521c19"), "photo"),
+    "item-train-journey-2026-09": ("low-poly", "a polished silver dome cloche on a round silver platter, its lid lifted a little at one side with a wisp of steam escaping", ("#3a4a5a", "#232f3b"), "low-poly"),
+    "item-train-journey-2026-10": ("toy", "a classic black felt bowler hat with a black ribbon band and a curled brim, a small folded red silk handkerchief beside it", ("#9a6a3a", "#6e4a26"), "toy"),
+    "item-2027-01-01": ("render", "a headlamp on a wide elastic strap, its round lamp switched on and glowing with a warm white beam", ("#1f3a5a", "#12243b"), "render"),
+    "item-2027-01-02": ("render", "a trapper hat in red-and-black buffalo-check wool with thick fluffy cream fur-lined ear flaps tied up on top", ("#8a6a2a", "#5e4818"), "render"),
+    "item-2027-01-03": ("photo", "a pair of thick hand-knitted wool socks in cream, grey and red with a Nordic star pattern, laid crossed", ("#34506e", "#203449"), "photo"),
+    "item-2027-01-04": ("cel", "a vintage camera on a three-legged wooden tripod with brass fittings, its legs spread wide", ("#40474f", "#272c32"), "cel"),
+    "item-2027-01-05": ("photo", "a traditional Finnish kuksa, a hand-carved wooden cup from a birch burl with a loop handle, steaming hot berry drink inside", ("#6a2a3e", "#441a28"), "photo"),
+    "item-2027-01-06": ("vector", "a pair of traditional wooden-framed snowshoes with criss-cross rawhide lacing and leather bindings, crossed", ("#2f6a8a", "#1d4a63"), "flat"),
+    "item-2027-01-07": ("low-poly", "a Scandinavian kick-sled seen from the side: a small red wooden seat with a low back at the front and a tall red handlebar rising behind it, both mounted on two long, thin, straight steel runners that stretch far out behind the seat, flat on the snow, much longer than the seat; not a rocking chair, no curved rockers", ("#5e2a5a", "#3c1a3a"), "low-poly"),
+    "item-2027-01-08": ("clay", "a pair of cosy grey felted wool slippers with a small red heart stitched on each toe", ("#3b4f6a", "#243246"), "render"),
+    "item-2027-01-09": ("macro", "a brass pocket telescope, fully extended, with a worn brown leather grip and a glinting lens", ("#235a45", "#133a2c"), "photo"),
+    "item-2027-01-10": ("macro", "an ice lantern: a hollow block of clear ice with a candle flame glowing warm inside it, frost along its rim", ("#2a2f5e", "#181b3d"), "photo"),
+    "item-2027-02-01": ("render", "a Venetian carnival mask covering the eyes, white and gold with red diamond patterns, a spray of red and gold feathers on one side", ("#1f5a5e", "#13393c"), "render"),
+    "item-2027-02-02": ("photo", "an elegant fan of fluffy pink ostrich feathers spread wide on a slim gold handle", ("#4a2350", "#2e1532"), "photo"),
+    "item-2027-02-03": ("pop", "a wooden tambourine with pairs of shiny brass jingles round its rim and colourful ribbons tied to it", ("#a8481e", "#7a3214"), "pop"),
+    "item-2027-02-04": ("clay", "a pair of maracas painted in bright stripes of yellow, green and red, crossed", ("#2a3f8a", "#1a2860"), "render"),
+    "item-2027-02-05": ("render", "a jester's hat with three floppy points in purple, green and gold, a little gold bell at the tip of each", ("#7a1f2e", "#52141e"), "render"),
+    "item-2027-02-06": ("vector", "a party popper cone in bright stripes bursting with curly streamers and confetti", ("#1f2f55", "#121d38"), "flat"),
+    "item-2027-02-07": ("macro", "a pair of sparkling gold sequinned high-heeled dance shoes with ankle straps", ("#1f5a3a", "#123a25"), "photo"),
+    "item-2027-02-08": ("photo", "a tangle of shiny Mardi Gras bead necklaces in purple, green and gold", ("#6a1f55", "#451338"), "photo"),
+    "item-2027-02-09": ("render", "a party horn noisemaker lying on its side: a long slim paper tube in bright red and yellow spiral stripes with a small white mouthpiece at the left end, flaring at the right end into a wide trumpet bell edged with a fringe of shiny gold foil; clearly a horn to blow, not a hat", ("#1f4f6e", "#13334a"), "render"),
+    "item-2027-02-10": ("macro", "a sparkling carnival tiara of gold and rhinestones topped with tall white and pink feathers", ("#3a2466", "#241544"), "photo"),
 }
 
 
@@ -119,6 +155,36 @@ PAL = {
     "item-2026-12-04": ["amber", "orange", "brown"], "item-2026-12-05": ["red", "gold"], "item-2026-12-06": ["tan", "brown"],
     "item-2026-12-07": ["green", "red"], "item-2026-12-08": ["brown", "gold", "white"], "item-2026-12-09": ["red", "white"],
     "item-2026-12-10": ["green", "red", "brown"],
+    "item-train-journey-2026-01": ["gold", "white", "green"],
+    "item-train-journey-2026-02": ["red", "brass", "cream"],
+    "item-train-journey-2026-03": ["pink", "cream", "black"],
+    "item-train-journey-2026-04": ["white", "gold", "blue"],
+    "item-train-journey-2026-05": ["black", "gold", "blue"],
+    "item-train-journey-2026-06": ["pearl", "brass", "purple"],
+    "item-train-journey-2026-07": ["brown", "brass", "cream"],
+    "item-train-journey-2026-08": ["silver", "cream", "red"],
+    "item-train-journey-2026-09": ["silver", "slate"],
+    "item-train-journey-2026-10": ["black", "red", "caramel"],
+    "item-2027-01-01": ["blue", "white", "yellow"],
+    "item-2027-01-02": ["red", "black", "cream"],
+    "item-2027-01-03": ["cream", "red", "grey"],
+    "item-2027-01-04": ["brown", "brass", "black"],
+    "item-2027-01-05": ["brown", "red"],
+    "item-2027-01-06": ["brown", "tan", "blue"],
+    "item-2027-01-07": ["red", "silver"],
+    "item-2027-01-08": ["grey", "red"],
+    "item-2027-01-09": ["brass", "brown"],
+    "item-2027-01-10": ["white", "amber", "blue"],
+    "item-2027-02-01": ["white", "gold", "red"],
+    "item-2027-02-02": ["pink", "gold"],
+    "item-2027-02-03": ["tan", "brass", "rainbow"],
+    "item-2027-02-04": ["yellow", "green", "red"],
+    "item-2027-02-05": ["purple", "green", "gold"],
+    "item-2027-02-06": ["pink", "yellow", "blue"],
+    "item-2027-02-07": ["gold", "green"],
+    "item-2027-02-08": ["purple", "green", "gold"],
+    "item-2027-02-09": ["red", "yellow", "gold"],
+    "item-2027-02-10": ["gold", "white", "pink"],
 }
 
 
@@ -199,8 +265,9 @@ def items(raw, ids):
         small = obj.resize((round(obj.width * k), round(obj.height * k)), Image.LANCZOS)
         small = Image.composite(small, Image.new("RGBA", small.size, (0, 0, 0, 0)), small.getchannel("A").point(lambda v: 255 if v else 0))
         co = out_dir / f"{pid}-cutout.webp"
-        for q in (84, 78, 72, 66):
-            small.save(co, "WEBP", quality=q, alpha_quality=85, method=6)
+        # 40 KB a cut-out: busy ones (lattice, beads, feathers) step on down, then soften their alpha's quality too
+        for q, aq in ((84, 85), (78, 85), (72, 85), (66, 85), (60, 80), (54, 75), (50, 70)):
+            small.save(co, "WEBP", quality=q, alpha_quality=aq, method=6)
             if co.stat().st_size <= 40 * 1024:
                 break
         sizes = [f"{(out_dir / f).stat().st_size // 1024} KB" for f in (f"{pid}.webp", f"{pid}-board.webp", f"{pid}-cutout.webp")]

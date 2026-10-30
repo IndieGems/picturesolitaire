@@ -129,6 +129,43 @@
       "border": "pumpkin-porch"
     },
     {
+      "id": "table-dining-car",
+      "title": "Dining Car",
+      "table": "art/tables/dining-car/dining-car-table.webp",
+      "stackBack": "art/tables/dining-car/dining-car-stack-back.webp",
+      "thumb": "art/tables/dining-car/dining-car-thumb.webp",
+      "base": "#913e1d",
+      "panel": "#a54b27",
+      "border": "dining-car"
+    },
+    {
+      "id": "table-arctic-cabin",
+      "title": "Arctic Cabin",
+      "table": "art/tables/arctic-cabin/arctic-cabin-table.webp",
+      "stackBack": "art/tables/arctic-cabin/arctic-cabin-stack-back.webp",
+      "particles": "art/snow.webp",
+      "thumb": "art/tables/arctic-cabin/arctic-cabin-thumb.webp",
+      "particleKind": "snow",
+      "particleFrame": 32,
+      "particleFrames": 4,
+      "base": "#a3683e",
+      "border": "arctic-cabin"
+    },
+    {
+      "id": "table-carnival",
+      "title": "Carnival",
+      "table": "art/tables/carnival/carnival-table.webp",
+      "stackBack": "art/tables/carnival/carnival-stack-back.webp",
+      "particles": "art/tables/carnival/carnival-particles.webp",
+      "thumb": "art/tables/carnival/carnival-thumb.webp",
+      "particleKind": "petals",
+      "particleFrame": 64,
+      "particleFrames": 4,
+      "base": "#990e1f",
+      "panel": "#a52736",
+      "border": "carnival"
+    },
+    {
       "id": "table-souvenir-america",
       "title": "Diner Counter",
       "table": "art/tables/souvenir-america/souvenir-america-table.webp",
