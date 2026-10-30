@@ -61,6 +61,8 @@ export interface AfterStamp {
   go(): void;
   /** Also offer the trip's Souvenir beside it (the stamp moment), when it has one still to play. */
   souvenir?: boolean;
+  /** The moment is over: the stamp (or sticker) is down and the way on is up (app.ts: an unlock card waits for it). */
+  landed?: () => void;
 }
 
 /** When the stamp starts down after the page is up, and when it lands (style.css, pp-stamp-land). */
@@ -410,6 +412,7 @@ export function createPassport(nav: Nav) {
     foot.classList.toggle("two", kids.length > 1);
     foot.replaceChildren(...kids);
     foot.hidden = false;
+    after.landed?.();
   }
 
   /** A trip's Souvenir sticker, stuck on its page by the stamp. */

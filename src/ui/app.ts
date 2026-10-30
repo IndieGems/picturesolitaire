@@ -79,6 +79,8 @@ import { KINDS, KIT, stock, type HelperKind } from "./stock";
 import { createRunOut } from "./helper-shop";
 import { createHomeShop } from "./home-shop";
 import { createCosmetics } from "./cosmetics";
+import { createUnlocks } from "./unlock";
+import { onUnlock } from "../net/achievements";
 import { pretendCosmetics, pretendState } from "./cosmetics-shop";
 import { coinIcon, priceTag } from "./coin";
 import { createTries, mercyFor } from "./tries";
@@ -246,8 +248,11 @@ const runOut = createRunOut(stock, (k) => pressHelper(k));
 const homeShop = createHomeShop(stock);
 // the Cosmetics screen (cosmetics.ts): tables and soundtracks, tried, bought and chosen
 const cosmeticsUi = createCosmetics({ home: () => goHome(), show: () => show("cosmetics") });
+// the unlock card (unlock.ts): an achievement the checker says unlocked, in the win card's place, once
+// the screen can take it (unlockReady); the cards under it wait out of sight (style.css, #app.unlocking)
+const unlockUi = createUnlocks({ ready: () => unlockReady(), changed: (up) => app.classList.toggle("unlocking", up) });
 
-app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, suitcaseUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, dareVeil, resumeVeil, runOut.element, homeShop.element, cosmeticsUi.screen, offlineVeil);
+app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, suitcaseUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, dareVeil, resumeVeil, runOut.element, homeShop.element, cosmeticsUi.screen, unlockUi.veil, offlineVeil);
 // the win card's Challenge a friend and Share, and the friends sheet over it (friend-cards.ts)
 const friendCards = createFriendCards(app);
 
@@ -445,6 +450,7 @@ function show(next: Screen): void {
   winViewer.close();
   screenChanged();
   drawOffline();
+  unlockUi.poke();
 }
 
 // ---------- home ----------
@@ -497,6 +503,8 @@ function settleHome(fonts: Promise<unknown>): void {
   void Promise.race([Promise.all([fonts, homeUi.whole(), homeDrawn()]), after(SETTLE_CAP_MS)]).then(async () => {
     if (homeSettled) return;
     homeSettled = true;
+    // an unlock the checker reported for last session's win waited for home to be whole
+    unlockUi.poke();
     // the music and the rest of the sounds (Audio's: the sound code and the click came at start)
     homeWhole();
     // the pictures' titles in the player's language (the enlarged picture, the win card's labels)
@@ -1252,6 +1260,8 @@ on("board:solved", ({ moves, ms, line }) => {
   }
   win.helpers = helpersUsed;
   lastWin = win;
+  // a win that stamps the passport holds its unlocks until the stamp is down
+  stampDown = !(win.kind === "campaign" && win.stamp);
   // practice (the dev menu): the card shows as ever, and nothing goes out: no claim, no Coins,
   // no progress, no daily result
   if (isPractice(play)) {
@@ -1288,6 +1298,36 @@ on("board:solved", ({ moves, ms, line }) => {
 on("board:won", () => {
   if (screen === "board" && boardWon && lastWin && winVeil.hidden) showWin();
 });
+
+// ---------- the unlock card ----------
+//
+// An achievement Server says just unlocked (onUnlock, below) gets its own card (unlock.ts). It waits for a moment the screen can take it, so a quick tap never loses it:
+// - not over the play in hand (a level with a move made: it shows at that level's end, or on leaving);
+// - not during a level's finish: it comes up as the level's card does, in its place;
+// - on a trip's last level, after the passport's stamp is down, never before it: "Stamped: Japan" crowns
+//   the stamp the player has just seen land (and anything else that win unlocked comes with it);
+// - not under the settings or the dev menu (<dialog>s), nor before home is whole.
+
+/** The stamp of the win in hand is down (the passport's way on is up), or it has no stamp. */
+let stampDown = true;
+
+function unlockReady(): boolean {
+  if (document.querySelector("dialog[open]")) return false;
+  if (screen === "home" && !homeSettled) return false;
+  // the stamp first: from the win card that leads to it, until it is down
+  const stamping = lastWin?.kind === "campaign" && !!lastWin.stamp && !stampDown;
+  if (stamping && ((screen === "board" && boardWon) || (screen === "passport" && stampMoment))) return false;
+  if (screen === "board") {
+    // the finish runs: its card comes first (a quick Back shows it at once)
+    if (boardWon) return !winVeil.hidden;
+    if (board?.canUndo()) return false;
+  }
+  return true;
+}
+
+// Server's word on each unlock (src/net/achievements.ts): a win's verdict, or its compare for a verdict
+// that never arrived; once a session each. Several from one win reach the card together (unlock.ts).
+onUnlock((u) => unlockUi.add([{ slug: u.achievement.slug, points: u.points }]));
 
 // THE DAY'S ITEM (the Daily Suitcase, suitcase.ts): the board says when the day's item picture is finished
 // (suitcase:item, Gameplay's); on the day's first daily that is a moment of its own (item-found.ts: the item
@@ -1486,6 +1526,11 @@ function showWin(): void {
     : { label: t("passport.nextTrip"), icon: icon("next"), trailing: true, press: "passport.nextTrip", go: () => openPlay({ kind: "campaign", level: level + 1 }) };
   // the trip's Souvenir beside it, once there is one (docs/souvenirs.md): Next trip stays the main action
   after.souvenir = true;
+  // the stamp is down: what this win unlocked ("Stamped: <trip>") comes now, over the stamped page
+  after.landed = () => {
+    stampDown = true;
+    unlockUi.poke();
+  };
   // Next goes on, round to board 1 after the last (boardNumber); Home is the card's corner key
   const next = ended
     ? withClick(button("amber next", "win.stamp", icon("passport"), t("win.stamp")), () =>
@@ -2133,6 +2178,8 @@ function showCard(veil: HTMLElement, escape?: () => void): void {
   opened(veil, veil === restartVeil ? () => hideCard(restartVeil) : escape);
   screenChanged();
   drawOffline();
+  // an unlock waiting for the level's card comes up in its place
+  unlockUi.poke();
 }
 function hideCard(veil: HTMLElement): void {
   if (veil === winVeil) {
@@ -2141,6 +2188,7 @@ function hideCard(veil: HTMLElement): void {
   }
   veil.hidden = true;
   closed(veil);
+  unlockUi.poke();
 }
 
 /** The "No connection" card: over everything but the board in hand, until the connection is back. */
@@ -2363,6 +2411,22 @@ export async function startApp(): Promise<void> {
           closeSettings();
           void playEventPuzzle();
         },
+        showUnlock: (kind) => {
+          closeSettings();
+          if (kind !== "stamp") return void unlockUi.preview([kind === "icon" ? "first-steps" : "up-for-a-challenge"]);
+          // a trip's last level (Travel America's 15th is a hard level): its stamp lands, then its card
+          momentOf(() =>
+            passportUi.stamp("t1", {
+              label: t("passport.nextTrip"),
+              icon: icon("next"),
+              trailing: true,
+              press: "passport.nextTrip",
+              go: goHome,
+              souvenir: true,
+              landed: () => unlockUi.preview(["stamped-t1", "up-for-a-challenge"]),
+            }),
+          );
+        },
       });
     })().catch((err: unknown) => console.warn("[dev-menu] did not load", err));
   }
@@ -2421,6 +2485,10 @@ export async function startApp(): Promise<void> {
        * (tables.ts, tryTable; ?tryTable=<folder> does it from <folder>/table.json at boot).
        */
       tryTable: (a: TryTable | null) => tryTable(a),
+      /** As if a win's verdict said these achievements unlocked (slugs, achievements.ts): the card, once the screen can take it; nothing unlocks. */
+      unlocked: (slugs: string[]) => unlockUi.add(slugs.map((slug) => ({ slug }))),
+      /** The unlock card for these slugs, again and again (past the once-a-session rule), once the screen can take it. */
+      unlockCard: (slugs: string[]) => unlockUi.preview(slugs),
       /** Board 1's finish card over the board in hand, as after its guided win (nothing is sent). */
       milestone() {
         if (!board || !play) return;

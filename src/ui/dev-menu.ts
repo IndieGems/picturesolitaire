@@ -66,6 +66,12 @@ export interface DevHost {
   openSuitcase(): void;
   /** Open the event preview's next puzzle (a November daily the pretend suitcase lacks the item of), in practice. */
   playEvent(): void;
+  /**
+   * The achievement unlock card as a player sees it (achievements never unlock on dev or test): "icon",
+   * First Steps with Art's icon; "medal", Up for a Challenge with its medal; "stamp", a trip's last level:
+   * the passport's stamp lands, then Stamped: Travel America and Up for a Challenge on one card.
+   */
+  showUnlock(kind: "icon" | "medal" | "stamp"): void;
 }
 
 /** What the menu lends the screens back. */
@@ -542,7 +548,26 @@ export function mountDevMenu(host: DevHost): DevMenu {
     el("p", "dev-note", "Level 1 with its four steps from the first, then its finish card. Nothing is saved, and no table is given."),
   );
 
-  scroll.append(title, buildBox, boardSec, switches, pickSec, xSec, eventSec, guideSec);
+  // the achievement unlock card: the real card, its fireworks and its sound; nothing unlocks or is sent
+  const showUnlock = (kind: "icon" | "medal" | "stamp") => {
+    dialog.close();
+    host.showUnlock(kind);
+  };
+  const unlockRow = el("div", "dev-row");
+  unlockRow.append(btn("amber", "First Steps (icon)", () => showUnlock("icon")), btn("", "Up for a Challenge", () => showUnlock("medal")));
+  const unlockSec = el("section");
+  unlockSec.append(
+    el("h3", "", "Show achievement card"),
+    unlockRow,
+    btn("dev-wide", "A trip's last level: the stamp, then 2 at once", () => showUnlock("stamp")),
+    el(
+      "p",
+      "dev-note",
+      "The card a player sees when an achievement unlocks: on dev and test none ever unlocks, so this is the only way to see it before release. Nothing is unlocked, saved or sent. Over a level with a move made, it waits for that level's end, as a player's would. An icon Art has not finished shows the medal in its place.",
+    ),
+  );
+
+  scroll.append(title, buildBox, boardSec, switches, pickSec, xSec, eventSec, guideSec, unlockSec);
   document.body.append(dialog);
 
   // ---------- the Next move bar, over the board's foot ----------
