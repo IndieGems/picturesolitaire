@@ -2681,9 +2681,9 @@ export async function startApp(): Promise<void> {
         if (screen === "home") offerCarryOn();
         return !!carryOn;
       },
-      /** The events as a stand-in ("default": Haunted Holiday 12 levels in, Ski Trip 2; null: the platform's word), for this page only. */
-      suitcase(p?: "default" | null) {
-        suitcases.pretend(p === undefined ? "default" : p);
+      /** The events as a stand-in ("default": as of the player's date, or of `asOf` such as "2026-11-05"; null: the platform's word), for this page only. */
+      suitcase(p?: "default" | null, asOf?: string) {
+        suitcases.pretend(p === undefined ? "default" : p, asOf);
         if (screen === "home") drawHome();
       },
       /** An event's page: the newest, or event `id`. */

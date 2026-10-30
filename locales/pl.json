@@ -469,8 +469,7 @@
   "case.how.prizeTable": "Znajdź wszystkie {{count}}, by zdobyć stół „{{table}}” i pomoce.",
   "case.none": "Teraz nie ma żadnego wydarzenia.",
   "case.prizeWhere": "Wybierz nowy stół w Wyglądzie.",
-  "case.shelf": "Więcej wydarzeń",
-  "case.strip": "Wydarzenie · {{theme}}",
+  "case.shelf": "Minione wydarzenia",
   "case.tileLockedAria": "Wydarzenie: {{theme}}. Dla członków VIP.",
   "cosmetics.keep": "Zatrzymaj: {{price}}",
   "cosmetics.owned": "Twoje",
@@ -529,5 +528,11 @@
   "vip.eventLine_one": "{{count}} poziom, a w nim {{items}} ukrytych przedmiotów z podróży.",
   "vip.eventLine_few": "{{count}} poziomy, a w nich {{items}} ukrytych przedmiotów z podróży.",
   "vip.eventLine_many": "{{count}} poziomów, a w nich {{items}} ukrytych przedmiotów z podróży.",
-  "vip.eventLine_other": "{{count}} poziomu, a w nich {{items}} ukrytych przedmiotów z podróży."
+  "vip.eventLine_other": "{{count}} poziomu, a w nich {{items}} ukrytych przedmiotów z podróży.",
+  "case.comingSoon": "Wkrótce: {{theme}} · {{date}}",
+  "case.comingSoonName": "Wkrótce: {{theme}}",
+  "case.eventTag": "Wydarzenie!",
+  "case.nowPlaying": "Teraz trwa: {{theme}}!",
+  "case.pastEvent": "Minione wydarzenie",
+  "case.themeBang": "{{theme}}!"
 }

@@ -25,7 +25,7 @@ type Nav = {
 /** What a door holds. */
 export type VipDoor =
   | { kind: "archive"; today: string }
-  | { kind: "event"; title: string; art: string; table?: { name: string; thumb: string }; levels: number; items: number };
+  | { kind: "event"; title: string; headline?: string; art: string; table?: { name: string; thumb: string }; levels: number; items: number };
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", text = ""): HTMLElementTagNameMap[K] {
   const e = document.createElement(tag);
@@ -94,9 +94,11 @@ export function createVipDoor(nav: Nav) {
     }
     pic.append(vipTag("big"));
     const note = el("div", "vip-note glass");
+    // the event's door says it with the strip's energy: "Event!" and "Now playing: Haunted Holiday!"
+    if (d.kind === "event") note.append(el("span", "case-hero-tag", t("case.eventTag")));
     note.append(
       el("span", "vip-kicker", t("vip.kicker")),
-      el("b", "vip-big", d.kind === "archive" ? t("archive.title") : d.title),
+      el("b", "vip-big", d.kind === "archive" ? t("archive.title") : (d.headline ?? d.title)),
       el("p", "", d.kind === "archive" ? t("vip.archiveLine") : t("vip.eventLine", { count: d.levels, items: d.items })),
     );
     if (d.kind === "event" && d.table) {

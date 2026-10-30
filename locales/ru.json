@@ -469,8 +469,7 @@
   "case.how.prizeTable": "Найди все {{count}} и получи стол «{{table}}» и бонусы.",
   "case.none": "Сейчас событий нет.",
   "case.prizeWhere": "Выбери новый стол в разделе «Стиль».",
-  "case.shelf": "Другие события",
-  "case.strip": "Событие · {{theme}}",
+  "case.shelf": "Прошедшие события",
   "case.tileLockedAria": "Событие: {{theme}}. Для участников VIP.",
   "cosmetics.keep": "Оставить: {{price}}",
   "cosmetics.owned": "Твоё",
@@ -529,5 +528,11 @@
   "vip.eventLine_one": "{{count}} уровень, в котором спрятано {{items}} предметов для путешествий.",
   "vip.eventLine_few": "{{count}} уровня, в которых спрятано {{items}} предметов для путешествий.",
   "vip.eventLine_many": "{{count}} уровней, в которых спрятано {{items}} предметов для путешествий.",
-  "vip.eventLine_other": "{{count}} уровня, в которых спрятано {{items}} предметов для путешествий."
+  "vip.eventLine_other": "{{count}} уровня, в которых спрятано {{items}} предметов для путешествий.",
+  "case.comingSoon": "Скоро: {{theme}} · {{date}}",
+  "case.comingSoonName": "Скоро: {{theme}}",
+  "case.eventTag": "Событие!",
+  "case.nowPlaying": "Сейчас идёт: {{theme}}!",
+  "case.pastEvent": "Прошедшее событие",
+  "case.themeBang": "{{theme}}!"
 }

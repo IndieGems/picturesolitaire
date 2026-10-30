@@ -8,8 +8,10 @@
 // (src/game/levels.ts loadEventLevels), loaded only when an event page or level opens.
 //
 // Outside a release build only: a stand-in (the play-test tool's __ps.suitcase, the dev menu's switch), so
-// the pages can be seen filled where no platform answers: Haunted Holiday part-played, and Ski Trip,
-// barely begun. Its won levels are its own; nothing is saved or sent.
+// the pages can be seen filled where no platform answers, as of a date of the creator's choosing (the
+// creator, 2026-10-30: "see Haunted Holiday as a past event now"): the events Levels releases by then, the
+// newest barely begun, the one before part-played, older ones full; the rest to come. Its won levels are
+// its own; nothing is saved or sent.
 //
 // Nothing here is the device's record: no count, no "paid" flag, no date of its own. While the events are
 // not shown (event-switch.ts: off, or not a VIP), the platform is never asked here.
@@ -58,6 +60,7 @@ export function scheduledEvent(today = currentDaily().date): { e: EventData; rel
 // ---------------------------------------------------------------- outside a release build
 type Pretend = { packs: EventPack[]; won: Set<string>; upcoming: { id: string; theme: string; release: string }[] };
 let pretend: Pretend | null = null;
+let pretendAsOf: string | null = null;
 const ALLOWED = import.meta.env.MODE !== "release";
 
 /** Event `e` as a pack, its levels the first `won` played and every item on them found. */
@@ -87,17 +90,21 @@ function packOf(e: EventData, won: number): { pack: EventPack; won: string[] } {
   };
 }
 
-/** The stand-in: Haunted Holiday 12 levels in (4 items found), Ski Trip 2 in, and Winter Market still to come. */
-export function standIn(): Pretend {
-  const real = EVENTS.filter((e) => !e.standIn);
-  const halloween = real.find((e) => e.id === "halloween-2026") ?? real[0];
-  const ski = real.find((e) => e.id === "ski-trip-2026") ?? real[1];
-  const rest = real.filter((e) => e !== halloween && e !== ski);
-  const made = [ski && packOf(ski, 2), halloween && packOf(halloween, 12)].filter((x): x is ReturnType<typeof packOf> => !!x);
+/**
+ * The stand-in as of `asOf` (the player's date by default): the events released by then, newest first, the
+ * newest 2 levels in, the one before 12 in (4 items found), older ones all 30; the ones after, to come.
+ */
+export function standIn(asOf = currentDaily().date): Pretend {
+  const real = EVENTS.filter((e) => !e.standIn && releaseOf(e)).sort((a, b) => releaseOf(b).localeCompare(releaseOf(a)));
+  const out = real.filter((e) => releaseOf(e) <= asOf);
+  const made = out.map((e, i) => packOf(e, i === 0 ? 2 : i === 1 ? 12 : EVENT_LEVELS));
   return {
     packs: made.map((m) => m.pack),
     won: new Set(made.flatMap((m) => m.won)),
-    upcoming: rest.slice(0, 1).map((e) => ({ id: e.id, theme: e.theme, release: releaseOf(e) || "2026-12-01" })),
+    upcoming: real
+      .filter((e) => releaseOf(e) > asOf)
+      .reverse()
+      .map((e) => ({ id: e.id, theme: e.theme, release: releaseOf(e) })),
   };
 }
 
@@ -136,15 +143,18 @@ export const suitcases = {
   },
 
   // ---- outside a release build ----
-  /** The stand-in ("default"), or the platform's word again (null). */
-  pretend(p: "default" | null): void {
+  /** The stand-in ("default": as of the player's date, or of `asOf`), or the platform's word again (null). */
+  pretend(p: "default" | null, asOf?: string): void {
     if (!ALLOWED) return;
-    pretend = p === null ? null : standIn();
+    pretend = p === null ? null : standIn(asOf);
+    pretendAsOf = p === null ? null : (asOf ?? null);
     lookAtEvent(!!pretend);
     say();
   },
   /** The stand-in is on. */
   pretending: (): boolean => ALLOWED && !!pretend,
+  /** The stand-in's date, when it was given one ("2026-11-05"). */
+  pretendDate: (): string | null => (ALLOWED && pretend ? pretendAsOf : null),
   /** The stand-in: level `id` won (its item found when it hides one), as a first win there would. */
   pretendWin(id: string): { item: EventItem; pack: EventPack } | null {
     if (!ALLOWED || !pretend || pretend.won.has(id)) return null;

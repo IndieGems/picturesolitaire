@@ -520,7 +520,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
   const drawEvent = () => {
     const e = suitcases.newest();
     eventState.textContent = suitcases.pretending()
-      ? `Stand-in on: ${suitcases.list().map((x) => `${x.theme} ${x.found}/${x.items.length}`).join(", ")}. Nothing is saved or sent.`
+      ? `Stand-in on${suitcases.pretendDate() ? `, as of ${suitcases.pretendDate()}` : ""}: ${suitcases.list().map((x) => `${x.theme} ${x.found}/${x.items.length}`).join(", ") || "none out yet"}. Nothing is saved or sent.`
       : e
         ? `The platform's: ${suitcases.list().map((x) => `${x.theme} ${x.found}/${x.items.length}`).join(", ")}.`
         : EVENT_ON
@@ -537,14 +537,23 @@ export function mountDevMenu(host: DevHost): DevMenu {
       dialog.close();
       host.openSuitcase();
     }),
-    btn("dev-wide", "Stand-in events (look only)", () => {
-      suitcases.pretend(suitcases.pretending() ? null : "default");
+    btn("dev-wide", "Stand-in events, as of today", () => {
+      suitcases.pretend("default");
+      drawEvent();
+    }),
+    // the creator, 2026-10-30: see Haunted Holiday as a past event now (Ski Trip opens on 1 Nov)
+    btn("dev-wide", "Stand-in events, as of 5 Nov", () => {
+      suitcases.pretend("default", "2026-11-05");
+      drawEvent();
+    }),
+    btn("dev-wide", "Stand-in off", () => {
+      suitcases.pretend(null);
       drawEvent();
     }),
     el(
       "p",
       "dev-note",
-      "With Pretend I'm VIP on, the event page shows the platform's events and their levels play for real on dev. The stand-in fills the page with Haunted Holiday 12 levels in and Ski Trip 2 in, to look at; its levels still play their real boards, and nothing is saved or sent.",
+      "With Pretend I'm VIP on, the event page shows the platform's events and their levels play for real on dev. The stand-in fills the page as of a date: the events out by then (the newest 2 levels in, the one before 12 in), the rest coming soon. As of 5 Nov, Ski Trip is now playing and Haunted Holiday is a past event. Its levels play their real boards in practice; nothing is saved or sent.",
     ),
   );
 

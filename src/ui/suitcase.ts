@@ -2,16 +2,21 @@
 // with 10 travel items hidden one per level; finding all 10 wins the event's table. A VIP plays any released
 // event at any time. The record is the platform's (suitcase-data.ts, over Server's module):
 //
-//   the strip       home, just above the dock (the creator's pick, 2026-10-30): Art's closed suitcase,
-//                   "Event · Haunted Holiday" and "4 of 10 found · 12 of 30 levels"; a tap opens the newest
-//                   event's page. For a player who is not a VIP it wears the padlock and gold VIP tag and
-//                   opens the locked door's screen (vip-door.ts): the event's suitcase and prize table.
-//   the event page  a screen of its own: the 10-slot suitcase (each item's picture once found, its outline
-//                   while missing), "Play level 13" (the first level not won yet, the page's main action),
-//                   the 30 levels as a grid (won ones ticked; a level hiding an item wears a small suitcase
-//                   until it is found, then the item itself; hard ones say so), how it works, the prize, and
-//                   the other events (each "4 of 10 found · 12 of 30 levels"; ones still to come say when).
-//                   Every level is open: tapping one plays it, and its win card comes back here.
+//   the strip       home, just above the dock (the creator's pick, 2026-10-30): Art's closed suitcase, a
+//                   bold "Event!" and "Now playing: Haunted Holiday!" (the creator's words; where that will
+//                   not fit on its line, measured as the top row's title is, "Haunted Holiday!"), and under
+//                   it "4 of 10 found · 12 of 30 levels"; a tap opens the newest event's page. For a player
+//                   who is not a VIP it wears the padlock and gold VIP tag and opens the locked door's
+//                   screen (vip-door.ts): the event's suitcase and prize table.
+//   the event page  a screen of its own: "Event!" and "Now playing: Haunted Holiday!" (a past one's "Past
+//                   event"), the 10-slot suitcase (each item's picture once found, its outline while
+//                   missing), "Play level 13" (the first level not won yet, the page's main action), then
+//                   the past events as a row of cards, close under it so they are seen (the creator could
+//                   not find them at the page's foot), and "Coming soon: Ski Trip · Nov 1"; then the 30
+//                   levels as a grid (won ones ticked; a level hiding an item wears a small suitcase until
+//                   it is found, then the item itself; hard ones say so), how it works and the prize. Every
+//                   level is open: tapping one plays it, and its win card comes back here. A past event
+//                   keeps its progress and stays winnable; the newest released is the one now playing.
 //   the preview     an event announced but not released yet (only while none is out): its suitcase in
 //                   outline, when it opens, how it works and its prize; nothing to play yet.
 //   the win card    an event level's first win packs its item: once the checker's verdict says so, the
@@ -150,10 +155,28 @@ function levelLabel(n: number, won: boolean, item: EventItem | null): string {
 
 export function createSuitcase(nav: Nav) {
   // ---- home's strip, above the dock: the newest event, a tap opens its page ----
+  const tileTag = el("span", "strip-event", t("case.eventTag"));
   const tileName = el("b", "strip-name");
+  const tileHead = el("span", "strip-head");
+  tileHead.append(tileTag, tileName);
   const tileLine = el("small", "strip-line");
   const stripWords = el("span", "strip-words");
-  stripWords.append(tileName, tileLine);
+  stripWords.append(tileHead, tileLine);
+  /** The strip's name in full ("Now playing: Haunted Holiday!") and short ("Haunted Holiday!"). */
+  let names = { full: "", short: "" };
+  /**
+   * The full name where it fits on its one line, else the short one (which may wrap: never cut off).
+   * Measured, never guessed, as the top row's title is: at each draw, resize and change of the words.
+   */
+  const fitName = (): void => {
+    tileName.classList.remove("short");
+    tileName.textContent = names.full;
+    if (!tile.isConnected || tile.hidden || !tileName.clientWidth) return;
+    if (tileName.scrollWidth > tileName.clientWidth + 1) {
+      tileName.textContent = names.short;
+      tileName.classList.add("short");
+    }
+  };
   const caseArt = el("span", "strip-art");
   caseArt.append(miniCase("", true));
   const lock = vipTag("strip-tag");
@@ -162,6 +185,7 @@ export function createSuitcase(nav: Nav) {
   tile.dataset.press = "home.event";
   tile.hidden = true;
   tile.append(caseArt, stripWords, lock);
+  new ResizeObserver(() => fitName()).observe(tile);
   tile.addEventListener("click", () => {
     if (eventShown()) return open();
     // not a VIP: the locked door, with the event's suitcase and prize
@@ -172,6 +196,7 @@ export function createSuitcase(nav: Nav) {
     nav.door({
       kind: "event",
       title: eventTitle(e),
+      headline: sch.released ? t("case.nowPlaying", { theme: themeName(e) }) : t("case.comingSoonName", { theme: themeName(e) }),
       art: ART.closed,
       ...(art ? { table: { name: prizeTableName({ table: e.table, helpers: {} }, e.tableTitle ?? art.title), thumb: thumbOf(art) } } : {}),
       levels: e.levels?.length || EVENT_LEVELS,
@@ -315,11 +340,18 @@ export function createSuitcase(nav: Nav) {
     return box;
   }
 
-  /** The other events: each released one a button to its page, with how far the player is; ones to come say when. */
-  function others(except: string | null): HTMLElement | null {
-    const list = suitcases.list().filter((e) => e.id !== except);
-    const soon = suitcases.upcoming().filter((u) => u.id !== except);
-    if (!list.length && !soon.length) return null;
+  /** The page's head: "Event!" and "Now playing: Haunted Holiday!", a past one's "Past event" and its name, the next one's "Coming soon". */
+  function hero(tag: string, words: string, past = false): HTMLElement {
+    const box = el("div", `case-hero${past ? " past" : ""}`);
+    box.append(el("span", "case-hero-tag", tag), el("h2", "", words));
+    return box;
+  }
+
+  /** The past events (every released one but the newest), each a card to its page with how far the player is. */
+  function pastRow(): HTMLElement | null {
+    const newest = suitcases.newest()?.id;
+    const list = suitcases.list().filter((e) => e.id !== newest);
+    if (!list.length) return null;
     const box = el("div", "case-shelf");
     box.append(el("h2", "", t("case.shelf")));
     const row = el("div", "shelf-row");
@@ -337,13 +369,14 @@ export function createSuitcase(nav: Nav) {
       b.addEventListener("click", () => open(e.id));
       row.append(b);
     }
-    for (const u of soon) {
-      const c = el("div", "shelf-case soon glass");
-      c.append(miniCase("", true), el("b", "", themeName(u)), el("small", "", t("case.starts", { date: shortDate(u.release) })));
-      row.append(c);
-    }
     box.append(row);
     return box;
+  }
+
+  /** The next event to come, on its own line (information): "Coming soon: Ski Trip · Nov 1". */
+  function comingSoon(except: string | null): HTMLElement | null {
+    const u = suitcases.upcoming().find((x) => x.id !== except);
+    return u ? el("p", "case-soon glass", t("case.comingSoon", { theme: themeName(u), date: shortDate(u.release) })) : null;
   }
 
   function draw(): void {
@@ -351,8 +384,8 @@ export function createSuitcase(nav: Nav) {
     if (screen.hidden) return;
     const e = shown();
     const next = !e && !viewing ? nextUp() : null;
+    pill.textContent = t("case.name");
     if (!e && !next) {
-      pill.textContent = t("case.name");
       scroll.replaceChildren(el("p", "case-empty", t("case.none")));
       return;
     }
@@ -363,21 +396,23 @@ export function createSuitcase(nav: Nav) {
     const wrap = el("div", "case-wrap");
     wrap.append(suitcase);
     if (e) {
-      pill.textContent = eventTitle(e);
+      // the newest released is the one now playing; any other is a past event, still winnable
+      const past = e.id !== suitcases.newest()?.id;
       const status = el("p", "case-status glass");
       status.append(el("b", "", t("case.foundOf", { found: e.found, all: e.items.length })), " · ", el("span", "", t("case.levelsOf", { won: suitcases.wonCount(e), count: e.levels.length || EVENT_LEVELS })));
       suitcase.append(slots(e));
-      parts.push(status, wrap, playNext(e), levelGrid(e), howItWorks(e), prize(e), others(e.id));
+      const head = past ? hero(t("case.pastEvent"), eventTitle(e), true) : hero(t("case.eventTag"), t("case.nowPlaying", { theme: themeName(e) }));
+      // the past events and the next one close under the suitcase, where a phone shows them: on the newest's page
+      parts.push(head, status, wrap, playNext(e), ...(past ? [] : [pastRow(), comingSoon(null)]), levelGrid(e), howItWorks(e), prize(e));
     } else if (next) {
       // an event to come, with none out yet: its suitcase in outline, when it opens, how it works, its prize
       const data = scheduledFor(next.id);
-      pill.textContent = eventTitle(next);
       const status = el("p", "case-status glass");
       status.append(el("b", "", t("case.starts", { date: shortDate(next.release) })), " · ", el("span", "", t("case.previewWhy")));
       const items: EventItem[] = (data?.items ?? []).map((it) => ({ id: it.id, title: it.title, level: null, found: false }));
       suitcase.append(slots({ items }));
       const preview = { items, levels: data?.levels ?? [], paid: false, prize: { table: data?.table ?? DEFAULT_TABLE, ...(data?.tableTitle ? { tableTitle: data.tableTitle } : {}), helpers: {} } };
-      parts.push(status, wrap, howItWorks(preview), prize(preview), others(next.id));
+      parts.push(hero(t("case.eventTag"), t("case.comingSoonName", { theme: themeName(next) })), status, wrap, howItWorks(preview), prize(preview), comingSoon(next.id));
     }
     scroll.replaceChildren(...parts.filter((p): p is HTMLElement => !!p));
   }
@@ -400,22 +435,24 @@ export function createSuitcase(nav: Nav) {
     tile.hidden = !eventDoor() || (vip ? !e && !up : !sch);
     lock.hidden = vip;
     tile.classList.toggle("locked", !vip);
+    tileTag.textContent = t("case.eventTag");
     if (e) {
-      tileName.textContent = t("case.strip", { theme: themeName(e) });
+      names = { full: t("case.nowPlaying", { theme: themeName(e) }), short: t("case.themeBang", { theme: themeName(e) }) };
       tileLine.textContent = progressLine(e);
       tile.setAttribute("aria-label", t("case.tileAria", { theme: themeName(e) }));
     } else if (up) {
-      tileName.textContent = t("case.strip", { theme: themeName(up) });
+      names = { full: t("case.comingSoonName", { theme: themeName(up) }), short: themeName(up) };
       tileLine.textContent = t("case.starts", { date: shortDate(up.release) });
       tile.setAttribute("aria-label", t("case.tileAria", { theme: themeName(up) }));
     } else if (sch) {
       const theme = themeName(sch.e);
-      tileName.textContent = t("case.strip", { theme });
+      names = sch.released ? { full: t("case.nowPlaying", { theme }), short: t("case.themeBang", { theme }) } : { full: t("case.comingSoonName", { theme }), short: theme };
       tileLine.textContent = sch.released
         ? t("case.lockedLine", { count: sch.e.levels?.length || EVENT_LEVELS, items: sch.e.items.length })
         : t("case.starts", { date: shortDate(sch.e.release ?? sch.e.start ?? "") });
       tile.setAttribute("aria-label", t("case.tileLockedAria", { theme }));
     }
+    fitName();
   }
 
   /** Open an event's page: the newest (or the next one's preview, with none out), or event `id`. */
