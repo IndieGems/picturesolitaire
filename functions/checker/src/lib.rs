@@ -34,12 +34,20 @@
 //! daily win packs nothing, a swap answers "closed" and the read answers an empty suitcase
 //! ("off": true), and no prize is paid, whatever is held (suitcase::on gates each one).
 //!
+//! THE ACHIEVEMENTS (count.rs, docs/achievements.md): after a verified win is paid, one more order
+//! sets every counter to what the record says (progression_max), so earlier wins count too; the
+//! platform unlocks an achievement from it (on release only), and the verdict lists what it
+//! unlocked ("achievements": [{ id, points }]). The record keeps the counts too ("counts"), so the
+//! game sees which thresholds a verdict crossed. That order failing never changes the verdict:
+//! the next verified win sets them all again.
+//!
 //! Who pays is always the player who called (get-context), never anyone the
 //! input names. Every progression this writes has `function_may_grant: true`:
 //! this function is the only check on what they pay.
 
 pub mod canon;
 pub mod claim;
+pub mod count;
 pub mod pay;
 pub mod progress;
 pub mod rules;
@@ -95,6 +103,7 @@ mod function {
     use serde_json::{json, Value};
 
     use crate::claim::{self, Lane, Refusal, Win};
+    use crate::count;
     use crate::pay;
     use crate::progress::{self, Wait};
     use crate::suitcase;
@@ -702,6 +711,39 @@ mod function {
         progress::from_saves(|key| read_save(player, key))
     }
 
+    /// Set the achievements' counters to what the record says (count.rs), in an order of its own,
+    /// after the win's payment: a channel whose config has no counters yet, or a refusal, costs
+    /// only this order, never the payment, and the next verified win sets them again. The nonce is
+    /// the claim's, so a resend of it writes once. What it unlocked (release only), else nothing.
+    fn count_up(player: &str, doc: &Value, claim_id: Option<&str>) -> Vec<Value> {
+        let operations = count::operations(doc, count::plan());
+        if operations.is_empty() {
+            return Vec::new();
+        }
+        let nonce = format!("count:{}", claim_id.map(str::to_string).unwrap_or_else(|| host::now_ms().to_string()));
+        let body = json!({ "source": "reward", "nonce": nonce, "operations": operations });
+        let res = match api("POST", format!("/v1/inventory/players/{player}/orders"), Some(body)) {
+            Ok(r) => r,
+            Err(e) => {
+                host::log(LogLevel::Warn, &format!("order {nonce}: no answer: {e}"));
+                return Vec::new();
+            }
+        };
+        if res.status == 409 {
+            return Vec::new(); // this claim's counts were set before (a resend)
+        }
+        if !(200..300).contains(&res.status) || res.body["status"] == "failed" {
+            host::log(LogLevel::Warn, &format!("order {nonce} answered {}: {}", res.status, res.body));
+            return Vec::new();
+        }
+        let changes = res.body["changes"].as_array().cloned().unwrap_or_default();
+        let receipts = count::receipts(&changes);
+        if !receipts.is_empty() {
+            host::log(LogLevel::Info, &format!("achievements: {}", receipts.join(", ")));
+        }
+        count::unlocked(&changes)
+    }
+
     /// The record as the game reads it (without the claim ids it keeps).
     fn public(doc: &Value) -> Value {
         let mut d = doc.clone();
@@ -744,7 +786,12 @@ mod function {
                 Err(v) => return v,
             }
         }
-        if changed || marked || !stored {
+        // the achievements' counts ride in the record (count.rs), so the game knows what a verdict
+        // moved from; a record from before them gains them on its next verified win
+        let counts = count::summary(&doc, count::plan());
+        let recounted = doc["counts"] != counts;
+        doc["counts"] = counts;
+        if changed || marked || recounted || !stored {
             if let Err(v) = write_save(player, crate::PROGRESS, &doc) {
                 return v;
             }
@@ -755,6 +802,12 @@ mod function {
         };
         if verdict["status"] != "retry" {
             verdict["progress"] = public(&doc);
+        }
+        if matches!(verdict["status"].as_str(), Some("paid" | "kept" | "late")) {
+            let unlocked = count_up(player, &doc, win.claim_id.as_deref());
+            if !unlocked.is_empty() {
+                verdict["achievements"] = json!(unlocked);
+            }
         }
         verdict
     }

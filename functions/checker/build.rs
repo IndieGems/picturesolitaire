@@ -157,6 +157,24 @@ fn main() {
     let pay = json!({ "boards": boards, "gifts": gifts, "helpers": helpers });
     fs::write(Path::new(&env::var("OUT_DIR").unwrap()).join("pay.json"), pay.to_string()).unwrap();
 
+    // THE ACHIEVEMENTS' COUNTERS (OUT_DIR/counts.json, read by src/count.rs): each counter's slug,
+    // its id (the config's, which make-config.mts fills into src/net/achievements.json once) and
+    // what it counts; each campaign board's mark, in play order; and each trip's last position.
+    let achievements = read(&Path::new(&here).join("../../src/net/achievements.json"));
+    let counters: Vec<Value> = achievements["counters"]
+        .as_array()
+        .expect("src/net/achievements.json has a counters list")
+        .iter()
+        .map(|c| {
+            let slug = c["slug"].as_str().expect("a counter has a slug");
+            let id = c["id"].as_str().unwrap_or_else(|| panic!("src/net/achievements.json: counter {slug} has no id yet (node tools/server/make-config.mts gives it one)"));
+            json!({ "slug": slug, "id": id, "counts": c["counts"] })
+        })
+        .collect();
+    let marks: Vec<Value> = read(&levels.join("campaign.json"))["levels"].as_array().into_iter().flatten().map(|l| l["mark"].clone()).collect();
+    let counts = json!({ "counters": counters, "marks": marks, "trips": last });
+    fs::write(Path::new(&env::var("OUT_DIR").unwrap()).join("counts.json"), counts.to_string()).unwrap();
+
     // THE DAILY SUITCASE (OUT_DIR/suitcases.json, read by src/suitcase.rs): Levels' months
     // (src/content/levels/suitcases.json) with each item's and each month's prize mark's id
     // (name-based, exactly as make-config.mts writes them into the config), the month's table

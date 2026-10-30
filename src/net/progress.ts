@@ -11,6 +11,8 @@
 //   progress().daily[date]     the first verified result of that date { moves, ms }
 //   progress().souvenir[id]    best (fewest) moves on a Souvenir won ("s1"): its sticker (docs/souvenirs.md)
 //   progress().restored        pictures of boards won
+//   progress().counts          the achievements' counters as the checker last set them, by counter slug
+//                              (src/net/achievements.ts); absent on a record from before checker 0.1.35
 //   progress().known           false until the server's word has landed this session
 //
 // The game standard's rules for it ("All player data lives in the CLOUD"; "When
@@ -41,6 +43,8 @@ export interface Progress {
   /** Souvenirs won, by id: best (fewest) moves. Won when present. */
   souvenir: Record<string, number>;
   restored: string[];
+  /** The achievements' counters as the checker last set them (functions/checker/src/count.rs), by counter slug; absent on a record from before them. Held wins never change it. */
+  counts?: Record<string, number>;
 }
 
 /** What a won board would change, held until the checker answers. */
@@ -93,6 +97,9 @@ function normal(x: unknown): Progress {
     daily: d.daily && typeof d.daily === "object" ? { ...d.daily } : {},
     souvenir: d.souvenir && typeof d.souvenir === "object" ? { ...d.souvenir } : {},
     restored: Array.isArray(d.restored) ? d.restored.filter((p): p is string => typeof p === "string") : [],
+    ...(d.counts && typeof d.counts === "object"
+      ? { counts: Object.fromEntries(Object.entries(d.counts).filter((e): e is [string, number] => Number.isInteger(e[1]) && e[1] >= 0)) }
+      : {}),
   };
 }
 
@@ -134,6 +141,8 @@ export const guideDone = (): boolean => progress().campaign.next > 1;
 /** A Souvenir is won (its sticker shows) once its id is in the record: its best moves, or undefined. */
 export const souvenirBest = (id: string): number | undefined => progress().souvenir[id];
 export const dailyResult = (date: string): { moves: number; ms: number } | undefined => progress().daily[date];
+/** The achievements' counters in the server's record (never a held win's): none ({}) for a new player or a record from before them; null before the record landed. */
+export const serverCounts = (): Readonly<Record<string, number>> | null => (known ? (server.counts ?? {}) : null);
 
 // ---------------------------------------------------------------- held wins (src/net/claims.ts)
 

@@ -10,9 +10,13 @@
 //!                                             at most boards + 1, "all done"; won: verified wins, replays too
 //!     "challenge": { "ch01": 19 },          best (fewest) moves per cleared challenge board
 //!     "daily": { "2026-10-24": { "moves": 17, "ms": 150000 } },  the first verified result per date
+//!     "dailies": 23,                         dailies won, one a date, ever (the dates above are pruned);
+//!                                             absent on a record from before 0.1.35: its dates count
 //!     "restored": ["apple-orchard", ...],   pictures of boards won, in the order first restored
 //!     "souvenir": { "s1": 13 },              best (fewest) moves per Souvenir won: its sticker on its
 //!                                             trip's passport page (UI, 2026-10-28); absent until the first
+//!     "counts": { "levels_finished": 7, ... },  the achievements' counters as last set (count.rs,
+//!                                             written by lib.rs beside each win; derived, never read back)
 //!     "imported": { "from": "campaign" },   only on a record begun before 0.1.28 from an old device save; read by nothing
 //!     "seen": ["<claim id>", ...] }          the last claims applied, so a resent claim changes nothing
 
@@ -25,6 +29,13 @@ const SEEN: usize = 32;
 /// How many dates of daily results are kept: the archive's longest reach (this
 /// month and the two before, at most 92 days), with a little slack.
 const DAILY_DAYS: usize = 100;
+
+/// How many dailies the record has won, one a date, ever: its running total, or on a record from
+/// before the total was kept, its dates (all of them, then: the game was newer than DAILY_DAYS).
+pub fn dailies(doc: &Value) -> u64 {
+    let dates = doc["daily"].as_object().map_or(0, |d| d.len() as u64);
+    doc["dailies"].as_u64().unwrap_or(0).max(dates)
+}
 
 /// A record for a player with no progress yet.
 pub fn empty() -> Value {
@@ -128,6 +139,7 @@ pub fn apply(doc: &mut Value, win: &Win, claim_id: Option<&str>, n: Option<u64>,
         Lane::Daily => {
             let date = win.date.clone().unwrap_or_default();
             if doc["daily"].get(&date).is_none() {
+                doc["dailies"] = json!(dailies(doc) + 1);
                 doc["daily"][&date] = json!({ "moves": win.moves, "ms": win.ms });
                 // keep the most recent dates only (ISO dates sort as text)
                 if let Some(days) = doc["daily"].as_object_mut() {

@@ -4,7 +4,8 @@
 // lines in gem-backend-game-config.yaml (appending it the first time), and
 // writes docs/coins.md, the table of what each board pays and the hourly maths. It also writes
 // the table and soundtrack items (src/net/tables.json, src/net/tracks.json) and, in its own
-// marked block in the catalogs list, the Cosmetics screen's catalog of Coins offers.
+// marked block in the catalogs list, the Cosmetics screen's catalog of Coins offers, and the
+// achievements' counter progressions (src/net/achievements.json, which gains its ids here).
 //
 //   node tools/server/make-config.mts
 //
@@ -23,7 +24,7 @@
 // replays the win before it moves one.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -188,6 +189,115 @@ const SOLD = [...TABLES.filter((t) => t.award === "shop").map((t) => ({ ...t, ki
 
 const rows = [];
 const TRIPS = JSON.parse(readFileSync(join(root, "src/content/levels/trips.json"), "utf8")).trips;
+
+// THE ACHIEVEMENTS (the creator, 2026-10-30; docs/achievements.md): src/net/achievements.json, one
+// counter progression per group with an achievement on each level of its track. A counter's id is
+// made once from its slug, an achievement's once at random, and both are kept there for good. Only the
+// win checker writes a counter (functions/checker/src/count.rs): no client, recipe, loot table or
+// reward here may, or the platform's next write would unlock whatever value was stored.
+// The names and descriptions are UI's (locales/<lang>.json); the file's English stands in until then.
+const ACH_PATH = join(root, "src/net/achievements.json");
+const LOCALES = ["de", "es", "fr", "it", "ja", "ko", "pl", "pt-BR", "ru", "tr", "zh-Hans"];
+/** What a counter may count (count.rs's Kind). */
+const COUNTS = ["levels", "stamps", "souvenirs", "hard", "super", "dailies"];
+/** The platform's lifetime budget (gemctl achievement limits, 2026-10-30): points, icon-awarding achievements, achievements. */
+const BUDGET = { points: 1000, icons: 20, achievements: 200 };
+let COUNTERS = [];
+{
+  const doc = JSON.parse(readFileSync(ACH_PATH, "utf8"));
+  const before = JSON.stringify(doc);
+  doc.counters = doc.counters.map((c) => {
+    const withId = c.id ? c : { slug: c.slug, id: uuid5(`counter:${c.slug}`), ...c };
+    return { ...withId, achievements: withId.achievements.map((a) => (a.id ? a : { slug: a.slug, id: randomUUID(), ...a })) };
+  });
+  if (JSON.stringify(doc) !== before) {
+    writeFileSync(ACH_PATH, JSON.stringify(doc, null, 2) + "\n");
+    console.log("config: src/net/achievements.json gains ids (commit it: an achievement's id is its identity for good)");
+  }
+  COUNTERS = doc.counters;
+  const all = COUNTERS.flatMap((c) => c.achievements);
+  const bad = [];
+  const twice = (xs) => xs.filter((x, i) => xs.indexOf(x) !== i);
+  for (const c of COUNTERS) {
+    if (!/^[a-z][a-z0-9_]*$/.test(c.slug) || c.slug.startsWith("board_")) bad.push(`counter ${c.slug}: a slug of lowercase letters, digits and underscores, never board_`);
+    if (!COUNTS.includes(c.counts)) bad.push(`counter ${c.slug}: counts "${c.counts}", which the checker does not count (${COUNTS.join(", ")})`);
+    c.achievements.forEach((a, i) => {
+      if (!Number.isInteger(a.at) || a.at < 1 || (i > 0 && a.at <= c.achievements[i - 1].at)) bad.push(`${a.slug}: "at" must be a whole number from 1, above the one before it`);
+      if (!Number.isInteger(a.points) || a.points < 0) bad.push(`${a.slug}: points must be a whole number`);
+      if (a.icon !== undefined && !(a.awardsIcon && typeof a.icon === "string" && /^[a-z0-9][a-z0-9-]*$/.test(a.icon))) bad.push(`${a.slug}: an icon is the slug of a game item (gemctl item upload), on an achievement that awardsIcon`);
+      if (c.counts === "stamps" && (a.trip !== TRIPS[i]?.id || a.at !== i + 1)) bad.push(`${a.slug}: the stamps count trips in trips.json's order, so stamp ${i + 1} is ${TRIPS[i]?.id ?? "no trip"}'s, at ${i + 1}`);
+    });
+  }
+  for (const s of twice(COUNTERS.map((c) => c.slug))) bad.push(`counter ${s} twice`);
+  for (const k of twice(COUNTERS.map((c) => c.counts))) bad.push(`two counters count ${k}`);
+  for (const s of twice(all.map((a) => a.slug))) bad.push(`achievement ${s} twice`);
+  for (const id of twice(all.map((a) => a.id))) bad.push(`the id ${id} twice`);
+  const points = all.reduce((n, a) => n + a.points, 0);
+  if (points > BUDGET.points) bad.push(`${points} points: past the game's lifetime ${BUDGET.points}`);
+  if (all.filter((a) => a.awardsIcon).length > BUDGET.icons) bad.push(`more than ${BUDGET.icons} achievements award an icon`);
+  if (all.length > BUDGET.achievements) bad.push(`more than ${BUDGET.achievements} achievements`);
+  if (bad.length) {
+    console.error(`make-config: src/net/achievements.json:\n  ${bad.join("\n  ")}`);
+    process.exit(1);
+  }
+}
+/** A locale file (locales/<name>.json), or nothing when there is none. */
+const localeFile = (name) => {
+  const f = join(root, "locales", `${name}.json`);
+  return existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : {};
+};
+const STRINGS = Object.fromEntries(["en", ...LOCALES].map((l) => [l, { t: localeFile(l), names: localeFile(`names-${l}`) }]));
+/**
+ * A counter's (no `a`) or an achievement's name and description in one locale: UI's keys, with a
+ * stamp's {{trip}} filled from names-<lang>.json; in English, the file's own until UI's are in.
+ * A field the locale lacks is left out (the platform shows the English).
+ */
+function copyOf(lang, c, a) {
+  const { t, names } = STRINGS[lang];
+  const key = !a ? `achievement.count.${c.slug}` : a.trip ? "achievement.stamped" : `achievement.${a.slug}`;
+  const own = !a ? c.en : a.trip ? c.stamp : a.en;
+  let name = t[`${key}.name`] ?? (lang === "en" ? own?.name : undefined);
+  let desc = t[`${key}.desc`] ?? (lang === "en" ? own?.desc : undefined);
+  if (a?.trip) {
+    const trip = names[`trip.${a.trip}`] ?? (lang === "en" ? TRIPS.find((x) => x.id === a.trip)?.name : undefined);
+    const fill = (s) => (s === undefined || trip === undefined ? undefined : s.replace(/\{\{\s*trip\s*\}\}/g, trip));
+    [name, desc] = [fill(name), fill(desc)];
+  }
+  return { name, desc };
+}
+{
+  // every name and description fits, has no placeholder left, and the English is all there
+  const bad = [];
+  for (const c of COUNTERS) {
+    for (const a of [undefined, ...c.achievements]) {
+      const who = a ? a.slug : `counter ${c.slug}`;
+      const [nameMax, descMax] = a ? [64, 280] : [256, 4096];
+      for (const lang of ["en", ...LOCALES]) {
+        const { name, desc } = copyOf(lang, c, a);
+        if (lang === "en" && (!name || !desc)) bad.push(`${who}: no English name and description`);
+        for (const [field, s, max] of [["name", name, nameMax], ["description", desc, descMax]]) {
+          if (s === undefined) continue;
+          if (s.length > max) bad.push(`${who} (${lang}): its ${field} is ${s.length} characters, past ${max}`);
+          if (/\{\{|\}\}/.test(s)) bad.push(`${who} (${lang}): its ${field} keeps a placeholder: ${s}`);
+        }
+      }
+    }
+  }
+  if (bad.length) {
+    console.error(`make-config: the achievements' words:\n  ${bad.join("\n  ")}`);
+    process.exit(1);
+  }
+}
+/** The `localized` lines for a counter or an achievement, at `pad` spaces. */
+function localizedOf(c, a, pad) {
+  const out = [];
+  for (const lang of LOCALES) {
+    const { name, desc } = copyOf(lang, c, a);
+    const fields = [name !== undefined ? `display_name: ${JSON.stringify(name)}` : null, desc !== undefined ? `description: ${JSON.stringify(desc)}` : null].filter(Boolean);
+    if (fields.length) out.push(`${" ".repeat(pad + 2)}${lang}: { ${fields.join(", ")} }`);
+  }
+  return out.length ? [`${" ".repeat(pad)}localized:`, ...out] : [];
+}
 const CAMPAIGN = JSON.parse(readFileSync(join(root, "src/content/levels/campaign.json"), "utf8")).levels;
 /** A Souvenir's Coins (the lead, 2026-10-28): what the better-paying of its trip's relief boards pays. */
 const souvenirCoins = (l, most) => {
@@ -292,6 +402,43 @@ if (MONTHS.length) {
     y.push(`    display_name: "Suitcase ${m.month} full"`);
     y.push("    config:");
     y.push("      completion_threshold: 1");
+  }
+}
+if (COUNTERS.length) {
+  y.push("  # THE ACHIEVEMENTS (the creator, 2026-10-30; docs/achievements.md; src/net/achievements.json):");
+  y.push("  # one counter per group, set only by the win checker, to what the player's progress record");
+  y.push("  # says (progression_max, on every verified win, so wins from before count too), never by the");
+  y.push("  # game or by anything else in this config. Each achievement unlocks once, ever, when its");
+  y.push("  # counter reaches its level's threshold, and only on release. Its id, points, rewards and");
+  y.push("  # place are fixed at the first release: the points budget is lifetime.");
+  for (const c of COUNTERS) {
+    const own = copyOf("en", c);
+    y.push(`  - id: ${c.id}`);
+    y.push(`    slug: ${c.slug}`);
+    y.push(`    display_name: ${JSON.stringify(own.name)}`);
+    y.push(`    description: ${JSON.stringify(own.desc)}`);
+    y.push(...localizedOf(c, undefined, 4));
+    y.push("    config:");
+    y.push("      function_may_grant: true");
+    y.push("      tracks:");
+    y.push("        - track_id: main");
+    y.push("          levels:");
+    c.achievements.forEach((a, i) => {
+      const words = copyOf("en", c, a);
+      y.push(`            - level: ${i + 1}   # ${a.slug}`);
+      y.push(`              threshold: ${a.at}`);
+      y.push("              platform_grants:");
+      y.push("                - achievement:");
+      y.push(`                    id: ${a.id}`);
+      y.push(`                    points: ${a.points}`);
+      y.push(`                    display_name: ${JSON.stringify(words.name)}`);
+      y.push(`                    description: ${JSON.stringify(words.desc)}`);
+      y.push(...localizedOf(c, a, 20));
+      if (a.icon) {
+        y.push("                    rewards:");
+        y.push(`                      - item: ${a.icon}   # an Arcade avatar icon, Art's (gemctl item upload)`);
+      }
+    });
   }
 }
 y.push("");

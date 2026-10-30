@@ -2455,6 +2455,242 @@ progressions:
     display_name: "Suitcase 2027-06 full"
     config:
       completion_threshold: 1
+  # THE ACHIEVEMENTS (the creator, 2026-10-30; docs/achievements.md; src/net/achievements.json):
+  # one counter per group, set only by the win checker, to what the player's progress record
+  # says (progression_max, on every verified win, so wins from before count too), never by the
+  # game or by anything else in this config. Each achievement unlocks once, ever, when its
+  # counter reaches its level's threshold, and only on release. Its id, points, rewards and
+  # place are fixed at the first release: the points budget is lifetime.
+  - id: beaa2579-ae90-53fb-a34e-0bf14e5de6e2
+    slug: levels_finished
+    display_name: "Levels finished"
+    description: "Trip levels finished, each counted once."
+    config:
+      function_may_grant: true
+      tracks:
+        - track_id: main
+          levels:
+            - level: 1   # first-steps
+              threshold: 1
+              platform_grants:
+                - achievement:
+                    id: 9092ea1d-1ed7-4b42-972c-1f21a5203c4e
+                    points: 5
+                    display_name: "First Steps"
+                    description: "Finish your first level."
+            - level: 2   # finding-your-feet
+              threshold: 10
+              platform_grants:
+                - achievement:
+                    id: d21fe3b0-d370-4a72-9462-7337c0f1683a
+                    points: 10
+                    display_name: "Finding Your Feet"
+                    description: "Finish 10 levels."
+            - level: 3   # seasoned-traveller
+              threshold: 50
+              platform_grants:
+                - achievement:
+                    id: 87fdd60b-9830-4290-aa97-6163767fa002
+                    points: 25
+                    display_name: "Seasoned Traveller"
+                    description: "Finish 50 levels."
+            - level: 4   # globetrotter
+              threshold: 150
+              platform_grants:
+                - achievement:
+                    id: d54a294b-bad1-4dab-a1a4-61c9478de4d2
+                    points: 75
+                    display_name: "Globetrotter"
+                    description: "Finish 150 levels."
+  - id: 764d331a-ac00-50b3-b7b2-3bb79c9267a6
+    slug: trips_stamped
+    display_name: "Passport stamps"
+    description: "Trips finished, each with its passport stamp."
+    config:
+      function_may_grant: true
+      tracks:
+        - track_id: main
+          levels:
+            - level: 1   # stamped-t1
+              threshold: 1
+              platform_grants:
+                - achievement:
+                    id: 0fbcf317-2a71-4a56-a9dc-801ff8679151
+                    points: 15
+                    display_name: "Stamped: Travel America"
+                    description: "Finish the Travel America trip and get its passport stamp."
+            - level: 2   # stamped-t2
+              threshold: 2
+              platform_grants:
+                - achievement:
+                    id: 2fe500dd-8a78-41df-b81d-9767482dc955
+                    points: 15
+                    display_name: "Stamped: Japan"
+                    description: "Finish the Japan trip and get its passport stamp."
+            - level: 3   # stamped-t3
+              threshold: 3
+              platform_grants:
+                - achievement:
+                    id: 422057ad-3cbc-4fc6-b252-7d9091b668be
+                    points: 15
+                    display_name: "Stamped: Italy"
+                    description: "Finish the Italy trip and get its passport stamp."
+            - level: 4   # stamped-t4
+              threshold: 4
+              platform_grants:
+                - achievement:
+                    id: b7ffcbec-30e3-42b0-b45c-e37bd00048ab
+                    points: 15
+                    display_name: "Stamped: American West"
+                    description: "Finish the American West trip and get its passport stamp."
+            - level: 5   # stamped-t5
+              threshold: 5
+              platform_grants:
+                - achievement:
+                    id: 46db4c3e-5d45-4397-956b-9383a7728a56
+                    points: 15
+                    display_name: "Stamped: France"
+                    description: "Finish the France trip and get its passport stamp."
+            - level: 6   # stamped-t6
+              threshold: 6
+              platform_grants:
+                - achievement:
+                    id: f762abf0-335a-4885-81e4-e6d9b21c035f
+                    points: 15
+                    display_name: "Stamped: Canada"
+                    description: "Finish the Canada trip and get its passport stamp."
+            - level: 7   # stamped-t7
+              threshold: 7
+              platform_grants:
+                - achievement:
+                    id: 580fff2b-4d2b-412f-9dbe-6eee0977768f
+                    points: 15
+                    display_name: "Stamped: Argentina"
+                    description: "Finish the Argentina trip and get its passport stamp."
+            - level: 8   # stamped-t8
+              threshold: 8
+              platform_grants:
+                - achievement:
+                    id: c77a395f-ff89-434c-9b35-cea42d517eae
+                    points: 15
+                    display_name: "Stamped: Australia"
+                    description: "Finish the Australia trip and get its passport stamp."
+            - level: 9   # stamped-t9
+              threshold: 9
+              platform_grants:
+                - achievement:
+                    id: b9595a98-4096-4513-acbf-ce64e111f049
+                    points: 15
+                    display_name: "Stamped: South Africa"
+                    description: "Finish the South Africa trip and get its passport stamp."
+            - level: 10   # stamped-t10
+              threshold: 10
+              platform_grants:
+                - achievement:
+                    id: 0bd04847-b0ca-43d5-b40d-1b9d1f8bb004
+                    points: 15
+                    display_name: "Stamped: UK & Ireland"
+                    description: "Finish the UK & Ireland trip and get its passport stamp."
+  - id: c7176dad-ec41-54ae-944a-33b57ceb3723
+    slug: souvenirs_finished
+    display_name: "Souvenirs finished"
+    description: "Souvenir levels finished, each counted once."
+    config:
+      function_may_grant: true
+      tracks:
+        - track_id: main
+          levels:
+            - level: 1   # something-to-remember
+              threshold: 1
+              platform_grants:
+                - achievement:
+                    id: e951b376-4860-4a47-8200-67d5f4970eac
+                    points: 5
+                    display_name: "Something to Remember"
+                    description: "Finish your first Souvenir level."
+            - level: 2   # full-suitcase
+              threshold: 10
+              platform_grants:
+                - achievement:
+                    id: f690f272-7617-4a4a-8bd5-6fa263a74ff4
+                    points: 40
+                    display_name: "Full Suitcase"
+                    description: "Finish 10 Souvenir levels."
+  - id: 630e6c93-925b-5368-965c-fcea503896d3
+    slug: hard_levels_won
+    display_name: "Hard levels won"
+    description: "Hard and super hard levels won, each counted once."
+    config:
+      function_may_grant: true
+      tracks:
+        - track_id: main
+          levels:
+            - level: 1   # up-for-a-challenge
+              threshold: 1
+              platform_grants:
+                - achievement:
+                    id: a91c65a2-72b5-4753-807e-52de66f90f99
+                    points: 10
+                    display_name: "Up for a Challenge"
+                    description: "Win a hard level."
+  - id: 0df4e3ab-8ddd-52f2-892c-17b61f61ca54
+    slug: super_hard_levels_won
+    display_name: "Super hard levels won"
+    description: "Super hard levels won, each counted once."
+    config:
+      function_may_grant: true
+      tracks:
+        - track_id: main
+          levels:
+            - level: 1   # nerves-of-steel
+              threshold: 1
+              platform_grants:
+                - achievement:
+                    id: 64bfd2e2-e5de-43f2-980b-09dfc55f7625
+                    points: 20
+                    display_name: "Nerves of Steel"
+                    description: "Win a super hard level."
+            - level: 2   # fearless
+              threshold: 10
+              platform_grants:
+                - achievement:
+                    id: 3b101ebb-da85-4a61-94d7-e8716e2b6f2b
+                    points: 50
+                    display_name: "Fearless"
+                    description: "Win 10 super hard levels."
+  - id: 120d5b2f-997e-5bee-817b-5252d606a5bc
+    slug: dailies_won
+    display_name: "Daily puzzles won"
+    description: "Daily puzzles won, one a day."
+    config:
+      function_may_grant: true
+      tracks:
+        - track_id: main
+          levels:
+            - level: 1   # daily-habit
+              threshold: 1
+              platform_grants:
+                - achievement:
+                    id: 00524475-df3a-49d1-8e8a-86818dda9301
+                    points: 5
+                    display_name: "Daily Habit"
+                    description: "Win your first daily puzzle."
+            - level: 2   # week-of-dailies
+              threshold: 7
+              platform_grants:
+                - achievement:
+                    id: 2224fdc2-1989-44fe-8f9a-2ce4ad24a67b
+                    points: 15
+                    display_name: "Week of Dailies"
+                    description: "Win 7 daily puzzles."
+            - level: 3   # daily-devotee
+              threshold: 30
+              platform_grants:
+                - achievement:
+                    id: ccee2fbb-4fa8-48f0-b210-19144ff6b4bf
+                    points: 40
+                    display_name: "Daily Devotee"
+                    description: "Win 30 daily puzzles."
 
 # A daily result, posted by the function once it has replayed the win: the
 # player's first verified result of the day (one run id per player per date).

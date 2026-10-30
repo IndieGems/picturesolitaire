@@ -89,6 +89,8 @@ interface Answered {
   packed?: { item: string; count: number };
   /** Daily only, with `packed`: the month's suitcase after it (src/net/suitcase.ts). */
   suitcase?: Suitcase;
+  /** Platform achievements this win unlocked (release only), earlier wins' catch-ups included: by id (src/net/achievements.json), with the points credited. src/net/achievements.ts's onUnlock hears them. */
+  achievements?: { id: string; points: number }[];
   /** Daily only: the date, the time the board shows, whether the result is on the day's board, whether it is this player's first of the day. */
   date?: string;
   ms?: number;
@@ -290,6 +292,9 @@ async function send(h: Held): Promise<void> {
   failing = 0;
   if (status === "paid" || status === "kept" || status === "late") {
     const items = Array.isArray(answer.items) ? answer.items.filter((i): i is string => typeof i === "string").map(tableOf) : [];
+    const unlocked = (Array.isArray(answer.achievements) ? answer.achievements : [])
+      .filter((a): a is { id: string; points?: unknown } => !!a && typeof a === "object" && typeof (a as { id?: unknown }).id === "string")
+      .map((a) => ({ id: a.id, points: Math.max(0, Math.floor(Number(a.points) || 0)) }));
     // the server granted what this device's cached inventory cannot know: read it afresh next time
     if (status === "paid" || items.length) gem.me.inventory.refresh();
     // the Daily Suitcase follows the server's word too (a pack carries the month after it)
@@ -318,6 +323,7 @@ async function send(h: Held): Promise<void> {
       gifts: Array.isArray(answer.gifts) ? answer.gifts.filter((g): g is Gift => g === "kit" || g === "hard" || g === "stamp" || g === "daily" || g === "suitcase") : [],
       ...(packed ? { packed } : {}),
       ...(month ? { suitcase: month } : {}),
+      ...(unlocked.length ? { achievements: unlocked } : {}),
     }, answer.progress);
   }
   console.warn(`[claims] ${lane} ${board} refused: ${String(answer.reason)}`);

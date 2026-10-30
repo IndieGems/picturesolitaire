@@ -1,0 +1,271 @@
+{
+  "note": "THE PLATFORM ACHIEVEMENTS (the creator, 2026-10-30; docs/achievements.md). One counter progression per group, each achievement on one level of its track. tools/server/make-config.mts writes them into the game config (names and descriptions from locales/<lang>.json, keys achievement.<slug>.name/.desc, the stamps' from achievement.stamped.name/.desc with {{trip}} from names-<lang>.json trip.<id>, each counter's from achievement.count.<counter slug>.name/.desc; the English here only until those keys are written), and fills a missing id once: a counter's from its slug, an achievement's at random. NEVER change an id, a counter's slug or what it counts, an achievement's counter, `at`, `points` or `icon` once it is released: the points budget is lifetime, so a changed achievement is a new one (a new entry, a new id). `counts` is what the win checker (functions/checker/src/count.rs) sets the counter to from the player's progress record, on every verified win: levels, the campaign levels finished (each once); stamps, the trips stamped, in trips.json's order (so stamp k is trip k's); souvenirs, the Souvenirs finished; hard, the hard and super hard campaign levels won; super, the super hard ones; dailies, the dailies won, one a date. `awardsIcon`: it awards an Arcade avatar icon, the game item `icon` (Art's slug, gemctl item upload); until that is set it ships with no reward.",
+  "counters": [
+    {
+      "slug": "levels_finished",
+      "id": "beaa2579-ae90-53fb-a34e-0bf14e5de6e2",
+      "counts": "levels",
+      "en": {
+        "name": "Levels finished",
+        "desc": "Trip levels finished, each counted once."
+      },
+      "achievements": [
+        {
+          "slug": "first-steps",
+          "id": "9092ea1d-1ed7-4b42-972c-1f21a5203c4e",
+          "at": 1,
+          "points": 5,
+          "awardsIcon": true,
+          "en": {
+            "name": "First Steps",
+            "desc": "Finish your first level."
+          }
+        },
+        {
+          "slug": "finding-your-feet",
+          "id": "d21fe3b0-d370-4a72-9462-7337c0f1683a",
+          "at": 10,
+          "points": 10,
+          "en": {
+            "name": "Finding Your Feet",
+            "desc": "Finish 10 levels."
+          }
+        },
+        {
+          "slug": "seasoned-traveller",
+          "id": "87fdd60b-9830-4290-aa97-6163767fa002",
+          "at": 50,
+          "points": 25,
+          "awardsIcon": true,
+          "en": {
+            "name": "Seasoned Traveller",
+            "desc": "Finish 50 levels."
+          }
+        },
+        {
+          "slug": "globetrotter",
+          "id": "d54a294b-bad1-4dab-a1a4-61c9478de4d2",
+          "at": 150,
+          "points": 75,
+          "awardsIcon": true,
+          "en": {
+            "name": "Globetrotter",
+            "desc": "Finish 150 levels."
+          }
+        }
+      ]
+    },
+    {
+      "slug": "trips_stamped",
+      "id": "764d331a-ac00-50b3-b7b2-3bb79c9267a6",
+      "counts": "stamps",
+      "en": {
+        "name": "Passport stamps",
+        "desc": "Trips finished, each with its passport stamp."
+      },
+      "stamp": {
+        "name": "Stamped: {{trip}}",
+        "desc": "Finish the {{trip}} trip and get its passport stamp."
+      },
+      "achievements": [
+        {
+          "slug": "stamped-t1",
+          "id": "0fbcf317-2a71-4a56-a9dc-801ff8679151",
+          "trip": "t1",
+          "at": 1,
+          "points": 15
+        },
+        {
+          "slug": "stamped-t2",
+          "id": "2fe500dd-8a78-41df-b81d-9767482dc955",
+          "trip": "t2",
+          "at": 2,
+          "points": 15
+        },
+        {
+          "slug": "stamped-t3",
+          "id": "422057ad-3cbc-4fc6-b252-7d9091b668be",
+          "trip": "t3",
+          "at": 3,
+          "points": 15
+        },
+        {
+          "slug": "stamped-t4",
+          "id": "b7ffcbec-30e3-42b0-b45c-e37bd00048ab",
+          "trip": "t4",
+          "at": 4,
+          "points": 15
+        },
+        {
+          "slug": "stamped-t5",
+          "id": "46db4c3e-5d45-4397-956b-9383a7728a56",
+          "trip": "t5",
+          "at": 5,
+          "points": 15
+        },
+        {
+          "slug": "stamped-t6",
+          "id": "f762abf0-335a-4885-81e4-e6d9b21c035f",
+          "trip": "t6",
+          "at": 6,
+          "points": 15
+        },
+        {
+          "slug": "stamped-t7",
+          "id": "580fff2b-4d2b-412f-9dbe-6eee0977768f",
+          "trip": "t7",
+          "at": 7,
+          "points": 15
+        },
+        {
+          "slug": "stamped-t8",
+          "id": "c77a395f-ff89-434c-9b35-cea42d517eae",
+          "trip": "t8",
+          "at": 8,
+          "points": 15
+        },
+        {
+          "slug": "stamped-t9",
+          "id": "b9595a98-4096-4513-acbf-ce64e111f049",
+          "trip": "t9",
+          "at": 9,
+          "points": 15
+        },
+        {
+          "slug": "stamped-t10",
+          "id": "0bd04847-b0ca-43d5-b40d-1b9d1f8bb004",
+          "trip": "t10",
+          "at": 10,
+          "points": 15
+        }
+      ]
+    },
+    {
+      "slug": "souvenirs_finished",
+      "id": "c7176dad-ec41-54ae-944a-33b57ceb3723",
+      "counts": "souvenirs",
+      "en": {
+        "name": "Souvenirs finished",
+        "desc": "Souvenir levels finished, each counted once."
+      },
+      "achievements": [
+        {
+          "slug": "something-to-remember",
+          "id": "e951b376-4860-4a47-8200-67d5f4970eac",
+          "at": 1,
+          "points": 5,
+          "en": {
+            "name": "Something to Remember",
+            "desc": "Finish your first Souvenir level."
+          }
+        },
+        {
+          "slug": "full-suitcase",
+          "id": "f690f272-7617-4a4a-8bd5-6fa263a74ff4",
+          "at": 10,
+          "points": 40,
+          "awardsIcon": true,
+          "en": {
+            "name": "Full Suitcase",
+            "desc": "Finish 10 Souvenir levels."
+          }
+        }
+      ]
+    },
+    {
+      "slug": "hard_levels_won",
+      "id": "630e6c93-925b-5368-965c-fcea503896d3",
+      "counts": "hard",
+      "en": {
+        "name": "Hard levels won",
+        "desc": "Hard and super hard levels won, each counted once."
+      },
+      "achievements": [
+        {
+          "slug": "up-for-a-challenge",
+          "id": "a91c65a2-72b5-4753-807e-52de66f90f99",
+          "at": 1,
+          "points": 10,
+          "en": {
+            "name": "Up for a Challenge",
+            "desc": "Win a hard level."
+          }
+        }
+      ]
+    },
+    {
+      "slug": "super_hard_levels_won",
+      "id": "0df4e3ab-8ddd-52f2-892c-17b61f61ca54",
+      "counts": "super",
+      "en": {
+        "name": "Super hard levels won",
+        "desc": "Super hard levels won, each counted once."
+      },
+      "achievements": [
+        {
+          "slug": "nerves-of-steel",
+          "id": "64bfd2e2-e5de-43f2-980b-09dfc55f7625",
+          "at": 1,
+          "points": 20,
+          "en": {
+            "name": "Nerves of Steel",
+            "desc": "Win a super hard level."
+          }
+        },
+        {
+          "slug": "fearless",
+          "id": "3b101ebb-da85-4a61-94d7-e8716e2b6f2b",
+          "at": 10,
+          "points": 50,
+          "awardsIcon": true,
+          "en": {
+            "name": "Fearless",
+            "desc": "Win 10 super hard levels."
+          }
+        }
+      ]
+    },
+    {
+      "slug": "dailies_won",
+      "id": "120d5b2f-997e-5bee-817b-5252d606a5bc",
+      "counts": "dailies",
+      "en": {
+        "name": "Daily puzzles won",
+        "desc": "Daily puzzles won, one a day."
+      },
+      "achievements": [
+        {
+          "slug": "daily-habit",
+          "id": "00524475-df3a-49d1-8e8a-86818dda9301",
+          "at": 1,
+          "points": 5,
+          "en": {
+            "name": "Daily Habit",
+            "desc": "Win your first daily puzzle."
+          }
+        },
+        {
+          "slug": "week-of-dailies",
+          "id": "2224fdc2-1989-44fe-8f9a-2ce4ad24a67b",
+          "at": 7,
+          "points": 15,
+          "en": {
+            "name": "Week of Dailies",
+            "desc": "Win 7 daily puzzles."
+          }
+        },
+        {
+          "slug": "daily-devotee",
+          "id": "ccee2fbb-4fa8-48f0-b210-19144ff6b4bf",
+          "at": 30,
+          "points": 40,
+          "awardsIcon": true,
+          "en": {
+            "name": "Daily Devotee",
+            "desc": "Win 30 daily puzzles."
+          }
+        }
+      ]
+    }
+  ]
+}
