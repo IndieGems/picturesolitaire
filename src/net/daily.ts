@@ -41,6 +41,25 @@ export interface DailyToday {
   guessed: boolean;
 }
 
+export interface DailyRow {
+  rank: number;
+  /** The player's name as the platform gives it (render with the SDK's text.toPlain); absent for an anonymous row. */
+  displayName?: unknown;
+  discriminator?: string;
+  playerId?: string;
+  /** The viewer's own row (friends board only). */
+  isViewer: boolean;
+  moves: number;
+  timeMs: number;
+}
+
+export interface DailyStandings {
+  date?: string;
+  /** False while results can still arrive (a day's board stays open about 50 hours across time zones): say "so far". */
+  final: boolean;
+  rows: DailyRow[];
+}
+
 const framed = window.self !== window.top;
 const changes = new Set<(d: DailyToday) => void>();
 let known: (DailyToday & { key: string }) | null = null;
@@ -120,7 +139,35 @@ export async function today(waitMs = 1000): Promise<DailyToday> {
   return got ?? (known ? plain(known) : guess());
 }
 
-// The day's board among the player's friends is src/net/daily-board.ts (dailyBoard()).
+/**
+ * The day's results among the player's friends (and themselves): `daysBack` 0 is today, 1 yesterday.
+ * Unpaced, for the results screen written before the Daily page: new code reads dailyBoard()
+ * (src/net/daily-board.ts), which holds the board until the platform's next rendering.
+ */
+export async function standings(daysBack = 0): Promise<DailyStandings> {
+  return rowsOf(await gem.leaderboards.friends(DAILY_BOARD, daysBack ? { periodsBack: daysBack } : {}));
+}
+
+/** The day's results among everyone (the top of the board). */
+export async function everyone(daysBack = 0): Promise<DailyStandings> {
+  return rowsOf(await gem.leaderboards.get(DAILY_BOARD, daysBack ? { periodsBack: daysBack } : {}));
+}
+
+function rowsOf(board: Awaited<ReturnType<typeof gem.leaderboards.get>>): DailyStandings {
+  return {
+    ...(board.period?.localDate ? { date: board.period.localDate } : {}),
+    final: board.period?.final ?? false,
+    rows: board.entries.map((e) => ({
+      rank: e.rank,
+      ...(e.displayName ? { displayName: e.displayName } : {}),
+      ...(e.discriminator ? { discriminator: e.discriminator } : {}),
+      ...(e.playerId ? { playerId: e.playerId } : {}),
+      isViewer: e.isViewer === true,
+      moves: e.stats?.moves ?? 0,
+      timeMs: e.stats?.time_ms ?? 0,
+    })),
+  };
+}
 
 if (framed) {
   onOnline((up) => {
