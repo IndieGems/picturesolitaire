@@ -96,7 +96,7 @@ table.year { width: 100%; border-collapse: collapse; }
 .mini { display: inline-block; width: 32px; height: 40px; margin-right: 8px; vertical-align: middle; border-radius: 5px; object-fit: cover; background: #1a212b; }
 .mini.blank { border: 1px dashed var(--line); }
 
-/* a month: the prize beside its ten pieces */
+/* an event: the prize beside its items */
 .month-row { display: grid; grid-template-columns: 200px 1fr; gap: 14px; margin-top: 12px; align-items: start; }
 @media (max-width: 640px) { .month-row { grid-template-columns: 1fr; } .prize { max-width: 260px; } }
 
@@ -105,8 +105,7 @@ table.year { width: 100%; border-collapse: collapse; }
   grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
   gap: 10px;
 }
-.month .grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-@media (max-width: 820px) { .month .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.month .grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
 .grid.tables { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); margin-top: 12px; }
 
 .piece, .prize {

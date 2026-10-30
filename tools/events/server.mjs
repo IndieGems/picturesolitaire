@@ -1,7 +1,7 @@
-// Events: the creator's view of every monthly event (the Daily Suitcase, docs/daily-suitcase.md),
-// its ten pieces and its prize, and of every table and how a player gets it, in the Editor's rail
-// (creator, 2026-10-28: "make an editor that shows all of the events, their pieces and rewards").
-// Read-only. Plain Node, no packages of its own; it never loads the game's code.
+// Events: the creator's view of every VIP event (the Daily Suitcase, two weeks each since 2026-10-30:
+// docs/vip.md, docs/daily-suitcase.md), its items and its prize, and of every table and how a player gets
+// it, in the Editor's rail (creator, 2026-10-28: "make an editor that shows all of the events, their
+// pieces and rewards"). Read-only. Plain Node, no packages of its own; it never loads the game's code.
 //
 // Started by the Gem host from gem-game.json (process "eventstool"): the host ASSIGNS the port in
 // EVENTS_PORT, and this prints `EVENTS_PORT <port>` once it is listening, the ready line the
@@ -12,21 +12,19 @@
 // Levels and Server have changed since. The data code is data.mjs, imported afresh when it changes.
 //
 //   GET  /                     the page (index.html, app.js, style.css beside this file)
-//   GET  /api/data[?today=D]   the months, their pieces, prizes and the tables; `today` (YYYY-MM-DD)
+//   GET  /api/data[?today=D]   the events, their items, prizes and the tables; `today` (YYYY-MM-DD)
 //                              previews another day's live/next marks (default: this machine's date)
 //   GET  /pictures/<path>      the game's picture files (public/pictures/)
 //   GET  /art/<path>           the game's art (public/art/: the tables)
 //
-// Where it reads (every month is the union of the first four, the later ones winning):
-//   docs/daily-suitcase.md             the twelve approved themes: items and table (the months with no
-//                                      plan yet, e.g. 2027-07 on)
-//   tools/art/items-plan.json          Art's plan: each item's slot and title, each month's table
-//   src/content/levels/suitcases.json  Levels' schedule: each day's item (and `standIn` months)
+// Where it reads:
+//   src/content/levels/events.json     Levels' schedule: each event's theme, table, items and each day's item
 //   src/content/pictures.json `items`  the item pictures; `standin: true` borrows a library picture
 //   src/content/levels/daily.json      each day's board, to confirm it deals the scheduled item
+//   docs/daily-suitcase.md             the approved themes: those no event uses yet wait for a date
 //   src/net/suitcase-ids.json          `prize`: the helpers a full suitcase pays (the win checker's own
-//                                      source, functions/checker/build.rs); `builtInTable`
-//   src/net/tables.json                the tables that are items: which prize grants each
+//                                      source, functions/checker/build.rs); `spares`; `builtInTable`
+//   src/net/tables.json                the tables that are items, and how each is granted
 //   public/art/tables/tables.json      the tables drawn: picture, name, the default; `souvenir: tN`
 //   src/content/levels/trips.json      the trips' names (a Souvenir's table)
 //   src/content/levels/campaign.json   board numbers (the onboarding prize's board)

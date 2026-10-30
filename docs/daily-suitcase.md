@@ -40,13 +40,20 @@ event.
   - each month's 10 item pictures: one clear object on a calm background, squares;
   - each month's themed table, in the look of the game's other tables.
   - This costs about $0.50 a month.
-- **Levels:**
-  - each month's schedule of items, made by a maker script and proved by check.mts:
-    - each item appears 2 to 4 times, about 3 on average;
-    - no item has all its days in one week;
-  - the daily boards re-dealt under today's rules: readable, current pictures, no landmarks;
-  - each day's item placed as a 2×2 picture on that day's board;
-  - the pool extended well past 31 January 2027.
+- **Levels** (two-week events since 2026-10-30):
+  - the schedule, `tools/levels/events-plan.json` (which events run, from when: back to back, with
+    gaps or none, a plan edit only) written out as `src/content/levels/events.json` by
+    `make-events.mts` and proved by check.mts:
+    - 14 days an event, about 7 items, each turning up at least twice (7 items: exactly twice);
+    - every item at least once in each week, its two days at least 4 apart, so a player who plays
+      either week whole sees them all;
+  - the daily boards under today's rules from 1 September 2026: readable, current pictures, no
+    landmarks, no atmospheric picture;
+  - each event day's item placed as a 2×2 picture on that day's board, in place (the deal and its
+    proved line stay), and lifted the same way from a day no event covers any more.
+  - Now: Ski Trip 1-14 Nov and Winter Market
+    1-14 Dec, 7 of each month's 10 items, and Halloween 15-28 Oct 2026 (over: the archive's first)
+    once Art's items land; nothing after until the cadence is set.
 - **Server:**
   - packs the day's item in the daily claim's one order, on the player's own day, first win only;
   - the swap: 3 spares for one missing item, checked on the server;
@@ -89,8 +96,9 @@ the month's prize, `table-<name>` in `public/art/tables/tables.json`, drawn in t
 
 ## Seeing it all
 
-The Editor's **Events** tab (`tools/events/`, read-only) shows the twelve months in order, with the
-live and next ones marked: each month's ten pieces and their days, its art status against its due
-date (a month ahead), and its prize (the table, and the helpers read from `src/net/suitcase-ids.json`,
-the win checker's own source). Below them, every table and how a player gets it. It reads the files
+The Editor's **Events** tab (`tools/events/`, read-only) shows every scheduled event in order, with the
+live and next ones marked: each event's items and their days, its art status against its due date (a
+month ahead), and its prize (the table, and the helpers read from `src/net/suitcase-ids.json`, the win
+checker's own source); then the approved themes still waiting for a date, and every table and how a
+player gets it. It reads the files
 above on every load, so it follows Art's and Levels' changes; `?today=YYYY-MM-DD` previews another day.

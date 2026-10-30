@@ -14,21 +14,27 @@ const el = (tag, cls, text) => {
 };
 
 const parts = (date) => date.split("-").map(Number);
-/** "2026-11" -> "November 2026" */
-const monthName = (month) => {
-  const [y, m] = parts(month);
-  return `${MONTHS[m - 1]} ${y}`;
-};
 /** "2026-12-01" -> "1 Dec 2026" */
 const dayName = (date) => {
   const [y, m, d] = parts(date);
   return `${d} ${SHORT[m - 1]} ${y}`;
 };
-const daysBetween = (a, b) => Math.round((Date.UTC(...toUtc(b)) - Date.UTC(...toUtc(a))) / 86400000);
+/** "2026-12-01" -> "1 Dec" */
+const dayShort = (date) => {
+  const [, m, d] = parts(date);
+  return `${d} ${SHORT[m - 1]}`;
+};
+/** An event's span: "15 to 28 Oct 2026", "25 Nov to 8 Dec 2026". */
+const spanName = (a, b) => {
+  const [ya, ma, da] = parts(a);
+  const [yb, mb] = parts(b);
+  return ya === yb && ma === mb ? `${da} to ${dayName(b)}` : ya === yb ? `${dayShort(a)} to ${dayName(b)}` : `${dayName(a)} to ${dayName(b)}`;
+};
 const toUtc = (date) => {
   const [y, m, d] = parts(date);
   return [y, m - 1, d];
 };
+const daysBetween = (a, b) => Math.round((Date.UTC(...toUtc(b)) - Date.UTC(...toUtc(a))) / 86400000);
 const plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 
 /** "2 Hints, 2 Undos, 1 Shuffle", from the win checker's own numbers. */
@@ -71,47 +77,42 @@ function picture(thumb, full, caption, aspect, empty) {
 const badge = (text, kind) => el("span", `badge ${kind}`, text);
 
 function whenBadge(m, d) {
-  if (m.month === d.live) return badge("Live now", "live");
-  if (m.month === d.next) return badge("Next", "next");
-  return m.when === "ended" ? badge("Ended: on the shelf", "ended") : badge("Upcoming", "upcoming");
+  if (m.key === d.live) return badge("Live now", "live");
+  if (m.key === d.next) return badge("Next", "next");
+  return m.when === "ended" ? badge("Ended: in the archive", "ended") : badge("Upcoming", "upcoming");
 }
 
 function artBadge(m, today) {
-  const late = m.art !== "ready" && today >= m.due;
-  const due = `${late ? "was due" : "due by"} ${dayName(m.due)}`;
+  const late = m.art !== "ready" && m.when !== "ended" && today >= m.due;
+  const due = m.when === "ended" ? "" : ` · ${late ? "was due" : "due by"} ${dayName(m.due)}`;
   const kind = late ? "late" : "warn";
   switch (m.art) {
     case "ready":
       return badge("Art ready", "good");
     case "standin":
-      return badge(`Stand-in art · ${due}`, kind);
+      return badge(`Stand-in art${due}`, kind);
     case "table-missing":
-      return badge(`Items ready, table not drawn · ${due}`, kind);
+      return badge(`Items ready, table not drawn${due}`, kind);
     case "partial":
-      return badge(`${m.counts.ready} of 10 items drawn · ${due}`, kind);
+      return badge(`${m.counts.ready} of ${m.items.length} items drawn${due}`, kind);
     default:
-      return badge(`No art yet · ${due}`, kind);
+      return badge(`No art yet${due}`, kind);
   }
 }
 
 function scheduleText(m) {
-  if (m.scheduled === m.days) return `Scheduled: every day of the ${m.days} has its item`;
-  if (m.scheduled) return `Scheduled: ${m.scheduled} of ${m.days} days`;
-  return "No schedule yet: Levels deals it once the daily puzzle reaches this month";
+  if (m.scheduled === m.days) return `Every day of the ${m.days} deals its item on its daily`;
+  return `${m.scheduled} of ${m.days} days deal their item: Levels re-runs the daily maker`;
 }
 
-/** "3 days: 5, 21, 24 Nov" */
-function datesText(dates) {
-  if (!dates.length) return "Not scheduled yet";
-  const [, mo] = parts(dates[0]);
-  return `${plural(dates.length, "day")}: ${dates.map((x) => parts(x)[2]).join(", ")} ${SHORT[mo - 1]}`;
-}
+/** "2 days: 3 Nov, 10 Nov" */
+const datesText = (dates) => (dates.length ? `${plural(dates.length, "day")}: ${dates.map(dayShort).join(", ")}` : "Not scheduled");
 
 function piece(it, m) {
   const card = el("article", `piece ${it.kind}`);
   card.append(el("span", "num", String(it.slot)));
-  const name = it.title ?? `Slot ${it.slot}`;
-  const pic = picture(it.thumb, it.full, `${monthName(m.month)}, slot ${it.slot}: ${name}${it.kind === "standin" ? " (stand-in picture)" : ""}`, "3 / 4", it.kind === "missing" ? "Picture file missing" : "No art yet");
+  const name = it.title ?? `Item ${it.slot}`;
+  const pic = picture(it.thumb, it.full, `${m.theme}, item ${it.slot}: ${name}${it.kind === "standin" ? " (stand-in picture)" : ""}`, "3 / 4", it.kind === "missing" ? "Picture file missing" : "No art yet");
   if (it.kind === "standin") pic.append(el("span", "ribbon", "Stand-in"));
   card.append(pic, el("p", "name", name));
   const meta = el("p", "meta", datesText(it.dates));
@@ -122,11 +123,11 @@ function piece(it, m) {
   return card;
 }
 
-function prizeCard(m) {
+function prizeCard(m, spares) {
   const p = m.prize;
   const card = el("article", "prize");
   card.append(el("h3", null, "The prize for a full suitcase"));
-  const caption = `${p.title} table: ${monthName(m.month)}'s prize`;
+  const caption = `${p.title} table: the ${m.theme} prize`;
   card.append(picture(p.thumb, p.thumb, caption, "4 / 5", p.builtIn ? "The built-in table" : "Table not drawn yet"));
   card.append(el("p", "name", p.title ? `${p.title} table` : "No table planned"));
   if (!p.drawn && p.note) card.append(el("p", "meta soft", `Planned: ${p.note}`));
@@ -134,44 +135,45 @@ function prizeCard(m) {
   const helpers = el("p", "helpers");
   helpers.append(el("span", "plus", "plus"), document.createTextNode(` ${helpersText(p.helpers)}`));
   card.append(helpers);
-  card.append(el("p", "meta soft", "Paid once, when the tenth item is packed or swapped in"));
+  card.append(el("p", "meta soft", `Paid once, when the last of the ${m.items.length} items is packed${spares ? ` or swapped in (${spares} spares a swap)` : ""}`));
   return card;
 }
 
-function monthSection(m, d) {
-  const s = el("section", `group month ${m.month === d.live ? "is-live" : m.month === d.next ? "is-next" : ""}`);
-  s.id = `m-${m.month}`;
+function eventSection(m, d) {
+  const s = el("section", `group month ${m.key === d.live ? "is-live" : m.key === d.next ? "is-next" : ""}`);
+  s.id = `e-${m.key}`;
   const head = el("header", "group-head");
-  const title = el("h2", null, `${monthName(m.month)} · ${m.theme ?? "No theme yet"}`);
+  const title = el("h2", null, `${m.theme} · ${spanName(m.start, m.end)}`);
   const badges = el("div", "badges");
   badges.append(whenBadge(m, d), artBadge(m, d.today));
   head.append(title, badges);
   s.append(head);
-  let span = `${dayName(m.start)} to ${dayName(m.end)} · ${m.days} days`;
+  let span = `${m.days} days, ${plural(m.items.length, "item")}, each turning up ${m.items.length ? Math.floor(m.days / m.items.length) : 0} times or more`;
   if (m.when === "upcoming") span += ` · starts in ${plural(daysBetween(d.today, m.start), "day")}`;
   if (m.when === "live") span += ` · ${plural(daysBetween(d.today, m.end) + 1, "day")} left`;
   s.append(el("p", "sub", `${span} · ${scheduleText(m)}`));
   const row = el("div", "month-row");
   const grid = el("div", "grid");
   for (const it of m.items) grid.append(piece(it, m));
-  row.append(prizeCard(m), grid);
+  row.append(prizeCard(m, d.spares), grid);
   s.append(row);
   return s;
 }
 
 function overview(d) {
   const s = el("section", "group");
-  s.id = "year";
-  s.append(el("h2", null, "The year at a glance"));
+  s.id = "all";
+  s.append(el("h2", null, "Every event"));
+  s.append(el("p", "sub", "Two weeks each, for VIP members (switched off for every player until the platform can say who holds VIP). How often they run is a schedule edit."));
   const t = el("table", "year");
   const head = el("tr");
-  for (const h of ["Month", "Theme", "When", "Art", "Prize table"]) head.append(el("th", null, h));
+  for (const h of ["Event", "Dates", "When", "Art", "Prize table"]) head.append(el("th", null, h));
   t.append(el("thead"));
   t.tHead.append(head);
   const body = el("tbody");
-  for (const m of d.months) {
-    const tr = el("tr", m.month === d.live ? "is-live" : m.month === d.next ? "is-next" : "");
-    const a = Object.assign(el("a", null, monthName(m.month)), { href: `#m-${m.month}` });
+  for (const m of d.events) {
+    const tr = el("tr", m.key === d.live ? "is-live" : m.key === d.next ? "is-next" : "");
+    const a = Object.assign(el("a", null, m.theme), { href: `#e-${m.key}` });
     const c1 = el("td");
     c1.append(a);
     const c3 = el("td");
@@ -187,13 +189,14 @@ function overview(d) {
       c5.append(img);
     } else c5.append(el("span", "mini blank"));
     c5.append(document.createTextNode(m.prize.title ?? "–"));
-    tr.append(c1, el("td", null, m.theme ?? "–"), c3, c4, c5);
+    tr.append(c1, el("td", null, spanName(m.start, m.end)), c3, c4, c5);
     body.append(tr);
   }
   t.append(body);
   const wrap = el("div", "scroll");
   wrap.append(t);
   s.append(wrap);
+  if (d.waiting.length) s.append(el("p", "sub", `Approved themes waiting for a date: ${d.waiting.map((w) => w.theme).join(", ")}.`));
   return s;
 }
 
@@ -201,7 +204,7 @@ function tablesSection(d) {
   const s = el("section", "group");
   s.id = "tables";
   s.append(el("h2", null, "Tables"));
-  s.append(el("p", "sub", "Every table and how a player gets it. Players choose among the default and the ones they have won, in Settings."));
+  s.append(el("p", "sub", "Every table and how a player gets it. Players choose among the default and the ones they own, in Cosmetics."));
   const grid = el("div", "grid tables");
   for (const t of d.tables) {
     const card = el("article", `piece table ${t.drawn ? "" : "none"}`);
@@ -210,7 +213,7 @@ function tablesSection(d) {
     for (const w of t.how) {
       const line = el("p", `how ${w.kind}`);
       if (w.kind === "event") {
-        const a = Object.assign(el("a", null, `${w.text} (${monthName(w.month)})`), { href: `#m-${w.month}` });
+        const a = Object.assign(el("a", null, `${w.text} (from ${dayName(w.start)})`), { href: `#e-${w.key}` });
         line.append(a);
       } else line.textContent = w.text;
       card.append(line);
@@ -236,25 +239,21 @@ async function load() {
     return;
   }
   notes.replaceChildren(...d.problems.map((p) => el("p", null, p)));
-  const live = d.months.find((m) => m.month === d.live);
-  const next = d.months.find((m) => m.month === d.next);
+  const live = d.events.find((m) => m.key === d.live);
+  const next = d.events.find((m) => m.key === d.next);
   let line = `Today is ${dayName(d.today)}${asked ? " (previewed)" : ""}. `;
-  line += live ? `Live now: ${live.theme}, ${plural(daysBetween(d.today, live.end) + 1, "day")} left. ` : "No event is live yet. ";
+  line += live ? `Live now: ${live.theme}, ${plural(daysBetween(d.today, live.end) + 1, "day")} left. ` : "No event is live. ";
   if (next) line += `Next: ${next.theme}, from ${dayName(next.start)} (in ${plural(daysBetween(d.today, next.start), "day")}). `;
-  line += `Every full suitcase pays its table plus ${helpersText(d.months[0]?.prize.helpers)}${d.spares ? `; ${d.spares} spare copies swap for a missing item` : ""}.`;
+  line += `Every full suitcase pays its table plus ${helpersText(d.events[0]?.prize.helpers)}${d.spares ? `; ${d.spares} spare copies swap for a missing item` : ""}.`;
   document.getElementById("today").textContent = line;
   const jump = document.getElementById("jump");
   jump.replaceChildren(
-    ...d.months.map((m) => {
-      const [y, mo] = parts(m.month);
-      const a = Object.assign(el("a", m.month === d.live ? "live" : m.month === d.next ? "next" : "", `${SHORT[mo - 1]} ${String(y).slice(2)}`), { href: `#m-${m.month}` });
-      return a;
-    }),
+    ...d.events.map((m) => Object.assign(el("a", m.key === d.live ? "live" : m.key === d.next ? "next" : "", m.theme), { href: `#e-${m.key}` })),
     Object.assign(el("a", "tables-link", "Tables"), { href: "#tables" }),
   );
-  main.replaceChildren(overview(d), ...d.months.map((m) => monthSection(m, d)), tablesSection(d));
-  if (!d.months.length) main.prepend(el("p", "loading", "No events yet."));
-  // the page draws after it loads, so a link to a month (#m-2027-01) or #tables lands only now
+  main.replaceChildren(overview(d), ...d.events.map((m) => eventSection(m, d)), tablesSection(d));
+  if (!d.events.length) main.prepend(el("p", "loading", "No events yet."));
+  // the page draws after it loads, so a link to an event (#e-ski-trip-2026) or #tables lands only now
   if (location.hash) document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView();
 }
 

@@ -1,6 +1,8 @@
 // Events: the data behind the page (server.mjs serves it at /api/data). Kept in a module of its own so
 // that server.mjs loads it afresh whenever this file changes: a fix here shows on the next reload of the
 // page, with no restart of the process the Editor started. What it reads is listed in server.mjs.
+// Since 2026-10-30 the events are two weeks each, for VIP members (docs/vip.md): Levels' events.json
+// lists them, and the approved monthly themes of docs/daily-suitcase.md wait there for a date.
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
@@ -47,23 +49,19 @@ async function served(rel) {
 }
 
 /** The approved themes' table in docs/daily-suitcase.md: | 2026-11 | Ski Trip | a, b, ... | `table-x`: words | */
-function docMonths(text) {
-  const out = new Map();
+function docThemes(text) {
+  const out = [];
   for (const line of text.split(/\r?\n/)) {
     const m = /^\|\s*(\d{4}-\d{2})\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*`(table-[a-z0-9-]+)`:?\s*([^|]*?)\s*\|\s*$/.exec(line);
-    if (m) out.set(m[1], { theme: m[2], items: m[3].split(/\s*,\s*/), table: m[4], tableNote: m[5] || null });
+    if (m) out.push({ month: m[1], theme: m[2], items: m[3].split(/\s*,\s*/), table: m[4], tableNote: m[5] || null });
   }
   return out;
 }
 
 const pad = (n) => String(n).padStart(2, "0");
-const daysIn = (month) => {
-  const [y, m] = month.split("-").map(Number);
-  return new Date(Date.UTC(y, m, 0)).getUTCDate();
-};
-/** The first day of the month before: Art makes each month's art a month ahead (TODO.md). */
-const dueBy = (month) => {
-  const [y, m] = month.split("-").map(Number);
+/** The first day of the month before `date`'s: Art makes an event's art a month ahead (TODO.md). */
+const dueBy = (date) => {
+  const [y, m] = date.split("-").map(Number);
   return m === 1 ? `${y - 1}-12-01` : `${y}-${pad(m - 1)}-01`;
 };
 /** "table-safari-camp" -> "Safari Camp", for a table planned in the doc only. */
@@ -75,10 +73,9 @@ export const localToday = () => {
 
 export async function data(today) {
   const problems = [];
-  const [doc, plan, schedule, catalogue, daily, ids, netTables, art, trips, campaign] = await Promise.all([
+  const [doc, schedule, catalogue, daily, ids, netTables, art, trips, campaign] = await Promise.all([
     readText("docs/daily-suitcase.md", problems),
-    readJson("tools/art/items-plan.json", { items: [], suitcases: [] }, problems),
-    readJson("src/content/levels/suitcases.json", { months: [] }, problems),
+    readJson("src/content/levels/events.json", { events: [] }, problems),
     readJson("src/content/pictures.json", { items: [] }, problems),
     readJson("src/content/levels/daily.json", { levels: [] }, problems),
     readJson("src/net/suitcase-ids.json", {}, problems),
@@ -87,10 +84,8 @@ export async function data(today) {
     readJson("src/content/levels/trips.json", { trips: [] }, problems),
     readJson("src/content/levels/campaign.json", { levels: [] }, problems),
   ]);
-  const fromDoc = docMonths(doc);
-  const planMonth = new Map((plan.suitcases ?? []).map((s) => [s.month, s]));
-  const planItem = new Map((plan.items ?? []).map((i) => [i.id, i]));
-  const sched = new Map((schedule.months ?? []).map((s) => [s.month, s]));
+  const themes = docThemes(doc);
+  const docTheme = new Map(themes.map((t) => [t.table, t]));
   const catItem = new Map((catalogue.items ?? []).map((i) => [i.id, i]));
   const libraryByFile = new Map((catalogue.pictures ?? []).map((q) => [q.file, q]));
   const dayBoard = new Map((daily.levels ?? []).filter((l) => l.date).map((l) => [l.date, l]));
@@ -99,80 +94,58 @@ export async function data(today) {
   const prize = ids.prize ?? null;
   if (!prize) problems.push("src/net/suitcase-ids.json has no `prize`: the helpers a full suitcase pays are unknown.");
 
-  const monthIds = [...new Set([...fromDoc.keys(), ...planMonth.keys(), ...sched.keys()])].sort();
-  const months = [];
-  for (const month of monthIds) {
-    const d = fromDoc.get(month);
-    const p = planMonth.get(month);
-    const s = sched.get(month);
-    const n = daysIn(month);
-    const start = `${month}-01`;
-    const end = `${month}-${pad(n)}`;
-    const when = today < start ? "upcoming" : today > end ? "ended" : "live";
-    const days = s?.days ?? {};
-    const sItems = new Map((s?.items ?? []).map((i) => [i.id, i]));
-
+  const events = [];
+  for (const e of schedule.events ?? []) {
+    const when = today < e.start ? "upcoming" : today > e.end ? "ended" : "live";
+    const days = e.days ?? {};
     const items = [];
-    for (let slot = 1; slot <= 10; slot++) {
-      const id = `item-${month}-${pad(slot)}`;
+    for (const [k, { id, title }] of (e.items ?? []).entries()) {
       const c = catItem.get(id);
-      const title = sItems.get(id)?.title ?? planItem.get(id)?.title ?? c?.title ?? d?.items[slot - 1] ?? null;
       const board = c ? c.board ?? c.file : null;
       const thumb = await served(board);
       const full = c ? await served(c.file) : null;
       const kind = !c ? "none" : c.standin ? "standin" : thumb ? "ready" : "missing";
-      if (c && !thumb) problems.push(`${month} slot ${slot} (${title}): the picture ${board} is not in public/.`);
+      if (c && !thumb) problems.push(`${e.theme}, item ${k + 1} (${title}): the picture ${board} is not in public/.`);
       const dates = Object.entries(days)
         .filter(([, v]) => v === id)
-        .map(([k]) => k)
+        .map(([d]) => d)
         .sort();
-      items.push({ id, slot, title, kind, thumb, full, medium: c?.medium ?? planItem.get(id)?.medium ?? null, borrowed: c?.standin ? libraryByFile.get(c.file)?.title ?? c.file.replace(/^pictures\//, "") : null, dates });
+      items.push({ id, slot: k + 1, title, kind, thumb, full, medium: c?.medium ?? null, borrowed: c?.standin ? libraryByFile.get(c.file)?.title ?? c.file.replace(/^pictures\//, "") : null, dates });
     }
 
-    // the schedule against the boards: every day of a scheduled month has its item, on its board
-    let scheduled = 0;
+    // the schedule against the boards: every day of the event has its item, on its board
     const offBoard = [];
-    if (s) {
-      for (let k = 1; k <= n; k++) {
-        const date = `${month}-${pad(k)}`;
-        const it = days[date];
-        if (!it) {
-          problems.push(`${month}: ${date} has no item in the schedule.`);
-          continue;
-        }
-        scheduled++;
-        const b = dayBoard.get(date);
-        if (!b) offBoard.push(`${date} (no daily board)`);
-        else if (b.item?.id !== it) offBoard.push(`${date} (its board deals ${b.item?.id ?? "no item"})`);
-      }
-      if (offBoard.length) problems.push(`${month}: the daily board does not deal the scheduled item on ${offBoard.join(", ")}.`);
+    for (const [date, it] of Object.entries(days)) {
+      const b = dayBoard.get(date);
+      if (!b) offBoard.push(`${date} (no daily board)`);
+      else if (b.item?.id !== it) offBoard.push(`${date} (its board deals ${b.item?.id ?? "no item"})`);
     }
+    if (offBoard.length) problems.push(`${e.theme}: the daily board does not deal the scheduled item on ${offBoard.join(", ")}.`);
 
-    const tableId = s?.table ?? p?.table ?? d?.table ?? null;
+    const tableId = e.table ?? null;
     const drawn = tableId ? artTable.get(tableId) : null;
-    const tableTitle = drawn?.title ?? s?.tableTitle ?? p?.tableTitle ?? (tableId ? titleOf(tableId) : null);
     const builtIn = tableId && tableId === ids.builtInTable;
     const counts = { ready: 0, standin: 0, none: 0, missing: 0 };
     for (const it of items) counts[it.kind]++;
-    const art =
-      counts.ready === 10 && (drawn || builtIn) ? "ready" : counts.ready === 10 ? "table-missing" : counts.standin ? "standin" : counts.ready ? "partial" : "none";
-    months.push({
-      month,
-      start,
-      end,
-      days: n,
-      theme: s?.theme ?? p?.theme ?? d?.theme ?? null,
+    const all = items.length;
+    const art = counts.ready === all && (drawn || builtIn) ? "ready" : counts.ready === all ? "table-missing" : counts.standin ? "standin" : counts.ready ? "partial" : "none";
+    events.push({
+      key: e.id,
+      theme: e.theme,
+      start: e.start,
+      end: e.end,
+      days: Object.keys(days).length,
       when,
       art,
       counts,
-      due: dueBy(month),
-      scheduled,
-      standInMonth: Boolean(s?.standIn),
+      due: dueBy(e.start),
+      scheduled: Object.keys(days).length - offBoard.length,
+      standIn: Boolean(e.standIn),
       items,
       prize: {
         table: tableId,
-        title: tableTitle,
-        note: d?.tableNote ?? null,
+        title: drawn?.title ?? e.tableTitle ?? (tableId ? titleOf(tableId) : null),
+        note: docTheme.get(tableId)?.tableNote ?? null,
         thumb: drawn ? await served(drawn.thumb) : null,
         drawn: Boolean(drawn),
         builtIn: Boolean(builtIn),
@@ -181,8 +154,11 @@ export async function data(today) {
       },
     });
   }
-  const live = months.find((m) => m.when === "live")?.month ?? null;
-  const next = months.find((m) => m.when === "upcoming")?.month ?? null;
+  const live = events.find((m) => m.when === "live")?.key ?? null;
+  const next = events.find((m) => m.when === "upcoming")?.key ?? null;
+  // the approved monthly themes no event uses yet: each waits for a date (the cadence is the creator's)
+  const used = new Set(events.map((e) => e.theme));
+  const waiting = themes.filter((t) => !used.has(t.theme)).map((t) => ({ theme: t.theme, table: t.table, items: t.items.length }));
 
   // the tables: every one drawn, then the prizes not drawn yet
   const tripName = new Map((trips.trips ?? []).map((t) => [t.id, t.name]));
@@ -195,36 +171,28 @@ export async function data(today) {
       const no = boardNo.get(net.board);
       ways.push({ kind: "onboarding", text: `Prize for winning the guided first board${no ? ` (board ${no})` : ""}${net.coins ? `, with ${net.coins} Coins` : ""}` });
     }
-    for (const m of months)
-      if (m.prize.table === id) ways.push({ kind: "event", month: m.month, text: `Prize for the full ${m.theme} suitcase`, label: m.month });
-    if (t?.souvenir)
-      ways.push({ kind: "souvenir", text: `Not owned or chosen: the ${tripName.get(t.souvenir) ?? t.souvenir} Souvenir board is played on it` });
-    if (net && !["onboarding", "suitcase", "none"].includes(net.award)) ways.push({ kind: "other", text: `Granted by: ${net.award}` });
+    if (net?.award === "shop") ways.push({ kind: "other", text: `Sold in Cosmetics${net.price ? ` for ${net.price} Coins` : ""}` });
+    for (const m of events) if (m.prize.table === id) ways.push({ kind: "event", key: m.key, start: m.start, text: `Prize for the full ${m.theme} suitcase` });
+    if (t?.souvenir) ways.push({ kind: "souvenir", text: `Not owned or chosen: the ${tripName.get(t.souvenir) ?? t.souvenir} Souvenir board is played on it` });
+    if (net && !["onboarding", "suitcase", "none", "shop"].includes(net.award)) ways.push({ kind: "other", text: `Granted by: ${net.award}` });
     if (!ways.length)
       ways.push({
         kind: "none",
-        // award "none" (src/net/tables.json): an uploaded table no month awards any more, its item kept
+        // award "none" (src/net/tables.json): an uploaded table no event awards any more, its item kept
         text: net?.award === "none" || t ? "Kept, not awarded: no prize grants it now" : "Not given out yet: no prize grants it",
       });
     return ways;
   };
-  for (const net of netTables.tables ?? []) {
-    if (net.award !== "suitcase") continue;
-    const m = months.find((x) => x.month === net.month);
-    if (m && m.prize.table !== net.slug)
-      problems.push(`The server's table list (src/net/tables.json) still pays ${net.title ?? net.slug} for ${net.month}'s suitcase, but its prize is now ${m.prize.title ?? m.prize.table}: Server's make-config brings it in line.`);
-  }
-  if (ids.builtInTable && months.some((m) => m.prize.table === ids.builtInTable))
-    problems.push(`${months.filter((m) => m.prize.table === ids.builtInTable).map((m) => m.month).join(", ")}: the prize table is ${ids.builtInTable}, which src/net/suitcase-ids.json still calls every player's built-in table, so the win checker pays only the helpers for it until Server makes it an item.`);
+  if (ids.builtInTable && events.some((m) => m.prize.table === ids.builtInTable))
+    problems.push(`${events.filter((m) => m.prize.table === ids.builtInTable).map((m) => m.theme).join(", ")}: the prize table is ${ids.builtInTable}, which src/net/suitcase-ids.json still calls every player's built-in table, so the win checker pays only the helpers for it until Server makes it an item.`);
   if (ids.builtInTable && art.default && ids.builtInTable !== art.default)
     problems.push(`The game's default table (public/art/tables/tables.json) is ${art.default}, but the win checker's built-in table (src/net/suitcase-ids.json) is ${ids.builtInTable}: UI switches the default once that table is drawn.`);
   const tables = [];
   for (const t of art.tables ?? []) tables.push({ id: t.id, title: t.title, thumb: await served(t.thumb), base: t.base ?? null, drawn: true, how: how(t.id, t) });
-  for (const m of months)
+  for (const m of events)
     if (m.prize.table && !artTable.has(m.prize.table) && !tables.some((t) => t.id === m.prize.table))
       tables.push({ id: m.prize.table, title: m.prize.title, thumb: null, drawn: false, note: m.prize.note, how: how(m.prize.table, null) });
-  for (const id of netTable.keys())
-    if (!tables.some((t) => t.id === id)) tables.push({ id, title: netTable.get(id).title, thumb: null, drawn: false, how: how(id, null) });
+  for (const id of netTable.keys()) if (!tables.some((t) => t.id === id)) tables.push({ id, title: netTable.get(id).title, thumb: null, drawn: false, how: how(id, null) });
 
-  return { today, live, next, months, tables, defaultTable: art.default ?? null, spares: ids.spares ?? null, problems };
+  return { today, live, next, events, waiting, tables, defaultTable: art.default ?? null, spares: ids.spares ?? null, problems };
 }
