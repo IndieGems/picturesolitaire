@@ -97,8 +97,14 @@ const reading = new Map<number, Promise<DailyBoard | null>>();
 export function dailyBoard(opts: Options = {}): Promise<DailyBoard | null> {
   const back = Math.max(0, Math.min(400, Math.floor(opts.daysBack ?? 0)));
   if (!framed) {
-    // a plain tab: no platform, so no board, but a non-release build shows the sample
-    return Promise.resolve(CAN_SAMPLE ? withSamples(empty(dateBack(back)), opts.par) : null);
+    // a plain tab: no platform, so no board, but a non-release build shows the sample, with the
+    // player's own result of the day (as this session holds it) among the made-up friends
+    if (!CAN_SAMPLE) return Promise.resolve(null);
+    const date = dateBack(back);
+    const mine = dailyResult(date);
+    const board = empty(date);
+    if (mine) board.me = { rank: 0, name: "", isViewer: true, moves: mine.moves, timeMs: mine.ms };
+    return Promise.resolve(withSamples(board, opts.par));
   }
   const was = reading.get(back);
   if (was) return was;
