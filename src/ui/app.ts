@@ -106,7 +106,7 @@ import { currentDaily, today as dailyToday } from "../net/daily";
 import { pretendVip } from "../net/vip";
 import { createVipDoor } from "./vip-door";
 import { createArchive } from "./daily-archive";
-import { vipNow } from "./vip-view";
+import { forceVipSale, vipNow } from "./vip-view";
 import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy, suitcaseItem } from "./catalogue";
 import { ensure, ensureSuitcase, fileUrl, resident, warmIndex } from "../packs";
 import { mountParticles, setWeather } from "./particles";
@@ -2597,6 +2597,8 @@ export async function startApp(): Promise<void> {
       unlocked: (slugs: string[]) => unlockUi.add(slugs.map((slug) => ({ slug }))),
       /** Play as a VIP (docs/vip.md), as the dev menu's switch does: on the play-test frame, no server to ask, so it holds. */
       vip: (on: boolean) => pretendVip(on),
+      /** Show Get VIP on the doors and in Cosmetics (true), so its words can be seen; its press only logs. As ?vipsale. */
+      vipSale: (on: boolean) => forceVipSale(on),
       /** The daily archive's calendar (as a VIP's badge opens it). */
       archive: () => archiveUi.open(),
       /** The locked door's screen for the archive (as a non-VIP's Daily page opens it). */

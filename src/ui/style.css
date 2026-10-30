@@ -871,6 +871,14 @@ html.less-motion .marker.next::after { animation-duration: 3.4s; }
    device (a phone, or the letterboxed column on a PC or a TV): two tiles to a row, three once the
    column is wide enough (a tablet, a TV's column). */
 .cosmetics-screen { container-type: inline-size; }
+/* VIP, above the tabs: a non-VIP's banner (the tag, one line, Get VIP once VIP can be had); a VIP's quiet line */
+.cz-vip { display: flex; flex-direction: column; align-items: center; gap: 10px; width: min(100%, 440px); margin: 2px auto 14px; padding: 12px 14px; border-radius: 20px; text-align: center; }
+.cz-vip-words { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px 10px; }
+.cz-vip p { margin: 0; font: 600 16px/1.3 var(--round); color: var(--ink); }
+.cz-vip > .vip-tag, .cz-vip-words > .vip-tag { flex: none; }
+.cz-vip.member { flex-direction: row; justify-content: center; gap: 8px; padding: 8px 12px; }
+.cz-vip.member p { font-size: 14px; color: var(--ink-soft); }
+.btn.cz-vip-get { min-width: 200px; min-height: 50px; font-size: 18px; }
 .cz-tabs { display: flex; gap: 12px; width: min(100%, 360px); margin: 2px auto 18px; }
 .btn.cz-tab { flex: 1 1 0; min-width: 0; min-height: 50px; padding: 0 12px; font-size: 18px; }
 /* the tab shown: pressed in, its words in the amber's deep colour */

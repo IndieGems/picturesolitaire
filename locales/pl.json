@@ -533,7 +533,7 @@
   "vip.eventLine_few": "{{count}} dni łamigłówek dnia, by wypełnić walizkę.",
   "vip.eventLine_many": "{{count}} dni łamigłówek dnia, by wypełnić walizkę.",
   "vip.eventLine_other": "{{count}} dnia łamigłówek dnia, by wypełnić walizkę.",
-  "vip.get": "Jak zdobyć VIP",
+  "vip.get": "Zdobądź VIP",
   "vip.kicker": "Dla członków VIP",
   "vip.prize": "Nagroda: stół „{{table}}”",
   "vip.soon": "VIP już wkrótce.",
@@ -546,5 +546,7 @@
   "daily.played": "Rozwiązana ✓",
   "daily.today": "Dzisiejsza łamigłówka",
   "win.daily": "Wróć do łamigłówki dnia",
-  "daily.sample": "Przykładowi gracze, dopóki nie zagra znajomy"
+  "daily.sample": "Przykładowi gracze, dopóki nie zagra znajomy",
+  "cosmetics.vipBanner": "Członkowie VIP mogą za darmo używać każdego stołu i każdej ścieżki dźwiękowej.",
+  "cosmetics.vipYours": "Z VIP każdy stół i każda ścieżka dźwiękowa są tutaj twoje."
 }

@@ -5,12 +5,12 @@
 //   the archive   a strip of the last few days, as the calendar draws them, under the tag
 //   the event     its suitcase and its prize table, its name and how long it runs
 //
-// then the line "VIP is coming soon." where How to get VIP will go: no game can open the Arcade's VIP
-// card, or read who holds VIP, yet (gem-development#2119), and a buyer must never stay locked out
-// (vip-view.ts: canGetVip, getVip). Back goes home. A VIP never sees it: VIP arriving while it is up
-// goes home, where the door now opens.
+// then the line "VIP is coming soon." where Get VIP will go: no game can open the Arcade's VIP card, or
+// read who holds VIP, yet (gem-development#2119), and a buyer must never stay locked out (vip-view.ts:
+// canGetVip, getVip, one switch for both doors and Cosmetics). Back goes home. A VIP never sees it: VIP
+// arriving while it is up goes home, where the door now opens.
 //
-// Information is glass and paper; the only buttons are Back, the gear and (once it can be) How to get VIP.
+// Information is glass and paper; the only buttons are Back, the gear and (once it can be) Get VIP.
 
 import { ICONS } from "./icons";
 import { liveAttr, locale, t } from "./i18n";
@@ -117,9 +117,11 @@ export function createVipDoor(nav: Nav) {
     body.replaceChildren(pic, note, ...foot);
   }
 
-  // VIP arrived while the door was up: home, where it opens now
+  // VIP arrived while the door was up: home, where it opens now; VIP came on sale: its button
   onVip(() => {
-    if (!screen.hidden && vipNow()) nav.home();
+    if (screen.hidden) return;
+    if (vipNow()) nav.home();
+    else draw();
   });
 
   return {
