@@ -94,7 +94,7 @@ import { recentStats } from "./board-stats";
 import { createSuitcase, eventTitle, packedOnCard, progressLine } from "./suitcase";
 import { eventShown } from "./event-switch";
 import { playItemFound } from "./item-found";
-import { suitcases, type SuitItem } from "./suitcase-data";
+import { eventNamed, suitcases, type SuitItem } from "./suitcase-data";
 import { createLessons, type LessonName } from "./lessons";
 import { createHintNudge } from "./hint-nudge";
 import { createDestinationBanner, type Destination } from "./destination";
@@ -887,8 +887,8 @@ function drawPill(): void {
     pillName.textContent = t("board.level", { level: play.e.number });
     if (play.e.mark) pillName.append(" ", markTag(play.e.mark, true));
     if (tag) pillName.append(tag);
-    const pack = suitcases.get(play.e.event);
-    pillPar.textContent = pack ? eventTitle(pack) : "";
+    const named = eventNamed(play.e.event);
+    pillPar.textContent = named ? eventTitle(named) : "";
     levelPill.replaceChildren(pillName, pillPar);
     return;
   }
@@ -1750,14 +1750,14 @@ function showEventWin(w: Extract<Win, { kind: "event" }>, gallery: HTMLElement):
       boardWon = false;
       suitcaseUi.openEvent(event);
     });
-  const pack = suitcases.get(event);
+  const named = eventNamed(event);
   winVeil.replaceChildren(
     h(
       "div",
       { class: "card event" },
       cornerKey("back", t("win.event"), "win.eventBack", toEvent),
       h("h2", {}, t("win.title")),
-      h("p", { class: "event-of" }, pack ? t("case.levelOf", { theme: eventTitle(pack), n: w.e.number }) : t("board.level", { level: w.e.number })),
+      h("p", { class: "event-of" }, named ? t("case.levelOf", { theme: eventTitle(named), n: w.e.number }) : t("board.level", { level: w.e.number })),
       gallery,
       h(
         "div",
@@ -2072,8 +2072,8 @@ function carryWhere(p: Play): string {
     return t("souvenir.wonTheme", { trip: w.trip, theme: w.theme });
   }
   if (p.kind === "event") {
-    const pack = suitcases.get(p.e.event);
-    return pack ? t("case.levelOf", { theme: eventTitle(pack), n: p.e.number }) : t("board.level", { level: p.e.number });
+    const named = eventNamed(p.e.event);
+    return named ? t("case.levelOf", { theme: eventTitle(named), n: p.e.number }) : t("board.level", { level: p.e.number });
   }
   return "";
 }

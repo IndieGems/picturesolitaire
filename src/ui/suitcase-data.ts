@@ -172,3 +172,13 @@ export const suitcases = {
     return hit;
   },
 };
+
+/**
+ * An event's id and theme, for naming it (the top row, a level's win card, "Carry on?"): the platform's
+ * event once read, else Levels' schedule, which the game always has, so the name never waits on a read
+ * (QA, 2026-10-30: a kept level's card came up before the list and said only "Level 2").
+ */
+export function eventNamed(id: string): { id: string; theme: string } | null {
+  const e = suitcases.get(id) ?? EVENTS.find((x) => x.id === id);
+  return e ? { id: e.id, theme: e.theme } : null;
+}
