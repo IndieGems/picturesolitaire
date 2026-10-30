@@ -54,7 +54,7 @@ On each day of a VIP event (`src/content/levels/events.json`, from
 `tools/levels/events-plan.json`; [daily-suitcase.md](daily-suitcase.md)), the
 board hides the day's item as one of its squares, finished like any picture;
 the stored line finishes it neither first nor last, and the pictures count
-includes it. 28 days carry an item: ski-trip-2026 from 2026-11-01, winter-market-2026 from 2026-12-01.
+includes it. 42 days carry an item: halloween-2026 from 2026-10-15, ski-trip-2026 from 2026-11-01, winter-market-2026 from 2026-12-01.
 The maker places an item IN PLACE on a day already dealt (it takes a square's
 spot, so the deal, line and par stay) and lifts it the same way from a day no
 event covers any more, so the plan can change with no re-deal.

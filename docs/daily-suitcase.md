@@ -51,9 +51,9 @@ event.
     landmarks, no atmospheric picture;
   - each event day's item placed as a 2×2 picture on that day's board, in place (the deal and its
     proved line stay), and lifted the same way from a day no event covers any more.
-  - Now: Ski Trip 1-14 Nov and Winter Market
-    1-14 Dec, 7 of each month's 10 items, and Halloween 15-28 Oct 2026 (over: the archive's first)
-    once Art's items land; nothing after until the cadence is set.
+  - Now: Haunted Holiday 15-28 Oct 2026 (Halloween: seven haunted places; over, the archive's
+    first), Ski Trip 1-14 Nov and Winter Market 1-14 Dec (Art's clearest 7 of each month's 10);
+    nothing after until the cadence is set.
 - **Server:**
   - packs the day's item in the daily claim's one order, on the player's own day, first win only;
   - the swap: 3 spares for one missing item, checked on the server;

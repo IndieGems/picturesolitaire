@@ -1,6 +1,8 @@
 {
   "//": "The VIP events (docs/vip.md, docs/daily-suitcase.md): which run and from when, read by tools/levels/events.mts. Each entry is one two-week event: `id` (lower case, never reused), `start` (its first day), `items` (Art's 2x2 item pictures, slot order, each in one event only) and, for a set of items drawn for a month, `month` (Art's monthly theme and table in pictures.json `suitcases`; otherwise Art's `events` entry for the id). Events run in start order and never overlap; back to back, a gap or none are all just entries. After an edit: node tools/levels/make-events.mts, then node tools/levels/make-daily.mts --played (it places or lifts each day's item in place), then check.mts.",
   "events": [
+    { "id": "halloween-2026", "start": "2026-10-15",
+      "items": ["item-halloween-2026-01", "item-halloween-2026-02", "item-halloween-2026-03", "item-halloween-2026-04", "item-halloween-2026-05", "item-halloween-2026-06", "item-halloween-2026-07"] },
     { "id": "ski-trip-2026", "start": "2026-11-01", "month": "2026-11",
       "items": ["item-2026-11-01", "item-2026-11-02", "item-2026-11-03", "item-2026-11-04", "item-2026-11-07", "item-2026-11-08", "item-2026-11-09"] },
     { "id": "winter-market-2026", "start": "2026-12-01", "month": "2026-12",
