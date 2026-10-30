@@ -13,7 +13,13 @@
 // The board lights the move and takes only it (its guide mode, the gameplay
 // member's: "line" lights the next move of the line and accepts only that,
 // "hold" takes no moves). Everything outside what the step asks for is
-// shaded, deaf to keys, and a tap on it only nudges the note. The guide wears
+// shaded, deaf to keys, and a tap on it only nudges the note. ON THE BOARD
+// TOO (the creator, 2026-10-30: the lit card was hard to find on the calm blue
+// panel): while a board step is up the board host wears "guiding", and
+// style.css dims every other card, the stacks and the panel under a dark
+// scrim, leaving the lit card (and, once it is held, it and the cards where it
+// goes: "guide-near") at full brightness, its ring a warm gold. Filters only,
+// nothing laid over the cards: they still drag and tap. The guide wears
 // colours the game uses nowhere else (style.css, --guide-*): it is the guide
 // speaking, not a label of the game.
 //
@@ -86,6 +92,8 @@ export function createGuide(d: Deps) {
 
   let step = -1;
   let off: (() => void) | null = null;
+  /** The card the board lit last: once it is held, the board lights where it goes instead, and it stays bright. */
+  let lastLit: Element | null = null;
   let deafened: HTMLElement[] = [];
   /** Run once every step is done, until the board is won (the finish card). */
   let finishOwed = false;
@@ -126,6 +134,7 @@ export function createGuide(d: Deps) {
     set(shades[2]!, 0, y0, x0, y1 - y0); // left
     set(shades[3]!, x1, y0, W - x1, y1 - y0); // right
     ring.hidden = round.hidden = STEPS[step]!.board !== "hold";
+    keepBright();
     if (!ring.hidden) {
       set(ring, x0, y0, x1 - x0, y1 - y0);
       set(round, x0, y0, x1 - x0, y1 - y0);
@@ -154,6 +163,33 @@ export function createGuide(d: Deps) {
     const l = lit.getBoundingClientRect();
     const n = note.getBoundingClientRect();
     if (l.bottom > n.top - 8 && l.top < n.bottom + 8) note.classList.add("top");
+  }
+
+  /**
+   * On a board step: the card held (lit a moment ago) and the cards where it goes keep their brightness
+   * under the scrim ("guide-near"); everything else dims (style.css, .board-host.guiding).
+   */
+  function keepBright(): void {
+    const board = step >= 0 && STEPS[step]!.board === "line";
+    d.host.classList.toggle("guiding", board);
+    const lit = d.host.querySelector(".guide-lit");
+    if (lit) lastLit = lit;
+    const target = board ? d.host.querySelector(".guide-target") : null;
+    const t = target?.getBoundingClientRect();
+    for (const p of d.host.querySelectorAll<HTMLElement>(".bd-piece")) {
+      let near = false;
+      if (t && !lit) {
+        if (p === lastLit) near = true;
+        else {
+          const r = p.getBoundingClientRect();
+          // a card the target ring covers (more than a sliver of it)
+          const w = Math.min(r.right, t.right) - Math.max(r.left, t.left);
+          const h = Math.min(r.bottom, t.bottom) - Math.max(r.top, t.top);
+          near = w > r.width * 0.4 && h > r.height * 0.4;
+        }
+      }
+      p.classList.toggle("guide-near", near);
+    }
   }
 
   const relayout = () => requestAnimationFrame(layout);
@@ -201,6 +237,8 @@ export function createGuide(d: Deps) {
     off?.();
     off = null;
     step = -1;
+    lastLit = null;
+    keepBright();
     layer.hidden = true;
     hear();
     d.setBoard(null);

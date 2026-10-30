@@ -84,8 +84,12 @@
   --guide-hi: #4c2b92;
   --guide-lo: #321769;
   --guide-ink: #ffffff;
-  --guide-ring: #74f0cf;
-  --guide-shade: rgba(22, 8, 46, 0.6);
+  /* the lit card's ring and the Hint step's: warm gold with a white inner edge, unmissable on any table
+     and the calm blue panel (the creator, 2026-10-30: the teal one vanished there) */
+  --guide-ring: #ffb51f;
+  --guide-ring-edge: #ffffff;
+  --guide-glow: rgba(255, 181, 31, 0.65);
+  --guide-shade: rgba(14, 8, 30, 0.62);
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -1008,14 +1012,25 @@ html.less-motion .particles, html.battery-saver .particles { display: none; }
 /* the one lit button (the Hint step) */
 .guide-ring {
   position: absolute; border-radius: 999px; pointer-events: none;
-  box-shadow: 0 0 0 4px var(--guide-ring), 0 0 24px 8px rgba(116, 240, 207, 0.5);
-  animation: guide-breathe 1.8s ease-in-out infinite;
+  box-shadow: 0 0 0 3px var(--guide-ring-edge), 0 0 0 8px var(--guide-ring), 0 0 26px 12px var(--guide-glow);
+  animation: guide-breathe 1.6s ease-in-out infinite;
 }
+/* less motion: no pulse, steady at full strength */
+html.less-motion .guide-ring { animation: none; }
+@media (prefers-reduced-motion: reduce) { .guide-ring { animation: none; } }
 .guide-ring[hidden], .guide-hole[hidden] { display: none; }
 /* on the Hint step the shade is cut round the button: the four shades still catch taps, the hole dims */
 .guide-layer.holding .guide-shade { background: transparent; }
 .guide-hole { position: absolute; border-radius: 999px; pointer-events: none; box-shadow: 0 0 0 200vmax var(--guide-shade); }
-@keyframes guide-breathe { 0%, 100% { opacity: 0.55; transform: scale(0.97); } 50% { opacity: 1; transform: scale(1.03); } }
+@keyframes guide-breathe { 0%, 100% { opacity: 0.8; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.03); } }
+
+/* a board step (guide.ts keepBright): every card but the lit one, the stacks and the panel under a dark
+   scrim; the lit card, the one held and the cards where it goes stay bright. Filters and an inset shade
+   only: nothing is laid over the cards, so they still drag and tap. */
+.board-host.guiding { box-shadow: inset 0 0 0 100vmax var(--guide-shade); transition: box-shadow 0.25s ease; }
+.board-host.guiding :is(.bd-piece:not(.guide-lit):not(.guide-near):not(.lifted), .bd-stack, .bd-slot) { filter: brightness(0.38) saturate(0.8); }
+.board-host :is(.bd-piece, .bd-stack, .bd-slot) { transition: filter 0.25s ease; }
+html.less-motion .board-host :is(.bd-piece, .bd-stack, .bd-slot), html.less-motion .board-host.guiding { transition: none; }
 /* one short line in big type */
 .guide-note {
   position: absolute; left: 16px; right: 16px; bottom: calc(var(--foot) + 6px);
