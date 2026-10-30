@@ -126,6 +126,11 @@
       "note": "looks AI-made (the same tilt and smile); remade as carrot-harvest",
       "date": "2026-10-25"
     },
+    "hedgerow": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-30"
+    },
     "heliconia": {
       "flagged": true,
       "note": "",
