@@ -107,7 +107,7 @@ function audio() {
 const fileUrl = (name, take) => {
   if (take) return `takes/${take}.${ext}`;
   const s = data.sounds.find((x) => x.name === name);
-  return `${s.dir ?? "audio"}/${s.file}.${ext}`;
+  return `${s.dir ?? "audio"}/${s.file}.${s.ext ?? ext}`;
 };
 function buffer(url) {
   if (!buffers.has(url)) buffers.set(url, fetch(url).then((r) => r.arrayBuffer()).then((b) => audio().decodeAudioData(b)));
@@ -180,12 +180,25 @@ const musicLevel = () => data.levels.music.gain * mix.music;
 async function startMusic(name, take, fromEnd) {
   audio();
   stopMusic(true);
-  const buf = await buffer(fileUrl(name, take));
+  const raw = data.sounds.find((x) => x.name === name)?.raw;
+  let buf;
+  try {
+    buf = await buffer(fileUrl(name, take));
+  } catch {
+    const moment = document.querySelector(`li[data-name="${name}"] .moment`);
+    if (moment && !moment.querySelector(".missing")) moment.insertAdjacentHTML("beforeend", ' <span class="missing">(file missing)</span>');
+    return;
+  }
   const src = ctx.createBufferSource();
   src.buffer = buf;
-  src.loop = true;
-  src.loopStart = makeLoop(buf, data.levels.music.crossfade);
-  src.loopEnd = buf.duration;
+  if (raw) {
+    // As the file is: once through to its own ending, no loop crossfade.
+    src.onended = () => { if (music?.src === src) stopMusic(true); };
+  } else {
+    src.loop = true;
+    src.loopStart = makeLoop(buf, data.levels.music.crossfade);
+    src.loopEnd = buf.duration;
+  }
   const g = ctx.createGain();
   g.gain.value = musicLevel();
   src.connect(g).connect(out);
@@ -294,7 +307,7 @@ function tally() {
   const all = Object.values(data.choices).filter((c) => c && c.choice);
   const keep = all.filter((c) => c.choice === "keep").length;
   const remake = all.length - keep;
-  document.getElementById("tally").innerHTML = `<b>${all.length}</b> of ${data.sounds.length} decided · ${keep} keep · ${remake} remake`;
+  document.getElementById("tally").innerHTML = `<b>${all.length}</b> of ${data.sounds.filter((s) => !s.raw).length} decided · ${keep} keep · ${remake} remake`;
 }
 
 // ---- rows -----------------------------------------------------------------
@@ -352,10 +365,15 @@ function row(s) {
   li.querySelector(".name").textContent = s.label;
   // For listening only: the game never plays it, so nothing to mute or reset.
   if (s.preview) li.querySelector(".corner").hidden = true;
+  // As generated: no loop to hear join, and nothing to keep or remake.
+  if (s.raw) {
+    li.querySelector(".join").closest(".row").hidden = true;
+    li.querySelector(".keep").closest(".row").hidden = true;
+  }
   li.querySelector(".moment").textContent = s.moment;
   const play = li.querySelector(".play");
 
-  if (!s.present) {
+  if (!s.present && !s.raw) {
     play.disabled = true;
     li.querySelector(".moment").insertAdjacentHTML("beforeend", ' <span class="missing">(file missing)</span>');
   } else if (s.kind === "music") {

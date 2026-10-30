@@ -80,8 +80,13 @@ const MUSIC = [
   // The Cosmetics soundtracks (creator, 2026-10-29: "4 from our trips", 500
   // Coins each), looped like the beds, at their loudness. Each is cut where
   // its own ending begins to fall away.
-  // France: café accordion, nylon guitar and upright bass, a slow waltz; D minor.
-  { name: "track-paris-cafe", src: "track-paris-cafe.mp3", start: 0, end: 86, fade: 0.05, lufs: -20 },
+  // France: a slow French waltz, a soft vibraphone tune over nylon guitar and
+  // upright bass, 80 bpm, C major (creator, 2026-10-29: it replaced a café
+  // accordion take whose high, buzzy lead from ~30 s was "hard to listen to";
+  // picked from three accordion-free takes). Its first note is at 0.72 s and its
+  // ending falls away from 86.5; the cut makes a loop of 81 s (36 bars) whose
+  // last 4 s line up with its first in rhythm and harmony.
+  { name: "track-paris-cafe", src: "track-paris-cafe.mp3", start: 0.72, end: 85.723, fade: 0.05, lufs: -20 },
   // Japan: koto, shakuhachi and a soft pad; pentatonic on A and D. Its first
   // 16 s are sparse phrases with near-silent gaps, 8-10 dB under the rest: the
   // loop starts at the phrase after the last gap, so it is even throughout.

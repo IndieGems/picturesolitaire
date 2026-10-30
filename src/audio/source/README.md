@@ -35,15 +35,30 @@ original holds.
 | found-fanfare.mp3 | the Daily Suitcase's found-it moment (music cue, 6 s) | 0.02-0.94 s, then 2.976-5.2 s | xylophone, glockenspiel, pizzicato in C, beats every 0.455 s; the cut skips to the pickup note before the last beat and final chord (3.66), which lands at 1.59 s |
 | bed.mp3 | the Winter Dusk soundtrack (owned with that table), 90 s (snowy evening: felt piano, string pad, celesta) | 0-86.5 s | loop: crossfade last ~4 s into the start at run time |
 | bed-day.mp3 | the Sunny Day soundtrack, every player's and the default, 90 s (sunny afternoon: guitar, felt piano, airy strings, flute) | 0-90 s | generated in G major (a second take asked harder for C and came out keyless, discarded); ships in G, the creator's choice (2026-10-28), accepting a slight rub between its F sharp and the picture harp's F; same loop as bed. Also encoded re-keyed up a fourth to C, tempo kept (rubberband), to audio/takes/bed-day-c (not shipped) for Sound Tuning's listen-only "Music moved to C" row |
-| track-paris-cafe.mp3 | Cosmetics soundtrack, France (bought, 500 Coins), 90 s: café accordion, nylon guitar, upright bass, slow waltz | 0-86 s | D minor; its own ending falls away from 86 s, cut; same loop as bed |
+| track-paris-cafe.mp3 | Cosmetics soundtrack, France (bought, 500 Coins), 90 s: slow French waltz, vibraphone over nylon guitar and upright bass, 80 bpm | 0.72-85.723 s | C major; the second Paris take (2026-10-29), see below; first note at 0.72 s, ending falls away from 86.5 s; cut for a loop of 81 s (36 bars) whose last 4 s match its first in rhythm and harmony |
 | track-japanese-garden.mp3 | Cosmetics soundtrack, Japan, 90 s: koto, shakuhachi, soft pad | 16.3-79 s | pentatonic on A and D; the first 16 s are sparse phrases with near-silent gaps (8-10 dB under), so the loop starts at the phrase after the last gap: 63 s, even; ending falls away from 79 s |
 | track-buenos-aires-tango.mp3 | Cosmetics soundtrack, Argentina, 90 s: bandoneon, violin, piano, pizzicato bass, laid-back tango | 0-88 s | C minor; very even (LRA 2 LU) |
 | track-celtic-folk.mp3 | Cosmetics soundtrack, UK & Ireland, 90 s: tin whistle, fiddle, fingerpicked guitar, harp | 0-89.5 s | C major; its first 24 s about 4 dB softer, kept as a gentle swell each loop |
 
 The four soundtracks are one take each (2026-10-29, 1,355 units of the shared
-audio pool apiece), at the beds' -20 LUFS. Like the sunny bed, the minor-key
-ones rub a little against the picture harp (E, B, C, F): the café's B flat and
-the tango's E flat, under the duck the harp brings.
+audio pool apiece), at the beds' -20 LUFS, except Paris, remade the same day:
+the first take's café accordion took the tune at ~30 s high and buzzy (its 2-5
+kHz share went from -36 to -16 dB, about 11 dB over Sunny Day's, with a flat,
+reedy run of harmonics and no vibrato), which the creator found "hard to listen
+to". Three accordion-free takes (a jazz trio, this vibraphone waltz, a guitar
+and piano duet; 4 x 1,355 units, a musette-waltz take with a mellow accordion
+was dropped unheard when it brightened the same way past 50 s) were heard in
+Sound Tuning, and the creator picked the waltz. Keep reeds, bowed strings and
+anything nasal out of a remake's prompt. Like the sunny bed, the tango's E flat
+rubs a little against the picture harp (E, B, C, F), under the duck the harp
+brings; Paris is now in C, as the harp is.
+
+A loop's cut is chosen so its last 4 s (crossfaded into its first at run time)
+match its first 4 s in rhythm and harmony: the first Paris cut scored 0.04 on
+rhythm, a flam every loop. Sound Tuning's "as generated" rows play each
+original untouched (byte copies in audio/takes/, never shipped), to hear what
+the trim, levelling and encode change: they measure within about 1 dB of the
+original's tone; the originals are 2-8 dB louder.
 
 Shipped: Ogg Opus (effects mono 40 kbps, music stereo 48 kbps), plus an MP3
 fallback for a browser that cannot decode Opus. A player fetches one music
