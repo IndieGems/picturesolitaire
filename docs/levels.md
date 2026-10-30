@@ -173,7 +173,7 @@ daily puzzle in [daily.md](daily.md).
 
 **Atmospheric pictures** (creator, 2026-10-28; at most one a level, 2026-10-29): one of each board's pictures, from board 3 on (none on an all-long board), is atmospheric, each in a clear square's place with the deal unchanged (`tools/levels/atmospheric.mts`). Per trip: Travel America 12 of 106, Japan 14 of 154, Italy 14 of 160, American West 14 of 172, France 14 of 168, Canada 14 of 176, Argentina 14 of 168, Australia 14 of 174, South Africa 14 of 169, UK & Ireland 14 of 174. The clear pictures they displaced: 137, of which 112 are on no board now, the stock trips 11 on take first (`tools/levels/atmospheric.json`).
 
-Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture comes back 15 boards later at the soonest (median 21). Every board made since 2026-10-25 keeps the rule: no picture on two of boards 1-13, none back within 15 boards; 0 of 397 returns are sooner than 15, on boards kept from before it.
+Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture comes back 15 boards later at the soonest (median 21). Every board made since 2026-10-25 keeps the rule: no picture on two of boards 1-13, none back within 15 boards; 0 of 396 returns are sooner than 15, on boards kept from before it.
 
 | picture | boards |
 |---|---|
@@ -910,7 +910,7 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | noodle-maker (2x2, noodle maker) | 65, 89 |
 | falconer (2x2, falconer) |  |
 | microscope (2x2, microscope) | 63, 80 |
-| quilter (2x2, quilter) | 67, 84 |
+| quilter (2x2, quilter) FLAGGED: don't use |  |
 | puppeteer (2x2, puppeteer) | 70, 90 |
 | welder (2x2, welder) | 83 |
 | helter-skelter (1x2, helter skelter) | 66 |
@@ -918,7 +918,7 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | plane-window (2x1, plane window) | 81 |
 | floating-market (2x1, floating market) | 81 |
 | glider (2x2, sky plane) | 124 |
-| paraglider (2x2, paraglider) |  |
+| paraglider (2x2, paraglider) | 67 |
 | airliner (2x2, sky plane) |  |
 | lifeboat (2x2, lifeboat) | 76 |
 | monorail (2x2, monorail) | 69, 88 |
@@ -1077,7 +1077,7 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | malachite (2x2, gemstone) | 115 |
 | ammonite (2x2, ammonite) | 118 |
 | snow-gums (2x2, gum trees) | 100, 117 |
-| bluebonnets (2x2, bluebonnets) |  |
+| bluebonnets (2x2, bluebonnets) FLAGGED: don't use |  |
 | ripples (2x2, ripples) | 100, 116 |
 | reed-bed (2x2, tall grass) |  |
 | glowworm-cave (2x2, night sky) | 103 |
@@ -1322,7 +1322,7 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | signal-box (2x2, signal box) |  |
 | round-barn (2x2, red barn) | 128 |
 | bathing-machine (2x2, bathing machine) | 142 |
-| watchmaker (2x2, watchmaker) |  |
+| watchmaker (2x2, watchmaker) | 84 |
 | mapmaker (2x2, mapmaker) | 125 |
 | tile-painter (2x2, tile painter) | 122 |
 | lamplighter (2x2, lamplighter) |  |
@@ -1480,7 +1480,7 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | cricket-green (2x2, cricket green, atmospheric) | 129 |
 | lakeside-inn (2x2, lakeside inn, atmospheric) | 57 |
 | alpine-hut-hikers (2x2, alpine hut hikers, atmospheric) | 45 |
-| rocky-cove (2x2, rocky cove, atmospheric) |  |
+| rocky-cove (2x2, rocky cove, atmospheric) FLAGGED: don't use |  |
 | regatta-headland (2x2, regatta headland, atmospheric) | 35 |
 | autumn-lake-reflections (2x2, autumn lake reflections, atmospheric) | 28 |
 | winter-farmyard (2x2, winter farmyard, atmospheric) | 147 |
@@ -1598,3 +1598,9 @@ Every picture's appearances across the 150 boards: 0 to 2 (mean 1.1). A picture 
 | beach-twirl (2x2, beach twirl) | 121 |
 | rolling-chapatis (2x2, rolling chapatis) |  |
 | learning-to-ride (2x2, learning to ride) | 15 |
+| koi-pair (2x2, koi pair) |  |
+| french-horn (2x2, french horn) |  |
+| firefighter (2x2, firefighter) |  |
+| jukebox (2x2, jukebox) |  |
+| puffer-fish (2x2, puffer fish) |  |
+| limes (2x2, limes) |  |
