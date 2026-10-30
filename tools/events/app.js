@@ -77,14 +77,14 @@ function picture(thumb, full, caption, aspect, empty) {
 const badge = (text, kind) => el("span", `badge ${kind}`, text);
 
 function whenBadge(m, d) {
-  if (m.key === d.live) return badge("Live now", "live");
+  if (m.key === d.live) return badge("Newest", "live");
   if (m.key === d.next) return badge("Next", "next");
-  return m.when === "ended" ? badge("Ended: in the archive", "ended") : badge("Upcoming", "upcoming");
+  return m.when === "archive" ? badge("In the archive", "ended") : badge("Upcoming", "upcoming");
 }
 
 function artBadge(m, today) {
-  const late = m.art !== "ready" && m.when !== "ended" && today >= m.due;
-  const due = m.when === "ended" ? "" : ` · ${late ? "was due" : "due by"} ${dayName(m.due)}`;
+  const late = m.art !== "ready" && today >= m.due;
+  const due = ` · ${late ? "was due" : "due by"} ${dayName(m.due)}`;
   const kind = late ? "late" : "warn";
   switch (m.art) {
     case "ready":
@@ -101,12 +101,10 @@ function artBadge(m, today) {
 }
 
 function scheduleText(m) {
-  if (m.scheduled === m.days) return `Every day of the ${m.days} deals its item on its daily`;
-  return `${m.scheduled} of ${m.days} days deal their item: Levels re-runs the daily maker`;
+  const made = m.made === m.levels ? `all ${m.levels} levels made` : `${m.made} of ${m.levels} levels made`;
+  const placed = m.placed === m.items.length ? "every item on its level" : `${m.placed} of ${m.items.length} items on their levels`;
+  return `${made}, ${placed}${m.marked.length ? `; marked hard: ${m.marked.map(([k]) => k).join(", ")}` : ""}`;
 }
-
-/** "2 days: 3 Nov, 10 Nov" */
-const datesText = (dates) => (dates.length ? `${plural(dates.length, "day")}: ${dates.map(dayShort).join(", ")}` : "Not scheduled");
 
 function piece(it, m) {
   const card = el("article", `piece ${it.kind}`);
@@ -115,9 +113,7 @@ function piece(it, m) {
   const pic = picture(it.thumb, it.full, `${m.theme}, item ${it.slot}: ${name}${it.kind === "standin" ? " (stand-in picture)" : ""}`, "3 / 4", it.kind === "missing" ? "Picture file missing" : "No art yet");
   if (it.kind === "standin") pic.append(el("span", "ribbon", "Stand-in"));
   card.append(pic, el("p", "name", name));
-  const meta = el("p", "meta", datesText(it.dates));
-  if (it.dates.length) meta.title = it.dates.map(dayName).join(", ");
-  card.append(meta);
+  card.append(el("p", "meta", it.level > 0 ? `Hidden on level ${it.level}` : "On no level yet"));
   if (it.kind === "standin") card.append(el("p", "meta soft", `Stand-in: ${it.borrowed}`));
   else if (it.kind === "ready" && it.medium) card.append(el("p", "meta soft", STYLE[it.medium] ?? it.medium));
   return card;
@@ -135,7 +131,7 @@ function prizeCard(m, spares) {
   const helpers = el("p", "helpers");
   helpers.append(el("span", "plus", "plus"), document.createTextNode(` ${helpersText(p.helpers)}`));
   card.append(helpers);
-  card.append(el("p", "meta soft", `Paid once, when the last of the ${m.items.length} items is packed${spares ? ` or swapped in (${spares} spares a swap)` : ""}`));
+  card.append(el("p", "meta soft", `Paid once, when the last of the ${m.items.length} items is found`));
   return card;
 }
 
@@ -143,14 +139,13 @@ function eventSection(m, d) {
   const s = el("section", `group month ${m.key === d.live ? "is-live" : m.key === d.next ? "is-next" : ""}`);
   s.id = `e-${m.key}`;
   const head = el("header", "group-head");
-  const title = el("h2", null, `${m.theme} · ${spanName(m.start, m.end)}`);
+  const title = el("h2", null, `${m.theme} · from ${dayName(m.release)}`);
   const badges = el("div", "badges");
   badges.append(whenBadge(m, d), artBadge(m, d.today));
   head.append(title, badges);
   s.append(head);
-  let span = `${m.days} days, ${plural(m.items.length, "item")}, each turning up ${m.items.length ? Math.floor(m.days / m.items.length) : 0} times or more`;
-  if (m.when === "upcoming") span += ` · starts in ${plural(daysBetween(d.today, m.start), "day")}`;
-  if (m.when === "live") span += ` · ${plural(daysBetween(d.today, m.end) + 1, "day")} left`;
+  let span = `${m.levels} levels, ${plural(m.items.length, "item")}, one hidden on each of ${m.items.length} of them`;
+  if (m.when === "upcoming") span += ` · opens in ${plural(daysBetween(d.today, m.release), "day")}`;
   s.append(el("p", "sub", `${span} · ${scheduleText(m)}`));
   const row = el("div", "month-row");
   const grid = el("div", "grid");
@@ -164,10 +159,10 @@ function overview(d) {
   const s = el("section", "group");
   s.id = "all";
   s.append(el("h2", null, "Every event"));
-  s.append(el("p", "sub", "Two weeks each, for VIP members (switched off for every player until the platform can say who holds VIP). How often they run is a schedule edit."));
+  s.append(el("p", "sub", "Packs of 30 levels for VIP members (switched off for every player until the platform can say who holds VIP), playable any time from their release date. How often a new one arrives is a schedule edit."));
   const t = el("table", "year");
   const head = el("tr");
-  for (const h of ["Event", "Dates", "When", "Art", "Prize table"]) head.append(el("th", null, h));
+  for (const h of ["Event", "Release", "When", "Art", "Prize table"]) head.append(el("th", null, h));
   t.append(el("thead"));
   t.tHead.append(head);
   const body = el("tbody");
@@ -189,7 +184,7 @@ function overview(d) {
       c5.append(img);
     } else c5.append(el("span", "mini blank"));
     c5.append(document.createTextNode(m.prize.title ?? "–"));
-    tr.append(c1, el("td", null, spanName(m.start, m.end)), c3, c4, c5);
+    tr.append(c1, el("td", null, dayName(m.release)), c3, c4, c5);
     body.append(tr);
   }
   t.append(body);
@@ -242,9 +237,9 @@ async function load() {
   const live = d.events.find((m) => m.key === d.live);
   const next = d.events.find((m) => m.key === d.next);
   let line = `Today is ${dayName(d.today)}${asked ? " (previewed)" : ""}. `;
-  line += live ? `Live now: ${live.theme}, ${plural(daysBetween(d.today, live.end) + 1, "day")} left. ` : "No event is live. ";
-  if (next) line += `Next: ${next.theme}, from ${dayName(next.start)} (in ${plural(daysBetween(d.today, next.start), "day")}). `;
-  line += `Every full suitcase pays its table plus ${helpersText(d.events[0]?.prize.helpers)}${d.spares ? `; ${d.spares} spare copies swap for a missing item` : ""}.`;
+  line += live ? `Newest: ${live.theme}, out since ${dayName(live.release)}. ` : "No event is out yet. ";
+  if (next) line += `Next: ${next.theme}, from ${dayName(next.release)} (in ${plural(daysBetween(d.today, next.release), "day")}). `;
+  line += `Finding all of an event's items pays its table plus ${helpersText(d.events[0]?.prize.helpers)}.`;
   document.getElementById("today").textContent = line;
   const jump = document.getElementById("jump");
   jump.replaceChildren(

@@ -67,21 +67,23 @@
 //   - a lesson board (lessons.json; make-lessons.mts), which opens stuck on
 //     purpose: its own proof instead of "not a dead end" and "the solver can
 //     win the deal" (checkLesson), and its line replays after its shuffle.
-//   - THE EVENTS (creator, 2026-10-30; docs/vip.md, docs/daily-suitcase.md):
-//     a daily on one of an event's days carries that day's item (events.json
-//     `days`) in its pictures exactly once, 2x2 on a board of squares, with
-//     nothing beside it of its family or sharing a word with it (lib.mts
-//     itemClash), and its stored line finishes the item neither first nor
-//     last; a daily on no event's day carries no item. A daily from
-//     daily-plan.mts RULES_FROM is readable, starts safe, and holds no
-//     landmark and no picture from before the clear ones. An item plays only
-//     as its day's item. And events.json is exactly what make-events.mts
-//     writes from events-plan.json (in start order, never overlapping, an
-//     item in one event only; each event's schedule seeded by its id alone,
-//     events.mts eventProblem holding: 14 days, each item at least twice and
-//     in both weeks, its days at least APART apart), every day of it a daily
-//     of the pool from RULES_FROM. (suitcases.json, the monthly schedule it
-//     replaced, stays for Server's readers until Server drops it, unchecked.)
+//   - THE EVENTS (creator, 2026-10-30; docs/vip.md; events.mts): each VIP
+//     event is 30 levels of its own (event-levels.json, ids "<event>-NN", in
+//     play order), on the rows of events.mts ROWS: its role's size and count,
+//     all squares or all long, its mark on a hard one, readable and a safe
+//     start unless marked (a marked one careful), no landmark, no picture twice
+//     within the event. Its 10 items (events.json) hide one on each of 10 of
+//     its levels: the level's `item` is that item, in its pictures exactly
+//     once, 2x2, nothing beside it of its family or sharing a word with it
+//     (lib.mts itemClash), finished neither first nor last on the stored line;
+//     no other level has an item, and no daily has one. events.json is exactly
+//     what make-events.mts writes from events-plan.json (release order, an
+//     item in one event only); an event with fewer than 10 items or stand-in
+//     art (`standIn`) is a WARNING in an everyday build and a FAILURE in a
+//     release one (--full). A daily from daily-plan.mts RULES_FROM is
+//     readable, starts safe, and holds no landmark and no picture from before
+//     the clear ones. An item plays only as its level's item. (suitcases.json,
+//     the old monthly schedule, stays for UI's readers until they move, unchecked.)
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
 
 import { createHash } from "node:crypto";
@@ -97,7 +99,7 @@ import { byId, clearOrder, destById, flags, itemById, itemClash, LESSON_MOVES, s
 import { CURRENT, DISTINCT, LAST_BEFORE_T9, MARKS, MAY_TRAP, SPACING, SPARES, TRIPS } from "./campaign-plan.mts";
 import { FIRST as ATMOS_FIRST, isAtmospheric, MOST as ATMOS_MOST, MOST_BOARDS, shareOf, takesAtmospheric } from "./atmospheric.mts";
 import { RULES_FROM } from "./daily-plan.mts";
-import { eventOf, eventProblem, PLAN as EVENT_PLAN, planProblem } from "./events.mts";
+import { EVENT_LEVELS, EVENT_MARKS, EVENT_MAY_TRAP, eventOf, ITEMS as EVENT_ITEMS, PLAN as EVENT_PLAN, planProblem, ROWS as EVENT_ROWS } from "./events.mts";
 import { SOUVENIR_BOARD, SOUVENIR_COUNT, souvenirId, souvenirOf } from "./make-souvenirs.mts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
@@ -120,10 +122,14 @@ const dir = join(root, "src/content/levels");
 // trips.json, events.json and suitcases.json are no boards files (trips and events are checked on their own below)
 const NOT_BOARDS = new Set(["trips.json", "events.json", "suitcases.json"]);
 if (ALL) for (const f of readdirSync(dir).sort()) if (f.endsWith(".json") && !NOT_BOARDS.has(f)) files.push(join(dir, f));
-// the VIP events (make-events.mts): the day's item of each date in an event
+// the VIP events (make-events.mts): each event's levels, and the item each item level hides
 const eventsFile = join(dir, "events.json");
 const EVENTS = existsSync(eventsFile) ? JSON.parse(readFileSync(eventsFile, "utf8")).events : [];
-const itemOfDay = new Map(EVENTS.flatMap((e) => Object.entries(e.days)));
+const itemOfLevel = new Map(EVENTS.flatMap((e) => e.items.map((it) => [it.level, it.id])));
+/** An event level's event and its place in it (from 0). */
+const placeOfLevel = new Map(EVENTS.flatMap((e) => e.levels.map((id, k) => [id, { event: e.id, k }])));
+/** Each event's pictures so far, as the file is read in order: none twice within an event. */
+const eventPictures = new Map();
 
 // the campaign's first trip, for the lessons (a lesson's pictures are none of its boards')
 const campaignFile = join(dir, "campaign.json");
@@ -280,8 +286,9 @@ for (const file of files) {
       if (ids.has(l.id)) fail("id used twice");
       ids.add(l.id);
       if (l.peek !== 0) fail(`peek ${l.peek}: every stack shows card backs, peek 0 (AGENTS.md)`);
-      const markWant = file.endsWith("campaign.json") ? MARKS[l.axes?.role] : undefined;
-      if (l.mark !== markWant) fail(`mark ${l.mark ?? "none"}, but a ${file.endsWith("campaign.json") ? `${l.axes?.role} board` : "board outside the campaign"} takes ${markWant ?? "none"}`);
+      const eventLevel = file.endsWith("event-levels.json");
+      const markWant = file.endsWith("campaign.json") ? MARKS[l.axes?.role] : eventLevel ? EVENT_MARKS[l.axes?.role] : undefined;
+      if (l.mark !== markWant) fail(`mark ${l.mark ?? "none"}, but a ${file.endsWith("campaign.json") || eventLevel ? `${l.axes?.role} board` : "board outside the campaign and the events"} takes ${markWant ?? "none"}`);
       if (l.par !== undefined && l.par !== l.line.length) fail(`par ${l.par} but the line has ${l.line.length} moves`);
       if (l.date !== undefined) {
         if (!/^\d{4}-\d{2}-\d{2}$/.test(l.date) || l.id !== `d${l.date}`) fail(`date ${l.date} and id ${l.id} do not match`);
@@ -328,11 +335,32 @@ for (const file of files) {
         const twice = bgs.find((b, k) => bgs.indexOf(b) !== k);
         if (twice) fail(`two pictures on the background colour ${twice} (Art: never two alike on a board)`);
       }
-      // the events: a daily on an event's day hides its day's item (events.json; make-daily.mts)
-      const eventDay = l.date !== undefined && itemOfDay.has(l.date);
-      // and every daily from RULES_FROM is made under today's rules, with an item or without
+      // every daily from RULES_FROM is made under today's rules
       const rulesDay = l.date !== undefined && l.date >= RULES_FROM;
-      if (l.item !== undefined && !eventDay) fail(`an item on a board that is on no event's day (events.json)`);
+      // an EVENT LEVEL (events.mts): its event's, in its place, on its row; an item only on an item level
+      const wantItem = eventLevel ? itemOfLevel.get(l.id) : undefined;
+      if (l.item !== undefined && !wantItem) fail(eventLevel ? "an item on an event level that hides none (events.json)" : "an item on a board that is no event level (the dailies carry none since 2026-10-30)");
+      if (eventLevel) {
+        const place = placeOfLevel.get(l.id);
+        const row = place && EVENT_ROWS[place.k];
+        if (!place) fail(`a level of no event in events.json (make-events.mts)`);
+        else if (l.event !== place.event) fail(`event ${l.event ?? "none"}, events.json lists it in ${place.event}`);
+        else if (data.levels.indexOf(l) !== data.levels.findIndex((e) => e.event === place.event) + place.k) fail(`not in its event's play order (level ${place.k + 1} of ${place.event})`);
+        if (row) {
+          if (l.axes?.role !== row.role) fail(`role ${l.axes?.role}, level ${place.k + 1}'s row is ${row.role} (events.mts ROWS)`);
+          if (l.cols !== row.board[0] || l.rows !== row.board[1]) fail(`a ${l.cols}x${l.rows} board, level ${place.k + 1}'s row is ${row.board.join("x")}`);
+          if (l.pictures.length !== row.count) fail(`${l.pictures.length} pictures, the row's ${row.count}`);
+        }
+        const sizes = new Set(l.pictures.map((p) => p.cols * p.rows));
+        if (sizes.size !== 1 || !(sizes.has(4) || sizes.has(2))) fail("an event level is all squares or all long (AGENTS.md)");
+        for (const p of l.pictures) if (catalogue.get(p.id)?.landmark) fail(`${p.id} is a landmark`);
+        if (place) {
+          const seen = eventPictures.get(place.event) ?? new Set();
+          for (const p of l.pictures) if (seen.has(p.id)) fail(`${p.id} is on another level of ${place.event} too (none twice within an event)`);
+          for (const p of l.pictures) seen.add(p.id);
+          eventPictures.set(place.event, seen);
+        }
+      }
       if (rulesDay) {
         if (l.pictures.some((p) => p.cols !== 2 || p.rows !== 2)) fail("a daily from RULES_FROM is a board of squares only (AGENTS.md: all 2x2 or all long; an item is a 2x2)");
         for (const p of l.pictures) {
@@ -341,17 +369,16 @@ for (const file of files) {
           if (SPARES.has(p.id) || (catalogue.has(p.id) && pictureOrder.get(p.id) > pictureOrder.get(LAST_BEFORE_T9))) fail(`${p.id} is one of trips 9 and 10's new pictures or spares, kept new to the campaign`);
         }
       }
-      if (eventDay) {
-        const want = itemOfDay.get(l.date);
+      if (wantItem) {
+        const want = wantItem;
         const id = l.item?.id;
-        if (id !== want) fail(`item ${id ?? "none"}, the day's item is ${want} (events.json; node tools/levels/make-daily.mts places it)`);
-        if (!rulesDay) fail(`an event day before ${RULES_FROM}, today's rules' first day`);
+        if (id !== want) fail(`item ${id ?? "none"}, the level's item is ${want} (events.json; node tools/levels/make-events.mts places it)`);
         const it = id && itemById.get(id);
         if (id && !it) fail(`item ${id} is not in the catalogue's items`);
         const times = l.pictures.filter((p) => p.id === id).length;
         if (times !== 1) fail(`item ${id} is in the pictures ${times} times, not once`);
         // nothing beside the item looks like it or shares a word with it (lib.mts itemClash; make-daily.mts swaps one out in place)
-        if (it) for (const p of l.pictures) if (p.id !== id && itemClash(it, catalogue.get(p.id) ?? p)) fail(`${p.id} clashes with item ${id} (${itemClash(it, catalogue.get(p.id) ?? p)}): run make-daily.mts, which swaps it out in place`);
+        if (it) for (const p of l.pictures) if (p.id !== id && itemClash(it, catalogue.get(p.id) ?? p)) fail(`${p.id} clashes with item ${id} (${itemClash(it, catalogue.get(p.id) ?? p)}): run make-events.mts, which swaps it out in place`);
         if (times === 1) {
           const order = clearOrder(l);
           const at = order.indexOf(l.pictures.findIndex((p) => p.id === id));
@@ -443,11 +470,13 @@ for (const file of files) {
       // the solver's checks (prove), remembered by content hash; which of them this board takes
       const campaign = file.endsWith("campaign.json");
       const mayTrap = campaign && MAY_TRAP.has(l.axes?.role);
+      // an event level as a campaign board (events.mts): readable with a safe start unless it may trap, careful if it may
+      const eventTrap = eventLevel && EVENT_MAY_TRAP.has(l.axes?.role);
       const takes = {
-        // a safe start: the campaign's boards but its hard ones, the experiments, the dailies from RULES_FROM, the Souvenirs
-        safe: (campaign && !mayTrap) || file.endsWith("experiments.json") || rulesDay || souvenirBoard,
-        readable: (campaign && !mayTrap) || rulesDay || souvenirBoard,
-        careful: mayTrap,
+        // a safe start: the campaign's boards but its hard ones, the experiments, the dailies from RULES_FROM, the Souvenirs, the event levels but their hard ones
+        safe: (campaign && !mayTrap) || file.endsWith("experiments.json") || rulesDay || souvenirBoard || (eventLevel && !eventTrap),
+        readable: (campaign && !mayTrap) || rulesDay || souvenirBoard || (eventLevel && !eventTrap),
+        careful: mayTrap || eventTrap,
       };
       const key = proofKey(takes, l);
       if (remembered.has(key)) {
@@ -480,28 +509,38 @@ if (flaggedUses.length)
     `\n${FULL ? "FAIL" : "WARNING"}: pictures flagged "don't use" are on ${flaggedBoards} board(s)${FULL ? "; a release never ships one" : "; this build carries on, a release build (--full) fails on them"}:\n  ${flaggedUses.map((u) => u.line).join("\n  ")}\n` +
       `Re-deal them, keeping every other board as it is: node tools/levels/redeal.mts\n`,
   );
-// the events: exactly what make-events.mts writes from events-plan.json, every day a daily of the pool from RULES_FROM
-const dailyFile = join(dir, "daily.json");
-if (ALL && existsSync(dailyFile)) {
-  const dates = new Set(JSON.parse(readFileSync(dailyFile, "utf8")).levels.map((l) => l.date));
+// the events: exactly what make-events.mts writes from events-plan.json, each event's 30 levels in
+// event-levels.json; an event short of its 10 items or with stand-in art warns, and fails a release (--full)
+const eventLevelsFile = join(dir, "event-levels.json");
+if (ALL) {
+  const made = existsSync(eventLevelsFile) ? JSON.parse(readFileSync(eventLevelsFile, "utf8")).levels : [];
+  const madeById = new Map(made.map((l) => [l.id, l]));
   const bad = [];
+  const short = [];
   const plan = planProblem();
   if (plan) bad.push(`events-plan.json: ${plan}`);
   else {
     if (JSON.stringify(EVENTS.map((e) => e.id)) !== JSON.stringify(EVENT_PLAN.map((p) => p.id))) bad.push(`its events are ${EVENTS.map((e) => e.id).join(", ") || "none"}, the plan's ${EVENT_PLAN.map((p) => p.id).join(", ") || "none"} (node tools/levels/make-events.mts)`);
     for (const e of EVENTS) {
       const p = EVENT_PLAN.find((q) => q.id === e.id);
-      const problem = eventProblem(e.items.map((it) => it.id), Object.values(e.days));
-      if (problem) bad.push(`${e.id}: ${problem}`);
       if (p && JSON.stringify(e) !== JSON.stringify(eventOf(p))) bad.push(`${e.id} is not what make-events.mts writes (re-run it: the plan, Art's themes or titles changed)`);
-      const off = Object.keys(e.days).filter((d) => !dates.has(d) || d < RULES_FROM);
-      if (off.length) bad.push(`${e.id}: ${off.join(", ")} ${off.length === 1 ? "is" : "are"} no daily of the pool from ${RULES_FROM} (make-daily.mts --to)`);
+      if (e.levels.length !== EVENT_LEVELS) bad.push(`${e.id}: ${e.levels.length} levels, an event has ${EVENT_LEVELS}`);
+      const missing = e.levels.filter((id) => madeById.get(id)?.event !== e.id);
+      if (missing.length) bad.push(`${e.id}: ${missing.length} of its levels are not in event-levels.json (${missing.slice(0, 3).join(", ")}${missing.length > 3 ? ", ..." : ""}; make-events.mts)`);
+      const homes = e.items.map((it) => it.level);
+      if (new Set(homes).size !== homes.length) bad.push(`${e.id}: two items on one level`);
+      for (const it of e.items) if (!e.levels.includes(it.level)) bad.push(`${e.id}: item ${it.id} hides on ${it.level}, no level of the event`);
+      if (e.items.length !== EVENT_ITEMS || e.standIn) short.push(`${e.id} (${e.items.length} of ${EVENT_ITEMS} items${e.standIn ? ", stand-in art or items" : ""})`);
     }
+    const stray = made.filter((l) => !placeOfLevel.has(l.id));
+    if (stray.length) bad.push(`event-levels.json holds ${stray.length} level(s) of no event (${stray.slice(0, 3).map((l) => l.id).join(", ")})`);
   }
+  if (short.length && FULL) bad.push(`a release never ships an event short of its items or on stand-ins: ${short.join(", ")}`);
   if (bad.length) {
     failed++;
     console.error(`FAIL events.json: ${bad.join("; ")}`);
-  } else console.log(`events: ${EVENTS.length ? EVENTS.map((e) => `${e.id} ${e.start} to ${e.end}${e.standIn ? " (stand-in)" : ""}`).join(", ") : "none"}`);
+  } else console.log(`events: ${EVENTS.length ? EVENTS.map((e) => `${e.id} from ${e.release}, ${e.levels.length} levels, ${e.items.length} items${e.standIn ? " (stand-in)" : ""}`).join("; ") : "none"}`);
+  if (short.length && !FULL) console.warn(`WARNING: ${short.join(", ")}: a release build fails until the event has all ${EVENT_ITEMS} items, drawn (Art's pictures.json items, events-plan.json, make-events.mts)`);
 }
 // the Souvenirs: every trip whose Souvenir pictures Art has made has its board (make-souvenirs.mts)
 if (ALL && souvenirPictures.length) {

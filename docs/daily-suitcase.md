@@ -40,20 +40,19 @@ event.
   - each month's 10 item pictures: one clear object on a calm background, squares;
   - each month's themed table, in the look of the game's other tables.
   - This costs about $0.50 a month.
-- **Levels** (two-week events since 2026-10-30):
-  - the schedule, `tools/levels/events-plan.json` (which events run, from when: back to back, with
-    gaps or none, a plan edit only) written out as `src/content/levels/events.json` by
-    `make-events.mts` and proved by check.mts:
-    - 14 days an event, about 7 items, each turning up at least twice (7 items: exactly twice);
-    - every item at least once in each week, its two days at least 4 apart, so a player who plays
-      either week whole sees them all;
-  - the daily boards under today's rules from 1 September 2026: readable, current pictures, no
-    landmarks, no atmospheric picture;
-  - each event day's item placed as a 2×2 picture on that day's board, in place (the deal and its
-    proved line stay), and lifted the same way from a day no event covers any more.
-  - Now: Haunted Holiday 15-28 Oct 2026 (Halloween: seven haunted places; over, the archive's
-    first), Ski Trip 1-14 Nov and Winter Market 1-14 Dec (Art's clearest 7 of each month's 10);
-    nothing after until the cadence is set.
+- **Levels** (30-level VIP packs since 2026-10-30, docs/vip.md):
+  - the plan, `tools/levels/events-plan.json` (which events exist, from which release date, their 10
+    items: a plan edit only), made by `make-events.mts` into `src/content/levels/events.json` (the
+    details) and `src/content/levels/event-levels.json` (each event's 30 levels), proved by check.mts;
+  - the curve, the same for every event (`events.mts` ROWS; docs/difficulty-curve.md "The VIP
+    events"): a gentle sawtooth, levels 25 and 30 marked hard; library pictures only, the least used
+    first, none twice within an event;
+  - the 10 items one a level on levels 2, 5, 8 ... 29, each a 2x2 picture finished neither first nor
+    last on the stored line, nothing beside it sharing its family or a word;
+  - the dailies carry no item (lifted in place, 2026-10-30) and stay under today's rules from
+    1 September 2026.
+  - Now: Haunted Holiday from 15 Oct 2026 (ten haunted places), Ski Trip from 1 Nov and Winter Market
+    from 1 Dec (each month's ten items).
 - **Server:**
   - packs the day's item in the daily claim's one order, on the player's own day, first win only;
   - the swap: 3 spares for one missing item, checked on the server;
@@ -96,9 +95,9 @@ the month's prize, `table-<name>` in `public/art/tables/tables.json`, drawn in t
 
 ## Seeing it all
 
-The Editor's **Events** tab (`tools/events/`, read-only) shows every scheduled event in order, with the
-live and next ones marked: each event's items and their days, its art status against its due date (a
-month ahead), and its prize (the table, and the helpers read from `src/net/suitcase-ids.json`, the win
+The Editor's **Events** tab (`tools/events/`, read-only) shows every event in release order, with the
+newest and next ones marked: each event's items and the level each hides on, its levels made and marked,
+its art status against its due date (a month ahead), and its prize (the table, and the helpers read from `src/net/suitcase-ids.json`, the win
 checker's own source); then the approved themes still waiting for a date, and every table and how a
 player gets it. It reads the files
 above on every load, so it follows Art's and Levels' changes; `?today=YYYY-MM-DD` previews another day.

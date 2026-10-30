@@ -1,8 +1,9 @@
 // Events: the data behind the page (server.mjs serves it at /api/data). Kept in a module of its own so
 // that server.mjs loads it afresh whenever this file changes: a fix here shows on the next reload of the
 // page, with no restart of the process the Editor started. What it reads is listed in server.mjs.
-// Since 2026-10-30 the events are two weeks each, for VIP members (docs/vip.md): Levels' events.json
-// lists them, and the approved monthly themes of docs/daily-suitcase.md wait there for a date.
+// Since 2026-10-30 each event is a VIP pack of 30 levels of its own with 10 items hidden one a level
+// (docs/vip.md): Levels' events.json lists them, event-levels.json holds their boards, and the approved
+// monthly themes of docs/daily-suitcase.md wait for a release date.
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
@@ -73,11 +74,11 @@ export const localToday = () => {
 
 export async function data(today) {
   const problems = [];
-  const [doc, schedule, catalogue, daily, ids, netTables, art, trips, campaign] = await Promise.all([
+  const [doc, schedule, catalogue, packs, ids, netTables, art, trips, campaign] = await Promise.all([
     readText("docs/daily-suitcase.md", problems),
     readJson("src/content/levels/events.json", { events: [] }, problems),
     readJson("src/content/pictures.json", { items: [] }, problems),
-    readJson("src/content/levels/daily.json", { levels: [] }, problems),
+    readJson("src/content/levels/event-levels.json", { levels: [] }, problems),
     readJson("src/net/suitcase-ids.json", {}, problems),
     readJson("src/net/tables.json", { tables: [] }, problems),
     readJson("public/art/tables/tables.json", { tables: [] }, problems),
@@ -88,39 +89,35 @@ export async function data(today) {
   const docTheme = new Map(themes.map((t) => [t.table, t]));
   const catItem = new Map((catalogue.items ?? []).map((i) => [i.id, i]));
   const libraryByFile = new Map((catalogue.pictures ?? []).map((q) => [q.file, q]));
-  const dayBoard = new Map((daily.levels ?? []).filter((l) => l.date).map((l) => [l.date, l]));
+  const levelBoard = new Map((packs.levels ?? []).map((l) => [l.id, l]));
   const artTable = new Map((art.tables ?? []).map((t) => [t.id, t]));
   const netTable = new Map((netTables.tables ?? []).map((t) => [t.slug, t]));
   const prize = ids.prize ?? null;
   if (!prize) problems.push("src/net/suitcase-ids.json has no `prize`: the helpers a full suitcase pays are unknown.");
 
   const events = [];
+  const released = (schedule.events ?? []).filter((e) => e.release <= today);
+  const newest = released.at(-1)?.id ?? null;
   for (const e of schedule.events ?? []) {
-    const when = today < e.start ? "upcoming" : today > e.end ? "ended" : "live";
-    const days = e.days ?? {};
+    const when = today < e.release ? "upcoming" : e.id === newest ? "newest" : "archive";
+    const levels = e.levels ?? [];
     const items = [];
-    for (const [k, { id, title }] of (e.items ?? []).entries()) {
+    for (const [k, { id, title, level }] of (e.items ?? []).entries()) {
       const c = catItem.get(id);
       const board = c ? c.board ?? c.file : null;
       const thumb = await served(board);
       const full = c ? await served(c.file) : null;
       const kind = !c ? "none" : c.standin ? "standin" : thumb ? "ready" : "missing";
       if (c && !thumb) problems.push(`${e.theme}, item ${k + 1} (${title}): the picture ${board} is not in public/.`);
-      const dates = Object.entries(days)
-        .filter(([, v]) => v === id)
-        .map(([d]) => d)
-        .sort();
-      items.push({ id, slot: k + 1, title, kind, thumb, full, medium: c?.medium ?? null, borrowed: c?.standin ? libraryByFile.get(c.file)?.title ?? c.file.replace(/^pictures\//, "") : null, dates });
+      items.push({ id, slot: k + 1, title, kind, thumb, full, medium: c?.medium ?? null, borrowed: c?.standin ? libraryByFile.get(c.file)?.title ?? c.file.replace(/^pictures\//, "") : null, level: levels.indexOf(level) + 1 });
     }
 
-    // the schedule against the boards: every day of the event has its item, on its board
-    const offBoard = [];
-    for (const [date, it] of Object.entries(days)) {
-      const b = dayBoard.get(date);
-      if (!b) offBoard.push(`${date} (no daily board)`);
-      else if (b.item?.id !== it) offBoard.push(`${date} (its board deals ${b.item?.id ?? "no item"})`);
-    }
-    if (offBoard.length) problems.push(`${e.theme}: the daily board does not deal the scheduled item on ${offBoard.join(", ")}.`);
+    // the items against the boards: each item on its level, every level made
+    const off = (e.items ?? []).filter((it) => levelBoard.get(it.level)?.item?.id !== it.id).map((it) => `${it.title} (level ${levels.indexOf(it.level) + 1})`);
+    if (off.length) problems.push(`${e.theme}: the level does not hide its item for ${off.join(", ")}.`);
+    const unmade = levels.filter((id) => !levelBoard.has(id));
+    if (unmade.length) problems.push(`${e.theme}: ${unmade.length} of its ${levels.length} levels are not made yet.`);
+    const marked = levels.map((id, k) => [k + 1, levelBoard.get(id)?.mark]).filter(([, m]) => m);
 
     const tableId = e.table ?? null;
     const drawn = tableId ? artTable.get(tableId) : null;
@@ -132,14 +129,15 @@ export async function data(today) {
     events.push({
       key: e.id,
       theme: e.theme,
-      start: e.start,
-      end: e.end,
-      days: Object.keys(days).length,
+      release: e.release,
+      levels: levels.length,
+      made: levels.length - unmade.length,
+      marked,
       when,
       art,
       counts,
-      due: dueBy(e.start),
-      scheduled: Object.keys(days).length - offBoard.length,
+      due: dueBy(e.release),
+      placed: items.length - off.length,
       standIn: Boolean(e.standIn),
       items,
       prize: {
@@ -154,7 +152,7 @@ export async function data(today) {
       },
     });
   }
-  const live = events.find((m) => m.when === "live")?.key ?? null;
+  const live = newest;
   const next = events.find((m) => m.when === "upcoming")?.key ?? null;
   // the approved monthly themes no event uses yet: each waits for a date (the cadence is the creator's)
   const used = new Set(events.map((e) => e.theme));
@@ -172,7 +170,7 @@ export async function data(today) {
       ways.push({ kind: "onboarding", text: `Prize for winning the guided first board${no ? ` (board ${no})` : ""}${net.coins ? `, with ${net.coins} Coins` : ""}` });
     }
     if (net?.award === "shop") ways.push({ kind: "other", text: `Sold in Cosmetics${net.price ? ` for ${net.price} Coins` : ""}` });
-    for (const m of events) if (m.prize.table === id) ways.push({ kind: "event", key: m.key, start: m.start, text: `Prize for the full ${m.theme} suitcase` });
+    for (const m of events) if (m.prize.table === id) ways.push({ kind: "event", key: m.key, start: m.release, text: `Prize for finding all ${m.theme} items` });
     if (t?.souvenir) ways.push({ kind: "souvenir", text: `Not owned or chosen: the ${tripName.get(t.souvenir) ?? t.souvenir} Souvenir board is played on it` });
     if (net && !["onboarding", "suitcase", "none", "shop"].includes(net.award)) ways.push({ kind: "other", text: `Granted by: ${net.award}` });
     if (!ways.length)

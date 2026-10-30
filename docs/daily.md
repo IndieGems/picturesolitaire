@@ -48,21 +48,12 @@ about the last month; [vip.md](vip.md)).
 | Friday | 9 | none | 4 | 36-36 | 0 | any | 65%-90% | 65-89% | 20.9 |
 | Saturday | 9 | none | 4 | 36-36 | 0 | any | 70%-95% | 70-95% | 20.9 |
 
-## The events' days
+## No items
 
-On each day of a VIP event (`src/content/levels/events.json`, from
-`tools/levels/events-plan.json`; [daily-suitcase.md](daily-suitcase.md)), the
-board hides the day's item as one of its squares, finished like any picture;
-the stored line finishes it neither first nor last, and the pictures count
-includes it. 42 days carry an item: halloween-2026 from 2026-10-15, ski-trip-2026 from 2026-11-01, winter-market-2026 from 2026-12-01.
-The maker places an item IN PLACE on a day already dealt (it takes a square's
-spot, so the deal, line and par stay) and lifts it the same way from a day no
-event covers any more, so the plan can change with no re-deal.
+The dailies carry no event item since 2026-10-30 (the creator, [vip.md](vip.md):
+each VIP event is a pack of 30 levels of its own, `make-events.mts`). The items
+the Daily Suitcase had placed (15 October to 14 December 2026) were lifted IN
+PLACE, an ordinary square taking each one's spot, so every deal, line and par
+stayed as it was.
 
-The data (agreed with Gameplay, UI, Server and Art): a day's board carries
-`"item": { "id": "<item id>" }` right after its size, the id one of its own
-2x2 pictures, whose files are in pictures.json `items`. Each event runs
-14 days; each of its items comes up at least twice and in both weeks,
-its days at least 4 apart (`tools/levels/events.mts`, seeded by the event's id).
-
-Every picture's appearances in the pool: 0 to 6 (mean 2.0); no picture is on two boards within three days.
+Every picture's appearances in the pool: 0 to 6 (mean 2.1); no picture is on two boards within three days.

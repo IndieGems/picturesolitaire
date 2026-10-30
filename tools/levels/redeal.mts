@@ -1,6 +1,6 @@
 // Re-deals every shipped board that uses a picture the creator flagged "don't
 // use" (src/content/picture-flags.json), in the campaign, the challenge route,
-// the daily pool and the dev menu's experiment boards, and keeps every other
+// the daily pool, the dev menu's experiment boards and the VIP events' levels, and keeps every other
 // board byte-identical; then
 // re-proves every board. One command:
 //   node tools/levels/redeal.mts
@@ -18,7 +18,7 @@ import { join } from "node:path";
 import { root } from "./lib.mts";
 
 // --repair-only: flagged boards only, never a plan row not made yet
-for (const [maker, ...args] of [["make-campaign.mts", "--repair-only"], ["make-challenge.mts", "--repair-only"], ["make-daily.mts"], ["make-experiments.mts"], ["check.mts"]]) {
+for (const [maker, ...args] of [["make-campaign.mts", "--repair-only"], ["make-challenge.mts", "--repair-only"], ["make-daily.mts"], ["make-experiments.mts"], ["make-events.mts"], ["check.mts"]]) {
   console.log(`\n== ${maker}`);
   execFileSync(process.execPath, [join(root, "tools/levels", maker), ...args], { stdio: "inherit" });
 }

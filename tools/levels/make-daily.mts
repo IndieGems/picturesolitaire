@@ -39,9 +39,7 @@ import { hashId } from "../../src/game/levels/generate.ts";
 import { fits, pick } from "../../src/game/levels/pick.ts";
 import { byId, catalogue, catchUp, clearOrder, dealBoard, familyOf, flaggedOn, flags, isFlower, itemById, MOVED_OFF, itemClash, onSchedule, REMAKES, remadeInPlace, reserveLandmarks, root, swapSets, sameWord, tallyText, usable, usesOf, wordsOf, writeBoards } from "./lib.mts";
 import { RULES_FROM, rowOn, SUITCASE_WEEK, WEEK } from "./daily-plan.mts";
-import { EVENT_DAYS, PLAN as EVENT_PLAN } from "./events.mts";
 import { CURRENT, LAST_BEFORE_T9, SPARES } from "./campaign-plan.mts";
-import { itemsByDay } from "./events.mts";
 import { fewerAtmospheric, isAtmospheric } from "./atmospheric.mts";
 
 const FILE = join(root, "src/content/levels/daily.json");
@@ -74,7 +72,9 @@ const CLEAR = usable.filter((p) => !isAtmospheric(p));
 const OLDER_POOL = CLEAR.filter((p) => !SPARES.has(p.id) && at.get(p.id) <= lastKept);
 const CURRENT_SQUARES = CLEAR.filter((p) => p.cols === 2 && p.rows === 2 && !CURRENT.has(p.id) && !SPARES.has(p.id) && at.get(p.id) <= lastKept);
 /** Each event day's item (events.mts; tools/levels/events-plan.json). */
-const DAY_ITEM = itemsByDay();
+// none since 2026-10-30 (the creator, docs/vip.md: events are 30-level packs of their own, the dailies
+// carry no item): step 1d lifts any item left on a day, in place
+const DAY_ITEM = new Map();
 /** The day's item, on a day of an event; null on any other day. */
 const itemOn = (date) => {
   const id = DAY_ITEM.get(date);
@@ -418,7 +418,6 @@ const tableOf = (week) =>
     return `| ${NAMES[d]} | ${w.count} | ${w.alike.join(" + ") || "none"} | ${w.sizes.join(" ")} | ${w.cards.join("-")} | ${w.peek} | ${w.chain[1] >= 99 ? "any" : w.chain.join("-")} | ${w.careless.map((x) => Math.round(x * 100) + "%").join("-")} | ${careless} | ${avg((l) => l.par)} |`;
   });
 const head = "| weekday | pictures | lookalikes | cards per picture | cards | shown | chain | careless win, target | careless win, dealt | mean par |\n|---|---|---|---|---|---|---|---|---|---|";
-const eventDays = levels.filter((l) => l.item).length;
 const md = `# The daily puzzle
 
 One board per calendar date, the same deal for every player on that date
@@ -455,22 +454,13 @@ about the last month; [vip.md](vip.md)).
 ${head}
 ${tableOf(SUITCASE_WEEK).join("\n")}
 
-## The events' days
+## No items
 
-On each day of a VIP event (\`src/content/levels/events.json\`, from
-\`tools/levels/events-plan.json\`; [daily-suitcase.md](daily-suitcase.md)), the
-board hides the day's item as one of its squares, finished like any picture;
-the stored line finishes it neither first nor last, and the pictures count
-includes it. ${eventDays} days carry an item: ${EVENT_PLAN.map((p) => `${p.id} from ${p.start}`).join(", ") || "none"}.
-The maker places an item IN PLACE on a day already dealt (it takes a square's
-spot, so the deal, line and par stay) and lifts it the same way from a day no
-event covers any more, so the plan can change with no re-deal.
-
-The data (agreed with Gameplay, UI, Server and Art): a day's board carries
-\`"item": { "id": "<item id>" }\` right after its size, the id one of its own
-2x2 pictures, whose files are in pictures.json \`items\`. Each event runs
-${EVENT_DAYS} days; each of its items comes up at least twice and in both weeks,
-its days at least 4 apart (\`tools/levels/events.mts\`, seeded by the event's id).
+The dailies carry no event item since 2026-10-30 (the creator, [vip.md](vip.md):
+each VIP event is a pack of 30 levels of its own, \`make-events.mts\`). The items
+the Daily Suitcase had placed (15 October to 14 December 2026) were lifted IN
+PLACE, an ordinary square taking each one's spot, so every deal, line and par
+stayed as it was.
 
 Every picture's appearances in the pool: ${Math.min(...counts)} to ${Math.max(...counts)} (mean ${(counts.reduce((a, b) => a + b, 0) / counts.length).toFixed(1)}); no picture is on two boards within three days.
 `;
