@@ -336,7 +336,7 @@ if (redays.length) {
 
 // 1e. event days whose item now clashes with one of their pictures (Art's real item, with its
 // own words, replacing a stand-in after the day was made): that picture gives way IN PLACE to another
-// square of today's rules that clashes with nothing, the least used first. A board of squares deals
+// square of today's rules that clashes with nothing, the least used first (a flower close-up last). A board of squares deals
 // the same from any square pictures (dealFor reads shapes only), so the deal, line and measures stay
 // as they were; check.mts re-proves the day
 levels.forEach((l, k) => {
@@ -350,10 +350,11 @@ levels.forEach((l, k) => {
     if (p.id === it.id || !itemClash(it, byId.get(p.id) ?? p)) continue;
     // a day some player may have reached never changes (as --redeal-from): Art's item must fit it instead
     if (l.date <= fmt(Date.now() + 14 * 3600_000) && !process.argv.includes("--played")) throw new Error(`${l.id}: ${p.id} clashes with item ${it.id} (${itemClash(it, byId.get(p.id) ?? p)}), and the day may be played already; change the item, or change the day with --played`);
-    const near = around(k);
+    const near = around(k, 3);
     const others = pictures.filter((q) => q.id !== it.id && q.id !== p.id);
-    const swap = CURRENT_SQUARES.filter((c) => !clashes(it, c) && !near.has(c.id) && !pictures.some((q) => q.id === c.id) && fits(catalogue, spec, [...others, { id: c.id, cols: 2, rows: 2 }]))
-      .sort((a, b) => (uses.get(a.id) ?? 0) - (uses.get(b.id) ?? 0) || (a.id < b.id ? -1 : 1))[0];
+    // a flower close-up last (lib.mts isFlower), none Art moved off (MOVED_OFF), none within three days
+    const swap = CURRENT_SQUARES.filter((c) => !clashes(it, c) && !MOVED_OFF.has(c.id) && !near.has(c.id) && !pictures.some((q) => q.id === c.id) && fits(catalogue, spec, [...others, { id: c.id, cols: 2, rows: 2 }]))
+      .sort((a, b) => isFlower(a) - isFlower(b) || (uses.get(a.id) ?? 0) - (uses.get(b.id) ?? 0) || hashId(`${l.id}~${a.id}`) - hashId(`${l.id}~${b.id}`))[0];
     if (!swap) throw new Error(`${l.id}: ${p.id} clashes with item ${it.id} (${itemClash(it, byId.get(p.id) ?? p)}) and no square can take its place`);
     console.log(`${l.id}: ${p.id} -> ${swap.id} in place (${itemClash(it, byId.get(p.id) ?? p)} in common with item ${it.id}, ${it.title}); the deal and line unchanged`);
     pictures = pictures.map((q, i) => (i === j ? { id: swap.id, cols: 2, rows: 2 } : q));
