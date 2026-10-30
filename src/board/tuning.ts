@@ -111,6 +111,14 @@ export const TUNING = {
    * keeps its size either way.
    */
   showNext: true,
+  /**
+   * The guide's ring round the card to play and round where it goes (the creator, 2026-10-30: the
+   * thin teal ring vanished on the blue panel): a band guideRing of a card's width (never under
+   * guideRingMin CSS px) just outside the card, in var(--guide-ring) with a white inner edge a third
+   * as wide (var(--guide-ring-edge)), a soft glow round it, pulsing gently while the step is up.
+   */
+  guideRing: 0.11,
+  guideRingMin: 5,
   /** The largest a card may be drawn, its width in CSS px (a desktop letterbox). */
   maxCard: 136,
   /**

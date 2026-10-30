@@ -40,20 +40,29 @@
    centre-cropped to the portrait card (a square back loses a little of its sides) */
 .bd-piece .bd-cover { position: absolute; display: block; overflow: hidden; background: center / cover no-repeat; }
 
-/* the guide (tutorial): a ring round the card to play, then round where it goes.
-   The screens set --guide-ring; it breathes twice when lit, then holds still. */
-.bd-ring {
-  fill: none;
-  stroke: var(--guide-ring, #74f0cf);
-  stroke-linejoin: round;
-  pointer-events: none;
-  animation: bd-ring-in 0.9s ease-in-out 2;
+/* the guide (tutorial): a ring round the card to play, then round where it goes (view.ts ringPath).
+   The creator, 2026-10-30: the thin teal ring vanished on the blue panel. Now a thick band in
+   --guide-ring with a white inner edge (--guide-ring-edge; the screens set both), a soft glow round
+   it, pulsing gently for as long as the step is up. The ring is a layer of its own (bd-ring-layer):
+   its glow is drawn once and the pulse is the layer's opacity, so it costs the phone no repaint.
+   Reduced motion: steady at full strength. */
+.bd-ring-layer {
+  position: absolute; left: 0; top: 0; pointer-events: none; will-change: opacity;
+  filter: drop-shadow(0 0 6px var(--guide-ring, #ffb51f)) drop-shadow(0 0 14px rgba(255, 181, 31, 0.6));
+  animation: bd-ring-pulse 1.6s ease-in-out infinite;
 }
+.bd-piece .bd-ring-layer svg, .bd-ring-layer svg { display: block; overflow: visible; filter: none; }
+.bd-ring path { fill: none; stroke-linejoin: round; }
+.bd-ring-band { stroke: var(--guide-ring, #ffb51f); }
+.bd-ring-edge { stroke: var(--guide-ring-edge, #fff); }
+/* the lit card over its neighbours, so they never cover its ring or glow (a lifted piece is 3) */
+.bd-piece.guide-lit { z-index: 2; }
 .bd-target { pointer-events: none; z-index: 1; }
 .bd-target.again .bd-ring { animation: bd-ring-again 0.45s ease-out 1; }
-@keyframes bd-ring-in { 0%, 100% { stroke-opacity: 1; } 50% { stroke-opacity: 0.45; } }
+@keyframes bd-ring-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 @keyframes bd-ring-again { 0% { stroke-opacity: 0.2; } 100% { stroke-opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .bd-ring, .bd-target.again .bd-ring { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .bd-ring-layer, .bd-target.again .bd-ring { animation: none; } }
+html.less-motion .bd-ring-layer, html.less-motion .bd-target.again .bd-ring { animation: none; }
 
 /* the stacks */
 .bd-stack { position: absolute; top: 0; }

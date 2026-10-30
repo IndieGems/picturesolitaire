@@ -1839,7 +1839,7 @@ export function openBoard(
   function unlight(): void {
     if (litView) {
       litView.el.classList.remove("guide-lit");
-      litView.el.querySelector(".bd-ring")?.remove();
+      litView.el.querySelector(".bd-ring-layer")?.remove();
       litView = null;
     }
     targetEl?.remove();

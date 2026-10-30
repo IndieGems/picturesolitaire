@@ -354,39 +354,65 @@ function svgCard(
 }
 
 /**
- * The guide's ring round `cells`: the piece's own rounded outline, a little
- * outside its frame, stroked in var(--guide-ring) (the screens set it). A path
- * in grid px, so it can go inside a piece's own svg and travel with it.
+ * The guide's ring round `cells`, in grid px: the piece's own rounded outline,
+ * a band (TUNING.guideRing of a card) just outside it in var(--guide-ring), and
+ * a white edge a third as wide along its inside (var(--guide-ring-edge)), so it
+ * reads on any panel or picture (the screens set both).
  */
-export function ringPath(geo: Geometry, cells: readonly number[]): SVGPathElement {
+export function ringPath(geo: Geometry, cells: readonly number[]): SVGGElement {
   const { s, sh, g } = geo;
   const xy = cells.map((c) => [c % geo.cols, (c / geo.cols) | 0] as [number, number]);
-  const out = Math.max(2, s * 0.06);
-  const p = document.createElementNS(SVGNS, "path");
+  const L = loops(xy, s, g, sh);
   const R = radiusOf(s);
-  p.setAttribute("d", path(inset(loops(xy, s, g, sh), -out), R + out, Math.max(1, R - out)));
-  p.setAttribute("class", "bd-ring");
-  p.setAttribute("stroke-width", Math.max(3, s * 0.065).toFixed(2));
-  return p;
+  const w = Math.max(TUNING.guideRingMin, s * TUNING.guideRing);
+  // the band's inner side a hair outside the card, the edge on the band's inner third
+  const out = w / 2 + 0.5;
+  const e = w / 3;
+  const oe = out - w / 2 + e / 2;
+  const line = (cls: string, at: number, width: number): SVGPathElement => {
+    const p = document.createElementNS(SVGNS, "path");
+    p.setAttribute("d", path(inset(L, -at), R + at, Math.max(1, R - at)));
+    p.setAttribute("class", cls);
+    p.setAttribute("stroke-width", width.toFixed(2));
+    return p;
+  };
+  const ring = document.createElementNS(SVGNS, "g");
+  ring.setAttribute("class", "bd-ring");
+  ring.append(line("bd-ring-band", out, w), line("bd-ring-edge", oe, e));
+  return ring;
 }
 
 /**
- * Put the guide's ring on piece `v`. A piece's svg keeps the coordinates of
- * the cells it was drawn on; when it has moved or fallen since, only its
- * element's transform says so. So the ring, built on the piece's cells now,
- * is shifted back into the svg's own coordinates (same shape, so it fits).
+ * The ring on a layer of its own over `cells` (the board's grid px): an
+ * element, so its glow (a CSS filter) is drawn once and its pulse is the
+ * element's opacity alone, which the browser runs without repainting.
+ */
+function ringLayer(geo: Geometry, cells: readonly number[], className: string): HTMLDivElement {
+  const { s, sh, g } = geo;
+  const b = box(cells.map((c) => [c % geo.cols, (c / geo.cols) | 0] as [number, number]), s, g, sh);
+  const m = Math.ceil(s * 0.16);
+  const W = b.w + 2 * m;
+  const H = b.h + 2 * m;
+  const el = document.createElement("div");
+  el.className = `bd-ring-layer ${className}`.trim();
+  el.style.cssText = `width:${W}px;height:${H}px`;
+  const svg = document.createElementNS(SVGNS, "svg");
+  svg.setAttribute("width", String(W));
+  svg.setAttribute("height", String(H));
+  svg.setAttribute("viewBox", `${b.x - m} ${b.y - m} ${W} ${H}`);
+  svg.append(ringPath(geo, cells));
+  el.append(svg);
+  return el;
+}
+
+/**
+ * Put the guide's ring on piece `v`: a layer inside its element, so it
+ * travels with it. The layer is built on the piece's cells now, so it fits
+ * the element where it stands, wherever the piece was first drawn.
  */
 export function addRing(geo: Geometry, v: PieceView): void {
-  const svg = v.el.querySelector("svg");
-  if (!svg) return;
-  const ring = ringPath(geo, v.cells);
-  const vb = svg.viewBox.baseVal;
-  const b = box(v.cells.map((c) => [c % geo.cols, (c / geo.cols) | 0] as [number, number]), geo.s, geo.g, geo.sh);
-  const m = Math.ceil(geo.s * 0.16);
-  const dx = vb.x - (b.x - m);
-  const dy = vb.y - (b.y - m);
-  if (dx || dy) ring.setAttribute("transform", `translate(${dx.toFixed(2)} ${dy.toFixed(2)})`);
-  svg.append(ring);
+  v.el.querySelector(".bd-ring-layer")?.remove();
+  v.el.append(ringLayer(geo, v.cells, ""));
 }
 
 /** The guide's ring on its own, round the cells where a piece should go. */
@@ -394,19 +420,8 @@ export function drawRing(geo: Geometry, cells: readonly number[], className: str
   const { s, sh, g } = geo;
   const b = box(cells.map((c) => [c % geo.cols, (c / geo.cols) | 0] as [number, number]), s, g, sh);
   const m = Math.ceil(s * 0.16);
-  const W = b.w + 2 * m;
-  const H = b.h + 2 * m;
-  const el = document.createElement("div");
-  el.className = className;
-  el.style.cssText = `position:absolute;left:0;top:0;width:${W}px;height:${H}px;transform:translate3d(${b.x - m}px, ${b.y - m}px, 0)`;
-  const svg = document.createElementNS(SVGNS, "svg");
-  svg.setAttribute("width", String(W));
-  svg.setAttribute("height", String(H));
-  svg.setAttribute("viewBox", `${b.x - m} ${b.y - m} ${W} ${H}`);
-  svg.style.display = "block";
-  svg.style.overflow = "visible";
-  svg.append(ringPath(geo, cells));
-  el.append(svg);
+  const el = ringLayer(geo, cells, className);
+  el.style.transform = `translate3d(${b.x - m}px, ${b.y - m}px, 0)`;
   return el;
 }
 
