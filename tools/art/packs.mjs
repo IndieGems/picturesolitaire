@@ -40,7 +40,7 @@
 // <dist>/packs/full-index.json, read only when the enlarged view first opens (UI, 2026-10-28: the
 // list of every full picture was ~60 KB of the boot's 74 KB index):
 //   {"full":{<full chunk>:[<path>,...]}}     where each full picture is (each path in one chunk)
-import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const dist = process.argv[2];
@@ -57,7 +57,10 @@ const byId = new Map([...catalogue.pictures, ...(catalogue.destinations ?? []), 
 // In the order players meet them, which is the order full pictures fill their chunks.
 // lessons: the staged lesson boards, such as the Shuffle lesson after board 3 (Levels, 2026-10-27).
 // souvenirs: each trip's Souvenir board, s1..s10, played after its stamp (Gameplay, 2026-10-28).
-const LANES = ["campaign", "lessons", "souvenirs", "challenge", "daily", "experiments"];
+// event-levels: each VIP event's 30 levels of its own, <event id>-01..30 (docs/vip.md, Levels' 69edb68),
+// each its own pack b-<level id> like a campaign board, fetched only when that level (or its event page's
+// next level) asks for it; a level hiding an item carries the item's board copy too.
+const LANES = ["campaign", "lessons", "souvenirs", "challenge", "daily", "event-levels", "experiments"];
 /** A full chunk closes before it would pass this (the biggest full picture is ~1 MB). */
 const CHUNK = 2 * 1024 * 1024;
 
@@ -71,6 +74,15 @@ function weekOf(date) {
 const dailyDate = (level) => level.date ?? /^d(\d{4}-\d{2}-\d{2})/.exec(level.id)?.[1] ?? "";
 
 const problems = [];
+// Every lane file Levels writes (src/content/levels/<lane>.json holding boards) must be one of LANES:
+// one left out ships its boards with no pictures, which the play-test cannot show because it serves the
+// loose files (2026-10-30: the 90 event levels were missed). So an unknown one fails the build.
+for (const f of readdirSync("src/content/levels").filter((f) => f.endsWith(".json"))) {
+  const lane = f.slice(0, -5);
+  const levels = read(`src/content/levels/${f}`).levels;
+  if (!LANES.includes(lane) && Array.isArray(levels) && levels.some((l) => l?.pictures || l?.destination))
+    problems.push(`src/content/levels/${f}: a lane of ${levels.length} boards packs.mjs does not pack; add "${lane}" to LANES`);
+}
 const packs = new Map(); // name -> ordered catalogue paths (duplicates dropped on write)
 const add = (name, rel) => (packs.get(name) ?? packs.set(name, []).get(name)).push(rel);
 const index = { boards: {}, full: {}, trips: {}, suitcases: {} };
@@ -89,6 +101,7 @@ for (const lane of LANES) {
       const id = typeof p === "string" ? p : p.id;
       if (!ids.includes(id)) ids.push(id);
     }
+    if (level.item?.id && !ids.includes(level.item.id)) ids.push(level.item.id); // the hidden item (dealt as a picture)
     const b = lane === "daily" ? `b-daily-w${weekOf(dailyDate(level))}` : `b-${level.id}`;
     const mine = [];
     for (const id of ids) {
@@ -104,6 +117,7 @@ for (const lane of LANES) {
         fullOrder.push(p.file);
       }
     }
+    if (index.boards[level.id]) problems.push(`${lane} ${level.id}: a board id another lane uses too (${boardFiles.get(level.id)?.lane})`);
     index.boards[level.id] = { b };
     boardFiles.set(level.id, { lane, b, files: mine });
   }
@@ -198,6 +212,11 @@ for (const [name, paths] of packs) {
   sizes.set(name, pack.length);
   ends.set(name, new Map(files.map((f) => [f.path, 4 + json.length + f.offset + f.length])));
   if (!dry) writeFileSync(join(outDir, `${name}.bin`), pack);
+}
+// Every board of every lane opens from its pack: each picture it draws is in the pack its index entry names.
+for (const [id, { lane, b, files }] of boardFiles) {
+  if (index.boards[id]?.b !== b) problems.push(`${lane} ${id}: no pack in the index`);
+  for (const f of files) if (!ends.get(b)?.has(f)) problems.push(`${lane} ${id}: its pack ${b} lacks ${f}`);
 }
 if (problems.length) {
   console.error(`packs: ${problems.length} problem(s):`);

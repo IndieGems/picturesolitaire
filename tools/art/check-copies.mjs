@@ -97,6 +97,53 @@ for (const d of catalogue.destinations ?? []) {
     bad.push(`${d.id}: no full picture (${d.file})`);
   }
 }
+// The suitcase items (the catalogue's `items`: each VIP event's 10, hidden one a level): a board copy like
+// any 2x2 picture, the full picture, and, once drawn, the cut-out its suitcase slot shows.
+for (const it of catalogue.items ?? []) {
+  check(it, it.board, it.boardPx, "board copy");
+  for (const [rel, what] of [[it.file, "full picture"], [it.cutout, "cut-out"]]) {
+    if (!rel) {
+      if (what === "cut-out" && !it.standin) bad.push(`${it.id}: no cut-out in the catalogue`);
+      continue;
+    }
+    try {
+      statSync(join(root, rel));
+    } catch {
+      bad.push(`${it.id}: no ${what} (${rel})`);
+    }
+  }
+}
+// Every picture any board deals, in every lane file Levels writes (src/content/levels/<lane>.json holding
+// boards: the campaign, the dailies, the event levels and the rest, found by reading the folder, so a new
+// lane is covered the day it lands), is in the catalogue with its board copy and full picture on disk.
+const known = new Map([...catalogue.pictures, ...(catalogue.destinations ?? []), ...(catalogue.items ?? []), ...(catalogue.souvenirPictures ?? [])].map((p) => [p.id, p]));
+let dealt = 0;
+for (const f of readdirSync("src/content/levels").filter((f) => f.endsWith(".json"))) {
+  const levels = JSON.parse(readFileSync(join("src/content/levels", f), "utf8")).levels;
+  if (!Array.isArray(levels)) continue;
+  for (const level of levels) {
+    const ids = [level.destination?.id, level.item?.id, ...(level.pictures ?? []).map((p) => (typeof p === "string" ? p : p.id))].filter(Boolean);
+    for (const id of new Set(ids)) {
+      dealt++;
+      const p = known.get(id);
+      if (!p) {
+        bad.push(`${f} ${level.id}: deals ${id}, which is not in the catalogue`);
+        continue;
+      }
+      for (const [rel, what] of [[p.board, "board copy"], [p.file, "full picture"]]) {
+        if (!rel) {
+          bad.push(`${f} ${level.id}: ${id} lists no ${what} in the catalogue`);
+          continue;
+        }
+        try {
+          statSync(join(root, rel));
+        } catch {
+          bad.push(`${f} ${level.id}: ${id} has no ${what} (${rel})`);
+        }
+      }
+    }
+  }
+}
 // No image carries metadata (EXIF, XMP, a colour profile, PNG text): bytes every player downloads
 // for nothing. tools/art/images.py squeezes each file the art scripts write; this holds the line
 // for any file made another way (2026-10-28).
@@ -147,4 +194,4 @@ if (bad.length) {
   for (const b of bad) console.error("  " + b);
   process.exit(1);
 }
-console.log(`check-copies: ${catalogue.pictures.length} pictures, ${(catalogue.destinations ?? []).length} destinations, board copies ${Math.round(boardBytes / 1024)} KB in all; ${images} images, no metadata`);
+console.log(`check-copies: ${catalogue.pictures.length} pictures, ${(catalogue.destinations ?? []).length} destinations, ${(catalogue.items ?? []).length} items, ${dealt} pictures dealt on every lane's boards; board copies ${Math.round(boardBytes / 1024)} KB in all; ${images} images, no metadata`);
