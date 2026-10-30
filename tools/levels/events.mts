@@ -7,9 +7,14 @@
 //     event: a gentle sawtooth of relief, builds and a bite, two all-long change-of-pace levels, every
 //     square level from 7 on 4x5, and a hard mark near the end (25, 30); readable and a safe start
 //     unless marked, a marked level careful (as the campaign's).
-//   - THE ITEMS: item k of the plan (slot order) hides on level ITEM_AT[k] (every third: 2, 5, ... 29),
-//     a 2x2 picture of that level, finished neither first nor last on the stored line, nothing beside it
-//     of its family or sharing a word with it (lib.mts itemClash).
+//   - THE ITEMS: item k of the plan (slot order) hides on the k-th of the event's `itemLevels` (the
+//     plan's, in level order), a 2x2 picture of that level, finished neither first nor last on the
+//     stored line, nothing beside it of its family or sharing a word with it (lib.mts itemClash). The
+//     levels are each event's own seeded draw (the creator, 2026-10-30: "lets get more random with which
+//     puzzle has the piece in it"; drawItemLevels, written into the plan once), under itemLevelsProblem's
+//     light rules: one in levels 1-5, never three levels in a row, at most 4 in any 10, never four evenly
+//     spaced in a row, none on a
+//     change-of-pace (long) level or on the hard 25 and 30 (the set stays findable without the finales).
 //   - THE PICTURES: library pictures only (the creator), clear (no atmospheric one), current (none from
 //     before the clear ones), no landmark, none flagged and none Art moved off; on no other level first
 //     (the least used), and none twice within an event.
@@ -20,6 +25,8 @@
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { random } from "../../src/game/rules.ts";
+import { hashId } from "../../src/game/levels/generate.ts";
 import { CAREFUL, READABLE } from "../../src/game/solver/metrics.ts";
 import { eventThemeOf, itemById, root, themeOf } from "./lib.mts";
 
@@ -27,8 +34,6 @@ import { eventThemeOf, itemById, root, themeOf } from "./lib.mts";
 export const EVENT_LEVELS = 30;
 /** Items an event hides, one a level. */
 export const ITEMS = 10;
-/** The levels (from 0) that hide the items, in item order: every third, 2, 5, ... 29 as players count. */
-export const ITEM_AT = Array.from({ length: ITEMS }, (_, k) => 1 + 3 * k);
 /** A level's id: "<event id>-NN". */
 export const levelId = (eventId: string, k: number) => `${eventId}-${String(k + 1).padStart(2, "0")}`;
 
@@ -86,10 +91,46 @@ for (const row of ROWS)
     reader: EVENT_MAY_TRAP.has(row.role) ? [CAREFUL, 1] : [READABLE, 1],
   });
 if (ROWS.length !== EVENT_LEVELS) throw new Error(`events.mts: ${ROWS.length} rows, an event has ${EVENT_LEVELS}`);
-for (const k of ITEM_AT) if (ROWS[k].sizes.join() !== "4") throw new Error(`events.mts: level ${k + 1} hides an item, so it is a board of squares`);
+/** The levels (from 1, as players count) an item may hide on: squares (an item is a 2x2), none hard. */
+export const ITEM_ELIGIBLE = ROWS.map((r, k) => k + 1).filter((n) => ROWS[n - 1].sizes.join() === "4" && !EVENT_MAY_TRAP.has(ROWS[n - 1].role));
+
+/** Why `levels` (level numbers from 1, the items' homes) break the light rules, or null. */
+export function itemLevelsProblem(levels: readonly number[]): string | null {
+  if (levels.length !== ITEMS) return `${levels.length} item levels, an event has ${ITEMS}`;
+  if (new Set(levels).size !== levels.length) return "a level twice";
+  if (levels.some((n, k) => k && n <= levels[k - 1]!)) return "not in level order";
+  const off = levels.filter((n) => !ITEM_ELIGIBLE.includes(n));
+  if (off.length) return `level${off.length > 1 ? "s" : ""} ${off.join(", ")}: an item hides only on a level of squares that is not hard`;
+  if (!levels.some((n) => n <= 5)) return "none in levels 1-5 (a new player finds one early)";
+  // four evenly spaced in a row read as a pattern (a first draw gave 2, 5, 8, 11: the every-third the creator turned down)
+  const gaps = levels.slice(1).map((n, k) => n - levels[k]!);
+  for (let k = 0; k + 2 < gaps.length; k++) if (gaps[k] === gaps[k + 1] && gaps[k] === gaps[k + 2]) return `four evenly spaced in a row (${levels.slice(k, k + 4).join(", ")}): a pattern`;
+  const on = new Set(levels);
+  for (let n = 1; n + 2 <= EVENT_LEVELS; n++) if (on.has(n) && on.has(n + 1) && on.has(n + 2)) return `three in a row (${n}-${n + 2})`;
+  for (let n = 1; n + 9 <= EVENT_LEVELS; n++) {
+    const inTen = levels.filter((x) => x >= n && x <= n + 9).length;
+    if (inTen > 4) return `${inTen} in levels ${n}-${n + 9}, at most 4 in any 10`;
+  }
+  return null;
+}
+
+/** An event's own seeded draw of its item levels (written into the plan once; a re-run draws the same). */
+export function drawItemLevels(eventId: string): number[] {
+  const rnd = random(hashId(`items-${eventId}`));
+  for (let attempt = 0; attempt < 100_000; attempt++) {
+    const pool = [...ITEM_ELIGIBLE];
+    for (let k = pool.length - 1; k > 0; k--) {
+      const j = Math.floor(rnd() * (k + 1));
+      [pool[k], pool[j]] = [pool[j]!, pool[k]!];
+    }
+    const levels = pool.slice(0, ITEMS).sort((a, b) => a - b);
+    if (!itemLevelsProblem(levels)) return levels;
+  }
+  throw new Error(`event ${eventId}: no draw of item levels meets the rules`);
+}
 
 export const PLAN_FILE = join(root, "tools/levels/events-plan.json");
-/** The plan: [{ id, release, items: [item ids, slot order], month? }], `month` naming Art's monthly theme a set drawn for a month takes. */
+/** The plan: [{ id, release, items: [item ids, slot order], itemLevels: [10 level numbers], month? }], `month` naming Art's monthly theme a set drawn for a month takes. */
 export const PLAN = JSON.parse(readFileSync(PLAN_FILE, "utf8")).events;
 
 /**
@@ -100,7 +141,7 @@ export const PLAN = JSON.parse(readFileSync(PLAN_FILE, "utf8")).events;
  */
 export function eventOf(p) {
   const theme = eventThemeOf.get(p.id) ?? (p.month ? themeOf.get(p.month) : undefined);
-  const items = p.items.map((id, k) => ({ id, title: itemById.get(id)?.title ?? `Item ${k + 1}`, level: levelId(p.id, ITEM_AT[k]) }));
+  const items = p.items.map((id, k) => ({ id, title: itemById.get(id)?.title ?? `Item ${k + 1}`, level: levelId(p.id, p.itemLevels[k] - 1) }));
   const standIn = !theme || p.items.length < ITEMS || p.items.some((id) => !itemById.has(id) || itemById.get(id).standin);
   const name = theme?.theme ?? "Stand-in";
   return {
@@ -126,6 +167,10 @@ export function planProblem(plan = PLAN): string | null {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(p.release ?? "")) return `${p.id}: release ${JSON.stringify(p.release)} is not a date`;
     if (plan[k - 1] && p.release < plan[k - 1].release) return `${p.id} is released ${p.release}, before ${plan[k - 1].id} (${plan[k - 1].release}): events run in release order`;
     if (!Array.isArray(p.items) || p.items.length > ITEMS) return `${p.id}: ${p.items?.length ?? 0} items, an event has ${ITEMS}`;
+    const where = Array.isArray(p.itemLevels) ? itemLevelsProblem(p.itemLevels) : "no itemLevels (make-events.mts draws them into the plan)";
+    if (where) return `${p.id}: itemLevels ${JSON.stringify(p.itemLevels ?? null)}: ${where}`;
+    const twin = plan.slice(0, k).find((q) => JSON.stringify(q.itemLevels) === JSON.stringify(p.itemLevels));
+    if (twin) return `${p.id}: the same item levels as ${twin.id}; each event has its own pattern`;
     for (const id of p.items) {
       const it = itemById.get(id);
       if (!it) return `${p.id}: item ${id} is not in the catalogue's items (Art: pictures.json items)`;

@@ -1,6 +1,6 @@
 // Builds the VIP EVENTS (creator, 2026-10-30; docs/vip.md; events.mts): for each event of
 // tools/levels/events-plan.json, its 30 levels of its own, written to src/content/levels/event-levels.json
-// (ids "<event id>-NN", the event's id in `event`, its mark on a hard one, and on the 10 item levels the
+// (ids "<event id>-NN", the event's id in `event`, its mark on a hard one, and on its 10 item levels the
 // item's `item`: {"id"}, the id one of its own 2x2 pictures), and the events' details to
 // src/content/levels/events.json (v3: theme, table, release, the 30 level ids, the 10 items and the level
 // each hides on). Shape agreed with Server (2026-10-30), who compiles both into the win checker.
@@ -25,7 +25,7 @@ import { fits, pick } from "../../src/game/levels/pick.ts";
 import { byId, catalogue, clearOrder, dealBoard, familyOf, isFlower, itemById, itemClash, MOVED_OFF, readBoards, reserveLandmarks, root, tallyText, usable, usesOf, writeBoards } from "./lib.mts";
 import { CURRENT } from "./campaign-plan.mts";
 import { isAtmospheric } from "./atmospheric.mts";
-import { EVENT_LEVELS, EVENT_MARKS, EVENT_MAY_TRAP, eventOf, ITEM_AT, levelId, PLAN, planProblem, ROWS } from "./events.mts";
+import { drawItemLevels, EVENT_LEVELS, EVENT_MARKS, EVENT_MAY_TRAP, eventOf, levelId, PLAN, PLAN_FILE, planProblem, ROWS } from "./events.mts";
 
 export const EVENTS_FILE = join(root, "src/content/levels/events.json");
 export const LEVELS_FILE = join(root, "src/content/levels/event-levels.json");
@@ -61,6 +61,18 @@ function shaped(board, event, mark, itemId) {
 
 function main() {
   const t0 = performance.now();
+  // an event with no item levels yet takes its seeded draw, written into the plan (so a reader sees them,
+  // and a later change of the draw's rules moves no shipped item)
+  const undrawn = PLAN.filter((p) => !p.itemLevels);
+  if (undrawn.length) {
+    const file = JSON.parse(readFileSync(PLAN_FILE, "utf8"));
+    for (const p of undrawn) {
+      p.itemLevels = drawItemLevels(p.id);
+      file.events.find((e) => e.id === p.id).itemLevels = p.itemLevels;
+      console.log(`${p.id}: items on levels ${p.itemLevels.join(", ")} (its seeded draw, written into events-plan.json)`);
+    }
+    writeFileSync(PLAN_FILE, JSON.stringify(file, null, 1).replace(/\[\n\s+("item|\d)/g, "[$1").replace(/(",|\d,)\n\s+(?=["\d])/g, "$1 ").replace(/("|\d)\n\s+\]/g, "$1]") + "\n");
+  }
   const problem = planProblem();
   if (problem) throw new Error(`events-plan.json: ${problem}`);
   // landmarks wait for their trips' destinations (lib.mts): none on an event level
@@ -92,7 +104,7 @@ function main() {
       const id = levelId(p.id, k);
       const row = ROWS[k];
       const [cols, rows] = row.board;
-      const at = ITEM_AT.indexOf(k);
+      const at = p.itemLevels.indexOf(k + 1);
       const it = at >= 0 && p.items[at] ? itemById.get(p.items[at]) : null;
       const mark = EVENT_MARKS[row.role];
       const n = row.count - (it ? 1 : 0);

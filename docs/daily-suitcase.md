@@ -47,8 +47,9 @@ event.
   - the curve, the same for every event (`events.mts` ROWS; docs/difficulty-curve.md "The VIP
     events"): a gentle sawtooth, levels 25 and 30 marked hard; library pictures only, the least used
     first, none twice within an event;
-  - the 10 items one a level on levels 2, 5, 8 ... 29, each a 2x2 picture finished neither first nor
-    last on the stored line, nothing beside it sharing its family or a word;
+  - the 10 items one a level on each event's own seeded draw of levels (`itemLevels`: one in 1-5, never
+    three in a row, at most 4 in any 10, none on a long or hard level), each a 2x2 picture finished
+    neither first nor last on the stored line, nothing beside it sharing its family or a word;
   - the dailies carry no item (lifted in place, 2026-10-30) and stay under today's rules from
     1 September 2026.
   - Now (the creator, 2026-10-30: a new event every two weeks): Haunted Holiday from 15 Oct 2026 (ten

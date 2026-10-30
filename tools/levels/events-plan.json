@@ -1,33 +1,28 @@
 {
- "//": "The VIP events (docs/vip.md): which packs exist and from when, read by tools/levels/events.mts. Each entry is one event of 30 levels of its own: `id` (lower case, never reused; its levels are <id>-01..30), `release` (the day VIPs can first play it; it never closes), `items` (Art's 2x2 item pictures, slot order, 10, each in one event only: item k hides on level 2, 5, 8 ... 29) and, for a set of items drawn for a month, `month` (Art's monthly theme and table in pictures.json `suitcases`; otherwise Art's `events` entry for the id). Events run in release order; back to back, a gap or none are all just entries. After an edit: node tools/levels/make-events.mts (it keeps every level already made), then check.mts.",
- "events": [
+ "//": "The VIP events (docs/vip.md): which packs exist and from when, read by tools/levels/events.mts. Each entry is one event of 30 levels of its own: `id` (lower case, never reused; its levels are <id>-01..30), `release` (the day VIPs can first play it; it never closes), `items` (Art's 2x2 item pictures, slot order, 10, each in one event only: item k hides on the k-th of `itemLevels`, the event's own seeded draw of 10 levels that make-events.mts writes in once: events.mts itemLevelsProblem) and, for a set of items drawn for a month, `month` (Art's monthly theme and table in pictures.json `suitcases`; otherwise Art's `events` entry for the id). Events run in release order; back to back, a gap or none are all just entries. After an edit: node tools/levels/make-events.mts (it keeps every level already made), then check.mts.", "events": [
   {
-   "id": "halloween-2026",
-   "release": "2026-10-15", "items": ["item-halloween-2026-01", "item-halloween-2026-02", "item-halloween-2026-03", "item-halloween-2026-04", "item-halloween-2026-05", "item-halloween-2026-06", "item-halloween-2026-07", "item-halloween-2026-08", "item-halloween-2026-09", "item-halloween-2026-10"]
+   "id": "halloween-2026", "release": "2026-10-15", "items": ["item-halloween-2026-01", "item-halloween-2026-02", "item-halloween-2026-03", "item-halloween-2026-04", "item-halloween-2026-05", "item-halloween-2026-06", "item-halloween-2026-07", "item-halloween-2026-08", "item-halloween-2026-09", "item-halloween-2026-10"],
+   "itemLevels": [1, 3, 7, 10, 12, 13, 20, 22, 23, 26]
   },
   {
-   "id": "ski-trip-2026",
-   "release": "2026-11-01",
-   "month": "2026-11", "items": ["item-2026-11-01", "item-2026-11-02", "item-2026-11-03", "item-2026-11-04", "item-2026-11-05", "item-2026-11-06", "item-2026-11-07", "item-2026-11-08", "item-2026-11-09", "item-2026-11-10"]
+   "id": "ski-trip-2026", "release": "2026-11-01", "month": "2026-11", "items": ["item-2026-11-01", "item-2026-11-02", "item-2026-11-03", "item-2026-11-04", "item-2026-11-05", "item-2026-11-06", "item-2026-11-07", "item-2026-11-08", "item-2026-11-09", "item-2026-11-10"],
+   "itemLevels": [1, 2, 8, 14, 17, 19, 23, 24, 28, 29]
   },
   {
-   "id": "train-journey-2026",
-   "release": "2026-11-15", "items": ["item-train-journey-2026-01", "item-train-journey-2026-02", "item-train-journey-2026-03", "item-train-journey-2026-04", "item-train-journey-2026-05", "item-train-journey-2026-06", "item-train-journey-2026-07", "item-train-journey-2026-08", "item-train-journey-2026-09", "item-train-journey-2026-10"]
+   "id": "train-journey-2026", "release": "2026-11-15", "items": ["item-train-journey-2026-01", "item-train-journey-2026-02", "item-train-journey-2026-03", "item-train-journey-2026-04", "item-train-journey-2026-05", "item-train-journey-2026-06", "item-train-journey-2026-07", "item-train-journey-2026-08", "item-train-journey-2026-09", "item-train-journey-2026-10"],
+   "itemLevels": [3, 5, 9, 10, 14, 17, 19, 26, 28, 29]
   },
   {
-   "id": "winter-market-2026",
-   "release": "2026-12-01",
-   "month": "2026-12", "items": ["item-2026-12-01", "item-2026-12-02", "item-2026-12-03", "item-2026-12-04", "item-2026-12-05", "item-2026-12-06", "item-2026-12-07", "item-2026-12-08", "item-2026-12-09", "item-2026-12-10"]
+   "id": "winter-market-2026", "release": "2026-12-01", "month": "2026-12", "items": ["item-2026-12-01", "item-2026-12-02", "item-2026-12-03", "item-2026-12-04", "item-2026-12-05", "item-2026-12-06", "item-2026-12-07", "item-2026-12-08", "item-2026-12-09", "item-2026-12-10"],
+   "itemLevels": [2, 3, 5, 12, 17, 18, 22, 26, 27, 29]
   },
   {
-   "id": "northern-lights-2026",
-   "release": "2026-12-15",
-   "month": "2027-01", "items": ["item-2027-01-01", "item-2027-01-02", "item-2027-01-03", "item-2027-01-04", "item-2027-01-05", "item-2027-01-06", "item-2027-01-07", "item-2027-01-08", "item-2027-01-09", "item-2027-01-10"]
+   "id": "northern-lights-2026", "release": "2026-12-15", "month": "2027-01", "items": ["item-2027-01-01", "item-2027-01-02", "item-2027-01-03", "item-2027-01-04", "item-2027-01-05", "item-2027-01-06", "item-2027-01-07", "item-2027-01-08", "item-2027-01-09", "item-2027-01-10"],
+   "itemLevels": [2, 5, 8, 9, 14, 18, 21, 22, 24, 29]
   },
   {
-   "id": "carnival-2027",
-   "release": "2027-01-01",
-   "month": "2027-02", "items": ["item-2027-02-01", "item-2027-02-02", "item-2027-02-03", "item-2027-02-04", "item-2027-02-05", "item-2027-02-06", "item-2027-02-07", "item-2027-02-08", "item-2027-02-09", "item-2027-02-10"]
+   "id": "carnival-2027", "release": "2027-01-01", "month": "2027-02", "items": ["item-2027-02-01", "item-2027-02-02", "item-2027-02-03", "item-2027-02-04", "item-2027-02-05", "item-2027-02-06", "item-2027-02-07", "item-2027-02-08", "item-2027-02-09", "item-2027-02-10"],
+   "itemLevels": [2, 3, 10, 14, 17, 18, 23, 24, 27, 29]
   }
  ]
 }

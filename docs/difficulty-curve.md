@@ -489,18 +489,18 @@ and a bite, two all-long change-of-pace levels, and a hard mark only near the en
 | levels | board | squares | careless win | role |
 | --- | --- | --- | --- | --- |
 | 1, 4 | 4x4 | 5 | 85-100% | relief |
-| 2 | 4x4 | 6 | 85-100% | build (item) |
+| 2 | 4x4 | 6 | 85-100% | build |
 | 3 | 4x4 | 7 | 55-75% | the first bite |
-| 5 | 4x4 | 7 | 65-85% | build (item) |
+| 5 | 4x4 | 7 | 65-85% | build |
 | 6, 15 | 4x4 | 10, 12 long | 85-100% | change of pace |
 | 7, 10 | 4x5 | 9 | 70-85% | build |
-| 8, 11 | 4x5 | 10 | 55-70% | bite (items) |
+| 8, 11 | 4x5 | 10 | 55-70% | bite |
 | 9, 12, 18 | 4x5 | 8 | 85-100% | relief |
 | 13, 16, 19 | 4x5 | 10 | 60-75% | build |
-| 14 | 4x5 | 10 | 50-65% | bite (item) |
-| 17, 20, 23 | 4x5 | 11 | 45-60% | bite (items) |
-| 21, 24, 26 | 4x5 | 9 | 80-100% | relief (26: item) |
-| 22, 27, 29 | 4x5 | 10 | 55-70% | build (29: item) |
+| 14 | 4x5 | 10 | 50-65% | bite |
+| 17, 20, 23 | 4x5 | 11 | 45-60% | bite |
+| 21, 24, 26 | 4x5 | 9 | 80-100% | relief |
+| 22, 27, 29 | 4x5 | 10 | 55-70% | build |
 | 25 | 4x5 | 11 | 30-50% | **hard** (marked) |
 | 28 | 4x5 | 11 | 40-55% | bite |
 | 30 | 5x5 | 13 | 25-40% | **hard** (marked), the finale |
@@ -508,8 +508,11 @@ and a bite, two all-long change-of-pace levels, and a hard mark only near the en
 - Every unmarked level is readable (a player who draws by the face-up cards wins 85% or more) with a
   safe start; the two marked ones may trap from the first move, and a careful player still wins 1 in 4
   or more. The dial is the picture count (peek 0), from the survey above.
-- The items hide on levels 2, 5, 8 ... 29 (every third), never on a change-of-pace level (an item is a
-  square) and never on a marked one, each finished neither first nor last on the stored line.
+- The items hide on each event's own seeded draw of 10 levels (the creator, 2026-10-30: "lets get more
+  random with which puzzle has the piece in it"; `itemLevels` in events-plan.json), under light rules:
+  one in levels 1-5, never three in a row, at most 4 in any 10, never four evenly spaced in a row, and
+  never on a change-of-pace level (an item is a square) or on the hard 25 and 30, so the set is
+  findable without the finales. Each is finished neither first nor last on the stored line.
 - A first try at 6 squares on 4x4 for 75-95% found no deal: 5 or 6 squares there are always won.
 
 ## Watching real players (from config v28)
