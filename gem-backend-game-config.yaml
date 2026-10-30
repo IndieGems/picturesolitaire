@@ -3073,13 +3073,15 @@ run_types:
     challenge: 6d1f3b0e-8a52-4c7e-9f14-2b6e0d9a7c31
 
 # The day's results, for comparing with friends (gem.leaderboards.friends): fewest
-# moves first, then the quicker time. One board per date (per_period).
+# moves first, and a tie to whoever finished first (the creator, 2026-10-30): the
+# platform's own tie-break, the earlier run, which the player cannot forge. The time
+# is the game's clock (the checker only bounds it), so it is shown, never ranked.
+# One board per date (per_period).
 leaderboards:
   - id: daily
     run_type: daily_result
     order_by:
       - { column: int_value_1, direction: asc }
-      - { column: int_value_2, direction: asc }
     per_period: true
     max_size: 100
     update_frequency_seconds: 300
