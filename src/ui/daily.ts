@@ -4,13 +4,17 @@
 //   Home's Daily tile     today's state: ready to play, or done in N moves. It opens THE DAILY PAGE
 //                         (the creator, 2026-10-30: the archive's VIP badge on the tile made the daily
 //                         itself look locked, and it never is)
-//   the Daily page        today's puzzle first: "Play today's puzzle", big, or once won "Played ✓"
-//                         and the result; then the past days (the archive: for a VIP a strip of the
-//                         last days and the calendar, daily-archive.ts; for anyone else the archive's
-//                         locked door, about the archive alone, vip-door.ts); then today's friends
-//                         (Server's src/net/daily-board.ts, read as the page opens, never on a
-//                         timer): fewest moves first, a tie to whoever finished first (the platform's
-//                         own tie-break); the time each took is shown, never ranked
+//   the Daily page        the past days at the top (the archive: for a VIP a strip of the last days
+//                         and the calendar, daily-archive.ts; for anyone else the archive's locked
+//                         door, about the archive alone, vip-door.ts); then today's friends (Server's
+//                         src/net/daily-board.ts, read as the page opens, never on a timer): fewest
+//                         moves first, a tie to whoever finished first (the platform's own
+//                         tie-break); the time each took is shown, never ranked. Those two scroll.
+//                         TODAY is the band at the foot, never scrolled away (the creator, 2026-10-30:
+//                         "bottom, thumb-sized"; at the top it was too easily overlooked): "Today ·
+//                         Friday, Oct 30" over "Play today's puzzle", wide and the page's tallest
+//                         button, a light sweeping across it now and then; once won it steps down
+//                         to "Today ✓ · 23 moves" and a normal Play again
 //   the board             plays as any other; its top row shows par and the moves so far; every way
 //                         off a daily's win card comes back here (app.ts)
 //
@@ -36,6 +40,7 @@ import { liveAttr, liveText, locale, t } from "./i18n";
 import { clock, shortDate } from "./format";
 import { dailyResult, onProgress } from "../net/progress";
 import { vipTag } from "./vip-door";
+import { onArcadePause } from "../gem";
 import { onVip, vipNow } from "./vip-view";
 
 type Nav = {
@@ -68,6 +73,16 @@ function btn(cls: string, press: string, words: string): HTMLButtonElement {
   return b;
 }
 
+/** How often the light sweeps across today's button (style.css's daily-shine lasts 1.4 s of it). */
+const SHINE_MS = 5500;
+
+/** "Friday, Oct 30": a date's weekday, short month and day in the page's language. */
+function dayDate(date: string): string {
+  const [y, m, d] = date.split("-").map(Number);
+  if (!y || !m || !d) return date;
+  return new Intl.DateTimeFormat(locale(), { weekday: "long", month: "short", day: "numeric", timeZone: "UTC" }).format(Date.UTC(y, m - 1, d));
+}
+
 /** "2026-10-29" a day `n` before `date`. */
 function daysBefore(date: string, n: number): string {
   const [y, m, d] = date.split("-").map(Number);
@@ -98,14 +113,16 @@ export function createDaily(nav: Nav) {
   back.innerHTML = ICONS.back;
   liveAttr(back, "aria-label", "daily.back");
   back.addEventListener("click", nav.home);
-  const todayBox = el("section", "daily-today glass");
   const archiveBox = el("section", "daily-archive");
   const friendsBox = el("section", "daily-friends");
   const scroll = el("div", "scroll");
-  scroll.append(todayBox, archiveBox, friendsBox);
+  scroll.append(archiveBox, friendsBox);
+  // today's band, under the scrolling column: frosted, so the table's corner things (a hat, shells)
+  // never sit behind the button
+  const band = el("section", "daily-band glass");
   const screen = el("section", "screen menu-screen daily-screen");
   screen.hidden = true;
-  screen.append(pill, back, scroll);
+  screen.append(pill, back, scroll, band);
 
   let day: DailyToday | null = null;
   let board: Daily | null = null;
@@ -153,24 +170,64 @@ export function createDaily(nav: Nav) {
     void openPage();
   });
 
-  /** Today's puzzle: the big button, or once won, the result and Play again. */
+  /** Today's band: the big button, or once won, the result and a normal Play again. */
   function drawToday(): void {
     if (!day || !board) return;
     const mine = dailyResult(day.date);
     const b = board;
-    const head = el("h2", "daily-today-head", t("daily.today"));
+    stopShine();
+    band.classList.toggle("done", !!mine);
     if (!mine) {
-      const play = btn("amber next daily-play", "daily.play", t("daily.play"));
+      const play = btn("amber next daily-go", "daily.play", t("daily.play"));
       play.addEventListener("click", () => nav.play(b));
-      todayBox.replaceChildren(head, play);
+      play.addEventListener("animationend", () => play.classList.remove("shine"));
+      band.replaceChildren(el("p", "daily-band-line", t("daily.todayLine", { date: dayDate(day.date) })), play);
+      shineSoon();
       return;
     }
-    const done = el("p", "daily-done");
-    done.append(el("b", "", t("daily.played")), el("span", "", t("daily.result", { count: mine.moves, time: clock(mine.ms) })));
     const again = btn("daily-again", "daily.again", t("daily.again"));
     again.addEventListener("click", () => nav.play(b));
-    todayBox.replaceChildren(head, done, el("p", "daily-note", t("daily.firstCounts")), again);
+    band.replaceChildren(
+      el("p", "daily-band-line", t("daily.todayDone", { count: mine.moves })),
+      el("p", "daily-band-note", t("daily.firstCounts")),
+      again,
+    );
   }
+
+  // The light across the big button: one sweep every few seconds, started by a slow timer so nothing
+  // asks for frames between sweeps (the standard's battery rule), and none at all with reduced motion,
+  // under Battery saver, while the page is hidden or the Arcade has the game paused.
+  let shineTimer = 0;
+  let paused = false;
+  const calm = (): boolean => {
+    const c = document.documentElement.classList;
+    return c.contains("less-motion") || c.contains("battery-saver") || matchMedia("(prefers-reduced-motion: reduce)").matches;
+  };
+  function stopShine(): void {
+    clearTimeout(shineTimer);
+    shineTimer = 0;
+  }
+  function shineSoon(): void {
+    stopShine();
+    if (screen.hidden || document.hidden || paused) return;
+    shineTimer = window.setTimeout(() => {
+      shineTimer = 0;
+      const go = band.querySelector<HTMLElement>(".daily-go");
+      if (!go || screen.hidden) return;
+      if (!calm()) {
+        go.classList.remove("shine");
+        void go.offsetWidth; // the sweep starts over
+        go.classList.add("shine");
+      }
+      shineSoon();
+    }, SHINE_MS);
+  }
+  onArcadePause((p) => {
+    paused = p;
+    if (p) stopShine();
+    else shineSoon();
+  });
+  document.addEventListener("visibilitychange", () => (document.hidden ? stopShine() : shineSoon()));
 
   /** The past days: a VIP's strip of the last week and the calendar; anyone else's locked door, about the archive alone. */
   function drawArchive(): void {
@@ -261,6 +318,7 @@ export function createDaily(nav: Nav) {
     draw();
     nav.show();
     scroll.scrollTop = 0;
+    shineSoon(); // the page is up now (drawn while it was still hidden)
     await readFriends(token);
     // a first finish still on its way to the checker: the board as it is now, then once more when the
     // checker answers, so the player's own row joins it (Server's board reads it again only then)
