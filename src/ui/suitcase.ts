@@ -42,7 +42,7 @@ import { BUILT_IN_TABLE, knownTable, thumbOf } from "./tables";
 import { shortDate } from "./format";
 import { markTag } from "./marks";
 import { loadItems, suitcaseItem } from "./catalogue";
-import { ensureSuitcase, fileUrl } from "../packs";
+import { ensureSuitcase, fileUrl, resident } from "../packs";
 
 type Nav = {
   home(): void;
@@ -80,11 +80,18 @@ export const progressLine = (e: EventPack): string =>
  * An item's picture. Art's cut-out (the object alone, on transparency) once there is one: itself when
  * found, darkened to its outline when missing. Without a cut-out (Art's stand-ins): the board copy
  * when found, a dashed outline with its first letter when missing. No art at all: a stand-in tile.
+ * A built game's file not in yet (the event's pack is on its way, src/packs.ts): an empty slot, and
+ * the page is drawn again once it lands (never the plain path, which a built game does not serve).
  */
 function itemPic(it: SuitItem, missing: boolean): HTMLElement {
   const box = el("span", `item-pic${missing ? " missing" : ""}`);
   const art = suitcaseItem(it.id);
-  const src = it.pic ?? (art ? fileUrl(art.cutout ?? art.picture) : null);
+  const file = art ? (art.cutout ?? art.picture) : null;
+  if (!it.pic && file && !resident(file)) {
+    box.setAttribute("aria-hidden", "true");
+    return box;
+  }
+  const src = it.pic ?? (file ? fileUrl(file) : null);
   const cutout = !!(it.pic || art?.cutout);
   if (src && (cutout || !missing)) {
     if (cutout) box.classList.add("cutout");

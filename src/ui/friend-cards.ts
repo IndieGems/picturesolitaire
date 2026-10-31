@@ -225,17 +225,47 @@ export function createFriendCards(app: HTMLElement) {
     };
     const first = state();
     draw(first);
-    if (first !== "yes") {
-      const off = onFriendState(() => {
-        // the card closed, or the button is out: nothing more to hear
-        if (!row.isConnected) return off();
+    // the button is not in yet: a later read may bring it (true: it is in, nothing more to hear)
+    if (first !== "yes")
+      listen(row, () => {
         const s = state();
-        if (s === "asking") return;
+        if (s === "asking") return false;
         draw(s);
-        if (s === "yes") off();
+        return s === "yes";
       });
-    }
     return h("div", { class: "social" }, row, say);
+  }
+
+  // The rows still waiting on the friends list (their card opened before a read found a friend; a
+  // later one may). One listener for them all, and each row held WEAKLY: a card that has closed,
+  // whichever way (Next, Home and a later card, Back, a replay), is kept alive by nothing here, and is
+  // dropped from the list on the next row made or the next read (QA, 2026-10-30: a listener of each
+  // row's own was let go only on the next read, which in the Arcade comes only after a pause or from
+  // the challenge sheet, and never where challenges are not offered, so every win card stayed in
+  // memory, its pictures and all: ~1.8 MB a level).
+  const waiting = new Set<WeakRef<HTMLElement>>();
+  const heardBy = new WeakMap<HTMLElement, () => boolean>();
+  let unhear: (() => void) | null = null;
+  /** Let go of the rows whose card is gone; stop listening once none is left. */
+  function prune(): void {
+    for (const ref of waiting) if (!ref.deref()?.isConnected) waiting.delete(ref);
+    if (!waiting.size && unhear) {
+      unhear();
+      unhear = null;
+    }
+  }
+  /** Row `row` hears each settled read through `heard` (true: it needs no more) while its card is up. */
+  function listen(row: HTMLElement, heard: () => boolean): void {
+    prune();
+    heardBy.set(row, heard);
+    waiting.add(new WeakRef(row));
+    unhear ??= onFriendState(() => {
+      for (const ref of waiting) {
+        const r = ref.deref();
+        if (r?.isConnected && heardBy.get(r)?.()) waiting.delete(ref);
+      }
+      prune();
+    });
   }
 
   /** Challenge back: one press, one ask, straight to the sender (the Arcade confirms and sends). */

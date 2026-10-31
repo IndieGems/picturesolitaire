@@ -20,7 +20,7 @@
 // then only the span that holds the files wanted. A host that ignores Range answers 200:
 // the stream is read only as far as the last byte wanted, then dropped. Which one the host
 // did is logged once outside a release build, for QA. Every file becomes a blob URL, kept
-// for the last few boards and every trip opened.
+// for the last few boards, the board on screen, every trip opened and the event shown.
 //
 // In the dev loop (and any build without packs/index.json) nothing is packed: every path
 // is the plain file under public/, resident at once, and ensure() does nothing. So the
@@ -31,6 +31,7 @@
 //   ensure(paths, board)   load them from that board's packs; resolves once they are resident,
 //                          rejects when a pack would not load (the plain path then 404s)
 //   ensureTrip(trip)       a trip's passport copies
+//   ensureSuitcase(event)  an event's item cut-outs (read again once let go)
 
 const base = import.meta.env.BASE_URL;
 
@@ -66,6 +67,12 @@ const KEEP = 6;
  * and the next board's prefetch as the card opened let its own picture go).
  */
 let pinned: string | null = null;
+/**
+ * The event whose items were asked for last (its page, or a level hiding one of its items): its
+ * cut-outs are never let go, as the board on screen's are not. Another event's go with the old
+ * boards (each event's ~380 KB), and ensureSuitcase reads them again when they are wanted.
+ */
+let pinnedCase: string | null = null;
 /** A pack's index is near its start: the first read asks for this much. */
 const HEAD_BYTES = 32 * 1024;
 /** Files in a shared pack this close together are read in one span (a gap costs less than a request). */
@@ -394,8 +401,9 @@ function remember(owner: string, paths: string[]): void {
     by.add(owner);
     wantedBy.set(p, by);
   }
-  // let go of what only boards long gone wanted (a trip's passport copies are kept, and the board on screen)
-  const going = () => recent.filter((o) => !o.startsWith("trip:") && o !== pinned);
+  // let go of what only boards long gone wanted (a trip's passport copies are kept, the board on
+  // screen's files, and the event's whose items were asked for last)
+  const going = () => recent.filter((o) => !o.startsWith("trip:") && o !== pinned && o !== pinnedCase);
   while (going().length > KEEP) {
     const old = going()[0]!;
     recent.splice(recent.indexOf(old), 1);
@@ -500,15 +508,27 @@ export async function ensureTrip(trip: string): Promise<void> {
   return job;
 }
 
-const suitcasesIn = new Set<string>();
+/** Each event's item files, once its pack has been read. */
+const suitcaseFiles = new Map<string, string[]>();
 
-/** A month's suitcase items (their cut-outs, or board copies while Art's are stand-ins: its own pack, whole), read once. */
-export async function ensureSuitcase(month: string): Promise<void> {
-  if (suitcasesIn.has(month)) return;
+/**
+ * An event's items (by its id; a month, "YYYY-MM", for an item in no event): their cut-outs, or board
+ * copies while Art's are stand-ins, from its own pack, whole. Read again whenever any of them has been
+ * let go (QA, 2026-10-30: an event's pack went with the old boards, and a "read once" said it was still
+ * in, so after about six levels its page showed every item as a broken picture until a reload).
+ */
+export async function ensureSuitcase(event: string): Promise<void> {
   const idx = await loadIndex();
-  const name = (idx as (Index & { suitcases?: Record<string, string> }) | null)?.suitcases?.[month];
+  const name = (idx as (Index & { suitcases?: Record<string, string> }) | null)?.suitcases?.[event];
   if (!name) return;
-  const owner = `suitcase:${month}`;
+  const owner = `suitcase:${event}`;
+  // asked for now: the newest, and kept while it is the event shown (pinnedCase)
+  pinnedCase = owner;
+  const files = suitcaseFiles.get(event);
+  if (files) {
+    remember(owner, files);
+    if (files.every((p) => urls.has(p))) return;
+  }
   let job = loading.get(owner);
   if (!job) {
     job = (async () => {
@@ -516,8 +536,9 @@ export async function ensureSuitcase(month: string): Promise<void> {
       const head = headFrom(bytes);
       if (!head) throw new Error(`${name}: no index`);
       keep([...head.files.values()], head, bytes, 0);
-      remember(owner, [...head.files.keys()]);
-      suitcasesIn.add(month);
+      const paths = [...head.files.keys()];
+      suitcaseFiles.set(event, paths);
+      remember(owner, paths);
     })();
     loading.set(owner, job);
     void job.catch(() => undefined).finally(() => loading.delete(owner));

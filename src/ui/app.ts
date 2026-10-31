@@ -73,7 +73,7 @@ import { keepFitted } from "./fit";
 import { cardAspect, syncCardAspect } from "./cards";
 import { createViewer } from "./viewer";
 import { closed, cornerKey, opened } from "./dialogs";
-import { markAt, markOf, markTag, markWords, pretendMarks, type Mark } from "./marks";
+import { boardAt, markAt, markTag, markWords, pretendMarks, type Mark } from "./marks";
 import { allDone, awaitingRecord, createHome, nextBoard, warmTripStamp } from "./home";
 import { KINDS, KIT, stock, type HelperKind } from "./stock";
 import { createHelperRest } from "./helper-cooldown";
@@ -687,6 +687,8 @@ function prefetch(lvl: Level | null | undefined): void {
 function prefetchBoard(n: number): void {
   void loadLevel(n).then(prefetch, () => undefined);
 }
+/** The campaign board a play opens by its number (a campaign board, or a friend's one-off of one), else null. */
+const boardToLoad = (p: Play): number | null => (p.kind === "campaign" ? p.level : p.kind === "oneoff" && typeof p.o.open === "number" ? p.o.open : null);
 /** Is campaign board `n`'s trip loaded, so that campaignLevel(n) answers? */
 function campaignReady(n: number): boolean {
   try {
@@ -716,12 +718,13 @@ function openPlay(next: Play): void {
   if (next.kind === "campaign" && tripEndingAt(boardNumber(next.level))) void loadSouvenirList();
   // a campaign board whose trip has not loaded (a trip at a time): its boards first, home's Play
   // saying "Opening…" meanwhile, then this again (only the last board asked for opens)
-  if (next.kind === "campaign" && !campaignReady(next.level)) {
+  const n = boardToLoad(next);
+  if (n !== null && !campaignReady(n)) {
     const at = ++packWait;
     const onHome = screen === "home";
     if (onHome) homeUi.opening(true);
     const asked = next;
-    void loadLevel(asked.level).then(
+    void loadLevel(n).then(
       () => {
         if (onHome) homeUi.opening(false);
         if (at === packWait) openPlay(asked);
@@ -757,6 +760,11 @@ function openPlay(next: Play): void {
 
 /** Open `next`, its pictures in (or plain files). */
 function openLoaded(next: Play): void {
+  // its level is in before anything reads it (the board, its banners, the top row, the win): a campaign
+  // board whose trip has not loaded goes back through openPlay, which loads it first (QA, 2026-10-30: a
+  // start-up once threw "board 16 is not loaded yet", which on a phone is a dead screen)
+  const n = boardToLoad(next);
+  if (n !== null && !campaignReady(n)) return void openPlay(next);
   if (!online()) {
     waiting = next;
     drawOffline();
@@ -846,10 +854,11 @@ function bannersFor(p: Play): Banner[] {
     return m ? [{ cls: m, text: markWords(m), shown: () => emit("board:mark", { mark: m }) }] : [];
   }
   if (p.kind !== "campaign") return [];
-  const lvl = campaignLevel(p.level);
-  const m = markOf(lvl);
+  // from the campaign's skeleton (its size and mark), always here, its trip loaded or not
+  const b = boardAt(p.level);
+  const m = markAt(p.level);
   const out: Banner[] = m ? [{ cls: m, text: markWords(m), shown: () => emit("board:mark", { mark: m }) }] : [];
-  const size = lvl.deal.cols === lvl.deal.rows ? SIZE_BANNERS[lvl.deal.cols] : undefined;
+  const size = b && b.cols === b.rows ? SIZE_BANNERS[b.cols] : undefined;
   if (size && !isPractice(p) && !lessonSeen(size.seen)) out.push({ cls: "big", text: t(size.words), shown: () => learnt(size.seen) });
   return out;
 }
@@ -886,7 +895,7 @@ function drawPill(): void {
   // a practice board says so beside its name (the dev menu's tag: information, never a button)
   const tag = isPractice(play) ? dev?.tag() : null;
   if (play.kind === "campaign") {
-    const mark = markOf(campaignLevel(play.level));
+    const mark = markAt(play.level);
     const name = h("span", { class: "level-name" }, t("board.level", { level: boardNumber(play.level) }));
     // a hard board's tag by the number (marks.ts); with the practice tag too, both under the number
     const tags = [...(mark ? [markTag(mark, true)] : []), ...(tag ? [tag] : [])];

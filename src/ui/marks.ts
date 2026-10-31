@@ -15,7 +15,7 @@
 // and no shadow, warm red-coral for hard, deep purple for super hard (style.css,
 // --mark-hard and --mark-super, both 4.7:1 or more under white text).
 
-import { campaign } from "virtual:ps-content";
+import { campaign, type BoardSkeleton } from "virtual:ps-content";
 import { t } from "./i18n";
 
 export type Mark = "hard" | "super";
@@ -32,10 +32,18 @@ export function markOf(board: { id: string }): Mark | null {
   return pretended.has(board.id) ? pretended.get(board.id)! : (stored.get(board.id) ?? null);
 }
 
+/**
+ * Campaign board `n`'s skeleton (from 1, going round past the last, as level(n)): its id, trip, size and
+ * mark, always here, its trip loaded or not.
+ */
+export function boardAt(n: number): BoardSkeleton | undefined {
+  const count = campaign.boards.length;
+  return count ? campaign.boards[(((Math.floor(n) - 1) % count) + count) % count] : undefined;
+}
+
 /** The mark of campaign board `n` (from 1, going round past the last, as level(n)), loaded or not. */
 export function markAt(n: number): Mark | null {
-  const count = campaign.boards.length;
-  const b = count ? campaign.boards[(((Math.floor(n) - 1) % count) + count) % count] : undefined;
+  const b = boardAt(n);
   return b ? markOf(b) : null;
 }
 
