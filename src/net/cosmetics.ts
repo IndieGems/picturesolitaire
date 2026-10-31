@@ -123,7 +123,10 @@ export const cosmetics = {
       try {
         await gem.awaitIdentity(10_000);
       } catch {
-        // no identity yet: the reads below fail and the next open asks again
+        // no identity yet (a play token refused or still on its way): nothing is asked, and the
+        // next open asks again. SDK 16.1.0's gameConfig.load() with no identity throws a TypeError
+        // (an empty game id in its path; QA 2026-10-30 finding 4), so it is never asked so.
+        return;
       }
       await Promise.all([readOffers(), readCoins()]);
       changed();

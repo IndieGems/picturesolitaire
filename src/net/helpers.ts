@@ -74,6 +74,10 @@ const owed: HelperKind[] = [];
 const waiting: { kind: HelperKind; answer: (a: SpendAnswer) => void }[] = [];
 /** Coins prices, of one and of a pack of 3. */
 const prices: Record<Pack, Record<HelperKind, number | null>> = { 1: { hint: null, undo: null, shuffle: null }, 3: { hint: null, undo: null, shuffle: null } };
+/** The prices are read (once a session); the waiting ask again while not, and how many failed in a row. */
+let pricesRead = false;
+let priceRetry: (() => void) | null = null;
+let priceTries = 0;
 let coins: number | null = null;
 let known = !framed;
 let sending = false;
@@ -110,7 +114,19 @@ async function readStock(fresh: boolean): Promise<boolean> {
   }
 }
 
+/**
+ * The prices, once a session. With no identity yet (a play token refused or still on its way) they
+ * are not known yet: nothing is asked, and they are asked again on a wait that grows
+ * (src/net/pace.ts), quietly. (SDK 16.1.0's gameConfig.load() asked with no identity builds its
+ * path from an empty game id and throws a TypeError, QA 2026-10-30 finding 4: never ask it so.)
+ */
 async function readPrices(): Promise<void> {
+  if (pricesRead) return;
+  try {
+    await gem.awaitIdentity(10_000);
+  } catch {
+    return pricesLater();
+  }
   try {
     const config = await gem.gameConfig.load();
     const recipes = config?.catalogs.find((c) => c.id === IDS.catalog)?.recipes ?? [];
@@ -119,9 +135,22 @@ async function readPrices(): Promise<void> {
         prices[pack][k] = recipes.find((x) => x.id === id)?.platform_prices?.[0]?.price ?? null;
       }
     }
+    pricesRead = true;
+    priceTries = 0;
   } catch (err) {
+    heard(err);
     console.warn(`[helpers] the prices could not be read: ${refusalOf(err)}`);
+    if (notNow(err)) pricesLater();
   }
+}
+
+/** Ask for the prices again in a while (one waiting ask at a time), and say so when they land. */
+function pricesLater(): void {
+  priceRetry?.();
+  priceRetry = whenDue(backoff(++priceTries, 5000), () => {
+    priceRetry = null;
+    void readPrices().then(() => pricesRead && changed());
+  });
 }
 
 async function readCoins(): Promise<void> {
