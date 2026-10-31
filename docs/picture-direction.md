@@ -132,6 +132,12 @@ top-left and torso up.
 - **A healthy mix of all races** (creator, 2026-10-30, after the new-library pilot): the
   earlier push for many more people of colour, particularly African Americans, has done its
   work, so new people pictures mix every background, each true to the style's culture and period.
+- **About half face each way** (creator, 2026-10-30: nearly every kept turned-away picture sat
+  on the left looking right): say in the prompt which side the person is on and which way they
+  look, and vary it. A finished picture can be mirrored (`pictures.py flip`, marked
+  `"mirrored"` in the plan) only where a mirror can't be told: no lettering, numbers or clock
+  faces, no tool whose handedness reads (a camera, a golf swing, a fly cast), no buttoning, no
+  kimono (left over right is the living's way).
 - **The setting gives every card something of its own:** a face, hands, an object, a
   part of the place. No card is only skin, only sky or one even texture.
 - **What still has to go is the AI look:** the same tilted head and posed camera smile

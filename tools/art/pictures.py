@@ -5,6 +5,8 @@
     python tools/art/pictures.py repaint <raw-dir> <id>... redraw a postcard from its own master in its plan
                                                           entry's "paint" style (gemforge edit, BILLS per id)
     python tools/art/pictures.py process <raw-dir> <id>... raw PNG -> tools/art/masters + public/pictures (+ thumb)
+    python tools/art/pictures.py flip <id>...             mirror a picture left to right in place (master and copies),
+                                                          and mark it "mirrored" in the plan (free)
     python tools/art/pictures.py export [<id>...]         masters -> public/pictures + thumbs, at the card aspect
     python tools/art/pictures.py thumbs [<id>...]         Albums-screen thumbs from the masters (default: all)
     python tools/art/pictures.py boards [<id>...]         the board's light copies from the masters (default: all)
@@ -114,6 +116,9 @@ def cmd_gen(raw, ids):
                 "--quality", "high", "--out", str(raw), "--name", pid, "--flat", "--no-wait", "--json"]
         r = subprocess.run(args, capture_output=True, text=True, encoding="utf-8")
         print(pid, r.returncode, (r.stdout or r.stderr).strip().replace("\n", " ")[:300])
+        if e.get("mirrored"):  # drawn from the prompt it faces the other way: process flips it (see cmd_flip)
+            (Path(raw) / f"{pid}.prompt-drawn").touch()
+            print(f"  {pid} is mirrored in the plan: process will mirror this draw")
 
 
 # Postcards are always an obviously painted style, never photoreal (creator, 2026-10-28: a generated
@@ -276,11 +281,40 @@ def cmd_process(raw, ids):
             print(pid, "no raw file in", raw)
             continue
         im = crop_to(Image.open(src).convert("RGB"), *size_of(e))
+        if e.get("mirrored") and (Path(raw) / f"{pid}.prompt-drawn").exists():  # a fresh draw of a mirrored picture
+            im = im.transpose(Image.FLIP_LEFT_RIGHT)
         im.save(master_path(pid), "WEBP", quality=90, method=6)
         out = export(e)
         if e.get("paint") and e["medium"] != PAINT[e["paint"]][0]:  # a repainted postcard takes its style's medium
             plan_set(pid, "medium", PAINT[e["paint"]][0])
         print(pid, im.size, "->", out.relative_to(ROOT), f"{out.stat().st_size // 1024} KB")
+
+
+# Mirrored pictures (creator, 2026-10-30: nearly all the people sat on the left looking right; flip some to make it
+# about half each way). Only where a mirror can't be told: no lettering, numbers or clock faces, no tool whose
+# handedness reads (a camera's controls, a golf swing, a fly cast), no buttoning, no kimono (left over right is the
+# living's way), no known asymmetric object. The plan marks each one "mirrored": true. restyle, repaint and a masked
+# edit start from the master, so they keep the flip; a fresh gen draws the prompt's way round, so gen leaves a
+# <id>.prompt-drawn marker beside the raw and process mirrors that draw. flip toggles the master and the mark together.
+def cmd_flip(ids):
+    import re
+    p = plan()
+    for pid in ids:
+        e = entry(p, pid)
+        m = master_path(pid)
+        Image.open(m).convert("RGB").transpose(Image.FLIP_LEFT_RIGHT).save(m, "WEBP", quality=90, method=6)
+        lines = PLAN.read_text(encoding="utf-8").split("\n")
+        k = next(k for k, line in enumerate(lines) if f'"id": "{pid}"' in line)
+        if e.get("mirrored"):  # flipped back: the mark goes
+            lines[k] = lines[k].replace(', "mirrored": true', "")
+        else:
+            lines[k] = lines[k].replace(f'"id": "{pid}",', f'"id": "{pid}", "mirrored": true,', 1)
+        if "cropX" in e:  # the framing window mirrors too
+            lines[k], n = re.subn(r'"cropX": [0-9.]+', f'"cropX": {round(1 - e["cropX"], 3)}', lines[k], count=1)
+            assert n == 1, (pid, "cropX is not on the id line")
+        PLAN.write_text("\n".join(lines), encoding="utf-8")
+        out = export(entry(plan(), pid))
+        print(pid, "mirrored" if not e.get("mirrored") else "back the right way", "->", out.relative_to(ROOT))
 
 
 def plan_set(pid, key, value):
@@ -690,6 +724,8 @@ if __name__ == "__main__":
         cmd_restyle(rest[0], rest[1:])
     elif c == "process":
         cmd_process(rest[0], rest[1:])
+    elif c == "flip":
+        cmd_flip(rest)
     elif c == "export":
         cmd_export(rest)
     elif c == "thumbs":
