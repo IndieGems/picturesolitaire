@@ -202,6 +202,23 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
   top: calc(var(--gem-mid) - var(--btn) / 2);
   right: calc(var(--row-right) + var(--gear-room));
 }
+/* Back, on every screen that has it (the creator, 2026-10-30: white frosted, it was hard to find, and on
+   the Passport it sat on the table's white flower): the Passport's deep navy with a white arrow, still a
+   button (its lip, a shade darker, and its drop shadow); pressed, it sinks onto its lip as every button
+   does; keyboard focus is a white ring on the fill and the amber outline around it */
+.btn.top-back {
+  color: #fff;
+  background: linear-gradient(180deg, #3a5078 0%, #1f2c42 100%);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.22), inset 0 -2px 4px rgba(0, 0, 0, 0.3), 0 5px 0 #0f1726, 0 9px 14px rgba(6, 12, 24, 0.45);
+}
+.btn.top-back:active:not(:disabled), .btn.top-back.pressed {
+  background: linear-gradient(180deg, #2d4063 0%, #182337 100%);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.16), inset 0 -2px 4px rgba(0, 0, 0, 0.3), 0 1px 0 #0f1726, 0 3px 6px rgba(6, 12, 24, 0.4);
+}
+.btn.top-back:focus-visible {
+  outline: 3px solid var(--amber-hi); outline-offset: 3px;
+  box-shadow: inset 0 0 0 2px #fff, inset 0 2px 0 rgba(255, 255, 255, 0.22), 0 5px 0 #0f1726, 0 9px 14px rgba(6, 12, 24, 0.45);
+}
 /* the gear (src/settings-screen.ts): the row's right end, on every screen, over every card */
 /* home's note of a win from last time that paid (app.ts): in the top row beside the gear (home has no Back) */
 .home-note { right: calc(var(--row-right) + var(--gear-solo)); gap: 8px; font-size: 15px; animation: coins-in 0.35s ease-out both; }
