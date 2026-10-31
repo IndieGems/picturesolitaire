@@ -48,5 +48,5 @@ Dev: build 0.56.0 (9849bcb, Gem Web SDK 16.0.0), store page 11, config 42, check
 ## Still owed by people, not agents
 
 - **Pictures at full size** (GSR-008, item 2): the review saw all 1,683 unique pictures at thumbnail size and found nothing near the content bar. A full-size pass, or the checklist reading the picture packs, is still owed. The rights pass in `TODO.md` covers the same pictures.
-- **Physical phones** (GSR-009): one iPhone (Safari and the Gem Arcade app) and one Android phone, using the device sheet in the review.
+- **Physical phones** (GSR-009): one iPhone (Safari and the Gem Arcade app) and one Android phone, using the device sheet in the review. Also watch, from QA's memory and crash check (2026-10-30, `docs/qa-memory-crash-2026-10-30.md`): a 40+ level session in the Arcade app on an iPhone and a mid-range Android for a reload or late slowdown; the event page after six or more levels; ten minutes on a 6×6 level for heat and smoothness. The next release candidate also needs UI's fixes for that check's findings 1 and 2 (the win-card listener leak, the event item pictures).
 - **Fresh players** (GSR-010): two or three people new to the game, the first ten minutes on their own phones, with no help.
