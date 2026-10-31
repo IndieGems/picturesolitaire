@@ -55,6 +55,11 @@ const levelFile = (lane) => path.join(contentDir, "levels", `${lane}.json`);
 // the events' names, for "Haunted Holiday level 3"
 const eventsFile = path.join(contentDir, "levels", "events.json");
 const noUse = () => Object.fromEntries(LANES.map((lane) => [lane, []]));
+// Pictures put up for the creator's review, shown first as a group of their own (the creator,
+// 2026-10-30): the people swap's olds (turned away, or framed like their neighbours) that a level
+// still deals. Once the team re-deals one it leaves the group.
+const peopleSwapsFile = path.join(projectRoot, "tools", "art", "people-swaps.json");
+const TURNED_AWAY = "Turned away, still in use";
 const publicDir = path.join(projectRoot, "public");
 const picturesDir = path.join(publicDir, "pictures");
 
@@ -172,6 +177,9 @@ async function library() {
     });
   }
 
+  const swapsFile = await readJson(peopleSwapsFile, { swaps: [] });
+  const swappedOff = new Set((Array.isArray(swapsFile.data?.swaps) ? swapsFile.data.swaps : []).map((s) => s?.old).filter(Boolean));
+
   const albums = Array.isArray(cat.data?.albums) ? cat.data.albums : [];
   const raw = Array.isArray(cat.data?.pictures) ? cat.data.pictures : [];
   const pictures = await Promise.all(
@@ -181,13 +189,15 @@ async function library() {
         const flag = flags[p.id];
         const rd = redraws[p.id];
         const u = used.get(p.id) ?? noUse();
+        const usedTotal = LANES.reduce((n, lane) => n + u[lane].length, 0);
         const [fileV, thumbV] = await Promise.all([changed(publicPath(p.file)), changed(publicPath(p.thumb))]);
         return {
           ...p,
           fileV,
           thumbV,
           used: u,
-          usedTotal: LANES.reduce((n, lane) => n + u[lane].length, 0),
+          usedTotal,
+          review: swappedOff.has(p.id) && usedTotal > 0 ? TURNED_AWAY : "",
           flag: flag && typeof flag === "object" ? { flagged: flag.flagged === true, note: String(flag.note ?? ""), date: String(flag.date ?? "") } : null,
           redraw: rd && typeof rd === "object" ? { redraw: rd.redraw === true, note: String(rd.note ?? ""), date: String(rd.date ?? "") } : null,
         };
@@ -201,7 +211,7 @@ async function library() {
 
 /** A fingerprint of every file the library is made from: the page reloads when it changes. */
 async function stamp() {
-  const files = [picturesFile, flagsFile, redrawsFile, planFile, tuningFile, configFile, ...LANES.map(levelFile)];
+  const files = [picturesFile, flagsFile, redrawsFile, planFile, tuningFile, configFile, eventsFile, peopleSwapsFile, ...LANES.map(levelFile)];
   const parts = await Promise.all(
     files.map(async (f) => {
       try {

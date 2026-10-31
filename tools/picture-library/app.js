@@ -150,12 +150,20 @@ const batchLabel = (b) => {
   return `New, ${when}${m[4] ? `: ${m[4]}` : ""}`;
 };
 
+// Pictures put up for review (the server's `review`, a group title, e.g. the turned-away people
+// pictures a level still deals) show first, above the newest batch, each review a group of its own
+// (the creator, 2026-10-30).
 function groups(list) {
+  const reviews = [...new Set(lib.pictures.map((p) => p.review).filter((r) => typeof r === "string" && r))];
+  const top = reviews
+    .map((r) => ({ key: `review:${r}`, title: r, all: lib.pictures.filter((p) => p.review === r).length, pictures: flaggedLast(list.filter((p) => p.review === r)) }))
+    .filter((g) => g.pictures.length);
+  list = list.filter((p) => !p.review);
   const batch = newestBatch();
   const fresh = batch ? list.filter((p) => p.batch === batch) : [];
   const head = fresh.length ? [{ key: `batch:${batch}`, title: batchLabel(batch), all: lib.pictures.filter((p) => p.batch === batch).length, pictures: flaggedLast(fresh) }] : [];
   if (batch) list = list.filter((p) => p.batch !== batch);
-  return [...head, ...groupsBy(list)];
+  return [...top, ...head, ...groupsBy(list)];
 }
 
 function groupsBy(list) {
