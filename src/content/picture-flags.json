@@ -21,9 +21,19 @@
       "note": "looks AI-made (the same tilt and smile); remade as apple-ladder",
       "date": "2026-10-25"
     },
+    "asador": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-30"
+    },
     "autumn-treetops": {
       "flagged": true,
       "note": "Too busy",
+      "date": "2026-10-30"
+    },
+    "baker": {
+      "flagged": true,
+      "note": "",
       "date": "2026-10-30"
     },
     "basket-weaver": {
@@ -51,6 +61,11 @@
       "note": "",
       "date": "2026-10-29"
     },
+    "bricklayer": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-30"
+    },
     "bubbles": {
       "flagged": true,
       "note": "looks AI-made (the same tilt and smile); remade as dandelion-wish",
@@ -71,6 +86,11 @@
       "note": "looks AI-made (the same tilt and smile); remade as towpath-cyclist",
       "date": "2026-10-25"
     },
+    "cellist": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-30"
+    },
     "chef": {
       "flagged": true,
       "note": "looks AI-made (the same tilt and smile); remade as wok-chef",
@@ -79,6 +99,11 @@
     "colosseum": {
       "flagged": true,
       "note": "Lead: a real landmark, shown only as a painted postcard now; on no board",
+      "date": "2026-10-30"
+    },
+    "cooper": {
+      "flagged": true,
+      "note": "",
       "date": "2026-10-30"
     },
     "copper-kitchen": {
@@ -111,6 +136,11 @@
       "note": "man is backwards, dogs look like copies",
       "date": "2026-10-29"
     },
+    "dressmaker": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-30"
+    },
     "dung-beetle": {
       "flagged": true,
       "note": "inaccurate",
@@ -119,6 +149,11 @@
     "eiffel-tower": {
       "flagged": true,
       "note": "Lead: a real landmark, shown only as a painted postcard now; on no board",
+      "date": "2026-10-30"
+    },
+    "florist": {
+      "flagged": true,
+      "note": "",
       "date": "2026-10-30"
     },
     "fritillary": {
@@ -155,6 +190,11 @@
       "flagged": true,
       "note": "looks AI-made (the same tilt and smile); remade as carrot-harvest",
       "date": "2026-10-25"
+    },
+    "hairdresser": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-30"
     },
     "hedgerow": {
       "flagged": true,
@@ -241,9 +281,19 @@
       "note": "Lead: too busy (rated busy 2, which no level deals); on no board",
       "date": "2026-10-30"
     },
+    "plein-air": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-30"
+    },
     "pole-vaulter": {
       "flagged": true,
       "note": "anatomy weird",
+      "date": "2026-10-30"
+    },
+    "printmaker": {
+      "flagged": true,
+      "note": "",
       "date": "2026-10-30"
     },
     "pyramids": {
@@ -280,6 +330,11 @@
       "flagged": true,
       "note": "",
       "date": "2026-10-29"
+    },
+    "scuba-diver": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-30"
     },
     "skating-day": {
       "flagged": true,
@@ -324,6 +379,21 @@
     "torii": {
       "flagged": true,
       "note": "Lead: a real landmark, shown only as a painted postcard now; on no board",
+      "date": "2026-10-30"
+    },
+    "violin-maker": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-30"
+    },
+    "washing-line": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-30"
+    },
+    "weaver": {
+      "flagged": true,
+      "note": "",
       "date": "2026-10-30"
     },
     "white-garden": {
