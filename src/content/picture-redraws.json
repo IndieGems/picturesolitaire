@@ -12,8 +12,8 @@
       "date": "2026-10-30"
     },
     "bioluminescent-bay": {
-      "redraw": true,
-      "note": "3 fingers on a hand",
+      "redraw": false,
+      "note": "3 fingers on a hand; done ec2c5a21",
       "date": "2026-10-30"
     },
     "bluebells": {
@@ -37,8 +37,8 @@
       "date": "2026-10-30"
     },
     "footballer": {
-      "redraw": true,
-      "note": "his left arm is in an impossible position and the hand is flipped opposite of what that hand would be",
+      "redraw": false,
+      "note": "his left arm is in an impossible position and the hand is flipped opposite of what that hand would be; done ec2c5a21",
       "date": "2026-10-30"
     },
     "goldenrod": {
@@ -62,8 +62,8 @@
       "date": "2026-10-30"
     },
     "park-ranger": {
-      "redraw": true,
-      "note": "she has only three fingers",
+      "redraw": false,
+      "note": "she has only three fingers; done ec2c5a21",
       "date": "2026-10-30"
     },
     "peony-jug": {
@@ -82,13 +82,13 @@
       "date": "2026-10-30"
     },
     "skydiver": {
-      "redraw": true,
-      "note": "It looks like there are three legs, just remove the one below the leg on the very left",
+      "redraw": false,
+      "note": "It looks like there are three legs, just remove the one below the leg on the very left; done ec2c5a21",
       "date": "2026-10-30"
     },
     "sumo": {
-      "redraw": true,
-      "note": "the hand at the very bottom has too many fingers",
+      "redraw": false,
+      "note": "the hand at the very bottom has too many fingers; done ec2c5a21",
       "date": "2026-10-30"
     },
     "tempura": {
