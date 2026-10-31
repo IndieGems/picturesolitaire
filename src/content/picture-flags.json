@@ -26,6 +26,11 @@
       "note": "Too busy",
       "date": "2026-10-30"
     },
+    "basket-weaver": {
+      "flagged": true,
+      "note": "Lead: turned away, replaced by the people swap (2026-10-29); on no board",
+      "date": "2026-10-30"
+    },
     "blue-headscarf": {
       "flagged": true,
       "note": "looks AI-made (the same tilt and smile); remade as book-reader",
@@ -71,6 +76,21 @@
       "note": "looks AI-made (the same tilt and smile); remade as wok-chef",
       "date": "2026-10-25"
     },
+    "colosseum": {
+      "flagged": true,
+      "note": "Lead: a real landmark, shown only as a painted postcard now; on no board",
+      "date": "2026-10-30"
+    },
+    "copper-kitchen": {
+      "flagged": true,
+      "note": "Lead: too busy (rated busy 2, which no level deals); on no board",
+      "date": "2026-10-30"
+    },
+    "copper-spires": {
+      "flagged": true,
+      "note": "Lead: too busy (rated busy 2, which no level deals); on no board",
+      "date": "2026-10-30"
+    },
     "cowboy": {
       "flagged": true,
       "note": "looks AI-made (the same tilt and smile); remade as fence-cowboy",
@@ -95,6 +115,11 @@
       "flagged": true,
       "note": "inaccurate",
       "date": "2026-10-29"
+    },
+    "eiffel-tower": {
+      "flagged": true,
+      "note": "Lead: a real landmark, shown only as a painted postcard now; on no board",
+      "date": "2026-10-30"
     },
     "fritillary": {
       "flagged": true,
@@ -121,6 +146,11 @@
       "note": "Looks AI-ish",
       "date": "2026-10-29"
     },
+    "grape-picker": {
+      "flagged": true,
+      "note": "Lead: turned away, replaced by the people swap (2026-10-29); on no board",
+      "date": "2026-10-30"
+    },
     "greenhouse": {
       "flagged": true,
       "note": "looks AI-made (the same tilt and smile); remade as carrot-harvest",
@@ -136,6 +166,11 @@
       "note": "",
       "date": "2026-10-29"
     },
+    "hill-roll": {
+      "flagged": true,
+      "note": "Too busy",
+      "date": "2026-10-30"
+    },
     "ink-crumble": {
       "flagged": true,
       "note": "Too busy",
@@ -146,6 +181,21 @@
       "note": "the lobster has one claw",
       "date": "2026-10-29"
     },
+    "irish-dancer": {
+      "flagged": true,
+      "note": "",
+      "date": "2026-10-30"
+    },
+    "lamplighter": {
+      "flagged": true,
+      "note": "Lead: turned away, replaced by the people swap (2026-10-29); on no board",
+      "date": "2026-10-30"
+    },
+    "leaning-tower": {
+      "flagged": true,
+      "note": "Lead: a real landmark, shown only as a painted postcard now; on no board",
+      "date": "2026-10-30"
+    },
     "lilac-bouquet": {
       "flagged": true,
       "note": "Too busy",
@@ -154,6 +204,11 @@
     "log-flume": {
       "flagged": true,
       "note": "no people in it, makes no sense to picture it",
+      "date": "2026-10-30"
+    },
+    "matterhorn": {
+      "flagged": true,
+      "note": "Lead: a real landmark, shown only as a painted postcard now; on no board",
       "date": "2026-10-30"
     },
     "moai": {
@@ -166,6 +221,11 @@
       "note": "",
       "date": "2026-10-29"
     },
+    "mount-fuji": {
+      "flagged": true,
+      "note": "Lead: a real landmark, shown only as a painted postcard now; on no board",
+      "date": "2026-10-30"
+    },
     "osteospermum": {
       "flagged": true,
       "note": "",
@@ -175,6 +235,11 @@
       "flagged": true,
       "note": "looks AI-made (the same tilt and smile); remade as plein-air",
       "date": "2026-10-25"
+    },
+    "patisserie": {
+      "flagged": true,
+      "note": "Lead: too busy (rated busy 2, which no level deals); on no board",
+      "date": "2026-10-30"
     },
     "pole-vaulter": {
       "flagged": true,
@@ -191,9 +256,19 @@
       "note": "its too strange that she is made of yarn",
       "date": "2026-10-30"
     },
+    "riad-court": {
+      "flagged": true,
+      "note": "Lead: too busy (rated busy 2, which no level deals); on no board",
+      "date": "2026-10-30"
+    },
     "rocky-cove": {
       "flagged": true,
       "note": "Too busy",
+      "date": "2026-10-30"
+    },
+    "rower-scull": {
+      "flagged": true,
+      "note": "Lead: turned away, replaced by the people swap (2026-10-29); on no board",
       "date": "2026-10-30"
     },
     "salvia": {
@@ -206,10 +281,25 @@
       "note": "",
       "date": "2026-10-29"
     },
+    "skating-day": {
+      "flagged": true,
+      "note": "Lead: too busy (rated busy 2, which no level deals); on no board",
+      "date": "2026-10-30"
+    },
     "snapdragons": {
       "flagged": true,
       "note": "",
       "date": "2026-10-29"
+    },
+    "snow-chalets": {
+      "flagged": true,
+      "note": "Lead: too busy (rated busy 2, which no level deals); on no board",
+      "date": "2026-10-30"
+    },
+    "stone-village": {
+      "flagged": true,
+      "note": "Lead: too busy (rated busy 2, which no level deals); on no board",
+      "date": "2026-10-30"
     },
     "sweet-violets": {
       "flagged": true,
@@ -221,9 +311,34 @@
       "note": "",
       "date": "2026-10-29"
     },
+    "taj-mahal": {
+      "flagged": true,
+      "note": "Lead: a real landmark, shown only as a painted postcard now; on no board",
+      "date": "2026-10-30"
+    },
     "threshing-day": {
       "flagged": true,
       "note": "Too busy",
+      "date": "2026-10-30"
+    },
+    "torii": {
+      "flagged": true,
+      "note": "Lead: a real landmark, shown only as a painted postcard now; on no board",
+      "date": "2026-10-30"
+    },
+    "white-garden": {
+      "flagged": true,
+      "note": "Lead: too busy (rated busy 2, which no level deals); on no board",
+      "date": "2026-10-30"
+    },
+    "window-cleaner": {
+      "flagged": true,
+      "note": "Lead: turned away, replaced by the people swap (2026-10-29); on no board",
+      "date": "2026-10-30"
+    },
+    "winter-stream": {
+      "flagged": true,
+      "note": "Lead: too busy (rated busy 2, which no level deals); on no board",
       "date": "2026-10-30"
     },
     "yellow-raincoat": {

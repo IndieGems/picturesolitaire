@@ -26,7 +26,7 @@ const QUICK_NOTES = ["Too dark", "Looks AI-ish", "Too busy", "Hard to tell apart
 const PAGE_API = 2;
 /** The server's word on what it can save: null until asked, 0 when it is too old to say. */
 let serverApi = null;
-const LANE_WORDS = { campaign: "Campaign", challenge: "Challenge route", daily: "Daily puzzle" };
+const LANE_WORDS = { campaign: "Campaign", challenge: "Challenge route", daily: "Daily puzzle", "event-levels": "VIP events" };
 
 /** Palette words as the catalogue writes them, as colours to show. */
 const SWATCH = {
@@ -374,7 +374,9 @@ function cutLines(p, iw, ih) {
 
 function usedRows(p) {
   const rows = [];
-  for (const lane of ["campaign", "challenge", "daily"]) {
+  for (const lane of ["campaign", "challenge", "daily", "event-levels"]) {
+    // a library server from before the events were counted sends no event lane: leave the row out
+    if (!(lane in p.used)) continue;
     const list = p.used[lane];
     if (!list.length) {
       rows.push(el("li", {}, el("b", { text: `${LANE_WORDS[lane]}: ` }), el("span", { text: "not in any board" })));
@@ -383,7 +385,11 @@ function usedRows(p) {
     let detail;
     if (lane === "campaign") detail = `Level${list.length > 1 ? "s" : ""} ${listOf(list.map((b) => b.n))}`;
     else if (lane === "challenge") detail = `Challenge${list.length > 1 ? "s" : ""} ${listOf(list.map((b) => b.n))}`;
-    else {
+    else if (lane === "event-levels") {
+      const byEvent = new Map();
+      for (const b of list) byEvent.set(b.event, [...(byEvent.get(b.event) ?? []), b.n]);
+      detail = [...byEvent].map(([name, ns]) => `${name} level${ns.length > 1 ? "s" : ""} ${listOf(ns)}`).join("; ");
+    } else {
       const ahead = list.filter((b) => b.ahead);
       detail = ahead.length ? `${ahead.length} still to come, next on ${day(ahead[0].date)}` : `all in the past (last ${day(list.at(-1).date)})`;
     }

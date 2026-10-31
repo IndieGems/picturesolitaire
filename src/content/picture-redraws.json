@@ -66,6 +66,11 @@
       "note": "done bc505c1",
       "date": "2026-10-30"
     },
+    "sumo": {
+      "redraw": true,
+      "note": "the hand at the very bottom has too many fingers",
+      "date": "2026-10-30"
+    },
     "tempura": {
       "redraw": false,
       "note": "also, theres batter on some objects that shouldnt be battered; done bc505c1",

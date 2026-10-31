@@ -49,8 +49,12 @@ const tuningFile = path.join(projectRoot, "src", "board", "tuning.ts");
 const configFile = path.join(projectRoot, "gem-backend-game-config.yaml");
 const flagsFile = path.join(contentDir, "picture-flags.json");
 const redrawsFile = path.join(contentDir, "picture-redraws.json");
-const LANES = ["campaign", "challenge", "daily"];
+// the VIP events' levels count as use too (lead, 2026-10-30: without them ~250 event pictures read as unused)
+const LANES = ["campaign", "challenge", "daily", "event-levels"];
 const levelFile = (lane) => path.join(contentDir, "levels", `${lane}.json`);
+// the events' names, for "Haunted Holiday level 3"
+const eventsFile = path.join(contentDir, "levels", "events.json");
+const noUse = () => Object.fromEntries(LANES.map((lane) => [lane, []]));
 const publicDir = path.join(projectRoot, "public");
 const picturesDir = path.join(publicDir, "pictures");
 
@@ -145,19 +149,25 @@ async function library() {
   const used = new Map();
   const boards = {};
   const now = today();
+  const evFile = await readJson(eventsFile, { events: [] });
+  const eventName = new Map((Array.isArray(evFile.data?.events) ? evFile.data.events : []).map((e) => [e?.id, String(e?.theme ?? e?.id)]));
   for (const lane of LANES) {
     const file = await readJson(levelFile(lane), { levels: [] });
     if (file.problem) problems.push(file.problem);
     const levels = Array.isArray(file.data?.levels) ? file.data.levels : [];
     boards[lane] = levels.length;
     levels.forEach((lvl, i) => {
+      // a picture is in a board once, however the board deals it
+      const seen = new Set();
       for (const p of Array.isArray(lvl?.pictures) ? lvl.pictures : []) {
-        if (!p?.id) continue;
-        if (!used.has(p.id)) used.set(p.id, { campaign: [], challenge: [], daily: [] });
+        if (!p?.id || seen.has(p.id)) continue;
+        seen.add(p.id);
+        if (!used.has(p.id)) used.set(p.id, noUse());
         const list = used.get(p.id)[lane];
-        // a picture is in a board once, however the board deals it
-        if (list.some((b) => b.n === i + 1)) continue;
-        list.push(lane === "daily" ? { n: i + 1, id: lvl.id, date: lvl.date, ahead: typeof lvl.date === "string" && lvl.date >= now } : { n: i + 1, id: lvl.id });
+        if (lane === "daily") list.push({ n: i + 1, id: lvl.id, date: lvl.date, ahead: typeof lvl.date === "string" && lvl.date >= now });
+        // an event level's number is its place in its event (halloween-2026-03 is level 3)
+        else if (lane === "event-levels") list.push({ n: Number(String(lvl.id).split("-").pop()) || i + 1, id: lvl.id, event: eventName.get(lvl.event) ?? String(lvl.event ?? "") });
+        else list.push({ n: i + 1, id: lvl.id });
       }
     });
   }
@@ -170,14 +180,14 @@ async function library() {
       .map(async (p) => {
         const flag = flags[p.id];
         const rd = redraws[p.id];
-        const u = used.get(p.id) ?? { campaign: [], challenge: [], daily: [] };
+        const u = used.get(p.id) ?? noUse();
         const [fileV, thumbV] = await Promise.all([changed(publicPath(p.file)), changed(publicPath(p.thumb))]);
         return {
           ...p,
           fileV,
           thumbV,
           used: u,
-          usedTotal: u.campaign.length + u.challenge.length + u.daily.length,
+          usedTotal: LANES.reduce((n, lane) => n + u[lane].length, 0),
           flag: flag && typeof flag === "object" ? { flagged: flag.flagged === true, note: String(flag.note ?? ""), date: String(flag.date ?? "") } : null,
           redraw: rd && typeof rd === "object" ? { redraw: rd.redraw === true, note: String(rd.note ?? ""), date: String(rd.date ?? "") } : null,
         };
