@@ -138,3 +138,32 @@ the whole browser up to 582 MB.
 WebAudio node events, a preload hooking createObjectURL/revokeObjectURL, timers and observers, OS private bytes per
 Chrome process, and two heap snapshots diffed for detached DOM and retainer paths. The scripts, snapshots and the
 clean build lived in a temp folder and are deleted.
+
+## Re-check on 0.81.0 (f6e982a5, the dev build), 2026-10-30
+
+**Findings 1 and 2: fixed.** One built soak in one page with no reload, of the main tree's dist (the dev menu's
+Build line: commit f6e982a5), served read-only by the play-test tool. 15 levels won:
+- **7 real dailies**, played by touch from their stored moves; each card has the Challenge/Share row, which is
+  finding 1's path. The dev menu's levels are practice and have no row.
+- **7 campaign levels in practice** (2–8), which make the pack cache let go.
+- **1 past event's level** (Haunted Holiday 1, from the stand-in events as of 5 Nov).
+- **The event page three times:** early, after 10 levels (8 other boards since the first visit) and at the end.
+
+| | L5 | L10 | L15 | Before the fix |
+|---|---|---|---|---|
+| Real win cards so far | 2 | 4 | 7 | |
+| Detached DOM (heap snapshot) | 44 | | 22 (−2 a level) | +25 a level |
+| DOM nodes / listeners | 2,037 / 370 | 2,037 / 370 | 2,013 / 367 | +40 / +9 a level |
+| Renderer private (MB) | 170.1 | 185.2 | 185.4 (+0.04 a level after L10) | +1.8 a level |
+| JS heap (MB) | 6.0 | 6.2 | 6.4 | |
+| Blob URLs alive (made / revoked) | 74 (74/0) | 79 (105/26) | 79 (131/52) | |
+
+- **Renderer memory:** its rise to level 10 is the picture cache warming. The earlier practice run, which had no
+  rows, rose the same way, then went flat.
+- **Detached elements left at the end:** only the last board's stacks, held through the board in hand (bounded).
+  No old win card is held.
+- **Event page:** 15 pictures shown each time (11 from the event's pack), **0 broken, 0 404s**, on all three
+  visits.
+- **Console:** 0 errors, 0 unhandled rejections, 0 page errors. Every card picture decoded on all 15 win cards.
+
+The scripts, snapshots and served config were in a temp folder and are deleted. The main tree's dist was only read.
