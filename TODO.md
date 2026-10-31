@@ -38,7 +38,7 @@ Still owed:
   date with what changed since; a native read of what the translators flagged
   (ko/zh place spellings, "Arcade" per language, the postcard greetings, Russian
   Coins wording) and of
-  the long Super hard badge in pl, fr and it.
+  the long Super hard badge in pl, fr and it. Also the 190 new picture titles (UI, baa4e037): pl Archeolożka and Geolożka; poutine in ru and ko (worded away from Putin); zh dish and boat names described rather than transliterated (croque monsieur, khachapuri, gulab jamun, halva, basket boat, coracle, lowrider); ko transliterations (beignet, semla, suya, gulab jamun, manakish); ja シンクロ, 振り子時計, 椅子かご; tr Shakshuka (şakşuka is another dish), Pabuçgagalı, Yol koşucusu; it Madonnaro.
 - **At release: a rights pass on the pictures** (creator, 2026-10-28; QA and Art, about half an hour):
   - flag any generated picture with lettering or logo-like marks (team jerseys, signs, rinds);
   - reverse-image-search the most iconic-looking pictures for near-copies of famous photos or characters;
