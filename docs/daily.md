@@ -56,4 +56,4 @@ the Daily Suitcase had placed (15 October to 14 December 2026) were lifted IN
 PLACE, an ordinary square taking each one's spot, so every deal, line and par
 stayed as it was.
 
-Every picture's appearances in the pool: 0 to 6 (mean 2.1); no picture is on two boards within three days.
+Every picture's appearances in the pool: 0 to 6 (mean 1.8); no picture is on two boards within three days.

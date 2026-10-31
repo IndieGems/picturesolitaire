@@ -1471,3 +1471,203 @@ Every picture's appearances across the route: 0 to 6 (mean 0.1).
 | jukebox (2x2, jukebox) |  |
 | puffer-fish (2x2, puffer fish) |  |
 | limes (2x2, limes) |  |
+| manatee (2x1, manatee) |  |
+| black-panther (2x2, black panther) |  |
+| toaster (2x2, toaster) |  |
+| gumbo (2x2, gumbo) |  |
+| pinata (2x2, pinata) |  |
+| daruma (2x2, daruma) |  |
+| longcase-clock (1x2, longcase clock) |  |
+| nouveau-lamp (2x2, nouveau lamp) |  |
+| aviator (2x2, aviator) |  |
+| backyard-grill (2x2, backyard grill) |  |
+| steel-pan (2x2, steel pan) |  |
+| chrome-diner (2x2, chrome diner) |  |
+| fennec-fox (2x2, fennec fox) |  |
+| shoebill (2x2, shoebill) |  |
+| mandrill (2x2, mandrill) |  |
+| tarsier (2x2, tarsier) |  |
+| ibex (2x2, ibex) |  |
+| blue-footed-booby (2x2, blue footed booby) |  |
+| porcupine (2x2, porcupine) |  |
+| musk-ox (2x2, musk ox) |  |
+| roadrunner (2x1, roadrunner) |  |
+| ocelot (2x2, ocelot) |  |
+| jollof-rice (2x2, jollof rice) |  |
+| injera (2x2, injera) |  |
+| shakshuka (2x2, shakshuka) |  |
+| dosa (2x1, dosa) |  |
+| ceviche (2x2, ceviche) |  |
+| beignets (2x2, beignets) |  |
+| poutine (2x2, poutine) |  |
+| key-lime-pie (2x2, key lime pie) |  |
+| smores (2x2, smores) |  |
+| banana-split (2x1, banana split) |  |
+| khachapuri (2x2, khachapuri) |  |
+| tagine (2x2, tagine) |  |
+| borscht (2x2, borscht) |  |
+| elote (2x2, elote) |  |
+| satay (2x2, satay) |  |
+| hummus (2x2, hummus) |  |
+| brigadeiros (2x2, brigadeiros) |  |
+| poke-bowl (2x2, poke bowl) |  |
+| lassi (1x2, lassi) |  |
+| french-toast (2x2, french toast) |  |
+| raclette (2x2, raclette) |  |
+| halva (2x2, halva) |  |
+| film-projector (2x2, film projector) |  |
+| barometer (1x2, barometer) |  |
+| weather-vane (2x2, weather vane) |  |
+| yo-yo (2x2, yo yo) |  |
+| samovar (2x2, samovar) |  |
+| stand-mixer (2x2, stand mixer) |  |
+| mirror-ball (2x2, mirror ball) |  |
+| boombox (2x2, boombox) |  |
+| bongos (2x2, bongos) |  |
+| kalimba (2x2, kalimba) |  |
+| spinning-wheel (2x2, spinning wheel) |  |
+| paint-palette (2x2, paint palette) |  |
+| cezve (2x2, cezve) |  |
+| cast-iron-skillet (2x2, cast iron skillet) |  |
+| garden-gnome (2x2, garden gnome) |  |
+| kitchen-scales (2x2, kitchen scales) |  |
+| toolbox (2x2, toolbox) |  |
+| lunchbox (2x2, lunchbox) |  |
+| kimchi-making (2x2, kimchi making) |  |
+| soda-fountain (2x2, soda fountain) |  |
+| basket-boat (2x2, basket boat) |  |
+| luchador (2x2, luchador) |  |
+| dj-turntables (2x2, dj turntables) |  |
+| ice-sculptor (2x2, ice sculptor) |  |
+| figure-skater (2x2, figure skater) |  |
+| mime (2x2, mime) |  |
+| street-painter (2x2, street painter) |  |
+| glasses-optician (2x2, glasses optician) |  |
+| lighthouse-keeper (2x2, lighthouse keeper) |  |
+| morris-dancer (2x2, morris dancer) |  |
+| sumo (2x2, sumo) |  |
+| jeepney (2x1, jeepney) |  |
+| steamer-trunk (2x2, steamer trunk) |  |
+| gas-station (2x2, gas station) |  |
+| giant-sequoia (1x2, giant sequoia) |  |
+| kakapo (2x2, kakapo) |  |
+| quetzal (1x2, quetzal) |  |
+| coati (2x2, coati) |  |
+| serval (2x2, serval) |  |
+| yak (2x2, yak) |  |
+| shiba-inu (2x2, shiba inu) |  |
+| kiwi-bird (2x2, kiwi bird) |  |
+| sea-lion (2x2, sea lion) |  |
+| basset-hound (2x2, basset hound) |  |
+| kimbap (2x2, kimbap) |  |
+| katsu-curry (2x2, katsu curry) |  |
+| xiaolongbao (2x2, xiaolongbao) |  |
+| banh-mi (2x1, banh mi) |  |
+| laksa (2x2, laksa) |  |
+| samosas (2x2, samosas) |  |
+| gulab-jamun (2x2, gulab jamun) |  |
+| simit (2x2, simit) |  |
+| kunafa (2x2, kunafa) |  |
+| goulash (2x2, goulash) |  |
+| sachertorte (2x2, sachertorte) |  |
+| croque-monsieur (2x2, croque monsieur) |  |
+| tarte-tatin (2x2, tarte tatin) |  |
+| tres-leches (2x2, tres leches) |  |
+| pupusas (2x2, pupusas) |  |
+| feijoada (2x2, feijoada) |  |
+| jambalaya (2x2, jambalaya) |  |
+| lobster-roll (2x2, lobster roll) |  |
+| candy-floss (1x2, candy floss) |  |
+| eton-mess (2x2, eton mess) |  |
+| semla (2x2, semla) |  |
+| suya (2x2, suya) |  |
+| armillary-sphere (2x2, armillary sphere) |  |
+| butter-churn (2x2, butter churn) |  |
+| cake-stand (2x2, cake stand) |  |
+| candelabra (2x2, candelabra) |  |
+| coffee-grinder (2x2, coffee grinder) |  |
+| spectacles (2x2, spectacles) |  |
+| gong (2x2, gong) |  |
+| harmonica (2x2, harmonica) |  |
+| headphones (2x2, headphones) |  |
+| jigsaw-puzzle (2x2, jigsaw puzzle) |  |
+| padlock (2x2, padlock) |  |
+| horseshoe-magnet (2x2, horseshoe magnet) |  |
+| microphone (2x2, microphone) |  |
+| piggy-bank (2x2, piggy bank) |  |
+| paperweight (2x2, paperweight) |  |
+| pogo-stick (1x2, pogo stick) |  |
+| western-saddle (2x2, western saddle) |  |
+| tailor-shears (2x2, tailor shears) |  |
+| stethoscope (2x2, stethoscope) |  |
+| stopwatch (2x2, stopwatch) |  |
+| trophy (2x2, trophy) |  |
+| tuba (2x2, tuba) |  |
+| washboard (2x2, washboard) |  |
+| desk-lamp (2x2, desk lamp) |  |
+| electric-fan (2x2, electric fan) |  |
+| whistling-kettle (2x2, whistling kettle) |  |
+| lava-lamp (2x2, lava lamp) |  |
+| light-bulb (2x2, light bulb) |  |
+| perfume-bottle (2x2, perfume bottle) |  |
+| record-player (2x2, record player) |  |
+| toy-soldier (2x2, toy soldier) |  |
+| top-hat (2x2, top hat) |  |
+| clothes-iron (2x2, clothes iron) |  |
+| push-mower (2x1, push mower) |  |
+| cowbell (2x2, cowbell) |  |
+| bellows (2x2, bellows) |  |
+| spice-merchant (2x2, spice merchant) |  |
+| shoe-shiner (2x2, shoe shiner) |  |
+| beach-yoga (2x2, beach yoga) |  |
+| salsa-dancers (2x2, salsa dancers) |  |
+| pianist (2x2, pianist) |  |
+| one-man-band (2x2, one man band) |  |
+| librarian (2x2, librarian) |  |
+| dentist (2x2, dentist) |  |
+| piano-tuner (2x2, piano tuner) |  |
+| ringmaster (2x2, ringmaster) |  |
+| synchronised-swimmers (1x2, synchronised swimmers) |  |
+| skydiver (2x2, skydiver) |  |
+| zookeeper (2x2, zookeeper) |  |
+| park-ranger (2x2, park ranger) |  |
+| astronomer (2x2, astronomer) |  |
+| archaeologist (2x2, archaeologist) |  |
+| roofer (2x2, roofer) |  |
+| teacher-globe (2x2, teacher globe) |  |
+| flight-attendant (2x2, flight attendant) |  |
+| simit-seller (2x2, simit seller) |  |
+| surf-lifeguard (2x2, surf lifeguard) |  |
+| ballroom-dancers (1x2, ballroom dancers) |  |
+| train-driver (2x2, train driver) |  |
+| geologist (2x2, geologist) |  |
+| jianzhi-artist (2x2, jianzhi artist) |  |
+| manakish-baker (2x2, manakish baker) |  |
+| footballer (2x2, footballer) |  |
+| coracle (2x2, coracle) |  |
+| lowrider (2x1, lowrider) |  |
+| bulldozer (2x2, bulldozer) |  |
+| stagecoach (2x1, stagecoach) |  |
+| autogyro (2x2, autogyro) |  |
+| vintage-skis (1x2, vintage skis) |  |
+| cooler-box (2x2, cooler box) |  |
+| station-wagon (2x1, station wagon) |  |
+| tackle-box (2x2, tackle box) |  |
+| climbing-gear (2x2, climbing gear) |  |
+| sleeper-train (2x2, sleeper train) |  |
+| trullo (2x2, trullo) |  |
+| longhouse (2x1, longhouse) |  |
+| kiosk (2x2, kiosk) |  |
+| orangery (2x2, orangery) |  |
+| planetarium (2x2, planetarium) |  |
+| onsen (2x2, onsen) |  |
+| roundhouse (2x2, roundhouse) |  |
+| cave-houses (2x2, cave houses) |  |
+| watchtower (2x2, watchtower) |  |
+| clawfoot-bathtub (2x2, clawfoot bathtub) |  |
+| barber-chair (2x2, barber chair) |  |
+| breakwater (2x2, breakwater) |  |
+| frozen-waterfall (2x2, frozen waterfall) |  |
+| bioluminescent-bay (2x2, bioluminescent bay) |  |
+| sedan-chair (2x2, sedan chair) |  |
+| luggage-porter (2x2, luggage porter) |  |
