@@ -4,7 +4,7 @@
 //
 //   the top row   "Cosmetics", then Back (home) and the gear, as every screen's
 //   the tabs      Tables | Music, two buttons; the one shown sits pressed in
-//   Tables        a tile per table: its picture (a button: TRY IT ON, the whole game's table
+//   Tables        a row per table, as Music's (rowOf): its picture (a button: TRY IT ON, the whole game's table
 //                 behind the screen changes to it, with a panel at the foot naming it, its price
 //                 or Use, and a corner key back), its name, then one of: "In use" (information),
 //                 Use (a button), or its price (a button: buy). In order: the default and every
@@ -44,6 +44,7 @@ import { sayPrice } from "./coin";
 import { closed, cornerKey, opened } from "./dialogs";
 import { liveAttr, liveText, named, onLocaleChange, t } from "./i18n";
 import { ICONS } from "./icons";
+import { fitText } from "./fit";
 import { shop, type BuyAnswer, type CosmeticKind } from "./cosmetics-shop";
 import { BUILT_IN_TABLE, chooseTable, chosenTable, knownTable, onTableChange, pickerTables, shopTableArts, tableTitle, thumbOf, warmThumbs, wearTable, type TableArt } from "./tables";
 import { chooseTrack, chosenTrack, onTrackChange, ownedTrackIds, TRACK_LIST, trackTitle, type TrackInfo } from "./tracks";
@@ -246,12 +247,27 @@ export function createCosmetics(nav: Nav) {
     return el("span", `cz-mark glass${lent ? " lent" : ""}`, t(lent ? "cosmetics.withVip" : "cosmetics.owned"));
   }
 
+  // ROWS (the creator, 2026-10-30: everything pushed to the left, two actions wrapped under a small
+  // icon, the right half empty): every row of both tabs the same height in every state, a big picture
+  // at the left, the name and its mark in the middle, and the actions in a column of one width at the
+  // right, vertically centred: one, or two stacked (Use over "Keep it", Listen over the price).
+  /** One row: its picture, the middle (name, mark, its line), the actions' column. */
+  function rowOf(cls: string, id: string, pic: HTMLElement, middle: (HTMLElement | null)[], acts: HTMLElement[]): HTMLElement {
+    const row = el("section", `cz-row glass ${cls}`);
+    row.dataset.id = id;
+    const words = el("div", "cz-words");
+    words.append(...middle.filter((x): x is HTMLElement => !!x));
+    const col = el("div", "cz-acts");
+    col.append(...acts);
+    row.append(pic, words, col);
+    return row;
+  }
+
   function tableTile(r: TableRow): HTMLElement {
     const name = tableTitle(r.art);
-    const tile = el("section", `cz-tile glass ${r.state}${r.lent ? " lent" : ""}`);
-    tile.dataset.id = r.art.id;
+    const cls = `cz-table ${r.state}${r.lent ? " lent" : ""}`;
     // a picture that is pressed, as a postcard is: raised in its frame, no button face
-    const look = el("button", "cz-look");
+    const look = el("button", "cz-look cz-pic");
     look.type = "button";
     look.dataset.press = "cosmetics.tryOn";
     look.setAttribute("aria-label", t("cosmetics.tryOnAria", { name }));
@@ -260,31 +276,26 @@ export function createCosmetics(nav: Nav) {
     look.append(img);
     if (r.state === "locked") {
       // a table to win, not to try or buy: information
-      const frame = el("span", "cz-look locked");
+      const frame = el("span", "cz-look cz-pic locked");
       frame.setAttribute("role", "img");
       const event = named(`suitcase.${r.lockedEvent!.id}.theme`, r.lockedEvent!.theme);
       frame.setAttribute("aria-label", t("cosmetics.tableLockedAria", { table: name, event }));
       const lock = el("span", "table-lock");
       lock.innerHTML = ICONS.lock;
       frame.append(img, lock);
-      tile.append(frame, el("b", "cz-name", name), el("small", "cz-how", t("cosmetics.tableLocked", { event })));
-      return tile;
+      return rowOf(cls, r.art.id, frame, [el("b", "cz-name", name), el("small", "cz-how", t("cosmetics.tableLocked", { event }))], []);
     }
     look.addEventListener("click", () => void startTryOn(r.art.id));
-    const tag = mark(!!r.lent, r.art.id === BUILT_IN_TABLE);
-    tile.append(look, el("b", "cz-name", name), ...(tag ? [tag] : []), action("table", r.art.id, r.state, name));
+    const acts = [action("table", r.art.id, r.state, name)];
     // lent through VIP: still for sale, to keep
-    if (r.lent) tile.append(priceButton("table", r.art.id, name, "cosmetics.keep"));
-    tile.append(line(r.art.id, r.state, r.lent));
-    return tile;
+    if (r.lent) acts.push(priceButton("table", r.art.id, name, "cosmetics.keep"));
+    return rowOf(cls, r.art.id, look, [el("b", "cz-name", name), mark(!!r.lent, r.art.id === BUILT_IN_TABLE), line(r.art.id, r.state, r.lent)], acts);
   }
 
   function trackRow(r: TrackRow): HTMLElement {
     const id = r.info.id;
     const name = trackTitle(id);
-    const row = el("section", `cz-track glass ${r.state}${r.lent ? " lent" : ""}`);
-    row.dataset.id = id;
-    const cover = el("span", "cz-cover");
+    const cover = el("span", "cz-cover cz-pic");
     const img = el("img");
     Object.assign(img, { src: COVER(id), alt: "", draggable: false, decoding: "async" });
     img.addEventListener("error", () => img.remove(), { once: true });
@@ -297,16 +308,14 @@ export function createCosmetics(nav: Nav) {
       eq.append(el("i"), el("i"), el("i"));
       cover.append(eq);
     }
-    const words = el("div", "cz-words");
-    words.append(el("b", "", name));
-    const tag = mark(!!r.lent, r.info.kind === "free");
-    if (tag) words.append(tag);
-    if (r.info.kind === "free") words.append(el("small", "", t("cosmetics.free")));
+    const middle: (HTMLElement | null)[] = [el("b", "cz-name", name), mark(!!r.lent, r.info.kind === "free")];
+    if (r.info.kind === "free") middle.push(el("small", "cz-how", t("cosmetics.free")));
     else if (r.info.kind === "table" && r.info.table) {
       const art = knownTable(r.info.table);
-      words.append(el("small", "", t("cosmetics.withTable", { table: art ? tableTitle(art) : r.info.table })));
+      middle.push(el("small", "cz-how", t("cosmetics.withTable", { table: art ? tableTitle(art) : r.info.table })));
     }
-    const acts = el("div", "cz-acts");
+    middle.push(line(id, r.state, r.lent));
+    const acts: HTMLElement[] = [];
     if (r.state === "sale") {
       const listen = btn("cz-listen", "cosmetics.listen");
       const on = listening === id;
@@ -320,12 +329,11 @@ export function createCosmetics(nav: Nav) {
       }
       listen.setAttribute("aria-label", t(on ? "cosmetics.stopAria" : "cosmetics.listenAria", { name }));
       listen.addEventListener("click", () => void listenTo(id));
-      acts.append(listen);
+      acts.push(listen);
     }
-    acts.append(action("track", id, r.state, name));
-    if (r.lent) acts.append(priceButton("track", id, name, "cosmetics.keep"));
-    row.append(cover, words, acts, line(id, r.state, r.lent));
-    return row;
+    acts.push(action("track", id, r.state, name));
+    if (r.lent) acts.push(priceButton("track", id, name, "cosmetics.keep"));
+    return rowOf(`cz-track ${r.state}${r.lent ? " lent" : ""}`, id, cover, middle, acts);
   }
 
   /** "December", in the player's language (a locked event table's month). */
@@ -370,18 +378,33 @@ export function createCosmetics(nav: Nav) {
     const focused = document.activeElement instanceof HTMLElement && panel.contains(document.activeElement) ? document.activeElement : null;
     const where = focused?.closest<HTMLElement>("[data-id]")?.dataset.id;
     const press = focused?.dataset.press;
-    if (tab === "tables") {
-      const grid = el("div", "cz-grid");
-      grid.append(...tables.map(tableTile));
-      panel.replaceChildren(grid);
-    } else {
-      const list = el("div", "cz-list");
-      list.append(...tracks.map(trackRow));
-      panel.replaceChildren(list);
-    }
+    // both tabs a list of the same rows (rowOf)
+    const list = el("div", `cz-list ${tab}`);
+    list.append(...(tab === "tables" ? tables.map(tableTile) : tracks.map(trackRow)));
+    panel.replaceChildren(list);
+    fitNames();
     if (where && press) panel.querySelector<HTMLElement>(`[data-id="${where}"] [data-press="${press}"]`)?.focus({ preventScroll: true });
     if (wearing) drawTryOn();
   }
+
+  // a name with a word too wide for the row's middle (a long German or Polish one on a phone) steps its
+  // size down rather than break inside the word: after each draw, and when the column's width changes
+  // (one observer for the panel, never one a row: the rows are drawn anew each time)
+  let fitQueued = false;
+  function fitNames(): void {
+    if (fitQueued) return;
+    fitQueued = true;
+    requestAnimationFrame(() => {
+      fitQueued = false;
+      for (const n of panel.querySelectorAll<HTMLElement>(".cz-name")) fitText(n);
+    });
+  }
+  let panelWidth = 0;
+  new ResizeObserver(() => {
+    if (panel.clientWidth === panelWidth) return;
+    panelWidth = panel.clientWidth;
+    fitNames();
+  }).observe(panel);
 
   // ---------------------------------------------------------------- doing
 

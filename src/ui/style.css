@@ -872,10 +872,10 @@ html.less-motion .marker.next::after { animation-duration: 3.4s; }
 .table-lock :is(svg, .ico) { width: 20px; height: 20px; }
 
 /* ---------- THE COSMETICS SCREEN (cosmetics.ts): Tables | Music, and a table tried on ----------
-   The tiles and rows are information (glass); the picture to try on, Use, Listen and the prices are
-   buttons. A tile never moves when its table is bought. The column is the portrait game's on every
-   device (a phone, or the letterboxed column on a PC or a TV): two tiles to a row, three once the
-   column is wide enough (a tablet, a TV's column). */
+   The rows are information (glass); the picture to try on, Use, Listen and the prices are buttons. A
+   row never moves when its item is bought. The column is the portrait game's on every device (a
+   phone, or the letterboxed column on a PC or a TV); the rows grow their picture and actions once the
+   column is wide enough. */
 .cosmetics-screen { container-type: inline-size; }
 /* VIP, above the tabs: a non-VIP's banner (the tag, one line, Get VIP once VIP can be had); a VIP's quiet line */
 .cz-vip { display: flex; flex-direction: column; align-items: center; gap: 10px; width: min(100%, 440px); margin: 2px auto 14px; padding: 12px 14px; border-radius: 20px; text-align: center; }
@@ -889,15 +889,24 @@ html.less-motion .marker.next::after { animation-duration: 3.4s; }
 .btn.cz-tab { flex: 1 1 0; min-width: 0; min-height: 50px; padding: 0 12px; font-size: 18px; }
 /* the tab shown: pressed in, its words in the amber's deep colour */
 .btn.cz-tab.pressed { color: var(--amber-lip); background: linear-gradient(180deg, #e6ecf3 0%, #d3dce7 100%); }
-.cz-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; max-width: 640px; margin: 0 auto; }
-@container (min-width: 520px) { .cz-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; } }
-.cz-tile { display: flex; flex-direction: column; align-items: stretch; gap: 8px; padding: 10px 10px 12px; border-radius: 22px; text-align: center; }
+/* ROWS, both tabs (cosmetics.ts rowOf; the creator, 2026-10-30): the same height in every state; the
+   picture at the left, the name and its mark in the middle (left-aligned, centred), the actions in a
+   column of one width at the right, centred: one, or two stacked with their right edges aligned */
+.cz-list { display: flex; flex-direction: column; gap: 12px; max-width: 560px; margin: 0 auto; }
+.cz-row {
+  --pic: 68px; --acts: 136px;
+  display: grid; grid-template-columns: var(--pic) minmax(0, 1fr) var(--acts); align-items: center; column-gap: 12px;
+  min-height: 128px; padding: 12px; border-radius: 22px;
+}
+@container (min-width: 520px) { .cz-row { --pic: 80px; --acts: 168px; column-gap: 16px; padding: 12px 16px; } }
+.cz-pic { width: var(--pic); }
+/* a table's picture: pressed to try it on, raised in its frame as a postcard is, in the table's own shape (4:5) */
 .cz-look {
-  position: relative; display: block; width: 100%; padding: 0; border: 0; border-radius: 16px; background: none;
+  position: relative; display: block; padding: 0; border: 0; border-radius: 14px; background: none;
   cursor: pointer; touch-action: manipulation; font: inherit; color: inherit;
 }
 .cz-look img {
-  display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 14px;
+  display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 12px;
   box-shadow: 0 3px 0 #7f8b9c, 0 6px 10px rgba(6, 12, 24, 0.35);
   transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
@@ -905,52 +914,50 @@ button.cz-look:active img { transform: translateY(2px); box-shadow: 0 1px 0 #7f8
 .cz-look:focus-visible { outline: none; }
 .cz-look:focus-visible img { outline: 3px solid var(--amber-hi); outline-offset: 3px; }
 /* the table in use: ringed in amber */
-.cz-tile.inUse .cz-look img { box-shadow: 0 0 0 3px var(--amber-lo), 0 3px 0 #7f8b9c, 0 6px 10px rgba(6, 12, 24, 0.35); }
+.cz-row.inUse .cz-look img { box-shadow: 0 0 0 3px var(--amber-lo), 0 3px 0 #7f8b9c, 0 6px 10px rgba(6, 12, 24, 0.35); }
 /* an event's table to win: information, flat and dimmed */
 .cz-look.locked { cursor: default; }
 .cz-look.locked img { box-shadow: none; filter: saturate(0.55) brightness(0.92); opacity: 0.8; }
-.cz-name { font: 600 16px/1.15 var(--round); }
-.cz-how { font: 500 12.5px/1.2 var(--round); color: var(--ink-soft); }
-.btn.cz-buy.shop-buy, .btn.cz-use { width: 100%; min-width: 0; min-height: 46px; padding: 0 10px; font-size: 17px; }
-.cz-inuse { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 46px; font: 600 16px/1.1 var(--round); color: #2e7d5a; }
-.cz-inuse :is(svg, .ico) { width: 20px; height: 20px; }
-p.cz-say { margin: 0; font: 600 13px/1.3 var(--round); color: var(--ink-soft); text-align: center; }
-p.cz-say:empty { display: none; }
-p.cz-say.good { color: #2e7d5a; }
-.cz-tile.grew, .cz-track.grew { animation: badge-pop 0.5s ease-out; }
-html.less-motion :is(.cz-tile, .cz-track).grew { animation: none; }
-
-/* Music: a row per soundtrack, its cover, its name, Listen and its price (or Use, or In use) */
-.cz-list { display: flex; flex-direction: column; gap: 12px; max-width: 520px; margin: 0 auto; }
-.cz-track {
-  display: grid; grid-template-columns: 64px minmax(0, 1fr); grid-template-areas: "cover words" "acts acts" "say say";
-  align-items: center; column-gap: 12px; row-gap: 10px; padding: 10px 12px 12px; border-radius: 22px;
-}
-.cz-cover { grid-area: cover; position: relative; width: 64px; height: 64px; border-radius: 12px; overflow: hidden; background: rgba(52, 67, 90, 0.14); }
+.cz-look.locked .table-lock { width: 32px; height: 32px; margin: -16px 0 0 -16px; }
+/* a track's cover, square */
+.cz-cover { position: relative; height: var(--pic); border-radius: 14px; overflow: hidden; background: rgba(52, 67, 90, 0.14); }
 .cz-cover img { display: block; width: 100%; height: 100%; object-fit: cover; }
 /* playing now: three little bars on the cover */
-.cz-eq { position: absolute; right: 4px; bottom: 4px; display: flex; align-items: flex-end; gap: 2px; height: 18px; padding: 3px 4px; border-radius: 6px; background: rgba(255, 255, 255, 0.88); }
+.cz-eq { position: absolute; right: 5px; bottom: 5px; display: flex; align-items: flex-end; gap: 2px; height: 18px; padding: 3px 4px; border-radius: 6px; background: rgba(255, 255, 255, 0.88); }
 .cz-eq i { display: block; width: 3px; height: 6px; border-radius: 1px; background: var(--amber-lo); animation: cz-eq 0.9s ease-in-out infinite; }
 .cz-eq i:nth-child(2) { animation-delay: -0.3s; }
 .cz-eq i:nth-child(3) { animation-delay: -0.6s; }
 @keyframes cz-eq { 0%, 100% { height: 4px; } 50% { height: 12px; } }
 html.less-motion .cz-eq i { animation: none; height: 10px; }
-.cz-words { grid-area: words; display: flex; flex-direction: column; gap: 4px; min-width: 0; text-align: left; }
-.cz-words b { font: 600 18px/1.15 var(--round); }
-.cz-words small { font: 500 13px/1.25 var(--round); color: var(--ink-soft); }
-.cz-acts { grid-area: acts; display: flex; gap: 10px; }
-.cz-acts > * { flex: 1 1 0; min-width: 0; }
-.cz-acts > .btn.cz-buy.shop-buy { width: auto; min-width: 0; }
-/* a track owned: Use or In use beside its name, on the same line */
-.cz-track:is(.owned, .inUse) { grid-template-columns: 64px minmax(0, 1fr) auto; grid-template-areas: "cover words acts" "say say say"; }
-.cz-track:is(.owned, .inUse) .cz-acts > * { flex: none; }
-.cz-track.owned .btn.cz-use { width: auto; padding: 0 22px; }
-.btn.cz-listen { min-width: 0; min-height: 46px; padding: 0 12px; font-size: 17px; gap: 8px; white-space: nowrap; }
+/* the middle: the name, its mark, how to get it, its last word */
+.cz-words { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; min-width: 0; text-align: left; }
+/* the name wraps between words, never inside one and never cut off: a word too wide for the middle
+   steps its size down (cosmetics.ts, fitText) */
+.cz-name { align-self: stretch; min-width: 0; font: 600 18px/1.15 var(--round); overflow-wrap: normal; }
+.cz-how { font: 500 13px/1.25 var(--round); color: var(--ink-soft); }
+/* an event's table to win has no actions: its words take their column too */
+.cz-row.locked .cz-words { grid-column: 2 / 4; }
+.cz-row.locked .cz-acts { display: none; }
+p.cz-say { margin: 0; font: 600 13px/1.3 var(--round); color: var(--ink-soft); text-align: center; }
+.cz-row p.cz-say { text-align: left; }
+p.cz-say:empty { display: none; }
+p.cz-say.good { color: #2e7d5a; }
+/* the actions' column: every button its full width, so two stacked share their width and right edge;
+   long words wrap inside a button rather than push it out */
+.cz-acts { display: flex; flex-direction: column; justify-content: center; align-items: stretch; gap: 8px; min-width: 0; }
+.cz-row .cz-acts > .btn { width: 100%; min-width: 0; min-height: 46px; padding: 4px 10px; font-size: 17px; line-height: 1.1; white-space: normal; text-align: center; }
+.cz-row .cz-acts > .btn.cz-keep.shop-buy { font-size: 15px; }
+.cz-row .cz-acts .buy-words { flex-wrap: wrap; justify-content: center; white-space: normal; row-gap: 2px; }
+.cz-inuse { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 46px; font: 600 16px/1.1 var(--round); color: #2e7d5a; text-align: center; }
+.cz-inuse :is(svg, .ico) { flex: none; width: 20px; height: 20px; }
+.cz-row.grew { animation: badge-pop 0.5s ease-out; }
+html.less-motion .cz-row.grew { animation: none; }
+/* Listen, a track for sale's: above its price, in the same column */
+.btn.cz-listen { gap: 8px; }
 .cz-listen :is(.cz-play, .cz-stop) { flex: none; }
 .btn.cz-listen.on { color: var(--amber-lip); }
 .cz-play { width: 0; height: 0; border-left: 12px solid currentColor; border-top: 7px solid transparent; border-bottom: 7px solid transparent; }
 .cz-stop { width: 12px; height: 12px; border-radius: 2px; background: currentColor; }
-.cz-track p.cz-say { grid-area: say; }
 
 /* a table tried on: the list steps aside, the table fills the screen behind a card at the foot */
 .cz-tryon { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; display: flex; justify-content: center; padding: 0 16px calc(var(--foot) + 12px); }
@@ -1746,13 +1753,8 @@ html.less-motion .btn.daily-go::before, html.battery-saver .btn.daily-go::before
 .btn.arc-play { align-self: center; min-width: 240px; min-height: 56px; font-size: 19px; }
 
 /* Cosmetics for a VIP (cosmetics.ts): owned or lent (information), and a lent one's price to keep it */
-.cz-mark { align-self: center; padding: 3px 10px; border-radius: 999px; font: 600 12px/1.2 var(--round); color: var(--ink-soft); }
+.cz-mark { align-self: flex-start; padding: 3px 10px; border-radius: 999px; font: 600 12px/1.2 var(--round); color: var(--ink-soft); }
 .cz-mark.lent { color: #8a5a00; background: linear-gradient(180deg, #fff2c8, #ffe29a); border-color: rgba(232, 169, 58, 0.6); }
-.cz-track .cz-words .cz-mark { align-self: flex-start; margin-top: 2px; }
-.btn.cz-keep.shop-buy { min-width: 0; width: 100%; min-height: 44px; font-size: 15px; }
-.cz-acts > .btn.cz-keep.shop-buy { width: auto; }
-/* a lent track: its buttons (Use, Keep it) on a row of their own, as a track for sale's */
-.cz-track.lent { grid-template-columns: 64px minmax(0, 1fr); grid-template-areas: "cover words" "acts acts" "say say"; }
 
 /* COINS AS "+50" WITH THE ARCADE'S COIN (suitcase.ts): an event item's, beside its line on the win card */
 .find-coins { display: inline-flex; align-items: center; gap: 4px; font: 700 17px/1 var(--round); color: var(--ink); white-space: nowrap; }
