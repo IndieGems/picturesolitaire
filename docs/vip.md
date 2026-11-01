@@ -36,6 +36,10 @@ The game never prices it or describes the Arcade's own perks; the SDK's `docs/ar
      ordinary play). The values are tunable.
    - Every level stays winnable with no helper (AGENTS.md), so VIP never decides whether a level can
      be won.
+   - Known limit, left for now (the lead, 2026-11-01): the win checker takes at most 100 shuffles in
+     one level's line (`SHUFFLES` in `functions/checker/src/claim.rs`), so a VIP who shuffles for about
+     17 minutes on one level would have that win refused. Raise it the next time the checker is
+     rebuilt for something else.
 2. **The daily archive.**
    - VIPs can play past days' dailies from a calendar opened from home's Daily tile.
    - It starts with about the past month, then follows the game standard's window: the player's
