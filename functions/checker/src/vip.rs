@@ -1,11 +1,14 @@
 //! WHO IS VIP, and the daily archive VIPs may play (the creator, 2026-10-30; docs/vip.md). Pure:
 //! lib.rs asks the platform, this decides. tests/vip.rs runs it on this machine.
 //!
-//! Gem Arcade VIP is the Arcade's own pass. The platform cannot tell a game who holds it yet (SDK
-//! 17.0.0), so lib.rs's `platform_vip` answers None and the player is NOT VIP on test and release.
-//! When the platform adds a read, that one function changes, and nothing else. On the dev channel
-//! only, a call carrying `pretend_vip: true` (the dev menu's "Pretend I'm VIP", src/net/vip.ts) is
-//! VIP, so the creator and QA can see every perk; on any other channel the flag is ignored.
+//! Gem Arcade VIP is the Arcade's own pass, `vip` (on sale since 2026-11-01). lib.rs's `platform_vip`
+//! asks the platform which passes the player who called holds (GET /v1/games/{game}/players/me/passes,
+//! gem-api#4337; SDK 19.0.0's arcade-and-store.md, section 11), and `passes` reads the answer: VIP is
+//! a `vip` entry with `held: true`; listed and not held, or not listed at all, is not VIP. A read that
+//! failed is UNKNOWN (None), never "not VIP" and never VIP: lib.rs holds a claim that needs it to try
+//! again and says nothing about VIP, so the game keeps what it had. On the dev channel only, a call
+//! carrying `pretend_vip: true` (the dev menu's "Pretend I'm VIP", src/net/vip.ts) is VIP, so the
+//! creator and QA can see every perk; on any other channel the flag is ignored.
 //!
 //! THE DAILY ARCHIVE (the game standard, "An archive of past dailies"): this month and the two before
 //! it, in the player's own months, from the 1st of the month two before their today, to yesterday.
@@ -14,12 +17,34 @@
 
 use serde_json::Value;
 
-/// VIP for this call: the platform's word when it has one; else, on the dev channel only, the
-/// dev menu's pretend; else not.
-pub fn decide(channel: &str, input: &Value, platform: Option<bool>) -> bool {
+/// The pass read's answer ({"passes":[{"pass":"vip","held":true,"ends_at":…}]}), read for VIP.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Passes {
+    /// The player holds `vip`.
+    pub held: bool,
+    /// `vip` is in the list at all: a pass the platform has not marked visible to games is left out,
+    /// and then every player reads as not VIP (lib.rs logs which).
+    pub listed: bool,
+    /// How many passes the list has.
+    pub count: usize,
+}
+
+/// Read a 2xx pass read's body. None when it is not the documented shape: unknown, not "not VIP".
+pub fn passes(body: &Value) -> Option<Passes> {
+    let list = body["passes"].as_array()?;
+    let vip: Vec<&Value> = list.iter().filter(|p| p["pass"] == "vip").collect();
+    Some(Passes { held: vip.iter().any(|p| p["held"] == true), listed: !vip.is_empty(), count: list.len() })
+}
+
+/// VIP for this call: Some(true) if the platform says the player holds it, or on the dev channel
+/// only, the dev menu's pretend; Some(false) if the platform says not; None (unknown) if the
+/// platform could not be asked and there is no pretend.
+pub fn decide(channel: &str, input: &Value, platform: Option<bool>) -> Option<bool> {
+    let pretend = channel == "dev" && input["pretend_vip"] == true;
     match platform {
-        Some(v) => v || (channel == "dev" && input["pretend_vip"] == true),
-        None => channel == "dev" && input["pretend_vip"] == true,
+        Some(true) => Some(true),
+        _ if pretend => Some(true),
+        p => p,
     }
 }
 

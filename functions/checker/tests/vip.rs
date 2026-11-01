@@ -9,14 +9,32 @@ use serde_json::json;
 fn the_dev_pretend_counts_on_dev_only_and_the_platform_decides_elsewhere() {
     let pretend = json!({ "v": 1, "pretend_vip": true });
     let plain = json!({ "v": 1 });
-    assert!(vip::decide("dev", &pretend, None), "the dev menu's pretend, on dev");
-    assert!(!vip::decide("test", &pretend, None) && !vip::decide("release", &pretend, None), "never off dev");
-    assert!(!vip::decide("dev", &plain, None) && !vip::decide("release", &plain, None), "not VIP while the platform cannot say");
-    assert!(!vip::decide("dev", &json!({ "pretend_vip": "true" }), None), "the flag is a JSON true, nothing else");
-    // once the platform can say, its word stands (and the pretend can only add, on dev)
-    assert!(vip::decide("release", &plain, Some(true)));
-    assert!(!vip::decide("release", &pretend, Some(false)));
-    assert!(vip::decide("dev", &pretend, Some(false)));
+    assert_eq!(vip::decide("dev", &pretend, None), Some(true), "the dev menu's pretend, on dev");
+    assert_eq!(vip::decide("dev", &pretend, Some(false)), Some(true), "on dev the pretend adds to the platform's no");
+    for channel in ["test", "release"] {
+        assert_eq!(vip::decide(channel, &pretend, Some(false)), Some(false), "never off dev ({channel})");
+        assert_eq!(vip::decide(channel, &pretend, None), None, "and no pretend turns unknown into yes ({channel})");
+    }
+    assert_eq!(vip::decide("dev", &json!({ "pretend_vip": "true" }), Some(false)), Some(false), "the flag is a JSON true, nothing else");
+    // the platform's word stands
+    assert_eq!(vip::decide("release", &plain, Some(true)), Some(true));
+    assert_eq!(vip::decide("release", &plain, Some(false)), Some(false));
+    // a read that failed is unknown: never a lock-out and never a grant
+    assert_eq!(vip::decide("release", &plain, None), None);
+    assert_eq!(vip::decide("dev", &plain, None), None);
+}
+
+#[test]
+fn the_pass_read_says_vip_only_for_a_vip_entry_that_is_held() {
+    let read = |b| vip::passes(&b).map(|p| (p.held, p.listed, p.count));
+    assert_eq!(read(json!({ "passes": [{ "pass": "vip", "held": true, "ends_at": "2026-12-01T00:00:00Z" }] })), Some((true, true, 1)));
+    assert_eq!(read(json!({ "passes": [{ "pass": "vip", "held": true, "ends_at": null }] })), Some((true, true, 1)), "support's grant with no end");
+    assert_eq!(read(json!({ "passes": [{ "pass": "vip", "held": false, "ends_at": null }] })), Some((false, true, 1)), "listed, not held");
+    assert_eq!(read(json!({ "passes": [] })), Some((false, false, 0)), "not marked visible to games: not listed");
+    assert_eq!(read(json!({ "passes": [{ "pass": "gold", "held": true, "ends_at": null }] })), Some((false, false, 1)), "another pass is not VIP");
+    assert_eq!(read(json!({ "passes": [{ "pass": "vip", "held": "true" }] })), Some((false, true, 1)), "held is a JSON true, nothing else");
+    assert_eq!(read(json!({ "error": "x" })), None, "not the shape: unknown, not \"not VIP\"");
+    assert_eq!(read(json!(null)), None);
 }
 
 #[test]

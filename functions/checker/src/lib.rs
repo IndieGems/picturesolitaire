@@ -332,8 +332,10 @@ mod function {
     }
 
     /// The claim's day. Err: the verdict: a date after today ("wrong_day"); a past day for a player
-    /// who is not VIP ("vip_only", yesterday excepted); a VIP's day older than the archive ("too_old").
-    fn daily_kind(player: &str, win: &Win, vip: bool) -> Result<Day, Value> {
+    /// who is not VIP ("vip_only", yesterday excepted); a VIP's day older than the archive ("too_old");
+    /// a past day while VIP is unknown ("retry": held, never refused, so a holder is never locked out).
+    /// VIP is asked only for a past day.
+    fn daily_kind(player: &str, win: &Win, vip: VipWord) -> Result<Day, Value> {
         let date = win.date.clone().unwrap_or_default();
         let today = match daily_date(player, 0)? {
             Some(d) => d,
@@ -346,7 +348,7 @@ mod function {
         if date.as_str() > today.as_str() {
             return Err(refused("wrong_day"));
         }
-        if vip {
+        if vip().map_err(retry)? {
             return if vip::in_archive(&date, &today) { Ok(Day::Past) } else { Err(refused("too_old")) };
         }
         match daily_date(player, 1)? {
@@ -355,7 +357,7 @@ mod function {
         }
     }
 
-    fn daily_win(game: &str, player: &str, win: &Win, late: bool, kit: bool, vip: bool) -> Value {
+    fn daily_win(game: &str, player: &str, win: &Win, late: bool, kit: bool) -> Value {
         let date = win.date.clone().unwrap_or_default();
 
         // the result, on the date's board (moves, then time); the first one a day stands
@@ -399,7 +401,6 @@ mod function {
             Ok(g) => g,
             Err(v) => return v,
         };
-        let _ = vip; // the events left the dailies: nothing here is VIP's now
         let mut verdict = json!({
             "v": 1, "status": "kept", "lane": "daily", "board": win.board, "date": date,
             "moves": win.moves, "ms": win.ms, "coins": g.coins, "items": g.items, "recorded": recorded, "first": first,
@@ -503,18 +504,35 @@ mod function {
         }
     }
 
+    /// The events whose prize is paid (their mark: the Passport stamp, with the table), newest
+    /// release first, whoever the player is: a lapsed VIP keeps what they earned. Err: the verdict.
+    fn stamps_of(player: &str, today: &str) -> Result<Vec<&'static str>, Value> {
+        let mut out = Vec::new();
+        for e in suitcase::shown(today) {
+            if value_of(player, suitcase::mark(e))? >= 1.0 {
+                out.push(suitcase::name(e));
+            }
+        }
+        Ok(out)
+    }
+
     /// {"v":1,"what":"suitcase"}: every event released by the player's today, newest first, with the
     /// items they hold, for a VIP; a full one whose prize is still unpaid is paid now (a few a call at
     /// most). `current` (the newest) and `past` (the rest) repeat `events` for a build from before.
+    /// `stamps`, for every player, VIP or not: the events whose prize is paid (stamps_of).
     fn suitcase_read(player: &str, vip: bool) -> Value {
         let today = match today_of(player) {
             Ok(d) => d,
             Err(v) => return v,
         };
         if !suitcase::open(vip) {
-            // not open to this player: no events, and nothing is read or paid (the items held stay
-            // put). `today` keeps a build from asking again and again.
-            return json!({ "v": 1, "status": "suitcase", "off": true, "today": today, "events": [], "current": null, "past": [], "helpers": pay::none(), "gifts": [], "prizes": [] });
+            // not open to this player: no events, and nothing is paid (the items held stay put), but
+            // the stamps they earned stay theirs. `today` keeps a build from asking again and again.
+            let stamps = match stamps_of(player, &today) {
+                Ok(s) => s,
+                Err(v) => return v,
+            };
+            return json!({ "v": 1, "status": "suitcase", "off": true, "today": today, "events": [], "current": null, "past": [], "helpers": pay::none(), "gifts": [], "prizes": [], "stamps": stamps });
         }
         let rows = match items_held(player) {
             Ok(r) => r,
@@ -547,15 +565,20 @@ mod function {
         let gifts = if prizes.is_empty() { json!([]) } else { json!(["suitcase"]) };
         let current = list.first().cloned().unwrap_or(Value::Null);
         let past: Vec<Value> = list.iter().skip(1).cloned().collect();
-        json!({ "v": 1, "status": "suitcase", "today": today, "events": list, "current": current, "past": past, "helpers": helpers, "gifts": gifts, "prizes": prizes })
+        let stamps: Vec<Value> = list.iter().filter(|e| e["paid"] == true).map(|e| e["id"].clone()).collect();
+        json!({ "v": 1, "status": "suitcase", "today": today, "events": list, "current": current, "past": past, "helpers": helpers, "gifts": gifts, "prizes": prizes, "stamps": stamps })
     }
 
     /// An event level's claim may be paid: its event (the level is one of an event's), the events
-    /// open to this player (switched on, VIP), and the event released by their today. Err: the verdict.
-    fn event_gate(player: &str, win: &Win, vip: bool) -> Result<suitcase::Event, Value> {
+    /// open to this player (switched on, VIP), and the event released by their today. Err: the verdict;
+    /// while VIP is unknown, "retry" (held, never "vip_only").
+    fn event_gate(player: &str, win: &Win, vip: VipWord) -> Result<suitcase::Event, Value> {
         let refused = |why: &str| json!({ "v": 1, "status": "refused", "reason": why, "lane": "event", "board": win.board });
         let Some(e) = suitcase::of_level(&win.board) else { return Err(refused("unknown_event")) };
-        if !suitcase::open(vip) {
+        if !suitcase::on() {
+            return Err(refused("vip_only"));
+        }
+        if !suitcase::open(vip().map_err(retry)?) {
             return Err(refused("vip_only"));
         }
         let today = today_of(player)?;
@@ -839,7 +862,7 @@ mod function {
 
     /// A verified win: the record first, then the payment, so a payment never
     /// lands without its progress, and a resent claim changes the record once.
-    fn verified(game: &str, player: &str, win: &Win, boards: u64, vip: bool) -> Value {
+    fn verified(game: &str, player: &str, win: &Win, boards: u64, vip: VipWord) -> Value {
         let day = match win.lane {
             Lane::Daily => match daily_kind(player, win, vip) {
                 Ok(d) => d,
@@ -903,8 +926,9 @@ mod function {
         let mut verdict = match (win.lane.clone(), day, event) {
             // a past day pays no kit (it waits for the next win)
             (Lane::Daily, Day::Past, _) => past_win(player, win, &mut doc, past_coins),
-            (Lane::Daily, d, _) => daily_win(game, player, win, matches!(d, Day::Late), kit, vip),
-            (Lane::Event, _, Some(e)) => event_win(game, player, win, e, kit, vip),
+            (Lane::Daily, d, _) => daily_win(game, player, win, matches!(d, Day::Late), kit),
+            // past event_gate, the word is a VIP's (read once: this asks nothing more)
+            (Lane::Event, _, Some(e)) => event_win(game, player, win, e, kit, vip().unwrap_or(false)),
             _ => board_win(player, win, kit),
         };
         if verdict["status"] != "retry" {
@@ -919,10 +943,40 @@ mod function {
         verdict
     }
 
-    /// THE PLATFORM'S WORD ON VIP: None while the platform cannot say (SDK 17.0.0, docs/vip.md).
-    /// When it adds a read, this is the one function to change (vip::decide does the rest).
-    fn platform_vip(_player: &str) -> Option<bool> {
-        None
+    /// VIP for this call, read at most once and only when the call needs it: Ok(VIP or not), or
+    /// Err(why it is unknown), the reason of the "retry" that holds a claim needing it.
+    type VipWord<'a> = &'a dyn Fn() -> Result<bool, &'static str>;
+
+    /// THE PLATFORM'S WORD ON VIP (vip.rs; docs/vip.md): the passes of the player who called (the
+    /// route's "me" is the function's invoker). Ok(holds `vip`), or Err when the read failed:
+    /// "platform" for a hiccup (no answer, 429, 5xx), "vip_unknown" for anything else (a refusal, a
+    /// body not the documented shape). A failure is never "not VIP". One log line a read, with no
+    /// player id, says whether `vip` was in the list at all: a pass the platform has not marked
+    /// visible to games is left out, and every player then reads as not VIP.
+    fn platform_vip(game: &str) -> Result<bool, &'static str> {
+        let res = match api("GET", format!("/v1/games/{game}/players/me/passes"), None) {
+            Ok(r) => r,
+            Err(e) => {
+                host::log(LogLevel::Warn, &format!("vip pass read: no answer: {e}"));
+                return Err("platform");
+            }
+        };
+        if !(200..300).contains(&res.status) {
+            let code = ["code", "reason", "error"].iter().find_map(|k| res.body[*k].as_str()).unwrap_or("");
+            host::log(LogLevel::Warn, &format!("vip pass read answered {} {code}", res.status));
+            return Err(if passing(res.status) { "platform" } else { "vip_unknown" });
+        }
+        match vip::passes(&res.body) {
+            Some(p) => {
+                let held = if !p.listed { "" } else if p.held { ", held" } else { ", not held" };
+                host::log(LogLevel::Info, &format!("vip pass read: vip {} ({} listed){held}", if p.listed { "listed" } else { "NOT listed" }, p.count));
+                Ok(p.held)
+            }
+            None => {
+                host::log(LogLevel::Warn, "vip pass read: not the documented shape");
+                Err("vip_unknown")
+            }
+        }
     }
 
     impl Guest for Function {
@@ -935,17 +989,37 @@ mod function {
                 return Ok(json!({ "v": 1, "levels": claim::LEVELS }).to_string().into_bytes());
             }
             let asked = serde_json::from_slice::<Value>(&input).unwrap_or(Value::Null);
-            // VIP for this call (vip.rs): every answer below says it, so the game follows the server
-            let vip = vip::decide(&ctx.channel, &asked, platform_vip(&player));
+            // VIP for this call (vip.rs), asked of the platform once, and only by a call that needs it
+            // (the VIP ask, the events read, an event level, a past daily). An answer that asked says
+            // it, so the game follows the server; one that did not, or could not, says nothing about
+            // VIP, and the game keeps what it had.
+            let word: std::cell::OnceCell<Result<bool, &'static str>> = std::cell::OnceCell::new();
+            let vip = || -> Result<bool, &'static str> {
+                *word.get_or_init(|| {
+                    let platform = platform_vip(&ctx.game_id);
+                    match vip::decide(&ctx.channel, &asked, platform.ok()) {
+                        Some(v) => Ok(v),
+                        None => Err(platform.err().unwrap_or("vip_unknown")),
+                    }
+                })
+            };
             let said = |mut v: Value| -> Result<Vec<u8>, String> {
-                v["vip"] = json!(vip);
+                if let Some(Ok(known)) = word.get() {
+                    v["vip"] = json!(known);
+                }
                 Ok(v.to_string().into_bytes())
             };
             if asked["what"] == "vip" {
-                return said(json!({ "v": 1, "status": "vip" }));
+                return said(match vip() {
+                    Ok(_) => json!({ "v": 1, "status": "vip" }),
+                    Err(why) => retry(why),
+                });
             }
             if asked["what"] == "suitcase" {
-                return said(suitcase_read(&player, vip));
+                return said(match vip() {
+                    Ok(v) => suitcase_read(&player, v),
+                    Err(why) => retry(why),
+                });
             }
             if asked["what"] == "swap" {
                 // no swap since the events became level packs (docs/vip.md, 2026-10-30)
@@ -966,7 +1040,7 @@ mod function {
                 }
                 Ok(win) => {
                     host::log(LogLevel::Info, &format!("won {} {} in {} moves, {} shuffles", win.lane.name(), win.board, win.moves, win.shuffles));
-                    verified(&ctx.game_id, &player, &win, data.campaign.len() as u64, vip)
+                    verified(&ctx.game_id, &player, &win, data.campaign.len() as u64, &vip)
                 }
             };
             said(verdict)
