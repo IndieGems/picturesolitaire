@@ -77,7 +77,7 @@ import { gem, onArcadePause, onWillTerminate } from "../gem";
 import { on } from "../events";
 import { dealHash } from "../net/deal-hash.ts";
 import { refusalOf } from "../net/no-answer.ts";
-import { heard, held } from "../net/pace.ts";
+import { heard, held, needsLoad } from "../net/pace.ts";
 import { onOnline } from "../ui/online.ts";
 import type { BoardHandle, BoardKept } from "../board/index.ts";
 import type { Level } from "./levels.ts";
@@ -397,14 +397,6 @@ function failed(err: unknown): void {
 // ---------------------------------------------------------------- the calls
 
 /**
- * A refusal that means "read the slot again first" (SDK 16.2): the stored save changed since this
- * session read or wrote it (another device or tab), the player changed while the write waited, or
- * the slot's last load failed. Never worth resending as it stands.
- */
-const mustReread = (err: unknown): boolean =>
-  err instanceof GemSaveError && (err.reason === "save_conflict" || err.reason === "load_failed");
-
-/**
  * Read the slot: once at boot, for the screens (keptBoard), and again after a conflict. Any
  * failure (a timeout, a 429, storage's leg, load_failed) is never "no board": it is tried again
  * on the backoff, and nothing is written until a read lands.
@@ -513,8 +505,10 @@ async function write(timeoutMs: number, final = false): Promise<void> {
     notBefore = 0;
   } catch (err) {
     console.warn(`[in-hand] the board in hand could not be kept: ${err instanceof GemSaveError ? err.reason : refusalOf(err)}`);
-    if (mustReread(err)) {
-      // read the slot again, then the newer board stays; a second conflict in a row waits the backoff
+    if (needsLoad(err)) {
+      // save_conflict (another device or tab saved since, or the player changed while it waited) or
+      // load_failed: never resent as it stands. Read the slot again, then the newer board stays; a
+      // second conflict in a row waits the backoff
       reread = true;
       if (++conflicts > 1) failed(err);
       if (!dirty) dirtySince = Date.now();
