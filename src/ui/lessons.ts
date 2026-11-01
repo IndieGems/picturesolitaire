@@ -16,6 +16,11 @@
 // server's word, guideDone), nor for a player who has seen it (the screens' cloud save,
 // guide-save.ts, read first, a few seconds at most). No Arcade break inside one (app.ts,
 // signalBreak asks inLesson()).
+//
+// A LESSON'S FREE USE BELONGS TO ITS BOARD (QA, 2026-11-01: a free Undo was feared to follow the player
+// off board 2): leaving the board takes the lesson down and disarms the board's free use (free(null)),
+// and app.ts spends any use the board calls a lesson's unless that lesson's button is lit (spendOn).
+// Board 2 carried on with moves already made lights Undo at once, not after one more move.
 
 import { on } from "../events";
 import { t } from "./i18n";
@@ -40,8 +45,10 @@ type Deps = {
   others: () => HTMLElement[];
   /** Hold the board (no moves) or let it go (the board's guide mode). */
   setBoard: (mode: GuideMode) => void;
-  /** Make the board's next use of this helper free (board.lesson, the gameplay member's). */
-  free: (name: LessonName) => void;
+  /** Make the board's next use of this helper free (board.lesson, the gameplay member's); null: none is. */
+  free: (name: LessonName | null) => void;
+  /** Can the board in play take a move back now (its own word: board.canUndo)? */
+  canUndo: () => boolean;
   /** Is the board this lesson belongs to still the one in play? */
   stillHere: (name: LessonName) => boolean;
 };
@@ -137,6 +144,8 @@ export function createLessons(d: Deps) {
   function end(done: boolean): void {
     for (const off of offs) off();
     offs = [];
+    // the lesson's free use was armed and not used (its board left): it goes with the lesson
+    if (up && !done) d.free(null);
     const was = pending;
     pending = null;
     up = null;
@@ -154,24 +163,29 @@ export function createLessons(d: Deps) {
 
   return {
     /**
-     * Campaign board 2 just opened, fresh, and not won before: once the player's first move
-     * lands, Undo is lit, the board held, and that Undo is free.
+     * Campaign board 2 just opened, not won before: once the player's first move lands, Undo is
+     * lit, the board held, and that Undo is free. `carried`: carried on from last time, so a board
+     * with moves already made lights Undo at once.
      */
-    async offerUndo(): Promise<void> {
+    async offerUndo(carried = false): Promise<void> {
       end(false);
       pending = "undo";
       if (!(await owed("undo")) || pending !== "undo" || !d.stillHere("undo")) {
         if (pending === "undo") pending = null;
         return;
       }
-      offs.push(
-        on("piece:move", () => {
-          for (const off of offs) off();
-          offs = [on(DONE.undo, () => end(true))];
-          // after the move's own slide, so the lit button and the note never sit over a card in flight
-          window.setTimeout(() => pending === "undo" && d.stillHere("undo") && show("undo"), 350);
-        }),
-      );
+      /** From now on only the Undo ends it; Undo lights `ms` from now (if the board is still the lesson's). */
+      const light = (ms: number) => {
+        for (const off of offs) off();
+        offs = [on(DONE.undo, () => end(true))];
+        window.setTimeout(() => pending === "undo" && !up && d.stillHere("undo") && show("undo"), ms);
+      };
+      // carried on with moves made: Undo lights as soon as the board says it can take one back (now, or,
+      // for a board resumed from the save, once its replay has settled)
+      if (carried && d.canUndo()) return light(600);
+      if (carried) offs.push(on("board:changed", (e) => e.canUndo && pending === "undo" && !up && light(600)));
+      // after the move's own slide, so the lit button and the note never sit over a card in flight
+      offs.push(on("piece:move", () => light(350)));
     },
     /** Should the way to board 4 go through the Shuffle lesson first? (By board 4 the save and the record are read.) */
     shuffleOwed: (): boolean => guideDone() && !lessonSeen("shuffle"),

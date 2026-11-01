@@ -105,7 +105,15 @@ type Stored = { v: 1; guide: number; lessons?: string[]; tries?: Tries; [older: 
 
 let state: Stored = { v: 1, guide: 0 };
 const listeners = new Set<() => void>();
-const framed = window.self !== window.top;
+/** Framed by the platform: another origin's frame (as src/net/helpers.ts). The play-test tool's frame is this page's own origin, with no platform behind it: a plain tab. */
+const framed = ((): boolean => {
+  if (window.self === window.top) return false;
+  try {
+    return window.parent.location.origin !== location.origin;
+  } catch {
+    return true;
+  }
+})();
 
 let landed!: () => void;
 /** Resolves once the account's copy has been read (or there is none to read). */

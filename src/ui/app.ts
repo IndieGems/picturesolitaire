@@ -450,6 +450,7 @@ const lessons = createLessons({
     ),
   setBoard: (mode) => (board as GuidedBoard | null)?.guide?.(mode),
   free: (name) => (board as LessonBoard | null)?.lesson?.(name),
+  canUndo: () => board?.canUndo() ?? false,
   stillHere: (name) =>
     screen === "board" && !boardWon && (name === "undo" ? play?.kind === "campaign" && play.level === 2 : play?.kind === "lesson"),
 });
@@ -898,11 +899,16 @@ function openLoaded(next: Play): void {
       else if (next.guide) void guide.practise();
     }
     // board 2, not won before: the Undo lesson, after the first move; the lesson board: Shuffle's
-    if (next.kind === "campaign" && next.level === 2 && !isPractice(next) && campaignNext() <= 2) void lessons.offerUndo();
+    if (next.kind === "campaign" && next.level === 2 && !isPractice(next) && campaignNext() <= 2) void lessons.offerUndo(!!carry);
     if (next.kind === "lesson") lessons.startShuffle();
     // an event level hiding an item: the event's cut-outs come now, for its found moment (none while the events are not shown)
     if (next.kind === "event" && next.e.item && eventShown()) void ensureSuitcase(next.e.event).catch(() => undefined);
-  }
+  } else if (next.kind === "campaign" && next.level === 2 && !isPractice(next) && campaignNext() <= 2) {
+    // the board in hand again (Back, then board 2 once more): its lesson, which leaving took down (its
+    // free Undo with it), comes again; with moves made, Undo lights at once (QA, 2026-11-01: it never
+    // came back, then came only after one more move)
+    void lessons.offerUndo(true);
+  } else if (next.kind === "lesson") lessons.startShuffle();
   show("board");
 }
 
@@ -1181,13 +1187,17 @@ for (const k of KINDS) helperBtns[k].btn.addEventListener("click", () => pressHe
 // `free`), or the board costs nothing; a spend that got no answer is Server's to send again, and "none"
 // (another device used the last) is read again, the act standing
 const spendOn = (k: HelperKey) => (e: { lesson?: boolean; free?: boolean }) => {
+  // a lesson's use is free only while that lesson's button is lit, on its own board (board 2's Undo;
+  // the Shuffle lesson's board and the guided start are free anyway): one a board still had armed
+  // anywhere else is spent like any other (QA, 2026-11-01, "the lesson's Undo made the daily's free")
+  const lesson = !!e.lesson && (lessons.lit() === k || freeHelpers());
   // a VIP's: nothing spent, the button rests (a mercy Hint the board gave is used up all the same)
-  if (!e.lesson && rest.vip()) {
+  if (!lesson && rest.vip()) {
     rest.used(k);
     if (e.free) tries.usedFree();
     return;
   }
-  if (e.lesson || freeHelpers()) return;
+  if (lesson || freeHelpers()) return;
   if (e.free) return void tries.usedFree();
   void stock.spend(k);
   tries.spent(k);
