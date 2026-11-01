@@ -7,6 +7,7 @@
   the VIP check, each month's suitcase art a month ahead (Art; none is made while it is
   held), and a framed check of the first live suitcase.
 - **VIP, before release:** the holder's side is untested live (no test account holds VIP; a real one costs $6.99, or the platform's support can grant one to the QA account with the creator's OK). Ask the platform whether a game may say "free" with VIP (Cosmetics' banner says it, the creator's ask).
+- **Stalled loads, the rest** (UI, 7ef5f668, after QA saw a first fetch never answer in 2 of 10 loads): our own files go through `src/ui/own-file.ts` (time limits, retries, "Couldn't load" with Try again). Still without it: Gameplay's level loads (`loadTrip`, `loadDaily`, the events' boards, build chunks the browser imports itself: a hung first import rejoins on Try again; a retry would re-import with a fresh query) and Audio's fetches in `src/audio/engine.ts` (not on the way to a board; can use own-file.ts).
 - **Tell the platform (SDK 16.1.0):** `gem.gameConfig.load()` before an identity exists builds `/v1/games//config/...` and throws `TypeError: "" is not a usable path segment` instead of a typed refusal (`unavailable`). Our reads now wait for an identity (Server, 08000ca9); the SDK should still answer with a GemApiError. Check whether 19.0.0 (the game's pin since 2026-11-01) fixed it before filing.
 - **Build size:** 0.75.0 is 556 MB of the 1 GiB limit (860 of 2,000 files), with six VIP events at about
   13 MB each. Before more trips or months, Art de-duplicates pictures
