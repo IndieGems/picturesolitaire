@@ -14,7 +14,8 @@
 // its own; nothing is saved or sent.
 //
 // Nothing here is the device's record: no count, no "paid" flag, no date of its own. While the events are
-// not shown (event-switch.ts: off, or not a VIP), the platform is never asked here.
+// not shown (event-switch.ts: off, or not a VIP), the platform is never asked here; the stamps a player
+// earned are theirs whatever they are (stamps(): read at boot by Server, for everyone).
 
 import { suitcase as platform, type EventItem, type EventPack } from "../net/suitcase";
 import { eventBest, onProgress } from "../net/progress";
@@ -129,6 +130,18 @@ export const suitcases = {
   wonCount: (e: EventPack): number => e.levels.filter((id) => suitcases.won(id)).length,
   /** The item hidden on level `id` of event `e`, if any. */
   itemOn: (e: EventPack, id: string): EventItem | null => e.items.find((it) => it.level === id) ?? null,
+  /**
+   * The events whose stamp (and table) this player won, newest first, VIP or not: a VIP who lapsed keeps
+   * what they earned (the Passport's Event stamps page). Server's word (suitcase.stamps()), named from
+   * Levels' schedule; the stand-in's finished ones.
+   */
+  stamps: (): { id: string; theme: string }[] =>
+    pretend
+      ? pretend.packs.filter((p) => p.paid).map((p) => ({ id: p.id, theme: p.theme }))
+      : platform.stamps().flatMap((id) => {
+          const e = EVENTS.find((x) => x.id === id);
+          return e ? [{ id: e.id, theme: e.theme }] : [];
+        }),
   /** A prize that landed since last asked, once; null otherwise. */
   lastPrize: (): { event: string } | null => (pretend || !eventShown() ? null : platform.lastPrize()),
   /** Read the platform's word again (the events page opening): paced and one at a time, Server's. */

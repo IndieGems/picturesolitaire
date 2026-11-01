@@ -49,7 +49,7 @@ import { shop, type BuyAnswer, type CosmeticKind } from "./cosmetics-shop";
 import { BUILT_IN_TABLE, chooseTable, chosenTable, knownTable, onTableChange, pickerTables, shopTableArts, tableTitle, thumbOf, warmThumbs, wearTable, type TableArt } from "./tables";
 import { chooseTrack, chosenTrack, onTrackChange, ownedTrackIds, TRACK_LIST, trackTitle, type TrackInfo } from "./tracks";
 import { vipTag } from "./vip-door";
-import { canGetVip, getVip, onVip, vipNow } from "./vip-view";
+import { onVip, vipButton, vipNow } from "./vip-view";
 
 type Nav = {
   /** Back: to home. */
@@ -117,7 +117,7 @@ export function createCosmetics(nav: Nav) {
   panel.id = "cz-panel";
   panel.setAttribute("role", "tabpanel");
   // VIP, above the tabs (the creator, 2026-10-30): a non-VIP's banner, every table and soundtrack theirs
-  // with VIP (and Get VIP, once VIP can be had: vip-view.ts); a VIP's one quiet line
+  // with VIP, and Get VIP (a guest's Sign in) where the Arcade sells it here: vip-view.ts; a VIP's one quiet line
   const vipBox = el("div", "cz-vip");
   const scroll = el("div", "scroll");
   scroll.append(vipBox, tabs, panel);
@@ -353,12 +353,8 @@ export function createCosmetics(nav: Nav) {
     const words = el("div", "cz-vip-words");
     words.append(vipTag(), el("p", "", t("cosmetics.vipBanner")));
     vipBox.replaceChildren(words);
-    if (canGetVip()) {
-      const get = btn("amber cz-vip-get", "vip.get");
-      get.textContent = t("vip.get");
-      get.addEventListener("click", getVip);
-      vipBox.append(get);
-    }
+    const get = vipButton("cz-vip-get");
+    if (get) vipBox.append(get);
   }
 
   function draw(): void {

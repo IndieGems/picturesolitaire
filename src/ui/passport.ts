@@ -32,7 +32,8 @@
 // opens on Stamps; the stamp and sticker moments always play there, the tabs put away until they are over.
 //
 // EVENT STAMPS (docs/vip.md, the creator, 2026-10-30: a finished event's prize is its table and its
-// stamp): every released event a VIP can play (suitcase-data.ts), newest first: a finished one's stamp
+// stamp; a VIP who lapses keeps what they earned, the lead, 2026-11-01, so anyone else's page holds the
+// stamps they won and nothing more): every released event a VIP can play (suitcase-data.ts), newest first: a finished one's stamp
 // (Art's, public/art/stamps/stamp-<event id>.webp, with no lettering: its name is ours, under it, so it
 // is said in the player's language), an unfinished one an empty dashed ring with its name and how many
 // of its items are found; an event still to come, nothing. The finish card's See your passport opens it.
@@ -238,12 +239,27 @@ export function createPassport(nav: Nav) {
     scroll.scrollTop = 0;
   }
 
-  /** The Event stamps page: each released event's stamp, or its dashed ring and how far the player is. */
+  /**
+   * The Event stamps page: a VIP's, each released event's stamp, or its dashed ring and how far the player
+   * is; anyone else's (a VIP who lapsed), the stamps they earned, and nothing of events they cannot play.
+   */
   function drawEvents(): void {
     const list = suitcases.list();
     const head = el("h2", "pp-ev-head", t("passport.tab.events"));
-    if (!list.length) return void evPage.replaceChildren(head, el("p", "pp-ev-none", t("passport.eventsNone")));
     const grid = el("div", "pp-ev-grid");
+    if (!list.length) {
+      const earned = suitcases.stamps();
+      if (!earned.length) return void evPage.replaceChildren(head, el("p", "pp-ev-none", t("passport.eventsNone")));
+      for (const e of earned) {
+        const name = eventName(e);
+        const spot = el("div", "pp-ev-spot");
+        spot.append(eventStamp(e.id, name));
+        const cell = el("div", "pp-ev won");
+        cell.append(spot, el("b", "pp-ev-name", name), el("small", "pp-ev-line", t("passport.eventDone")));
+        grid.append(cell);
+      }
+      return void evPage.replaceChildren(head, grid);
+    }
     for (const e of list) {
       const name = eventName(e);
       const cell = el("div", `pp-ev${e.paid ? " won" : ""}`);

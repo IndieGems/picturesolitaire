@@ -5,19 +5,22 @@
 //   the archive   a strip of the last few days, as the calendar draws them, under the tag
 //   the event     its suitcase and its prize table, its name, and its levels and hidden items
 //
-// then the line "VIP is coming soon." where Get VIP will go: no game can open the Arcade's VIP card, or
-// read who holds VIP, yet (gem-development#2119), and a buyer must never stay locked out (vip-view.ts:
-// canGetVip, getVip, one switch for both doors and Cosmetics). Back goes home. A VIP never sees it: VIP
-// arriving while it is up goes home, where the door now opens.
+// then Get VIP, the Arcade's own VIP sheet (vip-view.ts vipButton, the one button the Cosmetics banner
+// has too): "Sign in to get VIP" for a guest, and nothing where the Arcade cannot sell it here (a TV, a
+// browser that cannot pay). Back goes home. A VIP never sees it: VIP arriving while it is up (bought
+// from here, or anywhere: the server's word) goes through the door: the archive's calendar, or the
+// event's page once its record is in (else home, where the door now opens).
 //
-// Information is glass and paper; the only buttons are Back, the gear and (once it can be) Get VIP.
+// Information is glass and paper; the only buttons are Back, the gear and Get VIP (or Sign in).
 
 import { ICONS } from "./icons";
 import { liveAttr, locale, t } from "./i18n";
-import { canGetVip, getVip, onVip, vipNow } from "./vip-view";
+import { onVip, vipButton, vipNow } from "./vip-view";
 
 type Nav = {
   home(): void;
+  /** VIP arrived while the door was up: in, to what it holds. */
+  enter(door: VipDoor): void;
   /** Show the screen (app.ts's show("vip")). */
   show(): void;
 };
@@ -108,21 +111,14 @@ export function createVipDoor(nav: Nav) {
       prize.append(thumb, el("span", "", t("vip.prize", { table: d.table.name })));
       note.append(prize);
     }
-    const foot: HTMLElement[] = [];
-    if (canGetVip()) {
-      const get = el("button", "btn amber next vip-get", t("vip.get"));
-      get.type = "button";
-      get.dataset.press = "vip.get";
-      get.addEventListener("click", getVip);
-      foot.push(get);
-    } else foot.push(el("p", "vip-soon glass", t("vip.soon")));
-    body.replaceChildren(pic, note, ...foot);
+    const get = vipButton("next vip-get");
+    body.replaceChildren(pic, note, ...(get ? [get] : []));
   }
 
-  // VIP arrived while the door was up: home, where it opens now; VIP came on sale: its button
+  // VIP arrived while the door was up: in; Get VIP came, went or became Sign in: the button
   onVip(() => {
-    if (screen.hidden) return;
-    if (vipNow()) nav.home();
+    if (screen.hidden || !door) return;
+    if (vipNow()) nav.enter(door);
     else draw();
   });
 

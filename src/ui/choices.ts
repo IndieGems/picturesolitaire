@@ -131,6 +131,11 @@ function closing(): void {
   void send(true);
 }
 
+/** The player is about to leave the page (a sign-in may take it away): one try now, nothing awaited. */
+export function flushChoices(): void {
+  closing();
+}
+
 function wire(): void {
   if (wired) return;
   wired = true;

@@ -46,11 +46,24 @@
 //     try, and the hold gives way after PACE.guideHoldMs whatever happens.
 // Worst case, a refusing platform: about 4 calls in the first minute, then one in
 // 5 minutes; a healthy one with the guide played fast: one write at its end.
+//
+// THE SDK GUARDS THE SLOT (16.2, the SDK's saving-player-progress.md "Handling the common
+// cases"): each write carries the version this session last read or wrote, so it never
+// replaces a save it has not seen. Two refusals come back, neither worth resending as it is:
+//   - save_conflict: another device or tab wrote the slot since, or the player changed while
+//     the write waited. Nothing was written. The slot is read again and merged as at boot
+//     (the guide only moves forward, lessons add up, this session's tries are the newer),
+//     then the result is written; a player who changed starts from their own copy, never
+//     this session's. No overwrite: the merge is what both copies agree on;
+//   - load_failed: the SDK holds no good read of the slot. That is unknown, never "no save":
+//     the slot is read again (paced as a failed read), and the write waits for it.
+// A player who changed is also caught before a write goes (the SDK forgets the old player's
+// version, so that write would go with no condition): the slot is read again first.
 
-import { GemApiError } from "@indiegems/gem-web-sdk/sdk";
+import { GemApiError, GemSaveError } from "@indiegems/gem-web-sdk/sdk";
 import { gem, onArcadePause, onWillTerminate } from "../gem";
 import { noAnswer, refusalOf } from "../net/no-answer";
-import { backoff, heard, held, notNow, whenDue } from "../net/pace";
+import { backoff, heard, held, needsLoad, notNow, whenDue } from "../net/pace";
 import { onOnline, suspect } from "./online";
 
 const SLOT = "campaign";
@@ -173,6 +186,8 @@ function changed(): void {
 let started = false;
 /** The account's copy has been read (or there was none, or none could be). */
 let read = false;
+/** Whose copy was last read (gem.identity's player): a write for anyone else reads theirs first. */
+let readAs: string | undefined;
 /** Refused for good (no such slot here, a malformed record): no call more this session. */
 let off = false;
 /** Something changed since the last write: since when, and the newest change. */
@@ -193,6 +208,9 @@ let lastWrite = 0;
 /** Failures in a row, and no call before this (the backoff, never shorter than the address's hold). */
 let failures = 0;
 let notBefore = 0;
+/** Writes refused in a row for the slot's safety (save_conflict, load_failed), and no write before this. */
+let conflicts = 0;
+let writeNotBefore = 0;
 /** The one pending wake-up (pace.ts's whenDue) and when it is due. */
 let cancelWake: (() => void) | null = null;
 let wakeAt = Infinity;
@@ -221,7 +239,7 @@ function room(now: number): number {
 function earliest(kind: "read" | "write", now: number): number {
   const at = Math.max(notBefore, now + held(), room(now));
   if (kind === "read") return at;
-  return Math.max(at, Math.min(lastChange + PACE.settleMs, firstChange + PACE.gatherMaxMs), lastWrite + PACE.gapMs, holdUntil);
+  return Math.max(at, Math.min(lastChange + PACE.settleMs, firstChange + PACE.gatherMaxMs), lastWrite + PACE.gapMs, holdUntil, writeNotBefore);
 }
 
 /** Make the next call if one is wanted and may go now; else wait for when it may (one wake-up at a time). */
@@ -260,9 +278,10 @@ function succeeded(): void {
 }
 
 /** A "not now": the next call waits the backoff, never shorter than the hold any of the game's calls heard. */
-function failed(err: unknown, firstMs: number, what: string): void {
+function failed(err: unknown, firstMs: number, what: string, answered = false): void {
   heard(err); // a retry-after (or a bare 429) holds every loop of the game's, not only this one
-  if (noAnswer(err)) suspect();
+  // a refusal the SDK made for the slot's safety is an answer, never a sign of no connection
+  if (!answered && noAnswer(err)) suspect();
   failures++;
   notBefore = Date.now() + backoff(failures, firstMs);
   console.warn(`[guide-save] the campaign save could not be ${what} (${failures} in a row, next in ${Math.round((notBefore - Date.now()) / 1000)} s): ${refusalOf(err)}`);
@@ -271,7 +290,9 @@ function failed(err: unknown, firstMs: number, what: string): void {
 async function readSlot(): Promise<void> {
   busy = true;
   try {
-    await gem.awaitIdentity(PACE.timeoutMs);
+    const who = (await gem.awaitIdentity(PACE.timeoutMs)).playerId;
+    // another player since the last read: none of this session's record is theirs
+    if (readAs !== undefined && who !== readAs) forget();
     noteCall();
     let got: Record<string, unknown> | null = null;
     try {
@@ -290,6 +311,9 @@ async function readSlot(): Promise<void> {
     }
     // nothing changed here meanwhile: what was read is what the account holds
     if (!dirty) written = JSON.stringify(state);
+    // read again after a conflict: what the merge added to the account's copy is still to be written
+    else written = undefined;
+    readAs = who;
     succeeded();
     finishRead();
   } catch (err) {
@@ -312,8 +336,28 @@ function finishRead(): void {
   changed();
 }
 
+/** This session's record was another player's: start from nothing, and from the new player's copy once read. */
+function forget(): void {
+  state = { v: 1, guide: 0 };
+  triesTouched = false;
+  dirty = false;
+  written = undefined;
+  changed();
+}
+
+/** Read the slot again before the next write (a conflict, no good read held, another player). */
+function readAgain(): void {
+  read = false;
+}
+
 /** One write of the slot as it stands now (nothing, if that is what was last written). */
 async function write(timeoutMs: number): Promise<void> {
+  // the player changed since the slot was read: the SDK forgot the version, so this write would
+  // replace their save unseen. Theirs is read first, and this session's record is not theirs.
+  if (gem.identity && gem.identity.playerId !== readAs) {
+    readAgain();
+    return pump();
+  }
   const text = JSON.stringify(state);
   const since = firstChange;
   dirty = false;
@@ -325,8 +369,19 @@ async function write(timeoutMs: number): Promise<void> {
     await gem.me.saves.put(SLOT, JSON.parse(text) as Stored, { timeoutMs });
     written = text;
     succeeded();
+    conflicts = 0;
+    writeNotBefore = 0;
   } catch (err) {
-    if (notNow(err)) {
+    if (needsLoad(err)) {
+      // nothing was written, and the same write would be refused again: read, merge, then write.
+      // The read goes after the usual failed read's wait; the merged write after one that grows with
+      // each refusal in a row (two devices writing at once never settle into a flat loop)
+      failed(err, PACE.readFirstMs, err instanceof GemSaveError && err.reason === "save_conflict" ? "written (it changed elsewhere: read again)" : "written (no good read held: read again)", true);
+      writeNotBefore = Date.now() + backoff(++conflicts, PACE.writeFirstMs);
+      firstChange = dirty ? Math.min(firstChange, since) : since;
+      dirty = true;
+      readAgain();
+    } else if (notNow(err)) {
       failed(err, PACE.writeFirstMs, "written");
       // still to be saved, as old as it was (a change made meanwhile is newer)
       firstChange = dirty ? Math.min(firstChange, since) : since;
@@ -352,6 +407,18 @@ function closing(timeoutMs: number): void {
   if (held() > 0 || room(now) > now) return;
   closed = true;
   void write(timeoutMs);
+}
+
+/**
+ * The player is about to leave the page (Sign in, which the Arcade may do by taking the page away):
+ * one try now, nothing awaited, on the same terms as the closing try. The hide that may follow keeps
+ * its own.
+ */
+export function closingSave(): void {
+  if (!started || !framed || off || !read || busy || !dirty) return;
+  const now = Date.now();
+  if (held() > 0 || room(now) > now) return;
+  void write(PACE.closingMs);
 }
 
 /** Start reading. Call once, at boot. */

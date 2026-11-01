@@ -158,8 +158,13 @@ const suitcaseUi = createSuitcase({
   playLevel: (_event, level) => void playEventLevel(level),
   door: (d) => vipDoorUi.open(d),
 });
-// a locked VIP door's screen (vip-door.ts): what the daily archive or the event holds, "VIP is coming soon"
-const vipDoorUi = createVipDoor({ home: () => goHome(), show: () => show("vip") });
+// a locked VIP door's screen (vip-door.ts): what the daily archive or the event holds, and Get VIP; VIP
+// arriving while it is up goes in (the event's page only once its record is in: never "No event right now")
+const vipDoorUi = createVipDoor({
+  home: () => goHome(),
+  show: () => show("vip"),
+  enter: (d) => (d.kind === "archive" ? archiveUi.open() : eventShown() && suitcases.newest() ? suitcaseUi.open() : goHome()),
+});
 // the daily archive (daily-archive.ts): a VIP's calendar of this month's and the two before's dailies
 const archiveUi = createArchive({
   home: () => goHome(),
@@ -2704,8 +2709,8 @@ export async function startApp(): Promise<void> {
       unlocked: (slugs: string[]) => unlockUi.add(slugs.map((slug) => ({ slug }))),
       /** Play as a VIP (docs/vip.md), as the dev menu's switch does: on the play-test frame, no server to ask, so it holds. */
       vip: (on: boolean) => pretendVip(on),
-      /** Show Get VIP on the doors and in Cosmetics (true), so its words can be seen; its press only logs. As ?vipsale. */
-      vipSale: (on: boolean) => forceVipSale(on),
+      /** Show Get VIP on the doors and in Cosmetics (true; "signin", a guest's Sign in), so its words can be seen; its press only logs. As ?vipsale. */
+      vipSale: (on: boolean | "signin") => forceVipSale(on),
       /** The daily archive's calendar (as a VIP's badge opens it). */
       archive: () => archiveUi.open(),
       /** The locked door's screen for the archive (as a non-VIP's Daily page opens it). */
