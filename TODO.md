@@ -3,13 +3,11 @@
 - **Before 30 Jun 2027: extend the daily puzzle** (it now runs to 2027-06-30). Levels
   runs `make-daily.mts` for the new months, then Server rebuilds the checker.
 - **The monthly event, after release** (on hold, creator 2026-10-29): it may return for
-  the Gem Arcade's VIP members once that system exists. As of SDK 17.0.0 (2026-10-30), VIP is an Arcade Store pass: a game may show a "Get VIP" button that opens the Arcade's own offer sheet (`gem.store.showOffer`, the SDK's `docs/arcade-and-store.md` §10), but it **cannot tell whether a player holds VIP**, so a VIP-only event waits until the platform exposes that. Then: the switch back on behind
+  the Gem Arcade's VIP members. The platform now says who holds VIP (SDK 19 `gem.me.passes`, read by checker 0.1.47, 2026-11-01). Then: the switch back on behind
   the VIP check, each month's suitcase art a month ahead (Art; none is made while it is
   held), and a framed check of the first live suitcase.
-- **Gem Web SDK 16.2.0 or later, after the release candidate.** The game is on 16.1.0. From 16.2.0, a save write that collides with newer saved data is refused as `save_conflict` unless it passes `overwrite`, a load can fail as `load_failed`, and writes get the SDK's own spacing (`minWriteIntervalMs`). Before the pin moves, Server and Gameplay handle both in every save path, `src/net/pace.ts`'s loops included.
-- **Tell the platform (SDK 16.1.0):** `gem.gameConfig.load()` before an identity exists builds `/v1/games//config/...` and throws `TypeError: "" is not a usable path segment` instead of a typed refusal (`unavailable`). Our reads now wait for an identity (Server, 08000ca9); the SDK should still answer with a GemApiError. Check whether 17.x fixed it before filing.
-- **When VIP goes live: a lapsed VIP keeps what they earned.** Their event stamps still show on the Passport's Event stamps page and their won tables stay theirs, even though the events themselves lock (Server adds a read of earned stamps that doesn't need VIP; UI shows it).
-- **Before the "Get VIP" button goes on** (`VIP_SKU` in `src/ui/vip-view.ts`): move to SDK 17+ and call `gem.store.showOffer`, the Arcade's VIP sheet, not `purchase()`, which goes straight to checkout (gem-development#2119); that upgrade brings 16.2's save changes above. Also ask the platform whether a game may say "free" with VIP (Cosmetics' banner says it, the creator's ask).
+- **VIP, before release:** the holder's side is untested live (no test account holds VIP; a real one costs $6.99, or the platform's support can grant one to the QA account with the creator's OK). Ask the platform whether a game may say "free" with VIP (Cosmetics' banner says it, the creator's ask).
+- **Tell the platform (SDK 16.1.0):** `gem.gameConfig.load()` before an identity exists builds `/v1/games//config/...` and throws `TypeError: "" is not a usable path segment` instead of a typed refusal (`unavailable`). Our reads now wait for an identity (Server, 08000ca9); the SDK should still answer with a GemApiError. Check whether 19.0.0 (the game's pin since 2026-11-01) fixed it before filing.
 - **Build size:** 0.75.0 is 556 MB of the 1 GiB limit (860 of 2,000 files), with six VIP events at about
   13 MB each. Before more trips or months, Art de-duplicates pictures
   that repeat across packs, or ships a month's dailies only near their month.
