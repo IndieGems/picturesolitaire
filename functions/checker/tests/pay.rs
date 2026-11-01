@@ -15,8 +15,11 @@ fn ids() -> Value {
 
 #[test]
 fn a_line_may_hold_a_full_pouch_of_shuffles_and_more_bought_mid_board() {
-    assert_eq!(pay::cap(), 10);
-    assert!(SHUFFLES >= 10 * pay::cap());
+    // the cap is helper-ids.json's (20 since 2026-11-01; the platform clamps every gift at the
+    // currency's max_balance, so nothing here reads it at run time): five full pouches in a line
+    assert_eq!(pay::cap() as u64, ids()["cap"].as_u64().unwrap());
+    assert_eq!(pay::cap(), 20);
+    assert!(SHUFFLES >= 5 * pay::cap());
 }
 
 #[test]

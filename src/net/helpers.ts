@@ -21,6 +21,15 @@
 //   price(k), affordable(k)        the price is the config's alone. The player's Coins are
 //                                  read only to grey a button: the Arcade's wallet is the one
 //                                  place they are shown ("No counter", platform rules).
+//   bundles(), fitsBundle(slug),   THE GEMS BUNDLES (the creator, 2026-11-01): all three helpers
+//   starterOpen(), buyBundle(slug) at once, for Gems, through the ARCADE'S purchase sheet
+//                                  (gem.purchases.request: the Arcade confirms a Gems spend in its
+//                                  own words and price, from the press). A bundle any of whose
+//                                  grants would pass the cap is never asked for (fitsBundle), and
+//                                  the platform refuses each grant at the cap too (overflow: fail).
+//                                  The Starter Kit sells once per player, ever: whether it still
+//                                  can is the platform's count of its uses (recipeUsage), never a
+//                                  flag of ours. bundlesOffered(): the Arcade can draw the sheet.
 //
 // Unframed (the play-test tool) there is no platform: 3 of each, for this page only.
 // Dev-menu practice and the lessons never spend.
@@ -37,6 +46,27 @@ export type BuyAnswer = "ok" | "short" | "full" | "failed";
 export type Gift = "kit" | "hard" | "stamp" | "daily" | "suitcase";
 /** One helper, or a pack of 3. */
 export type Pack = 1 | 3;
+/** A Gems bundle (src/net/helper-ids.json `bundles`; its recipe is `buy-starter-kit`, `buy-bundle-<slug>`). */
+export type BundleSlug = "starter" | "small" | "medium" | "large";
+export interface Bundle {
+  slug: BundleSlug;
+  /** What it grants of each helper. */
+  contents: Readonly<Record<HelperKind, number>>;
+  /** Its Gems price, from the game config; null until read. */
+  gems: number | null;
+  /** Sold once per player, ever (the Starter Kit). */
+  once: boolean;
+}
+/**
+ * A bundle's purchase (agreed with UI, 2026-11-01): "ok" (the platform confirmed it; the stock was
+ * read again); "declined" (the player closed the sheet, or no press was behind the ask, or the
+ * Arcade's back-off after a cancel: show nothing, never ask again by itself); "short" (not enough
+ * Gems: say so in the shop's own words, never a top-up); "full" (a grant would pass the cap:
+ * nothing asked or charged); "gone" (the Starter Kit was bought before); "unknown" (no reliable
+ * answer: the player may have paid; the stock was read again, so redraw from it, and never ask
+ * again by itself); "failed" (a refusal: nothing bought, nothing charged).
+ */
+export type BundleAnswer = "ok" | "declined" | "short" | "full" | "gone" | "unknown" | "failed";
 
 const KINDS: readonly HelperKind[] = ["hint", "undo", "shuffle"];
 /** The most of one helper a player can hold (each currency's max_balance). */
@@ -75,6 +105,20 @@ const owed: HelperKind[] = [];
 const waiting: { kind: HelperKind; answer: (a: SpendAnswer) => void }[] = [];
 /** Coins prices, of one and of a pack of 3. */
 const prices: Record<Pack, Record<HelperKind, number | null>> = { 1: { hint: null, undo: null, shuffle: null }, 3: { hint: null, undo: null, shuffle: null } };
+/** The Gems bundles, in shop order, and each one's Gems price (null until read). */
+type BundleIds = { name: BundleSlug; slug: string; id: string; grants: Record<HelperKind, number>; once: boolean; gemsUnframed: number };
+const BUNDLES = (IDS as unknown as { bundles: BundleIds[] }).bundles;
+const bundleOf = (slug: BundleSlug): BundleIds | undefined => BUNDLES.find((b) => b.name === slug);
+/** Unframed (the play-test tool, no config): the stand-in prices, held to the config by tools/server/helpers-check.mts. */
+const bundlePrice = new Map<BundleSlug, number>(framed ? [] : BUNDLES.map((b) => [b.name, b.gemsUnframed]));
+/** The platform's id of Gems (`gemctl platform config`), to pick a bundle's Gems price. */
+const GEMS_ID = "00000000-0000-0000-0000-000000000002";
+/** The Starter Kit's uses, the platform's count (recipeUsage); null until read. Read once a session, and again after a try at it. */
+let starterUses: number | null = null;
+let usageReading = false;
+let usageTries = 0;
+let usageRetry: (() => void) | null = null;
+let bundleBuying = false;
 /** The prices are read (once a session); the waiting ask again while not, and how many failed in a row. */
 let pricesRead = false;
 let priceRetry: (() => void) | null = null;
@@ -136,6 +180,12 @@ async function readPrices(): Promise<void> {
         prices[pack][k] = recipes.find((x) => x.id === id)?.platform_prices?.[0]?.price ?? null;
       }
     }
+    for (const b of BUNDLES) {
+      const all = recipes.find((x) => x.id === b.id)?.platform_prices ?? [];
+      const p = (all.find((x) => x.platform_currency_id === GEMS_ID) ?? (all.length === 1 ? all[0] : undefined))?.price;
+      if (typeof p === "number") bundlePrice.set(b.name, p);
+      else bundlePrice.delete(b.name); // not on sale on this channel's config: no price, so no row
+    }
     pricesRead = true;
     priceTries = 0;
   } catch (err) {
@@ -165,6 +215,43 @@ async function readCoins(): Promise<void> {
     coins = null;
     console.warn(`[helpers] the Coins could not be read: ${refusalOf(err)}`);
   }
+}
+
+/**
+ * The Starter Kit's uses, the platform's count (recipeUsage), one read at a time. Asked the first
+ * time a screen wants to know (bundleOpen), and after a try at the kit; a read that fails is
+ * unknown (null stays), and is asked again on a wait that grows (src/net/pace.ts).
+ */
+async function readUsage(): Promise<void> {
+  const kit = BUNDLES.find((b) => b.once);
+  if (!framed || !kit || usageReading) return;
+  if (held() > 0) return usageLater(held());
+  usageReading = true;
+  try {
+    const u = await gem.me.mutations.recipeUsage(kit.id);
+    starterUses = Math.max(0, u?.useCount ?? 0); // null: never used
+    usageTries = 0;
+    changed();
+  } catch (err) {
+    heard(err);
+    console.warn(`[helpers] the Starter Kit's uses could not be read: ${refusalOf(err)}`);
+    usageLater(backoff(++usageTries, 5000));
+  } finally {
+    usageReading = false;
+  }
+}
+
+function usageLater(ms: number): void {
+  usageRetry?.();
+  usageRetry = whenDue(ms, () => {
+    usageRetry = null;
+    void readUsage();
+  });
+}
+
+/** The helpers of a bundle that would pass the cap with what is held now (empty: it fits). */
+function overCap(b: BundleIds): HelperKind[] {
+  return KINDS.filter((k) => (b.grants[k] ?? 0) > 0 && count(k) + b.grants[k] > HELPER_CAP);
 }
 
 /** Read the stock again (after a checker answer, a buy, a resume): one read at a time, and one more behind it at most. */
@@ -403,6 +490,93 @@ export const helpers = {
       if (!noAnswer(err) && !helpers.fits(k, pack)) return "full";
       return "failed";
     }
+  },
+  /** The Gems bundles, in the order to show (Starter Kit, Small, Medium, Large). */
+  bundles: (): Bundle[] =>
+    BUNDLES.map((b) => ({ slug: b.name, contents: { ...b.grants }, gems: bundlePrice.get(b.name) ?? null, once: b.once })),
+  /**
+   * Can this bundle be bought (the platform's word): the Starter Kit only while its uses are 0,
+   * null while not known yet (the first ask reads it, and onChange says when it lands); every
+   * other bundle, always true.
+   */
+  bundleOpen(slug: BundleSlug): boolean | null {
+    const b = bundleOf(slug);
+    if (!b) return false;
+    if (!b.once) return true;
+    if (!framed) return starterUses === null || starterUses < 1;
+    if (starterUses === null) void readUsage();
+    return starterUses === null ? null : starterUses < 1;
+  },
+  /** The helpers this bundle would take past HELPER_CAP, with what is held now (empty: it fits). */
+  fitsBundle: (slug: BundleSlug): HelperKind[] => {
+    const b = bundleOf(slug);
+    return b ? overCap(b) : [];
+  },
+  /** The Arcade can draw its purchase sheet here: without it, show no bundle row. */
+  bundlesOffered: (): boolean => !framed || !!gem.frame?.parentSupports("purchases"),
+  /**
+   * Buy a bundle for Gems, through the Arcade's purchase sheet (it confirms the spend in its own
+   * words and price). Call it in the Buy press's own turn, with nothing awaited first: without a
+   * press the Arcade shows nothing. A bundle that would pass the cap, a Starter Kit had already,
+   * or a second buy while one is open is answered at once, with nothing asked. The stock (and
+   * for the kit its uses) is read again before any answer the platform gave, through the same
+   * paced reads as a Coins buy. Never retried by itself.
+   */
+  buyBundle(slug: BundleSlug): Promise<BundleAnswer> {
+    const b = bundleOf(slug);
+    if (!b) return Promise.resolve("failed");
+    if (overCap(b).length) return Promise.resolve("full");
+    if (b.once && starterUses !== null && starterUses >= 1) return Promise.resolve("gone");
+    if (!framed) {
+      // the stand-in (the play-test tool): the stock grows on this page only
+      for (const k of KINDS) stock[k] += b.grants[k] ?? 0;
+      if (b.once) starterUses = 1;
+      changed();
+      return Promise.resolve("ok");
+    }
+    if (bundleBuying) return Promise.resolve("declined");
+    bundleBuying = true;
+    // first thing in the press: the Arcade opens its sheet only in answer to one
+    let asked: Promise<{ outcome: string; reason?: string }>;
+    try {
+      asked = gem.purchases.request({ kind: "recipe", catalogId: IDS.catalog, targetId: b.id, currencySlug: "GEMS", quantity: 1 });
+    } catch (err) {
+      asked = Promise.reject(err);
+    }
+    return asked
+      .then(async (res): Promise<BundleAnswer> => {
+        const reason = res.reason ?? "";
+        if (res.outcome === "declined" && (reason === "cancelled" || reason === "busy")) return "declined";
+        // anything the platform answered may have moved the stock (an unknown, a refusal at the cap)
+        await refresh();
+        if (b.once) await readUsage();
+        if (res.outcome === "ok") return "ok";
+        if (res.outcome === "unavailable") {
+          console.warn(`[helpers] buying the ${slug} bundle: no reliable answer (${reason || "none"}); the stock was read again`);
+          return "unknown";
+        }
+        console.warn(`[helpers] buying the ${slug} bundle was declined: ${reason || "no reason"}`);
+        if (reason === "insufficient_funds") return "short";
+        if (reason === "recipe_max_uses_exceeded" || reason === "already_owned") return "gone";
+        if (reason === "price_mismatch" || reason === "config_version_stale" || reason === "not_purchasable") {
+          // the catalog moved: read the prices again for the next try (nothing was charged)
+          pricesRead = false;
+          gem.gameConfig.refresh();
+          void readPrices().then(() => changed());
+          return "failed";
+        }
+        return overCap(b).length ? "full" : "failed";
+      })
+      .catch(async (err): Promise<BundleAnswer> => {
+        // the call itself failed (no bridge): unknown, so read what landed
+        console.warn(`[helpers] buying the ${slug} bundle: ${refusalOf(err)}`);
+        await refresh();
+        if (b.once) await readUsage();
+        return "unknown";
+      })
+      .finally(() => {
+        bundleBuying = false;
+      });
   },
   /** Read the stock again. The game need not call it: the boot, a resume, a buy and a page shown again do. */
   refresh: (): Promise<void> => refresh(),

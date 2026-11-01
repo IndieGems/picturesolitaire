@@ -705,6 +705,56 @@ md.push("- One-time: the onboarding prize. Replays and campaign boards past the 
 md.push("- **Still to measure**: real minutes per board once the creator has played some (the lead's");
 md.push("  note): if boards run much faster or slower than 2 to 4 minutes, change the rule here.");
 md.push("");
+// THE HELPER SHOP: the Coins singles and packs and the Gems bundles (the creator, 2026-11-01), from
+// the config's helpers catalog (hand-written) and src/net/helper-ids.json, at the standard's 500
+// Coins and 100 Gems to the dollar. tools/server/helpers-check.mts holds the two together.
+{
+  const HIDS = JSON.parse(readFileSync(join(root, "src/net/helper-ids.json"), "utf8"));
+  const cfg = readFileSync(join(root, "gem-backend-game-config.yaml"), "utf8").replace(/\r/g, "");
+  const entry = (id) => new RegExp(`\\n( *)- id: ${id}\\n([\\s\\S]*?)(?=\\n\\1- |\\n\\S|$)`).exec(cfg)?.[2] ?? "";
+  const priced = (id, cur) => Number(new RegExp(`currency: ${cur}, price: (\\d+) \\}`).exec(entry(id))?.[1]);
+  const NAME = { hint: ["Hint", "Hints"], undo: ["Undo", "Undos"], shuffle: ["Shuffle", "Shuffles"] };
+  const dollars = (d) => `$${d.toFixed(2)}`;
+  const one = Object.fromEntries(Object.entries(HIDS.kinds).map(([k, v]) => [k, priced(v.buy, "ARCADE_TICKETS")]));
+  md.push(`## The helper shop (cap ${HIDS.cap} of each)`);
+  md.push("");
+  md.push("Prices are the config's alone (`gem-backend-game-config.yaml`, the helpers catalog), at the standard's");
+  md.push("500 Coins and 100 Gems to the dollar. Every buy is refused at the cap before anything is charged.");
+  md.push("");
+  md.push("| product | Coins | worth |");
+  md.push("|---|---|---|");
+  for (const [k, v] of Object.entries(HIDS.kinds)) {
+    const c1 = priced(v.buy, "ARCADE_TICKETS");
+    const c3 = priced(v.buy3, "ARCADE_TICKETS");
+    md.push(`| 1 ${NAME[k][0]} | ${c1} | ${dollars(c1 / 500)} |`);
+    md.push(`| 3 ${NAME[k][1]} | ${c3} | ${dollars(c3 / 500)} (${dollars(c3 / 1500)} each) |`);
+  }
+  md.push("");
+  md.push("**The Gems bundles** (the creator, 2026-11-01): all three helpers at once, bought through the Arcade's");
+  md.push("purchase sheet. Each sits at the Coins value of its helpers plus a bundle bonus, on purpose, so that");
+  md.push("Gems never buy less than Coins would. The counterpart (the standard's \"Gems price like the hit");
+  md.push("games do\"): Candy Crush sells a booster at about $1 to $2 alone and about $0.50 each in bulk;");
+  md.push("ours cost less a helper because a helper is smaller than a booster, and every board is winnable with");
+  md.push("none. The standard's ranges: a quick top-up 100 to 200 Gems, a one-time starter pack 200 to 500.");
+  md.push("");
+  md.push("| bundle | gives | Gems | worth in Coins | bonus | a helper costs | counterpart |");
+  md.push("|---|---|---|---|---|---|---|");
+  const COUNTERPART = {
+    starter: "a hit game's one-time starter pack (200 to 500 Gems); once per player, ever",
+    small: "a quick top-up (100 to 200 Gems)",
+    medium: "Candy Crush's boosters in bulk, about $0.50 each",
+    large: "a big booster pack, the best rate but the Starter Kit's",
+  };
+  for (const b of HIDS.bundles) {
+    const gems = priced(b.id, "GEMS");
+    const coins = Object.entries(b.grants).reduce((s, [k, n]) => s + n * one[k], 0);
+    const count = Object.values(b.grants).reduce((s, n) => s + n, 0);
+    const gives = Object.entries(b.grants).map(([k, n]) => `${n} ${NAME[k][n === 1 ? 0 : 1]}`).join(", ");
+    const bonus = Math.round((coins / 5 / gems - 1) * 100);
+    md.push(`| ${b.name === "starter" ? "Starter Kit" : `${b.name[0].toUpperCase()}${b.name.slice(1)}`} | ${gives} | ${gems} (${dollars(gems / 100)}) | ${coins} (${dollars(coins / 500)}) | +${bonus}% | ${dollars(gems / 100 / count)} | ${COUNTERPART[b.name] ?? ""} |`);
+  }
+  md.push("");
+}
 md.push("## Board by board");
 md.push("");
 md.push("| board | lane | stored winning line (moves) | Coins |");
