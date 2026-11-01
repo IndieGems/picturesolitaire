@@ -17,6 +17,11 @@
 //   suitcase.upcoming()      the events announced but not released yet by the player's date (no VIP needed)
 //   suitcase.lastPrize()     a prize that landed since last asked ({ event }), once (its table is in the
 //                            level's verdict's `items`, and the verdict's `prize` names table and stamp)
+//   suitcase.stamps()        the ids of the events whose prize (table and Passport stamp) is paid, newest
+//                            release first, WHOEVER the player is: a VIP who lapsed keeps what they earned
+//                            (the Passport's Event stamps page). [] until read, or unframed. Kept by the
+//                            boot read (the checker answers `stamps` to anyone) and by a verdict that pays
+//                            a prize; never cleared when VIP turns off, unlike events()
 //   suitcase.refresh()       read again (when the events screen opens): from memory if the last read
 //                            was under 5 minutes ago (every verdict keeps it current), else one read,
 //                            one at a time, paced
@@ -98,6 +103,9 @@ const framed = ((): boolean => {
 const on = (IDS as { on?: boolean }).on === true;
 const heard = new Set<() => void>();
 let list: EventPack[] = [];
+/** The events stamped (prize paid), newest release first; and whether the server's list has landed this session. */
+let stamps: string[] = [];
+let stampsRead = false;
 let prize: { event: string } | null = null;
 let reading: Promise<void> | null = null;
 /** When the last read landed (Date.now()), 0 before one: a refresh within FRESH_MS answers from memory. */
@@ -146,6 +154,16 @@ function landed(event: string | undefined, gifts: unknown): void {
   prize = { event: event ?? list[0]?.id ?? "" };
 }
 
+/** Set the stamps to these event ids (this build's events only), newest release first. True if they changed. */
+function stamp(ids: readonly unknown[]): boolean {
+  const next = EVENTS.filter((e) => ids.includes(e.id))
+    .sort((a, b) => (releaseOf(a) < releaseOf(b) ? 1 : -1))
+    .map((e) => e.id);
+  if (next.join() === stamps.join()) return false;
+  stamps = next;
+  return true;
+}
+
 /** Put an event the server answered with in its place. */
 function place(e: EventPack): void {
   list = list.some((x) => x.id === e.id) ? list.map((x) => (x.id === e.id ? e : x)) : [e, ...list].sort((a, b) => (a.release < b.release ? 1 : -1));
@@ -162,6 +180,10 @@ async function read(): Promise<void> {
     }
     tries = 0;
     readAt = Date.now();
+    if (Array.isArray(a.stamps)) {
+      stamp(a.stamps);
+      stampsRead = true;
+    }
     list = (Array.isArray(a.events) ? a.events : []).map(view).filter((e): e is EventPack => e !== null);
     const ids = Array.isArray(a.prizes) ? (a.prizes as string[]) : [];
     landed(ids[0], a.gifts);
@@ -181,11 +203,12 @@ async function read(): Promise<void> {
 }
 
 /**
- * Read the events again (at most one read at a time): for a VIP, or while VIP is not known yet (the
- * read says). `force` reads even within FRESH_MS of the last read (VIP turned on, a new day, a refusal).
+ * Read the events again (at most one read at a time): for a VIP, while VIP is not known yet (the
+ * read says), or until the stamps have been read once (anyone's). `force` reads even within
+ * FRESH_MS of the last read (VIP turned on, a new day, a refusal).
  */
 function refresh(force = false): Promise<void> {
-  if (!framed || !on || (!isVip() && vipKnown())) return Promise.resolve();
+  if (!framed || !on || (!isVip() && vipKnown() && stampsRead)) return Promise.resolve();
   if (!force && !reading && readAt && Date.now() - readAt < FRESH_MS) return Promise.resolve();
   reading ??= read();
   return reading;
@@ -196,14 +219,24 @@ function refresh(force = false): Promise<void> {
  * other (a replay, a level with no item) changes nothing here, and a refusal reads the events again.
  */
 export function accept(answer: Record<string, unknown>): void {
-  if (!on || !isVip()) return;
+  if (!on) return;
+  // a prize paid now ({ event, table, stamp }) is a stamp, whoever reads the page later
+  const paid = (answer.prize && typeof answer.prize === "object" ? answer.prize : {}) as { event?: unknown };
+  const stamped = typeof paid.event === "string" && !stamps.includes(paid.event) && stamp([...stamps, paid.event]);
+  if (!isVip()) {
+    if (stamped) say();
+    return;
+  }
   if (answer.suitcase && typeof answer.suitcase === "object") {
     const e = view(answer.suitcase);
     if (e) place(e);
+    if (e?.paid && !stamps.includes(e.id)) stamp([...stamps, e.id]);
     landed(e?.id, answer.gifts);
     say();
   } else if (answer.status === "refused") {
     void refresh(true);
+  } else if (stamped) {
+    say();
   }
 }
 
@@ -217,6 +250,7 @@ export const suitcase = {
       .sort((a, b) => (a.release < b.release ? -1 : 1));
   },
   refresh: (): Promise<void> => refresh(),
+  stamps: (): string[] => [...stamps],
   lastPrize(): { event: string } | null {
     const p = prize;
     prize = null;

@@ -72,12 +72,21 @@ export async function savePlayerValue(key: string, value: string): Promise<void>
 // when something that matters happens (a level cleared, a run ended), never on
 // a timer.
 
-/** This player's save in `slot`, or `null` if they have never saved. */
+//
+// Load a slot before its first write (SDK 16.2 on): the SDK sends the version that load found with
+// every write, and refuses a write over a save it has not seen. A load that FAILS is unknown, never
+// "no save": play on unsaved and load again later, through src/net/pace.ts's waits (the SDK refuses
+// a write to that slot, GemSaveError "load_failed", until a load succeeds). A write refused as
+// "save_conflict" (another device or tab saved since) wrote nothing: load again, then merge and
+// write, or pass `overwrite` when this device's copy is meant to win. `teardown` on the closing
+// write skips the SDK's spacing between writes. src/net/claims.ts and helpers.ts show both.
+
+/** This player's save in `slot`, or `null` if they have never saved. Rejects when the load fails: that is unknown, not `null`. */
 export function loadSave<T>(slot: string): Promise<T | null> {
   return gem.me.saves.get<T>(slot);
 }
 
-/** Replace this player's save in `slot` with `state` (serialised as JSON). */
-export async function writeSave(slot: string, state: unknown): Promise<void> {
-  await gem.me.saves.put(slot, state);
+/** Replace this player's save in `slot` with `state` (serialised as JSON), after a load of it. */
+export async function writeSave(slot: string, state: unknown, options: { overwrite?: boolean; teardown?: boolean } = {}): Promise<void> {
+  await gem.me.saves.put(slot, state, options);
 }

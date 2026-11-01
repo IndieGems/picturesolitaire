@@ -10,7 +10,8 @@
 //                                  one at a time. No answer, or the platform's "not now"
 //                                  (rate_limited, unavailable): kept and sent again on a wait
 //                                  that grows (src/net/pace.ts; never while hidden), and from the
-//                                  "spends" slot after a restart too, never dropped. "none":
+//                                  "spends" slot after a restart too (resume: a slot read only
+//                                  late sends nothing again, so no use is taken twice). "none":
 //                                  the platform had none left (spent on another device); the
 //                                  count is read again and the act stands.
 //   buy(k, pack)                   one, or a pack of 3, for Coins: the platform's direct
@@ -28,7 +29,7 @@ import { gem } from "../gem";
 import { onOnline } from "../ui/online";
 import IDS from "./helper-ids.json";
 import { noAnswer, refusalOf } from "./no-answer";
-import { backoff, heard, held, notNow, whenDue } from "./pace";
+import { backoff, heard, held, needsLoad, notNow, whenDue } from "./pace";
 
 export type HelperKind = "hint" | "undo" | "shuffle";
 export type SpendAnswer = "spent" | "held" | "none";
@@ -192,19 +193,39 @@ function refresh(fresh = true): Promise<void> {
 
 const count = (k: HelperKind): number => Math.max(0, stock[k] - owed.filter((o) => o === k).length);
 
-/** Keep the owed uses for a restart, or clear them (only once something had to wait). */
-async function keep(): Promise<void> {
-  if (!framed || (!owed.length && !stored)) return;
+/**
+ * Keep the owed uses for a restart, or clear them (only once something had to wait). Never before
+ * this session has read the slot (resume): what an earlier session left is not written over unseen.
+ * `closing` (the page hidden): skip the SDK's spacing between writes.
+ *
+ * A conflict (another device or tab wrote the slot since it was read) is REPLACED with this device's
+ * list (`overwrite`), never merged: the slot is one device's outbox of uses, and a use is a
+ * purchase the platform does not dedupe, so taking in another device's uses would spend them
+ * twice (that device is sending them itself). Replacing them costs at most a use the player keeps.
+ */
+async function keep(closing = false): Promise<void> {
+  if (!framed || !slotRead || (!owed.length && !stored)) return;
   const doc = { v: 1, owed: Object.fromEntries(KINDS.map((k) => [k, owed.filter((o) => o === k).length])), total: { ...stock } };
   const text = JSON.stringify(doc.owed);
   if (text === keptDoc) return; // the slot holds these already
+  const put = (overwrite: boolean) => gem.me.saves.put(SLOT, doc, { timeoutMs: 10_000, ...(closing ? { teardown: true } : {}), ...(overwrite ? { overwrite: true } : {}) });
   try {
-    await gem.me.saves.put(SLOT, doc, { timeoutMs: 10_000 });
+    try {
+      await put(false);
+    } catch (err) {
+      if ((err as { reason?: string }).reason !== "save_conflict") throw err;
+      await put(true);
+    }
     stored = owed.length > 0;
     keptDoc = text;
   } catch (err) {
     heard(err);
     console.warn(`[helpers] the unsent uses could not be kept: ${refusalOf(err)}`);
+    // this session's read of the slot failed after all (SDK: load_failed): read it again, then keep
+    if (needsLoad(err)) {
+      slotRead = false;
+      resumeLater();
+    }
   }
 }
 
@@ -270,16 +291,58 @@ function pumpLater(ms: number): void {
   });
 }
 
-/** After a restart: uses an earlier session could not send, less any that landed since. */
+/** The "spends" slot has been read this session (keep() writes only after), the reads that failed in a row, and the one waiting. */
+let slotRead = false;
+let resumeTries = 0;
+let resumeRetry: (() => void) | null = null;
+/** The boot read of the slot failed at least once: a later read takes in nothing (below). */
+let resumedLate = false;
+
+/** Read the slot again in a while (src/net/pace.ts): a read that failed is unknown, never empty. */
+function resumeLater(): void {
+  resumedLate = true;
+  resumeRetry?.();
+  resumeRetry = whenDue(backoff(++resumeTries, 5000), () => {
+    resumeRetry = null;
+    void resume();
+  });
+}
+
+/**
+ * After a restart: uses an earlier session could not send, less any that landed since (a total
+ * lower than the one kept). Read at boot; a read that fails is tried again later, and keep() writes
+ * nothing over the slot until one succeeds. A read that succeeds only on a later try takes in no
+ * uses: the stock has moved since boot (gifts, buys, this session's own uses), so what landed
+ * cannot be told apart, and sending a use twice would take a helper the player has; skipping one
+ * leaves it theirs. The slot is then written over with this session's list.
+ */
 async function resume(): Promise<void> {
+  if (slotRead) return;
   let doc: { owed?: Partial<Record<HelperKind, number>>; total?: Partial<Record<HelperKind, number>> } | null = null;
   try {
     doc = await gem.me.saves.get(SLOT, { timeoutMs: 10_000 });
   } catch (err) {
-    if (noAnswer(err) || (err as { reason?: string; code?: string }).reason !== "not_found") console.warn(`[helpers] the unsent uses could not be read: ${refusalOf(err)}`);
+    if (noAnswer(err) || (err as { reason?: string; code?: string }).reason !== "not_found") {
+      heard(err);
+      console.warn(`[helpers] the unsent uses could not be read: ${refusalOf(err)}`);
+      return resumeLater();
+    }
+  }
+  slotRead = true;
+  resumeTries = 0;
+  if (resumedLate) {
+    if (doc?.owed) {
+      keptDoc = JSON.stringify(doc.owed);
+      stored = true;
+      console.info("[helpers] the unsent uses of an earlier session were read late: not sent again (the stock moved since)");
+    }
+    void keep();
     return;
   }
-  if (!doc?.owed) return;
+  if (!doc?.owed) {
+    void keep(); // uses made while it was read
+    return;
+  }
   keptDoc = JSON.stringify(doc.owed);
   for (const k of KINDS) {
     const n = Math.max(0, Math.floor(Number(doc.owed[k]) || 0));
@@ -396,7 +459,7 @@ export async function loadHelpers(): Promise<void> {
   // hidden: keep what waits (once; an unchanged list is not written again). Shown again: read the
   // stock, unless it was read in the last 15 s or the platform asked for a wait (src/net/pace.ts)
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") void keep();
+    if (document.visibilityState === "hidden") void keep(true);
     else if (Date.now() - lastRead > 15_000 && held() === 0) void refresh();
   });
 }

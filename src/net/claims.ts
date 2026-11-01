@@ -53,7 +53,7 @@ import { dealHash } from "./deal-hash";
 import { nextToSend, trimHeld } from "./held-wins";
 import { helpers, type Gift, type HelperKind } from "./helpers";
 import { noAnswer, refusalOf } from "./no-answer";
-import { backoff, heard, held, notNow, whenDue } from "./pace";
+import { backoff, heard, held, needsLoad, notNow, whenDue } from "./pace";
 import { answered, hold, type HeldWin } from "./progress";
 import { accept as acceptSuitcase, suitcase, type EventPack } from "./suitcase";
 import { tableOf } from "./tables";
@@ -471,12 +471,30 @@ async function persist(closing = false): Promise<void> {
       const text = JSON.stringify(claims);
       if (text === kept) break; // the slot holds this list already
       try {
-        await gem.me.saves.put(SLOT, { v: 1, claims }, { timeoutMs: 10_000 });
+        // closing: skip the SDK's spacing between writes (src/net/pace.ts), there may be no later
+        await gem.me.saves.put(SLOT, { v: 1, claims }, { timeoutMs: 10_000, ...(closing ? { teardown: true } : {}) });
         storedAny = claims.length > 0;
         kept = text;
         persistFails = 0;
       } catch (err) {
         if (leaving) break; // the page cut its own upload short; the claim itself went with keepalive
+        if (needsLoad(err)) {
+          // the slot changed since it was read (another device or tab kept its own waiting wins), or
+          // this session's read of it failed. Never overwrite: read it again and keep the UNION
+          // (resumeClaims merges by claim id, then writes the merged list). Every claim is the
+          // player's own and the checker applies each claim id once, so a win from the other device
+          // sent from here too loses nothing and pays nothing twice. On the way out there is no
+          // time to read: the claims went with keepalive, and the next start reads the slot.
+          console.info(`[claims] the kept claims changed elsewhere (${(err as { reason?: string }).reason}): reading them again to merge`);
+          if (closing) break;
+          resumed = false;
+          resumeRetry?.();
+          resumeRetry = whenDue(persistFails++ ? backoff(persistFails, 2000) : 0, () => {
+            resumeRetry = null;
+            void resumeClaims();
+          });
+          break;
+        }
         console.warn(`[claims] could not keep the unanswered claims: ${refusalOf(err)}`);
         if (!notNow(err)) break; // a refusal will not change by asking again
         heard(err);
