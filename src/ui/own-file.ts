@@ -21,11 +21,11 @@ import { suspect } from "./online";
 //                             json, its bytes, a part of its stream); release() ends the request early
 //                             once the caller has read enough (its connection back), and is no failure.
 
-/** Tries in all (the first and its retries). */
-const TRIES = 4;
+/** Tries in all (the first and its retries): the card comes at about 33 s (the lead, 2026-11-01: 47 s was too long on a phone). */
+const TRIES = 3;
 /** The longest a try waits for an answer to start, or for the next piece of it. */
 const WAIT_MS = 10_000;
-/** The first retry's wait; each one after doubles (1 s, 2 s, 4 s). */
+/** The first retry's wait; each one after doubles (1 s, then 2 s). */
 const FIRST_RETRY_MS = 1000;
 
 /** A try that is worth repeating: no answer, a stall, a busy host. */
