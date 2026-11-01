@@ -49,6 +49,7 @@ import EVENT_FILE from "../content/levels/events.json";
 import { eventShown } from "./event-switch";
 import { onVip, vipNow } from "./vip-view";
 import { t } from "./i18n";
+import { ownFile, ownJson } from "./own-file";
 
 export interface TableArt {
   /** "table-winter-dusk": the item's slug, the setting's value. */
@@ -94,9 +95,10 @@ let known: TableArt[] = [];
 /** Each table's thumbnail, kept in the page once fetched (thumbOf), so the picker and a prize draw offline. */
 const thumbs = new Map<string, string>();
 function loadManifest(): Promise<{ default: string; tables: TableArt[] }> {
-  manifest ??= fetch(url("art/tables/tables.json"))
-    .then((r) => r.json() as Promise<{ default: string; tables: TableArt[] }>)
+  // our own file, with a time limit and a few tries (own-file.ts: QA once saw it never answer)
+  manifest ??= ownJson<{ default: string; tables: TableArt[] }>(url("art/tables/tables.json"))
     .then(async (m) => {
+      if (!m) throw new Error("art/tables/tables.json: no list");
       if (import.meta.env.DEV) await standIns(m.tables);
       known = m.tables;
       return m;
@@ -145,8 +147,7 @@ export function warmThumbs(): void {
   thumbsAsked = true;
   void loadManifest().then((m) => {
     for (const a of m.tables.filter((x) => !x.souvenir && !thumbs.has(x.id)))
-      void fetch(url(a.thumb))
-        .then((r) => (r.ok ? r.blob() : null))
+      void ownFile(url(a.thumb), async (r) => (r.ok ? r.blob() : null), { tries: 2 })
         .then((b) => b && thumbs.set(a.id, URL.createObjectURL(b)))
         .catch(() => undefined);
   });

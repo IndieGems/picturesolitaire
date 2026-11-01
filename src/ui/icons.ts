@@ -12,6 +12,7 @@
 // as the fallback a glyph the build did not find still reads.
 
 import GLYPHS from "virtual:ps-icons";
+import { ownFile } from "./own-file";
 
 // absolute: a relative base ("./" in a build) in a CSS url() would be read from the stylesheet's folder
 const file = (name: string) => new URL(`${import.meta.env.BASE_URL}art/ui/icon-${name}.svg`, location.href).href;
@@ -65,9 +66,9 @@ export async function keepIcons(): Promise<void> {
   await Promise.all(
     [...FILES].filter((name) => !GLYPHS[name]).map(async (name) => {
       try {
-        const r = await fetch(file(name));
-        if (!r.ok) return;
-        const svg = await r.text();
+        // a few tries, each with a time limit (own-file.ts); a glyph that never comes keeps its file
+        const svg = await ownFile(file(name), async (r) => (r.ok ? r.text() : null), { tries: 2 });
+        if (svg === null) return;
         root.setProperty(`--ico-${name}`, `url("data:image/svg+xml,${encodeURIComponent(svg)}")`);
       } catch {
         // offline at boot: the file stays, and the browser asks for it when drawn

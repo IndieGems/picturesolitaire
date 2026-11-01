@@ -9,7 +9,7 @@
 // has too): "Sign in to get VIP" for a guest, and nothing where the Arcade cannot sell it here (a TV, a
 // browser that cannot pay). Back goes home. A VIP never sees it: VIP arriving while it is up (bought
 // from here, or anywhere: the server's word) goes through the door: the archive's calendar, or the
-// event's page once its record is in (else home, where the door now opens).
+// event's page once its record is in, a few seconds at most (else home, where the door now opens).
 //
 // Information is glass and paper; the only buttons are Back, the gear and Get VIP (or Sign in).
 
@@ -118,8 +118,8 @@ export function createVipDoor(nav: Nav) {
   // VIP arrived while the door was up: in; Get VIP came, went or became Sign in: the button
   onVip(() => {
     if (screen.hidden || !door) return;
+    draw(); // Get VIP goes at once, while the event's record is still on its way (app.ts enterEvent)
     if (vipNow()) nav.enter(door);
-    else draw();
   });
 
   return {

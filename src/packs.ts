@@ -21,6 +21,8 @@
 // the stream is read only as far as the last byte wanted, then dropped. Which one the host
 // did is logged once outside a release build, for QA. Every file becomes a blob URL, kept
 // for the last few boards, the board on screen, every trip opened and the event shown.
+// Every read goes through src/ui/own-file.ts: a time limit per try, a few tries with growing
+// waits (QA, 2026-11-01: the index once never answered, and every board waited on it for good).
 //
 // In the dev loop (and any build without packs/index.json) nothing is packed: every path
 // is the plain file under public/, resident at once, and ensure() does nothing. So the
@@ -29,9 +31,11 @@
 //   fileUrl(path)          the file's address now: its blob URL once loaded, else the plain path
 //   resident(path)         loaded (always, with no packs)
 //   ensure(paths, board)   load them from that board's packs; resolves once they are resident,
-//                          rejects when a pack would not load (the plain path then 404s)
+//                          rejects when a pack would not load after every try (the plain path then 404s)
 //   ensureTrip(trip)       a trip's passport copies
 //   ensureSuitcase(event)  an event's item cut-outs (read again once let go)
+
+import { ownFile, ownJson } from "./ui/own-file";
 
 const base = import.meta.env.BASE_URL;
 
@@ -102,10 +106,8 @@ const packUrl = (name: string) => `${base}packs/${name}.bin`;
 function loadIndex(): Promise<Index | null> {
   if (!BUILT) return Promise.resolve(null);
   indexLoad ??= (async () => {
-    const r = await fetch(`${base}packs/index.json`);
-    if (r.status === 404) return null; // a build without packs: plain files
-    if (!r.ok) throw new Error(`packs/index.json: ${r.status}`);
-    return (await r.json()) as Index;
+    // a build without packs (404): plain files; no answer after every try: rejects, asked again next time
+    return ownJson<Index>(`${base}packs/index.json`, "null");
   })().then(
     (x) => {
       index = x;
@@ -160,20 +162,24 @@ async function readSpan(url: string, from: number, to: number, orTo = to, priori
   // a host that ignores Range: what an earlier stream already read of this pack serves again
   const pre = prefixes.get(url);
   if (ignoresRange && pre && pre.length >= orTo) return { bytes: pre, at: 0, ranged: false };
-  const stop = new AbortController();
-  const r = await fetch(url, { headers: { Range: `bytes=${from}-${to - 1}` }, signal: stop.signal, ...(priority ? { priority } : {}) });
-  if (r.status === 206) {
-    const first = Number(/bytes (\d+)-/.exec(r.headers.get("Content-Range") ?? "")?.[1] ?? from);
-    note("range");
-    return { bytes: new Uint8Array(await r.arrayBuffer()), at: first, ranged: true };
-  }
-  if (!r.ok || !r.body) {
-    stop.abort(); // nothing of it is wanted: its connection goes back at once
-    throw new Error(`${url}: ${r.status}`);
-  }
-  note("whole");
-  ignoresRange = true;
-  return { bytes: await streamPrefix(url, r, stop, () => orTo), at: 0, ranged: false };
+  return ownFile(
+    url,
+    async (r, release) => {
+      if (r.status === 206) {
+        const first = Number(/bytes (\d+)-/.exec(r.headers.get("Content-Range") ?? "")?.[1] ?? from);
+        note("range");
+        return { bytes: new Uint8Array(await r.arrayBuffer()), at: first, ranged: true };
+      }
+      if (!r.ok || !r.body) {
+        release(); // nothing of it is wanted: its connection goes back at once
+        throw new Error(`${url}: ${r.status}`);
+      }
+      note("whole");
+      ignoresRange = true;
+      return { bytes: await streamPrefix(url, r, release, () => orTo), at: 0, ranged: false };
+    },
+    { init: { headers: { Range: `bytes=${from}-${to - 1}` }, ...(priority ? { priority } : {}) } },
+  );
 }
 
 /** The host answered a Range with the whole pack (200): from then on a pack's stream is shared. */
@@ -186,7 +192,7 @@ const prefixes = new Map<string, Uint8Array>();
  * be Infinity until it can tell, e.g. until the pack's index is in), then drop it; what was read
  * is kept for the next read of the same pack.
  */
-async function streamPrefix(url: string, r: Response, stop: AbortController, need: (b: Uint8Array) => number): Promise<Uint8Array> {
+async function streamPrefix(url: string, r: Response, release: () => void, need: (b: Uint8Array) => number): Promise<Uint8Array> {
   const reader = r.body!.getReader();
   const chunks: Uint8Array[] = [];
   let got = 0;
@@ -202,7 +208,7 @@ async function streamPrefix(url: string, r: Response, stop: AbortController, nee
   // the rest of the pack is not wanted: the stream is cancelled and the request aborted, so its
   // connection is released now rather than left draining the rest (what was read is kept below)
   void reader.cancel().catch(() => undefined);
-  stop.abort();
+  release();
   const bytes = join(chunks, got);
   const pre = prefixes.get(url);
   if (!pre || bytes.length > pre.length) {
@@ -227,23 +233,32 @@ async function oneStream(name: string, paths: string[], priority?: RequestPriori
   };
   const pre = prefixes.get(url);
   if (pre && need(pre) <= pre.length) return pre;
-  const stop = new AbortController();
-  const r = await fetch(url, { signal: stop.signal, ...(priority ? { priority } : {}) });
-  if (!r.ok || !r.body) {
-    stop.abort();
-    throw new Error(`${url}: ${r.status}`);
-  }
-  return streamPrefix(url, r, stop, need);
+  return ownFile(
+    url,
+    async (r, release) => {
+      if (!r.ok || !r.body) {
+        release();
+        throw new Error(`${url}: ${r.status}`);
+      }
+      return streamPrefix(url, r, release, need);
+    },
+    priority ? { init: { priority } } : {},
+  );
 }
 
 /** A whole pack, in one request (one board's own). */
 async function readWhole(url: string, priority?: RequestPriority): Promise<Uint8Array> {
-  const r = await fetch(url, priority ? { priority } : {});
-  if (!r.ok) {
-    void r.body?.cancel().catch(() => undefined);
-    throw new Error(`${url}: ${r.status}`);
-  }
-  return new Uint8Array(await r.arrayBuffer());
+  return ownFile(
+    url,
+    async (r) => {
+      if (!r.ok) {
+        void r.body?.cancel().catch(() => undefined);
+        throw new Error(`${url}: ${r.status}`);
+      }
+      return new Uint8Array(await r.arrayBuffer());
+    },
+    priority ? { init: { priority } } : {},
+  );
 }
 
 function join(chunks: Uint8Array[], size: number): Uint8Array {
@@ -378,9 +393,8 @@ function loadFull(idx: Index): Promise<Map<string, string>> {
   if (fullOf) return Promise.resolve(fullOf);
   if (idx.full) return Promise.resolve(turn(idx.full));
   fullLoad ??= (async () => {
-    const r = await fetch(`${base}packs/full-index.json`);
-    if (!r.ok) throw new Error(`packs/full-index.json: ${r.status}`);
-    return turn(((await r.json()) as { full?: Record<string, string[]> }).full ?? {});
+    const f = await ownJson<{ full?: Record<string, string[]> }>(`${base}packs/full-index.json`);
+    return turn(f?.full ?? {});
   })().catch((err: unknown) => {
     fullLoad = null; // asked again next time
     throw err;

@@ -159,12 +159,37 @@ const suitcaseUi = createSuitcase({
   door: (d) => vipDoorUi.open(d),
 });
 // a locked VIP door's screen (vip-door.ts): what the daily archive or the event holds, and Get VIP; VIP
-// arriving while it is up goes in (the event's page only once its record is in: never "No event right now")
+// arriving while it is up goes in (the event's page once its record is in: enterEvent)
 const vipDoorUi = createVipDoor({
   home: () => goHome(),
   show: () => show("vip"),
-  enter: (d) => (d.kind === "archive" ? archiveUi.open() : eventShown() && suitcases.newest() ? suitcaseUi.open() : goHome()),
+  enter: (d) => (d.kind === "archive" ? archiveUi.open() : enterEvent()),
 });
+/** How long VIP arriving on the event's door waits for the event's record (read once VIP is on: Server's). */
+const EVENT_WAIT_MS = 8000;
+/**
+ * VIP arrived on the event's door (bought there, or Pretend: QA, 2026-11-01, was sent home): the event's
+ * page as soon as its record is in, so it never opens on "No event right now"; home only if the record
+ * has not come in EVENT_WAIT_MS (the read failed, or there is truly no event). The door stays up meanwhile,
+ * its Get VIP gone; a player who leaves it first is left where they went.
+ */
+function enterEvent(): void {
+  const ready = () => eventShown() && suitcases.newest() !== null;
+  if (ready()) return void suitcaseUi.open();
+  let settled = false;
+  const go = (inside: boolean) => {
+    if (settled) return;
+    settled = true;
+    off();
+    clearTimeout(timer);
+    if (screen !== "vip") return;
+    if (inside) suitcaseUi.open();
+    else goHome();
+  };
+  const off = suitcases.onChange(() => ready() && go(true));
+  const timer = setTimeout(() => go(ready()), EVENT_WAIT_MS);
+  suitcases.refresh();
+}
 // the daily archive (daily-archive.ts): a VIP's calendar of this month's and the two before's dailies
 const archiveUi = createArchive({
   home: () => goHome(),
@@ -175,19 +200,23 @@ const archiveUi = createArchive({
 /**
  * A past day's daily, from the Daily page or the archive's calendar (docs/vip.md): its board, its win card's
  * way back to the Daily page. Today's from the calendar plays as today's always does. A week that would not
- * load (offline) opens nothing, and the next tap asks again.
+ * load (offline, or no answer in LOAD_WAIT_MS) says "Couldn't load", with Try again.
  */
 async function playPastDay(date: string, from: DailyFrom): Promise<void> {
-  const d = await loadDaily(date).catch(() => null);
-  if (!d) return;
+  // a week that would not load says so (Try again); a day with no board opens nothing
+  let failed = false;
+  const d = await within(loadDaily(date)).catch(() => ((failed = true), null));
+  if (!d) return void (failed && couldNotLoad(() => void playPastDay(date, from)));
   openPlay(date === currentDaily().date && "archive" in from ? { kind: "daily", d } : { kind: "daily", d, from });
 }
 /**
  * An event's level (its page's grid or its Play level button): Gameplay's loader brings the event boards in
- * on the first ask; a file that would not load (offline) opens nothing, and the next tap asks again.
+ * on the first ask; a file that would not load says "Couldn't load", with Try again.
  */
 async function playEventLevel(id: string): Promise<void> {
-  const e = await loadEventLevel(id).catch(() => null);
+  let failed = false;
+  const e = await within(loadEventLevel(id)).catch(() => ((failed = true), null));
+  if (!e) return void (failed && couldNotLoad(() => void playEventLevel(id)));
   // the dev menu's stand-in events (outside a release build): their real boards, in practice, nothing sent
   if (e) openPlay(suitcases.pretending() ? { kind: "event", e, practice: true } : { kind: "event", e });
 }
@@ -259,6 +288,9 @@ let carryRead: Promise<void> = Promise.resolve();
 let carryLanded = false;
 /** The free Hints the level carried on came back with (tries.ts reads it on its board:start). */
 let resumedFree = 0;
+// a level whose files did not come (own-file.ts gave up after its tries, or a level's boards waited past
+// LOAD_WAIT_MS): "Couldn't load." with Try again, never an endless "Opening…" (QA, 2026-11-01)
+const loadVeil = h("div", { class: "veil load", hidden: "", role: "alertdialog", "aria-modal": "true" });
 const offlineVeil = h(
   "div",
   { class: "veil offline", hidden: "", role: "alertdialog", "aria-live": "assertive" },
@@ -316,7 +348,7 @@ const pokeCards = (): void => {
   unlockUi.poke();
 };
 
-app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, suitcaseUi.screen, vipDoorUi.screen, archiveUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, dareVeil, resumeVeil, runOut.element, homeShop.element, cosmeticsUi.screen, unlockUi.veil, finishUi.veil, offlineVeil);
+app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, suitcaseUi.screen, vipDoorUi.screen, archiveUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, dareVeil, resumeVeil, runOut.element, homeShop.element, cosmeticsUi.screen, unlockUi.veil, finishUi.veil, loadVeil, offlineVeil);
 // the win card's Challenge a friend and Share, and the friends sheet over it (friend-cards.ts)
 const friendCards = createFriendCards(app);
 
@@ -707,6 +739,38 @@ function campaignReady(n: number): boolean {
 /** Counts each board asked for while its pictures load, so only the last one asked for opens. */
 let packWait = 0;
 
+/**
+ * Gameplay's level loads (a trip's, a day's week's, an event's boards) come in as parts of the build,
+ * which the browser fetches with no time limit of ours: a wait past this says "Couldn't load" (Try again
+ * asks again). Our own files have their own limits (own-file.ts).
+ */
+const LOAD_WAIT_MS = 20_000;
+const within = <T,>(p: Promise<T>, ms = LOAD_WAIT_MS): Promise<T> =>
+  Promise.race([p, new Promise<never>((_, no) => setTimeout(() => no(new Error(`no answer in ${ms / 1000} s`)), ms))]);
+
+/** "Couldn't load.": Not now, or Try again (`again`), over whatever screen asked. The connection is checked too. */
+function couldNotLoad(again: () => void): void {
+  suspect();
+  const close = () => hideCard(loadVeil);
+  loadVeil.replaceChildren(
+    h(
+      "div",
+      { class: "card" },
+      h("h2", {}, t("load.title")),
+      h(
+        "div",
+        { class: "row" },
+        withClick(button("", "load.close", t("load.close")), close),
+        withClick(button("amber", "load.again", t("load.again")), () => {
+          close();
+          again();
+        }),
+      ),
+    ),
+  );
+  showCard(loadVeil, close);
+}
+
 function openPlay(next: Play): void {
   // the dev menu's endless helpers are on: a win helped along never pays, so every board is practice
   if (import.meta.env.MODE !== "release" && dev?.practiceOnly() && !next.practice) next = { ...next, practice: true };
@@ -729,14 +793,15 @@ function openPlay(next: Play): void {
     const onHome = screen === "home";
     if (onHome) homeUi.opening(true);
     const asked = next;
-    void loadLevel(n).then(
+    void within(loadLevel(n)).then(
       () => {
         if (onHome) homeUi.opening(false);
         if (at === packWait) openPlay(asked);
       },
       () => {
         if (onHome) homeUi.opening(false);
-        suspect(); // no answer: the connection is checked, and the next tap asks again
+        // no answer: the connection is checked, and Try again (or the next tap) asks again
+        if (at === packWait) couldNotLoad(() => openPlay(asked));
       },
     );
     return;
@@ -751,12 +816,18 @@ function openPlay(next: Play): void {
     const at = ++packWait;
     const onHome = screen === "home";
     if (onHome) homeUi.opening(true);
-    void ensure(paths, lvl.id)
-      .catch(() => suspect())
-      .finally(() => {
+    // a pack that would not load after its tries (own-file.ts) is never opened as a board of broken
+    // pictures (a build ships no loose ones): "Couldn't load", and Try again asks again
+    void ensure(paths, lvl.id).then(
+      () => {
         if (onHome) homeUi.opening(false);
         if (at === packWait) openLoaded(next);
-      });
+      },
+      () => {
+        if (onHome) homeUi.opening(false);
+        if (at === packWait) couldNotLoad(() => openPlay(next));
+      },
+    );
     return;
   }
   ++packWait;
