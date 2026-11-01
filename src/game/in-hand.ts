@@ -42,6 +42,28 @@
 // The SDK itself sends the first of a save's three requests up to three times (on a 429, a
 // 5xx or no answer, waiting as long as the platform asks, up to a minute); the save's own
 // timeout cuts that wait short, so one try is at most five requests, and only one is out.
+// Since SDK 16.2 it also spaces one slot's writes 5 s apart; the closing saves and Back pass
+// `teardown`, which skips that spacing, so they still go at once (the rest are minutes apart).
+//
+// WHEN TWO DEVICES DISAGREE (SDK 16.2: a save that would replace one this session has not seen
+// is refused as save_conflict; the lead, 2026-11-01). The slot holds ONE board, the one the next
+// session offers, so the one to keep is the board the player touched last: each record carries
+// `at`, when it was last played on the device that wrote it. On a conflict the slot is read
+// again and the newer board stays; ours is written at once, conditioned on what was just read.
+// Theirs stays when it is newer, and this board writes again only once it is played again here
+// (its clock running on an unwatched screen is not play). Why not one side always:
+//   - ours always: a save held back on a device left open (the three-minute spacing, a retry)
+//     lands late and replaces the board the player went on to play on their phone;
+//   - theirs always: the closing save is the one that matters, and it is the one most often
+//     refused (phone, then tablet, then back to the phone for a few moves): the moves the player
+//     made last would be lost, with no later try.
+// A closing save (or Back) made within PACE.settleMs of a move here replaces whatever is stored
+// (`overwrite`): another device's timed save waits that long after its first move, so nothing it
+// wrote can be newer, and a closing save gets no second try. A slot emptied elsewhere carries no
+// time, so a board here counts as newer: at worst a board won on the other device is offered
+// again, never a board lost. The player changing (signing in) is a conflict too: the slot is
+// read again for the new player before anything is written to it. A refused or failed read is
+// never "no board": nothing is written until a read lands (SDK load_failed included).
 //
 // The screens' part (UI's, src/ui/app.ts): read keptBoard() once at boot (cap the wait, as
 // for any save) and offer the board when it fits() the level as loaded; open it with
@@ -50,7 +72,7 @@
 // or a friend's one-off); dropInHand() where the board in hand is let go. Back is heard from
 // the button's own press (ui:press "board.back"), so the screens need nothing for it.
 
-import { GemApiError } from "@indiegems/gem-web-sdk/sdk";
+import { GemApiError, GemSaveError } from "@indiegems/gem-web-sdk/sdk";
 import { gem, onArcadePause, onWillTerminate } from "../gem";
 import { on } from "../events";
 import { dealHash } from "../net/deal-hash.ts";
@@ -105,6 +127,12 @@ export interface InHand extends BoardKept {
   id: string;
   /** dealHash of the deal it was started on. */
   deal: string;
+  /**
+   * When the player last played it, on the device that wrote it (epoch ms, that device's clock):
+   * after a save conflict, the newer of two boards is kept. Absent in records written before
+   * SDK 16.2 (counted as oldest), and never compared when nothing else changed.
+   */
+  at?: number;
 }
 
 /** Is `kept` a board of `level` as the game has it now (the same id and deal)? A re-deal shipped since: no. */
@@ -133,13 +161,21 @@ function asRecord(x: unknown): InHand | null {
     ms: Number.isFinite(r.ms) ? Math.max(0, r.ms!) : 0,
     plans: Array.isArray(r.plans) ? r.plans : [],
     free: r.free && typeof r.free === "object" ? r.free : {},
+    ...(Number.isFinite(r.at) ? { at: r.at } : {}),
   };
+}
+
+/** A record as text without its `at`, to tell whether the board itself changed (null: the slot is empty). */
+function textOf(r: InHand | null): string {
+  if (!r) return "null";
+  const { at: _at, ...board } = r;
+  return JSON.stringify(board);
 }
 
 /** The calls this file makes (the dev-only test seam swaps in a stand-in). */
 type Store = {
   get(key: string, o: { timeoutMs: number }): Promise<unknown>;
-  put(key: string, value: InHand, o: { timeoutMs: number }): Promise<unknown>;
+  put(key: string, value: InHand, o: { timeoutMs: number; teardown: boolean; overwrite: boolean }): Promise<unknown>;
   delete(key: string, signal?: AbortSignal): Promise<void>;
 };
 let store: Store = {
@@ -148,6 +184,8 @@ let store: Store = {
   delete: (key, signal) => gem.me.saves.delete(key, signal),
 };
 let identity = (): Promise<unknown> => gem.awaitIdentity(10_000);
+/** The signed-in player now (null before identity, and unframed). */
+let who = (): string | null => gem.identity?.playerId ?? null;
 let framed = window.self !== window.top;
 
 // ---------------------------------------------------------------- state
@@ -163,14 +201,28 @@ let settleRead: ((r: InHand | null) => void) | null = null;
  * the slot is left as it was read (a board kept last time waits to be offered).
  */
 let current: { board: BoardHandle; play: KeptPlay; id: string; deal: string } | "dropped" | null = null;
-/** The record as last written (JSON; "null": the slot is empty). */
+/** What the slot holds as far as this session knows: the record last written or read (textOf; "null": empty). */
 let written: string | undefined;
+/** The player the slot was last read for (who()). */
+let readAs: string | null = null;
 
 /** The board changed since the last save; since when. */
 let dirty = false;
 let dirtySince = 0;
+/** When the player last did anything here (a record's `at`). */
+let lastPlay = 0;
 /** What waits is to go without the play spacing (a win, Back, a board let go). */
 let urgent = false;
+/** The next save is a final one (Back): it skips the SDK's spacing (`teardown`). */
+let finalNext = false;
+/** The slot must be read again before anything is written (a save conflict, load_failed, another player). */
+let reread = false;
+/** Conflicts in a row (from the second, each waits the backoff, so two writers never ping-pong). */
+let conflicts = 0;
+/** Another device's newer board was left in the slot: only play here writes ours again, never its clock alone. */
+let yielded = false;
+/** The board last saved (or left to another device's newer one), and its clock then: what the closing save measures from. */
+let base: { board: BoardHandle | null; ms: number } = { board: null, ms: 0 };
 /** A call is out. */
 let busy = false;
 /** When the calls in the last window started. */
@@ -225,6 +277,8 @@ export function dropInHand(): void {
 function changed(now = false): void {
   if (!dirty) dirtySince = Date.now();
   dirty = true;
+  lastPlay = Date.now();
+  yielded = false;
   if (now) urgent = true;
   stopped = false;
   pump();
@@ -241,6 +295,7 @@ function recordNow(): InHand | null {
 function want(): "read" | "write" | null {
   if (!framed || off) return null;
   if (stored === undefined) return reading ? "read" : null;
+  if (reread) return "read";
   return current && dirty ? "write" : null;
 }
 
@@ -287,25 +342,33 @@ function arm(at: number): void {
  * The page hides, the Arcade pauses the game or is about to close it: one try now, if the
  * board or its clock moved since the last save and a call may go at all (none out, no
  * backoff, room in the window). There may be no later; if there is, it waits as any save.
+ * While the slot waits to be read again (a conflict), only a save that may replace it goes.
  */
 function closing(timeoutMs: number): void {
   if (!framed || off || stored === undefined || !current || busy || stopped) return;
+  if (reread && !justPlayed()) return;
   if (!dirty && !clockMoved()) return;
   if (gate(Date.now()) > Date.now()) return;
-  void write(timeoutMs);
+  void write(timeoutMs, true);
 }
 
-/** The board in hand's clock moved PACE.clockMs since the record last written. */
+/** The board in hand's clock moved PACE.clockMs since it was last saved (never after another device's board was kept). */
 function clockMoved(): boolean {
-  if (!current || current === "dropped" || !written) return false;
+  if (!current || current === "dropped" || yielded) return false;
   const k = current.board.kept();
   if (!k) return false;
-  try {
-    const w = JSON.parse(written) as InHand | null;
-    return !w || w.id !== current.id || k.ms - w.ms >= PACE.clockMs;
-  } catch {
-    return true;
-  }
+  return current.board !== base.board || k.ms - base.ms >= PACE.clockMs;
+}
+
+/**
+ * The player played here within PACE.settleMs: no other device's save can be newer (its timed
+ * save waits that long after its first move), so a final save may replace what is stored.
+ */
+const justPlayed = (): boolean => lastPlay > 0 && Date.now() - lastPlay < PACE.settleMs;
+
+/** Remember the board in hand and its clock as saved now (or as left to a newer board elsewhere). */
+function saved(rec: InHand | null): void {
+  base = { board: current && current !== "dropped" ? current.board : null, ms: rec?.ms ?? 0 };
 }
 
 function noteCall(): void {
@@ -333,6 +396,19 @@ function failed(err: unknown): void {
 
 // ---------------------------------------------------------------- the calls
 
+/**
+ * A refusal that means "read the slot again first" (SDK 16.2): the stored save changed since this
+ * session read or wrote it (another device or tab), the player changed while the write waited, or
+ * the slot's last load failed. Never worth resending as it stands.
+ */
+const mustReread = (err: unknown): boolean =>
+  err instanceof GemSaveError && (err.reason === "save_conflict" || err.reason === "load_failed");
+
+/**
+ * Read the slot: once at boot, for the screens (keptBoard), and again after a conflict. Any
+ * failure (a timeout, a 429, storage's leg, load_failed) is never "no board": it is tried again
+ * on the backoff, and nothing is written until a read lands.
+ */
 async function read(): Promise<void> {
   busy = true;
   noteCall();
@@ -346,6 +422,7 @@ async function read(): Promise<void> {
       if (!(err instanceof GemApiError) || err.reason !== "not_found") throw err;
     }
     got = asRecord(raw);
+    readAs = who();
     failures = 0;
     notBefore = 0;
   } catch (err) {
@@ -354,42 +431,96 @@ async function read(): Promise<void> {
   } finally {
     busy = false;
   }
-  if (got !== undefined) finishRead(got);
-  else pump();
+  if (got === undefined) pump();
+  else if (stored === undefined) finishRead(got);
+  else resolve(got);
 }
 
 function finishRead(r: InHand | null): void {
   stored = r;
-  written = JSON.stringify(r);
+  written = textOf(r);
   settleRead?.(r);
   settleRead = null;
   // what the screens kept or dropped meanwhile goes now, at its own pace
   pump();
 }
 
-/** One save (or, with nothing to carry on, one delete) of the board kept now. */
-async function write(timeoutMs: number): Promise<void> {
+/**
+ * After a conflict, the slot read again holds `theirs`: the board the player touched last stays
+ * (WHEN TWO DEVICES DISAGREE, above). The screens hear nothing: the board on screen plays on.
+ */
+function resolve(theirs: InHand | null): void {
+  reread = false;
+  written = textOf(theirs);
+  const mine = recordNow();
+  if (textOf(mine) === written) {
+    dirty = urgent = false;
+    conflicts = 0;
+    saved(mine);
+  } else if ((theirs?.at ?? 0) > lastPlay) {
+    // theirs is newer: it stays, and this board is saved again only once it is played here again
+    dirty = urgent = false;
+    yielded = true;
+    conflicts = 0;
+    saved(mine);
+  } else {
+    // ours is newer (or the slot was emptied elsewhere, which carries no time): written at once,
+    // conditioned on what was just read
+    if (!dirty) dirtySince = Date.now();
+    dirty = urgent = true;
+  }
+  pump();
+}
+
+/**
+ * One save (or, with nothing to carry on, one delete) of the board kept now. `final`: a closing
+ * save, which skips the SDK's spacing (as does Back's, finalNext), and, right after play here,
+ * replaces whatever is stored.
+ */
+async function write(timeoutMs: number, final = false): Promise<void> {
+  const last = final || finalNext;
+  finalNext = false;
+  // the player changed since the slot was read (a sign-in): theirs is read before anything is written to it
+  const player = who();
+  if (player !== null && player !== readAs) {
+    reread = true;
+    return pump();
+  }
   const rec = recordNow();
-  const text = JSON.stringify(rec);
+  const text = textOf(rec);
   const wasUrgent = urgent;
   dirty = false;
   urgent = false;
-  if (text === written) return pump();
+  if (text === written) {
+    saved(rec);
+    return pump();
+  }
+  const overwrite = last && justPlayed();
   busy = true;
   noteCall();
   // a delete takes no budget of its own: its signal is cut at the same one (a controller, not
-  // AbortSignal.timeout, which older iPhones lack)
+  // AbortSignal.timeout, which older iPhones lack). A delete is never conditional (the SDK's).
   const cut = new AbortController();
   const cutTimer = setTimeout(() => cut.abort(new DOMException(`the delete did not finish within ${timeoutMs}ms`, "TimeoutError")), timeoutMs);
   try {
-    if (rec) await store.put(SLOT, rec, { timeoutMs });
+    if (rec) await store.put(SLOT, { ...rec, at: lastPlay }, { timeoutMs, teardown: last, overwrite });
     else await store.delete(SLOT, cut.signal);
     written = text;
+    saved(rec);
+    reread = false;
+    conflicts = 0;
     failures = 0;
     notBefore = 0;
   } catch (err) {
-    console.warn(`[in-hand] the board in hand could not be kept: ${refusalOf(err)}`);
-    if (forGood(err)) {
+    console.warn(`[in-hand] the board in hand could not be kept: ${err instanceof GemSaveError ? err.reason : refusalOf(err)}`);
+    if (mustReread(err)) {
+      // read the slot again, then the newer board stays; a second conflict in a row waits the backoff
+      reread = true;
+      if (++conflicts > 1) failed(err);
+      if (!dirty) dirtySince = Date.now();
+      dirty = true;
+      urgent ||= wasUrgent;
+    } else if (forGood(err)) {
       if (err.reason !== "too_large") off = true; // no such slot here, or a call it takes for malformed: never again this session
       else if (rec) {
         // too large to keep: keep nothing more of this board, which stays winnable fresh, and
@@ -426,7 +557,9 @@ function listen(): void {
   on("board:solved", () => changed(true));
   // Back to home (heard on the way down, before the screen changes): the board in hand, kept now
   on("ui:press", ({ id }) => {
-    if (id === "board.back") changed(true);
+    if (id !== "board.back") return;
+    finalNext = true; // a session may end on home: this one skips the SDK's spacing (teardown)
+    changed(true);
   });
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") closing(PACE.closingMs);
@@ -448,13 +581,15 @@ if (framed) listen();
 
 /**
  * Dev builds only (tools/playtest.mts runs unframed, with no player): stand in for the
- * platform with `store`, every PACE time scaled by `scale`, to check the pacing above.
+ * platform with `store` (and the player with `who`), every PACE time scaled by `scale`, to
+ * check the pacing and the conflicts above.
  */
 export const __inHandTest = import.meta.env.DEV
   ? {
-      install(o: { store: Store; scale: number }): void {
+      install(o: { store: Store; scale: number; who?: () => string | null }): void {
         store = o.store;
         identity = async () => {};
+        if (o.who) who = o.who;
         const pace = PACE as Record<string, number>;
         for (const k of Object.keys(pace)) if (k.endsWith("Ms")) pace[k] = pace[k]! * o.scale;
         if (!framed) {
@@ -464,6 +599,7 @@ export const __inHandTest = import.meta.env.DEV
       },
       pause: onPause,
       GemApiError,
-      state: () => ({ busy, failures, notBefore, stopped, dirty, urgent, off, written, recent: [...recent] }),
+      GemSaveError,
+      state: () => ({ busy, failures, notBefore, stopped, dirty, urgent, off, written, reread, conflicts, yielded, lastPlay, recent: [...recent] }),
     }
   : undefined;
