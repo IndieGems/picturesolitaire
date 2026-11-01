@@ -1188,6 +1188,30 @@ html.less-motion .shop-item .item-pic.grew { animation: none; }
 .shop-item p.item-say:empty { display: none; }
 .shop-item p.item-say.good { color: #2e7d5a; }
 .home-shop-card p.shop-earn { font-size: 14px; }
+/* THE GEMS BUNDLES (bundle-rows.ts; the creator, 2026-11-01): a glass row each, its picture, its name (the
+   Starter Kit's "One time only" a flat gold tag: information, not a button) and its contents, and one
+   price button at the right, the Gem as the Arcade draws it. In home's shop above the Coins rows, under
+   their heading; on the run-out panel compact, under the Coins */
+.bundle-head { margin: 6px 0 0; align-self: flex-start; font: 700 13px/1.2 var(--round); letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-soft); }
+.bundle-list { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.shop-item.bundle-item { grid-template-columns: 46px minmax(0, 1fr) auto; grid-template-areas: "pic words buy"; column-gap: 10px; padding: 8px 8px 8px 10px; }
+.bundle-item .item-pic { width: 46px; height: 46px; }
+/* the words read from the left (the card centres its text); a long name wraps between words, never cut */
+.bundle-item .item-words { flex-direction: column; align-items: flex-start; justify-content: center; gap: 3px; text-align: left; }
+.bundle-item .item-words b { font-size: 17px; line-height: 1.15; }
+.bundle-item .item-have { font-size: 14px; line-height: 1.25; }
+.bundle-item.once { border-color: rgba(232, 169, 58, 0.75); background: rgba(255, 246, 222, 0.6); }
+.bundle-once { padding: 2px 9px; border-radius: 999px; font: 700 12px/1.25 var(--round); color: #8a5a00; background: linear-gradient(180deg, #fff2c8, #ffe29a); border: 1px solid rgba(232, 169, 58, 0.6); }
+.shop-item .btn.shop-buy.bundle-buy { grid-area: buy; flex: none; min-width: 86px; min-height: 48px; padding: 0 10px; font-size: 18px; }
+.shop-item.bundle-item.compact { grid-template-columns: 44px minmax(0, 1fr) auto; padding: 6px 8px 6px 10px; }
+.bundle-item.compact .item-pic { width: 44px; height: 44px; }
+.bundle-item.compact .item-words b { font-size: 16px; }
+.bundle-item.compact .item-have { font-size: 13px; }
+.card p.bundle-room { margin: 0; font: 600 13px/1.3 var(--round); color: var(--ink-soft); text-align: center; }
+.card p.bundle-say { margin: 0; font: 600 14px/1.3 var(--round); color: var(--ink-soft); text-align: center; }
+.card p.bundle-say:empty { display: none; }
+.card p.bundle-say.good { color: #2e7d5a; }
+.shop-card .bundle-list .bundle-head { margin-top: 2px; }
 
 /* mercy help (tries.ts): this try's free Hints on the Hint badge, in their own colour */
 .helper.gifted .badge { background: linear-gradient(180deg, #6fd3a6, #2e9d6c); text-shadow: 0 1px 0 rgba(10, 80, 50, 0.5); }

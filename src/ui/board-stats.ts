@@ -20,7 +20,8 @@
 // with the funnels buying, first_session and daily_try):
 //
 //   shop_opened    where                       as home's Shop or the run-out panel opens
-//   helper_bought  where, helper, pack ("1"/"3")  price (the Coins charged for the whole pack)
+//   helper_bought  where, helper, pack ("1"/"3")  price (the Coins charged for the whole pack);
+//                  a Gems bundle: helper "all", pack its slug, price its Gems
 //                                              only once the platform has taken the purchase
 //                                              (stock.ts buy), never on the press
 //   daily_started  (none)                      each try at the day's board, Restarts included
@@ -74,6 +75,10 @@ export const shopStats = {
   bought(where: ShopWhere, helper: HelperKind, pack: Pack, price: number | null): void {
     // pack is a dimension, so a string; the price a measure, sent when it was known
     track("helper_bought", { where, helper, pack: String(pack), ...(price !== null ? { price: Math.round(price) } : {}) });
+  },
+  /** A Gems bundle bought (Server's config, 2026-11-01): helper "all", pack the bundle's slug, price its Gems. */
+  bundleBought(where: ShopWhere, bundle: "starter" | "small" | "medium" | "large", gems: number | null): void {
+    track("helper_bought", { where, helper: "all", pack: bundle, ...(gems !== null ? { price: Math.round(gems) } : {}) });
   },
 };
 

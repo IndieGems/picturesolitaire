@@ -1,7 +1,8 @@
 // The player's helpers as the screens see them: how many Hints, Undos and Shuffles they
 // carry, what one (or a pack of 3) costs, whether their Coins cover it, the spend and the
-// purchase. The record is the platform's (the helpers are Arcade-held game currencies,
-// capped at 10 each, never in the save), read and written by Server's src/net/helpers.ts,
+// purchase, and the Gems bundles (bundle-rows.ts). The record is the platform's (the helpers are
+// Arcade-held game currencies, capped at HELPER_CAP each, src/net/helper-ids.json, never in the
+// save), read and written by Server's src/net/helpers.ts,
 // which also keeps a spend that got no answer and sends it again until it lands. This file
 // only puts a dev-only pretend in front of it (app.ts, __ps.stock), so the screens can be
 // checked in the play-test tool, where no platform answers.
@@ -11,17 +12,18 @@
 // Nothing here says who is a guest: a guest can hold Coins (QA, 0.41.0, a test guest),
 // so "no Coins" is no sign of one (who can challenge a friend: src/net/friends.ts).
 
-import { helpers, HELPER_CAP, type BuyAnswer, type HelperKind, type Pack, type SpendAnswer } from "../net/helpers";
+import { helpers, HELPER_CAP, type Bundle, type BundleAnswer, type BundleSlug, type BuyAnswer, type HelperKind, type Pack, type SpendAnswer } from "../net/helpers";
 import { shopStats, type ShopWhere } from "./board-stats";
 
-export type { BuyAnswer, HelperKind, Pack, SpendAnswer };
+export type { Bundle, BundleAnswer, BundleSlug, BuyAnswer, HelperKind, Pack, SpendAnswer };
 /** Board 1's travel kit, as the checker grants it (one copy, the checker's own: Server's helpers.ts). */
 export { KIT, dailyHelper } from "../net/helpers";
 export const KINDS: readonly HelperKind[] = ["undo", "hint", "shuffle"];
 export const PACKS: readonly Pack[] = [1, 3];
 
 type Prices = Record<Pack, Record<HelperKind, number>>;
-type Pretend = { counts: Record<HelperKind, number>; prices: Prices | null; coins: number };
+/** `kitGone`: the Starter Kit was bought; `bundle`: what a bundle's purchase answers (ok, by default). */
+type Pretend = { counts: Record<HelperKind, number>; prices: Prices | null; coins: number; kitGone: boolean; bundle: BundleAnswer };
 /** The dev server's stand-in (never in a build): set by __ps.stock. */
 let pretend: Pretend | null = null;
 const pretendHeard = new Set<() => void>();
@@ -44,6 +46,20 @@ async function buyNow(k: HelperKind, pack: Pack): Promise<BuyAnswer> {
   said();
   return "ok";
 }
+
+/** The stand-in's bundle purchase: the answer it was told to give, else the bundle added (the kit once). */
+async function pretendBundle(b: Bundle): Promise<BundleAnswer> {
+  const p = pretend!;
+  if (b.once && p.kitGone) return "gone";
+  if (stock.bundleFits(b.slug).length) return "full";
+  await new Promise((r) => setTimeout(r, 500));
+  if (p.bundle !== "ok") return p.bundle;
+  for (const k of KINDS) p.counts[k] += b.contents[k];
+  if (b.once) p.kitGone = true;
+  said();
+  return "ok";
+}
+const bundleOf = (slug: BundleSlug): Bundle | undefined => helpers.bundles().find((b) => b.slug === slug);
 
 export const stock = {
   cap: HELPER_CAP,
@@ -77,6 +93,34 @@ export const stock = {
     if (answer === "ok" && where) shopStats.bought(where, k, pack, price);
     return answer;
   },
+  /**
+   * The Gems bundles on sale to this player here, now, in order: priced on this channel's config, only
+   * where the Arcade can draw its purchase sheet, and the Starter Kit only once the platform has said it
+   * is still theirs to buy (unknown: left out until onChange says).
+   */
+  bundles(): Bundle[] {
+    if (!helpers.bundlesOffered()) return [];
+    return helpers.bundles().filter((b) => b.gems !== null && (!b.once || (pretend ? !pretend.kitGone : helpers.bundleOpen(b.slug) === true)));
+  },
+  /** The helpers bundle `slug` would carry past the cap, with what is carried now (empty: it fits). */
+  bundleFits(slug: BundleSlug): HelperKind[] {
+    if (!pretend) return helpers.fitsBundle(slug);
+    const b = bundleOf(slug);
+    return b ? KINDS.filter((k) => stock.count(k) + b.contents[k] > HELPER_CAP) : [];
+  },
+  /**
+   * Buy bundle `slug` for Gems from shop `where`. Call it in the Buy press's own turn: the Arcade is
+   * asked first thing, nothing awaited before it (Server's helpers.buyBundle: the Arcade's sheet). A
+   * purchase taken is counted (helper_bought: helper "all", pack its slug, price its Gems).
+   */
+  buyBundle(slug: BundleSlug, where?: ShopWhere): Promise<BundleAnswer> {
+    const b = bundleOf(slug);
+    const asked = pretend && b ? pretendBundle(b) : helpers.buyBundle(slug);
+    return asked.then((answer) => {
+      if (answer === "ok" && where && b) shopStats.bundleBought(where, slug, b.gems);
+      return answer;
+    });
+  },
   /** Hear when a count, a price or the player's Coins change. Returns the unsubscribe. */
   onChange(fn: () => void): () => void {
     const off = helpers.onChange(fn);
@@ -94,6 +138,8 @@ export const stock = {
           counts: { undo: 3, hint: 3, shuffle: 3, ...pretend?.counts, ...p.counts },
           prices: p.prices === undefined ? (pretend?.prices ?? PRETEND_PRICES) : p.prices,
           coins: p.coins ?? pretend?.coins ?? 420,
+          kitGone: p.kitGone ?? pretend?.kitGone ?? false,
+          bundle: p.bundle ?? pretend?.bundle ?? "ok",
         }
       : null;
     said();

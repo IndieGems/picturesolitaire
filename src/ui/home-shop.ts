@@ -6,8 +6,13 @@
 //   carries ("You have 3"), and two price buttons, one ("1 for 150 ◉") and a pack of 3
 //   ("3 for 400 ◉"). Under them, one plain line when a button is greyed: "Not enough
 //   Coins yet", or that there is no room ("You're already carrying the most Hints you can
-//   (10)", "Room for 2 more Hints"); and after a purchase, what came ("+3 Hints"). One line
+//   (the cap, HELPER_CAP)", "Room for 2 more Hints"); and after a purchase, what came ("+3 Hints"). One line
 //   at the foot: "Hard boards and trips also give free tools."
+//
+// Above them, "Bundles" (the creator, 2026-11-01): the Gems bundles of all three (bundle-rows.ts), the
+// Starter Kit first, tagged "One time only", until it is bought; a bundle that would pass the cap is
+// left out, with one line saying why; after a purchase, what came ("Added: 3 of each"). The Coins rows
+// follow under "Helpers".
 //
 // Greyed buttons stay pressable and answer in words (the lead: "an unaffordable item stays
 // listed"; "a full stock refuses plainly"). A purchase goes through the platform, one at a
@@ -19,6 +24,8 @@ import { t } from "./i18n";
 import { closed, cornerKey, opened } from "./dialogs";
 import { buyFrom, el, helperPic, priceButton, refusalWords, type BuyAnswer, type HelperKind, type Pack, type Shop } from "./helper-shop";
 import { shopStats } from "./board-stats";
+import { bundleRows, bundleWords, buyingBundle } from "./bundle-rows";
+import type { Bundle, BundleAnswer } from "./stock";
 
 /** The rows, in the order of the board's helper buttons. */
 const ORDER: readonly HelperKind[] = ["undo", "hint", "shuffle"];
@@ -33,12 +40,17 @@ export function createHomeShop(shop: Shop) {
   let busy = false;
   /** The last answer per row, said until the next draw that is not its own. */
   const said: Partial<Record<HelperKind, { text: string; good: boolean }>> = {};
+  /** The bundles' last answer, said under them until the next purchase. */
+  let bundleSaid: { text: string; good: boolean } | null = null;
+  /** The helpers' pictures pop once after a bundle lands. */
+  let grewAll = false;
 
   function close(): void {
     if (veil.hidden) return;
     veil.hidden = true;
     closed(veil);
     for (const k of ORDER) delete said[k];
+    bundleSaid = null;
   }
 
   /** Why a row's button is greyed, in words (nothing when neither is). */
@@ -78,17 +90,52 @@ export function createHomeShop(shop: Shop) {
     const card = el("div", "card shop-card home-shop-card");
     const head = el("h2", "", t("shop.title"));
     head.id = "home-shop-title";
-    card.append(cornerKey("close", t("shop.close"), "shop.close", close), head, ...ORDER.map(row), el("p", "shop-earn", t("shop.earn")));
+    card.append(cornerKey("close", t("shop.close"), "shop.close", close), head);
+    // the Gems bundles first (the Starter Kit at their top, until bought), then the Coins rows
+    const { rows, room } = bundleRows(shop, pressBundle);
+    if (rows.length || room) {
+      const line = el("p", "item-say bundle-say");
+      line.setAttribute("role", "status");
+      line.textContent = bundleSaid?.text ?? "";
+      line.classList.toggle("good", !!bundleSaid?.good);
+      card.append(el("h3", "bundle-head", t("bundle.title")), ...rows, ...(room ? [room] : []), line, el("h3", "bundle-head", t("shop.helpers")));
+    }
+    card.append(...ORDER.map(row), el("p", "shop-earn", t("shop.earn")));
+    if (grewAll) {
+      grewAll = false;
+      for (const pic of card.querySelectorAll<HTMLElement>(".shop-item[data-kind] .item-pic")) pic.classList.add("grew");
+    }
     // keep the focus on the button pressed across the redraw
     const focused = (document.activeElement as HTMLElement | null)?.dataset?.press;
     veil.replaceChildren(card);
     if (focused) card.querySelector<HTMLElement>(`[data-press="${focused}"]`)?.focus();
   }
 
+  /** A bundle's Buy: the Arcade's sheet, asked first thing in the press; the stock shows as it lands. */
+  function pressBundle(b: Bundle, button: HTMLButtonElement): void {
+    if (busy) return;
+    busy = true;
+    for (const x of ORDER) delete said[x];
+    bundleSaid = null;
+    const asked = shop.buyBundle(b.slug, "home");
+    const back = buyingBundle(button);
+    void asked
+      .catch((): BundleAnswer => "unknown")
+      .then((answer) => {
+        busy = false;
+        back();
+        if (veil.hidden) return;
+        bundleSaid = bundleWords(answer, b);
+        grewAll = answer === "ok";
+        draw();
+      });
+  }
+
   async function press(b: HTMLButtonElement, k: HelperKind, pack: Pack): Promise<void> {
     if (busy) return;
     busy = true;
     for (const x of ORDER) delete said[x];
+    bundleSaid = null;
     const answer: BuyAnswer = await buyFrom(shop, b, k, pack, "home");
     busy = false;
     if (veil.hidden) return;
@@ -105,6 +152,7 @@ export function createHomeShop(shop: Shop) {
     open(): void {
       busy = false;
       for (const k of ORDER) delete said[k];
+      bundleSaid = null;
       draw();
       veil.hidden = false;
       opened(veil, close);

@@ -16,6 +16,14 @@ import c32x1 from "@indiegems/gem-web-sdk/brand/ticket-icon-32-1x.png";
 import c32x15 from "@indiegems/gem-web-sdk/brand/ticket-icon-32-1.5x.png";
 import c32x2 from "@indiegems/gem-web-sdk/brand/ticket-icon-32-2x.png";
 import c32x3 from "@indiegems/gem-web-sdk/brand/ticket-icon-32-3x.png";
+import g20x1 from "@indiegems/gem-web-sdk/brand/gem-icon-20-1x.png";
+import g20x15 from "@indiegems/gem-web-sdk/brand/gem-icon-20-1.5x.png";
+import g20x2 from "@indiegems/gem-web-sdk/brand/gem-icon-20-2x.png";
+import g20x3 from "@indiegems/gem-web-sdk/brand/gem-icon-20-3x.png";
+import g32x1 from "@indiegems/gem-web-sdk/brand/gem-icon-32-1x.png";
+import g32x15 from "@indiegems/gem-web-sdk/brand/gem-icon-32-1.5x.png";
+import g32x2 from "@indiegems/gem-web-sdk/brand/gem-icon-32-2x.png";
+import g32x3 from "@indiegems/gem-web-sdk/brand/gem-icon-32-3x.png";
 import { locale, t } from "./i18n";
 
 /**
@@ -37,6 +45,29 @@ export function coinIcon(px = 20, named = true, cls = ""): HTMLImageElement {
   img.draggable = false;
   img.decoding = "async";
   return img;
+}
+
+/**
+ * The Gems icon, the same way (brand-art.md §2): a bundle's price is in Gems (the creator, 2026-11-01).
+ * `named`: its alt says "Gems". The player's Gems are never drawn: the Arcade's wallet shows them.
+ */
+export function gemIcon(px = 20, named = true, cls = ""): HTMLImageElement {
+  const img = coinIcon(px, named, cls ? `gem-icon ${cls}` : "gem-icon");
+  const big = px > 24;
+  const [a, b, c, d] = big ? [g32x1, g32x15, g32x2, g32x3] : [g20x1, g20x15, g20x2, g20x3];
+  const w = big ? 32 : 20;
+  img.src = a;
+  img.srcset = `${a} ${w}w, ${b} ${w * 1.5}w, ${c} ${w * 2}w, ${d} ${w * 3}w`;
+  img.alt = named ? t("gems.name") : "";
+  return img;
+}
+
+/** A price in Gems: the number, then the gem, read aloud as "200 Gems". */
+export function gemPriceTag(price: number, px = 20): HTMLElement {
+  const tag = document.createElement("span");
+  tag.className = "price-tag gems";
+  tag.append(document.createTextNode(price.toLocaleString(locale())), gemIcon(px));
+  return tag;
 }
 
 /** A price: the number, then the coin ("150 ◉"), read aloud as "150 Coins". */

@@ -1107,7 +1107,7 @@ function toRoute(): void {
 }
 
 // THE HELPERS are the player's own stock (the creator, 2026-10-27): Hints, Undos and Shuffles held by
-// the Arcade, carried from board to board, at most 10 of each (stock.ts, over Server's helpers.ts).
+// the Arcade, carried from board to board, at most HELPER_CAP of each (src/net/helper-ids.json; stock.ts, over Server's helpers.ts).
 // A press with some left acts at once (an Undo never waits on the network), and one is spent only once
 // the board says it acted and it was not free; a press with none left opens the run-out panel. Free:
 // the guided first board (before the travel kit comes), a lesson's lit button and its board, and the
