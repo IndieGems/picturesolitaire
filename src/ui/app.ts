@@ -91,7 +91,7 @@ import { CARRY_WAIT_MS, carryOnCard, carryOnFrom, keptPlayOf, readCarryOn, type 
 import { keepInHand, type InHand } from "../game/in-hand";
 import { createMercyNote } from "./mercy-note";
 import { recentStats } from "./board-stats";
-import { createSuitcase, eventTitle, packedOnCard, progressLine, setCaseList } from "./suitcase";
+import { createSuitcase, eventTitle, packedOnCard, progressLine } from "./suitcase";
 import { eventShown } from "./event-switch";
 import { playItemFound } from "./item-found";
 import { EVENT_ITEM_COINS, eventNamed, eventPrize, suitcases, type SuitItem } from "./suitcase-data";
@@ -2919,8 +2919,6 @@ export async function startApp(): Promise<void> {
       },
       /** An event's page: the newest, or event `id`. */
       openSuitcase: (id?: string) => suitcaseUi.open(id ?? null),
-      /** The suitcase as a packing list (true) or the grid as shipped, its page drawn again (suitcase.ts's trial look, 2026-11-02). */
-      caseList: (on: boolean) => setCaseList(on).then(() => true),
       /** An event's level, as from its page (the stand-in's events play their real boards; the claim goes unframed). */
       eventLevel: (id: string) => void playEventLevel(id),
       /** The stand-in's level `id` won as a first win would (its item found), its page redrawn: nothing sent. */

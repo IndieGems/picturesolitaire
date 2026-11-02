@@ -76,25 +76,12 @@ export const eventTitle = (e: { id: string; theme: string }): string => capital(
 export const itemName = (it: { id: string; title: string }): string => named(`picture.${it.id}`, it.title);
 const prizeTableName = (prize: Prize, english: string): string => named(`table.${prize.table}`, english);
 
-// ---- THE SUITCASE AS A PACKING LIST, a trial look (the creator, 2026-11-02: QA found item names broken mid-word
-// in the 5-wide grid, and no grid slot holds a German or Russian word at 12 px; A of four, "mock it up first"):
-// case-list-look.css. Outside a release build only: ?caselist=1, or __ps.caseList; every line sits inside inline
-// import.meta.env.MODE checks, so a release build carries none of it. Once the creator says yes it moves in for good.
-let caseList = false;
-/** Outside a release build: the suitcase's slots as the packing list (true) or the grid as shipped. */
-export async function setCaseList(on: boolean): Promise<void> {
-  if (import.meta.env.MODE !== "release") {
-    if (on) await import("./case-list-look.css");
-    caseList = on;
-  }
-}
-if (import.meta.env.MODE !== "release" && new URLSearchParams(location.search).get("caselist") === "1") void setCaseList(true);
 /**
- * The list's names at 13 px, or all at 12 px (`tight`) when one of them would not fit its place at 13: a word
- * wider than its box, or more than two lines. Never smaller: a name still too wide at 12 says so (`data-over`).
+ * The suitcase's packing list (style.css .case-slots; the creator, 2026-11-02): its names at 13 px, or all at
+ * 12 px (`tight`) when one of them would not fit its place at 13, a word wider than its box or more than two
+ * lines. Never smaller: a name still too wide at 12 says so (`data-over`, for the checks).
  */
 function fitList(grid: HTMLElement): void {
-  if (import.meta.env.MODE === "release") return;
   const names = [...grid.querySelectorAll<HTMLElement>(".slot-name")];
   const over = (n: HTMLElement) => n.scrollWidth > n.clientWidth + 0.5 || n.getBoundingClientRect().height > parseFloat(getComputedStyle(n).lineHeight) * 2 + 1;
   grid.classList.remove("tight");
@@ -265,12 +252,9 @@ export function createSuitcase(nav: Nav) {
   function slots(e: { items: EventItem[] }): HTMLElement {
     const grid = el("div", "case-slots");
     grid.setAttribute("role", "list");
-    // the packing list's trial look (outside a release build only): two columns read down, the names fitted
-    if (import.meta.env.MODE !== "release" && caseList) {
-      grid.classList.add("list");
-      grid.style.gridTemplateRows = `repeat(${Math.ceil(e.items.length / 2)}, auto)`;
-      new ResizeObserver(() => fitList(grid)).observe(grid);
-    }
+    // the packing list: two columns read down, the names fitted
+    grid.style.gridTemplateRows = `repeat(${Math.ceil(e.items.length / 2)}, auto)`;
+    new ResizeObserver(() => fitList(grid)).observe(grid);
     for (const it of e.items) {
       const missing = !it.found;
       const slot = el("div", `slot${missing ? " missing" : ""}`);
