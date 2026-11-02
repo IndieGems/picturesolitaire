@@ -36,7 +36,10 @@
 // stamps they won and nothing more): every released event a VIP can play (suitcase-data.ts), newest first: a finished one's stamp
 // (Art's, public/art/stamps/stamp-<event id>.webp, with no lettering: its name is ours, under it, so it
 // is said in the player's language), an unfinished one an empty dashed ring with its name and how many
-// of its items are found; an event still to come, nothing. The finish card's See your passport opens it.
+// of its items are found; an event still to come, nothing. A player who is not a VIP (the creator,
+// 2026-11-02): the stamps they won, whole, and the event running and the past ones as empty outlines
+// wearing the gold VIP tag, as the locked doors show what VIP opens (lockedEvents). The finish card's
+// See your passport opens it.
 //
 // Its top row is every screen's: the title on the left, Back then the gear at the right
 // end. A trip's stamp is Art's drawing, public/art/stamps/stamp-<trip id>.webp (300 px
@@ -54,7 +57,10 @@ import { currentTrip, loadTripOf, placesOf, tripById, tripCount, tripDone, tripN
 import { souvenirOf, souvenirOpen, souvenirWon, souvenirWords, stickerReady, stickerUrl } from "./souvenirs";
 import { createAchievementsPage } from "./achievements-page";
 import { named } from "./i18n";
-import { suitcases } from "./suitcase-data";
+import { pastEvents, scheduledEvent, suitcases } from "./suitcase-data";
+import { eventDoor, eventShown, onEventShown } from "./event-switch";
+import { vipTag } from "./vip-door";
+import { currentDaily } from "../net/daily";
 
 type Nav = {
   /** Back: to home. */
@@ -168,6 +174,19 @@ export function eventStamp(id: string, name: string): HTMLElement {
   return inkedStamp(eventStampUrl(id), name, t("passport.eventStamped", { theme: name }));
 }
 
+/**
+ * The events whose stamps a player who is not a VIP sees as locked outlines (the creator, 2026-11-02): while
+ * the event's door shows and the events do not (event-switch.ts), the event running by the door's "today"
+ * and the past ones (suitcase-data.ts scheduledEvent and pastEvents, the locked door's own list), newest
+ * first; none while the next one has not opened, and never one still to come. Levels' schedule, never a record.
+ */
+function lockedEvents(): { id: string; theme: string }[] {
+  if (!eventDoor() || eventShown()) return [];
+  const today = currentDaily().date;
+  const sch = scheduledEvent(today);
+  return sch?.released ? [sch.e, ...pastEvents(sch.e, today)] : [];
+}
+
 /** The passport's tabs. */
 type Tab = "stamps" | "events" | "achievements";
 
@@ -241,7 +260,9 @@ export function createPassport(nav: Nav) {
 
   /**
    * The Event stamps page: a VIP's, each released event's stamp, or its dashed ring and how far the player
-   * is; anyone else's (a VIP who lapsed), the stamps they earned, and nothing of events they cannot play.
+   * is. Anyone else's (never a VIP, or one who lapsed): the stamps they earned, drawn whole, and each event
+   * the locked door holds (the one running and the past ones, lockedEvents) an empty outline wearing the
+   * gold VIP tag, newest first; never one still to come. None of either: the line that says how.
    */
   function drawEvents(): void {
     const list = suitcases.list();
@@ -249,13 +270,24 @@ export function createPassport(nav: Nav) {
     const grid = el("div", "pp-ev-grid");
     if (!list.length) {
       const earned = suitcases.stamps();
-      if (!earned.length) return void evPage.replaceChildren(head, el("p", "pp-ev-none", t("passport.eventsNone")));
-      for (const e of earned) {
+      const won = new Set(earned.map((e) => e.id));
+      const locked = lockedEvents();
+      const shown = [...locked, ...earned.filter((e) => !locked.some((l) => l.id === e.id))];
+      if (!shown.length) return void evPage.replaceChildren(head, el("p", "pp-ev-none", t("passport.eventsNone")));
+      for (const e of shown) {
         const name = eventName(e);
         const spot = el("div", "pp-ev-spot");
-        spot.append(eventStamp(e.id, name));
-        const cell = el("div", "pp-ev won");
-        cell.append(spot, el("b", "pp-ev-name", name), el("small", "pp-ev-line", t("passport.eventDone")));
+        const cell = el("div", `pp-ev ${won.has(e.id) ? "won" : "locked"}`);
+        if (won.has(e.id)) {
+          spot.append(eventStamp(e.id, name));
+          cell.append(spot, el("b", "pp-ev-name", name), el("small", "pp-ev-line", t("passport.eventDone")));
+        } else {
+          // what VIP opens, as the locked doors show it: information, nothing to press
+          spot.setAttribute("role", "img");
+          spot.setAttribute("aria-label", t("passport.eventLocked", { theme: name }));
+          spot.append(vipTag("pp-ev-tag"));
+          cell.append(spot, el("b", "pp-ev-name", name));
+        }
         grid.append(cell);
       }
       return void evPage.replaceChildren(head, grid);
@@ -273,6 +305,9 @@ export function createPassport(nav: Nav) {
   }
   // the events read again (a prize landed, VIP came or went) while the page is up: drawn again
   suitcases.onChange(() => {
+    if (!screen.hidden && view === "events") drawEvents();
+  });
+  onEventShown(() => {
     if (!screen.hidden && view === "events") drawEvents();
   });
 

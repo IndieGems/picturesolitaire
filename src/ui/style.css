@@ -1912,6 +1912,10 @@ html.less-motion .btn.daily-go::before, html.battery-saver .btn.daily-go::before
 .pp-ev-name { font: 700 15px/1.2 var(--round); color: var(--ink); overflow-wrap: break-word; max-width: 100%; }
 .pp-ev-line { font: 600 13px/1.2 var(--round); color: var(--ink-soft); }
 .pp-ev.won .pp-ev-line { color: #2e7d5a; }
+/* not a VIP: an event's stamp locked, its empty ring with the gold VIP tag across its foot, as a door's (passport.ts) */
+.pp-ev.locked .pp-ev-spot { border-color: rgba(162, 106, 16, 0.4); }
+.pp-ev-spot > .vip-tag { position: absolute; left: 50%; bottom: -11px; translate: -50% 0; }
+.pp-ev.locked .pp-ev-name { margin-top: 8px; }
 /* three tabs over the passport: a little smaller, so each fits its third */
 .pp-tabs:has(> :nth-child(3)) { gap: 8px; }
 .pp-tabs:has(> :nth-child(3)) .btn.pp-tab { padding: 4px 8px; font-size: 16px; line-height: 1.1; white-space: normal; }

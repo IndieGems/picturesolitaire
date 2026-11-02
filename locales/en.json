@@ -367,6 +367,7 @@
   "passport.board": "Level {{n}}",
   "passport.count": "{{done}} of {{all}} places visited",
   "passport.eventDone": "Stamped",
+  "passport.eventLocked": "{{theme}}: its stamp, with VIP",
   "passport.eventStamped": "{{theme}}: stamped",
   "passport.eventsNone": "Finish an event to earn its stamp.",
   "passport.home": "Home",
