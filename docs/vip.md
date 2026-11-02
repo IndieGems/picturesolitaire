@@ -100,6 +100,19 @@ which says what VIP is and what it costs; the game shows no price and no perks o
 buyer's doors open when the checker says so, with no reload. Untangled (`../yarn`: `src/vip.ts`,
 `showVip`) is the model. The dev toggle is kept in the save, so it holds across reloads.
 
+**What a player without VIP is shown** (the creator, 2026-11-02):
+- The event's locked door lists the past events still in the archive under Get VIP ("Also in the event
+  archive": suitcase, name, prize table, VIP tag; at most 3, then "and N more"), as information
+  (UI, 64fcf0c3).
+- The Passport's Event stamps page draws the running and past events' stamps as empty outlines with the
+  VIP tag, never "Finish an event", which they cannot (a32955bb).
+- **Home's VIP badge** (after Cosmic Commute's): a round gold VIP button beside the wordmark, from the
+  first level done, with a shake and a glint every 6 s (none with less motion), still with a tick for a
+  member. It opens the VIP screen: what VIP gives here (the doors' own list, `vipPerks()`), "Other Gem
+  Arcade games give VIP rewards too!" in red, never naming a game or a reward (the Arcade's sheet lists
+  its own perks), and Get VIP; a member reads "You're VIP" and the days left (display only, from the
+  SDK's pass reading) and no Get VIP (e9e325a3).
+
 **When VIP ends** the doors lock again, and the player keeps what they earned or bought: every
 event's stamp they won (the Passport's Event stamps page reads `suitcase.stamps()`, which the
 checker answers to anyone, VIP or not), every event table they won and everything bought (all are
