@@ -161,8 +161,6 @@
   "case.pastEvent": "Événement passé",
   "case.playLevel": "Jouer le niveau {{n}}",
   "case.previewWhy": "Un premier aperçu de la valise",
-  "case.prizeCoinsAll_one": "{{count}} pièce gagnée",
-  "case.prizeCoinsAll_other": "{{count}} pièces gagnées",
   "case.prizeCoinsEach_one": "{{count}} pièce par objet trouvé",
   "case.prizeCoinsEach_other": "{{count}} pièces par objet trouvé",
   "case.prizeHead": "Trouve les {{count}} pour débloquer",

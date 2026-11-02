@@ -352,12 +352,14 @@ export function createSuitcase(nav: Nav) {
     stamp.setAttribute("aria-hidden", "true");
     stampRow.append(stamp, el("span", "", t("case.prizeStamp")));
     rows.append(stampRow);
-    // the Coins: with each item found
-    const coinRow = el("div", "prize-row prize-coins");
-    const each = EVENT_ITEM_COINS;
-    coinRow.append(el("span", "prize-coin", ""), el("span", "", e.items.length && e.items.every((i) => i.found) ? t("case.prizeCoinsAll", { count: each * e.items.length }) : t("case.prizeCoinsEach", { count: each })));
-    coinRow.firstElementChild!.append(coinIcon(28));
-    rows.append(coinRow);
+    // the Coins: with each item found, while some are still to find. Once all are, nothing: the platform's suitcase
+    // keeps no receipt of what each find paid (a guest's paid none), so "500 Coins found" would be made up (QA, 2026-11-02)
+    if (!(e.items.length && e.items.every((i) => i.found))) {
+      const coinRow = el("div", "prize-row prize-coins");
+      coinRow.append(el("span", "prize-coin", ""), el("span", "", t("case.prizeCoinsEach", { count: EVENT_ITEM_COINS })));
+      coinRow.firstElementChild!.append(coinIcon(28));
+      rows.append(coinRow);
+    }
     box.append(rows);
     if (e.paid && own) box.append(el("span", "prize-note", t("case.prizeWhere")));
     return box;

@@ -161,8 +161,6 @@
   "case.pastEvent": "Past event",
   "case.playLevel": "Play level {{n}}",
   "case.previewWhy": "A first look at the suitcase",
-  "case.prizeCoinsAll_one": "{{count}} Coin found",
-  "case.prizeCoinsAll_other": "{{count}} Coins found",
   "case.prizeCoinsEach_one": "{{count}} Coin for every item found",
   "case.prizeCoinsEach_other": "{{count}} Coins for every item found",
   "case.prizeHead": "Find all {{count}} to unlock",

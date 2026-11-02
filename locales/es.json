@@ -161,8 +161,6 @@
   "case.pastEvent": "Evento pasado",
   "case.playLevel": "Jugar el nivel {{n}}",
   "case.previewWhy": "Un primer vistazo a la maleta",
-  "case.prizeCoinsAll_one": "{{count}} moneda conseguida",
-  "case.prizeCoinsAll_other": "{{count}} monedas conseguidas",
   "case.prizeCoinsEach_one": "{{count}} moneda por cada objeto encontrado",
   "case.prizeCoinsEach_other": "{{count}} monedas por cada objeto encontrado",
   "case.prizeHead": "Encuentra los {{count}} para desbloquear",

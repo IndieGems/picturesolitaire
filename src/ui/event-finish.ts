@@ -2,7 +2,7 @@
 // its table and its Passport stamp (its Coins come with each item found, 50 at a time: the Arcade pays at
 // most 100 at once), and that is the game standard's biggest celebration: a card of its own, fireworks
 // over it (none under less motion) and its sound (Audio's milestone, on milestone:show "event"), the
-// event's name, the table won, the last item's "+50" with the Arcade's coin, and the
+// event's name, the table won, the last item's Coins as paid ("+50", none when the receipt says none) with the Arcade's coin, and the
 // event's stamp landing on the card as the passport's trip stamps do (the same thud and sparkle, and
 // trip:stamp, for the same thump, as it lands). Continue carries on; See your passport opens its Event
 // stamps page.
@@ -41,7 +41,7 @@ export interface Finished {
   event: string;
   /** The table's slug, when the platform gave it now (absent: already held, or the event has none). */
   table?: string;
-  /** The last item's Coins as paid (50 when not said). */
+  /** The last item's Coins as the checker's receipt says they were paid; absent or 0 (a guest's): no Coins on the card. */
   coins?: number;
 }
 
@@ -100,10 +100,13 @@ export function createEventFinish(opts: Opts) {
       item.append(img, el("span", "", t("case.tableName", { table: named(`table.${slug}`, won?.tableTitle ?? art.title) })));
       prize.append(item);
     }
-    const coins = f.coins && f.coins > 0 ? f.coins : EVENT_ITEM_COINS;
-    const coinRow = el("div", "finish-row glass finish-coins");
-    coinRow.append(el("b", "", `+${coins.toLocaleString(locale())}`), coinIcon(28, true, "", coins));
-    prize.append(coinRow);
+    // the Coins the receipt says were paid, and only then (QA, 2026-11-02: a guest paid none was shown "+50")
+    const coins = typeof f.coins === "number" && f.coins > 0 ? Math.floor(f.coins) : 0;
+    if (coins > 0) {
+      const coinRow = el("div", "finish-row glass finish-coins");
+      coinRow.append(el("b", "", `+${coins.toLocaleString(locale())}`), coinIcon(28, true, "", coins));
+      prize.append(coinRow);
+    }
     const stampLine = el("p", "finish-stamped", t("finish.stamped"));
     const on = el("button", "btn amber next finish-on");
     on.type = "button";
@@ -158,11 +161,11 @@ export function createEventFinish(opts: Opts) {
     poke,
     /** Whether the card is up. */
     up: () => !veil.hidden,
-    /** Dev only: the card for event `event`, again and again (the seen list skipped). */
-    preview(event: string): void {
+    /** Dev only: the card for event `event`, again and again (the seen list skipped); `coins` as its receipt says (50 as a real account's, 0 a guest's, null not said). */
+    preview(event: string, coins: number | null = EVENT_ITEM_COINS): void {
       if (import.meta.env.MODE === "release") return;
       const table = eventPrize(event)?.table;
-      pending.push({ event, ...(table && table !== BUILT_IN_TABLE ? { table } : {}) });
+      pending.push({ event, ...(table && table !== BUILT_IN_TABLE ? { table } : {}), ...(coins === null ? {} : { coins }) });
       queueMicrotask(poke);
     },
   };

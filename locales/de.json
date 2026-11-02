@@ -161,8 +161,6 @@
   "case.pastEvent": "Vergangenes Event",
   "case.playLevel": "Level {{n}} spielen",
   "case.previewWhy": "Ein erster Blick in den Koffer",
-  "case.prizeCoinsAll_one": "{{count}} Münze gefunden",
-  "case.prizeCoinsAll_other": "{{count}} Münzen gefunden",
   "case.prizeCoinsEach_one": "{{count}} Münze für jeden gefundenen Gegenstand",
   "case.prizeCoinsEach_other": "{{count}} Münzen für jeden gefundenen Gegenstand",
   "case.prizeHead": "Finde alle {{count}} und schalte frei",

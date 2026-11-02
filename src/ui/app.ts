@@ -1647,7 +1647,8 @@ function packedMoment(v: Verdict, line: HTMLElement): void {
   // has flown in, the event's finish card (its table named only if it LANDED, the verdict's items)
   const fin = finishedOf(v);
   // the find's own Coins ("+50", Server's packed.coins), beside the line
-  packedOnCard(line, it, dayItem?.id === p.item ? dayItem.url : "", packed, s?.items.length ?? 10, fin ? { event: fin.event, done: () => finishUi.add(fin) } : null, typeof p.coins === "number" ? p.coins : EVENT_ITEM_COINS);
+  // the find's Coins as the receipt says they were paid: none said, none shown (never a made-up 50)
+  packedOnCard(line, it, dayItem?.id === p.item ? dayItem.url : "", packed, s?.items.length ?? 10, fin ? { event: fin.event, done: () => finishUi.add(fin) } : null, typeof p.coins === "number" ? p.coins : 0);
 }
 
 /**
@@ -1989,7 +1990,8 @@ function showEventWin(w: Extract<Win, { kind: "event" }>, gallery: HTMLElement):
     const r = suitcases.pretendWin(w.e.id);
     if (r) {
       const it: SuitItem = { id: r.item.id, title: r.item.title };
-      const fin: Finished = { event: r.pack.id, table: r.pack.prize.table };
+      // as a real account's 10th item pays it
+      const fin: Finished = { event: r.pack.id, table: r.pack.prize.table, coins: EVENT_ITEM_COINS };
       packedOnCard(line, it, dayItem?.id === it.id ? dayItem.url : "", r.pack.found, r.pack.items.length, r.pack.complete ? { event: r.pack.id, done: () => finishUi.add(fin) } : null);
     } else {
       const pack = suitcases.get(w.e.event);
@@ -2932,15 +2934,20 @@ export async function startApp(): Promise<void> {
       sticker: (trip: string) => momentOf(() => passportUi.sticker(trip, { label: t("home.nextStop"), icon: icon("next"), trailing: true, press: "passport.nextStop", go: goHome })),
       /** The friend_action events sent so far (friends.ts). */
       friendActions: () => recentFriendActions.slice(),
-      /** The event level's card up now as if the checker had packed `item` (event `event`; `full`: the 10th, its prize with it): the flight, nothing sent. */
-      packed(item: string, event: string, full = false) {
+      /**
+       * The event level's card up now as if the checker had packed `item` (event `event`; `full`: the 10th, its prize
+       * with it; `coins`: what its receipt says the find paid, 50 as a real account's, 0 a guest's, null not said): the
+       * flight, nothing sent.
+       */
+      packed(item: string, event: string, full = false, coins: number | null = EVENT_ITEM_COINS) {
         const line = winVeil.querySelector<HTMLElement>(".event-line");
         const table = eventPrize(event)?.table;
         const prize = full && table ? { gifts: ["suitcase"], items: [table], prize: { event, table, stamp: event } } : {};
-        if (line) packedMoment({ status: "paid", lane: "event", board: "dev", moves: 0, coins: 50, packed: { item, count: 1, coins: 50 }, event, ...prize } as unknown as Verdict, line);
+        const paid = coins === null ? {} : { coins };
+        if (line) packedMoment({ status: "paid", lane: "event", board: "dev", moves: 0, ...paid, packed: { item, count: 1, ...paid }, event, ...prize } as unknown as Verdict, line);
       },
-      /** The event finish card for `event` (its table, +500, its stamp landing), as after its 10th item: nothing sent. */
-      eventFinish: (event: string) => finishUi.preview(event),
+      /** The event finish card for `event` (its table, the last item's Coins, its stamp landing), as after its 10th item (`coins` as `packed`'s): nothing sent. */
+      eventFinish: (event: string, coins: number | null = EVENT_ITEM_COINS) => finishUi.preview(event, coins),
     };
     // ?restored=id,id shows those pictures as restored in the albums (never saved)
     const fake = new URLSearchParams(location.search).get("restored");
