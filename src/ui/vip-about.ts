@@ -102,6 +102,37 @@ export function pretendVipEnds(ms: number | null | undefined): void {
   for (const fn of [...passListeners]) fn();
 }
 
+// ---------------------------------------------------------------- the trial looks (outside a release build)
+// The creator's pick among four louder takes on the screen (vip-looks.ts, 2026-11-02): chosen from the dev menu
+// (or ?viplook=a..d, __ps.vipLook), for this page only; "" is the screen as shipped. Every line of it sits
+// inside import.meta.env.MODE checks written inline, so a release build drops it and never builds vip-looks.ts.
+let look = "";
+let looks: typeof import("./vip-looks") | null = null;
+const lookListeners = new Set<() => void>();
+/** Outside a release build: show the VIP screen (and home's badge) in trial look `next` ("a".."d"), or as shipped (""). */
+export async function setVipLook(next: string): Promise<void> {
+  if (import.meta.env.MODE !== "release") {
+    if (next && !looks) looks = await import("./vip-looks");
+    look = next && VIP_LOOKS.some((l) => l.id === next) ? next : "";
+    looks?.badgeLook(look ? (look as "a") : null);
+    for (const fn of [...lookListeners]) fn();
+  }
+}
+/** Outside a release build: the trial looks' names, for the dev menu ("A: First Class!"...). */
+export const VIP_LOOKS: readonly { id: string; name: string }[] =
+  import.meta.env.MODE !== "release"
+    ? [
+        { id: "a", name: "A: First Class!" },
+        { id: "b", name: "B: Boarding pass" },
+        { id: "c", name: "C: Big numbers" },
+        { id: "d", name: "D: Celebration" },
+      ]
+    : [];
+if (import.meta.env.MODE !== "release") {
+  const asked = new URLSearchParams(location.search).get("viplook");
+  if (asked) void setVipLook(asked);
+}
+
 // ---------------------------------------------------------------- the badge
 /** Home's VIP badge, beside the wordmark: hidden until home shows it (show(true), past the guided start). */
 export function createVipBadge(open: () => void) {
@@ -178,6 +209,11 @@ export function createVipAbout(nav: Nav) {
       listenPasses();
       askPassOnce();
     }
+    // a trial look, for a player who is not a member (outside a release build only)
+    if (import.meta.env.MODE !== "release" && !member && look && looks) {
+      body.replaceChildren(...looks.drawLook(look as "a"));
+      return;
+    }
     const note = el("div", "vip-note glass");
     const days = member ? daysLeft() : null;
     note.append(
@@ -197,6 +233,11 @@ export function createVipAbout(nav: Nav) {
   passListeners.add(() => {
     if (!screen.hidden) draw();
   });
+  if (import.meta.env.MODE !== "release") {
+    lookListeners.add(() => {
+      if (!screen.hidden) draw();
+    });
+  }
 
   return {
     screen,

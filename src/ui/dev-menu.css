@@ -24,6 +24,9 @@
 #dev-menu .dev-row { display: flex; gap: 10px; margin-top: 12px; }
 #dev-menu .dev-row .btn, #dev-menu .dev-wide { flex: 1 1 0; min-width: 0; min-height: 48px; padding: 0 10px; font-size: 16px; }
 #dev-menu .dev-wide { display: flex; width: 100%; margin: 4px 0 8px; }
+/* the VIP screen's trial looks: two to a line */
+#dev-menu .dev-row.dev-looks { flex-wrap: wrap; }
+#dev-menu .dev-row.dev-looks .btn { flex: 1 1 40%; }
 
 /* a setting: its words left, its control right */
 #dev-menu .dev-set { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 54px; font-size: 16px; font-weight: 500; }
