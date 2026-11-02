@@ -1612,8 +1612,14 @@ on("suitcase:item", (e) => {
   // practice counts only in the dev menu's stand-in events (nothing saved or sent)
   if (!play || play.kind !== "event" || (isPractice(play) && !suitcases.pretending()) || e.again) return;
   dayItem = { id: e.id, url: e.url };
-  // a replay of a won level packs nothing: no moment
-  if (eventBest(play.e.id) !== undefined || suitcases.won(play.e.id)) return;
+  // a replay of a won level packs nothing: no moment. Won BEFORE this try's win: when the winning move is the
+  // one that finishes the item, the board has said board:solved first and the claim already shows this win in
+  // the record (QA, 2026-11-02, Ski Trip 8), so the win's own word, read before its claim, decides; until the
+  // board is won, the record as it stands. The stand-in's own word changes only on the card, after this.
+  const id = play.e.id;
+  const own = boardWon && lastWin?.kind === "event" && lastWin.e.id === id ? lastWin : null;
+  const wonBefore = own ? !own.first : eventBest(id) !== undefined;
+  if (wonBefore || (suitcases.pretending() && suitcases.won(id))) return;
   const it = suitcases.get(play.e.event)?.items.find((x) => x.id === e.id);
   const art = suitcaseItem(e.id);
   // Art's cut-out when it is in (the month's pack, fetched as the daily opened), else the board's copy
