@@ -178,17 +178,23 @@ export function createHome(nav: Nav, parts: Parts) {
   /**
    * The trip's name on its one line in the head, above the stub's tear: a size smaller where it will not
    * fit ("Путешествие по Америке", "Wielka Brytania i Irlandia"); still too long, it wraps between words and
-   * the head grows, the tear's notches moving down with it. Measured, never guessed, at each draw and resize.
+   * the head grows, the tear's notches moving down with it. The head grows too where its words are taller
+   * than it for any other reason ("Остановка 1 из 15" on two lines beside a Souvenir, under a short phone's
+   * shorter head: style.css), never letting a line sit on the tear. Measured, never guessed, at each draw
+   * and resize.
    */
   const fitTrip = (): void => {
     tripLine.classList.remove("long", "wrap");
+    itinerary.classList.remove("grown");
     itinerary.style.removeProperty("--tear");
     if (itinerary.hidden || !tripLine.clientWidth) return;
     const over = () => tripLine.scrollWidth > tripLine.clientWidth + 1;
-    if (!over()) return;
-    tripLine.classList.add("long");
-    if (!over()) return;
-    tripLine.classList.add("wrap");
+    if (over()) {
+      tripLine.classList.add("long");
+      if (over()) tripLine.classList.add("wrap");
+    }
+    if (!tripLine.classList.contains("wrap") && words.scrollHeight <= head.clientHeight) return;
+    itinerary.classList.add("grown");
     itinerary.style.setProperty("--tear", `${Math.ceil(head.scrollHeight)}px`);
   };
 
@@ -249,6 +255,8 @@ export function createHome(nav: Nav, parts: Parts) {
   // the dotted path follows the stops wherever the layout puts them
   new ResizeObserver(() => drawPath()).observe(route);
   new ResizeObserver(() => fitTrip()).observe(head);
+  // and when its words change size (a Souvenir arriving beside them wraps the count): the head never measures stale
+  new ResizeObserver(() => fitTrip()).observe(words);
 
   /** The visited stops' postcards of the route drawn now, decoding (home appears whole once they are in). */
   let pictures: Promise<void>[] = [];

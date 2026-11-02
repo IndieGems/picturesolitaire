@@ -330,9 +330,16 @@ html.less-motion .vb-glint, html.battery-saver .vb-glint { display: none; }
 .itinerary-trip { font: 600 calc(21px * var(--k))/1.1 var(--round); white-space: nowrap; overflow: hidden; }
 .itinerary-trip.long { font-size: calc(17px * var(--k)); }
 .itinerary-trip.wrap { white-space: normal; overflow: visible; overflow-wrap: break-word; }
-.itinerary:has(.itinerary-trip.wrap) .itinerary-head { height: auto; min-height: var(--tear); padding-block: calc(6px * var(--k)); }
+.itinerary.grown .itinerary-head { height: auto; min-height: var(--tear); padding-block: calc(6px * var(--k)); }
 .itinerary-count { font: 500 calc(14px * var(--k))/1.2 var(--round); color: var(--ink-soft); }
 .itinerary.waiting .itinerary-words { visibility: hidden; }
+/* a 360 px phone: the head's gaps and plane a little smaller, so "Остановка 1 из 15" keeps its one line beside a
+   Souvenir (it was 9 px short; the head grows rather than overlap the tear where a language is longer still) */
+@media (max-width: 370px) {
+  .itinerary-head { gap: calc(7px * var(--k)); }
+  .itinerary-head .ico { width: calc(26px * var(--k)); height: calc(26px * var(--k)); }
+  .itinerary-head .btn.souvenir-tile { padding-right: calc(10px * var(--k)); }
+}
 
 /* the route: five stops to a row, snaking down, on a dotted path (walked in amber up to the next stop) */
 .tr-route { position: relative; margin-top: calc(12px * var(--k)); }
@@ -404,6 +411,24 @@ html.less-motion .tr-stop.here .tr-pin::after { display: none; }
 .home .dock:has(> :not([hidden]) ~ :not([hidden]) ~ :not([hidden]) ~ :not([hidden])) { gap: calc(8px * var(--k)); }
 .home .dock:has(> :not([hidden]) ~ :not([hidden]) ~ :not([hidden]) ~ :not([hidden])) .btn.tile-btn { padding-left: calc(4px * var(--k)); padding-right: calc(4px * var(--k)); }
 .home .dock:has(> :not([hidden]) ~ :not([hidden]) ~ :not([hidden]) ~ :not([hidden])) .tile-btn :is(.label, .words b) { font-size: calc(14.5px * var(--k)); }
+/* A SHORT PHONE (under 760 px tall: a 360x640 one; the lead, 2026-11-02): home whole, nothing cut off and no
+   scroll. Since the event strip came, the rest of home is ~624 px, so below ~750 px the dock's foot fell off
+   the screen (38 px at 640). Here the route's stops are drawn smaller (36 px: drawings, never pressed), the
+   stub's head, Next stop, the strip and the tiles a little shorter and the gaps closer; the wordmark keeps its
+   own rule (80 px tall at 640), which leaves room for a strip on two lines (Russian). Targets stay 44 px and
+   more, text 12 px and more. A taller phone (390x844, 360x780) is drawn as before. */
+@media (max-height: 760px) {
+  .screen.home { --pin: calc(36px * var(--k)); gap: 10px; padding-top: calc(var(--row-bottom) + 4px); }
+  .home .itinerary { --tear: calc(52px * var(--k)); padding-bottom: calc(8px * var(--k)); }
+  .home .tr-route { margin-top: calc(8px * var(--k)); }
+  .home .tr-stop { min-height: calc(var(--pin) + 10px * var(--k)); }
+  .home .play { min-height: calc(56px * var(--k)); }
+  .home .play .words b { font-size: calc(23px * var(--k)); }
+  .home .btn.event-strip { min-height: calc(48px * var(--k)); padding-block: 4px; }
+  .home .btn.tile-btn { padding-top: calc(6px * var(--k)); padding-bottom: calc(7px * var(--k)); gap: calc(3px * var(--k)); }
+  .home .tile-btn .booklet, .home .btn.tile-btn > .ico { height: calc(28px * var(--k)); }
+  .home .btn.tile-btn > .ico { width: calc(28px * var(--k)); }
+}
 
 /* ---------- the board ---------- */
 
