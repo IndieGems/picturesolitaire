@@ -260,6 +260,53 @@ html.arcade-menu { --gear-room: 0px; --gear-solo: 0px; }
    wide at the least, up to 300 on a phone (the 1400 px file where it draws large; wordmark.ts) */
 .home h1 { flex: none; margin: 0; line-height: 0; width: clamp(150px, calc((100dvh - 560px * var(--k)) * 2), calc(300px * var(--k))); max-width: 100%; }
 .home h1 picture, .home .wordmark { display: block; width: 100%; height: auto; }
+/* the title's row (home.ts): the wordmark centred; with the VIP badge (past the guided start), a badge's room
+   on each side, so the wordmark gives way rather than crowd it (a 390 px phone: 300 px down to ~220) */
+.home-title { --vb: calc(54px * var(--k)); --vb-gap: calc(10px * var(--k)); flex: none; display: flex; align-items: center; justify-content: center; gap: var(--vb-gap); width: 100%; }
+.home-title.with-badge::before { content: ""; flex: none; width: var(--vb); }
+.home-title.with-badge h1 { max-width: calc(100% - 2 * (var(--vb) + var(--vb-gap))); }
+/* THE VIP BADGE (vip-about.ts; the creator, 2026-11-02): a round button in the VIP tag's gold, raised on a deep
+   gold lip, a cream crown over "VIP". Every 6 s a small shake, then a glint across it, while the player is not a
+   member (as Cosmic Commute's); a member's is still, with a green tick. Never with less motion or the battery saver. */
+.btn.round.vip-badge {
+  --size: var(--vb); flex: none; color: #5a3a06;
+  background: linear-gradient(180deg, #ffe08a 0%, #e8a93a 100%);
+  box-shadow: inset 0 2px 0 rgba(255, 250, 225, 0.95), inset 0 -3px 6px rgba(140, 80, 0, 0.3), 0 5px 0 #a26a10, 0 9px 14px rgba(6, 12, 24, 0.45);
+}
+.btn.round.vip-badge:active:not(:disabled), .btn.round.vip-badge.pressed {
+  box-shadow: inset 0 2px 0 rgba(255, 250, 225, 0.95), inset 0 -3px 6px rgba(140, 80, 0, 0.3), 0 1px 0 #a26a10, 0 3px 6px rgba(6, 12, 24, 0.4);
+}
+.vb-face { display: flex; flex-direction: column; align-items: center; gap: 1px; margin-top: -1px; }
+.btn.vip-badge .vb-crown { width: calc(27px * var(--k)); height: calc(19px * var(--k)); }
+.vb-word { font: 700 calc(13px * var(--k))/1 var(--round); letter-spacing: 0.05em; }
+.vb-glint { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; pointer-events: none; }
+.vb-glint i { position: absolute; top: -10%; bottom: -10%; left: -60%; width: 40%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent); opacity: 0; transform: skewX(-18deg); animation: vb-glint 6s ease-in-out infinite; }
+@keyframes vb-glint {
+  0%, 80% { transform: translateX(0) skewX(-18deg); opacity: 0; }
+  82% { opacity: 1; }
+  97% { transform: translateX(420%) skewX(-18deg); opacity: 1; }
+  100% { transform: translateX(420%) skewX(-18deg); opacity: 0; }
+}
+/* the shake turns and swells the badge (rotate and scale, apart from the press's own transform) */
+.btn.vip-badge:not(.member) { animation: vb-shake 6s ease-in-out infinite; }
+@keyframes vb-shake {
+  0%, 64%, 80%, 100% { rotate: 0deg; scale: 1; }
+  66% { rotate: -10deg; scale: 1.06; }
+  68% { rotate: 9deg; scale: 1.06; }
+  70% { rotate: -7deg; scale: 1.04; }
+  72% { rotate: 5deg; scale: 1.02; }
+  74% { rotate: -3deg; scale: 1; }
+  77% { rotate: 1deg; }
+}
+.vb-tick { position: absolute; top: -5px; right: -6px; width: calc(22px * var(--k)); height: calc(22px * var(--k)); }
+.btn.vip-badge .vb-tick svg { display: block; width: 100%; height: 100%; }
+.vb-tick[hidden], .vb-glint[hidden] { display: none; }
+html.less-motion .btn.vip-badge, html.battery-saver .btn.vip-badge { animation: none; }
+html.less-motion .vb-glint, html.battery-saver .vb-glint { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .btn.vip-badge:not(.member) { animation: none; }
+  .vb-glint { display: none; }
+}
 
 /* the itinerary: frosted glass (information), with a travel stub's two notches at the tear under its head */
 .home .itinerary {
@@ -1730,6 +1777,25 @@ html.row-tight .top-pill {
 .vip-past-prize img { flex: none; width: 18px; height: 24px; object-fit: cover; border-radius: 4px; box-shadow: 0 1px 3px rgba(6, 12, 24, 0.3); }
 .vip-past-prize > span { min-width: 0; overflow-wrap: anywhere; }
 .vip-past-more { font: 500 13px/1.2 var(--round); color: var(--ink-soft); text-align: center; }
+/* home's VIP screen (vip-about.ts): the door's materials. Its picture, the suitcase between two of the helpers;
+   the line about other games in our red (Back's, deepened to read on the glass, 5.6:1), larger, under the perks */
+.vip-about-pic .va-row { display: flex; align-items: flex-end; justify-content: center; gap: 4px; }
+.vip-about-pic .va-row .vip-art { width: min(40%, 150px); }
+.vip-about-pic .va-row .helper-pic { width: 62px; height: 62px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(20, 30, 50, 0.3)); }
+.vip-about .vip-note { gap: 4px; }
+.vip-about .vip-note p { text-wrap: balance; }
+/* a member's tag wears no padlock: nothing here is locked to them */
+.vip-about.member .vip-pic .vip-lock { display: none; }
+/* a short screen (a 360x640 phone): the picture smaller and the gaps closer, so Get VIP shows without a scroll */
+@media (max-height: 700px) {
+  .vip-body.vip-about { gap: 10px; }
+  .vip-about-pic { padding: 10px 12px 22px; }
+  .vip-about-pic .va-row .vip-art { width: min(30%, 150px); }
+  .vip-about-pic .va-row .helper-pic { width: 50px; height: 50px; }
+  .vip-about .vip-perks { padding-block: 10px; gap: 6px; }
+  .vip-about .vip-perks ul { gap: 3px; }
+}
+.vip-more { margin: 6px 0 2px; font: 700 18px/1.2 var(--round); color: #b42a25; text-align: center; text-wrap: balance; }
 
 /* A VIP'S GIFTS (vip-gifts.ts): the day's two helpers, and the welcome's eight, a milestone of its own
    (gold edge, turning rays, fireworks). The gift's tiles, then the player's helpers on glass, each

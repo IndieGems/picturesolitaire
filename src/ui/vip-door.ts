@@ -66,12 +66,12 @@ function daysBefore(date: string, n: number): string {
 }
 
 /**
- * What VIP gives in this game, as every door lists it (the creator, 2026-11-01): the day's gift, the
+ * What VIP gives in this game, as every door and home's VIP screen list it (vip-about.ts; the creator, 2026-11-01): the day's gift, the
  * welcome gift, the archive and the events, and the Cosmetics only while VIP lends them (vip-view.ts
  * VIP_WEARS_ALL: off since 2026-11-02, so four rows). Ours to say; the Arcade's own perks are its
  * sheet's. Information (glass), its numbers the checker's (src/net/vip.ts, from helper-ids.json).
  */
-function perks(): HTMLElement {
+export function vipPerks(): HTMLElement {
   const box = el("div", "vip-perks glass");
   box.append(el("b", "vip-perks-head", t("vip.perks")));
   const list = el("ul");
@@ -202,7 +202,7 @@ export function createVipDoor(nav: Nav) {
     // Get VIP under what the door holds, in reach without a scroll; the past events and what VIP gives below it
     // (with past events, a short screen draws the suitcase smaller, so the first of them shows too: style.css)
     body.classList.toggle("with-past", !!past);
-    body.replaceChildren(pic, note, ...(get ? [get] : []), ...(past ? [past] : []), perks());
+    body.replaceChildren(pic, note, ...(get ? [get] : []), ...(past ? [past] : []), vipPerks());
   }
 
   // VIP arrived while the door was up: in; Get VIP came, went or became Sign in: the button

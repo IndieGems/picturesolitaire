@@ -106,6 +106,7 @@ import { currentDaily, today as dailyToday } from "../net/daily";
 import { onVipGift, pretendVip, VIP_DAILY, VIP_WELCOME, type VipGift } from "../net/vip";
 import { createVipGifts } from "./vip-gifts";
 import { createVipDoor } from "./vip-door";
+import { createVipAbout, createVipBadge, pretendVipEnds } from "./vip-about";
 import { createArchive } from "./daily-archive";
 import { forceVipSale } from "./vip-view";
 import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy, suitcaseItem } from "./catalogue";
@@ -225,6 +226,10 @@ async function playEventLevel(id: string): Promise<void> {
 // home screen"): its screen and code stay (routeUi), reached from nowhere for now
 // a stamped trip's Souvenir still to play (souvenirs.ts): its tile in home's itinerary
 const souvenirTile = createSouvenirTile((trip) => playSouvenir(trip));
+// VIP said on home (vip-about.ts; the creator, 2026-11-02): the round gold badge beside the title, past the
+// guided start, and the screen it opens: what VIP gives here, and that other Gem Arcade games give VIP rewards too
+const vipAboutUi = createVipAbout({ home: () => goHome(), show: () => show("vipAbout") });
+const vipBadge = createVipBadge(() => vipAboutUi.open());
 const homeUi = createHome(
   {
     play: () => void playNext(),
@@ -233,7 +238,7 @@ const homeUi = createHome(
     cosmetics: () => cosmeticsUi.open(),
   },
   // the Shop once the first board is done (its travel kit is how a player first meets the helpers)
-  { note: homeNote, event: suitcaseUi.tile, daily: dailyUi.homeButton, souvenir: souvenirTile.tile, shopShown: () => guideDone() },
+  { note: homeNote, event: suitcaseUi.tile, daily: dailyUi.homeButton, souvenir: souvenirTile.tile, shopShown: () => guideDone(), vipBadge: vipBadge.element, vipShown: (on) => vipBadge.show(on) },
 );
 const home = homeUi.screen;
 
@@ -365,13 +370,13 @@ const pokeCards = (): void => {
   vipGifts.poke();
 };
 
-app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, suitcaseUi.screen, vipDoorUi.screen, archiveUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, dareVeil, resumeVeil, runOut.element, homeShop.element, cosmeticsUi.screen, unlockUi.veil, finishUi.veil, vipGifts.veil, loadVeil, offlineVeil);
+app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, suitcaseUi.screen, vipDoorUi.screen, vipAboutUi.screen, archiveUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, dareVeil, resumeVeil, runOut.element, homeShop.element, cosmeticsUi.screen, unlockUi.veil, finishUi.veil, vipGifts.veil, loadVeil, offlineVeil);
 // the win card's Challenge a friend and Share, and the friends sheet over it (friend-cards.ts)
 const friendCards = createFriendCards(app);
 
 // ---------- state ----------
 
-type Screen = "home" | "board" | "albums" | "album" | "passport" | "challenges" | "daily" | "suitcase" | "cosmetics" | "vip" | "archive";
+type Screen = "home" | "board" | "albums" | "album" | "passport" | "challenges" | "daily" | "suitcase" | "cosmetics" | "vip" | "vipAbout" | "archive";
 /** Where a past day's daily was opened from: the Daily page's days or the archive's calendar. */
 type DailyFrom = { archive: true };
 /**
@@ -544,6 +549,7 @@ function show(next: Screen): void {
   if (next !== "passport") passportUi.leave();
   routeUi.screen.hidden = next !== "challenges";
   vipDoorUi.screen.hidden = next !== "vip";
+  vipAboutUi.screen.hidden = next !== "vipAbout";
   archiveUi.screen.hidden = next !== "archive";
   dailyUi.screen.hidden = next !== "daily";
   suitcaseUi.screen.hidden = next !== "suitcase";
@@ -2606,6 +2612,8 @@ onLocaleChange(() => {
   passportUi.redraw();
   dailyUi.redraw();
   suitcaseUi.redraw();
+  vipDoorUi.redraw();
+  vipAboutUi.redraw();
   albumsUi.redraw();
   routeUi.redraw();
   homeShop.redraw();
@@ -2831,6 +2839,10 @@ export async function startApp(): Promise<void> {
       archive: () => archiveUi.open(),
       /** The locked door's screen for the archive (as a non-VIP's Daily page opens it). */
       door: () => vipDoorUi.open({ kind: "archive", today: currentDaily().date }),
+      /** Home's VIP screen (vip-about.ts), as the badge opens it. */
+      vipAbout: () => vipAboutUi.open(),
+      /** A member's pass as if it ended at `ms` (null: no end known; undefined: the SDK's word), for the days left. */
+      vipEnds: (ms: number | null | undefined) => pretendVipEnds(ms),
       /** The Daily page (its friends: Server's board, sample players on dev and in the play-test tool). */
       dailyPage: () => void dailyUi.openPage(),
       /** The unlock card for these slugs, again and again (past the once-a-session rule), once the screen can take it. */

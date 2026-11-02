@@ -1,7 +1,9 @@
 // Home, as the travel game's front page (the creator, 2026-10-26: "change the home screen
 // to match the travel aspect more"):
 //
-//   the title     Art's drawn wordmark (wordmark.ts)
+//   the title     Art's drawn wordmark (wordmark.ts); at its right, once the first board is done, the
+//                 round gold VIP badge (vip-about.ts: what VIP gives, here and across the Gem Arcade;
+//                 the creator, 2026-11-02), the wordmark kept centred with a badge's room each side
 //   itinerary     the trip the player is on, as a travel card: its name and "Stop 4 of 15",
 //                 then its stops on a dotted path, five to a row, snaking down. A stop
 //                 visited shows its postcard (the trip's passport pack, src/packs.ts); the
@@ -76,6 +78,10 @@ type Parts = {
   souvenir: HTMLElement;
   /** Is the Shop on home (the first board done, so the helpers are known)? */
   shopShown(): boolean;
+  /** the VIP badge (vip-about.ts), beside the title */
+  vipBadge: HTMLElement;
+  /** Show the VIP badge or not: with the Shop, past the guided start. */
+  vipShown(on: boolean): void;
 };
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", text = ""): HTMLElementTagNameMap[K] {
@@ -147,6 +153,10 @@ export function createHome(nav: Nav, parts: Parts) {
   picture.append(source, wordmark);
   const title = el("h1");
   title.append(picture);
+  // the VIP badge at the title's right (vip-about.ts; the creator, 2026-11-02), once the first board is done:
+  // the row keeps the wordmark centred, a badge's width of room on each side while the badge shows
+  const titleRow = el("div", "home-title");
+  titleRow.append(title, parts.vipBadge);
 
   // ---- the itinerary ----
   const itinerary = el("div", "itinerary glass");
@@ -226,7 +236,7 @@ export function createHome(nav: Nav, parts: Parts) {
 
   const screen = el("section", "screen home");
   screen.setAttribute("aria-label", t("game.title"));
-  screen.append(parts.note, title, itinerary, play, parts.event, dock);
+  screen.append(parts.note, titleRow, itinerary, play, parts.event, dock);
 
   // a tablet's big column: home grows with it (style.css, --k), up to 1.7, never past what fits its height
   new ResizeObserver(() => {
@@ -377,6 +387,8 @@ export function createHome(nav: Nav, parts: Parts) {
     passport.setAttribute("aria-label", `${t("home.passport")}: ${stampsLine.textContent}`);
     shop.hidden = !parts.shopShown();
     cosmetics.hidden = !parts.shopShown();
+    parts.vipShown(parts.shopShown());
+    titleRow.classList.toggle("with-badge", parts.shopShown());
   }
 
   /** The press is answered at once while the board's pictures come ("Opening…"), and put back after. */
