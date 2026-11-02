@@ -2,6 +2,7 @@
 
 - **Before 30 Jun 2027: extend the daily puzzle** (it now runs to 2027-06-30). Levels
   runs `make-daily.mts` for the new months, then Server rebuilds the checker.
+- **Before 15 Jan 2027: the next VIP events.** Six are made (to Carnival, 1 Jan 2027); after it nothing new arrives and Carnival stays "Now playing". Each event is 30 levels (Levels, `tools/levels/events-plan.json`), 10 item pictures and a prize table (Art: ~$11.73 of its cap left, so the creator tops it up), and a build. Themes from `docs/daily-suitcase.md`'s approved list.
 - **The monthly event, after release** (on hold, creator 2026-10-29): it may return for
   the Gem Arcade's VIP members. The platform now says who holds VIP (SDK 19 `gem.me.passes`, read by checker 0.1.47, 2026-11-01). Then: the switch back on behind
   the VIP check, each month's suitcase art a month ahead (Art; none is made while it is
