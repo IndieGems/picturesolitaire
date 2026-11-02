@@ -66,8 +66,8 @@ function daysBefore(date: string, n: number): string {
 }
 
 /**
- * What VIP gives in this game, as every door and home's VIP screen list it (vip-about.ts; the creator, 2026-11-01): the day's gift, the
- * welcome gift, the archive and the events, and the Cosmetics only while VIP lends them (vip-view.ts
+ * What VIP gives in this game, as every door and home's VIP screen list it (vip-about.ts; the creator, 2026-11-01), the best
+ * first (the creator, 2026-11-02): the events, the archive, the day's gift and the welcome gift, and the Cosmetics only while VIP lends them (vip-view.ts
  * VIP_WEARS_ALL: off since 2026-11-02, so four rows). Ours to say; the Arcade's own perks are its
  * sheet's. Information (glass), its numbers the checker's (src/net/vip.ts, from helper-ids.json).
  */
@@ -83,10 +83,10 @@ export function vipPerks(): HTMLElement {
   const daily = el("span", "ico-wrap");
   daily.innerHTML = ICONS.daily;
   const rows: Array<[Node, string]> = [
+    [art("suitcase-closed-small.webp"), t("vip.perk.events")],
+    [daily, t("vip.perk.archive")],
     [helperPic("hint"), t("vip.perk.daily", { count: VIP_DAILY_SIZE })],
     [helperPic("shuffle", 3), t("vip.perk.welcome", { count: VIP_WELCOME_SIZE })],
-    [daily, t("vip.perk.archive")],
-    [art("suitcase-closed-small.webp"), t("vip.perk.events")],
     ...(VIP_WEARS_ALL ? ([[art("cosmetics-tile.webp"), t("vip.perk.cosmetics")]] as Array<[Node, string]>) : []),
   ];
   for (const [pic, words] of rows) {

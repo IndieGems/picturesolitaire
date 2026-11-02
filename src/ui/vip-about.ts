@@ -11,9 +11,9 @@
 //                member, a VIP BOARDING PASS (the creator's pick of four, 2026-11-02, after "act more excited
 //                about this with exclamation marks"): paper, flat, a gold band "FIRST CLASS ✈ VIP", Passenger:
 //                You!, Seat 1A, From Picture Passport, Valid in All of Gem Arcade, the suitcase; "Your VIP
-//                boarding pass" over its four stamped lines (the day's gift, the welcome gift, the daily
-//                archive, every event and its prize table: what vip-door.ts vipPerks lists, in the pass's
-//                words); its barcode stub carrying, red and larger, "Other Gem Arcade games give VIP rewards
+//                boarding pass" over its four stamped lines, the best first (the creator, 2026-11-02): every
+//                event and its prize table, the daily archive, the day's gift, the welcome gift (what
+//                vip-door.ts vipPerks lists, in the same order, in the pass's words); its barcode stub carrying, red and larger, "Other Gem Arcade games give VIP rewards
 //                too!", never which games or what (the Arcade's own sheet lists its perks: the SDK's
 //                arcade-and-store.md, "Never write an offer's perks"); then "Get VIP: board now!" (vip-view.ts
 //                vipButton: Sign in for a guest, nothing where the Arcade cannot sell it). A member reads the
@@ -208,10 +208,10 @@ export function createVipAbout(nav: Nav) {
     top.append(fields, suitcase);
     const lines = el("ul", "vip-pass-lines");
     for (const words of [
+      t("vip.about.pass.events"),
+      t("vip.about.pass.archive"),
       t("vip.about.pass.daily", { count: VIP_DAILY_SIZE }),
       t("vip.about.pass.welcome", { count: VIP_WELCOME_SIZE }),
-      t("vip.about.pass.archive"),
-      t("vip.about.pass.events"),
     ]) {
       const li = el("li");
       const stamp = el("span", "vip-pass-stamp");
