@@ -385,6 +385,13 @@ html.less-motion .tr-stop.here .tr-pin::after { display: none; }
 }
 /* a hard board's tag on its stop's foot (marks.ts), over the path */
 .tr-stop .mark-tag { position: relative; z-index: 1; margin: calc(-9px * var(--k)) 0 0; padding: 2px 6px 1px; font-size: calc(12px * var(--k)); }
+/* a stop in the route's first or last column: its mark centred under it where it fits, else held to the card's
+   inner side, never clipped at the card's edge ("Очень сложный", "Difficilissimo" under stops 20 and 30). "safe"
+   falls back to the cross axis's start: the left; the last column's runs right to left, so there it is the right
+   (its pin and tag themselves read left to right as ever) */
+.tr-stop:is(.edge-l, .edge-r) { align-items: safe center; }
+.tr-stop.edge-r { direction: rtl; }
+.tr-stop.edge-r > * { direction: ltr; }
 
 /* Next stop: the amber button, the board it opens under the words */
 .home .play { flex: none; min-width: calc(232px * var(--k)); min-height: calc(66px * var(--k)); padding: 0 calc(30px * var(--k)) 0 calc(24px * var(--k)); gap: calc(12px * var(--k)); }

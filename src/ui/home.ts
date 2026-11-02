@@ -295,6 +295,9 @@ export function createHome(nav: Nav, parts: Parts) {
     const li = el("li", `tr-stop ${state}`);
     li.style.gridRow = String(row + 1);
     li.style.gridColumn = String(col + 1);
+    // the route's two edge columns: a mark too wide for its stop stays inside the card (style.css)
+    if (col === 0) li.classList.add("edge-l");
+    if (col === PER_ROW - 1) li.classList.add("edge-r");
     if (p.board === next) li.classList.add("here");
     const pin = el("span", "tr-pin");
     // (while the record is on its way, `next` is null: bare stops, no numbers, so none of them change)
