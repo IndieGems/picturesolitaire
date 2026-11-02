@@ -7,6 +7,17 @@
 //                        in the game standard's sense, so a celebration: the gold rays, fireworks over the
 //                        card (none under less motion) and the milestone's sound (Audio's, milestone:show).
 //
+// THE WELCOME CARD comes before the welcome gift's (the creator, 2026-11-02, B of two mockups: "if a VIP member
+// comes from another game, not having ever played ours with the VIP tag, lets give them a welcome card telling them
+// what they'll get with VIP in our game"). The welcome gift's payment is the one seam that already knows this is a
+// membership's first visit (once a membership, again after a lapse), so it is the trigger: no flag of ours, nothing
+// kept. "Welcome, VIP!", what VIP gives here as the boarding pass says it (vip-about.ts vipPassLines, best first,
+// the welcome gift left to its own card), then "Show me the events!" (the gift card at once all the same, then the
+// event's page once it closes: nobody waits for their gift) or "Later" (the gift card at once, then home; Back and
+// Escape too). The calm one: the rays, no fireworks, no sound
+// (the gift card's milestone is the one celebration). Only what the game gives: no price, never "free", nothing of
+// the Arcade's own perks, no other game named.
+//
 // Each is a card of its own over home, after anything else home's boot shows (the friend's challenge,
 // Carry on?, an achievement or an event caught up: app.ts's `ready`), the welcome first when both came.
 // The card shows what came (Art's helper pictures, "+2 Hints"), then each helper flies into its counter
@@ -26,6 +37,7 @@ import { helperPic } from "./helper-shop";
 import { t } from "./i18n";
 import { KINDS, type HelperKind } from "./stock";
 import { vipTag } from "./vip-door";
+import { vipPassLines } from "./vip-about";
 import type { VipGift } from "../net/vip";
 
 export type { VipGift };
@@ -41,25 +53,8 @@ interface Opts {
   onStock: (fn: () => void) => () => void;
   /** The most of one helper a player can carry (HELPER_CAP). */
   cap: number;
-  /** Outside a release build, the welcome's trial look B: "Show me the events!" opens the event's page. */
-  events?: () => void;
-}
-
-// ---- the welcome's trial looks (vip-welcome-looks.ts; the creator, 2026-11-02), outside a release build only:
-// ?vipwelcome=a|b, the dev menu's picker, __ps.vipWelcome; "" is the card as shipped. Every line of it sits inside
-// import.meta.env.MODE checks written inline, so a release build drops it and never builds vip-welcome-looks.ts.
-let welcomeLook = "";
-let welcomeLooks: typeof import("./vip-welcome-looks") | null = null;
-/** Outside a release build: the welcome's card in trial look `look` ("a", "b"), or as shipped (""). */
-export async function setWelcomeLook(look: string): Promise<void> {
-  if (import.meta.env.MODE !== "release") {
-    if (look && !welcomeLooks) welcomeLooks = await import("./vip-welcome-looks");
-    welcomeLook = look === "a" || look === "b" ? look : "";
-  }
-}
-if (import.meta.env.MODE !== "release") {
-  const asked = new URLSearchParams(location.search).get("vipwelcome");
-  if (asked) void setWelcomeLook(asked);
+  /** The welcome card's "Show me the events!": the event's page. */
+  events: () => void;
 }
 
 /** A gift waits this long once home can take it, so whatever else home's boot shows comes first. */
@@ -98,9 +93,11 @@ export function createVipGifts(o: Opts) {
   const pending: VipGift[] = [];
   /** Shown or waiting this session, by the payment's id. */
   const seen = new Set<string>();
-  /** Outside a release build: the welcomes whose trial card B has been shown. */
-  const introduced = new Set<string>();
+  /** The welcomes whose welcome card has been shown, by the payment's id. */
+  const welcomed = new Set<string>();
   let timer = 0;
+  /** The welcome card's "Show me the events!" was pressed: the event's page once the gifts' cards close. */
+  let toEvents = false;
   /** The card up now: lands its helpers at once, and takes it down. */
   let current: { land(): void; landed(): boolean; stop(): void } | null = null;
 
@@ -113,37 +110,64 @@ export function createVipGifts(o: Opts) {
     veil.replaceChildren();
     closed(veil);
     o.changed?.(false);
+    if (toEvents) {
+      // the welcome card's "Show me the events!": the gifts that came with it (the day's) at once, then the page
+      const next = pending.shift();
+      if (next) return show(next);
+      toEvents = false;
+      return o.events();
+    }
     // the next (the day's, after the welcome) after a beat of home
     poke();
   }
 
+  /** The welcome card, before the welcome gift's: what VIP gives here, then the events or the gift. */
+  function welcomeCard(g: VipGift): void {
+    welcomed.add(g.id);
+    const openedAt = performance.now();
+    const card = el("div", "card vip-gift-card welcome vg-hello");
+    const rays = el("div", "vg-rays");
+    rays.setAttribute("aria-hidden", "true");
+    const tag = vipTag("big", true);
+    tag.setAttribute("aria-hidden", "true");
+    const head = el("h2", "vg-title", t("vip.welcome.title"));
+    head.id = "vip-gift-title";
+    const perks = el("div", "vg-perks");
+    const line = el("p", "vg-line", t("vip.welcome.line"));
+    line.id = "vip-gift-sub";
+    perks.append(line, vipPassLines(false));
+    const go = el("button", "btn amber next vg-go", t("vip.welcome.events"));
+    go.type = "button";
+    go.dataset.press = "vipWelcome.events";
+    const later = el("button", "btn vg-later", t("vip.welcome.later"));
+    later.type = "button";
+    later.dataset.press = "vipWelcome.later";
+    /** On to the gift's card, now. */
+    const toGift = () => {
+      closed(veil);
+      show(g);
+    };
+    go.addEventListener("click", () => {
+      // a tap meant for what was under it
+      if (performance.now() - openedAt < HOLD_MS) return;
+      // the gift first all the same, then the event's page once it closes
+      toEvents = true;
+      toGift();
+    });
+    later.addEventListener("click", () => {
+      if (performance.now() - openedAt >= HOLD_MS) toGift();
+    });
+    card.append(rays, tag, head, perks, go, later);
+    veil.replaceChildren(card);
+    veil.hidden = false;
+    // Back and Escape: Later, so the gift is never lost
+    opened(veil, toGift);
+    o.changed?.(true);
+  }
+
   function show(g: VipGift): void {
     const welcome = g.kind === "welcome";
-    // trial look B: "Welcome, VIP!" on a card of its own first (outside a release build only)
-    if (import.meta.env.MODE !== "release" && welcome && welcomeLook === "b" && welcomeLooks && !introduced.has(g.id)) {
-      introduced.add(g.id);
-      const intro = welcomeLooks.introCard(
-        () => {
-          // the events: the card goes, the gift waits for home again
-          veil.hidden = true;
-          veil.replaceChildren();
-          closed(veil);
-          o.changed?.(false);
-          pending.unshift(g);
-          o.events?.();
-        },
-        () => {
-          closed(veil);
-          show(g);
-        },
-      );
-      veil.replaceChildren(intro);
-      veil.hidden = false;
-      opened(veil, close);
-      o.changed?.(true);
-      emit("milestone:show", { id: "vipWelcome" });
-      return;
-    }
+    if (welcome && !welcomed.has(g.id)) return welcomeCard(g);
     const kinds = KINDS.filter((k) => whole(g.gift[k]) > 0);
     const got = (k: HelperKind) => whole(g.got[k], whole(g.gift[k]));
     /** Each counter's last number: the stock after (Server's, else as read), from it less what landed. */
@@ -226,8 +250,6 @@ export function createVipGifts(o: Opts) {
     const said = el("div", "vg-notes");
     said.append(...notes);
     card.append(tag, head, sub, tiles, have, ...(notes.length ? [said] : []), on);
-    // trial look A: the welcome's card says "Welcome, VIP!" and what VIP gives here (outside a release build only)
-    if (import.meta.env.MODE !== "release" && welcome && welcomeLook === "a" && welcomeLooks) welcomeLooks.mergeInto(card, head, sub);
     veil.replaceChildren(card);
 
     // ---- the flights: each helper that landed, one by one, into its counter ----

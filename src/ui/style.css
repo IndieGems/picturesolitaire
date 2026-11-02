@@ -1926,6 +1926,14 @@ html.less-motion .vg-count.grew b { animation: none; }
   animation: vg-turn 30s linear infinite;
 }
 @keyframes vg-turn { to { rotate: 360deg; } }
+/* the welcome card, before the welcome gift's (vip-gifts.ts welcomeCard): what VIP gives here on the boarding pass's
+   paper with its stamps (flat: information), the events its main way on, Later quieter */
+.vg-perks { width: 100%; display: flex; flex-direction: column; gap: 8px; padding: 10px 14px 12px; border-radius: 16px; background: #fffaf0; color: #3b2a12; text-align: left; }
+.card p.vg-line { margin: 0; text-align: center; font: 700 15px/1.25 var(--round); color: #5a3a06; text-wrap: balance; }
+.vg-perks .vip-pass-lines li { font-size: 15px; }
+.vg-perks .vip-pass-stamp { width: 26px; height: 26px; }
+.btn.vg-go { width: min(100%, 280px); min-height: 56px; font-size: 19px; margin-top: 2px; }
+.btn.vg-later { min-width: 160px; min-height: 46px; font-size: 16px; }
 html.less-motion .vg-rays, html.less-motion .vg-tile { animation: none; }
 @media (prefers-reduced-motion: reduce) { .vg-rays, .vg-tile { animation: none; } }
 

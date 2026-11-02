@@ -104,7 +104,7 @@ import { challengeCard, comparePanel, createFriendCards, outcomeOf, type Challen
 import { friendAction, launchLink, markAnswered, recentFriendActions, watchFriends, type Dare, type Launch } from "../net/friends";
 import { currentDaily, today as dailyToday } from "../net/daily";
 import { onVipGift, pretendVip, VIP_DAILY, VIP_WELCOME, type VipGift } from "../net/vip";
-import { createVipGifts, setWelcomeLook } from "./vip-gifts";
+import { createVipGifts } from "./vip-gifts";
 import { createVipDoor } from "./vip-door";
 import { createVipAbout, createVipBadge, pretendVipEnds } from "./vip-about";
 import { wearBackWords } from "./back";
@@ -354,7 +354,7 @@ suitcases.onChange(() => {
 // a VIP's gifts (vip-gifts.ts): the day's two helpers and the welcome's eight, each paid by the checker
 // (Server's onVipGift), on a card of its own over home once home can take it (giftReady), after the rest
 const vipGifts = createVipGifts({
-  // the welcome's trial look B (outside a release build): its way on, the event's page
+  // the welcome card's "Show me the events!": the event's page
   events: () => suitcaseUi.open(),
   ready: () => giftReady(),
   changed: (up) => {
@@ -2790,13 +2790,6 @@ export async function startApp(): Promise<void> {
           pretendAchievements(mix);
           passportUi.openAchievements();
         },
-        welcomeLook: (look) => {
-          closeSettings();
-          void setWelcomeLook(look).then(() => {
-            if (screen !== "home") goHome();
-            vipGifts.preview(standInGift("welcome"));
-          });
-        },
         showVipGift: (kind) => {
           closeSettings();
           if (screen !== "home") goHome();
@@ -2874,8 +2867,6 @@ export async function startApp(): Promise<void> {
       vipAbout: () => vipAboutUi.open(),
       /** A member's pass as if it ended at `ms` (null: no end known; undefined: the SDK's word), for the days left. */
       vipEnds: (ms: number | null | undefined) => pretendVipEnds(ms),
-      /** The VIP welcome card's trial look ("a", "b"; "" as shipped), as the dev menu picks it (vip-welcome-looks.ts). */
-      vipWelcome: (look: string) => setWelcomeLook(look),
       /** The Daily page (its friends: Server's board; none in the play-test tool, which has no platform). */
       dailyPage: () => void dailyUi.openPage(),
       /** The unlock card for these slugs, again and again (past the once-a-session rule), once the screen can take it. */
