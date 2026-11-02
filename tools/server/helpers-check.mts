@@ -74,10 +74,12 @@ check("vip: each day's gift is 2 helpers, and nothing but helpers", (V.daily ?? 
 const week = Object.fromEntries(Object.keys(IDS.kinds).map((k) => [k, (V.daily ?? []).reduce((a, g) => a + (g[k] ?? 0), 0)]));
 check(`vip: a week gives 5 Hints, 4 Undos, 5 Shuffles (${JSON.stringify(week)})`, week.hint === 5 && week.undo === 4 && week.shuffle === 5);
 check("vip: the welcome is 3 Hints, 2 Undos, 3 Shuffles", onlyHelpers(V.welcome) && V.welcome.hint === 3 && V.welcome.undo === 2 && V.welcome.shuffle === 3);
-check("vip: the welcome's mark is declared, writable by no client", (() => {
-  const e = entry(V.welcomeEnd?.progression);
-  return e.includes(`slug: ${V.welcomeEnd?.slug}\n`) && !e.includes("client_writable: true") && !e.includes("platform_grants");
-})());
+for (const [name, mark] of [["the welcome's mark", V.welcomeEnd], ["the day's mark", V.dayMark]]) {
+  check(`vip: ${name} is declared, writable by no client`, (() => {
+    const e = entry(mark?.progression);
+    return e.includes(`slug: ${mark?.slug}\n`) && !e.includes("client_writable: true") && !e.includes("platform_grants");
+  })());
+}
 check("the daily helper rotation names a helper for each weekday", IDS.daily.length === 7 && IDS.daily.every((k) => k in IDS.kinds));
 check("the helpers catalog is declared", yaml.includes(`- id: ${IDS.catalog}\n    slug: helpers\n`));
 check("the kit's progression is declared", yaml.includes(`- id: ${IDS.kit.progression}\n    slug: ${IDS.kit.slug}\n`));

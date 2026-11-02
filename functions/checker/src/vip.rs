@@ -18,8 +18,9 @@
 //! VIP'S GIFTS (the creator, 2026-11-01, after Jade Match; docs/vip.md): VIP no longer makes a helper
 //! free; it gives helpers. `due` decides what a VIP is owed on their own date (the platform's, never
 //! the device's): the day's gift, by the day of their week (Monday 1 .. Sunday 7, src/net/helper-ids.json
-//! `vip.daily`), once a date; and the welcome, once a membership, while the end day of the membership
-//! last welcomed (the progression `vip_welcome_end`) is before today. A membership is told by its end:
+//! `vip.daily`), once a date, while the day last given its gift (the progression `vip_gift_day`) is
+//! before today; and the welcome, once a membership, while the end day of the membership last
+//! welcomed (the progression `vip_welcome_end`) is before today. A membership is told by its end:
 //! one that ends after the last one welcomed ended is a new one, so a membership bought after a lapse
 //! is welcomed again and one extended before it lapses is not. lib.rs pays them (`what: "vip_gift"`).
 
@@ -69,27 +70,43 @@ pub fn gift_day(date: &str) -> Option<u32> {
     Some(((day_number(date)? + 3).rem_euclid(7) + 1) as u32)
 }
 
-/// What a VIP is owed on `today`, their own date: the day's gift (always: its order's nonce makes a
-/// date pay once) and, when due, the welcome, with the end day the order marks.
+/// What a VIP is owed on `today`, their own date: the day's gift unless the day mark says this day
+/// (or a later one, after a change of time zone) had it, and the welcome while the membership last
+/// welcomed ended before today. Both are decided from the marks the platform keeps, never from an
+/// order's nonce alone: the platform answers a reused nonce as a success that changed nothing.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Due {
     /// The day of the week (gift_day), whose gift the day pays.
     pub day: u32,
-    /// The day's order nonce: "vip:<date>".
-    pub daily: String,
+    /// The player's date as a day number: what the day's order raises `vip_gift_day` to.
+    pub today: i64,
+    /// The day's gift is due: its order nonce, "vip:<date>".
+    pub daily: Option<String>,
     /// The welcome is due: the end day its order raises `vip_welcome_end` to (nonce "vip-welcome:<end>").
     pub welcome: Option<i64>,
 }
 
-/// `today`: the player's date; `welcomed`: `vip_welcome_end` as read (0 never); `held`: the platform
-/// says they hold `vip` (false: the dev pretend alone); `ends`: its end day (Passes::ends). None for a
-/// malformed date: nothing is owed on a date that cannot be read. A membership's end is never taken
-/// as before today (an end today in UTC can be the player's tomorrow), so a welcome is never paid twice
-/// in a day.
-pub fn due(today: &str, welcomed: i64, held: bool, ends: Option<i64>) -> Option<Due> {
+impl Due {
+    /// Nothing is owed: no order to place.
+    pub fn nothing(&self) -> bool {
+        self.daily.is_none() && self.welcome.is_none()
+    }
+}
+
+/// `today`: the player's date; `welcomed`: `vip_welcome_end` as read (0 never); `gifted`:
+/// `vip_gift_day` as read (0 never); `held`: the platform says they hold `vip` (false: the dev pretend
+/// alone); `ends`: its end day (Passes::ends). None for a malformed date: nothing is owed on a date
+/// that cannot be read. A membership's end is never taken as before today (an end today in UTC can be
+/// the player's tomorrow), so a welcome is never paid twice in a day.
+pub fn due(today: &str, welcomed: i64, gifted: i64, held: bool, ends: Option<i64>) -> Option<Due> {
     let now = day_number(today)?;
     let end = if held { ends.unwrap_or(NO_END_DAY).max(now) } else { now + PRETEND_DAYS };
-    Some(Due { day: gift_day(today)?, daily: format!("vip:{today}"), welcome: (welcomed < now).then_some(end) })
+    Some(Due {
+        day: gift_day(today)?,
+        today: now,
+        daily: (gifted < now).then(|| format!("vip:{today}")),
+        welcome: (welcomed < now).then_some(end),
+    })
 }
 
 /// VIP for this call: Some(true) if the platform says the player holds it, or on the dev channel

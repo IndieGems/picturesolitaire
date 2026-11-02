@@ -45,9 +45,13 @@ The game never prices it or describes the Arcade's own perks; the SDK's `docs/ar
      currencies. Each gift is clamped at the cap of 20, as every other gift is, and the game is told
      what actually landed, so a full stock shows as full rather than as a gift.
    - **Who pays and when.** The win checker pays both (`{"v":1,"what":"vip_gift"}`,
-     `functions/checker/src/gift.rs`; who is VIP and when a gift is due: `vip.rs` `due`), each gift in
-     its own order with its own key (`vip:<date>`, `vip-welcome:<end day>`), so asking twice pays
-     once. It reads the pass itself: not VIP pays nothing, and a failed read pays nothing and is
+     `functions/checker/src/gift.rs`; who is VIP and when a gift is due: `vip.rs` `due`). What is
+     owed is read from two marks the server keeps, the day last given its gift (`vip_gift_day`) and
+     the end of the membership last welcomed (`vip_welcome_end`), and each gift is paid in its own
+     order that raises its mark, with its own key (`vip:<date>`, `vip-welcome:<end day>`), so asking
+     twice pays once and lists nothing the second time. The marks decide, not the key: the platform
+     answers a reused key as a success that changed nothing (QA, 2026-11-02), so an empty receipt is
+     read as paid before. It reads the pass itself: not VIP pays nothing, and a failed read pays nothing and is
      asked again. The game (`src/net/vip.ts`) asks once the server says VIP (at boot, after a
      purchase or a sign-in) and again whenever the Arcade's pass reading changes while it says VIP,
      which also brings a new day's gift on coming back to the game. It hands each gift paid to the

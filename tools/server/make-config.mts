@@ -388,6 +388,14 @@ for (const r of rows) {
   y.push(`    slug: ${W.slug}`);
   y.push(`    display_name: "VIP welcome"`);
   y.push("    config: {}");
+  // and the day's gift: the day number last paid, raised in that gift's own order
+  const D = JSON.parse(readFileSync(join(root, "src/net/helper-ids.json"), "utf8")).vip.dayMark;
+  y.push("  # VIP'S DAILY GIFT, once a date (docs/vip.md): the day (days from 1970-01-01, the player's own date)");
+  y.push("  # last given its gift, raised by the win checker in the order that pays it. Only the checker writes it.");
+  y.push(`  - id: ${D.progression}`);
+  y.push(`    slug: ${D.slug}`);
+  y.push(`    display_name: "VIP daily gift"`);
+  y.push("    config: {}");
 }
 y.push("  # THE DAILY PUZZLE: one board a day, the same for everyone (src/content/levels/daily.json,");
 y.push("  # the board \"d\" + the date). The function checks the date is the player's own today,");

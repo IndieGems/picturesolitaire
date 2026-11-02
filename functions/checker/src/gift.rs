@@ -11,7 +11,12 @@
 //!     "again"?: "platform" }
 //! `gift` is the gift's size, `got` what landed after the cap (got < gift: the stock was full), `after`
 //! each helper's balance after, as far as the receipt lists them. A gift paid by an earlier call is
-//! not listed (its nonce answers that it landed before). `again`: an order failed after another
+//! never listed: what is owed is read from the two marks first (`vip_gift_day`, `vip_welcome_end`),
+//! and nothing owed places no order at all. And should two calls race past that read, the one whose
+//! order reused the nonce is told by its receipt: the platform answers a reused nonce as a success
+//! that changed nothing (QA, 2026-11-02: not a 409), and a fresh gift's order always moves its mark,
+//! so an empty receipt is a gift paid before. A gift that clamped at the cap still moved its mark,
+//! and is listed with what landed. `again`: an order failed after another
 //! landed; ask again later (the one that landed is not paid twice). Not VIP: no gifts, `vip: false`
 //! (lib.rs adds `vip`). VIP unknown (the pass read failed): "retry", nothing paid.
 
@@ -50,25 +55,33 @@ pub fn vip_gift(p: &dyn Platform, vip: Result<bool, &'static str>, passes: Optio
         Ok(d) => d,
         Err(v) => return v,
     };
-    let welcomed = match p.value(pay::vip_welcome_mark().0) {
-        Ok(v) => v as i64,
-        Err(v) => return v,
+    let mark = |id: &str| p.value(id).map(|v| v as i64);
+    let (welcomed, gifted) = match (mark(pay::vip_welcome_mark().0), mark(pay::vip_day_mark().0)) {
+        (Ok(w), Ok(g)) => (w, g),
+        (Err(v), _) | (_, Err(v)) => return v,
     };
     let held = passes.is_some_and(|x| x.held);
-    let Some(due) = vip::due(&today, welcomed, held, passes.and_then(|x| x.ends)) else {
+    let Some(due) = vip::due(&today, welcomed, gifted, held, passes.and_then(|x| x.ends)) else {
         p.log(&format!("vip gift: the date {today:?} is not a date"));
         return retry("config");
     };
+    if due.nothing() {
+        return json!({ "v": 1, "status": "vip_gift", "today": today, "gifts": [] });
+    }
     let mut orders: Vec<(&str, pay::Order, Value)> = Vec::new();
     if let Some(end) = due.welcome {
         let sizes = pay::vip_welcome();
-        orders.push(("welcome", pay::vip_order(format!("vip-welcome:{end}"), &sizes, Some(end), "welcome"), sizes));
+        orders.push(("welcome", pay::vip_order(format!("vip-welcome:{end}"), &sizes, (pay::vip_welcome_mark().0, end), "welcome"), sizes));
     }
-    let sizes = pay::vip_daily(due.day);
-    orders.push(("daily", pay::vip_order(due.daily.clone(), &sizes, None, &format!("day {}", due.day)), sizes));
+    if let Some(nonce) = due.daily.clone() {
+        let sizes = pay::vip_daily(due.day);
+        orders.push(("daily", pay::vip_order(nonce, &sizes, (pay::vip_day_mark().0, due.today), &format!("day {}", due.day)), sizes));
+    }
     let mut gifts: Vec<Value> = Vec::new();
     for (kind, order, sizes) in orders {
         match p.place(&order) {
+            // the platform's answer to a reused nonce: paid before, by a call that raced this one
+            Ok(Some(changes)) if changes.is_empty() => p.log(&format!("vip gift {kind} {}: paid before (an empty receipt)", order.nonce)),
             Ok(Some(changes)) => {
                 let got = pay::landed(&changes);
                 p.log(&format!("vip gift {kind} {}: {sizes}, landed {got}", order.nonce));

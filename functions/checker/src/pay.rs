@@ -154,6 +154,13 @@ pub fn vip_welcome_mark() -> (&'static str, &'static str) {
     (w["progression"].as_str().unwrap_or_default(), w["slug"].as_str().unwrap_or_default())
 }
 
+/// VIP's day mark (helper-ids.json `vip.dayMark`): (id, slug). Its value is the day number last given
+/// its gift (vip.rs).
+pub fn vip_day_mark() -> (&'static str, &'static str) {
+    let d = &data()["helpers"]["vip"]["dayMark"];
+    (d["progression"].as_str().unwrap_or_default(), d["slug"].as_str().unwrap_or_default())
+}
+
 /// VIP's welcome gift, once a membership: { hint, undo, shuffle }.
 pub fn vip_welcome() -> Value {
     sizes(&data()["helpers"]["vip"]["welcome"])
@@ -173,15 +180,15 @@ fn sizes(v: &Value) -> Value {
     out
 }
 
-/// One VIP gift's order (lib.rs sends it; vip.rs decides when one is due). The day's: nonce
-/// `vip:<date>`, the player's own date, so a date pays once. The welcome's: nonce
-/// `vip-welcome:<end day>`, with the welcome mark raised to that end day in the same order, so the
-/// membership is welcomed once or not at all. Each grant into "earned", clamped at the cap.
-pub fn vip_order(nonce: String, sizes: &Value, mark_to: Option<i64>, what: &str) -> Order {
+/// One VIP gift's order (gift.rs sends it; vip.rs decides when one is due), with its MARK raised in
+/// the same order, so the gift and its mark land together or not at all: the day's, nonce
+/// `vip:<date>` and the day mark to that day's number; the welcome's, nonce `vip-welcome:<end day>`
+/// and the welcome mark to that end day. A fresh order always moves its mark, so its receipt is never
+/// empty: an empty one is the platform answering a reused nonce. Each grant into "earned", clamped at
+/// the cap.
+pub fn vip_order(nonce: String, sizes: &Value, mark: (&str, i64), what: &str) -> Order {
     let mut o = Order { nonce, ..Order::default() };
-    if let Some(end) = mark_to {
-        o.operations.push(json!({ "type": "progression_max", "progression_definition_id": vip_welcome_mark().0, "value": end, "reason": "vip welcome" }));
-    }
+    o.operations.push(json!({ "type": "progression_max", "progression_definition_id": mark.0, "value": mark.1, "reason": format!("vip {what} gift") }));
     for kind in KINDS {
         let n = sizes[kind].as_u64().unwrap_or(0);
         if n > 0 {

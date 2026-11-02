@@ -1,5 +1,5 @@
 {
-  "note": "The helper stock's ids and gifts: one copy, read by src/net/helpers.ts, the win checker (functions/checker/build.rs) and tools/server/make-config.mts, and held to gem-backend-game-config.yaml by tools/server/helpers-check.mts. Prices are the config's alone. `daily`: the helper the daily puzzle's first win of the player's day pays, by weekday, Sunday first. `bundles`: the Gems bundles (the creator, 2026-11-01), in shop order: each recipe's id and what it grants of each helper (every grant refused at the cap); `once`: max_uses 1, ever; `gemsUnframed`: a stand-in price for a page with no config (the play-test tool), held to the config's Gems price by helpers-check. `vip`: Gem Arcade VIP gives helpers (the creator, 2026-11-01, after Jade Match; docs/vip.md), paid by the win checker on its {\"v\": 1, \"what\": \"vip_gift\"} call: `daily`, a gift of each day of the player's week, Monday first (ISO: the player's own date, from the platform), once a date; `welcome`, once a membership, `welcomeEnd` the progression recording the end day (days from 1970-01-01) of the membership last welcomed. Every gift is clamped at the cap.",
+  "note": "The helper stock's ids and gifts: one copy, read by src/net/helpers.ts, the win checker (functions/checker/build.rs) and tools/server/make-config.mts, and held to gem-backend-game-config.yaml by tools/server/helpers-check.mts. Prices are the config's alone. `daily`: the helper the daily puzzle's first win of the player's day pays, by weekday, Sunday first. `bundles`: the Gems bundles (the creator, 2026-11-01), in shop order: each recipe's id and what it grants of each helper (every grant refused at the cap); `once`: max_uses 1, ever; `gemsUnframed`: a stand-in price for a page with no config (the play-test tool), held to the config's Gems price by helpers-check. `vip`: Gem Arcade VIP gives helpers (the creator, 2026-11-01, after Jade Match; docs/vip.md), paid by the win checker on its {\"v\": 1, \"what\": \"vip_gift\"} call: `daily`, a gift of each day of the player's week, Monday first (ISO: the player's own date, from the platform), once a date; `welcome`, once a membership, `welcomeEnd` the progression recording the end day (days from 1970-01-01) of the membership last welcomed; `dayMark` the one recording the day last given its gift (the platform answers a reused order key as a success that changed nothing, so the key alone cannot say a gift was paid before). Every gift is clamped at the cap.",
   "cap": 20,
   "catalog": "330c9600-3e06-4829-bdfe-e26b6e6889f2",
   "kinds": {
@@ -22,7 +22,8 @@
       { "hint": 1, "undo": 0, "shuffle": 1 }
     ],
     "welcome": { "hint": 3, "undo": 2, "shuffle": 3 },
-    "welcomeEnd": { "progression": "86031ea0-89b2-54df-8e49-aa5dcf11b2b6", "slug": "vip_welcome_end" }
+    "welcomeEnd": { "progression": "86031ea0-89b2-54df-8e49-aa5dcf11b2b6", "slug": "vip_welcome_end" },
+    "dayMark": { "progression": "2f0568bf-ac3b-5fdc-8277-b310ea3b4f8c", "slug": "vip_gift_day" }
   },
   "bundles": [
     { "name": "starter", "slug": "buy-starter-kit", "id": "f6235bfe-6f97-5c90-8bb4-0e956a5f0978", "grants": { "hint": 5, "undo": 5, "shuffle": 5 }, "once": true, "gemsUnframed": 200 },

@@ -976,7 +976,13 @@ mod function {
                 host::log(LogLevel::Warn, &format!("order {} answered {}: {}", order.nonce, res.status, res.body));
                 return Err(retry(if passing(res.status) { "platform" } else { "config" }));
             }
-            Ok(Some(res.body["changes"].as_array().cloned().unwrap_or_default()))
+            let changes = res.body["changes"].as_array().cloned().unwrap_or_default();
+            // what the receipt carried, by kind, and the answer's own fields: a reused nonce's answer
+            // is a success with no changes (QA, 2026-11-02), and this line shows what else it says
+            let kinds: Vec<&str> = changes.iter().filter_map(|c| c["type"].as_str()).collect();
+            let fields: Vec<&str> = res.body.as_object().map(|o| o.keys().map(String::as_str).collect()).unwrap_or_default();
+            host::log(LogLevel::Info, &format!("order {}: {} {}, changes {kinds:?}, fields {fields:?}", order.nonce, res.status, res.body["status"]));
+            Ok(Some(changes))
         }
         fn log(&self, line: &str) {
             host::log(LogLevel::Info, line);

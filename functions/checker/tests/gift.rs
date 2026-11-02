@@ -61,6 +61,9 @@ impl Fake {
     fn welcomed(&self) -> f64 {
         *self.values.borrow().get(pay::vip_welcome_mark().0).unwrap_or(&0.0)
     }
+    fn gifted(&self) -> f64 {
+        *self.values.borrow().get(pay::vip_day_mark().0).unwrap_or(&0.0)
+    }
 }
 
 impl Platform for Fake {
@@ -77,8 +80,9 @@ impl Platform for Fake {
         if self.failing.borrow_mut().remove(&order.nonce) {
             return Err(gift::retry("platform"));
         }
+        // a reused nonce: the platform answers a success that changed nothing (QA, 2026-11-02), not a 409
         if !self.nonces.borrow_mut().insert(order.nonce.clone()) {
-            return Ok(None);
+            return Ok(Some(Vec::new()));
         }
         self.orders.borrow_mut().push(order.nonce.clone());
         let mut changes = Vec::new();
@@ -89,7 +93,10 @@ impl Platform for Fake {
                     let v = op["value"].as_f64().unwrap();
                     let mut values = self.values.borrow_mut();
                     let was = *values.get(&id).unwrap_or(&0.0);
-                    values.insert(id, was.max(v));
+                    values.insert(id.clone(), was.max(v));
+                    if v > was {
+                        changes.push(json!({ "type": "progression", "progression_definition_id": id, "value_before": was, "value_after": v }));
+                    }
                 }
                 Some("currency_grant") => {
                     assert_eq!(op["overflow"], "clamp", "a gift clamps at the cap");
@@ -100,7 +107,10 @@ impl Platform for Fake {
                     let before = *stock.get(&kind).unwrap_or(&0);
                     let after = (before + op["amount"].as_i64().unwrap()).min(pay::cap() as i64);
                     stock.insert(kind, after);
-                    changes.push(json!({ "type": "currency", "currency_id": currency, "bucket": "earned", "balance_before": before, "balance_after": after, "delta": after - before }));
+                    // the worst case for telling a reuse: a grant the cap clamped to nothing is not listed
+                    if after > before {
+                        changes.push(json!({ "type": "currency", "currency_id": currency, "bucket": "earned", "balance_before": before, "balance_after": after, "delta": after - before }));
+                    }
                 }
                 other => panic!("a gift's order holds only its mark and its grants, not {other:?}"),
             }
@@ -170,9 +180,12 @@ fn a_vip_gets_the_welcome_and_the_days_gift_once_a_date() {
     assert_eq!(a["gifts"][1], json!({ "kind": "daily", "id": "vip:2026-11-02", "day": 1, "gift": helpers(1, 1, 0), "got": helpers(1, 1, 0), "after": { "hint": 4, "undo": 3 } }));
     assert_eq!(f.stock(), (4, 3, 3));
     assert_eq!(f.welcomed() as i64, end, "the membership's end, marked in the welcome's own order");
-    // the same date again (a reload, a second device): nothing
+    assert_eq!(f.gifted() as i64, vip::day_number("2026-11-02").unwrap(), "the day marked in the day's own order");
+    // the same date again (a reload, a fresh session, a second device): nothing, and no order placed
+    let placed = f.orders.borrow().len();
     let again = gift::vip_gift(&f, Ok(true), pass);
     assert_eq!(again, json!({ "v": 1, "status": "vip_gift", "today": "2026-11-02", "gifts": [] }));
+    assert_eq!(f.orders.borrow().len(), placed, "the marks say it was paid: nothing is asked of the platform");
     assert_eq!(f.stock(), (4, 3, 3));
     // the next date: the day's gift alone
     let tue = gift::vip_gift(f.on("2026-11-03"), Ok(true), pass);
@@ -217,10 +230,11 @@ fn gifts_clamp_at_the_cap_and_say_what_landed() {
     // welcome 3/2/3 onto 19/20/18: 1/0/2 land; then Monday's 1/1/0 onto 20/20/20: nothing
     assert_eq!(a["gifts"][0]["gift"], helpers(3, 2, 3));
     assert_eq!(a["gifts"][0]["got"], helpers(1, 0, 2));
-    assert_eq!(a["gifts"][0]["after"], helpers(20, 20, 20));
+    assert_eq!(a["gifts"][0]["after"], json!({ "hint": 20, "shuffle": 20 }), "after lists only what the receipt names");
     assert_eq!(a["gifts"][1]["gift"], helpers(1, 1, 0));
-    assert_eq!(a["gifts"][1]["got"], helpers(0, 0, 0), "paid, and full: the game says so");
-    assert_eq!(a["gifts"][1]["after"], json!({ "hint": 20, "undo": 20 }), "after lists only what the receipt names");
+    assert_eq!(a["gifts"][1]["got"], helpers(0, 0, 0), "paid, and full: listed, so the game says so");
+    assert_eq!(a["gifts"][1]["after"], json!({}));
+    assert_eq!(f.gifted() as i64, vip::day_number("2026-11-02").unwrap(), "a clamped gift still marks its day");
     assert_eq!(f.stock(), (20, 20, 20));
     // the day was paid, full or not: not again today
     assert_eq!(kinds(&gift::vip_gift(&f, Ok(true), held(Some("2026-12-01")))), Vec::<&str>::new());
@@ -264,4 +278,44 @@ fn the_pass_read_gives_the_end_day_of_a_held_vip() {
     assert_eq!(end(json!({ "passes": [{ "pass": "vip", "held": true, "ends_at": null }] })), None, "no end");
     assert_eq!(end(json!({ "passes": [{ "pass": "vip", "held": true, "ends_at": "soon" }] })), None, "not a date: no end, welcomed once for good");
     assert_eq!(end(json!({ "passes": [{ "pass": "vip", "held": false, "ends_at": "2026-12-01T08:30:00Z" }] })), None, "not held");
+}
+
+#[test]
+fn a_reused_nonce_answers_a_success_that_changed_nothing_and_is_never_listed() {
+    // QA, 2026-11-02: the second call of a day listed the day's gift again with nothing landed. Two
+    // calls racing past the marks' read (two devices at once): the second order reuses the nonces
+    let f = Fake::new("2026-11-02");
+    let pass = held(Some("2026-12-01"));
+    let first = gift::vip_gift(&f, Ok(true), pass);
+    assert_eq!(kinds(&first), vec!["welcome", "daily"]);
+    // the race: the second call read the marks before the first call's orders raised them
+    f.values.borrow_mut().clear();
+    let second = gift::vip_gift(&f, Ok(true), pass);
+    assert_eq!(second["gifts"], json!([]), "paid before: not listed, not a 'full' card");
+    assert_eq!(f.stock(), (4, 3, 3), "and nothing paid twice");
+    // a stand-in that answers a reuse as the platform does
+    let o = pay::vip_order("vip:2026-11-02".into(), &helpers(1, 1, 0), (pay::vip_day_mark().0, 1), "day 1");
+    assert_eq!(f.place(&o).unwrap(), Some(Vec::new()));
+}
+
+#[test]
+fn a_fresh_gift_that_the_cap_clamped_to_nothing_is_still_listed() {
+    // full stock: every grant clamps to 0, the receipt lists only the mark: a gift, and "full"
+    let f = Fake::new("2026-11-03");
+    f.holding(20, 20, 20);
+    f.values.borrow_mut().insert(pay::vip_welcome_mark().0.into(), vip::day_number("2026-12-01").unwrap() as f64);
+    let a = gift::vip_gift(&f, Ok(true), held(Some("2026-12-01")));
+    assert_eq!(kinds(&a), vec!["daily"]);
+    assert_eq!(a["gifts"][0]["got"], helpers(0, 0, 0));
+    assert_eq!(a["gifts"][0]["gift"], helpers(1, 0, 1), "Tuesday's");
+}
+
+#[test]
+fn the_day_mark_follows_the_players_date_and_a_date_behind_it_is_not_paid_again() {
+    // a player who moves west across the date line reads yesterday's date again: paid already
+    let f = Fake::new("2026-11-03");
+    f.values.borrow_mut().insert(pay::vip_welcome_mark().0.into(), vip::NO_END_DAY as f64);
+    assert_eq!(kinds(&gift::vip_gift(&f, Ok(true), held(None))), vec!["daily"]);
+    assert_eq!(kinds(&gift::vip_gift(f.on("2026-11-02"), Ok(true), held(None))), Vec::<&str>::new());
+    assert_eq!(kinds(&gift::vip_gift(f.on("2026-11-04"), Ok(true), held(None))), vec!["daily"]);
 }
