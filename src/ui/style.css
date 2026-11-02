@@ -1954,10 +1954,24 @@ html.less-motion .btn.daily-go::before, html.battery-saver .btn.daily-go::before
 .btn.daily-calendar { align-self: center; min-width: 220px; min-height: 48px; font-size: 17px; }
 /* the archive's locked door: the strip dimmed, the padlock and VIP tag, one line; a tap opens the door's screen */
 .daily-door { position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 12px 10px 14px; border-radius: 20px; cursor: pointer; font: inherit; color: var(--ink); }
-.daily-door .daily-strip { width: 100%; opacity: 0.55; }
+.daily-door .daily-strip { width: 100%; opacity: 0.7; }
 .daily-door .daily-door-tag { position: absolute; top: 34px; left: 50%; translate: -50% 0; }
 .daily-door-line { font: 600 15px/1.3 var(--round); color: var(--ink); }
 .daily-door:focus-visible { outline: 3px solid var(--amber-lo); outline-offset: 2px; }
+/* THE ARCHIVE, PROMOTED (daily.ts; the creator, 2026-11-02): once today is played, a big glass card in the page's
+   middle, pushed down to just above today's band. Information (flat glass, a gold edge to draw the eye; no lip, no
+   shadow); only the days (a VIP's), the calendar and the unlock are buttons, the main one in amber */
+.daily-screen .daily-archive.promo { margin-top: auto; padding: 14px 14px 16px; border-radius: 24px; gap: 10px; box-shadow: inset 0 0 0 2px rgba(255, 200, 80, 0.9); }
+.daily-promo-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 10px; }
+.daily-promo-head { margin: 0; text-align: center; font: 700 24px/1.15 var(--round); color: var(--ink); text-wrap: balance; }
+.daily-promo-line { margin: -2px 0 2px; text-align: center; font: 600 15px/1.3 var(--round); color: var(--ink-soft); text-wrap: balance; }
+.daily-archive.promo .daily-strip { gap: 7px; }
+.daily-archive.promo .daily-day { min-height: 68px; border-radius: 14px; }
+.daily-archive.promo .daily-day small { font-size: 13px; }
+.daily-archive.promo .daily-day b { font-size: 22px; }
+.daily-archive.promo .daily-day.glass { background: rgba(255, 255, 255, 0.5); opacity: 0.7; }
+.btn.daily-day.amber small, .btn.daily-day.amber b { color: #fff; }
+.btn.daily-unlock { align-self: center; min-width: 240px; min-height: 56px; padding: 0 22px; font-size: 18px; }
 
 /* the event's strip above the dock (suitcase.ts): one wide button, the suitcase, its name and days */
 .btn.event-strip {

@@ -150,6 +150,7 @@ const dailyUi = createDaily({
   calendar: () => archiveUi.open(),
   playDate: (date) => void playPastDay(date, { archive: true }),
   door: () => vipDoorUi.open({ kind: "archive", today: currentDaily().date }),
+  vipPass: () => vipAboutUi.open(),
 });
 // the events (suitcase.ts, docs/vip.md): VIP packs of 30 levels with 10 items hidden among them; home's strip,
 // each event's page and the other events; for VIPs only (event-switch.ts), a locked door for anyone else

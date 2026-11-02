@@ -29,7 +29,18 @@
 //
 // Today's friends are real players only (the creator, 2026-11-02: "just post your results and friends
 // will appear there as well"): once the player has a result, their own row shows with "Your friends will
-// appear here as they play." under it until a friend has played; before that, a friendly line.
+// appear here as they play." under it until a friend has played; before that, a friendly line. Their row is
+// never missing once the server's record says they played: where the board has no run of theirs yet (the
+// platform's rendering not caught up, or their run unreadable), it is drawn from the record's moves and time.
+//
+// THE ARCHIVE, PROMOTED ONCE TODAY IS PLAYED (the creator, 2026-11-02: "if the player has played the daily
+// we want to promote the archive ... Now play the daily archive!"). Before today is played the page is about
+// today: the past days are a quiet strip at the top (a VIP's days, or the locked door's). Once the record has
+// today's finish, the past days move down into the page's middle, just above today's band, as a big glass card:
+// "Now play the daily archive!", the days large. A VIP's are buttons into each day (a played one ticked), the
+// most recent one missed in amber, the page's main action; anyone else's are drawn locked under the gold VIP tag,
+// with one amber button, "Unlock the archive with VIP", into the VIP boarding pass. Today's Play again stays the
+// band's white button: only the first finish counts.
 
 import { loadDaily, type Daily } from "../game/levels";
 import { archiveWindow, currentDaily, onDailyChange, today, type DailyToday } from "../net/daily";
@@ -58,6 +69,8 @@ type Nav = {
   playDate(date: string): void;
   /** Anyone else's archive: the locked door's screen (vip-door.ts). */
   door(): void;
+  /** Anyone else's promoted archive card: the VIP screen, its boarding pass (vip-about.ts). */
+  vipPass(): void;
 };
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", words = ""): HTMLElementTagNameMap[K] {
@@ -229,14 +242,31 @@ export function createDaily(nav: Nav) {
   });
   document.addEventListener("visibilitychange", () => (document.hidden ? stopShine() : shineSoon()));
 
-  /** The past days: a VIP's strip of the last week and the calendar; anyone else's locked door, about the archive alone. */
+  /**
+   * The past days. Before today is played: a VIP's strip of the last week and the calendar, anyone else's
+   * locked door, at the top. Once it is played: the promoted card above today's band (the head of this file).
+   */
   function drawArchive(): void {
     if (!day) return;
     const vip = vipNow();
+    const promo = !!dailyResult(day.date);
+    // its place: the top before today is played; the middle, just above the band, after
+    scroll.replaceChildren(...(promo ? [friendsBox, archiveBox] : [archiveBox, friendsBox]));
+    archiveBox.classList.toggle("promo", promo);
+    archiveBox.classList.toggle("glass", promo);
     const { first } = archiveWindow(day.date);
-    const head = el("h2", "daily-section-head", t("daily.pastDays"));
+    const head = promo ? el("h2", "daily-promo-head", t("daily.promoHead")) : el("h2", "daily-section-head", t("daily.pastDays"));
     const strip = el("div", "daily-strip");
     const wd = new Intl.DateTimeFormat(locale(), { weekday: "short", timeZone: "UTC" });
+    // a VIP's main action on the promoted card: the most recent day not played yet, in amber
+    let lead = promo && vip;
+    for (let n = 1; n <= 6 && lead; n++) {
+      const date = daysBefore(day.date, n);
+      if (date >= first && !dailyResult(date)) {
+        lead = false;
+        strip.dataset.lead = date;
+      }
+    }
     for (let n = 6; n >= 1; n--) {
       const date = daysBefore(day.date, n);
       if (date < first) continue;
@@ -244,7 +274,7 @@ export function createDaily(nav: Nav) {
       const won = !!dailyResult(date);
       const words = [el("small", "", wd.format(new Date(Date.UTC(y!, m! - 1, d!)))), el("b", "", String(d))];
       if (vip) {
-        const b = el("button", `btn daily-day${won ? " done" : ""}`);
+        const b = el("button", `btn daily-day${won ? " done" : ""}${strip.dataset.lead === date ? " amber" : ""}`);
         b.type = "button";
         b.dataset.press = "daily.pastDay";
         b.append(...words);
@@ -261,8 +291,18 @@ export function createDaily(nav: Nav) {
     if (vip) {
       const cal = btn("daily-calendar", "daily.calendar", t("daily.calendar"));
       cal.addEventListener("click", () => nav.calendar());
-      archiveBox.replaceChildren(head, strip, cal);
+      archiveBox.replaceChildren(head, ...(promo ? [el("p", "daily-promo-line", t("daily.promoLine"))] : []), strip, cal);
       archiveBox.classList.remove("locked");
+      return;
+    }
+    if (promo) {
+      // anyone else's, promoted: the days drawn locked under the gold tag, and one way in, the VIP boarding pass
+      const top = el("div", "daily-promo-top");
+      top.append(head, vipTag("daily-promo-tag"));
+      const unlock = btn("amber daily-unlock", "daily.unlock", t("daily.unlock"));
+      unlock.addEventListener("click", () => nav.vipPass());
+      archiveBox.replaceChildren(top, el("p", "daily-promo-line", t("daily.archiveLocked")), strip, unlock);
+      archiveBox.classList.add("locked");
       return;
     }
     // the archive's locked door: the strip dimmed under the padlock and VIP tag, one line on what it is
@@ -285,9 +325,10 @@ export function createDaily(nav: Nav) {
     const head = el("h2", "daily-section-head", friends?.final ? t("daily.friendsFinal") : t("daily.friendsSoFar"));
     if (friendsFailed) return void friendsBox.replaceChildren(head, el("p", "daily-empty", t("daily.loadFailed")));
     if (!friends) return void friendsBox.replaceChildren(head, el("p", "daily-empty", t("daily.loading")));
-    if (!friends.friendsPlayed && !friends.me) return void friendsBox.replaceChildren(head, el("p", "daily-empty", t("daily.noFriends")));
+    const rows = withMine(friends);
+    if (!friends.friendsPlayed && !rows.some((r) => r.isViewer)) return void friendsBox.replaceChildren(head, el("p", "daily-empty", t("daily.noFriends")));
     const list = el("ol", "daily-list");
-    for (const row of friends.rows) {
+    for (const row of rows) {
       const li = el("li", row.isViewer ? "glass you" : "glass");
       const who = el("span", "who");
       who.append(el("span", "name", row.isViewer ? t("daily.you") : row.name || t("daily.anonymous")));
@@ -301,6 +342,20 @@ export function createDaily(nav: Nav) {
     }
     // the player alone so far: their friends join the list as they play
     friendsBox.replaceChildren(head, list, ...(friends.friendsPlayed ? [] : [el("p", "daily-empty", t("daily.friendsSoon"))]));
+  }
+
+  /**
+   * The board's rows, with the player's own placed among them from the server's record of today (dailyResult:
+   * its moves and time) where the board has no run of theirs: after every friend on as few moves or fewer.
+   */
+  function withMine(b: DailyBoard): DailyBoard["rows"] {
+    const mine = day ? dailyResult(day.date) : undefined;
+    if (b.me || !mine || (day && b.date !== day.date)) return b.rows;
+    const others = b.rows.filter((r) => !r.isViewer);
+    let at = 0;
+    while (at < others.length && others[at]!.moves <= mine.moves) at++;
+    const me = { rank: 0, name: "", isViewer: true, moves: mine.moves, timeMs: mine.ms };
+    return [...others.slice(0, at), me, ...others.slice(at)].map((r, i) => ({ ...r, rank: i + 1 }));
   }
 
   function draw(): void {
@@ -350,6 +405,7 @@ export function createDaily(nav: Nav) {
     if (!screen.hidden) {
       drawToday();
       drawArchive();
+      drawFriends();
     }
   };
   onVip(redraw);
