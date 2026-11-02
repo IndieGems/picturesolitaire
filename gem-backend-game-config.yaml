@@ -4270,7 +4270,19 @@ progressions:
   - id: 6d1f3b0e-8a52-4c7e-9f14-2b6e0d9a7c31
     slug: daily_picture
     display_name: "Today's picture"
-    description: "Mend the day's picture: the same board for every player."
+    description: "Mend the day's picture: the same level for every player."
+    localized:
+      de: { display_name: "Bild des Tages", description: "Setz das Bild des Tages zusammen: dasselbe Level für alle." }
+      es: { display_name: "La imagen de hoy", description: "Recompón la imagen del día: el mismo nivel para todos." }
+      fr: { display_name: "L'image du jour", description: "Reconstitue l'image du jour : le même niveau pour tout le monde." }
+      it: { display_name: "L'immagine di oggi", description: "Ricomponi l'immagine del giorno: lo stesso livello per tutti." }
+      ja: { display_name: "今日の絵", description: "今日の絵を完成させよう。全員が同じレベルに挑戦します。" }
+      ko: { display_name: "오늘의 그림", description: "오늘의 그림을 맞춰 보세요. 모두가 같은 레벨을 플레이해요." }
+      pl: { display_name: "Obrazek dnia", description: "Ułóż obrazek dnia: ten sam poziom dla wszystkich." }
+      pt-BR: { display_name: "A imagem de hoje", description: "Monte a imagem do dia: o mesmo nível para todos." }
+      ru: { display_name: "Картинка дня", description: "Собери картинку дня: один уровень для всех." }
+      tr: { display_name: "Bugünkü resim", description: "Bugünkü resim bulmacasını tamamla: herkes için aynı seviye." }
+      zh-Hans: { display_name: "今日图片", description: "拼好今日图片：所有玩家同一关卡。" }
     config:
       completion_threshold: 1
       # local: an untimed puzzle compared among friends, so each player's own day is fair

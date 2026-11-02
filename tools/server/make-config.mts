@@ -59,6 +59,27 @@ const DAILY_RUN = "daily_result";
 const KEEP = TABLES_FILE().find((t) => t.award === "onboarding");
 const ONBOARDING = { board: KEEP?.board ?? "c01", coins: KEEP?.coins ?? 100 };
 const DAILY_COINS = 50;
+/** The daily challenge's copy, which the Arcade shows (platform_display: challenge): English, then UI's
+ * translations (the translation pass, 2026-11-02). Players read "level", never "board". The copy is
+ * screened as the Arcade's own: Turkish "resmi" also means "official", a reserved word, so the Turkish
+ * says "bugünkü resim" (today's picture) and never "resmi". fr keeps its no-break space before the colon. */
+const DAILY_COPY = {
+  display_name: "Today's picture",
+  description: "Mend the day's picture: the same level for every player.",
+  localized: {
+    de: ["Bild des Tages", "Setz das Bild des Tages zusammen: dasselbe Level für alle."],
+    es: ["La imagen de hoy", "Recompón la imagen del día: el mismo nivel para todos."],
+    fr: ["L'image du jour", "Reconstitue l'image du jour : le même niveau pour tout le monde."],
+    it: ["L'immagine di oggi", "Ricomponi l'immagine del giorno: lo stesso livello per tutti."],
+    ja: ["今日の絵", "今日の絵を完成させよう。全員が同じレベルに挑戦します。"],
+    ko: ["오늘의 그림", "오늘의 그림을 맞춰 보세요. 모두가 같은 레벨을 플레이해요."],
+    pl: ["Obrazek dnia", "Ułóż obrazek dnia: ten sam poziom dla wszystkich."],
+    "pt-BR": ["A imagem de hoje", "Monte a imagem do dia: o mesmo nível para todos."],
+    ru: ["Картинка дня", "Собери картинку дня: один уровень для всех."],
+    tr: ["Bugünkü resim", "Bugünkü resim bulmacasını tamamla: herkes için aynı seviye."],
+    "zh-Hans": ["今日图片", "拼好今日图片：所有玩家同一关卡。"],
+  } as Record<string, [string, string]>,
+};
 // souvenir: the bonus board after each trip, in souvenirs.json (docs/souvenirs.md); paid as its trip's relief board (below)
 // event: an event's 30 levels (docs/vip.md, VIP packs), in event-levels.json; paid by the campaign's rule, once each
 const LANES = {
@@ -402,8 +423,12 @@ y.push("  # the board \"d\" + the date). The function checks the date is the pla
 y.push("  # posts moves and time to the \"daily\" board below, and completes this once a day.");
 y.push(`  - id: ${DAILY_ID}`);
 y.push(`    slug: ${DAILY_SLUG}`);
-y.push(`    display_name: "Today's picture"`);
-y.push(`    description: "Mend the day's picture: the same board for every player."`);
+y.push(`    display_name: ${JSON.stringify(DAILY_COPY.display_name)}`);
+y.push(`    description: ${JSON.stringify(DAILY_COPY.description)}`);
+y.push("    localized:");
+for (const [locale, [name, about]] of Object.entries(DAILY_COPY.localized)) {
+  y.push(`      ${locale}: { display_name: ${JSON.stringify(name)}, description: ${JSON.stringify(about)} }`);
+}
 y.push("    config:");
 y.push("      completion_threshold: 1");
 y.push("      # local: an untimed puzzle compared among friends, so each player's own day is fair");
