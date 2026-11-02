@@ -49,14 +49,32 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", text = ""):
   return e;
 }
 
-/** The padlock and the gold "VIP" tag (home's doors wear it too). */
-export function vipTag(cls = ""): HTMLElement {
-  const tag = el("span", cls ? `vip-tag ${cls}` : "vip-tag");
+/**
+ * The gold "VIP" tag: with its padlock where a player who is not a VIP meets a door (home's doors wear it too);
+ * `member`, without, where VIP is the player's own (the creator, 2026-11-02: "keep VIP visible so they know the
+ * things they are getting for what they paid for").
+ */
+export function vipTag(cls = "", member = false): HTMLElement {
+  const tag = el("span", ["vip-tag", member ? "member" : "", cls].filter(Boolean).join(" "));
   tag.setAttribute("aria-hidden", "true");
-  const lock = el("span", "vip-lock");
-  lock.innerHTML = ICONS.lock;
-  tag.append(lock, el("span", "", t("vip.tag")));
+  if (!member) {
+    const lock = el("span", "vip-lock");
+    lock.innerHTML = ICONS.lock;
+    tag.append(lock);
+  }
+  tag.append(el("span", "", t("vip.tag")));
   return tag;
+}
+
+/**
+ * A VIP's "[VIP] Included with your VIP" (the creator, 2026-11-02), the same words wherever VIP gives a member
+ * something: the event's page, the Daily page's archive, the archive's calendar, the Passport's Event stamps.
+ * Information, a small glass pill (`bare`: none of its own, on a card that is glass already).
+ */
+export function vipYours(cls = ""): HTMLElement {
+  const line = el("p", cls ? `vip-yours ${cls}` : "vip-yours");
+  line.append(vipTag("", true), el("span", "", t("vip.included")));
+  return line;
 }
 
 /** "2026-10-29" a day `n` before `date`. */

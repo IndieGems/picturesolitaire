@@ -453,6 +453,7 @@
   "vip.back": "뒤로",
   "vip.eventLine_other": "{{count}}개 레벨에 여행 소품 {{items}}개가 숨어 있어요.",
   "vip.get": "VIP 가입하기",
+  "vip.included": "내 VIP 혜택이에요",
   "vip.kicker": "VIP 회원 전용",
   "vip.pastHead": "이벤트 보관함에도 있어요",
   "vip.pastMore_other": "외 {{count}}개",

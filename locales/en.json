@@ -498,6 +498,7 @@
   "vip.eventLine_one": "{{count}} level, with {{items}} travel items hidden among them.",
   "vip.eventLine_other": "{{count}} levels, with {{items}} travel items hidden among them.",
   "vip.get": "Get VIP",
+  "vip.included": "Included with your VIP",
   "vip.kicker": "For VIP members",
   "vip.pastHead": "Also in the event archive",
   "vip.pastMore_one": "and {{count}} more",

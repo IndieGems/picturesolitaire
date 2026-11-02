@@ -453,6 +453,7 @@
   "vip.back": "返回",
   "vip.eventLine_other": "{{count}}个关卡，藏着{{items}}件旅行物品。",
   "vip.get": "获取 VIP",
+  "vip.included": "你的 VIP 包含此项",
   "vip.kicker": "VIP 会员专享",
   "vip.pastHead": "活动存档里还有",
   "vip.pastMore_other": "还有{{count}}个",

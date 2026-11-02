@@ -498,6 +498,7 @@
   "vip.eventLine_one": "{{count}} seviye ve aralarına gizlenmiş {{items}} seyahat eşyası.",
   "vip.eventLine_other": "{{count}} seviye ve aralarına gizlenmiş {{items}} seyahat eşyası.",
   "vip.get": "VIP al",
+  "vip.included": "VIP'ine dahil",
   "vip.kicker": "VIP üyeler için",
   "vip.pastHead": "Etkinlik arşivinde de var",
   "vip.pastMore_one": "ve {{count}} tane daha",

@@ -453,6 +453,7 @@
   "vip.back": "戻る",
   "vip.eventLine_other": "{{count}}レベルに、旅の品が{{items}}個隠れています。",
   "vip.get": "VIPになる",
+  "vip.included": "あなたのVIP特典です",
   "vip.kicker": "VIPメンバー向け",
   "vip.pastHead": "イベントアーカイブにもあります",
   "vip.pastMore_other": "ほか{{count}}件",

@@ -59,7 +59,8 @@ import { createAchievementsPage } from "./achievements-page";
 import { named } from "./i18n";
 import { pastEvents, scheduledEvent, suitcases } from "./suitcase-data";
 import { eventDoor, eventShown, onEventShown } from "./event-switch";
-import { vipTag } from "./vip-door";
+import { vipTag, vipYours } from "./vip-door";
+import { vipNow } from "./vip-view";
 import { currentDaily } from "../net/daily";
 
 type Nav = {
@@ -301,7 +302,8 @@ export function createPassport(nav: Nav) {
       cell.append(spot, el("b", "pp-ev-name", name), el("small", "pp-ev-line", e.paid ? t("passport.eventDone") : t("case.foundOf", { found: e.found, all: e.items.length })));
       grid.append(cell);
     }
-    evPage.replaceChildren(head, grid);
+    // a VIP's: the events are theirs through VIP (the creator, 2026-11-02)
+    evPage.replaceChildren(head, ...(vipNow() ? [vipYours("bare pp-ev-yours")] : []), grid);
   }
   // the events read again (a prize landed, VIP came or went) while the page is up: drawn again
   suitcases.onChange(() => {

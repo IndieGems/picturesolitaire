@@ -50,7 +50,7 @@ import { ICONS } from "./icons";
 import { liveAttr, liveText, locale, t } from "./i18n";
 import { clock, shortDate } from "./format";
 import { dailyResult, onProgress } from "../net/progress";
-import { vipTag } from "./vip-door";
+import { vipTag, vipYours } from "./vip-door";
 import { onArcadePause } from "../gem";
 import { onVip, vipNow } from "./vip-view";
 
@@ -291,7 +291,13 @@ export function createDaily(nav: Nav) {
     if (vip) {
       const cal = btn("daily-calendar", "daily.calendar", t("daily.calendar"));
       cal.addEventListener("click", () => nav.calendar());
-      archiveBox.replaceChildren(head, ...(promo ? [el("p", "daily-promo-line", t("daily.promoLine"))] : []), strip, cal);
+      // the archive is theirs through VIP (the creator, 2026-11-02): said beside the quiet strip's head, under the card's
+      if (promo) archiveBox.replaceChildren(head, vipYours("bare daily-yours"), el("p", "daily-promo-line", t("daily.promoLine")), strip, cal);
+      else {
+        const row = el("div", "daily-head-row");
+        row.append(head, vipYours("daily-yours"));
+        archiveBox.replaceChildren(row, strip, cal);
+      }
       archiveBox.classList.remove("locked");
       return;
     }

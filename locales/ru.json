@@ -554,6 +554,7 @@
   "vip.archiveLine": "Играй в пропущенные головоломки дня за этот месяц и два предыдущих.",
   "vip.back": "Назад",
   "vip.get": "Получить VIP",
+  "vip.included": "Входит в твой VIP",
   "vip.kicker": "Для участников VIP",
   "vip.pastHead": "Ещё в архиве событий",
   "vip.pastMore_one": "и ещё {{count}}",

@@ -21,6 +21,7 @@ import { onProgress, dailyResult } from "../net/progress";
 import { ICONS } from "./icons";
 import { liveAttr, locale, t } from "./i18n";
 import { onVip, vipNow } from "./vip-view";
+import { vipYours } from "./vip-door";
 
 type Nav = {
   home(): void;
@@ -130,7 +131,8 @@ export function createArchive(nav: Nav) {
       b.addEventListener("click", () => (isToday && done ? nav.results() : nav.play(date)));
       grid.append(b);
     }
-    const kids: HTMLElement[] = [head, grid, el("p", "arc-count glass", t("archive.won", { n: won, all: open }))];
+    // the archive is theirs through VIP (the creator, 2026-11-02), said over the month
+    const kids: HTMLElement[] = [vipYours("arc-yours"), head, grid, el("p", "arc-count glass", t("archive.won", { n: won, all: open }))];
     // today's, not won yet: the way to play it
     if (shown === lastMonth && !dailyResult(today)) {
       const play = el("button", "btn amber next arc-play", t("archive.playToday"));

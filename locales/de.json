@@ -498,6 +498,7 @@
   "vip.eventLine_one": "{{count}} Level mit {{items}} versteckten Reisegegenständen.",
   "vip.eventLine_other": "{{count}} Levels mit {{items}} versteckten Reisegegenständen.",
   "vip.get": "VIP holen",
+  "vip.included": "In deinem VIP enthalten",
   "vip.kicker": "Für VIP-Mitglieder",
   "vip.pastHead": "Auch im Event-Archiv",
   "vip.pastMore_one": "und {{count}} weiteres",
