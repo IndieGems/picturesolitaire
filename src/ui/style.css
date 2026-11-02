@@ -1707,6 +1707,29 @@ html.row-tight .top-pill {
 .vip-perk-pic { flex: none; width: 32px; height: 32px; display: grid; place-items: center; color: #a26a10; }
 .vip-perk-pic img { width: 100%; height: 100%; object-fit: contain; }
 .vip-perk-pic .ico-wrap, .vip-perk-pic .ico-wrap > svg { display: block; width: 26px; height: 26px; }
+/* the event door's past events (vip-door.ts pastPanel): information like the perks, one row an event: its
+   suitcase, its name and the padlock over its prize table; a hairline between rows; nothing pressed. With
+   them, a short screen (a 360x640 phone) draws the door's suitcase smaller, so Get VIP and the first past
+   event both show without a scroll */
+@media (max-height: 760px) {
+  .vip-body.with-past .vip-pic { padding-top: 10px; }
+  .vip-body.with-past .vip-pic .vip-art { width: min(44%, 160px); }
+}
+.vip-past { width: 100%; padding: 10px 14px 8px; border-radius: 22px; display: flex; flex-direction: column; gap: 4px; text-align: left; }
+.vip-past-head { font: 700 13px/1.2 var(--round); letter-spacing: 0.06em; text-transform: uppercase; color: #a26a10; text-align: center; }
+.vip-past ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; }
+.vip-past li { display: grid; grid-template-columns: 40px minmax(0, 1fr); align-items: center; gap: 10px; padding: 6px 0; }
+.vip-past li + li { border-top: 1px solid var(--glass-line); }
+.vip-past-pic { width: 40px; height: 40px; display: grid; place-items: center; }
+.vip-past-pic img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 2px 3px rgba(20, 30, 50, 0.3)); }
+.vip-past-words { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.vip-past-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.vip-past-line > .vip-tag { flex: none; }
+.vip-past-name { font: 600 16px/1.2 var(--round); color: var(--ink); overflow-wrap: anywhere; }
+.vip-past-prize { display: flex; align-items: center; gap: 6px; font: 500 13px/1.25 var(--round); color: var(--ink-soft); }
+.vip-past-prize img { flex: none; width: 18px; height: 24px; object-fit: cover; border-radius: 4px; box-shadow: 0 1px 3px rgba(6, 12, 24, 0.3); }
+.vip-past-prize > span { min-width: 0; overflow-wrap: anywhere; }
+.vip-past-more { font: 500 13px/1.2 var(--round); color: var(--ink-soft); text-align: center; }
 
 /* A VIP'S GIFTS (vip-gifts.ts): the day's two helpers, and the welcome's eight, a milestone of its own
    (gold edge, turning rays, fireworks). The gift's tiles, then the player's helpers on glass, each

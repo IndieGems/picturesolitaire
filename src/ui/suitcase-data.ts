@@ -56,6 +56,19 @@ export function scheduledEvent(today = currentDaily().date): { e: EventData; rel
   return next ? { e: next, released: false } : null;
 }
 
+/**
+ * The events released before `current` (the door's event, scheduledEvent's) by `today`, newest first: what
+ * the locked door tells a player who is not a VIP waits in the event archive (the creator, 2026-11-02:
+ * "should see that the haunted event is in the archive to play"). Levels' schedule, never a record: each
+ * event joins the list by itself once the next one opens; none before the first.
+ */
+export function pastEvents(current: EventData, today = currentDaily().date): EventData[] {
+  const at = releaseOf(current);
+  return EVENTS.filter((e) => !e.standIn && e.id !== current.id && releaseOf(e) && releaseOf(e) < at && releaseOf(e) <= today).sort((a, b) =>
+    releaseOf(b).localeCompare(releaseOf(a)),
+  );
+}
+
 // ---------------------------------------------------------------- outside a release build
 type Pretend = { packs: EventPack[]; won: Set<string>; upcoming: { id: string; theme: string; release: string }[] };
 let pretend: Pretend | null = null;

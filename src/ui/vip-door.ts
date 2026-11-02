@@ -3,7 +3,9 @@
 // tag; a tap opens this screen, what the door holds, big:
 //
 //   the archive   a strip of the last few days, as the calendar draws them, under the tag
-//   the event     its suitcase and its prize table, its name, and its levels and hidden items
+//   the event     its suitcase and its prize table, its name, and its levels and hidden items; under Get
+//                 VIP, the past events waiting in the archive (the creator, 2026-11-02), each its suitcase,
+//                 name, prize table and padlock, information only (suitcase-data.ts pastEvents)
 //
 // then Get VIP, the Arcade's own VIP sheet (vip-view.ts vipButton, the one button the Cosmetics banner
 // has too): "Sign in to get VIP" for a guest, and nothing where the Arcade cannot sell it here (a TV, a
@@ -27,10 +29,18 @@ type Nav = {
   show(): void;
 };
 
+/** An event's prize table as a door shows it. */
+type DoorTable = { name: string; thumb: string };
+/** A past event as the event door lists it: its suitcase, its name and its prize table. */
+export type PastEvent = { title: string; art: string; table?: DoorTable };
+
 /** What a door holds. */
 export type VipDoor =
   | { kind: "archive"; today: string }
-  | { kind: "event"; title: string; headline?: string; art: string; table?: { name: string; thumb: string }; levels: number; items: number };
+  | { kind: "event"; title: string; headline?: string; art: string; table?: DoorTable; levels: number; items: number; past?: PastEvent[] };
+
+/** How many past events the event door lists before "and 2 more" (the lead, 2026-11-02): Get VIP stays in reach. */
+const PAST_ROWS = 3;
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", text = ""): HTMLElementTagNameMap[K] {
   const e = document.createElement(tag);
@@ -88,6 +98,44 @@ function perks(): HTMLElement {
     list.append(li);
   }
   box.append(list);
+  return box;
+}
+
+/**
+ * The past events waiting in the event archive (the creator, 2026-11-02: a player who is not a VIP "should
+ * see that the haunted event is in the archive to play"), newest first: each its suitcase, its name, its
+ * prize table and the padlock. Information (one glass panel, as the perks are): nothing in it is pressed,
+ * and Get VIP stays the screen's one action. At most PAST_ROWS rows, then "and 2 more"; none, no panel.
+ */
+function pastPanel(past: readonly PastEvent[]): HTMLElement | null {
+  if (!past.length) return null;
+  const box = el("div", "vip-past glass");
+  box.append(el("b", "vip-past-head", t("vip.pastHead")));
+  const list = el("ul");
+  for (const e of past.slice(0, PAST_ROWS)) {
+    const li = el("li");
+    const pic = el("span", "vip-past-pic");
+    pic.setAttribute("aria-hidden", "true");
+    const img = el("img");
+    Object.assign(img, { src: e.art, alt: "", draggable: false, decoding: "async" });
+    pic.append(img);
+    const words = el("span", "vip-past-words");
+    const name = el("span", "vip-past-line");
+    name.append(el("b", "vip-past-name", e.title), vipTag("vip-past-tag"));
+    words.append(name);
+    if (e.table) {
+      const prize = el("span", "vip-past-prize");
+      const thumb = el("img");
+      Object.assign(thumb, { src: e.table.thumb, alt: "", draggable: false, decoding: "async" });
+      prize.append(thumb, el("span", "", t("vip.prize", { table: e.table.name })));
+      words.append(prize);
+    }
+    li.append(pic, words);
+    list.append(li);
+  }
+  box.append(list);
+  const more = past.length - PAST_ROWS;
+  if (more > 0) box.append(el("small", "vip-past-more", t("vip.pastMore", { count: more })));
   return box;
 }
 
@@ -150,8 +198,11 @@ export function createVipDoor(nav: Nav) {
       note.append(prize);
     }
     const get = vipButton("next vip-get");
-    // Get VIP under what the door holds, in reach without a scroll; what VIP gives here below it
-    body.replaceChildren(pic, note, ...(get ? [get] : []), perks());
+    const past = d.kind === "event" && d.past ? pastPanel(d.past) : null;
+    // Get VIP under what the door holds, in reach without a scroll; the past events and what VIP gives below it
+    // (with past events, a short screen draws the suitcase smaller, so the first of them shows too: style.css)
+    body.classList.toggle("with-past", !!past);
+    body.replaceChildren(pic, note, ...(get ? [get] : []), ...(past ? [past] : []), perks());
   }
 
   // VIP arrived while the door was up: in; Get VIP came, went or became Sign in: the button

@@ -7,7 +7,8 @@
 //                   not fit on its line, measured as the top row's title is, "Haunted Holiday!"), and under
 //                   it "4 of 10 found · 12 of 30 levels"; a tap opens the newest event's page. For a player
 //                   who is not a VIP it wears the padlock and gold VIP tag and opens the locked door's
-//                   screen (vip-door.ts): the event's suitcase and prize table.
+//                   screen (vip-door.ts): the event's suitcase and prize table, and the past events
+//                   waiting in the archive (suitcase-data.ts pastEvents, the creator, 2026-11-02).
 //   the event page  a screen of its own: "Event!" and "Now playing: Haunted Holiday!" (a past one's "Past
 //                   event"), the 10-slot suitcase (each item's picture once found, its outline while
 //                   missing), "Play level 13" (the first level not won yet, the page's main action), then
@@ -32,7 +33,8 @@ import { emit } from "../events";
 import { liveAttr, locale, named, t } from "./i18n";
 import { ICONS } from "./icons";
 import { eventDoor, eventShown, onEventShown } from "./event-switch";
-import { EVENT_ITEM_COINS, EVENT_LEVELS, scheduledEvent, suitcases, type EventItem, type EventPack, type SuitItem } from "./suitcase-data";
+import { EVENT_ITEM_COINS, EVENT_LEVELS, pastEvents, scheduledEvent, suitcases, type EventItem, type EventPack, type SuitItem } from "./suitcase-data";
+import { currentDaily } from "../net/daily";
 import { coinIcon } from "./coin";
 import { eventStamp } from "./passport";
 import { onProgress } from "../net/progress";
@@ -178,19 +180,25 @@ export function createSuitcase(nav: Nav) {
   new ResizeObserver(() => fitName()).observe(tile);
   tile.addEventListener("click", () => {
     if (eventShown()) return open();
-    // not a VIP: the locked door, with the event's suitcase and prize
-    const sch = scheduledEvent();
+    // not a VIP: the locked door, with the event's suitcase and prize, and the past events waiting in the archive
+    const today = currentDaily().date;
+    const sch = scheduledEvent(today);
     if (!sch) return;
     const e = sch.e;
-    const art = e.table ? knownTable(e.table) : undefined;
+    /** An event's prize table as the door shows it: its name and thumbnail (none while the tables' list is not in). */
+    const prizeOf = (x: { table: string; tableTitle?: string }): { table?: { name: string; thumb: string } } => {
+      const art = x.table ? knownTable(x.table) : undefined;
+      return art ? { table: { name: prizeTableName({ table: x.table }, x.tableTitle ?? art.title), thumb: thumbOf(art) } } : {};
+    };
     nav.door({
       kind: "event",
       title: eventTitle(e),
       headline: sch.released ? t("case.nowPlaying", { theme: themeName(e) }) : t("case.comingSoonName", { theme: themeName(e) }),
       art: ART.closed,
-      ...(art ? { table: { name: prizeTableName({ table: e.table }, e.tableTitle ?? art.title), thumb: thumbOf(art) } } : {}),
+      ...prizeOf(e),
       levels: e.levels?.length || EVENT_LEVELS,
       items: e.items.length,
+      past: pastEvents(e, today).map((p) => ({ title: eventTitle(p), art: ART.small, ...prizeOf(p) })),
     });
   });
 
