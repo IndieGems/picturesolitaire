@@ -115,6 +115,14 @@ buyer's doors open when the checker says so, with no reload. Untangled (`../yarn
   price, no "free", no hurry. A member reads "You're VIP" and the days left (display only, from the
   SDK's pass reading), the perks (`vipPerks()`, the doors' list) and no Get VIP (e9e325a3).
 
+**What a member is shown** (the creator, 2026-11-02: "keep VIP visible so they know the things they are getting", above all for a member who brought VIP from another game):
+- the gold VIP tag without its padlock and one line, "Included with your VIP", on home's event strip, the
+  event page, the Daily page's archive, the archive calendar and the Passport's Event stamps (UI, c94d3345),
+  beside home's badge with its tick and the gift cards;
+- **a welcome card** the first time the checker pays their welcome (once a membership, again after a lapse;
+  no flag of ours): "Welcome, VIP!", what VIP gives here best first, "Show me the events!" or "Later"; either
+  brings the welcome gift card at once, then the event page or home (35498fa5).
+
 **When VIP ends** the doors lock again, and the player keeps what they earned or bought: every
 event's stamp they won (the Passport's Event stamps page reads `suitcase.stamps()`, which the
 checker answers to anyone, VIP or not), every event table they won and everything bought (all are
