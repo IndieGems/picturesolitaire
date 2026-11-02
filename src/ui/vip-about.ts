@@ -109,6 +109,25 @@ export function pretendVipEnds(ms: number | null | undefined): void {
   for (const fn of [...passListeners]) fn();
 }
 
+/**
+ * What VIP gives here, best first, as the boarding pass's stamped lines: every event with its prize table, the
+ * daily archive, the day's gift, and (`welcome`) the welcome gift. The pass's own words, wherever they are said.
+ */
+export function vipPassLines(welcome = true): HTMLUListElement {
+  const lines = el("ul", "vip-pass-lines");
+  const words = [t("vip.about.pass.events"), t("vip.about.pass.archive"), t("vip.about.pass.daily", { count: VIP_DAILY_SIZE })];
+  if (welcome) words.push(t("vip.about.pass.welcome", { count: VIP_WELCOME_SIZE }));
+  for (const w of words) {
+    const li = el("li");
+    const stamp = el("span", "vip-pass-stamp");
+    stamp.setAttribute("aria-hidden", "true");
+    stamp.innerHTML = STAMP;
+    li.append(stamp, el("span", "", w));
+    lines.append(li);
+  }
+  return lines;
+}
+
 // ---------------------------------------------------------------- the badge
 /** Home's VIP badge, beside the wordmark: hidden until home shows it (show(true), past the guided start). */
 export function createVipBadge(open: () => void) {
@@ -206,20 +225,7 @@ export function createVipAbout(nav: Nav) {
     const suitcase = el("img", "vip-pass-case");
     Object.assign(suitcase, { src: `${import.meta.env.BASE_URL}art/suitcase-closed.webp`, alt: "", draggable: false, decoding: "async" });
     top.append(fields, suitcase);
-    const lines = el("ul", "vip-pass-lines");
-    for (const words of [
-      t("vip.about.pass.events"),
-      t("vip.about.pass.archive"),
-      t("vip.about.pass.daily", { count: VIP_DAILY_SIZE }),
-      t("vip.about.pass.welcome", { count: VIP_WELCOME_SIZE }),
-    ]) {
-      const li = el("li");
-      const stamp = el("span", "vip-pass-stamp");
-      stamp.setAttribute("aria-hidden", "true");
-      stamp.innerHTML = STAMP;
-      li.append(stamp, el("span", "", words));
-      lines.append(li);
-    }
+    const lines = vipPassLines();
     const passBody = el("div", "vip-pass-body");
     passBody.append(top, el("b", "vip-pass-title", t("vip.about.pass.title")), lines);
     // the other games' line on the stub's paper, where a busy table behind never muddies it

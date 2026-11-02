@@ -76,6 +76,8 @@ export interface DevHost {
   showAchievements(mix: boolean): void;
   /** A VIP's gift card over home, as the checker's payment brings it ("daily": today's two; "welcome": the eight). Nothing is paid. */
   showVipGift(kind: "daily" | "welcome"): void;
+  /** The VIP welcome card in trial look `look` ("a", "b"; "" as shipped), shown over home (vip-welcome-looks.ts, 2026-11-02). */
+  welcomeLook(look: string): void;
 }
 
 /** What the menu lends the screens back. */
@@ -398,6 +400,22 @@ export function mountDevMenu(host: DevHost): DevMenu {
       return r;
     })(),
     el("p", "dev-note", "The cards over home, as a VIP sees them when the checker pays: nothing is paid, saved or sent."),
+    // the VIP welcome card's trial looks (vip-welcome-looks.ts; the creator, 2026-11-02): temporary, until one is picked
+    (() => {
+      const r = el("div", "dev-row");
+      r.append(btn("", "Welcome as shipped", () => {
+        dialog.close();
+        host.welcomeLook("");
+      }), btn("", "A: Merged", () => {
+        dialog.close();
+        host.welcomeLook("a");
+      }), btn("", "B: Separate", () => {
+        dialog.close();
+        host.welcomeLook("b");
+      }));
+      return r;
+    })(),
+    el("p", "dev-note", "The VIP welcome card's trial looks, shown over home as the welcome gift would be. For this page only."),
     setting("Endless helpers", endlessSwitch),
     el("p", "dev-note", "While it's on, every level you open is practice."),
     speedSet,

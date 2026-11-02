@@ -1,0 +1,14 @@
+/* THE VIP WELCOME'S TRIAL LOOKS (vip-welcome-looks.ts; the creator, 2026-11-02): loaded with that file only,
+   outside a release build. The perks on the boarding pass's paper (flat: information), its stamps. */
+.vw-perks { width: 100%; display: flex; flex-direction: column; gap: 8px; padding: 10px 14px 12px; border-radius: 16px; background: #fffaf0; color: #3b2a12; text-align: left; }
+.card p.vw-line { margin: 0; text-align: center; font: 700 15px/1.25 var(--round); color: #5a3a06; text-wrap: balance; }
+.vw-perks .vip-pass-lines li { font-size: 15px; }
+.vw-perks .vip-pass-stamp { width: 26px; height: 26px; }
+.card.vip-gift-card p.vg-sub.vw-gift-head { margin-top: 2px; font: 700 16px/1.2 var(--round); color: var(--ink); }
+/* A: the merged card a little tighter, the perks and the gift on one card */
+.vw-merged { gap: 8px; }
+.vw-merged .vg-pic { width: 64px; height: 64px; }
+.vw-merged .vg-pic .helper-pic { width: 58px; height: 58px; }
+/* B: its own card, the events its main way on, Later quieter */
+.btn.vw-go { width: min(100%, 280px); min-height: 56px; font-size: 19px; margin-top: 2px; }
+.btn.vw-later { min-width: 160px; min-height: 46px; font-size: 16px; }
