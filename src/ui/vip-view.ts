@@ -6,7 +6,8 @@
 //
 // A NON-VIP MEETS LOCKED DOORS, never a hidden feature (the creator, 2026-10-30, after Untangled): the
 // daily archive's entry and the event's tile wear a padlock and a gold "VIP" tag, and a tap opens a
-// screen of what is inside (vip-door.ts). Cosmetics says the same in a banner (cosmetics.ts).
+// screen of what is inside (vip-door.ts). Cosmetics says the same in a banner (cosmetics.ts), only while
+// VIP lends the Cosmetics (VIP_WEARS_ALL, below: off since 2026-11-02).
 //
 // GET VIP, ONE BUTTON for the door's screen and the Cosmetics banner (vipButton; the Arcade sells VIP
 // from 2026-11-01, gem-web#4375; the SDK's docs/arcade-and-store.md §4 and §8-§11):
@@ -22,7 +23,8 @@
 //   - declined (closed, or busy: the Arcade's back-off) shows nothing and never asks again by itself;
 //   - ok, or unavailable/error (the outcome is unknown: they may have paid), asks the server again
 //     (recheckVip). NOTHING HERE OPENS A DOOR: only the server's word does (isVip, onVipChange).
-// A VIP never sees it: the doors are for players who are not, and the Cosmetics banner says "yours".
+// A VIP never sees it: the doors are for players who are not, and the Cosmetics banner (while it shows)
+// says "yours".
 // Outside a release build, ?vipsale shows Get VIP (?vipsale=signin, the guest's) so its words can be
 // seen where no Arcade answers; its press only logs.
 
@@ -52,6 +54,22 @@ const saleListeners = new Set<() => void>();
 
 /** This player is a VIP, by the server's last word (false until it lands). */
 export const vipNow = (): boolean => isVip();
+
+/**
+ * THE ONE SWITCH for VIP lending the Cosmetics (docs/vip.md perk 5): with it on, a VIP wears any
+ * table and plays any soundtrack the shop sells without owning it (tables.ts, tracks.ts), Cosmetics
+ * marks what is owned and what is lent ("Owned", "With VIP"), offers "Keep it" on a lent one and shows
+ * its VIP banner, and the VIP door lists it among the perks (vip-door.ts). The creator turned it OFF on
+ * 2026-11-02 ("remove the fact that VIP member can use all cosmetics at anytime ... keep it in case we
+ * go back to it"): a VIP is then treated exactly as anyone in Cosmetics, and a borrowed choice falls
+ * back to the latest one they own (else the default) at the next boot or VIP read. True brings back
+ * docs/vip.md perk 5 as it was; its words (cosmetics.vipBanner, cosmetics.vipYours, cosmetics.withVip,
+ * vip.perk.cosmetics) stay in every locale, unused while it is off.
+ */
+export const VIP_WEARS_ALL: boolean = false;
+
+/** Does VIP lend this player the shop's tables and tracks now? Only with the switch on, and only for a VIP. */
+export const vipLends = (): boolean => VIP_WEARS_ALL && vipNow();
 
 /** Hear when vipNow() or the Get VIP button may have changed. Returns the unsubscribe. */
 export function onVip(fn: () => void): () => void {

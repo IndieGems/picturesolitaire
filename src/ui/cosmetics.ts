@@ -27,10 +27,14 @@
 // THE TRY-OUT obeys the sound: while the game is muted, its volume is at nothing, or the
 // Arcade's Music switch is off, Listen says "The music is off" instead of playing silence.
 //
-// FOR A VIP (docs/vip.md): every table and track sold can be worn without owning it (tables.ts,
-// tracks.ts lend it): it offers Use, or says "In use", and a mark tells owned from lent ("Owned",
-// "With VIP"); buying for keeps stays open on a lent one ("Keep it: 2,000 coins"). Event tables stay
-// prizes: never lent. When VIP ends, a lent choice falls back to one the player owns.
+// FOR A VIP (docs/vip.md perk 5), BEHIND ONE SWITCH, OFF (vip-view.ts VIP_WEARS_ALL: the creator turned
+// it off on 2026-11-02, the code kept to turn it back on). With it off a VIP sees this screen exactly as
+// anyone: every row owned or for sale, no marks, no "Keep it", and no VIP banner above the tabs. With it
+// on, every table and track sold can be worn without owning it (tables.ts, tracks.ts lend it): it offers
+// Use, or says "In use", and a mark tells owned from lent ("Owned", "With VIP"); buying for keeps stays
+// open on a lent one ("Keep it: 2,000 coins"); the banner shows (a non-VIP's Get VIP, a VIP's "yours").
+// Event tables stay prizes: never lent. A lent choice that may no longer be worn (VIP ended, or the
+// switch off) falls back to one the player owns.
 //
 // Information is glass (the tiles, "In use", the lines); only the buttons are buttons. Every
 // button is a 44 px target or more at 360 x 640, focusable, and Escape ends a try-on.
@@ -49,7 +53,7 @@ import { shop, type BuyAnswer, type CosmeticKind } from "./cosmetics-shop";
 import { BUILT_IN_TABLE, chooseTable, chosenTable, knownTable, onTableChange, pickerTables, shopTableArts, tableTitle, thumbOf, warmThumbs, wearTable, type TableArt } from "./tables";
 import { chooseTrack, chosenTrack, onTrackChange, ownedTrackIds, TRACK_LIST, trackTitle, type TrackInfo } from "./tracks";
 import { vipTag } from "./vip-door";
-import { onVip, vipButton, vipNow } from "./vip-view";
+import { onVip, vipButton, vipLends, vipNow, VIP_WEARS_ALL } from "./vip-view";
 
 type Nav = {
   /** Back: to home. */
@@ -116,11 +120,12 @@ export function createCosmetics(nav: Nav) {
   const panel = el("div", "cz-panel");
   panel.id = "cz-panel";
   panel.setAttribute("role", "tabpanel");
-  // VIP, above the tabs (the creator, 2026-10-30): a non-VIP's banner, every table and soundtrack theirs
+  // VIP, above the tabs (the creator, 2026-10-30), only while VIP lends the Cosmetics (VIP_WEARS_ALL: off
+  // since 2026-11-02, so not on the screen at all): a non-VIP's banner, every table and soundtrack theirs
   // with VIP, and Get VIP (a guest's Sign in) where the Arcade sells it here: vip-view.ts; a VIP's one quiet line
   const vipBox = el("div", "cz-vip");
   const scroll = el("div", "scroll");
-  scroll.append(vipBox, tabs, panel);
+  scroll.append(...(VIP_WEARS_ALL ? [vipBox] : []), tabs, panel);
 
   // the try-on's panel at the foot, over the table being tried
   const tryOn = el("div", "cz-tryon");
@@ -165,8 +170,8 @@ export function createCosmetics(nav: Nav) {
     const owned = new Set(picker.filter((p) => !p.lockedEvent).map((p) => p.art.id));
     const sold = new Set(forSale.map((a) => a.id));
     const mine = (a: TableArt): State => (a.id === chosenTable() ? "inUse" : "owned");
-    // a VIP wears any table sold: not theirs, it is lent (an event's prize never is)
-    const vip = vipNow();
+    // while VIP lends (VIP_WEARS_ALL), a VIP wears any table sold: not theirs, it is lent (an event's prize never is)
+    const vip = vipLends();
     return [
       ...picker.filter((p) => !p.lockedEvent && !sold.has(p.art.id)).map((p) => ({ art: p.art, state: mine(p.art) })),
       ...forSale.map((art): TableRow => (owned.has(art.id) ? { art, state: mine(art) } : vip ? { art, state: mine(art), lent: true } : { art, state: "sale" })),
@@ -176,7 +181,7 @@ export function createCosmetics(nav: Nav) {
 
   async function readTracks(): Promise<TrackRow[]> {
     const owned = await ownedTrackIds();
-    const vip = vipNow();
+    const vip = vipLends();
     const mine = (id: string): State => (id === chosenTrack() ? "inUse" : "owned");
     return TRACK_LIST.filter((x) => x.kind !== "table" || owned.has(x.id)).map((info): TrackRow =>
       owned.has(info.id) ? { info, state: mine(info.id) } : vip && info.kind === "shop" ? { info, state: mine(info.id), lent: true } : { info, state: "sale" },
@@ -241,9 +246,9 @@ export function createCosmetics(nav: Nav) {
     return p;
   }
 
-  /** For a VIP: owned, or lent through VIP (information). Nothing on everyone's own, or for anyone not VIP. */
+  /** For a VIP while VIP lends: owned, or lent through VIP (information). Nothing on everyone's own, for anyone not VIP, or with VIP_WEARS_ALL off. */
   function mark(lent: boolean, everyones: boolean): HTMLElement | null {
-    if (!vipNow() || (!lent && everyones)) return null;
+    if (!vipLends() || (!lent && everyones)) return null;
     return el("span", `cz-mark glass${lent ? " lent" : ""}`, t(lent ? "cosmetics.withVip" : "cosmetics.owned"));
   }
 
@@ -340,8 +345,9 @@ export function createCosmetics(nav: Nav) {
   const monthName = (month: string) =>
     new Intl.DateTimeFormat(document.documentElement.lang || "en", { month: "long", timeZone: "UTC" }).format(new Date(`${month}-01T00:00:00Z`));
 
-  /** The VIP banner (information, glass), and its one button when VIP can be had from here. */
+  /** The VIP banner (information, glass), and its one button when VIP can be had from here; none with VIP_WEARS_ALL off. */
   function drawVip(): void {
+    if (!VIP_WEARS_ALL) return;
     if (vipNow()) {
       const tag = el("span", "vip-tag", t("vip.tag"));
       tag.setAttribute("aria-hidden", "true");
@@ -531,7 +537,7 @@ export function createCosmetics(nav: Nav) {
   });
   onTableChange(redraw);
   onTrackChange(redraw);
-  // VIP came or went: what is lent, and the marks
+  // VIP came or went: what is lent, the marks and the banner (while VIP lends; with it off, the redraw changes nothing)
   onVip(redraw);
   onLocaleChange(redraw);
   // the sound switched off or on while listening: the line and the playing bars follow

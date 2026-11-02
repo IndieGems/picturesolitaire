@@ -44,6 +44,7 @@ import type { Experiment, Play } from "./app";
 import { suitcases } from "./suitcase-data";
 import { EVENT_ON } from "./event-switch";
 import { pretending, pretendVip } from "../net/vip";
+import { VIP_WEARS_ALL } from "./vip-view";
 import { keepChoice, readChoices } from "./choices";
 
 /** What vite.config.ts stamps in at build time (its `define`). */
@@ -386,7 +387,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
   switches.append(
     el("h3", "", "Switches"),
     setting("Pretend I'm VIP", vipSwitch),
-    el("p", "dev-note", "Plays as a Gem Arcade VIP member: the daily VIP gift of 2 helpers, the welcome gift of 8 (once per membership), the daily archive, the event and its archive, every Cosmetic to wear. Helpers are spent as for anyone. The server honours it on dev only, and pays the gifts as it would a VIP's. Kept across reloads."),
+    el("p", "dev-note", `Plays as a Gem Arcade VIP member: the daily VIP gift of 2 helpers, the welcome gift of 8 (once per membership), the daily archive, the event and its archive${VIP_WEARS_ALL ? ", every Cosmetic to wear" : ""}. Helpers are spent as for anyone${VIP_WEARS_ALL ? "" : ", and Cosmetics owned as for anyone (VIP_WEARS_ALL off, 2026-11-02)"}. The server honours it on dev only, and pays the gifts as it would a VIP's. Kept across reloads.`),
     (() => {
       const r = el("div", "dev-row");
       const gift = (kind: "daily" | "welcome") => {

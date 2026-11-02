@@ -15,10 +15,13 @@
 // choices.ts); only a choice they make is written. A chosen track they no longer own falls back to
 // the default.
 //
-// A VIP PLAYS ANY TRACK SOLD (docs/vip.md): the shop's four, owned or not (never Winter Dusk's, which
-// comes with its table, an event's prize). "track" keeps the latest choice, owned or borrowed;
-// "trackOwned" the latest one they own, which a borrowed choice falls back to once VIP ends (the free
-// track if none), the setting kept for VIP's return. The first screen never waits for any of it; the music waits on trackChoiceRead,
+// A VIP PLAYED ANY TRACK SOLD (docs/vip.md perk 5), and the lending is now behind one switch, OFF
+// (vip-view.ts VIP_WEARS_ALL, the creator, 2026-11-02): with it off a VIP plays only what they own, as
+// anyone. With it on, the shop's four, owned or not (never Winter Dusk's, which comes with its table, an
+// event's prize). Either way "track" keeps the latest choice, owned or borrowed, and "trackOwned" the
+// latest one they own, which a borrowed choice that may not be played (the switch off, or VIP ended)
+// falls back to at boot or on the next VIP read (the free track if none), the setting kept for the
+// switch or VIP coming back. The first screen never waits for any of it; the music waits on trackChoiceRead,
 // capped (src/audio/index.ts), so it does not start on the default and change a moment later.
 
 import { ownedTracks } from "../net/keepsake";
@@ -26,7 +29,7 @@ import { TRACKS } from "../net/tracks";
 import { keepChoice, readChoices } from "./choices";
 import { t } from "./i18n";
 import { ownedTableArts } from "./tables";
-import { onVip, vipNow } from "./vip-view";
+import { onVip, vipLends } from "./vip-view";
 
 export type TrackKind = "free" | "table" | "shop";
 export interface TrackInfo {
@@ -80,21 +83,21 @@ export async function ownedTrackIds(): Promise<Set<string>> {
 let chosen = DEFAULT_TRACK;
 /** The player chose a track this session: what the boot read finds later never overrides it. */
 let touched = false;
-/** The player's latest choice (null: none, the default); it may be borrowed, by a VIP. */
+/** The player's latest choice (null: none, the default); it may be borrowed, by a VIP while VIP lends. */
 let wanted: string | null = null;
 /** The latest track they chose that they own. */
 let ownedPick: string | null = null;
 let booted = false;
 
-/** A track this player is lent while VIP (sold, and not theirs): the Cosmetics screen marks it. */
+/** A track this player is lent while VIP (sold, and not theirs; never while VIP_WEARS_ALL is off): the Cosmetics screen marks it. */
 export async function lentTrack(id: string): Promise<boolean> {
-  return vipNow() && trackInfo(id)?.kind === "shop" && !(await ownedTrackIds()).has(id);
+  return vipLends() && trackInfo(id)?.kind === "shop" && !(await ownedTrackIds()).has(id);
 }
 
-/** What this player may play now: one they own, or, while VIP, one sold. */
+/** What this player may play now: one they own, or, while VIP lends (VIP_WEARS_ALL), one sold. */
 async function playable(id: string): Promise<{ own: boolean } | undefined> {
   if ((await ownedTrackIds()).has(id)) return { own: true };
-  return vipNow() && trackInfo(id)?.kind === "shop" ? { own: false } : undefined;
+  return vipLends() && trackInfo(id)?.kind === "shop" ? { own: false } : undefined;
 }
 
 /** The track for the player's choices: the latest if they may play it, else the latest they own, else the default. */
@@ -104,7 +107,7 @@ async function settleChoice(): Promise<string> {
   return DEFAULT_TRACK;
 }
 
-// VIP came or went: a borrowed track on, or back to one they own
+// VIP came or went (or was read again): a borrowed track on while VIP lends, or back to one they own
 onVip(() => {
   if (!booted) return;
   void settleChoice().then((id) => {
@@ -153,7 +156,7 @@ export async function startTracks(): Promise<void> {
   }
 }
 
-/** The player chose track `id` (one they own, or a VIP's sold one): the music changes over, and their choice is kept. */
+/** The player chose track `id` (one they own, or a sold one VIP lends): the music changes over, and their choice is kept. */
 export async function chooseTrack(id: string): Promise<boolean> {
   touched = true;
   const p = await playable(id);

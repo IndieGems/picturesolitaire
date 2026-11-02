@@ -24,10 +24,13 @@
 // chose is stored.
 // A chosen table they no longer own falls back to the default.
 //
-// A VIP WEARS ANY TABLE SOLD (docs/vip.md, the creator, 2026-10-30): the shop's tables, owned or not,
-// never an event's prize. "table" keeps the latest choice, owned or borrowed; "tableOwned" the latest
-// one they own. While VIP the latest choice shows; once VIP ends, a borrowed one falls back to their
-// latest owned choice (the default if none), the setting kept, so it comes back with VIP. Ownership
+// A VIP WORE ANY TABLE SOLD (docs/vip.md perk 5, the creator, 2026-10-30), and the lending is now behind
+// one switch, OFF (vip-view.ts VIP_WEARS_ALL, the creator, 2026-11-02): with it off a VIP wears only what
+// they own, as anyone. With it on, the shop's tables, owned or not, never an event's prize. Either way
+// "table" keeps the latest choice, owned or borrowed, and "tableOwned" the latest one they own: a
+// borrowed one that may not be worn (the switch off, or VIP ended) falls back to their latest owned
+// choice (the default if none) at boot or on the next VIP read, the setting kept for the switch or VIP
+// coming back. Ownership
 // stays the platform inventory's: nothing here says what is owned. The first
 // screen never waits for any of it: it draws on the default and changes over
 // once the choice and the ownership have been read.
@@ -47,7 +50,7 @@ import { TABLES } from "../net/tables";
 import { keepChoice, readChoices } from "./choices";
 import EVENT_FILE from "../content/levels/events.json";
 import { eventShown } from "./event-switch";
-import { onVip, vipNow } from "./vip-view";
+import { onVip, vipLends } from "./vip-view";
 import { t } from "./i18n";
 import { ownFile, ownJson } from "./own-file";
 
@@ -155,7 +158,7 @@ export function warmThumbs(): void {
 
 let chosen = BUILT_IN_TABLE;
 let fallback = BUILT_IN_TABLE;
-/** The player's latest choice, as read or made (null: none, the default); it may be borrowed, by a VIP. */
+/** The player's latest choice, as read or made (null: none, the default); it may be borrowed, by a VIP while VIP lends. */
 let wanted: string | null = null;
 /** The latest table they chose that they own (null: none read or made). */
 let ownedPick: string | null = null;
@@ -203,18 +206,18 @@ export async function shopTableArts(): Promise<TableArt[]> {
     .filter((a): a is TableArt => !!a && !a.souvenir);
 }
 
-/** A table this player is lent while VIP (sold, and not theirs): the Cosmetics screen marks it. */
+/** A table this player is lent while VIP (sold, and not theirs; never while VIP_WEARS_ALL is off): the Cosmetics screen marks it. */
 export async function lentTable(id: string): Promise<boolean> {
-  if (!vipNow()) return false;
+  if (!vipLends()) return false;
   const [mine, sold] = await Promise.all([ownedTableArts(), shopTableArts()]);
   return !mine.some((a) => a.id === id) && sold.some((a) => a.id === id);
 }
 
-/** What this player may wear now: one they own, or, while VIP, one sold (never an event's prize). */
+/** What this player may wear now: one they own, or, while VIP lends (VIP_WEARS_ALL), one sold (never an event's prize). */
 async function wearable(id: string): Promise<{ art: TableArt; own: boolean } | undefined> {
   const own = (await ownedTableArts()).find((a) => a.id === id);
   if (own) return { art: own, own: true };
-  if (!vipNow()) return undefined;
+  if (!vipLends()) return undefined;
   const lent = (await shopTableArts()).find((a) => a.id === id);
   return lent ? { art: lent, own: false } : undefined;
 }
@@ -229,7 +232,8 @@ async function settleChoice(): Promise<TableArt | undefined> {
   return m.tables.find((x) => x.id === m.default);
 }
 
-// VIP came or went: what may be worn changes (a borrowed table on, or back to one they own)
+// VIP came or went (or was read again): what may be worn may change (a borrowed table on while VIP lends,
+// or back to one they own)
 onVip(() => {
   if (!booted) return;
   void settleChoice().then((a) => {
@@ -470,7 +474,7 @@ let choiceSettled!: () => void;
  */
 export const tableChoiceRead: Promise<void> = new Promise((r) => (choiceSettled = r));
 
-/** The player chose a table (one they own, or a VIP's sold one): show it, and keep their choice. */
+/** The player chose a table (one they own, or a sold one VIP lends): show it, and keep their choice. */
 export async function chooseTable(id: string): Promise<void> {
   touched = true;
   const w = await wearable(id);
