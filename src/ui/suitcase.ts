@@ -126,7 +126,7 @@ const ART = {
 /** Coins as "+50" and the Arcade's coin (information; read aloud as "50 Coins"). */
 function coinsChip(n: number, cls = ""): HTMLElement {
   const chip = el("span", `find-coins${cls ? ` ${cls}` : ""}`); // never "coins-chip": the win card's own Coins chip is that
-  chip.append(el("b", "", `+${n.toLocaleString(locale())}`), coinIcon(20));
+  chip.append(el("b", "", `+${n.toLocaleString(locale())}`), coinIcon(20, true, "", n));
   return chip;
 }
 

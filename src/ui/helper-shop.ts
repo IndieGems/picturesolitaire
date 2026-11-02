@@ -29,7 +29,7 @@
 // The pieces both shops use (the run-out and home's, home-shop.ts) are here too: the
 // helpers' pictures and a price button that buys.
 
-import { t } from "./i18n";
+import { locale, t } from "./i18n";
 import { closed, cornerKey, opened } from "./dialogs";
 import { sayPrice } from "./coin";
 import { shopStats, type ShopWhere } from "./board-stats";
@@ -97,7 +97,7 @@ export function priceButton(shop: Shop, k: HelperKind, pack: Pack, cls: string, 
   // brief (home's shop, whose row names the helper): "3 for 675 ◉", said in full to a screen reader
   if (price === null) words.textContent = brief ? t("shop.forWait", { count: pack }) : t(`${key}Wait.${k}`);
   else words.append(...sayPrice(brief ? "shop.for" : `${key}.${k}`, price, { count: pack }));
-  if (brief && price !== null) b.setAttribute("aria-label", t(`${key}.${k}`, { price: `${price} ${t("coins.name")}` }));
+  if (brief && price !== null) b.setAttribute("aria-label", t(`${key}.${k}`, { price: `${price.toLocaleString(locale())} ${t("coins.unit", { count: price })}` }));
   b.append(words);
   b.disabled = price === null;
   b.classList.toggle("short", price !== null && (shop.affordable(k, pack) === false || !shop.fits(k, pack)));

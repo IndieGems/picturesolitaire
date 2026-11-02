@@ -46,7 +46,7 @@ import { eventShown } from "./event-switch";
 import { cosmeticStats } from "./board-stats";
 import { sayPrice } from "./coin";
 import { closed, cornerKey, opened } from "./dialogs";
-import { liveAttr, liveText, named, onLocaleChange, t } from "./i18n";
+import { liveAttr, liveText, locale, named, onLocaleChange, t } from "./i18n";
 import { ICONS } from "./icons";
 import { fitText } from "./fit";
 import { shop, type BuyAnswer, type CosmeticKind } from "./cosmetics-shop";
@@ -227,7 +227,7 @@ export function createCosmetics(nav: Nav) {
     b.append(words);
     b.disabled = price === null;
     b.classList.toggle("short", price !== null && shop.affordable(id) === false);
-    if (price !== null) b.setAttribute("aria-label", t("cosmetics.buyAria", { name, price: `${price.toLocaleString()} ${t("coins.name")}` }));
+    if (price !== null) b.setAttribute("aria-label", t("cosmetics.buyAria", { name, price: `${price.toLocaleString(locale())} ${t("coins.unit", { count: price })}` }));
     b.addEventListener("click", () => void buy(kind, id, b));
     return b;
   }

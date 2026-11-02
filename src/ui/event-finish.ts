@@ -102,7 +102,7 @@ export function createEventFinish(opts: Opts) {
     }
     const coins = f.coins && f.coins > 0 ? f.coins : EVENT_ITEM_COINS;
     const coinRow = el("div", "finish-row glass finish-coins");
-    coinRow.append(el("b", "", `+${coins.toLocaleString(locale())}`), coinIcon(28));
+    coinRow.append(el("b", "", `+${coins.toLocaleString(locale())}`), coinIcon(28, true, "", coins));
     prize.append(coinRow);
     const stampLine = el("p", "finish-stamped", t("finish.stamped"));
     const on = el("button", "btn amber next finish-on");

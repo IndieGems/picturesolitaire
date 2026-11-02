@@ -117,7 +117,7 @@ function row(b: Bundle, press: (b: Bundle, button: HTMLButtonElement) => void, c
   // the price as the config gives it, with the Arcade's Gem; read aloud in full
   if (b.gems !== null) {
     label.append(gemPriceTag(b.gems));
-    buy.setAttribute("aria-label", t("bundle.buyAria", { name: t(`bundle.${b.slug}`), price: `${b.gems.toLocaleString(locale())} ${t("gems.name")}` }));
+    buy.setAttribute("aria-label", t("bundle.buyAria", { name: t(`bundle.${b.slug}`), price: `${b.gems.toLocaleString(locale())} ${t("gems.unit", { count: b.gems })}` }));
   }
   buy.append(label);
   buy.addEventListener("click", () => press(b, buy));

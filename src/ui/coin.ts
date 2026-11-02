@@ -6,7 +6,8 @@
 //
 // The word is not lost: the icon's alt is "Coins", so a screen reader hears "150 Coins", and a
 // sentence that names a price ("You need 150 Coins.") draws the number and the icon where its
-// {{price}} stands (sayPrice).
+// {{price}} stands (sayPrice). Beside a number the alt takes that number's form (coins.unit, gems.unit:
+// Polish "1 moneta", "3 monety", "500 monet"); an icon on its own says the plain name (coins.name).
 
 import c20x1 from "@indiegems/gem-web-sdk/brand/ticket-icon-20-1x.png";
 import c20x15 from "@indiegems/gem-web-sdk/brand/ticket-icon-20-1.5x.png";
@@ -27,10 +28,10 @@ import g32x3 from "@indiegems/gem-web-sdk/brand/gem-icon-32-3x.png";
 import { locale, t } from "./i18n";
 
 /**
- * The Coins icon in a `px` box (16 to 40). `named`: its alt says "Coins" (beside a bare number);
- * otherwise it is decoration, the words beside it saying Coins already.
+ * The Coins icon in a `px` box (16 to 40). `named`: its alt says "Coins" (beside a bare number: `count`,
+ * that number, so the word takes its form); otherwise it is decoration, the words beside it saying Coins already.
  */
-export function coinIcon(px = 20, named = true, cls = ""): HTMLImageElement {
+export function coinIcon(px = 20, named = true, cls = "", count?: number): HTMLImageElement {
   const img = document.createElement("img");
   const big = px > 24;
   const [a, b, c, d] = big ? [c32x1, c32x15, c32x2, c32x3] : [c20x1, c20x15, c20x2, c20x3];
@@ -40,7 +41,7 @@ export function coinIcon(px = 20, named = true, cls = ""): HTMLImageElement {
   img.sizes = `${px}px`;
   img.width = px;
   img.height = px;
-  img.alt = named ? t("coins.name") : "";
+  img.alt = named ? (count === undefined ? t("coins.name") : t("coins.unit", { count })) : "";
   img.className = cls ? `coin-icon ${cls}` : "coin-icon";
   img.draggable = false;
   img.decoding = "async";
@@ -49,16 +50,17 @@ export function coinIcon(px = 20, named = true, cls = ""): HTMLImageElement {
 
 /**
  * The Gems icon, the same way (brand-art.md §2): a bundle's price is in Gems (the creator, 2026-11-01).
- * `named`: its alt says "Gems". The player's Gems are never drawn: the Arcade's wallet shows them.
+ * `named`: its alt says "Gems" (in `count`'s form beside a number). The player's Gems are never drawn: the
+ * Arcade's wallet shows them.
  */
-export function gemIcon(px = 20, named = true, cls = ""): HTMLImageElement {
+export function gemIcon(px = 20, named = true, cls = "", count?: number): HTMLImageElement {
   const img = coinIcon(px, named, cls ? `gem-icon ${cls}` : "gem-icon");
   const big = px > 24;
   const [a, b, c, d] = big ? [g32x1, g32x15, g32x2, g32x3] : [g20x1, g20x15, g20x2, g20x3];
   const w = big ? 32 : 20;
   img.src = a;
   img.srcset = `${a} ${w}w, ${b} ${w * 1.5}w, ${c} ${w * 2}w, ${d} ${w * 3}w`;
-  img.alt = named ? t("gems.name") : "";
+  img.alt = named ? (count === undefined ? t("gems.name") : t("gems.unit", { count })) : "";
   return img;
 }
 
@@ -66,7 +68,7 @@ export function gemIcon(px = 20, named = true, cls = ""): HTMLImageElement {
 export function gemPriceTag(price: number, px = 20): HTMLElement {
   const tag = document.createElement("span");
   tag.className = "price-tag gems";
-  tag.append(document.createTextNode(price.toLocaleString(locale())), gemIcon(px));
+  tag.append(document.createTextNode(price.toLocaleString(locale())), gemIcon(px, true, "", price));
   return tag;
 }
 
@@ -74,7 +76,7 @@ export function gemPriceTag(price: number, px = 20): HTMLElement {
 export function priceTag(price: number, px = 20): HTMLElement {
   const tag = document.createElement("span");
   tag.className = "price-tag";
-  tag.append(document.createTextNode(price.toLocaleString(locale())), coinIcon(px));
+  tag.append(document.createTextNode(price.toLocaleString(locale())), coinIcon(px, true, "", price));
   return tag;
 }
 
