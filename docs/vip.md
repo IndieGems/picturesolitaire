@@ -110,7 +110,7 @@ buyer's doors open when the checker says so, with no reload. Untangled (`../yarn
   first level done, with a shake and a glint every 6 s (none with less motion), still with a tick for a
   member. It opens the VIP screen: for a player who is not VIP, a gold VIP boarding pass ("FIRST CLASS
   ✈ VIP", Passenger: You!, Seat 1A; the creator picked it of four looks, cc6a2e42) whose stamped lines
-  are what VIP gives here, then "Other Gem Arcade games give VIP rewards too!" in red on its stub, never
+  are what VIP gives here, best first (the creator: the events, the daily archive, then the two gifts; fbc37a5a, the doors' list too), then "Other Gem Arcade games give VIP rewards too!" in red on its stub, never
   naming a game or a reward (the Arcade's sheet lists its own perks), and "Get VIP: board now!"; no
   price, no "free", no hurry. A member reads "You're VIP" and the days left (display only, from the
   SDK's pass reading), the perks (`vipPerks()`, the doors' list) and no Get VIP (e9e325a3).
