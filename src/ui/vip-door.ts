@@ -16,6 +16,8 @@
 import { ICONS } from "./icons";
 import { liveAttr, locale, t } from "./i18n";
 import { onVip, vipButton, vipNow } from "./vip-view";
+import { helperPic } from "./helper-shop";
+import { VIP_DAILY_SIZE, VIP_WELCOME_SIZE } from "../net/vip";
 
 type Nav = {
   home(): void;
@@ -51,6 +53,41 @@ export function vipTag(cls = ""): HTMLElement {
 function daysBefore(date: string, n: number): string {
   const [y, m, d] = date.split("-").map(Number);
   return new Date(Date.UTC(y!, m! - 1, d! - n)).toISOString().slice(0, 10);
+}
+
+/**
+ * What VIP gives in this game, as every door lists it (the creator, 2026-11-01): the day's gift, the
+ * welcome gift, the archive, the events and the Cosmetics. Ours to say; the Arcade's own perks are its
+ * sheet's. Information (glass), its numbers the checker's (src/net/vip.ts, from helper-ids.json).
+ */
+function perks(): HTMLElement {
+  const box = el("div", "vip-perks glass");
+  box.append(el("b", "vip-perks-head", t("vip.perks")));
+  const list = el("ul");
+  const art = (src: string) => {
+    const img = el("img");
+    Object.assign(img, { src: `${import.meta.env.BASE_URL}art/${src}`, alt: "", draggable: false, decoding: "async" });
+    return img;
+  };
+  const daily = el("span", "ico-wrap");
+  daily.innerHTML = ICONS.daily;
+  const rows: Array<[Node, string]> = [
+    [helperPic("hint"), t("vip.perk.daily", { count: VIP_DAILY_SIZE })],
+    [helperPic("shuffle", 3), t("vip.perk.welcome", { count: VIP_WELCOME_SIZE })],
+    [daily, t("vip.perk.archive")],
+    [art("suitcase-closed-small.webp"), t("vip.perk.events")],
+    [art("cosmetics-tile.webp"), t("vip.perk.cosmetics")],
+  ];
+  for (const [pic, words] of rows) {
+    const li = el("li");
+    const p = el("span", "vip-perk-pic");
+    p.setAttribute("aria-hidden", "true");
+    p.append(pic);
+    li.append(p, el("span", "", words));
+    list.append(li);
+  }
+  box.append(list);
+  return box;
 }
 
 export function createVipDoor(nav: Nav) {
@@ -112,7 +149,8 @@ export function createVipDoor(nav: Nav) {
       note.append(prize);
     }
     const get = vipButton("next vip-get");
-    body.replaceChildren(pic, note, ...(get ? [get] : []));
+    // Get VIP under what the door holds, in reach without a scroll; what VIP gives here below it
+    body.replaceChildren(pic, note, ...(get ? [get] : []), perks());
   }
 
   // VIP arrived while the door was up: in; Get VIP came, went or became Sign in: the button

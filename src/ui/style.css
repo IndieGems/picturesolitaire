@@ -1699,6 +1699,59 @@ html.row-tight .top-pill {
 .vip-prize { display: flex; align-items: center; gap: 10px; margin-top: 6px; font: 600 15px/1.25 var(--round); color: var(--ink); }
 .vip-prize img { width: 40px; height: 52px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 6px rgba(6, 12, 24, 0.3); }
 .btn.vip-get { min-width: 220px; min-height: 54px; font-size: 19px; }
+/* what VIP gives here (vip-door.ts perks): information, one row a perk, a small picture beside its words */
+.vip-perks { width: 100%; padding: 12px 14px 12px; border-radius: 22px; display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.vip-perks-head { font: 700 13px/1.2 var(--round); letter-spacing: 0.06em; text-transform: uppercase; color: #a26a10; text-align: center; }
+.vip-perks ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.vip-perks li { display: flex; align-items: center; gap: 10px; font: 500 15px/1.25 var(--round); color: var(--ink); }
+.vip-perk-pic { flex: none; width: 32px; height: 32px; display: grid; place-items: center; color: #a26a10; }
+.vip-perk-pic img { width: 100%; height: 100%; object-fit: contain; }
+.vip-perk-pic .ico-wrap, .vip-perk-pic .ico-wrap > svg { display: block; width: 26px; height: 26px; }
+
+/* A VIP'S GIFTS (vip-gifts.ts): the day's two helpers, and the welcome's eight, a milestone of its own
+   (gold edge, turning rays, fireworks). The gift's tiles, then the player's helpers on glass, each
+   counter ticking up as its helper flies in; any cap's clamp said under them; one button on. */
+.veil.vip-gift { z-index: 38; }
+.card.vip-gift-card { position: relative; overflow: hidden; width: min(360px, 100%); padding: 20px 18px 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.vip-gift-card > :where(:not(.vg-rays, .fireworks)) { position: relative; }
+.card.vip-gift-card h2.vg-title { margin: 2px 0 0; font-size: 26px; }
+.card.vip-gift-card p.vg-sub { margin: 0; font: 500 15px/1.3 var(--round); }
+.vg-gift { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 2px 0 0; }
+.vg-tile { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 86px; animation: vg-tile-in 0.45s calc(0.3s + var(--i, 0) * 0.09s) cubic-bezier(0.2, 1.5, 0.4, 1) both; }
+@keyframes vg-tile-in { from { opacity: 0; transform: translateY(10px) scale(0.6); } }
+.vg-pic { display: grid; place-items: center; width: 74px; height: 74px; border-radius: 50%; background: radial-gradient(circle at 50% 45%, rgba(255, 236, 180, 0.95), rgba(255, 236, 180, 0) 70%); }
+.vg-pic .helper-pic { width: 66px; height: 66px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(20, 30, 50, 0.3)); }
+.vg-n { font: 600 16px/1.15 var(--round); color: var(--ink); }
+.vg-tile.none .vg-pic { opacity: 0.5; filter: grayscale(0.7); }
+.vg-tile.none .vg-n { color: var(--ink-soft); }
+.vg-have { width: 100%; padding: 8px 12px 10px; border-radius: 18px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.vg-have-head { font: 600 13px/1.2 var(--round); color: var(--ink-soft); }
+.vg-counts { display: flex; justify-content: center; gap: 16px; }
+.vg-count { display: inline-flex; align-items: center; gap: 5px; font: 700 20px/1 var(--round); color: var(--ink); font-variant-numeric: tabular-nums; }
+.vg-count b { display: inline-block; min-width: 1.2em; text-align: left; }
+.vg-count-pic { width: 34px; height: 34px; display: grid; place-items: center; }
+.vg-count-pic .helper-pic { width: 100%; height: 100%; object-fit: contain; }
+.vg-count.full b { color: #a26a10; }
+.vg-count.grew b { animation: badge-pop 0.45s ease-out; }
+html.less-motion .vg-count.grew b { animation: none; }
+.vg-notes { display: flex; flex-direction: column; gap: 2px; }
+.card p.vg-full { margin: 0; font: 600 14px/1.3 var(--round); color: var(--ink-soft); }
+.card p.vg-full.cap { font-weight: 500; font-size: 13px; }
+.btn.vg-on { width: min(100%, 260px); min-height: 54px; font-size: 19px; margin-top: 4px; }
+.vg-flight { position: fixed; z-index: 70; width: 40px; height: 40px; pointer-events: none; }
+.vg-flight .helper-pic { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 3px 6px rgba(6, 12, 24, 0.35)); }
+/* the welcome: a gold edge, and gold rays turning slowly behind the gift (still under less motion) */
+.card.vip-gift-card.welcome { border-color: #e8b04a; box-shadow: 0 0 0 3px rgba(255, 214, 120, 0.5), 0 18px 40px rgba(6, 12, 24, 0.35); }
+.card.vip-gift-card.welcome h2.vg-title { font-size: 28px; }
+.vg-rays {
+  position: absolute; left: 50%; top: 158px; width: 560px; height: 560px; margin: -280px 0 0 -280px; pointer-events: none;
+  background: repeating-conic-gradient(rgba(255, 200, 90, 0.3) 0deg 9deg, rgba(255, 200, 90, 0) 9deg 22.5deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0, #000 22%, transparent 58%); mask-image: radial-gradient(circle, #000 0, #000 22%, transparent 58%);
+  animation: vg-turn 30s linear infinite;
+}
+@keyframes vg-turn { to { rotate: 360deg; } }
+html.less-motion .vg-rays, html.less-motion .vg-tile { animation: none; }
+@media (prefers-reduced-motion: reduce) { .vg-rays, .vg-tile { animation: none; } }
 
 /* THE DAILY PAGE (daily.ts): the past days (a VIP's strip and calendar, or the archive's locked door)
    and today's friends scroll; today is the band at the foot, never scrolled away (the creator,

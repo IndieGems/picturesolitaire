@@ -73,6 +73,8 @@ export interface DevHost {
   showUnlock(kind: "icon" | "medal" | "stamp"): void;
   /** The Passport's Achievements page: `mix`, some unlocked and counters part way (pretend); else the platform's own word. */
   showAchievements(mix: boolean): void;
+  /** A VIP's gift card over home, as the checker's payment brings it ("daily": today's two; "welcome": the eight). Nothing is paid. */
+  showVipGift(kind: "daily" | "welcome"): void;
 }
 
 /** What the menu lends the screens back. */
@@ -368,8 +370,8 @@ export function mountDevMenu(host: DevHost): DevMenu {
     everyPicture = on;
     host.showAll(on);
   });
-  // VIP (docs/vip.md): the platform cannot say who holds it yet, so on dev the server takes this
-  // switch's word (src/net/vip.ts); kept in the player's settings, so it holds across reloads and devices
+  // VIP (docs/vip.md): on dev the server takes this switch's word as well as the platform's pass
+  // (src/net/vip.ts); kept in the player's settings, so it holds across reloads and devices
   const vipSwitch = toggle((on) => {
     void pretendVip(on);
     keepChoice("devVip", on ? "1" : "0");
@@ -384,7 +386,17 @@ export function mountDevMenu(host: DevHost): DevMenu {
   switches.append(
     el("h3", "", "Switches"),
     setting("Pretend I'm VIP", vipSwitch),
-    el("p", "dev-note", "Plays as a Gem Arcade VIP member: free helpers with a short rest, the daily archive, the event and its archive, every Cosmetic to wear. The server honours it on dev only. Kept across reloads."),
+    el("p", "dev-note", "Plays as a Gem Arcade VIP member: the daily VIP gift of 2 helpers, the welcome gift of 8 (once per membership), the daily archive, the event and its archive, every Cosmetic to wear. Helpers are spent as for anyone. The server honours it on dev only, and pays the gifts as it would a VIP's. Kept across reloads."),
+    (() => {
+      const r = el("div", "dev-row");
+      const gift = (kind: "daily" | "welcome") => {
+        dialog.close();
+        host.showVipGift(kind);
+      };
+      r.append(btn("amber", "Show the VIP gift", () => gift("daily")), btn("", "Show the welcome gift", () => gift("welcome")));
+      return r;
+    })(),
+    el("p", "dev-note", "The cards over home, as a VIP sees them when the checker pays: nothing is paid, saved or sent."),
     setting("Endless helpers", endlessSwitch),
     el("p", "dev-note", "While it's on, every level you open is practice."),
     speedSet,

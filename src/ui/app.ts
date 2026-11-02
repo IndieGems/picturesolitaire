@@ -76,7 +76,6 @@ import { closed, cornerKey, opened } from "./dialogs";
 import { boardAt, markAt, markTag, markWords, pretendMarks, type Mark } from "./marks";
 import { allDone, awaitingRecord, createHome, nextBoard, warmTripStamp } from "./home";
 import { KINDS, KIT, stock, type HelperKind } from "./stock";
-import { createHelperRest } from "./helper-cooldown";
 import { createRunOut } from "./helper-shop";
 import { createHomeShop } from "./home-shop";
 import { createCosmetics } from "./cosmetics";
@@ -104,7 +103,8 @@ import { currentTrip, loadTripOf, tripById, tripDone, tripEndingAt, tripOf, trip
 import { challengeCard, comparePanel, createFriendCards, outcomeOf, type ChallengeView } from "./friend-cards";
 import { friendAction, launchLink, markAnswered, recentFriendActions, watchFriends, type Dare, type Launch } from "../net/friends";
 import { currentDaily, today as dailyToday } from "../net/daily";
-import { pretendVip } from "../net/vip";
+import { onVipGift, pretendVip, VIP_DAILY, VIP_WELCOME, type VipGift } from "../net/vip";
+import { createVipGifts } from "./vip-gifts";
 import { createVipDoor } from "./vip-door";
 import { createArchive } from "./daily-archive";
 import { forceVipSale } from "./vip-view";
@@ -286,6 +286,8 @@ let carryOn: CarryOn | null = null;
 /** The slot's read, resolved; home never waits on it, a press into a level CARRY_WAIT_MS at most. */
 let carryRead: Promise<void> = Promise.resolve();
 let carryLanded = false;
+/** When the kept level's read was asked (performance.now()). */
+let carryAsked = 0;
 /** The free Hints the level carried on came back with (tries.ts reads it on its board:start). */
 let resumedFree = 0;
 // a level whose files did not come (own-file.ts gave up after its tries, or a level's boards waited past
@@ -342,13 +344,28 @@ suitcases.onChange(() => {
   const p = suitcases.lastPrize();
   if (p?.event) finishUi.add({ event: p.event });
 });
-/** The screen changed: the cards that wait for a moment (an achievement, an event finished) may come now. */
+// a VIP's gifts (vip-gifts.ts): the day's two helpers and the welcome's eight, each paid by the checker
+// (Server's onVipGift), on a card of its own over home once home can take it (giftReady), after the rest
+const vipGifts = createVipGifts({
+  ready: () => giftReady(),
+  changed: (up) => {
+    if (up) return;
+    pokeCards();
+    if (carryOn) offerCarryOn();
+  },
+  count: (k) => stock.count(k),
+  onStock: (fn) => stock.onChange(fn),
+  cap: stock.cap,
+});
+onVipGift((g) => vipGifts.add(g));
+/** The screen changed: the cards that wait for a moment (an achievement, an event finished, a VIP gift) may come now. */
 const pokeCards = (): void => {
   finishUi.poke();
   unlockUi.poke();
+  vipGifts.poke();
 };
 
-app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, suitcaseUi.screen, vipDoorUi.screen, archiveUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, dareVeil, resumeVeil, runOut.element, homeShop.element, cosmeticsUi.screen, unlockUi.veil, finishUi.veil, loadVeil, offlineVeil);
+app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, suitcaseUi.screen, vipDoorUi.screen, archiveUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, dareVeil, resumeVeil, runOut.element, homeShop.element, cosmeticsUi.screen, unlockUi.veil, finishUi.veil, vipGifts.veil, loadVeil, offlineVeil);
 // the win card's Challenge a friend and Share, and the friends sheet over it (friend-cards.ts)
 const friendCards = createFriendCards(app);
 
@@ -493,8 +510,7 @@ const tries = createTries({
   pictures: () => board?.pictures().length ?? 0,
   grant: (n) => (board as MercyBoard | null)?.grantFree?.("hint", n),
   announce: (n) => {
-    // a VIP's helpers are unlimited already: no free Hint to announce
-    if (screen === "board" && !rest.vip()) mercyNote.show(n);
+    if (screen === "board") mercyNote.show(n);
   },
   changed: () => drawHelpers(),
 });
@@ -1117,20 +1133,11 @@ function toRoute(): void {
 // A press with some left acts at once (an Undo never waits on the network), and one is spent only once
 // the board says it acted and it was not free; a press with none left opens the run-out panel. Free:
 // the guided first board (before the travel kit comes), a lesson's lit button and its board, and the
-// creator's practice. A Gem Arcade VIP's are free and unlimited, each button resting a moment after
-// use (helper-cooldown.ts, docs/vip.md), except on the guide's and a lesson's boards, free already.
-const rest = createHelperRest({
-  buttons: helperBtns,
-  here: () => !inGuidedStart() && play?.kind !== "lesson",
-  canUndo: () => canUndoNow,
-  redraw: () => {
-    drawHelpers();
-    drawStuck();
-  },
-});
+// creator's practice. A Gem Arcade VIP spends them like anyone (the creator, 2026-11-01): VIP's helpers
+// come as gifts instead, the day's two and the welcome's eight (vip-gifts.ts, paid by the checker).
 /** Every helper on this board costs nothing. */
 function freeHelpers(): boolean {
-  return inGuidedStart() || play?.kind === "lesson" || isPractice(play) || rest.vip();
+  return inGuidedStart() || play?.kind === "lesson" || isPractice(play);
 }
 /** The counts last drawn, so a count that grew (the kit, a gift, a purchase) gives its badge a pop. */
 const shown: Partial<Record<HelperKey, number>> = {};
@@ -1139,8 +1146,6 @@ function drawHelpers(): void {
   // mercy help: this try's free Hints, on the Hint badge in their own colour until used (tries.ts)
   const gifted = free ? 0 : tries.freeHints();
   for (const key of KINDS) {
-    // a VIP's: "VIP", or resting with the seconds left (helper-cooldown.ts)
-    if (rest.draw(key)) continue;
     const { btn, badge } = helperBtns[key];
     const left = stock.count(key);
     const given = key === "hint" ? gifted : 0;
@@ -1173,8 +1178,6 @@ function drawHelpers(): void {
 /** A helper pressed (or just bought): it acts, or, with none left and nothing free, the run-out panel opens. */
 function pressHelper(k: HelperKey): void {
   if (!board || boardWon) return;
-  // a VIP's button resting after its last use takes no press
-  if (rest.resting(k)) return;
   const given = k === "hint" && tries.freeHints() > 0;
   if (!freeHelpers() && !given && lessons.lit() !== k && stock.count(k) <= 0) return void runOut.open(k);
   if (k === "undo") board.undo();
@@ -1191,12 +1194,6 @@ const spendOn = (k: HelperKey) => (e: { lesson?: boolean; free?: boolean }) => {
   // the Shuffle lesson's board and the guided start are free anyway): one a board still had armed
   // anywhere else is spent like any other (QA, 2026-11-01, "the lesson's Undo made the daily's free")
   const lesson = !!e.lesson && (lessons.lit() === k || freeHelpers());
-  // a VIP's: nothing spent, the button rests (a mercy Hint the board gave is used up all the same)
-  if (!lesson && rest.vip()) {
-    rest.used(k);
-    if (e.free) tries.usedFree();
-    return;
-  }
   if (lesson || freeHelpers()) return;
   if (e.free) return void tries.usedFree();
   void stock.spend(k);
@@ -1523,8 +1520,8 @@ let stampDown = true;
 
 function unlockReady(): boolean {
   if (document.querySelector("dialog[open]")) return false;
-  // one card at a time: an event's finish, then what it unlocked
-  if (finishUi.up()) return false;
+  // one card at a time: an event's finish, then what it unlocked; a VIP's gift goes on first if it is up
+  if (finishUi.up() || vipGifts.up()) return false;
   if (screen === "home" && !homeSettled) return false;
   // the stamp first: from the win card that leads to it, until it is down
   const stamping = lastWin?.kind === "campaign" && !!lastWin.stamp && !stampDown;
@@ -1535,6 +1532,38 @@ function unlockReady(): boolean {
     if (board?.canUndo()) return false;
   }
   return true;
+}
+
+/**
+ * A VIP's gift can come up now: home, whole, with nothing over it, and nothing of the boot's still to come
+ * (a friend's challenge, Carry on? while it may still be offered, an achievement or an event caught up).
+ */
+function giftReady(): boolean {
+  if (screen !== "home" || !homeSettled || cardUp() || unlockUi.up() || finishUi.up()) return false;
+  // the kept level's read, a few seconds at most (a read that never answers holds no gift back; its
+  // Carry on? then comes after the gift's card: vipGifts' changed)
+  if (pendingLink || (!carryLanded && performance.now() - carryAsked < GIFT_CARRY_CAP_MS)) return false;
+  return !(carryOn && !carryOffered && guideDone());
+}
+/** The longest a VIP's gift waits for the kept level's read (startCarryOn), from when it was asked. */
+const GIFT_CARRY_CAP_MS = 6000;
+
+/**
+ * The dev menu's and the play-test tool's VIP gift, as the checker pays one: its helpers clamped by the cap
+ * against the stock; `pay`: into __ps.stock's pretend counts (the play-test tool's; else nothing is paid).
+ */
+function standInGift(kind: "daily" | "welcome", over: Partial<VipGift> = {}, pay = false): VipGift {
+  const day = over.day ?? ((new Date().getDay() + 6) % 7) + 1;
+  const gift = { ...(kind === "welcome" ? VIP_WELCOME : (VIP_DAILY[day - 1] ?? VIP_DAILY[0]!)) };
+  const got = { undo: 0, hint: 0, shuffle: 0 };
+  const after: Record<HelperKind, number> = { undo: 0, hint: 0, shuffle: 0 };
+  for (const k of KINDS) {
+    got[k] = Math.max(0, Math.min(gift[k], stock.cap - stock.count(k)));
+    after[k] = stock.count(k) + got[k];
+  }
+  const g: VipGift = { kind, id: `dev:${kind}:${performance.now()}`, gift, got, after, ...(kind === "daily" ? { day } : {}), ...over };
+  if (pay && import.meta.env.DEV) stock.pretend({ counts: g.after });
+  return g;
 }
 
 // Server's word on each unlock (src/net/achievements.ts): a win's verdict, or its compare for a verdict
@@ -2192,6 +2221,7 @@ function showOneOffWin(w: Extract<Win, { kind: "oneoff" }>, gallery: HTMLElement
 
 /** Read the level kept last time, once, as home is up. */
 function startCarryOn(): void {
+  carryAsked = performance.now();
   carryRead = readCarryOn()
     .then((c) => {
       // a level opened meanwhile has let it go
@@ -2728,6 +2758,11 @@ export async function startApp(): Promise<void> {
           pretendAchievements(mix);
           passportUi.openAchievements();
         },
+        showVipGift: (kind) => {
+          closeSettings();
+          if (screen !== "home") goHome();
+          vipGifts.preview(standInGift(kind));
+        },
       });
     })().catch((err: unknown) => console.warn("[dev-menu] did not load", err));
   }
@@ -2814,6 +2849,12 @@ export async function startApp(): Promise<void> {
       },
       /** The first-5x5 banner over the board in hand, as on a player's first 5x5 board (nothing is saved). */
       bigger: () => showBanners([{ cls: "big", text: t("board.bigger") }]),
+      /**
+       * A VIP's gift as the checker would pay it ("daily": `day` 1-7, Monday first, else today's; "welcome"):
+       * clamped by the cap against the stock, paid into __ps.stock's pretend counts (turned on), and
+       * shown as Server's onVipGift would hand it. `over` replaces any of its fields (a `got` of your own).
+       */
+      vipGift: (kind: "daily" | "welcome", over?: Partial<VipGift>) => vipGifts.add(standInGift(kind, over, true)),
       /** A pretend board:stuck, to see the notice (the board's own word clears it). */
       stuck: () => emit("board:stuck", { doomed: true } as never),
       /** The boards' player numbers sent so far (board-stats.ts), and the try in hand (tries.ts). */
