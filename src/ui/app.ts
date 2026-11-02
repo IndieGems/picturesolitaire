@@ -163,7 +163,7 @@ const suitcaseUi = createSuitcase({
 // a locked VIP door's screen (vip-door.ts): what the daily archive or the event holds, and Get VIP; VIP
 // arriving while it is up goes in (the event's page once its record is in: enterEvent)
 const vipDoorUi = createVipDoor({
-  home: () => goHome(),
+  home: () => backFrom("vip"),
   show: () => show("vip"),
   enter: (d) => (d.kind === "archive" ? archiveUi.open() : enterEvent()),
 });
@@ -194,7 +194,7 @@ function enterEvent(): void {
 }
 // the daily archive (daily-archive.ts): a VIP's calendar of this month's and the two before's dailies
 const archiveUi = createArchive({
-  home: () => goHome(),
+  home: () => backFrom("archive"),
   show: () => show("archive"),
   play: (date) => void playPastDay(date, { archive: true }),
   results: () => void dailyUi.openResults(),
@@ -229,7 +229,7 @@ async function playEventLevel(id: string): Promise<void> {
 const souvenirTile = createSouvenirTile((trip) => playSouvenir(trip));
 // VIP said on home (vip-about.ts; the creator, 2026-11-02): the round gold badge beside the title, past the
 // guided start, and the screen it opens: what VIP gives here, and that other Gem Arcade games give VIP rewards too
-const vipAboutUi = createVipAbout({ home: () => goHome(), show: () => show("vipAbout") });
+const vipAboutUi = createVipAbout({ home: () => backFrom("vipAbout"), show: () => show("vipAbout") });
 const vipBadge = createVipBadge(() => vipAboutUi.open());
 const homeUi = createHome(
   {
@@ -529,7 +529,25 @@ function momentOf(run: () => void): void {
   run();
 }
 
+/**
+ * BACK RETURNS WHERE THE PLAYER CAME FROM (the creator via the lead, 2026-11-02: "a player who looked and
+ * didn't buy should land where they were"): the VIP screen (home's badge, the Daily page's unlock), the
+ * archive's locked door (home, the Daily page) and the archive's calendar remember the screen that opened
+ * them, and their Back goes there: the Daily page, or home. A door VIP went through hands its opener on (the
+ * calendar it opened into goes back where the door would have).
+ */
+const RETURNS: readonly Screen[] = ["vipAbout", "vip", "archive"];
+const openedFrom: Partial<Record<Screen, Screen>> = {};
+/** Back from `s`: to the screen that opened it (the Daily page), else home. */
+function backFrom(s: Screen): void {
+  const to = openedFrom[s];
+  delete openedFrom[s];
+  if (to === "daily") void dailyUi.openPage();
+  else goHome();
+}
+
 function show(next: Screen): void {
+  if (RETURNS.includes(next) && next !== screen) openedFrom[next] = screen === "vip" ? (openedFrom.vip ?? "home") : screen;
   screen = next;
   // the table's weather on home and the menus only, never on a board, its win card or a stamp moment
   // (the creator, 2026-10-28: "too distracting" during a level): a quick fade out, and back on home
