@@ -106,7 +106,7 @@ import { currentDaily, today as dailyToday } from "../net/daily";
 import { onVipGift, pretendVip, VIP_DAILY, VIP_WELCOME, type VipGift } from "../net/vip";
 import { createVipGifts } from "./vip-gifts";
 import { createVipDoor } from "./vip-door";
-import { createVipAbout, createVipBadge, pretendVipEnds, setVipLook } from "./vip-about";
+import { createVipAbout, createVipBadge, pretendVipEnds } from "./vip-about";
 import { createArchive } from "./daily-archive";
 import { forceVipSale } from "./vip-view";
 import { copyUrl, picture as cataloguePicture, pictureTitle, sharpCopy, suitcaseItem } from "./catalogue";
@@ -2766,10 +2766,6 @@ export async function startApp(): Promise<void> {
           pretendAchievements(mix);
           passportUi.openAchievements();
         },
-        vipLook: (look) => {
-          closeSettings();
-          void setVipLook(look).then(() => vipAboutUi.open());
-        },
         showVipGift: (kind) => {
           closeSettings();
           if (screen !== "home") goHome();
@@ -2847,8 +2843,6 @@ export async function startApp(): Promise<void> {
       vipAbout: () => vipAboutUi.open(),
       /** A member's pass as if it ended at `ms` (null: no end known; undefined: the SDK's word), for the days left. */
       vipEnds: (ms: number | null | undefined) => pretendVipEnds(ms),
-      /** The VIP screen's trial look ("a".."d"; "" as shipped), as the dev menu picks it (vip-looks.ts). */
-      vipLook: (look: string) => setVipLook(look),
       /** The Daily page (its friends: Server's board, sample players on dev and in the play-test tool). */
       dailyPage: () => void dailyUi.openPage(),
       /** The unlock card for these slugs, again and again (past the once-a-session rule), once the screen can take it. */

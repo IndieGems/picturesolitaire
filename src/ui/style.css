@@ -1827,6 +1827,40 @@ html.row-tight .top-pill {
   .vip-about .vip-perks { padding-block: 10px; gap: 6px; }
   .vip-about .vip-perks ul { gap: 3px; }
 }
+/* THE BOARDING PASS (vip-about.ts; the creator's pick of four, 2026-11-02): home's VIP screen for a player who is
+   not a member. Paper, flat (information: no lip, no shadow), a gold band, the perks its stamped lines, the other
+   games' line in red on its barcode stub, its tear's notches cut from both halves; "Get VIP: board now!" under it */
+.vip-pass { width: 100%; display: flex; flex-direction: column; text-align: left; color: #3b2a12; filter: none; }
+.vip-pass > * { background: #fffaf0; }
+.vip-pass-band {
+  display: flex; align-items: center; justify-content: center; gap: 10px; padding: 11px 14px; border-radius: 20px 20px 0 0;
+  background: linear-gradient(180deg, #ffe08a, #e8a93a); color: #5a3a06; font: 800 18px/1 var(--round); letter-spacing: 0.14em; text-transform: uppercase;
+}
+.vip-pass-band .ico-wrap .ico { width: 22px; height: 22px; }
+.vip-pass-body {
+  display: flex; flex-direction: column; gap: 10px; padding: 12px 16px 14px;
+  -webkit-mask: radial-gradient(circle 11px at 0 100%, #0000 95%, #000) left / 51% 100% no-repeat, radial-gradient(circle 11px at 100% 100%, #0000 95%, #000) right / 51% 100% no-repeat;
+  mask: radial-gradient(circle 11px at 0 100%, #0000 95%, #000) left / 51% 100% no-repeat, radial-gradient(circle 11px at 100% 100%, #0000 95%, #000) right / 51% 100% no-repeat;
+}
+.vip-pass-top { display: flex; align-items: center; gap: 10px; }
+.vip-pass-fields { flex: 1; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; margin: 0; }
+.vip-pass-fields dt { font: 700 12px/1.1 var(--round); letter-spacing: 0.08em; text-transform: uppercase; color: #9a7a40; }
+.vip-pass-fields dd { margin: 2px 0 0; font: 700 16px/1.15 var(--round); color: #3b2a12; overflow-wrap: anywhere; }
+.vip-pass-case { flex: none; width: 82px; height: auto; rotate: -8deg; }
+.vip-pass-title { font: 700 21px/1.15 var(--round); padding-top: 8px; border-top: 1.5px solid rgba(162, 106, 16, 0.25); }
+.vip-pass-lines { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+.vip-pass-lines li { display: flex; align-items: center; gap: 10px; font: 700 16px/1.2 var(--round); }
+.vip-pass-stamp { flex: none; width: 30px; height: 30px; color: #c0392b; rotate: -14deg; opacity: 0.88; }
+.vip-pass-stamp svg { display: block; width: 100%; height: 100%; }
+.vip-pass-lines li:nth-child(even) .vip-pass-stamp { rotate: 9deg; }
+.vip-pass-stub {
+  display: flex; align-items: center; gap: 12px; padding: 12px 16px 14px; border-radius: 0 0 20px 20px; border-top: 2px dashed rgba(162, 106, 16, 0.45);
+  -webkit-mask: radial-gradient(circle 11px at 0 0, #0000 95%, #000) left / 51% 100% no-repeat, radial-gradient(circle 11px at 100% 0, #0000 95%, #000) right / 51% 100% no-repeat;
+  mask: radial-gradient(circle 11px at 0 0, #0000 95%, #000) left / 51% 100% no-repeat, radial-gradient(circle 11px at 100% 0, #0000 95%, #000) right / 51% 100% no-repeat;
+}
+.vip-pass-code { flex: none; width: 112px; height: 38px; opacity: 0.85; background: repeating-linear-gradient(90deg, #3b2a12 0 2px, transparent 2px 4px, #3b2a12 4px 7px, transparent 7px 9px, #3b2a12 9px 10px, transparent 10px 13px, #3b2a12 13px 16px, transparent 16px 17px); }
+.vip-about .vip-pass-stub .vip-more.vip-pass-more { flex: 1; min-width: 0; margin: 0; font-size: 17px; text-align: left; }
+.btn.vip-get.vip-pass-get { min-width: 250px; min-height: 58px; font-size: 22px; }
 .vip-more { margin: 6px 0 2px; font: 700 18px/1.2 var(--round); color: #b42a25; text-align: center; text-wrap: balance; }
 
 /* A VIP'S GIFTS (vip-gifts.ts): the day's two helpers, and the welcome's eight, a milestone of its own

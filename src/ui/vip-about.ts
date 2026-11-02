@@ -7,20 +7,24 @@
 //                the player is not a member; never with less motion or the battery saver (style.css). A
 //                member's is still, with a green tick. It shows once the first board is done, as the Shop
 //                does, never in the guided start.
-//   the screen   "VIP" in the top row, Back home and the gear as every screen has; then the travel picture
-//                (the suitcase between two of the helpers, the gold VIP tag across its foot), the headline
-//                and "One membership for the whole Gem Arcade."; what VIP gives here, the doors' own list
-//                (vip-door.ts vipPerks, so the two never disagree), and under it, red and larger, "Other Gem
-//                Arcade games give VIP rewards too!", never which games or what (the Arcade's own sheet
-//                lists its perks: the SDK's arcade-and-store.md, "Never write an offer's perks"); then Get
-//                VIP (vip-view.ts vipButton: Sign in for a guest, nothing where the Arcade cannot sell it).
-//                A member reads "You're VIP" and the days left on the pass, else a thank-you, and no Get VIP.
-//                It follows VIP coming or going while it is up, as the doors do.
+//   the screen   "VIP" in the top row, Back home and the gear as every screen has. For a player who is not a
+//                member, a VIP BOARDING PASS (the creator's pick of four, 2026-11-02, after "act more excited
+//                about this with exclamation marks"): paper, flat, a gold band "FIRST CLASS ✈ VIP", Passenger:
+//                You!, Seat 1A, From Picture Passport, Valid in All of Gem Arcade, the suitcase; "Your VIP
+//                boarding pass" over its four stamped lines (the day's gift, the welcome gift, the daily
+//                archive, every event and its prize table: what vip-door.ts vipPerks lists, in the pass's
+//                words); its barcode stub carrying, red and larger, "Other Gem Arcade games give VIP rewards
+//                too!", never which games or what (the Arcade's own sheet lists its perks: the SDK's
+//                arcade-and-store.md, "Never write an offer's perks"); then "Get VIP: board now!" (vip-view.ts
+//                vipButton: Sign in for a guest, nothing where the Arcade cannot sell it). A member reads the
+//                travel picture (the suitcase between two helpers, the gold tag), "You're VIP" and the days
+//                left on the pass, else a thank-you, the perks and the other games' line, and no Get VIP. It
+//                follows VIP coming or going while it is up, as the doors do.
 //
 // The days left are for show only, from the SDK's pass reading (gem.me.passes: the same reading the game's
 // VIP listener hears, src/net/vip.ts), never a decision: who is VIP is the server's word (vipNow). Read once
 // a session where nothing has said yet, never retried, and never while the platform has asked everyone to
-// wait (src/net/pace.ts). Information is glass; the only buttons are the badge, Back, the gear and Get VIP.
+// wait (src/net/pace.ts). Information is glass and paper; the only buttons are the badge, Back, the gear and Get VIP.
 
 import { gem } from "../gem";
 import { held } from "../net/pace";
@@ -29,6 +33,7 @@ import { liveAttr, liveText, onLocaleChange, t } from "./i18n";
 import { onVip, vipButton, vipNow } from "./vip-view";
 import { vipPerks, vipTag } from "./vip-door";
 import { helperPic } from "./helper-shop";
+import { VIP_DAILY_SIZE, VIP_WELCOME_SIZE } from "../net/vip";
 
 type Nav = {
   home(): void;
@@ -45,6 +50,8 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", text = ""):
 
 /** A crown in cream with a brown edge, drawn for the badge (no art of its own: the creator's VIP tag's gold around it). */
 const CROWN = `<svg class="vb-crown" viewBox="0 0 34 24" aria-hidden="true"><path d="M4.5 18.5 2.5 6.5l7.6 5.6L17 3.2l6.9 8.9 7.6-5.6-2 12Z" fill="#fff8e2" stroke="#7a4a06" stroke-width="2" stroke-linejoin="round"/><path d="M4.6 19.4h24.8v3H4.6Z" fill="#fff8e2" stroke="#7a4a06" stroke-width="1.8" stroke-linejoin="round"/><circle cx="17" cy="13.6" r="2.1" fill="#d8443a"/></svg>`;
+/** An ink stamp's tick, for the boarding pass's lines. */
+const STAMP = `<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="20" cy="20" r="12.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.2 2.2"/><path d="m13 20.5 4.6 4.4 9.4-9.6" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 /** A member's tick: white on green, ringed in white. */
 const TICK = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="#2e8f5e" stroke="#fff" stroke-width="2.5"/><path d="m7 12.4 3.3 3.2L17.2 8.7" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
@@ -100,37 +107,6 @@ export function pretendVipEnds(ms: number | null | undefined): void {
   if (import.meta.env.MODE === "release") return;
   pretendEnds = ms;
   for (const fn of [...passListeners]) fn();
-}
-
-// ---------------------------------------------------------------- the trial looks (outside a release build)
-// The creator's pick among four louder takes on the screen (vip-looks.ts, 2026-11-02): chosen from the dev menu
-// (or ?viplook=a..d, __ps.vipLook), for this page only; "" is the screen as shipped. Every line of it sits
-// inside import.meta.env.MODE checks written inline, so a release build drops it and never builds vip-looks.ts.
-let look = "";
-let looks: typeof import("./vip-looks") | null = null;
-const lookListeners = new Set<() => void>();
-/** Outside a release build: show the VIP screen (and home's badge) in trial look `next` ("a".."d"), or as shipped (""). */
-export async function setVipLook(next: string): Promise<void> {
-  if (import.meta.env.MODE !== "release") {
-    if (next && !looks) looks = await import("./vip-looks");
-    look = next && VIP_LOOKS.some((l) => l.id === next) ? next : "";
-    looks?.badgeLook(look ? (look as "a") : null);
-    for (const fn of [...lookListeners]) fn();
-  }
-}
-/** Outside a release build: the trial looks' names, for the dev menu ("A: First Class!"...). */
-export const VIP_LOOKS: readonly { id: string; name: string }[] =
-  import.meta.env.MODE !== "release"
-    ? [
-        { id: "a", name: "A: First Class!" },
-        { id: "b", name: "B: Boarding pass" },
-        { id: "c", name: "C: Big numbers" },
-        { id: "d", name: "D: Celebration" },
-      ]
-    : [];
-if (import.meta.env.MODE !== "release") {
-  const asked = new URLSearchParams(location.search).get("viplook");
-  if (asked) void setVipLook(asked);
 }
 
 // ---------------------------------------------------------------- the badge
@@ -202,28 +178,77 @@ export function createVipAbout(nav: Nav) {
     return pic;
   }
 
+  /**
+   * The VIP boarding pass, for a player who is not a member: the band, its fields and the suitcase, its four
+   * stamped lines, and its barcode stub with the other games' line. Paper, flat: information.
+   */
+  function boardingPass(): HTMLElement {
+    const pass = el("div", "vip-pass");
+    pass.setAttribute("role", "group");
+    pass.setAttribute("aria-label", t("vip.about.pass.title"));
+    const band = el("div", "vip-pass-band");
+    band.setAttribute("aria-hidden", "true");
+    const plane = el("span", "ico-wrap");
+    plane.innerHTML = ICONS.plane;
+    band.append(el("b", "", t("vip.about.pass.class")), plane, el("b", "", t("vip.tag")));
+    const top = el("div", "vip-pass-top");
+    const fields = el("dl", "vip-pass-fields");
+    for (const [k, v] of [
+      ["vip.about.pass.passenger", "vip.about.pass.you"],
+      ["vip.about.pass.seat", "vip.about.pass.seatNo"],
+      ["vip.about.pass.from", "vip.about.pass.here"],
+      ["vip.about.pass.to", "vip.about.pass.everywhere"],
+    ] as const) {
+      const f = el("div");
+      f.append(el("dt", "", t(k)), el("dd", "", t(v)));
+      fields.append(f);
+    }
+    const suitcase = el("img", "vip-pass-case");
+    Object.assign(suitcase, { src: `${import.meta.env.BASE_URL}art/suitcase-closed.webp`, alt: "", draggable: false, decoding: "async" });
+    top.append(fields, suitcase);
+    const lines = el("ul", "vip-pass-lines");
+    for (const words of [
+      t("vip.about.pass.daily", { count: VIP_DAILY_SIZE }),
+      t("vip.about.pass.welcome", { count: VIP_WELCOME_SIZE }),
+      t("vip.about.pass.archive"),
+      t("vip.about.pass.events"),
+    ]) {
+      const li = el("li");
+      const stamp = el("span", "vip-pass-stamp");
+      stamp.setAttribute("aria-hidden", "true");
+      stamp.innerHTML = STAMP;
+      li.append(stamp, el("span", "", words));
+      lines.append(li);
+    }
+    const passBody = el("div", "vip-pass-body");
+    passBody.append(top, el("b", "vip-pass-title", t("vip.about.pass.title")), lines);
+    // the other games' line on the stub's paper, where a busy table behind never muddies it
+    const stub = el("div", "vip-pass-stub");
+    const code = el("span", "vip-pass-code");
+    code.setAttribute("aria-hidden", "true");
+    stub.append(code, el("p", "vip-more vip-pass-more", t("vip.about.more")));
+    pass.append(band, passBody, stub);
+    return pass;
+  }
+
   function draw(): void {
     const member = vipNow();
     body.classList.toggle("member", member);
-    if (member) {
-      listenPasses();
-      askPassOnce();
-    }
-    // a trial look, for a player who is not a member (outside a release build only)
-    if (import.meta.env.MODE !== "release" && !member && look && looks) {
-      body.replaceChildren(...looks.drawLook(look as "a"));
+    if (!member) {
+      // the boarding pass, then Get VIP in its words (a guest's Sign in keeps its own)
+      const get = vipButton("next vip-get vip-pass-get");
+      if (get && get.dataset.press === "vip.get") get.textContent = t("vip.about.pass.get");
+      body.replaceChildren(boardingPass(), ...(get ? [get] : []));
       return;
     }
+    listenPasses();
+    askPassOnce();
     const note = el("div", "vip-note glass");
-    const days = member ? daysLeft() : null;
-    note.append(
-      el("b", "vip-big", t(member ? "vip.about.member" : "vip.about.head")),
-      el("p", "", member ? (days === null ? t("vip.about.thanks") : t("vip.about.daysLeft", { count: days })) : t("vip.about.line")),
-    );
+    const days = daysLeft();
+    note.append(el("b", "vip-big", t("vip.about.member")), el("p", "", days === null ? t("vip.about.thanks") : t("vip.about.daysLeft", { count: days })));
     const perks = vipPerks();
     perks.append(el("p", "vip-more", t("vip.about.more")));
-    const get = member ? null : vipButton("next vip-get");
-    body.replaceChildren(picture(), note, perks, ...(get ? [get] : []));
+    body.replaceChildren(picture(), note, perks);
   }
 
   // VIP came or went, or Get VIP came, went or became Sign in; the pass's end was read
@@ -233,11 +258,6 @@ export function createVipAbout(nav: Nav) {
   passListeners.add(() => {
     if (!screen.hidden) draw();
   });
-  if (import.meta.env.MODE !== "release") {
-    lookListeners.add(() => {
-      if (!screen.hidden) draw();
-    });
-  }
 
   return {
     screen,

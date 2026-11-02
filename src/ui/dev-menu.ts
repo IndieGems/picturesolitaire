@@ -45,7 +45,6 @@ import { suitcases } from "./suitcase-data";
 import { EVENT_ON } from "./event-switch";
 import { pretending, pretendVip } from "../net/vip";
 import { VIP_WEARS_ALL } from "./vip-view";
-import { VIP_LOOKS } from "./vip-about";
 import { keepChoice, readChoices } from "./choices";
 
 /** What vite.config.ts stamps in at build time (its `define`). */
@@ -77,8 +76,6 @@ export interface DevHost {
   showAchievements(mix: boolean): void;
   /** A VIP's gift card over home, as the checker's payment brings it ("daily": today's two; "welcome": the eight). Nothing is paid. */
   showVipGift(kind: "daily" | "welcome"): void;
-  /** Home's VIP screen in trial look `look` ("a".."d"; "" as shipped), opened (vip-about.ts, the creator's pick, 2026-11-02). */
-  vipLook(look: string): void;
 }
 
 /** What the menu lends the screens back. */
@@ -401,17 +398,6 @@ export function mountDevMenu(host: DevHost): DevMenu {
       return r;
     })(),
     el("p", "dev-note", "The cards over home, as a VIP sees them when the checker pays: nothing is paid, saved or sent."),
-    // the VIP screen's trial looks (vip-looks.ts; the creator, 2026-11-02): temporary, until one is picked
-    (() => {
-      const r = el("div", "dev-row dev-looks");
-      const go = (id: string) => {
-        dialog.close();
-        host.vipLook(id);
-      };
-      r.append(btn("", "As shipped", () => go("")), ...VIP_LOOKS.map((l) => btn(l.id === "a" ? "amber" : "", l.name, () => go(l.id))));
-      return r;
-    })(),
-    el("p", "dev-note", "Home's VIP screen in each trial look, as a player who is not a VIP sees it (turn Pretend I'm VIP off), and home's badge with it. For this page only."),
     setting("Endless helpers", endlessSwitch),
     el("p", "dev-note", "While it's on, every level you open is practice."),
     speedSet,
