@@ -27,9 +27,9 @@
 // first finish is in the server's record of the player's progress
 // (src/net/progress.ts), shown at once when it is won.
 //
-// On the dev channel (and in the play-test tool), while no real friend has played, the board's rows
-// include sample players (Server's, seeded by the date): the page labels them "Sample players". They
-// never appear on test or release.
+// Today's friends are real players only (the creator, 2026-11-02: "just post your results and friends
+// will appear there as well"): once the player has a result, their own row shows with "Your friends will
+// appear here as they play." under it until a friend has played; before that, a friendly line.
 
 import { loadDaily, type Daily } from "../game/levels";
 import { archiveWindow, currentDaily, onDailyChange, today, type DailyToday } from "../net/daily";
@@ -277,14 +277,15 @@ export function createDaily(nav: Nav) {
   }
 
   /**
-   * Today's friends, as the board ranks them (fewest moves; a tie to whoever finished first), once a
-   * friend has played; a friendly line until then. Sample players (dev only) are said to be samples.
+   * Today's friends, as the board ranks them (fewest moves; a tie to whoever finished first). Before any
+   * friend has played: the player's own row, if they have played, with friends to come under it; else a
+   * friendly line.
    */
   function drawFriends(): void {
     const head = el("h2", "daily-section-head", friends?.final ? t("daily.friendsFinal") : t("daily.friendsSoFar"));
     if (friendsFailed) return void friendsBox.replaceChildren(head, el("p", "daily-empty", t("daily.loadFailed")));
     if (!friends) return void friendsBox.replaceChildren(head, el("p", "daily-empty", t("daily.loading")));
-    if (!friends.friendsPlayed && !friends.sample) return void friendsBox.replaceChildren(head, el("p", "daily-empty", t("daily.noFriends")));
+    if (!friends.friendsPlayed && !friends.me) return void friendsBox.replaceChildren(head, el("p", "daily-empty", t("daily.noFriends")));
     const list = el("ol", "daily-list");
     for (const row of friends.rows) {
       const li = el("li", row.isViewer ? "glass you" : "glass");
@@ -298,7 +299,8 @@ export function createDaily(nav: Nav) {
       li.append(el("span", "rank", String(row.rank)), who, moves, time);
       list.append(li);
     }
-    friendsBox.replaceChildren(head, ...(friends.sample ? [el("p", "daily-sample", t("daily.sample"))] : []), list);
+    // the player alone so far: their friends join the list as they play
+    friendsBox.replaceChildren(head, list, ...(friends.friendsPlayed ? [] : [el("p", "daily-empty", t("daily.friendsSoon"))]));
   }
 
   function draw(): void {
@@ -330,7 +332,7 @@ export function createDaily(nav: Nav) {
   async function readFriends(token: number): Promise<void> {
     if (!board) return;
     try {
-      const b = await dailyBoard({ par: board.par });
+      const b = await dailyBoard();
       if (token !== loadToken || screen.hidden) return;
       friends = b;
       friendsFailed = !b;

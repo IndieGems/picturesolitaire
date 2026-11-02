@@ -2843,7 +2843,7 @@ export async function startApp(): Promise<void> {
       vipAbout: () => vipAboutUi.open(),
       /** A member's pass as if it ended at `ms` (null: no end known; undefined: the SDK's word), for the days left. */
       vipEnds: (ms: number | null | undefined) => pretendVipEnds(ms),
-      /** The Daily page (its friends: Server's board, sample players on dev and in the play-test tool). */
+      /** The Daily page (its friends: Server's board; none in the play-test tool, which has no platform). */
       dailyPage: () => void dailyUi.openPage(),
       /** The unlock card for these slugs, again and again (past the once-a-session rule), once the screen can take it. */
       unlockCard: (slugs: string[]) => unlockUi.preview(slugs),

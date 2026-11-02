@@ -1087,7 +1087,8 @@ html.less-motion .cz-row.grew { animation: none; }
 .daily-list .who .tag { flex: none; font-size: 13px; font-weight: 500; color: var(--ink-soft); }
 .daily-list .num { flex: none; min-width: 46px; text-align: right; font: 600 16px/1.1 var(--round); }
 .daily-list .num small { display: block; font-size: 12px; font-weight: 500; color: var(--ink-soft); }
-.daily-empty { max-width: 440px; margin: 10px auto 0; text-align: center; font-size: 15px; color: #dfe7f1; }
+/* a line on the table under the friends (none yet, or friends to come): the heads' shadow, so a bright sky behind keeps it readable */
+.daily-empty { max-width: 440px; margin: 10px auto 0; text-align: center; font-size: 15px; font-weight: 600; color: #f2f6fb; text-shadow: 0 1px 2px rgba(10, 30, 60, 0.6), 0 0 8px rgba(10, 30, 60, 0.25); }
 .daily-empty:empty { display: none; }
 .daily-foot { display: flex; justify-content: center; margin: 22px auto 0; }
 .daily-foot .btn { min-width: 220px; min-height: 56px; font-size: 18px; }
@@ -1957,8 +1958,6 @@ html.less-motion .btn.daily-go::before, html.battery-saver .btn.daily-go::before
 .daily-door .daily-door-tag { position: absolute; top: 34px; left: 50%; translate: -50% 0; }
 .daily-door-line { font: 600 15px/1.3 var(--round); color: var(--ink); }
 .daily-door:focus-visible { outline: 3px solid var(--amber-lo); outline-offset: 2px; }
-/* the dev channel's sample players, said to be samples */
-.daily-sample { margin: 0 4px; font: 600 13px/1.2 var(--round); color: #fff3c4; text-shadow: 0 1px 2px rgba(10, 30, 60, 0.55); }
 
 /* the event's strip above the dock (suitcase.ts): one wide button, the suitcase, its name and days */
 .btn.event-strip {

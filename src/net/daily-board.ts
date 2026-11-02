@@ -1,9 +1,8 @@
 // THE DAY'S FRIENDS BOARD, for the Daily page (src/ui/daily.ts, UI's): the player and their friends
 // on one day's daily, fewest moves first, a tie to whoever finished first (the creator, 2026-10-30).
 //
-//   dailyBoard()                today's board: { date, final, rows, me, friendsPlayed, sample }
+//   dailyBoard()                today's board: { date, final, rows, me, friendsPlayed }
 //   dailyBoard({ daysBack: 1 }) yesterday's (0 to 400 days back)
-//   dailyBoard({ par })         the day's par, so the dev channel's sample moves look like the board's
 //
 // Every score on it is the server's. The win checker (functions/checker, daily_win) posts the player's
 // FIRST verified win of the day as the day's run (one run id per player per date), and nothing else:
@@ -22,13 +21,11 @@
 //     (gem.leaderboards.mine) and placed among the friends, after any friend on the same moves (an
 //     earlier finish wins the tie).
 //   - Never while the platform asked us to wait (src/net/pace.ts), nor more than once per open.
-//   - null: no answer (offline, refused, or held). Say so and let the next open ask again.
+//   - null: no answer (offline, refused, or held). Say so and let the next open ask again. Unframed (a
+//     plain tab, the play-test tool) there is no platform: null.
 //
-// SAMPLE PLAYERS, the dev channel only (and a plain tab, the play-test tool, in a non-release build):
-// while no friend has played the day, the board is filled with made-up friends, seeded by the date so
-// they hold still, with `sample: true` on the board and on each of their rows, so the creator can judge
-// the page with something on it. The player's own real row is placed among them. Never on test or
-// release, and never in a release build (MODE "release"): there the empty state is the real one.
+// Only real players are on it: no made-up friends on any channel (the creator, 2026-11-02: "just post
+// your results and friends will appear there as well").
 
 import { text, type PlayerText } from "@indiegems/gem-web-sdk/sdk";
 import { gem } from "../gem";
@@ -43,20 +40,18 @@ export interface BoardRow {
   rank: number;
   /** The name as plain text, for textContent; "" for an anonymous row (a deleted player keeps their place). */
   name: string;
-  /** The platform's name, for anything richer than plain text. Absent on a sample or anonymous row. */
+  /** The platform's name, for anything richer than plain text. Absent on an anonymous row. */
   displayName?: PlayerText;
   discriminator?: string;
-  /** Absent on a sample or anonymous row. */
+  /** Absent on an anonymous row. */
   playerId?: string;
-  /** The portrait: pass it through the SDK's platformIconUrl before an <img>. Absent on a sample row. */
+  /** The portrait: pass it through the SDK's platformIconUrl before an <img>. Absent where the platform sent none. */
   avatarIconUrl?: string;
   /** The player's own row. */
   isViewer: boolean;
   moves: number;
   /** The game's own clock for the win (ms): shown, never ranked. */
   timeMs: number;
-  /** A made-up friend (the dev channel's sample, above). */
-  sample?: true;
 }
 
 export interface DailyBoard {
@@ -68,15 +63,13 @@ export interface DailyBoard {
   rows: BoardRow[];
   /** The player's own row (also in rows), or null: not played that day, or their run is not on the board (a late finish after the day closed). */
   me: BoardRow | null;
-  /** Any friend (not the player, not a sample) has played the day. */
+  /** Any friend (not the player) has played the day. */
   friendsPlayed: boolean;
-  /** The rows include sample friends: label them as samples. */
-  sample: boolean;
 }
 
-type Options = { daysBack?: number; par?: number };
+type Options = { daysBack?: number };
 
-/** Framed by the platform: another origin's frame (as src/net/vip.ts). The play-test tool's same-origin frame is a plain tab here, and gets the sample. */
+/** Framed by the platform: another origin's frame (as src/net/vip.ts). The play-test tool's same-origin frame is a plain tab here: no board. */
 const framed = ((): boolean => {
   if (window.self === window.top) return false;
   try {
@@ -85,7 +78,6 @@ const framed = ((): boolean => {
     return true;
   }
 })();
-const CAN_SAMPLE = import.meta.env.MODE !== "release";
 /** The platform re-renders a viewer's friends board at most this often; until then a read answers the same. */
 const FALLBACK_CADENCE_S = 300;
 
@@ -96,24 +88,14 @@ const reading = new Map<number, Promise<DailyBoard | null>>();
 /** The day's board among the player's friends. See the head of this file. */
 export function dailyBoard(opts: Options = {}): Promise<DailyBoard | null> {
   const back = Math.max(0, Math.min(400, Math.floor(opts.daysBack ?? 0)));
-  if (!framed) {
-    // a plain tab: no platform, so no board, but a non-release build shows the sample, with the
-    // player's own result of the day (as this session holds it) among the made-up friends
-    if (!CAN_SAMPLE) return Promise.resolve(null);
-    const date = dateBack(back);
-    const mine = dailyResult(date);
-    const board = empty(date);
-    if (mine) board.me = { rank: 0, name: "", isViewer: true, moves: mine.moves, timeMs: mine.ms };
-    return Promise.resolve(withSamples(board, opts.par));
-  }
+  // a plain tab: no platform, so no board
+  if (!framed) return Promise.resolve(null);
   const was = reading.get(back);
   if (was) return was;
-  const p = read(back, opts.par).finally(() => reading.delete(back));
+  const p = read(back).finally(() => reading.delete(back));
   reading.set(back, p);
   return p;
 }
-
-const empty = (date: string): DailyBoard => ({ date, final: false, rows: [], me: null, friendsPlayed: false, sample: false });
 
 /** The date `back` days before the player's today, as this game last heard it (a guess unframed). */
 function dateBack(back: number): string {
@@ -126,11 +108,10 @@ function dateBack(back: number): string {
 /** Unix seconds or ms, as ms. */
 const asMs = (t: number): number => (t < 1e12 ? t * 1000 : t);
 
-async function read(back: number, par: number | undefined): Promise<DailyBoard | null> {
+async function read(back: number): Promise<DailyBoard | null> {
   const id = await gem.awaitIdentity(10_000).catch(() => null);
   if (!id) return null;
   const key = `${id.playerId}/${id.channel}`;
-  const sampling = CAN_SAMPLE && id.channel === "dev";
   const have = kept.get(back);
   const fresh = have && have.key === key && Date.now() < have.until;
   // the player won since this was read, and their row is not on it: read it again (their own run, at least)
@@ -155,15 +136,13 @@ async function read(back: number, par: number | undefined): Promise<DailyBoard |
         rows = placed(rows, me);
       }
     }
-    let board: DailyBoard = {
+    const board: DailyBoard = {
       date,
       final: lb.period?.final ?? false,
       rows,
       me,
       friendsPlayed: rows.some((r) => !r.isViewer),
-      sample: false,
     };
-    if (sampling && !board.friendsPlayed) board = withSamples(board, par);
     const cadence = lb.updateFrequencySeconds ?? FALLBACK_CADENCE_S;
     const next = lb.generatedAt ? asMs(lb.generatedAt) + cadence * 1000 : Date.now() + cadence * 1000;
     // never hold one past its own cadence, and never less than a minute (a clock that disagrees)
@@ -202,51 +181,4 @@ function placed(rows: BoardRow[], me: BoardRow): BoardRow[] {
     r.rank = i + 1;
     return r;
   });
-}
-
-// ---------------------------------------------------------------- the dev channel's sample friends
-
-const NAMES = [
-  "Jamal", "Keisha", "Priya", "Tomás", "Grace", "Darnell", "Imani", "Kofi", "Lena", "Andre",
-  "Mei", "Aaliyah", "Marcus", "Sofia", "Tariq", "Nadia", "DeShawn", "Hana", "Malik", "Rosa",
-];
-
-/** A small seeded generator (mulberry32): the same date, the same friends. */
-function seeded(seed: number): () => number {
-  let a = seed >>> 0;
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function withSamples(board: DailyBoard, par = 20): DailyBoard {
-  let h = 2166136261;
-  for (const c of board.date) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
-  const rnd = seeded(h);
-  const names = [...NAMES];
-  const n = 5 + Math.floor(rnd() * 5); // 5 to 9 friends
-  const made: BoardRow[] = [];
-  for (let i = 0; i < n; i++) {
-    const name = names.splice(Math.floor(rnd() * names.length), 1)[0]!;
-    // most near par, a few well over it
-    const over = rnd() < 0.25 ? 0 : Math.floor(rnd() * rnd() * 14);
-    const moves = Math.max(1, Math.round(par) + over);
-    made.push({
-      rank: 0,
-      name,
-      discriminator: String(1000 + Math.floor(rnd() * 9000)),
-      isViewer: false,
-      moves,
-      timeMs: Math.round(moves * (2500 + rnd() * 4000)),
-      sample: true,
-    });
-  }
-  made.sort((a, b) => a.moves - b.moves);
-  let rows = made.map((r, i) => ({ ...r, rank: i + 1 }));
-  if (board.me) rows = placed(rows, { ...board.me });
-  return { ...board, rows, me: rows.find((r) => r.isViewer) ?? null, sample: true };
 }
