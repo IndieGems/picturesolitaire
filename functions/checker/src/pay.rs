@@ -10,6 +10,8 @@
 //!   - the KIT, 3 of each, once ever: at the end of board 1, or on the next win of a
 //!     player already past it. Its own progression ("helpers_kit") is set in the
 //!     same order, so it lands with the kit or not at all.
+//!   - VIP's GIFTS are not a win's (the creator, 2026-11-01, docs/vip.md): their own call, their own
+//!     orders (vip_order), sizes from helper-ids.json `vip`.
 //!
 //! The helpers are the game's own currencies (src/net/helper-ids.json), granted into
 //! their "earned" bucket and clamped at the cap, by the function's own write: unlike a
@@ -143,6 +145,62 @@ pub fn order(progression: &str, what: &str, nonce: &str, first: bool, gift: Opti
     // a first win's nonce is the board's own (two claims of it racing pay once); the kit alone, "kit"
     o.nonce = if first { nonce.to_string() } else { "kit".into() };
     Some(o)
+}
+
+/// VIP's welcome mark (helper-ids.json `vip.welcomeEnd`): (id, slug). Its value is the end day of
+/// the membership last welcomed (vip.rs).
+pub fn vip_welcome_mark() -> (&'static str, &'static str) {
+    let w = &data()["helpers"]["vip"]["welcomeEnd"];
+    (w["progression"].as_str().unwrap_or_default(), w["slug"].as_str().unwrap_or_default())
+}
+
+/// VIP's welcome gift, once a membership: { hint, undo, shuffle }.
+pub fn vip_welcome() -> Value {
+    sizes(&data()["helpers"]["vip"]["welcome"])
+}
+
+/// VIP's gift on day `day` of the player's week (1 Monday .. 7 Sunday, vip::gift_day).
+pub fn vip_daily(day: u32) -> Value {
+    sizes(&data()["helpers"]["vip"]["daily"][day.saturating_sub(1) as usize])
+}
+
+/// Every kind present, 0 where the data has none.
+fn sizes(v: &Value) -> Value {
+    let mut out = none();
+    for kind in KINDS {
+        out[kind] = json!(v[kind].as_u64().unwrap_or(0));
+    }
+    out
+}
+
+/// One VIP gift's order (lib.rs sends it; vip.rs decides when one is due). The day's: nonce
+/// `vip:<date>`, the player's own date, so a date pays once. The welcome's: nonce
+/// `vip-welcome:<end day>`, with the welcome mark raised to that end day in the same order, so the
+/// membership is welcomed once or not at all. Each grant into "earned", clamped at the cap.
+pub fn vip_order(nonce: String, sizes: &Value, mark_to: Option<i64>, what: &str) -> Order {
+    let mut o = Order { nonce, ..Order::default() };
+    if let Some(end) = mark_to {
+        o.operations.push(json!({ "type": "progression_max", "progression_definition_id": vip_welcome_mark().0, "value": end, "reason": "vip welcome" }));
+    }
+    for kind in KINDS {
+        let n = sizes[kind].as_u64().unwrap_or(0);
+        if n > 0 {
+            o.operations.push(grant(kind, n, format!("vip {what} gift")));
+        }
+    }
+    o
+}
+
+/// Each helper's balance after an order, from its receipt: only the kinds the receipt lists.
+pub fn after(changes: &[Value]) -> Value {
+    let mut out = serde_json::Map::new();
+    for kind in KINDS {
+        let id = currency(kind);
+        if let Some(n) = changes.iter().filter(|c| c["type"] == "currency" && c["currency_id"] == id).filter_map(|c| c["balance_after"].as_i64()).last() {
+            out.insert(kind.into(), json!(n));
+        }
+    }
+    Value::Object(out)
 }
 
 /// What landed of each helper, from an order's receipt (its `changes`): { hint, undo, shuffle }.

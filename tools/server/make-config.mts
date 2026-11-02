@@ -377,6 +377,18 @@ for (const r of rows) {
   y.push("    config:");
   y.push("      completion_threshold: 1");
 }
+{
+  // VIP's welcome gift (docs/vip.md, src/net/helper-ids.json `vip`): the checker raises this to the end
+  // day of the membership it welcomes, in the same order as the gift, so one membership is welcomed once
+  const W = JSON.parse(readFileSync(join(root, "src/net/helper-ids.json"), "utf8")).vip.welcomeEnd;
+  y.push("  # VIP'S WELCOME GIFT, once a membership (docs/vip.md): the end day (days from 1970-01-01) of the");
+  y.push("  # membership last welcomed, raised by the win checker in the order that pays the gift. A");
+  y.push("  # membership whose end is after it is a new one. Only the win checker writes it.");
+  y.push(`  - id: ${W.progression}`);
+  y.push(`    slug: ${W.slug}`);
+  y.push(`    display_name: "VIP welcome"`);
+  y.push("    config: {}");
+}
 y.push("  # THE DAILY PUZZLE: one board a day, the same for everyone (src/content/levels/daily.json,");
 y.push("  # the board \"d\" + the date). The function checks the date is the player's own today,");
 y.push("  # posts moves and time to the \"daily\" board below, and completes this once a day.");

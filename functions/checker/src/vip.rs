@@ -14,6 +14,14 @@
 //! it, in the player's own months, from the 1st of the month two before their today, to yesterday.
 //! The server pays a past day if the archive showed it on the player's date or the day before (a day
 //! of slack, so a board opened just before midnight on the 31st still pays), and nothing older.
+//!
+//! VIP'S GIFTS (the creator, 2026-11-01, after Jade Match; docs/vip.md): VIP no longer makes a helper
+//! free; it gives helpers. `due` decides what a VIP is owed on their own date (the platform's, never
+//! the device's): the day's gift, by the day of their week (Monday 1 .. Sunday 7, src/net/helper-ids.json
+//! `vip.daily`), once a date; and the welcome, once a membership, while the end day of the membership
+//! last welcomed (the progression `vip_welcome_end`) is before today. A membership is told by its end:
+//! one that ends after the last one welcomed ended is a new one, so a membership bought after a lapse
+//! is welcomed again and one extended before it lapses is not. lib.rs pays them (`what: "vip_gift"`).
 
 use serde_json::Value;
 
@@ -27,13 +35,61 @@ pub struct Passes {
     pub listed: bool,
     /// How many passes the list has.
     pub count: usize,
+    /// The day (days from 1970-01-01) a held `vip` ends: its `ends_at`'s UTC date. None: not held, or
+    /// held with no end (a pass support granted).
+    pub ends: Option<i64>,
 }
 
 /// Read a 2xx pass read's body. None when it is not the documented shape: unknown, not "not VIP".
 pub fn passes(body: &Value) -> Option<Passes> {
     let list = body["passes"].as_array()?;
     let vip: Vec<&Value> = list.iter().filter(|p| p["pass"] == "vip").collect();
-    Some(Passes { held: vip.iter().any(|p| p["held"] == true), listed: !vip.is_empty(), count: list.len() })
+    let held: Vec<&&Value> = vip.iter().filter(|p| p["held"] == true).collect();
+    // two held entries (never seen): the later end, and none at all if either has none; an `ends_at`
+    // that is not a date reads as no end, which welcomes once for good rather than every day
+    let open = held.iter().any(|p| p["ends_at"].as_str().and_then(|e| day_number(e.get(..10)?)).is_none());
+    let ends = if open { None } else { held.iter().filter_map(|p| day_number(p["ends_at"].as_str()?.get(..10)?)).max() };
+    Some(Passes { held: !held.is_empty(), listed: !vip.is_empty(), count: list.len(), ends })
+}
+
+/// `vip_welcome_end` for a membership with no end: welcomed once, for good.
+pub const NO_END_DAY: i64 = 99_999_999;
+/// The dev pretend has no membership behind it: it is welcomed as a 30-day one from that day.
+pub const PRETEND_DAYS: i64 = 30;
+
+/// Days from 1970-01-01 of a "YYYY-MM-DD" date. None when malformed.
+pub fn day_number(date: &str) -> Option<i64> {
+    let (y, m, d) = ymd(date)?;
+    Some(days_of(y, m, d))
+}
+
+/// The day of the player's week a date is, Monday 1 .. Sunday 7 (ISO): which VIP gift it pays.
+pub fn gift_day(date: &str) -> Option<u32> {
+    // 1970-01-01, day 0, was a Thursday (4)
+    Some(((day_number(date)? + 3).rem_euclid(7) + 1) as u32)
+}
+
+/// What a VIP is owed on `today`, their own date: the day's gift (always: its order's nonce makes a
+/// date pay once) and, when due, the welcome, with the end day the order marks.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Due {
+    /// The day of the week (gift_day), whose gift the day pays.
+    pub day: u32,
+    /// The day's order nonce: "vip:<date>".
+    pub daily: String,
+    /// The welcome is due: the end day its order raises `vip_welcome_end` to (nonce "vip-welcome:<end>").
+    pub welcome: Option<i64>,
+}
+
+/// `today`: the player's date; `welcomed`: `vip_welcome_end` as read (0 never); `held`: the platform
+/// says they hold `vip` (false: the dev pretend alone); `ends`: its end day (Passes::ends). None for a
+/// malformed date: nothing is owed on a date that cannot be read. A membership's end is never taken
+/// as before today (an end today in UTC can be the player's tomorrow), so a welcome is never paid twice
+/// in a day.
+pub fn due(today: &str, welcomed: i64, held: bool, ends: Option<i64>) -> Option<Due> {
+    let now = day_number(today)?;
+    let end = if held { ends.unwrap_or(NO_END_DAY).max(now) } else { now + PRETEND_DAYS };
+    Some(Due { day: gift_day(today)?, daily: format!("vip:{today}"), welcome: (welcomed < now).then_some(end) })
 }
 
 /// VIP for this call: Some(true) if the platform says the player holds it, or on the dev channel

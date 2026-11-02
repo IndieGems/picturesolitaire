@@ -4251,6 +4251,13 @@ progressions:
     display_name: "Helper kit"
     config:
       completion_threshold: 1
+  # VIP'S WELCOME GIFT, once a membership (docs/vip.md): the end day (days from 1970-01-01) of the
+  # membership last welcomed, raised by the win checker in the order that pays the gift. A
+  # membership whose end is after it is a new one. Only the win checker writes it.
+  - id: 86031ea0-89b2-54df-8e49-aa5dcf11b2b6
+    slug: vip_welcome_end
+    display_name: "VIP welcome"
+    config: {}
   # THE DAILY PUZZLE: one board a day, the same for everyone (src/content/levels/daily.json,
   # the board "d" + the date). The function checks the date is the player's own today,
   # posts moves and time to the "daily" board below, and completes this once a day.

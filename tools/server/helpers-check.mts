@@ -64,6 +64,20 @@ for (const b of IDS.bundles ?? []) {
   const coins = Object.entries(b.grants).reduce((sum, [kind, n]) => sum + n * single(kind), 0);
   check(`${b.name}: Gems never buy less than Coins (${coins} Coins of helpers = ${coins / 5} Gems at the dollar, for ${gems})`, coins / 5 >= gems);
 }
+// VIP'S GIFTS (the creator, 2026-11-01; docs/vip.md): helpers only, 2 a day over a 7-day week (5 Hints,
+// 4 Undos, 5 Shuffles), a welcome of 8 once a membership, and the welcome's mark declared for the checker
+const V = IDS.vip ?? {};
+const sum = (g) => Object.values(g ?? {}).reduce((a, n) => a + n, 0);
+const onlyHelpers = (g) => Object.entries(g ?? {}).every(([k, n]) => k in IDS.kinds && Number.isInteger(n) && n >= 0 && n <= IDS.cap);
+check("vip: a gift for each day of the week, Monday first", Array.isArray(V.daily) && V.daily.length === 7);
+check("vip: each day's gift is 2 helpers, and nothing but helpers", (V.daily ?? []).every((g) => onlyHelpers(g) && sum(g) === 2));
+const week = Object.fromEntries(Object.keys(IDS.kinds).map((k) => [k, (V.daily ?? []).reduce((a, g) => a + (g[k] ?? 0), 0)]));
+check(`vip: a week gives 5 Hints, 4 Undos, 5 Shuffles (${JSON.stringify(week)})`, week.hint === 5 && week.undo === 4 && week.shuffle === 5);
+check("vip: the welcome is 3 Hints, 2 Undos, 3 Shuffles", onlyHelpers(V.welcome) && V.welcome.hint === 3 && V.welcome.undo === 2 && V.welcome.shuffle === 3);
+check("vip: the welcome's mark is declared, writable by no client", (() => {
+  const e = entry(V.welcomeEnd?.progression);
+  return e.includes(`slug: ${V.welcomeEnd?.slug}\n`) && !e.includes("client_writable: true") && !e.includes("platform_grants");
+})());
 check("the daily helper rotation names a helper for each weekday", IDS.daily.length === 7 && IDS.daily.every((k) => k in IDS.kinds));
 check("the helpers catalog is declared", yaml.includes(`- id: ${IDS.catalog}\n    slug: helpers\n`));
 check("the kit's progression is declared", yaml.includes(`- id: ${IDS.kit.progression}\n    slug: ${IDS.kit.slug}\n`));

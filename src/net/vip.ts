@@ -1,7 +1,16 @@
-// WHO IS VIP, the server's word (the creator, 2026-10-30; docs/vip.md). Gem Arcade VIP is the
-// Arcade's own pass; the game never sells or describes it. The win checker decides who holds it
-// (functions/checker/src/vip.rs) and this file only repeats its answer, for the screens and the
-// helper buttons to draw from. The server never takes this file's word for anything.
+// WHO IS VIP, the server's word (the creator, 2026-10-30; docs/vip.md), and VIP'S GIFTS. Gem Arcade
+// VIP is the Arcade's own pass; the game never sells or describes it. The win checker decides who
+// holds it (functions/checker/src/vip.rs) and this file only repeats its answer, for the screens to
+// draw from. The server never takes this file's word for anything.
+//
+// VIP GIVES HELPERS, it does not make them free (the creator, 2026-11-01, after Jade Match): a VIP's
+// uses spend stock like anyone's. The checker pays the gifts ({"v":1,"what":"vip_gift"},
+// functions/checker/src/gift.rs): on the player's own date the day's gift (VIP_DAILY, 2 helpers by the
+// day of their week, Monday first) once a date, and the welcome (VIP_WELCOME) once a membership, both
+// clamped at the cap. It is asked when the server's word turns VIP on (at boot, after a purchase or a
+// sign-in, the dev pretend), and whenever the SDK's pass reading changes while it says VIP (which also
+// catches a new day on resume); what it paid goes to onVipGift's listeners, once per gift, and the
+// stock is read again. Asking pays nothing twice: each gift's order has its own nonce.
 //
 // VIP is the Arcade's pass `vip` (on sale since 2026-11-01). The checker asks the platform which
 // passes the player holds (SDK 19.0.0) and answers `vip: true | false`; when the platform could not
@@ -20,6 +29,10 @@
 //   pretendVip(on)      the dev menu's toggle: isVip() follows at once, then the server's word
 //   pretending()        the toggle's state, for the menu
 //   vipFields()         what a call to the checker carries for it (claims.ts, suitcase.ts)
+//   onVipGift(fn)       hear each gift the checker paid (welcome before daily), once per id; one paid
+//                       before anything listens is handed to the first listener. Returns the unsubscribe
+//   VIP_WELCOME, VIP_DAILY, VIP_WELCOME_SIZE, VIP_DAILY_SIZE   the gifts' sizes (src/net/helper-ids.json,
+//                       the copy the checker compiles in), for the screens' words
 //
 // The checker is asked at boot (the events read, src/net/suitcase.ts, says VIP; with the events off,
 // loadVip asks), again when the toggle moves, by recheckVip, and an answer that asked says too (`vip`
@@ -33,6 +46,8 @@ import { gem } from "../gem";
 import { noAnswer, refusalOf } from "./no-answer";
 import { backoff, heard as paced, held, whenDue } from "./pace";
 import { readChoices } from "../ui/choices";
+import HELPERS from "./helper-ids.json";
+import type { HelperKind } from "./helpers";
 import IDS from "./suitcase-ids.json";
 
 /** Framed by the platform: another origin's frame (as src/net/helpers.ts). */
@@ -55,8 +70,17 @@ let fails = 0;
 let again: (() => void) | null = null;
 const listeners = new Set<(vip: boolean) => void>();
 
+/** The server's last word this session (null: none yet), apart from the pretend's own. */
+let serverSaid: boolean | null = null;
+
 function set(next: boolean, fromServer: boolean): void {
-  if (fromServer) known = true;
+  if (fromServer) {
+    known = true;
+    const was = serverSaid;
+    serverSaid = next;
+    // the server's word turns VIP on (the first word, a purchase, a sign-in, the pretend): its gifts
+    if (next && was !== true) askGift();
+  }
   if (next === vip) return;
   vip = next;
   for (const fn of [...listeners]) {
@@ -152,6 +176,8 @@ function listen(): void {
     gem.me.passes.on("changed", (passes) => {
       const says = passes.some((p) => p.pass === "vip" && p.held);
       if (!known || says !== vip) recheckVip();
+      // a new membership, a renewal or a new day while VIP: its gifts (asked only once the server says VIP)
+      if (says) askGift();
     });
   } catch (err) {
     console.warn(`[vip] the pass listener could not be attached: ${refusalOf(err)}`);
@@ -212,4 +238,168 @@ export async function pretendVip(on: boolean): Promise<void> {
   if (!framed) return;
   fails = 0;
   await read();
+}
+
+// ------------------------------------------------------------------ VIP's gifts
+
+type Sizes = Readonly<Record<HelperKind, number>>;
+const KINDS: readonly HelperKind[] = ["hint", "undo", "shuffle"];
+const sizes = (g: Partial<Record<HelperKind, number>> | undefined): Sizes =>
+  Object.freeze({ hint: g?.hint ?? 0, undo: g?.undo ?? 0, shuffle: g?.shuffle ?? 0 });
+const total = (g: Sizes): number => KINDS.reduce((n, k) => n + g[k], 0);
+
+/** The welcome gift, once a membership (3 Hints, 2 Undos, 3 Shuffles). */
+export const VIP_WELCOME: Sizes = sizes(HELPERS.vip.welcome);
+/** The welcome's helpers in all (8). */
+export const VIP_WELCOME_SIZE: number = total(VIP_WELCOME);
+/** The day's gift by the day of the player's week, Monday first (7 of them). */
+export const VIP_DAILY: readonly Sizes[] = Object.freeze(HELPERS.vip.daily.map((g) => sizes(g)));
+/** One day's helpers (2; the largest day's, should the days ever differ). */
+export const VIP_DAILY_SIZE: number = Math.max(...VIP_DAILY.map(total));
+
+export type VipGiftKind = "daily" | "welcome";
+export interface VipGift {
+  kind: VipGiftKind;
+  /** The payment's own id (the daily's "vip:<date>", the welcome's "vip-welcome:<end day>"): a gift heard twice shows once. */
+  id: string;
+  /** The gift's size, before the cap (0 for a helper it has none of). */
+  gift: Sizes;
+  /** What reached the stock after the cap: got[k] < gift[k] means the cap clamped it. */
+  got: Sizes;
+  /** The counts just after paying, for the kinds the platform's receipt named. */
+  after?: Partial<Record<HelperKind, number>>;
+  /** The daily's day of the player's week, Monday 1 .. Sunday 7. */
+  day?: number;
+}
+
+const giftListeners = new Set<(g: VipGift) => void>();
+/** Paid before anything listened: handed to the first listener. */
+const unheard: VipGift[] = [];
+/** Ids already handed on this session. */
+const handed = new Set<string>();
+
+/** Hear each gift the checker paid, once per id (welcome before daily). Returns the unsubscribe. */
+export function onVipGift(fn: (g: VipGift) => void): () => void {
+  giftListeners.add(fn);
+  for (const g of unheard.splice(0)) hand(g);
+  return () => void giftListeners.delete(fn);
+}
+
+function hand(g: VipGift): void {
+  if (!giftListeners.size) {
+    unheard.push(g);
+    return;
+  }
+  for (const fn of [...giftListeners]) {
+    try {
+      fn(g);
+    } catch (err) {
+      console.warn("[vip] a gift listener failed:", err);
+    }
+  }
+}
+
+const whole = (x: unknown): number | null => (typeof x === "number" && Number.isInteger(x) && x >= 0 ? x : null);
+
+/** Each helper's number in a gift's record; null when `all` and one is missing. */
+function counts(r: unknown, all: boolean): Partial<Record<HelperKind, number>> | null {
+  const o = (r ?? {}) as Record<string, unknown>;
+  const out: Partial<Record<HelperKind, number>> = {};
+  for (const k of KINDS) {
+    const n = whole(o[k]);
+    if (n !== null) out[k] = n;
+    else if (all) return null;
+  }
+  return out;
+}
+
+/** One gift of the checker's answer, as the game reads it; null when it is not the shape. */
+function giftOf(x: unknown): VipGift | null {
+  const g = (x ?? {}) as Record<string, unknown>;
+  if ((g.kind !== "daily" && g.kind !== "welcome") || typeof g.id !== "string" || !g.id) return null;
+  const gift = counts(g.gift, true);
+  const got = counts(g.got, true);
+  if (!gift || !got) return null;
+  const after = counts(g.after, false) ?? {};
+  const day = whole(g.day);
+  return {
+    kind: g.kind,
+    id: g.id,
+    gift: sizes(gift),
+    got: sizes(got),
+    ...(Object.keys(after).length ? { after } : {}),
+    ...(g.kind === "daily" && day !== null ? { day } : {}),
+  };
+}
+
+let gifting = false;
+let giftAgain = false;
+let giftFails = 0;
+let giftRetry: (() => void) | null = null;
+let giftGather: number | undefined;
+/** The channel's checker does not know the gifts (an older one): asked no more this session. */
+let giftUnknown = false;
+
+/**
+ * Ask the checker for VIP's gifts, once the server says VIP (never on the browser's word): one ask
+ * for calls within GATHER_MS, one more after an ask already out, through src/net/pace.ts.
+ */
+function askGift(): void {
+  if (!framed || giftUnknown) return;
+  if (gifting) {
+    giftAgain = true;
+    return;
+  }
+  if (giftGather !== undefined) return;
+  giftGather = window.setTimeout(() => {
+    giftGather = undefined;
+    giftFails = 0;
+    giftLater(0);
+  }, GATHER_MS);
+}
+
+function giftLater(ms: number): void {
+  giftRetry?.();
+  giftRetry = whenDue(ms, () => {
+    giftRetry = null;
+    void askGiftNow();
+  });
+}
+
+async function askGiftNow(): Promise<void> {
+  if (!framed || gifting || serverSaid !== true) return; // not VIP (now): nothing to ask
+  if (held() > 0) return giftLater(held());
+  gifting = true;
+  giftAgain = false;
+  let again = false;
+  try {
+    await gem.awaitIdentity(10_000);
+    const a = (await gem.functions.invoke({ v: 1, what: "vip_gift", ...vipFields() })).json() as Record<string, unknown>;
+    if (a.status === "retry") throw new Error(`the checker answered retry ${String(a.reason ?? "")}`);
+    if (a.status !== "vip_gift") {
+      // the channel's checker predates the gifts: nothing to ask of it this session
+      giftUnknown = true;
+      console.warn(`[vip] the checker here pays no VIP gifts (it answered ${String(a.status)} ${String(a.reason ?? "")})`);
+      return;
+    }
+    heardVip(a);
+    const gifts = (Array.isArray(a.gifts) ? a.gifts : []).map(giftOf).filter((g): g is VipGift => !!g && !handed.has(g.id));
+    gifts.sort((x, y) => (x.kind === y.kind ? 0 : x.kind === "welcome" ? -1 : 1));
+    if (gifts.length) void import("./helpers").then((m) => m.helpers.refresh());
+    for (const g of gifts) {
+      handed.add(g.id);
+      hand(g);
+    }
+    // an order failed after another landed: ask again on the growing wait (nothing is paid twice)
+    again = typeof a.again === "string";
+    if (!again) giftFails = 0;
+  } catch (err) {
+    paced(err);
+    console.warn(`[vip] the gifts could not be asked: ${noAnswer(err) ? "no answer" : refusalOf(err)}`);
+    again = true;
+  } finally {
+    gifting = false;
+  }
+  if (again) giftLater(backoff(++giftFails, 5000));
+  else if (giftAgain) askGift();
 }

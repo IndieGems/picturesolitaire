@@ -35,6 +35,12 @@
 //! While src/net/suitcase-ids.json says `"on": false`, or for a player who is not VIP, an event
 //! level is refused "vip_only", the read answers no events ("off": true), and no prize is paid.
 //!
+//! VIP'S GIFTS (vip.rs `due`, pay.rs `vip_order`; docs/vip.md; the creator, 2026-11-01): a VIP's
+//! helpers are not free; {"v":1,"what":"vip_gift"} pays a VIP, on their own date, the day's gift (2
+//! helpers, by the day of their week) once a date, and the welcome (8) once a membership, each its
+//! own order, clamped at the cap; the answer lists what it paid and what landed. Not VIP: nothing.
+//! VIP unknown (the pass read failed): nothing, and "retry".
+//!
 //! THE ACHIEVEMENTS (count.rs, docs/achievements.md): after a verified win is paid, one more order
 //! sets every counter to what the record says (progression_max), so earlier wins count too; the
 //! platform unlocks an achievement from it (on release only), and the verdict lists what it
@@ -49,6 +55,7 @@
 pub mod canon;
 pub mod claim;
 pub mod count;
+pub mod gift;
 pub mod pay;
 pub mod progress;
 pub mod rules;
@@ -943,6 +950,39 @@ mod function {
         verdict
     }
 
+    /// The gift's platform (gift.rs): the live calls, for the player who called.
+    struct Live<'a> {
+        player: &'a str,
+    }
+
+    impl crate::gift::Platform for Live<'_> {
+        fn today(&self) -> Result<String, Value> {
+            today_of(self.player)
+        }
+        fn value(&self, id: &str) -> Result<f64, Value> {
+            value_of(self.player, id)
+        }
+        fn place(&self, order: &pay::Order) -> Result<Option<Vec<Value>>, Value> {
+            let body = json!({ "source": "reward", "nonce": order.nonce, "operations": order.operations });
+            let res = api("POST", format!("/v1/inventory/players/{}/orders", self.player), Some(body)).map_err(|e| {
+                host::log(LogLevel::Warn, &format!("order {}: no answer: {e}", order.nonce));
+                retry("platform")
+            })?;
+            if res.status == 409 {
+                host::log(LogLevel::Info, &format!("order {}: landed before", order.nonce));
+                return Ok(None);
+            }
+            if !(200..300).contains(&res.status) || res.body["status"] == "failed" {
+                host::log(LogLevel::Warn, &format!("order {} answered {}: {}", order.nonce, res.status, res.body));
+                return Err(retry(if passing(res.status) { "platform" } else { "config" }));
+            }
+            Ok(Some(res.body["changes"].as_array().cloned().unwrap_or_default()))
+        }
+        fn log(&self, line: &str) {
+            host::log(LogLevel::Info, line);
+        }
+    }
+
     /// VIP for this call, read at most once and only when the call needs it: Ok(VIP or not), or
     /// Err(why it is unknown), the reason of the "retry" that holds a claim needing it.
     type VipWord<'a> = &'a dyn Fn() -> Result<bool, &'static str>;
@@ -953,7 +993,7 @@ mod function {
     /// body not the documented shape). A failure is never "not VIP". One log line a read, with no
     /// player id, says whether `vip` was in the list at all: a pass the platform has not marked
     /// visible to games is left out, and every player then reads as not VIP.
-    fn platform_vip(game: &str) -> Result<bool, &'static str> {
+    fn platform_vip(game: &str) -> Result<vip::Passes, &'static str> {
         let res = match api("GET", format!("/v1/games/{game}/players/me/passes"), None) {
             Ok(r) => r,
             Err(e) => {
@@ -970,7 +1010,7 @@ mod function {
             Some(p) => {
                 let held = if !p.listed { "" } else if p.held { ", held" } else { ", not held" };
                 host::log(LogLevel::Info, &format!("vip pass read: vip {} ({} listed){held}", if p.listed { "listed" } else { "NOT listed" }, p.count));
-                Ok(p.held)
+                Ok(p)
             }
             None => {
                 host::log(LogLevel::Warn, "vip pass read: not the documented shape");
@@ -990,22 +1030,23 @@ mod function {
             }
             let asked = serde_json::from_slice::<Value>(&input).unwrap_or(Value::Null);
             // VIP for this call (vip.rs), asked of the platform once, and only by a call that needs it
-            // (the VIP ask, the events read, an event level, a past daily). An answer that asked says
+            // (the VIP ask, the VIP gift, the events read, an event level, a past daily). An answer that asked says
             // it, so the game follows the server; one that did not, or could not, says nothing about
             // VIP, and the game keeps what it had.
-            let word: std::cell::OnceCell<Result<bool, &'static str>> = std::cell::OnceCell::new();
+            let read: std::cell::OnceCell<Result<vip::Passes, &'static str>> = std::cell::OnceCell::new();
+            let platform = || *read.get_or_init(|| platform_vip(&ctx.game_id));
             let vip = || -> Result<bool, &'static str> {
-                *word.get_or_init(|| {
-                    let platform = platform_vip(&ctx.game_id);
-                    match vip::decide(&ctx.channel, &asked, platform.ok()) {
-                        Some(v) => Ok(v),
-                        None => Err(platform.err().unwrap_or("vip_unknown")),
-                    }
-                })
+                let p = platform();
+                match vip::decide(&ctx.channel, &asked, p.ok().map(|p| p.held)) {
+                    Some(v) => Ok(v),
+                    None => Err(p.err().unwrap_or("vip_unknown")),
+                }
             };
             let said = |mut v: Value| -> Result<Vec<u8>, String> {
-                if let Some(Ok(known)) = word.get() {
-                    v["vip"] = json!(known);
+                if read.get().is_some() {
+                    if let Ok(known) = vip() {
+                        v["vip"] = json!(known);
+                    }
                 }
                 Ok(v.to_string().into_bytes())
             };
@@ -1014,6 +1055,9 @@ mod function {
                     Ok(_) => json!({ "v": 1, "status": "vip" }),
                     Err(why) => retry(why),
                 });
+            }
+            if asked["what"] == "vip_gift" {
+                return said(crate::gift::vip_gift(&Live { player: &player }, vip(), platform().ok()));
             }
             if asked["what"] == "suitcase" {
                 return said(match vip() {

@@ -11,7 +11,7 @@ The game never prices it or describes the Arcade's own perks; the SDK's `docs/ar
   `platform_vip` in `lib.rs`) asks the platform which passes the player who called holds
   (`GET /v1/games/{game}/players/me/passes`, gem-api#4337): VIP is a `vip` entry with `held: true`.
   Listed and not held, or not listed at all, is not VIP. It asks only on a call that needs it (the
-  VIP ask, the events read, an event level, a past daily), and logs, once per read and with no
+  VIP ask, the VIP gift, the events read, an event level, a past daily), and logs, once per read and with no
   player id, whether `vip` was in the list at all: the platform lists only passes it has marked
   visible to games, and an unmarked `vip` would read as nobody holding it.
 - **A failed read is unknown, never "not VIP" and never VIP.** An event level's or a past daily's
@@ -28,18 +28,34 @@ The game never prices it or describes the Arcade's own perks; the SDK's `docs/ar
 
 ## The perks
 
-1. **Helpers are free and unlimited.**
-   - A VIP uses Hint, Undo and Shuffle without spending stock. Their stock stays as it was, for when
-     VIP ends.
-   - Each button gets a short cooldown after use, shown as a countdown on the button, so it can't be
-     spammed: Hint and Shuffle about 10 s, Undo about 1 s (undoing several moves in a row is
-     ordinary play). The values are tunable.
+1. **VIP gives helpers** (the creator, 2026-11-01, after Jade Match, replacing free and unlimited
+   helpers). A VIP's Hint, Undo and Shuffle spend stock like anyone's, with no cooldown, and mercy
+   help (the announced free helper after repeated stuck tries) applies to VIPs again.
+   - **A daily VIP gift: 2 helpers a day**, on the player's own date (the platform's, never the
+     device's), once a date. It follows the day of the player's week, Monday first, so a week brings
+     5 Hints, 4 Undos and 5 Shuffles: Monday Hint + Undo, Tuesday Shuffle + Hint, Wednesday Undo +
+     Shuffle, Thursday Hint + Undo, Friday Shuffle + Hint, Saturday Undo + Shuffle, Sunday Hint +
+     Shuffle. A day the player doesn't open the game is not saved up.
+   - **A welcome gift, once a membership: 3 Hints, 2 Undos, 3 Shuffles (8).** A membership is told
+     by its end date: the server keeps the end date of the membership it last welcomed
+     (`vip_welcome_end`), and one ending later is a new one. So a membership bought after the last
+     one ended is welcomed again, one extended before it ends is not, and one membership is never
+     welcomed twice. A pass with no end (granted by support) is welcomed once, for good.
+   - **Helpers only**, never Coins or Gems: a membership bought with money pays none of the Arcade's
+     currencies. Each gift is clamped at the cap of 20, as every other gift is, and the game is told
+     what actually landed, so a full stock shows as full rather than as a gift.
+   - **Who pays and when.** The win checker pays both (`{"v":1,"what":"vip_gift"}`,
+     `functions/checker/src/gift.rs`; who is VIP and when a gift is due: `vip.rs` `due`), each gift in
+     its own order with its own key (`vip:<date>`, `vip-welcome:<end day>`), so asking twice pays
+     once. It reads the pass itself: not VIP pays nothing, and a failed read pays nothing and is
+     asked again. The game (`src/net/vip.ts`) asks once the server says VIP (at boot, after a
+     purchase or a sign-in) and again whenever the Arcade's pass reading changes while it says VIP,
+     which also brings a new day's gift on coming back to the game. It hands each gift paid to the
+     gift cards (UI's) and reads the stock again. The sizes are `src/net/helper-ids.json` `vip`, the
+     copy the checker compiles in. With the dev Pretend on, the server welcomes the pretend once
+     every 30 days, as a 30-day membership.
    - Every level stays winnable with no helper (AGENTS.md), so VIP never decides whether a level can
      be won.
-   - Known limit, left for now (the lead, 2026-11-01): the win checker takes at most 100 shuffles in
-     one level's line (`SHUFFLES` in `functions/checker/src/claim.rs`), so a VIP who shuffles for about
-     17 minutes on one level would have that win refused. Raise it the next time the checker is
-     rebuilt for something else.
 2. **The daily archive.**
    - VIPs can play past days' dailies from a calendar opened from home's Daily tile.
    - It starts with about the past month, then follows the game standard's window: the player's
@@ -86,5 +102,3 @@ borrowing switches back to one they own.
 verified first win of the day posts, helpers or not (the creator's final word).
 
 Not now (the creator, 2026-10-30): a VIP-only table or soundtrack, a VIP passport.
-
-Still to ask the platform: whether a game may say "free for VIP" on its own screens.
