@@ -1,0 +1,48 @@
+/* THE BACK BUTTON'S TRIAL LOOKS (back-looks.ts; the creator, 2026-11-02): loaded with that file only, outside a
+   release build. Every Back keeps the button material (a lip and a drop shadow), never the amber main action's
+   colours; the title pill gives Back the room each look needs, so neither touches the gear. */
+
+/* ---- A: Labelled pill: "← Back" on a wider, taller red pill ---- */
+html[data-back-look="a"] { --bk-w: 112px; --bk-h: 52px; }
+html[data-back-look="a"] .btn.top-back {
+  width: auto; min-width: var(--bk-w); height: var(--bk-h); padding: 0 18px 0 14px; gap: 6px; border-radius: 999px;
+  top: calc(var(--gem-mid) - var(--bk-h) / 2);
+}
+html[data-back-look="a"] .btn.top-back :is(svg, .ico) { width: 24px; height: 24px; }
+html[data-back-look="a"] .bk-word { font: 700 18px/1 var(--round); color: #fff; letter-spacing: 0.01em; }
+html[data-back-look="a"] .top-pill { right: calc(var(--row-right) + var(--gear-room) + var(--bk-w) + 12px); }
+
+/* ---- B: Bold ring: a bigger red disc in a thick white ring, a stronger shadow; one bounce as a screen opens ---- */
+html[data-back-look="b"] { --bk: 58px; }
+html[data-back-look="b"] .btn.top-back {
+  --size: var(--bk); top: calc(var(--gem-mid) - var(--bk) / 2); border: 4px solid #fff;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.24), inset 0 -2px 4px rgba(60, 0, 0, 0.3), 0 6px 0 #651416, 0 12px 20px rgba(6, 12, 24, 0.6), 0 0 0 1px rgba(6, 12, 24, 0.25);
+}
+html[data-back-look="b"] .btn.top-back :is(svg, .ico) { width: 28px; height: 28px; }
+html[data-back-look="b"] .top-pill { right: calc(var(--row-right) + var(--gear-room) + var(--bk) + 12px); }
+html[data-back-look="b"] .screen:not([hidden]) > .btn.top-back { animation: bk-bounce 0.75s cubic-bezier(0.3, 1.6, 0.5, 1) 0.3s 1 both; }
+@keyframes bk-bounce {
+  0% { scale: 1; }
+  35% { scale: 1.22; }
+  65% { scale: 0.94; }
+  100% { scale: 1; }
+}
+html:is(.less-motion, .battery-saver)[data-back-look="b"] .screen:not([hidden]) > .btn.top-back { animation: none; }
+@media (prefers-reduced-motion: reduce) { html[data-back-look="b"] .screen:not([hidden]) > .btn.top-back { animation: none; } }
+
+/* ---- C: Joined title: the round red Back set into the title pill's left end ---- */
+html[data-back-look="c"] .btn.top-back { left: var(--row-left); right: auto; }
+html[data-back-look="c"] .top-pill {
+  left: var(--row-left); right: calc(var(--row-right) + var(--gear-room)); max-width: 420px;
+  padding-left: calc(var(--btn) + 14px); justify-content: flex-start; border-radius: 999px;
+}
+
+/* ---- D: At the bottom: "← Back" at every menu screen's foot, white; no Back in the top row ---- */
+html[data-back-look="d"] .screen.menu-screen > .btn.top-back { display: none; }
+html[data-back-look="d"] .screen.menu-screen > .top-pill { right: calc(var(--row-right) + var(--gear-room)); }
+html[data-back-look="d"] .screen.menu-screen { padding-bottom: calc(var(--foot) + 70px); }
+.btn.bk-foot {
+  position: absolute; z-index: 3; left: 50%; bottom: calc(var(--foot) + 6px); translate: -50% 0;
+  min-width: 200px; min-height: 54px; padding: 0 26px 0 20px; gap: 8px; font: 700 18px/1 var(--round);
+}
+.btn.bk-foot :is(svg, .ico) { width: 24px; height: 24px; }

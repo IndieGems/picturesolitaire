@@ -2727,6 +2727,10 @@ export async function startApp(): Promise<void> {
   // and the chunk; tools/no-dev-menu.mjs checks), and at run time only on the dev channel, or
   // unframed (the play-test tool: no player, nothing to protect).
   if (import.meta.env.MODE !== "release") {
+    // the Back button's trial looks (back-looks.ts; the creator, 2026-11-02), for this page: ?backlook=a..d, the
+    // dev menu's picker, __ps.backLook; temporary, until one is picked
+    const backLook = new URLSearchParams(location.search).get("backlook");
+    if (backLook) void import("./back-looks").then((m) => m.applyBackLook(backLook));
     void (async () => {
       // the Arcade and the Editor frame the game from another origin; the play-test tool frames
       // it from its own page, same origin, with no platform behind it
@@ -2784,6 +2788,10 @@ export async function startApp(): Promise<void> {
           closeSettings();
           pretendAchievements(mix);
           passportUi.openAchievements();
+        },
+        backLook: (look) => {
+          closeSettings();
+          void import("./back-looks").then((m) => m.applyBackLook(look));
         },
         showVipGift: (kind) => {
           closeSettings();
@@ -2862,6 +2870,8 @@ export async function startApp(): Promise<void> {
       vipAbout: () => vipAboutUi.open(),
       /** A member's pass as if it ended at `ms` (null: no end known; undefined: the SDK's word), for the days left. */
       vipEnds: (ms: number | null | undefined) => pretendVipEnds(ms),
+      /** Every Back in trial look "a".."d" ("" as shipped), as the dev menu picks it (back-looks.ts). */
+      backLook: (look: string) => import("./back-looks").then((m) => m.applyBackLook(look)),
       /** The Daily page (its friends: Server's board; none in the play-test tool, which has no platform). */
       dailyPage: () => void dailyUi.openPage(),
       /** The unlock card for these slugs, again and again (past the once-a-session rule), once the screen can take it. */
