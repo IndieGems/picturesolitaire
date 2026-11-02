@@ -108,10 +108,12 @@ buyer's doors open when the checker says so, with no reload. Untangled (`../yarn
   VIP tag, never "Finish an event", which they cannot (a32955bb).
 - **Home's VIP badge** (after Cosmic Commute's): a round gold VIP button beside the wordmark, from the
   first level done, with a shake and a glint every 6 s (none with less motion), still with a tick for a
-  member. It opens the VIP screen: what VIP gives here (the doors' own list, `vipPerks()`), "Other Gem
-  Arcade games give VIP rewards too!" in red, never naming a game or a reward (the Arcade's sheet lists
-  its own perks), and Get VIP; a member reads "You're VIP" and the days left (display only, from the
-  SDK's pass reading) and no Get VIP (e9e325a3).
+  member. It opens the VIP screen: for a player who is not VIP, a gold VIP boarding pass ("FIRST CLASS
+  ✈ VIP", Passenger: You!, Seat 1A; the creator picked it of four looks, cc6a2e42) whose stamped lines
+  are what VIP gives here, then "Other Gem Arcade games give VIP rewards too!" in red on its stub, never
+  naming a game or a reward (the Arcade's sheet lists its own perks), and "Get VIP: board now!"; no
+  price, no "free", no hurry. A member reads "You're VIP" and the days left (display only, from the
+  SDK's pass reading), the perks (`vipPerks()`, the doors' list) and no Get VIP (e9e325a3).
 
 **When VIP ends** the doors lock again, and the player keeps what they earned or bought: every
 event's stamp they won (the Passport's Event stamps page reads `suitcase.stamps()`, which the
