@@ -81,7 +81,11 @@ The game never prices it or describes the Arcade's own perks; the SDK's `docs/ar
    **The schedule** (the creator, 2026-10-30): a new event every two weeks, on the 1st and the 15th. Haunted Holiday
    (15 Oct, the archive's first), Ski Trip (1 Nov), Grand Train Journey (15 Nov), Winter Market (1 Dec), Northern
    Lights (15 Dec), Carnival (1 Jan 2027). Six in all; the themes come from `docs/daily-suitcase.md`'s approved list.
-5. **Every Cosmetic is wearable.**
+5. **Every Cosmetic is wearable: OFF since 2026-11-02** (the creator: "disable that but keep it in
+   case we go back to it"). A VIP buys tables and soundtracks like anyone, Cosmetics shows no VIP
+   banner or marks, and the VIP door lists four perks. The code is kept behind UI's one switch
+   (`VIP_WEARS_ALL` in `src/ui/vip-view.ts`, fe7b1ed5); a VIP wearing a borrowed one when it went off falls back to their own.
+   As it was, and would be again with the switch on:
    - A VIP can choose any table and soundtrack sold in Cosmetics.
    - What a player buys stays in their Arcade inventory, before VIP or during it.
    - When VIP ends, they keep everything they paid for. A table or track they were only borrowing
@@ -99,8 +103,8 @@ buyer's doors open when the checker says so, with no reload. Untangled (`../yarn
 **When VIP ends** the doors lock again, and the player keeps what they earned or bought: every
 event's stamp they won (the Passport's Event stamps page reads `suitcase.stamps()`, which the
 checker answers to anyone, VIP or not), every event table they won and everything bought (all are
-Arcade inventory items, never taken back), and the Coins paid. A table or soundtrack they were only
-borrowing switches back to one they own.
+Arcade inventory items, never taken back), and the Coins paid. (With perk 5's switch on, a table or
+soundtrack they were only borrowing switches back to one they own.)
 
 **The daily's friends leaderboard** (the creator, 2026-10-30): fewest moves, ties to the earlier finish; every
 verified first win of the day posts, helpers or not (the creator's final word).
