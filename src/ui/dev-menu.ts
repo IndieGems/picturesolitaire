@@ -45,7 +45,6 @@ import { suitcases } from "./suitcase-data";
 import { EVENT_ON } from "./event-switch";
 import { pretending, pretendVip } from "../net/vip";
 import { VIP_WEARS_ALL } from "./vip-view";
-import { BACK_LOOKS } from "./back-looks";
 import { keepChoice, readChoices } from "./choices";
 
 /** What vite.config.ts stamps in at build time (its `define`). */
@@ -77,8 +76,6 @@ export interface DevHost {
   showAchievements(mix: boolean): void;
   /** A VIP's gift card over home, as the checker's payment brings it ("daily": today's two; "welcome": the eight). Nothing is paid. */
   showVipGift(kind: "daily" | "welcome"): void;
-  /** Every screen's Back in trial look `look` ("a".."d"; "" as shipped), for this page (back-looks.ts, 2026-11-02). */
-  backLook(look: string): void;
 }
 
 /** What the menu lends the screens back. */
@@ -401,17 +398,6 @@ export function mountDevMenu(host: DevHost): DevMenu {
       return r;
     })(),
     el("p", "dev-note", "The cards over home, as a VIP sees them when the checker pays: nothing is paid, saved or sent."),
-    // the Back button's trial looks (back-looks.ts; the creator, 2026-11-02): temporary, until one is picked
-    (() => {
-      const r = el("div", "dev-row dev-looks");
-      const go = (id: string) => {
-        dialog.close();
-        host.backLook(id);
-      };
-      r.append(btn("", "Back as shipped", () => go("")), ...BACK_LOOKS.map((l) => btn("", l.name, () => go(l.id))));
-      return r;
-    })(),
-    el("p", "dev-note", "Every screen's Back in each trial look, for this page only."),
     setting("Endless helpers", endlessSwitch),
     el("p", "dev-note", "While it's on, every level you open is practice."),
     speedSet,

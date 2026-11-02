@@ -75,6 +75,9 @@
      holds the settings (html.arcade-menu, src/settings-screen.ts), so Back takes the right end */
   --gear-room: calc(var(--btn) + var(--pair-gap));
   --gear-solo: calc(var(--btn) + 12px);
+  /* Back, in words on its red pill (back.ts): its height; its width, as drawn in the player's language, is
+     --back-w (back.ts sets it on :root), the title's room the rest */
+  --back-h: 52px;
   --row-bottom: calc(var(--gem-mid) + var(--row-h) / 2);
   --foot: max(12px, var(--safe-bottom), var(--reserved-bl-height), var(--reserved-br-height));
 
@@ -193,13 +196,13 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
   position: absolute; z-index: 2;
   top: calc(var(--gem-mid) - var(--row-h) / 2); height: var(--row-h);
   left: var(--row-left);
-  right: calc(var(--row-right) + var(--gear-room) + var(--btn) + 12px);
+  right: calc(var(--row-right) + var(--gear-room) + var(--back-w, 112px) + 12px);
   display: flex; align-items: center; justify-content: center; padding: 0 16px;
   font: 600 20px/1 var(--round); letter-spacing: 0.01em; white-space: nowrap; overflow: hidden;
 }
 .top-back {
   position: absolute; z-index: 2;
-  top: calc(var(--gem-mid) - var(--btn) / 2);
+  top: calc(var(--gem-mid) - var(--back-h) / 2);
   right: calc(var(--row-right) + var(--gear-room));
 }
 /* Back, on every screen that has it (the creator: 2026-10-30, white frosted was hard to find, so navy;
@@ -208,7 +211,10 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
    tag's coral so it never reads as a mark, a warning or the amber main action; still a button (its lip,
    a shade darker, and its drop shadow); pressed, it sinks onto its lip as every button does; keyboard
    focus is a white ring on the fill and the amber outline around it */
+/* and in words (the creator's pick, 2026-11-02, "A: Labelled pill": "needs to be immediately findable"): the arrow
+   and "Back" in the player's language on a wider pill, 52 px tall, in the same place (back.ts puts the word on) */
 .btn.top-back {
+  width: auto; min-width: 104px; height: var(--back-h); padding: 0 18px 0 14px; gap: 6px; border-radius: 999px;
   color: #fff;
   background: linear-gradient(180deg, #c8332c 0%, #9a1f1f 100%);
   box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.24), inset 0 -2px 4px rgba(60, 0, 0, 0.3), 0 5px 0 #651416, 0 9px 14px rgba(6, 12, 24, 0.45);
@@ -217,6 +223,8 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
   background: linear-gradient(180deg, #b02a26 0%, #841a1b 100%);
   box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.16), inset 0 -2px 4px rgba(60, 0, 0, 0.3), 0 1px 0 #651416, 0 3px 6px rgba(6, 12, 24, 0.4);
 }
+.btn.top-back :is(svg, .ico) { width: 24px; height: 24px; }
+.btn.top-back .back-word { font: 700 18px/1 var(--round); letter-spacing: 0.01em; white-space: nowrap; }
 .btn.top-back:focus-visible {
   outline: 3px solid var(--amber-hi); outline-offset: 3px;
   box-shadow: inset 0 0 0 2px #fff, inset 0 2px 0 rgba(255, 255, 255, 0.24), 0 5px 0 #651416, 0 9px 14px rgba(6, 12, 24, 0.45);
@@ -1740,7 +1748,7 @@ html.less-motion .unlock-card .medal { animation: none; }
    Gem and its wallet, the column's full width, and moves the screen below it down (--row-bottom). */
 .top-row-probe {
   position: absolute; visibility: hidden; pointer-events: none; height: 1px;
-  top: 0; left: var(--row-left); right: calc(var(--row-right) + var(--gear-room) + var(--btn) + 12px);
+  top: 0; left: var(--row-left); right: calc(var(--row-right) + var(--gear-room) + var(--back-w, 112px) + 12px);
 }
 html.row-tight .screen:has(> .top-pill:not([hidden])) {
   --row-bottom: calc(var(--gem-mid) + var(--row-h) / 2 + 8px + 44px);
@@ -1972,6 +1980,15 @@ html.less-motion .btn.daily-go::before, html.battery-saver .btn.daily-go::before
 .daily-archive.promo .daily-day.glass { background: rgba(255, 255, 255, 0.5); opacity: 0.7; }
 .btn.daily-day.amber small, .btn.daily-day.amber b { color: #fff; }
 .btn.daily-unlock { align-self: center; min-width: 240px; min-height: 56px; padding: 0 22px; font-size: 18px; }
+/* a short phone (360x640): the card a little tighter, so it sits whole above the band in a long language too */
+@media (max-height: 700px) {
+  .daily-screen:has(.daily-archive.promo) .scroll { gap: 10px; padding-bottom: 10px; }
+  .daily-screen .daily-archive.promo { padding: 10px 12px 12px; gap: 7px; }
+  .daily-promo-head { font-size: 21px; }
+  .daily-archive.promo .daily-day { min-height: 56px; }
+  .daily-archive.promo .daily-day b { font-size: 20px; }
+  .btn.daily-unlock { min-height: 50px; }
+}
 
 /* the event's strip above the dock (suitcase.ts): one wide button, the suitcase, its name and days */
 .btn.event-strip {
