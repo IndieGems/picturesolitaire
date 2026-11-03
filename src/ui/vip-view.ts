@@ -17,10 +17,10 @@
 //     never on a timer. A read with no reliable answer keeps what was drawn;
 //   - a guest (offers: sign_in_required) gets "Sign in to get VIP" instead (gem.account.requestSignIn),
 //     the closing saves started first, as the Arcade may take the page away to sign in;
-//   - each press calls the Arcade in its own turn, nothing awaited before it, or the Arcade refuses it;
+//   - each press calls the Arcade at once (SDK 20 opens the VIP sheet from any turn; sign-in keeps its press);
 //   - it says what it opens, never a price, and the game never writes the pass's perks: the Arcade's
 //     sheet says what VIP is, in the player's language, sale and all;
-//   - declined (closed, or busy: the Arcade's back-off) shows nothing and never asks again by itself;
+//   - declined (closed, or busy: another Arcade sheet open) shows nothing and never asks again by itself;
 //   - ok, or unavailable/error (the outcome is unknown: they may have paid), asks the server again
 //     (recheckVip). NOTHING HERE OPENS A DOOR: only the server's word does (isVip, onVipChange).
 // A VIP never sees it: the doors are for players who are not, and the Cosmetics banner (while it shows)
@@ -106,7 +106,7 @@ function getVip(): void {
     if (outcome !== "ok") console.info(`[vip] the VIP sheet: ${outcome}${reason ? ` (${reason})` : ""}`);
     // paid (or pending), or nobody knows: the server is asked; it alone opens a door
     if (outcome === "ok" || reason === "error") recheckVip();
-    // closed, or the Arcade's back-off: nothing, and never asked again by itself; anything else
+    // closed, or another Arcade sheet open: nothing, and never asked again by itself; anything else
     // (not on sale here any more, a sign-in wanted, the store off): what the button should be now
     if (outcome !== "declined") void readOffer();
   });

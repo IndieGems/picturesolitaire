@@ -17,8 +17,8 @@
 //   - A row shows only once the config has priced it on this channel, and none where the Arcade cannot
 //     draw its purchase sheet (a TV, an older Arcade); the Starter Kit only once the platform has said
 //     it is still the player's to buy.
-//   - The press calls the Arcade in its own turn (stock.buyBundle, nothing awaited first). declined (the
-//     sheet closed, the Arcade's back-off) shows nothing; unknown (they may have paid) shows nothing but
+//   - The press calls the Arcade at once (stock.buyBundle). declined (the sheet closed, or another
+//     Arcade sheet open) shows nothing; unknown (they may have paid) shows nothing but
 //     the stock as re-read; the new stock shows as soon as it lands (the shop redraws on stock.onChange).
 
 import { locale, t } from "./i18n";
@@ -67,7 +67,7 @@ export function bundleWords(answer: BundleAnswer, b: Bundle | undefined): { text
   if (answer === "ok" && b) return { text: t("bundle.got", { contents: contentsWords(b.contents) }), good: true };
   if (answer === "short") return { text: t("bundle.short"), good: false };
   if (answer === "failed") return { text: t("shop.failed"), good: false };
-  // declined (closed, the Arcade's back-off), unknown (the stock re-read says it), full and gone (the
+  // declined (closed, or another Arcade sheet open), unknown (the stock re-read says it), full and gone (the
   // row goes, and the room line says why): nothing
   return null;
 }

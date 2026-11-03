@@ -59,8 +59,8 @@ export interface Bundle {
 }
 /**
  * A bundle's purchase (agreed with UI, 2026-11-01): "ok" (the platform confirmed it; the stock was
- * read again); "declined" (the player closed the sheet, or no press was behind the ask, or the
- * Arcade's back-off after a cancel: show nothing, never ask again by itself); "short" (not enough
+ * read again); "declined" (the player closed the sheet, or another Arcade sheet was
+ * open (busy): show nothing, never ask again by itself); "short" (not enough
  * Gems: say so in the shop's own words, never a top-up); "full" (a grant would pass the cap:
  * nothing asked or charged); "gone" (the Starter Kit was bought before); "unknown" (no reliable
  * answer: the player may have paid; the stock was read again, so redraw from it, and never ask
@@ -536,7 +536,7 @@ export const helpers = {
     }
     if (bundleBuying) return Promise.resolve("declined");
     bundleBuying = true;
-    // first thing in the press: the Arcade opens its sheet only in answer to one
+    // asked first thing in the press, so the sheet opens at once (SDK 20 needs no press for it)
     let asked: Promise<{ outcome: string; reason?: string }>;
     try {
       asked = gem.purchases.request({ kind: "recipe", catalogId: IDS.catalog, targetId: b.id, currencySlug: "GEMS", quantity: 1 });
