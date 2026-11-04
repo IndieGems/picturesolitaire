@@ -69,6 +69,7 @@ import { clock, longDate, shortDate } from "./format";
 import { claimWin, cueCoins, onVerdict, type Verdict } from "../net/claims";
 import { KEEPSAKE } from "../net/keepsake";
 import { knownTable, startTables, tableChoiceRead, tableTitle, thumbOf, tryTable, warmThumbs, wearTable, type TryTable } from "./tables";
+import { startTracks } from "./tracks";
 import { keepFitted } from "./fit";
 import { cardAspect, syncCardAspect } from "./cards";
 import { createViewer } from "./viewer";
@@ -2677,6 +2678,10 @@ export async function startApp(): Promise<void> {
   // the player's table, which home now shows (tables.ts): read and laid before home appears, in the
   // same capped wait, so a Winter Dusk owner never sees the sunny home turn snowy
   void startTables();
+  // and the player's soundtrack (tracks.ts), from the same one read: the first screen never waits for
+  // it; the music does, capped (src/audio/index.ts, trackChoiceRead). Uncalled from fea24dd9 until QA
+  // found it on 2026-11-04: a bought and chosen track played Sunny Day again every new session
+  void startTracks();
   await waitForProgress(1000);
   // THE FIRST LOAD CARRIES ONLY HOME (the creator, 2026-10-28: "it should load very quickly… then
   // load the rest smartly in the background as needed"): the player's trip (its boards and postcards,
