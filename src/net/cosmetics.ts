@@ -5,12 +5,15 @@
 // "buy-<item slug>". The event tables (the suitcase's, Winter Market, the onboarding keepsake)
 // have no offer, so nothing here can sell one.
 //
-// A BUY CHARGES ONCE AND GRANTS ONCE (the inventory-and-catalogs skill): it is the same direct
-// platform order as a helper's (src/net/helpers.ts), which debits the Coins and grants the item
-// in one step on the server, reversing the debit if the grant fails. Each offer may be used once
-// per player, ever (max_uses 1), and the item stacks to 1: a second buy, a double press, or a
-// resend after an unanswered one is refused before any Coins move. This file never resends: a
-// buy with no answer reads the bag, and says "ok" only if the item is there.
+// A BUY CHARGES ONCE AND GRANTS ONCE (the inventory-and-catalogs skill): like a helper's
+// (src/net/helpers.ts) it goes through the ARCADE'S purchase sheet (gem.purchases.request) wherever
+// the Arcade can draw one: since 2026-11-04 the platform refuses a website guest's direct Coins
+// spend (403 guest_upgrade_required), and the sheet shows a guest its own sign-up card instead.
+// Only without a sheet (a TV, an older Arcade) is it the direct platform order. Either way the
+// server debits the Coins and grants the item in one step, reversing the debit if the grant fails.
+// Each offer may be used once per player, ever (max_uses 1), and the item stacks to 1: a second
+// buy, a double press, or a resend after an unanswered one is refused before any Coins move. This
+// file never resends: a buy with no answer reads the bag, and says "ok" only if the item is there.
 //
 // No Coins balance is ever drawn (the Arcade's wallet is the only one): the Coins are read
 // only to grey a price button, which stays pressable and answers in words.
@@ -42,8 +45,13 @@ const CATALOG = "cosmetics";
 const offerSlug = (slug: string): string => `buy-${slug}`;
 
 export type CosmeticKind = "table" | "track";
-/** ok: bought (or already bought and now known); owned: it was already the player's, nothing charged; short: not enough Coins; failed: not now. */
-export type BuyAnswer = "ok" | "owned" | "short" | "failed";
+/**
+ * ok: bought (or already bought and now known); owned: it was already the player's, nothing charged;
+ * short: not enough Coins; failed: not now; declined: the Arcade's sheet closed, a guest shown its
+ * sign-up card, or any other refusal (say nothing); unknown: the sheet gave no reliable answer and
+ * the bag, read again, does not hold it (say nothing, never ask again by itself).
+ */
+export type BuyAnswer = "ok" | "owned" | "short" | "failed" | "declined" | "unknown";
 
 /** Every item for sale, in the screen's order: the shop tables, then the soundtracks. */
 export const FOR_SALE: readonly { slug: string; kind: CosmeticKind; title: string }[] = [
@@ -110,6 +118,52 @@ async function holdsNow(slug: string): Promise<boolean> {
   return (await rereadOwned()).has(slug);
 }
 
+/**
+ * A buy on the Arcade's sheet (cosmetics.buy): the Arcade confirms the spend in its own words, and
+ * shows a guest its sign-up card, then brings them back. ok: owned, the bag and the Coins read
+ * again. declined: nothing said (closed, a guest, a refusal), but for not enough Coins and already
+ * owned. unavailable or a failed call: the bag says ("unknown" if it does not hold it).
+ */
+async function buyOnSheet(slug: string, recipe: string, catalog: string): Promise<BuyAnswer> {
+  let res: { outcome: string; reason?: string };
+  try {
+    res = await gem.purchases.request({ kind: "recipe", catalogId: catalog, targetId: recipe, currencySlug: COINS, quantity: 1 });
+  } catch (err) {
+    // the call itself failed (no bridge): nobody knows, so the bag says
+    console.warn(`[cosmetics] buying ${slug}: ${refusalOf(err)}`);
+    return (await holdsNow(slug)) ? "ok" : "unknown";
+  }
+  const reason = res.reason ?? "";
+  if (res.outcome === "ok") {
+    // the platform confirmed: owned from now on, whatever an older read says
+    boughtNow(slug);
+    gem.me.inventory.refresh();
+    void readCoins().then(changed);
+    return "ok";
+  }
+  if (res.outcome === "unavailable") {
+    console.warn(`[cosmetics] buying ${slug}: no reliable answer (${reason || "none"}); the bag was read again`);
+    return (await holdsNow(slug)) ? "ok" : "unknown";
+  }
+  if (reason === "cancelled" || reason === "busy") return "declined";
+  console.warn(`[cosmetics] buying ${slug} was declined: ${reason || "no reason"}`);
+  if (reason === "insufficient_funds") {
+    void readCoins().then(changed);
+    return "short";
+  }
+  if (reason === "recipe_max_uses_exceeded" || reason === "item_max_stack_exceeded") {
+    // bought before (another device, or a buy whose answer was lost): nothing was charged now
+    boughtNow(slug);
+    return "owned";
+  }
+  if (reason === "price_mismatch" || reason === "config_version_stale" || reason === "not_purchasable") {
+    // the catalog moved; nothing was charged. Read it again at the next open.
+    catalogId = null;
+    offers.clear();
+  }
+  return "declined";
+}
+
 export const cosmetics = {
   /**
    * Call when the screen opens: the prices (once a session, from the game config) and the Coins
@@ -150,6 +204,18 @@ export const cosmetics = {
     if (!framed || buying || held() > 0) return "failed";
     const offer = offers.get(slug);
     if (!offer || !catalogId) return "failed";
+    if (gem.frame?.parentSupports("purchases")) {
+      // on the Arcade's sheet, asked first thing in the press, nothing awaited before it (a Buy on a
+      // stale screen for an item already owned is refused before any charge: "owned")
+      buying = true;
+      try {
+        return await buyOnSheet(slug, offer.recipe, catalogId);
+      } finally {
+        buying = false;
+        changed();
+      }
+    }
+    // the direct order, only where the Arcade cannot draw its sheet
     if (await ownsTable(slug)) return "owned"; // the one shared read holds tables and tracks alike
     buying = true;
     try {

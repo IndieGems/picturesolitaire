@@ -139,7 +139,9 @@ export function createHomeShop(shop: Shop) {
     const answer: BuyAnswer = await buyFrom(shop, b, k, pack, "home");
     busy = false;
     if (veil.hidden) return;
-    said[k] = answer === "ok" ? { text: t(`shop.got.${k}`, { count: pack }), good: true } : { text: refusalWords(shop, k, pack, answer), good: false };
+    // a closed sheet, a guest shown the Arcade's sign-up card, or no reliable answer: nothing said
+    const words = answer === "ok" ? t(`shop.got.${k}`, { count: pack }) : refusalWords(shop, k, pack, answer);
+    if (words) said[k] = { text: words, good: answer === "ok" };
     draw();
     if (answer === "ok") {
       const pic = veil.querySelector<HTMLElement>(`.shop-item[data-kind="${k}"] .item-pic`);

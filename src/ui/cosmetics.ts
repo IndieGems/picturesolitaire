@@ -445,9 +445,10 @@ export function createCosmetics(nav: Nav) {
       else await chooseTrack(id);
       if (kind === "track" && listening) stopListening(false);
       said.set(id, { text: t(answer === "ok" ? "cosmetics.bought" : "cosmetics.had"), good: true });
-    } else {
+    } else if (answer === "short" || answer === "failed") {
       said.set(id, { text: t(answer === "short" ? "cosmetics.short" : "shop.failed"), good: false });
     }
+    // declined (the Arcade's sheet closed, a guest shown its sign-up card) and unknown: nothing said
     await refresh();
     if (answer === "ok") screen.querySelector<HTMLElement>(`[data-id="${id}"]`)?.classList.add("grew");
   }

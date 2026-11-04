@@ -13,11 +13,13 @@
 //
 // Prices are the game config's (Server's helpers.ts reads them), one price everywhere,
 // never written here, and shown with the Arcade's own Coin (coin.ts). The pack's button
-// is left out while the config sells no pack. Buying goes through the platform: the
-// button says "Buying…", then the stock is read again. Bought: the panel closes and the
-// helper is used at once (the player tapped it to use it). Refused: said plainly on the
-// panel (not enough Coins, or no room under the cap), and the panel stays; no answer at
-// all: "try again" (a purchase is never retried by itself).
+// is left out while the config sells no pack. Buying goes through the Arcade's purchase
+// sheet (2026-11-04; Server's helpers.ts): the button says "Buying…" while it is up, then
+// the stock is read again. Bought: the panel closes and the helper is used at once (the
+// player tapped it to use it). Not enough Coins, or no room under the cap: said plainly on
+// the panel, which stays. The sheet closed, or a guest shown the Arcade's sign-up card:
+// nothing said. No reliable answer: nothing said, the panel drawn from the stock as read
+// again (bought after all: the helper is used). A purchase is never retried by itself.
 //
 // Under them, "Or get a bundle": the Gems bundles that fit (bundle-rows.ts, the creator,
 // 2026-11-01), each with its Gems price; one bought closes the panel and uses the helper at once,
@@ -39,8 +41,12 @@ import type { Bundle, BundleAnswer, BundleSlug } from "./stock";
 export type HelperKind = "undo" | "hint" | "shuffle";
 export type Pack = 1 | 3;
 
-/** What buying answered: bought, not enough Coins, no room under the cap, or no answer. */
-export type BuyAnswer = "ok" | "short" | "full" | "failed";
+/**
+ * What buying answered: bought, not enough Coins, no room under the cap, or no answer (failed); on
+ * the Arcade's sheet also declined (closed, a guest shown the Arcade's sign-up card, any refusal) and
+ * unknown (no reliable answer; the stock was read again), both said nowhere.
+ */
+export type BuyAnswer = "ok" | "short" | "full" | "failed" | "declined" | "unknown";
 
 /** What the shops read and do (stock.ts, over Server's helpers.ts). */
 export interface Shop {
@@ -214,7 +220,8 @@ export function createRunOut(shop: Shop, bought: (k: HelperKind) => void) {
     const answer = await buyFrom(shop, btn, kind, pack, "run_out");
     busy = false;
     if (veil.hidden) return;
-    if (answer === "ok") {
+    // bought, or an outcome nobody knows whose re-read stock shows the helper came (it opened at none)
+    if (answer === "ok" || (answer === "unknown" && shop.count(kind) > 0)) {
       close();
       bought(kind);
       return;

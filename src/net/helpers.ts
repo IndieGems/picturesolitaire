@@ -14,10 +14,14 @@
 //                                  late sends nothing again, so no use is taken twice). "none":
 //                                  the platform had none left (spent on another device); the
 //                                  count is read again and the act stands.
-//   buy(k, pack)                   one, or a pack of 3, for Coins: the platform's direct
-//                                  purchase (no sheet: call it from the press). One that would
-//                                  pass the cap is refused before anything is charged (fits).
-//                                  Never retried by itself.
+//   buy(k, pack)                   one, or a pack of 3, for Coins, through the ARCADE'S purchase
+//                                  sheet (gem.purchases.request) wherever it can draw one: since
+//                                  2026-11-04 the platform refuses a website guest's direct Coins
+//                                  spend (403 guest_upgrade_required), and the sheet shows a guest
+//                                  the Arcade's own sign-up card instead. Only where there is no
+//                                  sheet (a TV, an older Arcade) is it the direct purchase. One
+//                                  that would pass the cap is refused before anything is asked
+//                                  (fits). Never retried by itself.
 //   price(k), affordable(k)        the price is the config's alone. The player's Coins are
 //                                  read only to grey a button: the Arcade's wallet is the one
 //                                  place they are shown ("No counter", platform rules).
@@ -42,7 +46,14 @@ import { backoff, heard, held, needsLoad, notNow, whenDue } from "./pace";
 
 export type HelperKind = "hint" | "undo" | "shuffle";
 export type SpendAnswer = "spent" | "held" | "none";
-export type BuyAnswer = "ok" | "short" | "full" | "failed";
+/**
+ * A Coins purchase: "ok" (bought; the stock was read again); "short" (not enough Coins); "full" (no
+ * room under the cap); "failed" (the direct purchase refused, or no answer to it); "declined" (the
+ * Arcade's sheet closed, a guest shown its sign-up card, or any other refusal: say nothing);
+ * "unknown" (the sheet gave no reliable answer: the stock was read again, so draw from it, and never
+ * ask again by itself).
+ */
+export type BuyAnswer = "ok" | "short" | "full" | "failed" | "declined" | "unknown";
 export type Gift = "kit" | "hard" | "stamp" | "daily" | "suitcase";
 /** One helper, or a pack of 3. */
 export type Pack = 1 | 3;
@@ -59,12 +70,13 @@ export interface Bundle {
 }
 /**
  * A bundle's purchase (agreed with UI, 2026-11-01): "ok" (the platform confirmed it; the stock was
- * read again); "declined" (the player closed the sheet, or another Arcade sheet was
- * open (busy): show nothing, never ask again by itself); "short" (not enough
+ * read again); "declined" (the player closed the sheet, a guest was shown the Arcade's sign-up
+ * card, another Arcade sheet was open, or any other refusal: show nothing, never ask again by
+ * itself); "short" (not enough
  * Gems: say so in the shop's own words, never a top-up); "full" (a grant would pass the cap:
  * nothing asked or charged); "gone" (the Starter Kit was bought before); "unknown" (no reliable
  * answer: the player may have paid; the stock was read again, so redraw from it, and never ask
- * again by itself); "failed" (a refusal: nothing bought, nothing charged).
+ * again by itself); "failed" (no such bundle: nothing asked).
  */
 export type BundleAnswer = "ok" | "declined" | "short" | "full" | "gone" | "unknown" | "failed";
 
@@ -443,6 +455,46 @@ async function resume(): Promise<void> {
   void pump();
 }
 
+/** The catalog moved (nothing was charged): read the prices again for the next try. */
+function pricesMoved(): void {
+  pricesRead = false;
+  gem.gameConfig.refresh();
+  void readPrices().then(() => changed());
+}
+
+/**
+ * A Coins purchase on the Arcade's sheet (helpers.buy): the Arcade confirms the spend in its own
+ * words, and shows a guest its sign-up card, then brings them back. ok: the stock is read again (the
+ * SDK's cache dropped first) and only then answered. declined: back to the game with nothing said
+ * (closed, a guest, a refusal), but for not enough Coins and no room, which the shop says in its own
+ * words. unavailable or a failed call: the stock is read again ("unknown"), never asked again.
+ */
+async function buyOnSheet(k: HelperKind, pack: Pack, recipe: string): Promise<BuyAnswer> {
+  let res: { outcome: string; reason?: string };
+  try {
+    res = await gem.purchases.request({ kind: "recipe", catalogId: IDS.catalog, targetId: recipe, currencySlug: COINS, quantity: 1 });
+  } catch (err) {
+    // the call itself failed (no bridge): nobody knows, so read what landed
+    console.warn(`[helpers] buying a ${k}: ${refusalOf(err)}`);
+    await refresh();
+    return "unknown";
+  }
+  const reason = res.reason ?? "";
+  if (res.outcome === "declined" && (reason === "cancelled" || reason === "busy")) return "declined";
+  // anything else the platform answered may have moved the stock or the Coins
+  await refresh();
+  if (res.outcome === "ok") return "ok";
+  if (res.outcome === "unavailable") {
+    console.warn(`[helpers] buying a ${k}: no reliable answer (${reason || "none"}); the stock was read again`);
+    return "unknown";
+  }
+  console.warn(`[helpers] buying a ${k} was declined: ${reason || "no reason"}`);
+  if (reason === "insufficient_funds") return "short";
+  if (reason === "item_max_stack_exceeded" || !helpers.fits(k, pack)) return "full";
+  if (reason === "price_mismatch" || reason === "config_version_stale" || reason === "not_purchasable") pricesMoved();
+  return "declined";
+}
+
 // ------------------------------------------------------------------ the door
 
 export const helpers = {
@@ -473,12 +525,17 @@ export const helpers = {
     const p = prices[pack][k];
     return coins === null || p === null ? null : coins >= p;
   },
-  /** Buy one or a pack of 3 for Coins (call from the Buy press). The stock is read again before it answers. */
+  /**
+   * Buy one or a pack of 3 for Coins (call from the Buy press): on the Arcade's sheet where it can
+   * draw one (buyOnSheet), else the direct purchase. The stock is read again before it answers.
+   */
   async buy(k: HelperKind, pack: Pack = 1): Promise<BuyAnswer> {
     if (!framed) return "failed";
     if (!helpers.fits(k, pack)) return "full";
+    const recipe = pack === 3 ? IDS.kinds[k].buy3 : IDS.kinds[k].buy;
+    // the ask goes first, nothing awaited before it
+    if (gem.frame?.parentSupports("purchases")) return buyOnSheet(k, pack, recipe);
     try {
-      const recipe = pack === 3 ? IDS.kinds[k].buy3 : IDS.kinds[k].buy;
       await gem.me.mutations.purchase({ kind: "recipe", catalogId: IDS.catalog, targetId: recipe, quantity: 1, payment: { kind: "platform_currency", currencySlug: COINS } });
       await refresh();
       return "ok";
@@ -516,8 +573,8 @@ export const helpers = {
   bundlesOffered: (): boolean => !framed || !!gem.frame?.parentSupports("purchases"),
   /**
    * Buy a bundle for Gems, through the Arcade's purchase sheet (it confirms the spend in its own
-   * words and price). Call it in the Buy press's own turn, with nothing awaited first: without a
-   * press the Arcade shows nothing. A bundle that would pass the cap, a Starter Kit had already,
+   * words and price, and shows a guest its sign-up card). Call it from the Buy press, nothing
+   * awaited first. A bundle that would pass the cap, a Starter Kit had already,
    * or a second buy while one is open is answered at once, with nothing asked. The stock (and
    * for the kit its uses) is read again before any answer the platform gave, through the same
    * paced reads as a Coins buy. Never retried by itself.
@@ -558,14 +615,9 @@ export const helpers = {
         console.warn(`[helpers] buying the ${slug} bundle was declined: ${reason || "no reason"}`);
         if (reason === "insufficient_funds") return "short";
         if (reason === "recipe_max_uses_exceeded" || reason === "already_owned") return "gone";
-        if (reason === "price_mismatch" || reason === "config_version_stale" || reason === "not_purchasable") {
-          // the catalog moved: read the prices again for the next try (nothing was charged)
-          pricesRead = false;
-          gem.gameConfig.refresh();
-          void readPrices().then(() => changed());
-          return "failed";
-        }
-        return overCap(b).length ? "full" : "failed";
+        if (reason === "price_mismatch" || reason === "config_version_stale" || reason === "not_purchasable") pricesMoved();
+        // any other refusal (a guest shown the Arcade's sign-up card among them): nothing said
+        return overCap(b).length ? "full" : "declined";
       })
       .catch(async (err): Promise<BundleAnswer> => {
         // the call itself failed (no bridge): unknown, so read what landed
