@@ -651,7 +651,10 @@ const SETTLE_CAP_MS = 5000;
 const BOARD_FIRST_MS = 3000;
 function settleHome(fonts: Promise<unknown>): void {
   const after = (ms: number) => new Promise((r) => setTimeout(r, ms));
-  void Promise.race([Promise.all([fonts, homeUi.whole(), homeDrawn()]), after(SETTLE_CAP_MS)]).then(async () => {
+  // a new player's first screen is Level 1 (openFirst), its pictures in already: the rest (the board's
+  // sounds and the music among it) waits for nothing of home's
+  const whole = screen === "board" ? fonts : Promise.all([fonts, homeUi.whole(), homeDrawn()]);
+  void Promise.race([whole, after(SETTLE_CAP_MS)]).then(async () => {
     if (homeSettled) return;
     homeSettled = true;
     // an unlock the checker reported for last session's win waited for home to be whole
@@ -2655,6 +2658,74 @@ onLocaleChange(() => {
   drawOffline();
 });
 
+// ---------- the first screen: home, or a brand-new player's Level 1 ----------
+//
+// A BRAND-NEW PLAYER OPENS ON LEVEL 1 (the creator, 2026-11-05, after release 2 to 5 Nov: of 718
+// players who opened the game, 381 ever started Level 1, and a new player had to find Next stop first):
+// a player whose record, AS READ, says the guided start is still to come (board 1 not won) opens on
+// campaign Level 1 with its guide, as Next stop opens it; its finish card's Next leads home as ever, and
+// a friend's challenge waits for home after it (offerLink, docs/friend-challenges.md). Anyone else opens
+// on home: a returning player, and anyone whose record has not been read (a failed or slow read, a plain
+// tab, the play-test tool), never a guess. Level 1's trip and pictures load inside the first screen's own
+// capped wait; not in by then, home shows with Next stop's "Opening…" and Level 1 opens the moment it is
+// in, as a tap on Next stop would. A record that lands after home is up opens Level 1 too, but only while
+// home is as it appeared: nothing pressed, no card over it, within LATE_FIRST_MS (lateFirstOpen).
+
+/** The player's record has been read from the platform this session (never in a plain tab, nor the play-test tool's frame). */
+const recordRead = (): boolean => window.self !== window.top && progress().known;
+/** The record, as read, says the guided start is still to come: Level 1 first. */
+const recordSaysNew = (): boolean => recordRead() && !guideDone();
+/** Level 1's trip and pictures are in: opening it draws it at once (openPlay goes straight to openLoaded). */
+function firstLevelIn(): boolean {
+  return campaignReady(1) && boardPaths(campaignLevel(1)).every(resident);
+}
+/** Level 1's trip and its pictures, for a new player's first screen; a miss is only a wait (openPlay loads it again). */
+const loadFirstLevel = (): Promise<unknown> =>
+  loadLevel(1)
+    .then((l) => ensure(boardPaths(l), l.id))
+    .catch(() => undefined);
+
+/** The first screen: a new player's Level 1 (drawn at once when it is in), else home. */
+function openFirst(): void {
+  // the record as it stands now (it may have landed during the wait)
+  if (recordSaysNew()) {
+    if (online() && firstLevelIn()) return openLevel(1);
+    // not in yet (or no connection): home, its Next stop saying "Opening…", and Level 1 once it is in
+    show("home");
+    return openLevel(1);
+  }
+  show("home");
+  if (!recordRead()) lateFirstOpen();
+}
+
+/** How long after home appears a new player's late record may still open Level 1 (home untouched meanwhile). */
+const LATE_FIRST_MS = 10_000;
+/**
+ * Home appeared before the record was read (the Arcade's app can take seconds over the play token): when
+ * it lands and says the guided start is still to come, Level 1 opens, but only while home is as it
+ * appeared (nothing pressed, no card over it, the same screen) and within LATE_FIRST_MS; a player who has
+ * started looking around keeps home, and Next stop.
+ */
+function lateFirstOpen(): void {
+  const shownAt = performance.now();
+  let pressed = false;
+  const press = (): void => void (pressed = true);
+  const events = ["pointerdown", "keydown"] as const;
+  for (const e of events) addEventListener(e, press, true);
+  let timer = 0;
+  const done = (): void => {
+    off();
+    clearTimeout(timer);
+    for (const e of events) removeEventListener(e, press, true);
+  };
+  const off = onProgress(() => {
+    if (!recordRead()) return;
+    done();
+    if (!guideDone() && !pressed && !board && screen === "home" && !cardUp() && performance.now() - shownAt <= LATE_FIRST_MS) openLevel(1);
+  });
+  timer = window.setTimeout(done, LATE_FIRST_MS);
+}
+
 /** Draw the first screen. Called once by the boot entry (src/main.ts). */
 export async function startApp(): Promise<void> {
   // HOME APPEARS WHOLE (the creator, 2026-10-26, as Untangled does): the round type, home's own
@@ -2683,10 +2754,14 @@ export async function startApp(): Promise<void> {
   // found it on 2026-11-04: a bought and chosen track played Sunny Day again every new session
   void startTracks();
   await waitForProgress(1000);
+  // a brand-new player, by the record as read: Level 1 is the first screen (openFirst, above)
+  const first = recordSaysNew();
   // THE FIRST LOAD CARRIES ONLY HOME (the creator, 2026-10-28: "it should load very quickly… then
   // load the rest smartly in the background as needed"): the player's trip (its boards and postcards,
   // tools/content-split.mjs) inside the same capped wait, and the Souvenirs only for a player with a
-  // stamp (home's tile); everything else once home is whole, below
+  // stamp (home's tile); everything else once home is whole, below. A new player's first screen is
+  // Level 1 instead: its trip (the same one), then its pictures, in the same wait; home's own pictures
+  // are not waited for (home comes after the guide's finish card)
   const until = () => new Promise((r) => setTimeout(r, Math.max(0, by - performance.now())));
   const trip = currentTrip();
   if (trip) warmTripStamp(trip);
@@ -2694,7 +2769,7 @@ export async function startApp(): Promise<void> {
   const stamped = trips.some(tripDone);
   if (stamped) void loadSouvenirList();
   drawHome();
-  await Promise.race([Promise.all([fonts, homeUi.whole(), tableChoiceRead]), until()]);
+  await Promise.race([Promise.all([fonts, first ? loadFirstLevel() : homeUi.whole(), tableChoiceRead]), until()]);
 
   onProgress(drawHome);
   // the Souvenir boards (souvenirs.ts): home's tile and the passport's pages once they are in
@@ -2709,9 +2784,10 @@ export async function startApp(): Promise<void> {
   drawHome();
   document.body.append(app);
   mountSettings(app);
+  // home, or a new player's Level 1 (drawn before the boot text goes, as home is)
+  openFirst();
   document.getElementById("boot")?.remove();
-  show("home");
-  // no tap brought this screen in: Play answers from the first moment it is drawn
+  // no tap brought this screen in: Play (or the board) answers from the first moment it is drawn
   firstScreen();
   // opened by a friend's challenge or a shared link: its card, once home and the record allow (offerLink)
   onProgress(offerLink);
