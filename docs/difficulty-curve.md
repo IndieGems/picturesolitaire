@@ -40,7 +40,9 @@ with the next card showing on every stack. Now every stack shows card backs
 **The first cycle:**
 
 - Boards 1–2 teach.
-- Board 3 is the first bite: a hard-for-a-beginner board, around 60%.
+- Board 3 is a small step up from board 2, no longer a bite (creator,
+  2026-11-05; see "Trips of 15 boards" below for why): 7 pictures that no
+  clear or draw can doom (careless 100%).
 - Board 4 is relief.
 - Boards 5–6 build, board 7 is hard, board 8 is relief and board 9 builds.
 - Board 10 is the first peak, at the hard target rather than super hard.
@@ -117,8 +119,18 @@ board that eases off. The stamp rewards the finale.
 | x12–x14 | Build, the trip's hardest builds | 50–65% |
 | x15 | **Super hard**, the finale before the stamp | 10–30% |
 
-- **Trip 1 keeps its onboarding curve** (bite 3, hard 7, peak 10, finale 15):
-  it ends on a hard board, not a super hard one.
+- **Trip 1 keeps its onboarding curve** (hard 7, peak 10, finale 15):
+  it ends on a hard board, not a super hard one. Board 3 was its first bite
+  (careless 56%, one trap) until release showed it walled new players (2–5
+  Nov, distinct players: board 2 193 started, 173 won; board 3 164 started,
+  88 won, 54%; 35 got stuck 48 times, early, with 6–7 pictures left and
+  about 0.3 helpers used; 53 quit with about 6 left after about 1.7 helpers;
+  boards 4–9 won by nearly everyone who starts them). New players play it
+  carelessly: the careless measure (56%) matched what they won. So (creator,
+  2026-11-05) board 3 is now a small step up from board 2, re-dealt in place
+  with its own 7 pictures and postcard: careless 100% (nothing a player does
+  can doom it), no trap, a chain of 2 (each picture after at most one
+  other, as board 4), a 22-move line, unmarked. The first spike is board 7.
 - **All-long boards:** one a trip, in a relief slot after a spike (11 on
   trip 1, 21 on trip 2, then x6). That is one board in 15, not the ruled one
   in ten; one in ten needs two a trip (x6 and x11). *The creator's call*; I

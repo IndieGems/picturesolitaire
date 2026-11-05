@@ -4,7 +4,8 @@
 // A SAWTOOTH (creator, 2026-10-25: "we need to make the game harder", with a
 // bite "even by level 3"; docs/difficulty-curve.md): a ten-board cycle of a
 // change of pace (x1, all long pictures), three builds, a hard board (x5),
-// relief (x6), three builds and a peak (x10). Board 3 is the first bite, 7
+// relief (x6), three builds and a peak (x10). Board 3 was the first bite (a
+// small step up since 2026-11-05: it walled new players; its row below), 7
 // hard, 10 the first peak (at the hard target), 15 hard, 20 super hard. Each
 // cycle raises the floor: more pictures, then 4x5 boards from board 22.
 // THE DIAL IS THE PICTURE COUNT. Every stack shows card backs (peek 0), and
@@ -126,10 +127,15 @@ const STAND_IN = { old: CURRENT, oldMost: 1 };
 const NEW_ONLY = { old: CURRENT, oldMost: 0 };
 
 export const PLAN = [
-  // ---- the first cycle: teach, a first bite at board 3, a hard board at 7, the first peak at 10
+  // ---- the first cycle: teach, a small step up at board 3, a hard board at 7, the first peak at 10
   /*  1 */ { role: "teach",  destination: "dest-statue-of-liberty", drop: "pink-lotus", ...sq(3), careless: [1, 1], chain: [1, 1], ...STAND_IN },
   /*  2 */ { role: "teach",  destination: "dest-niagara-falls", drop: "cliff-lighthouse", ...sq(4), careless: [1, 1], chain: [1, 1], ...STAND_IN },
-  /*  3 */ { role: "bite",   destination: "dest-letchworth", drop: "mount-fuji", ...sq(7, { keep: ["blue-bicycle", "cactus-bloom", "ice-cream", "mount-fuji", "sailboat", "red-barn", "skier"] }), careless: [0.55, 0.65], chain: ANY, liveMost: 2, ...STAND_IN },
+  // board 3 was the first bite (careless 55-65%, one trap); in release it walled half the new players
+  // (2-5 Nov: 164 started, 88 won; most stuck or quit with 6-7 pictures left), so (creator, 2026-11-05,
+  // via the lead) it is a small step up from board 2: the same 7 pictures and postcard, a deal no clear
+  // can doom (careless 100%, no trap) and no clear needing more than one before it (chain 2, as board
+  // 4), re-dealt in place (id c03 kept, so a win on the old deal still pays) with --reseat 3
+  /*  3 */ { role: "build",  destination: "dest-letchworth", drop: "mount-fuji", ...sq(7, { keep: ["blue-bicycle", "cactus-bloom", "ice-cream", "mount-fuji", "sailboat", "red-barn", "skier"] }), careless: [1, 1], traps: [0, 0], chain: [2, 2], liveMost: 2, ...STAND_IN },
   /*  4 */ { role: "relief", destination: "dest-lucy-elephant", drop: "pancakes", ...sq(5, { keep: ["bubbles", "golden-puppy", "pancakes", "saxophonist", "steam-train"] }), careless: [0.85, 1], chain: [2, 2], ...STAND_IN },
   /*  5 */ { role: "build",  destination: "dest-mabry-mill", drop: "magnolia", ...sq(7, { keep: ["chef", "magnolia", "orchid", "suitcase", "teddy-bear", "watermelon"] }), careless: [0.7, 0.8], chain: ANY, ...STAND_IN },
   /*  6 */ { role: "build",  destination: "dest-castillo", drop: "leaning-tower", ...sq(7, { keep: ["camper-van", "cappuccino", "ginger-cat", "leaning-tower", "painter", "yellow-door", "pizza"] }), careless: [0.6, 0.75], chain: ANY, ...STAND_IN },
@@ -341,7 +347,7 @@ export const MAY_TRAP = new Set(["hard", "peak", "super"]);
 /**
  * The mark players see on a board (creator, 2026-10-25: hard and super hard
  * boards are marked), by role: a board's top-level `mark` field, which the
- * game reads; none on any other board, the first bite included, nor on the
+ * game reads; none on any other board, nor on the
  * challenge route or the daily (check.mts). The first peak is at the hard
  * target, so it is marked hard. The win checker ignores the field.
  */
