@@ -200,9 +200,10 @@ html.paused *, html.paused *::before, html.paused *::after { animation-play-stat
   display: flex; align-items: center; justify-content: center; padding: 0 16px;
   font: 600 20px/1 var(--round); letter-spacing: 0.01em; white-space: nowrap; overflow: hidden;
 }
+/* Back's middle is --back-mid: the Gem's row, or a line under the Arcade's areas when the row has no room (top-row.ts) */
 .top-back {
   position: absolute; z-index: 2;
-  top: calc(var(--gem-mid) - var(--back-h) / 2);
+  top: calc(var(--back-mid, var(--gem-mid)) - var(--back-h) / 2);
   right: calc(var(--row-right) + var(--gear-room));
 }
 /* Back, on every screen that has it (the creator: 2026-10-30, white frosted was hard to find, so navy;
@@ -241,7 +242,7 @@ html.less-motion .home-note { animation: none; }
 
 #settings-button {
   position: absolute; z-index: 50;
-  top: calc(var(--gem-mid) - var(--btn) / 2);
+  top: calc(var(--back-mid, var(--gem-mid)) - var(--btn) / 2);
   right: var(--row-right);
 }
 #settings-button :is(svg, .ico) { width: 28px; height: 28px; }
@@ -1763,12 +1764,30 @@ html.less-motion .unlock-card .medal { animation: none; }
   top: 0; left: var(--row-left); right: calc(var(--row-right) + var(--gear-room) + var(--back-w, 112px) + 12px);
 }
 html.row-tight .screen:has(> .top-pill:not([hidden])) {
-  --row-bottom: calc(var(--gem-mid) + var(--row-h) / 2 + 8px + 44px);
+  --row-bottom: calc(var(--line2-top, calc(var(--gem-mid) + var(--row-h) / 2 + 8px)) + 44px);
 }
 html.row-tight .top-pill {
-  top: calc(var(--gem-mid) + var(--row-h) / 2 + 8px); height: 44px; max-width: none;
+  top: var(--line2-top, calc(var(--gem-mid) + var(--row-h) / 2 + 8px)); height: 44px; max-width: none;
   left: max(12px, var(--safe-left)); right: max(12px, var(--safe-right));
 }
+
+/* ---------- BACK UNDER THE ARCADE'S ROW, WHEN THE ROW IS THE ARCADE'S END TO END (top-row.ts) ----------
+   QA, 2026-11-05: a 360 px phone and a wide wallet left no room on the Gem's row, and Back sat under the
+   Arcade's Gems chip. Back's slot is measured from the reserved areas (the probe: Back's band on the Gem's
+   row, between the side margins; its child as wide as Back and the gear); with none on the row,
+   html.back-down puts Back (--back-mid) on a line under the Arcade's areas at its right end, the title on
+   the same line giving way to it, and the screen below moves down past Back (--row-bottom). */
+.top-back-probe {
+  position: absolute; visibility: hidden; pointer-events: none;
+  left: max(12px, var(--safe-left)); right: max(12px, var(--safe-right));
+  top: calc(var(--gem-mid) - var(--back-h) / 2); height: var(--back-h);
+}
+.top-back-probe > i { display: block; height: 1px; width: calc(var(--back-w, 112px) + var(--gear-room)); }
+html.back-down :is(.screen:has(> .top-back), .screen:has(> .top-pill:not([hidden])), .viewer) {
+  --row-bottom: calc(var(--back-mid) + var(--back-h) / 2);
+}
+html.back-down .top-pill { top: calc(var(--back-mid) - 22px); }
+html.back-down .top-pill:not(.home-note) { right: calc(var(--row-right) + var(--gear-room) + var(--back-w, 112px) + 12px); }
 
 /* ---------- VIP (docs/vip.md): the gold tag of a locked door, its screen, the daily archive, the event's strip ---------- */
 /* the padlock and gold "VIP" tag (vip-door.ts vipTag): information on a door, never a button of its own */
