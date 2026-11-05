@@ -173,7 +173,10 @@ export function gameLink(d: Dare): string | null {
 export async function shareDare(d: Dare, line: string): Promise<Shared> {
   if (gem.share.available) {
     try {
-      gem.share.request({ params: query(d) });
+      // asked in the press's own turn; since SDK 21.1.0 it answers a promise, rejected with a
+      // ShareRefusal when the Arcade refuses the link (logged; the player is shown nothing, as the
+      // SDK's getting-started asks). A throw here is the SDK's own check, before anything is sent.
+      gem.share.request({ params: query(d) }).catch((err: unknown) => console.warn("[friends] the Arcade refused the share:", err));
       return "arcade";
     } catch (err) {
       console.warn("[friends] the Arcade's share refused:", err);

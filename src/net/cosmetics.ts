@@ -233,6 +233,8 @@ export const cosmetics = {
         return (await holdsNow(slug)) ? "ok" : "failed";
       }
       const code = codeOf(err);
+      // a guest (SDK 21.1.0): the SDK has handed the buy to the Arcade, which offers them an account; say nothing
+      if (code === "guest_upgrade_required") return "declined";
       if (code === "insufficient_funds") {
         void readCoins().then(changed);
         return "short";

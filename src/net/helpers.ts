@@ -543,6 +543,8 @@ export const helpers = {
       const code = (err as { code?: string }).code;
       console.warn(`[helpers] buying a ${k} answered: ${refusalOf(err)}`);
       await refresh();
+      // a guest (SDK 21.1.0): the SDK has handed the buy to the Arcade, which offers them an account; say nothing
+      if (code === "guest_upgrade_required") return "declined";
       if (code === "insufficient_funds") return "short";
       if (!noAnswer(err) && !helpers.fits(k, pack)) return "full";
       return "failed";
@@ -675,6 +677,10 @@ export async function loadHelpers(): Promise<void> {
   }
   await Promise.all([readStock(false), readPrices(), readCoins()]);
   changed();
+  // a purchase finished after its call had answered (SDK 21.1.0: a guest who made an account on the
+  // Arcade's offer and bought there, maybe after a reload): the SDK confirmed it and refreshed gem.me;
+  // read the stock and the Coins so the shops and the board's counts show it
+  gem.purchases.onSettled(() => void refresh());
   await resume();
   onOnline((up) => {
     if (!up) return;
