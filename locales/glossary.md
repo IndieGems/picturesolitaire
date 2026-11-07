@@ -63,3 +63,8 @@ place alone, for a sentence or a short label ("Level 8 · America"). Every other
 | t8 | Australia | Australien | Australia | Australie | Australia | オーストラリア | 호주 | Australia | Austrália | Австралия | Avustralya | 澳大利亚 |
 | t9 | South Africa | Südafrika | Sudáfrica | Afrique du Sud | Sudafrica | 南アフリカ | 남아프리카 | Afryka Południowa | África do Sul | Южная Африка | Güney Afrika | 南非 |
 | t10 | UK & Ireland | Großbritannien & Irland | Reino Unido e Irlanda | Royaume-Uni et Irlande | Regno Unito e Irlanda | イギリスとアイルランド | 영국과 아일랜드 | Wielka Brytania i Irlandia | Reino Unido e Irlanda | Великобритания и Ирландия | Birleşik Krallık ve İrlanda | 英国和爱尔兰 |
+| t11 | New Zealand | Neuseeland | Nueva Zelanda | Nouvelle-Zélande | Nuova Zelanda | ニュージーランド | 뉴질랜드 | Nowa Zelandia | Nova Zelândia | Новая Зеландия | Yeni Zelanda | 新西兰 |
+| t12 | Spain & Portugal | Spanien & Portugal | España y Portugal | Espagne et Portugal | Spagna e Portogallo | スペインとポルトガル | 스페인과 포르투갈 | Hiszpania i Portugalia | Espanha e Portugal | Испания и Португалия | İspanya ve Portekiz | 西班牙和葡萄牙 |
+| t13 | Morocco | Marokko | Marruecos | Maroc | Marocco | モロッコ | 모로코 | Maroko | Marrocos | Марокко | Fas | 摩洛哥 |
+| t14 | Vietnam & Thailand | Vietnam & Thailand | Vietnam y Tailandia | Vietnam et Thaïlande | Vietnam e Thailandia | ベトナムとタイ | 베트남과 태국 | Wietnam i Tajlandia | Vietnã e Tailândia | Вьетнам и Таиланд | Vietnam ve Tayland | 越南和泰国 |
+| t15 | Scandinavia & Iceland | Skandinavien & Island | Escandinavia e Islandia | Scandinavie et Islande | Scandinavia e Islanda | スカンジナビアとアイスランド | 스칸디나비아와 아이슬란드 | Skandynawia i Islandia | Escandinávia e Islândia | Скандинавия и Исландия | İskandinavya ve İzlanda | 斯堪的纳维亚和冰岛 |
