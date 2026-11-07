@@ -14,8 +14,9 @@
 //     still fit (keepOld, before anything new is placed), so a re-run moves no picture that need not move,
 //     and the cut to one a board put back only the clear pictures the extras had displaced;
 //   - never the destination's window; the clear square displaced is the board's busiest (its busy
-//     pictures become the atmospheric ones; busy 2 is allowed for those), then the one on fewest boards
-//     (freed whole for the next trips), then a hash;
+//     pictures become the atmospheric ones; busy 2 is allowed for those), then from trip 11 on one the
+//     player met before rather than one new to them (`wideFrom`), then the one on fewest boards (freed
+//     whole for the next trips), then a hash;
 //   - the atmospheric picture: not flagged, no landmark, a square; no family on the board (the
 //     destination's included); no word in common with any of its pictures (lib.mts sameWord, as the item
 //     rule: two atmospheric pictures on a board look different); album and medium within the picker's
@@ -59,8 +60,14 @@ const isSquare = (p) => p.cols === 2 && p.rows === 2;
  * The boards with the swap made (new objects only where a picture changed), the record, and a report.
  * `levels` are the boards as kept or made (their atmospheric pictures, if any, as the record left them).
  */
-export function atmosphericPass(levels, { distinct, spacing, trips = [], wideFrom = Infinity, postcardFamilies = new Set() }) {
+export function atmosphericPass(levels, { distinct, spacing, trips = [], wideFrom = Infinity, postcardFamilies = new Set(), renames = new Map() }) {
   const record = readRecord();
+  // boards renumbered (lib.mts alignByDestination: a trip put in before trips already dealt): each keeps its
+  // own swaps under its new id, and an old id no board keeps any more takes nothing to the board now there
+  if (renames.size) {
+    const taken = new Set(renames.values());
+    record.swaps = Object.fromEntries(Object.entries(record.swaps).flatMap(([k, v]) => (renames.has(k) ? [[renames.get(k), v]] : taken.has(k) ? [] : [[k, v]])));
+  }
   // 1. the clear pictures back where the record took them
   let boards = levels.map((l) => {
     const swaps = record.swaps[l.id];
@@ -123,13 +130,18 @@ export function atmosphericPass(levels, { distinct, spacing, trips = [], wideFro
     return true;
   };
   /** One more atmospheric picture on board i, or false if none fits. */
+  // where each picture is first shown: from board `wideFrom` on, a board gives up a picture the player met
+  // before, not one new to them (lead, 2026-11-07: every trip from 11 on keeps its share of never-seen pictures)
+  const firstAt = new Map();
+  boards.forEach((l, i) => l.pictures.forEach((p) => firstAt.has(p.id) || firstAt.set(p.id, i)));
   const swapOne = (i, busyOnly = false) => {
     const l = boards[i];
     const destId = l.destination?.id;
+    const fresh = (p) => Number(i >= wideFrom && firstAt.get(p.id) === i);
     const places = l.pictures
       .map((p, j) => ({ p, j, e: byId.get(p.id) }))
       .filter(({ p, e }) => isSquare(p) && p.id !== destId && e && !isAtmospheric(e) && (!busyOnly || (e.busy ?? 0) >= 1))
-      .sort((x, y) => (y.e.busy ?? 0) - (x.e.busy ?? 0) || uses.get(x.p.id) - uses.get(y.p.id) || hashId(`${l.id}:${x.p.id}`) - hashId(`${l.id}:${y.p.id}`));
+      .sort((x, y) => (y.e.busy ?? 0) - (x.e.busy ?? 0) || fresh(x.p) - fresh(y.p) || uses.get(x.p.id) - uses.get(y.p.id) || hashId(`${l.id}:${x.p.id}`) - hashId(`${l.id}:${y.p.id}`));
     // the busiest (busy 2) last (creator, 2026-10-30, flagging four atmospheric pictures "Too busy"), then the least used
     const busiest = (c) => Number((c.busy ?? 0) >= 2);
     const ranked = [...stock].sort((x, y) => busiest(x) - busiest(y) || (at.get(x.id)?.length ?? 0) - (at.get(y.id)?.length ?? 0) || hashId(`${l.id}~${x.id}`) - hashId(`${l.id}~${y.id}`));

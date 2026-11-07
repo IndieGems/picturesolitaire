@@ -14,7 +14,7 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { act, random, start } from "../../src/game/rules.ts";
-import { generate, hashId } from "../../src/game/levels/generate.ts";
+import { dealFor, generate, hashId } from "../../src/game/levels/generate.ts";
 import { alikeOf, fits, pick, shapeOf } from "../../src/game/levels/pick.ts";
 
 export const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
@@ -446,13 +446,31 @@ const lastSeen = (chosen, i) => {
  * Without `longest`, every picture met more than `spacing` boards ago costs the same but for its uses.
  * With it (trips 11-15, lead 2026-11-07: no new everyday art, so every board brings pictures back), the
  * one the player saw LONGEST AGO is the cheapest: 1 to 7 by how recently, LONGEST boards ago or more the
- * least, and a little for each use.
+ * least, and a little for each use. With boards made AFTER board i too (a trip put in before trips already
+ * dealt), "how recently" is the nearer gap, before or after, and a picture on no board at all costs 0.
  */
 export const LONGEST = 210;
+/** Where each picture is next after board i, from boards i+1.. (boards already made there: a trip put in before others). */
+const nextSeen = (chosen, i) => {
+  const next = new Map();
+  for (let k = chosen.length - 1; k > i; k--) for (const q of chosen[k] ?? []) next.set(q.id, k);
+  return next;
+};
 export function spacedCost(chosen, i, spacing, longest = false) {
   const last = lastSeen(chosen, i);
+  if (longest) {
+    // both ways (lead, 2026-11-07: East Coast America dealt between trip 10 and trips already made): the
+    // gap to the NEARER board with the picture, before or after; a board past the end has none after
+    const next = nextSeen(chosen, i);
+    const uses = usesOf(chosen.filter((_, k) => k !== i));
+    return new Map(
+      usable.map((p) => {
+        const gap = Math.min(last.has(p.id) ? i - last.get(p.id) : Infinity, next.has(p.id) ? next.get(p.id) - i : Infinity);
+        return [p.id, gap === Infinity ? 0 : 1 + 6 * (1 - Math.min(gap, LONGEST) / LONGEST) + (uses.get(p.id) ?? 0) * 0.25];
+      }),
+    );
+  }
   const uses = usesOf(chosen.slice(0, i));
-  if (longest) return new Map(usable.map((p) => [p.id, last.has(p.id) ? 1 + 6 * (1 - Math.min(i - last.get(p.id), LONGEST) / LONGEST) + uses.get(p.id) * 0.25 : 0]));
   return new Map(usable.map((p) => [p.id, last.has(p.id) ? 1 + Math.max(0, spacing - (i - last.get(p.id))) * 4 + uses.get(p.id) * 0.25 : 0]));
 }
 
@@ -520,13 +538,15 @@ export function balanceSpaced(plan, chosen, from, spacing, rule?) {
  * (bannedOn), only from the pictures the rule lets the board take.
  * `seedOf(i)` seeds board i's pick. Fills `chosen` in place.
  */
-export function pickFrom(plan, chosen, from, seedOf, spacing?, rule?) {
+export function pickFrom(plan, chosen, from, seedOf, spacing?, rule?, at = undefined) {
+  // `at`: these boards only (rows between boards already made, route's holes), in order; else from..the end
+  const rows = at ?? plan.map((_, i) => i).slice(from);
   const uses = usesOf(chosen.slice(0, from));
-  const slots = plan.slice(from).reduce((n, r) => n + r.count, 0);
+  const slots = rows.reduce((n, i) => n + plan[i].count, 0);
   const plan0 = catchUp(uses, slots);
   let done = 0;
-  for (let i = from; i < plan.length; i++) {
-    const recent = new Set((chosen[i - 1] ?? []).map((q) => q.id));
+  for (const i of rows) {
+    const recent = new Set([...(chosen[i - 1] ?? []), ...(at ? chosen[i + 1] ?? [] : [])].map((q) => q.id));
     const base = spacing ? spacedCost(chosen, i, spacing, plan[i].longest) : onSchedule(uses, plan0, done / Math.max(1, slots));
     // a picture the row limits (old) stands in only where the others run out, but one the row needs so
     // many of (oldLeast: the pictures back on trips 9 and 10) comes first; calm before busy, a little
@@ -822,13 +842,18 @@ function redealDestined(plan, i, b, chosen, uses, rule, opts, seed, held = new S
  */
 export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repairOnly = false, redeal = new Set(), reseat = new Set(), landmarks = false, outOf = undefined }) {
   if (old.length > plan.length) throw new Error(`the file has ${old.length} boards, the plan ${plan.length}`);
-  const chosen = old.map((b) => b.pictures);
+  // a null in `old` is a HOLE: a plan row between kept boards with no board yet (alignByDestination: a trip
+  // put in before trips already dealt), dealt below with the boards on both sides in view
+  const holes = old.map((b, i) => (b ? -1 : i)).filter((i) => i >= 0);
+  if (holes.length && repairOnly) throw new Error(`boards ${holes.map((i) => i + 1).join(", ")} have no deal yet: run the maker without --repair-only, --redeal or --reseat first`);
+  const chosen = old.map((b) => b?.pictures ?? null);
   // peek is no part of the deal (dealFor), so a kept board takes its row's peek with its deal and line
   // unchanged (2026-10-25: every stack shows card backs, peek 0); check.mts re-proves it
-  const levels = old.map((b, i) => (plan[i] && b.peek !== plan[i].peek ? { ...b, peek: plan[i].peek, ...(b.axes ? { axes: { ...b.axes, peek: plan[i].peek } } : {}) } : b));
+  const levels = old.map((b, i) => (b && plan[i] && b.peek !== plan[i].peek ? { ...b, peek: plan[i].peek, ...(b.axes ? { axes: { ...b.axes, peek: plan[i].peek } } : {}) } : b));
   // a row's destination goes in at its dropped picture's spot, before the flagged pictures are seen to
   // (a dropped picture may be one of them): the deal and line unchanged (destinedInPlace)
   levels.forEach((b, i) => {
+    if (!b) return;
     const d = destinedInPlace(b, plan[i]);
     if (d === b) return;
     if (b.destination?.id !== d.destination.id) console.log(`${b.id}: ${d.destination.id} in place of ${plan[i].drop}; the deal and line unchanged`);
@@ -840,6 +865,7 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
   // then the landmarks left on kept boards (the campaign's; reserveLandmarks), each in place
   if (landmarks)
     levels.forEach((b, i) => {
+      if (!b) return;
       const d = swappedInPlace(b, i, chosen, plan[i] ?? {}, rule);
       if (d === b) return;
       console.log(`${b.id}: ${b.pictures.map((p, k) => (p.id !== d.pictures[k].id ? `${p.id} -> ${d.pictures[k].id}` : "")).filter(Boolean).join(", ")} in place (landmarks wait for their trips); the deal and line unchanged`);
@@ -851,7 +877,7 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
   // swapped in place for a clear picture of its shape within the row's rules: the deal and line unchanged
   if (outOf)
     levels.forEach((b, i) => {
-      const out = outOf(i);
+      const out = b && outOf(i);
       if (!out) return;
       const d = swappedInPlace(b, i, chosen, plan[i] ?? {}, rule, out);
       if (d === b) return;
@@ -869,6 +895,7 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
   const seenOf = spacing ? (i) => spacedCost(chosen, i, spacing, plan[i]?.longest) : undefined;
   old.forEach((_, i) => {
     const b = levels[i];
+    if (!b) return;
     const bad = flaggedOn(b.pictures);
     if (!bad.length) return;
     const same = remadeInPlace(levels[i]);
@@ -935,6 +962,24 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
       console.log(`!! ${levels[i].id}: kept as it was: ${e.message}`);
     }
   }
+  /** A new board i dealt from its picks, and a row with a destination and no drop (trips 11 on): its postcard seated mid-board (seatMidBoard). */
+  const dealNew = (i, u) => {
+    levels[i] = makeBoard(plan, i, chosen, u, { ...optsOf(i), seenOf, poolOf });
+    if (plan[i].destination && !plan[i].drop) {
+      const seated = seatMidBoard(levels[i], plan[i]);
+      console.log(`${levels[i].id}: ${plan[i].destination} in place of ${seated.drop}, finished mid-board; the deal and line unchanged`);
+      levels[i] = seated.board;
+      chosen[i] = seated.board.pictures;
+    }
+  };
+  // the holes first, in order, each picked with the boards on both sides in view: the no-repeat rule both
+  // ways (bannedOn) and, on a longest-unseen row, the nearer gap (spacedCost); then dealt
+  if (holes.length) {
+    pickFrom(plan, chosen, holes[0], seedOf, spacing, rule, holes);
+    if (process.env.PICKS_ONLY && plan.length <= old.length) return { picks: chosen };
+    const u = usesOf(chosen);
+    for (const i of holes) dealNew(i, u);
+  }
   if (plan.length > old.length && !repairOnly) {
     // a row's kept pictures (keep) are its own from the start, so no board before it takes them
     for (let i = old.length; i < plan.length; i++) if (plan[i].keep) chosen[i] = keepOf(plan[i]).filter((id) => byId.has(id) && !flags.has(id)).map((id) => ({ id, cols: byId.get(id).cols, rows: byId.get(id).rows }));
@@ -943,18 +988,186 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
     else balance(plan, chosen, old.length);
     if (process.env.PICKS_ONLY) return { picks: chosen };
     const u = usesOf(chosen);
-    for (let i = old.length; i < plan.length; i++) {
-      levels[i] = makeBoard(plan, i, chosen, u, { ...optsOf(i), seenOf, poolOf });
-      // a row with a destination and no drop (trips 11 on): its postcard seated mid-board (seatMidBoard)
-      if (plan[i].destination && !plan[i].drop) {
-        const seated = seatMidBoard(levels[i], plan[i]);
-        console.log(`${levels[i].id}: ${plan[i].destination} in place of ${seated.drop}, finished mid-board; the deal and line unchanged`);
-        levels[i] = seated.board;
-        chosen[i] = seated.board.pictures;
-      }
-    }
+    for (let i = old.length; i < plan.length; i++) dealNew(i, u);
   }
   return levels;
+}
+
+// ---------------------------------------------------------------- a trip put in before trips already dealt
+/**
+ * Board b under a new id with the SAME deal (lead, 2026-11-07: East Coast America put in as trip 11, the
+ * five trips after it moved back 15 boards with their deals kept). dealFor seeds its shuffle with
+ * hashId(id) ^ seed·K (K = 0x9e3779b1, odd, so invertible mod 2^32): the one seed that gives the new id
+ * the old id's shuffle is (hashId(old) ^ hashId(new) ^ seed·K)·K⁻¹, a u32 (functions/checker reads it so).
+ * The stacks, line, proof and every measure stay the board's own; check.mts re-deals it from the new id
+ * and seed. Throws if the deal would differ.
+ */
+const GOLDEN = 0x9e3779b1;
+const GOLDEN_INV = (() => {
+  let x = GOLDEN;
+  for (let k = 0; k < 5; k++) x = Math.imul(x, 2 - Math.imul(GOLDEN, x));
+  return x;
+})();
+export function rekeyed(b, id) {
+  if (b.id === id) return b;
+  const seed = Math.imul(hashId(b.id) ^ hashId(id) ^ Math.imul(b.seed, GOLDEN), GOLDEN_INV) >>> 0;
+  const again = dealFor({ id, cols: b.cols, rows: b.rows, pictures: b.pictures, targets: {} }, seed);
+  if (JSON.stringify(again.stacks) !== JSON.stringify(b.stacks)) throw new Error(`${b.id}: re-keyed to ${id}, the deal would change`);
+  const out = {};
+  for (const [k, v] of Object.entries(b)) out[k] = k === "id" ? id : k === "seed" ? seed : v;
+  return out;
+}
+
+/**
+ * The kept boards from `from` (0-based) on, each at the plan row naming its postcard: a trip put in before
+ * trips already dealt moves them back whole, each re-keyed to its new number with its deal (rekeyed). A
+ * row with no board, before the last placed, is a hole (null) for route to deal. Boards before `from`
+ * stay where they are. Returns the boards and the ids renamed (old -> new).
+ */
+export function alignByDestination(old, plan, from) {
+  const rowOf = new Map();
+  plan.forEach((r, i) => i >= from && r.destination && rowOf.set(r.destination, i));
+  const out = old.slice(0, from);
+  const renames = new Map();
+  for (const b of old.slice(from)) {
+    const j = rowOf.get(b.destination?.id);
+    if (j === undefined) throw new Error(`${b.id}: its postcard ${b.destination?.id ?? "(none)"} is on no plan row from board ${from + 1} on`);
+    if (out[j]) throw new Error(`${b.id} and ${out[j].id} both carry ${b.destination.id}`);
+    const id = `c${String(j + 1).padStart(2, "0")}`;
+    out[j] = rekeyed(b, id);
+    if (id !== b.id) renames.set(b.id, id);
+  }
+  for (let i = 0; i < out.length; i++) if (!out[i]) out[i] = null;
+  return { boards: out, renames };
+}
+
+/**
+ * NEVER-SEEN PICTURES SHARED EVENLY across `trips` (lead, 2026-11-07, with East Coast America put in
+ * before trips already dealt: "don't leave East Coast with only seen pictures. It's the first new trip a
+ * player reaches ... every trip 11-16 about the same share of never-seen pictures"). A picture is new on
+ * the board where the campaign first shows it. While one trip's share of new pictures is more than one
+ * picture over another's (each trip's target is the total new in proportion to its everyday pictures),
+ * a clear new picture p moves IN PLACE from a board b of the trip over to a board c of the trip under:
+ *   - on c it takes the place of a clear picture q of its shape that the player met before c (the one met
+ *     most recently first), and p is new there: no board before c has it, and none within `spacing`;
+ *   - on b a clear picture the player met before b takes p's place (the backfill): the one met longest ago
+ *     or next met furthest on (spacedCost's nearer gap), calm before busy, none within `spacing` of b;
+ *   - each board keeps its row's picture rules (fitsBeside; looseFits on a board dealt under older rules),
+ *     a flower only where the board has one, nothing the row leaves out (`old`, oldMost 0), and never a
+ *     clear picture an atmospheric one hides there (`hidden`: board id -> ids, atmospheric.json).
+ * A board of one shape deals the same from any pictures of it, so every deal, line and measure stays as
+ * it is. Deterministic, and a fixed point: run on its own output it moves nothing. Returns the boards
+ * (new objects where a picture moved), the moves, and the trips' counts before and after.
+ */
+export function evenNew(levels, plan, { trips, spacing, hidden = new Map() }) {
+  const boards = [...levels];
+  const all = [...catalogue, ...destinations];
+  const at = new Map(); // id -> the boards it is on, in order
+  boards.forEach((l, i) => l.pictures.forEach((p) => at.set(p.id, [...(at.get(p.id) ?? []), i])));
+  const isClear = (id) => byId.has(id) && byId.get(id).look !== "atmospheric";
+  const tally = () =>
+    trips.map((t) => {
+      let n = 0, every = 0;
+      for (let i = t.from - 1; i < t.to; i++)
+        for (const p of boards[i].pictures) {
+          if (destById.has(p.id)) continue;
+          every++;
+          if (at.get(p.id)[0] === i) n++;
+        }
+      return { n, every };
+    });
+  const before = tally();
+  const total = before.reduce((s, c) => s + c.n, 0);
+  const size = before.reduce((s, c) => s + c.every, 0);
+  const target = before.map((c) => (total * c.every) / size);
+  const sorted = (l) => [...l].sort((a, b) => a - b);
+  const put = (i, k, r) => {
+    const l = boards[i];
+    const pictures = l.pictures.map((q, j) => (j === k ? { id: r.id, cols: r.cols, rows: r.rows } : q));
+    boards[i] = { ...l, pictures, ...(l.axes?.families ? { axes: { ...l.axes, families: pictures.map((q) => familyOf(q.id)) } } : {}) };
+  };
+  /** Can catalogue picture r take the place of picture k on board i, by the board's rules? */
+  const fitsOn = (i, k, r) => {
+    const l = boards[i];
+    const spec = { ...specOf(plan[i]), keep: undefined };
+    if (spec.old?.has(r.id) && spec.oldMost === 0) return false;
+    if (l.pictures.some((q) => q.id === r.id) || hidden.get(l.id)?.has(r.id)) return false;
+    if (isFlower(r) && !l.pictures.some((q, j) => j !== k && isFlower(byId.get(q.id)))) return false;
+    const swapIn = l.pictures.map((q, j) => (j === k ? { id: r.id, cols: r.cols, rows: r.rows } : q));
+    // and the board's atmospheric picture still joins beside it as atmospheric.mts holds it (its album within
+    // a third, its medium within half), so the next run's atmospheric pass keeps it where it is
+    const n = swapIn.length;
+    for (const a of swapIn.map((q) => byId.get(q.id)).filter((e) => e?.look === "atmospheric")) {
+      const rest = swapIn.filter((q) => q.id !== a.id).map((q) => byId.get(q.id) ?? destById.get(q.id) ?? {});
+      if (a.album && rest.filter((q) => q.album === a.album).length >= Math.ceil(n / 3)) return false;
+      if (a.medium && rest.filter((q) => q.medium === a.medium).length >= Math.ceil(n / 2)) return false;
+    }
+    return fitsBeside(all, spec, l.pictures, byId.get(l.pictures[k].id)) ? fitsBeside(all, spec, swapIn, r) : looseFits(l.pictures, k, r);
+  };
+  const clearPool = usable.filter((r) => r.look !== "atmospheric" && !r.landmark && !MOVED_OFF.has(r.id));
+  /** The backfill for p's place k on board b: met before b, nothing within `spacing`, the longest unseen either way. */
+  const backfill = (b, k, p) => {
+    const chosen = boards.map((l) => l.pictures);
+    const cost = spacedCost(chosen, b, spacing, true);
+    const ok = clearPool.filter((r) => {
+      if (r.cols !== p.cols || r.rows !== p.rows || r.id === p.id) return false;
+      const on = at.get(r.id);
+      if (!on || on[0] >= b || on.some((x) => Math.abs(x - b) < spacing)) return false;
+      return true;
+    });
+    ok.sort((x, y) => cost.get(x.id) + ((x.busy ?? 0) >= 1 ? 3 : 0) - (cost.get(y.id) + ((y.busy ?? 0) >= 1 ? 3 : 0)) || hashId(`${boards[b].id}~${x.id}`) - hashId(`${boards[b].id}~${y.id}`));
+    return ok.find((r) => fitsOn(b, k, r)) ?? null;
+  };
+  /** One move from trip d to trip r, or null. */
+  const tryMove = (d, r) => {
+    const td = trips[d], tr = trips[r];
+    // the donor's boards with the most new pictures first, each new clear picture by a hash
+    const donors = [];
+    for (let b = td.from - 1; b < td.to; b++) boards[b].pictures.forEach((p, k) => isClear(p.id) && at.get(p.id)[0] === b && donors.push({ b, k, p }));
+    const newOn = (i) => boards[i].pictures.filter((p) => !destById.has(p.id) && at.get(p.id)[0] === i).length;
+    donors.sort((x, y) => newOn(y.b) - newOn(x.b) || hashId(`${boards[x.b].id}~${x.p.id}`) - hashId(`${boards[y.b].id}~${y.p.id}`));
+    const takers = [];
+    for (let c = tr.from - 1; c < tr.to; c++) takers.push(c);
+    takers.sort((x, y) => newOn(x) - newOn(y) || x - y);
+    for (const { b, k, p } of donors) {
+      const others = at.get(p.id).filter((x) => x !== b);
+      const entry = byId.get(p.id);
+      let fill;
+      for (const c of takers) {
+        if (others.some((x) => x <= c || Math.abs(x - c) < spacing)) continue;
+        // the clear picture c gives up: met before c, of p's shape, the one met most recently first
+        const lastBefore = (id) => Math.max(...at.get(id).filter((x) => x < c));
+        const qs = boards[c].pictures
+          .map((q, j) => ({ q, j }))
+          .filter(({ q }) => isClear(q.id) && q.cols === p.cols && q.rows === p.rows && at.get(q.id)[0] < c)
+          .sort((x, y) => lastBefore(y.q.id) - lastBefore(x.q.id) || x.j - y.j);
+        const take = qs.find(({ j }) => fitsOn(c, j, entry));
+        if (!take) continue;
+        if (fill === undefined) fill = backfill(b, k, p);
+        if (!fill) break;
+        put(c, take.j, entry);
+        put(b, k, fill);
+        at.set(p.id, sorted([...others, c]));
+        at.set(take.q.id, at.get(take.q.id).filter((x) => x !== c));
+        at.set(fill.id, sorted([...at.get(fill.id), b]));
+        return { picture: p.id, from: b + 1, to: c + 1, gives: take.q.id, backfill: fill.id };
+      }
+    }
+    return null;
+  };
+  const moves = [];
+  for (;;) {
+    const now = tally();
+    const dev = now.map((c, t) => c.n - target[t]);
+    const pairs = [];
+    for (let d = 0; d < trips.length; d++) for (let r = 0; r < trips.length; r++) if (dev[d] - dev[r] > 1 + 1e-9) pairs.push([d, r]);
+    pairs.sort((x, y) => dev[y[0]] - dev[y[1]] - (dev[x[0]] - dev[x[1]]) || x[0] - y[0] || x[1] - y[1]);
+    let move = null;
+    for (const [d, r] of pairs) if ((move = tryMove(d, r))) break;
+    if (!move) break;
+    moves.push(move);
+  }
+  return { levels: boards.map((l, i) => (JSON.stringify(l) === JSON.stringify(levels[i]) ? levels[i] : l)), moves, before, after: tally(), target };
 }
 
 /** The most moves a lesson board may take after its staged helper (make-lessons.mts; check.mts holds it). */

@@ -34,8 +34,8 @@
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { byId as byIdOf, catalogue, destById, destinations, famName, flags, lookalikes, readBoards, reserveLandmarks, root, route, spacingOf, usable, writeBoards } from "./lib.mts";
-import { BOARD, DISTINCT, MARKS, NOT_ON_TRIP_11_ON, PLAN as FULL, PLAN_TAG, SPACING, TRIP_11_ON, TRIPS } from "./campaign-plan.mts";
+import { alignByDestination, byId as byIdOf, catalogue, destById, destinations, evenNew, famName, flags, lookalikes, readBoards, reserveLandmarks, root, route, spacingOf, usable, writeBoards } from "./lib.mts";
+import { BOARD, DISTINCT, EVEN_NEW, MARKS, NOT_ON_TRIP_11_ON, PLAN as FULL, PLAN_TAG, SPACING, TRIP_11_ON, TRIPS } from "./campaign-plan.mts";
 import { atmosphericPass, isAtmospheric, writeRecord } from "./atmospheric.mts";
 
 const t0 = performance.now();
@@ -51,7 +51,13 @@ const oldAt = process.argv.indexOf("--old");
 const FILE = oldAt > 0 ? process.argv[oldAt + 1] : SHIPPED;
 const OUT = outAt > 0 ? process.argv[outAt + 1] : SHIPPED;
 const keepAt = process.argv.indexOf("--keep");
-const old = has("--fresh") ? [] : keepAt > 0 ? readBoards(FILE).slice(0, Number(process.argv[keepAt + 1])) : readBoards(FILE);
+// from trip 11 on each kept board sits at the row naming its postcard: a trip put in before trips already
+// dealt moves them back whole, re-keyed to their new numbers with their deals (lib.mts alignByDestination),
+// and leaves holes that route deals with the boards on both sides in view
+const aligned = alignByDestination(has("--fresh") ? [] : keepAt > 0 ? readBoards(FILE).slice(0, Number(process.argv[keepAt + 1])) : readBoards(FILE), PLAN, TRIP_11_ON);
+const old = aligned.boards;
+const renames = aligned.renames;
+if (renames.size) console.log(`renumbered ${renames.size} boards, each with its deal: ${[...renames].map(([a, b]) => `${a}->${b}`).join(" ")}`);
 const shipped = readBoards(SHIPPED);
 const fileTag = existsSync(FILE) ? JSON.parse(readFileSync(FILE, "utf8")).plan : undefined;
 const redealAt = process.argv.indexOf("--redeal");
@@ -125,9 +131,21 @@ const withMark = (l, row) => {
 const atmos = atmosphericPass(
   made.map((l, i) => withMark(l, PLAN[i])),
   // a postcard's look-alike stays off its trip; and from trip 11 on, no atmospheric picture looks like any postcard
-  { distinct: DISTINCT, spacing: SPACING, trips: TRIPS, wideFrom: TRIP_11_ON, postcardFamilies: new Set(destinations.map((d) => d.family ?? d.id)) },
+  { distinct: DISTINCT, spacing: SPACING, trips: TRIPS, wideFrom: TRIP_11_ON, postcardFamilies: new Set(destinations.map((d) => d.family ?? d.id)), renames },
 );
-const levels = atmos.levels;
+let levels = atmos.levels;
+// then the never-seen pictures shared evenly across trips 11 on (campaign-plan.mts EVEN_NEW; lib.mts evenNew),
+// each move in place: the deals unchanged. The clear pictures atmospheric ones hide stay off their boards
+if (EVEN_NEW) {
+  const hidden = new Map(Object.entries(atmos.record.swaps).map(([id, s]) => [id, new Set(s.map((x) => x.clear))]));
+  const even = evenNew(levels, PLAN, { trips: TRIPS.filter((t) => t.from > TRIP_11_ON && t.to <= levels.length), spacing: SPACING, hidden });
+  levels = even.levels;
+  const text = (cs) => cs.map((c) => `${c.n}/${c.every}`).join(" ");
+  console.log(`never-seen pictures by trip from ${TRIP_11_ON + 1}: ${text(even.before)} -> ${text(even.after)} (targets ${even.target.map((t) => t.toFixed(1)).join(" ")}); ${even.moves.length} moved in place`);
+  for (const m of even.moves) console.log(`  ${m.picture}: ${m.from} -> ${m.to} (in place of ${m.gives}); ${m.backfill} in its place on ${m.from}`);
+  const onBoard = new Set(levels.flatMap((l) => l.pictures.map((p) => p.id)));
+  atmos.record.freed = atmos.record.displaced.filter((id) => !onBoard.has(id));
+}
 const ar = atmos.report;
 console.log(`atmospheric: ${ar.placed} placed of ${ar.wanted} wanted, from a stock of ${ar.stock} (${ar.distinctUsed} used, the most on ${ar.mostUses} boards); ${atmos.record.displaced.length} clear pictures displaced, ${atmos.record.freed.length} freed${ar.short.length ? `; SHORT of the share on ${ar.short.join(", ")}` : ""}`);
 // the first board hosts the guided start (UI's onboarding plays its line)

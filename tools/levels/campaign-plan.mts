@@ -513,6 +513,11 @@ export const NOT_ON_TRIP_11_ON = new Set([
   ...Object.keys(BACK_FILE.struck),
 ]);
 export const TRIP_11_ON = 150;
+/**
+ * THE NEVER-SEEN PICTURES SHARED EVENLY across trips 11 on (lead, 2026-11-07): make-campaign.mts runs lib.mts
+ * evenNew after the atmospheric pass, moving new pictures in place between the trips' boards.
+ */
+export const EVEN_NEW = false;
 PLAN.forEach((row, i) => {
   if (i < TRIP_11_ON) return;
   Object.assign(row, { old: NOT_ON_TRIP_11_ON, oldMost: 0, longest: true, busyLean: 3 });
