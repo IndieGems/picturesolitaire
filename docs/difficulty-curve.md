@@ -799,6 +799,38 @@ for a reader), and the all-long 156 is always won. The marked boards
 All 240 boards of the trial pass the checker, the 75 moved ones at their new
 numbers.
 
+**Dealt: East Coast America, and the five trips moved back** (2026-11-07,
+with Art's postcards, `docs/destinations-east-coast-america.md`):
+
+- **East Coast dealt at the trial's seeds**, so its measures are the trial's
+  (above). Each postcard opens mid-board.
+- **The 75 moved boards keep their deals and lines exactly**, and boards 1–150
+  are unchanged. All 787 boards pass the release build's full re-proof, and a
+  second run of the maker changes nothing.
+- **Look-alikes of East Coast's postcards swapped out in place**, each deal
+  unchanged:
+  - driftwood on 168, flytrap on 180, carousel-horse on 194, crocodile on
+    201, brownstone on 214, hermit-crab on 215, fire-escape on 220 and
+    log-cabin on 238;
+  - the atmospheric peony-jug (182) and berry-cake (217), which gave way to
+    other atmospheric pictures.
+- **Never-seen pictures, by trip:** 30, 31, 32, 30, 31 and 31 (before the
+  even-out: 8, 121, 14, 26, 9 and 7).
+  - 90 moved out of New Zealand: 22 to East Coast, 18 to Spain and Portugal,
+    4 to Morocco, 22 to Vietnam and Thailand, and 24 to Scandinavia and
+    Iceland.
+  - Each New Zealand board gave 3 to 9.
+  - The list is in the commit message.
+- **No picture comes back within 15 boards** (0 of 1,143 returns sooner), and
+  none is on more than four of boards 1–240.
+- **The mix, by trip:** people 12–18%, flowers 8–14% and busy pictures 10–16%.
+  Trips 9 and 10 had 17–18%, 11–13% and 9–13%.
+- **Left as it is:** Level 144 (UK and Ireland, already released) has a covered
+  bridge, 8 levels before Albany's covered-bridge postcard on 152. Boards
+  before 151 keep their pictures.
+- **Still to come:** the server's checker learns the 240 (Server). Until then
+  `npm run build` stops at levels-check.
+
 ## The VIP events (Levels, 2026-10-30)
 
 Each event is a pack of 30 levels of its own (the creator; [vip.md](vip.md)), the same curve for every

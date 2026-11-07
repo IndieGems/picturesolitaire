@@ -314,91 +314,111 @@ export const PLAN = [
   /* 148 */ { role: "build", destination: "dest-keem-bay", drop: "coleus", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
   /* 149 */ { role: "build", destination: "dest-loch-ness", drop: "red-deer", board: [4, 5], ...sq(11), careless: [0.4, 0.5], chain: ANY },
   /* 150 */ { role: "super", destination: "dest-edinburgh-castle", drop: "tree-tent", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY },
-  // ---- trips 11-15 (the creator, 2026-11-07; docs/difficulty-curve.md "Trips 11-15 (plan)"): trips 9 and
+  // ---- trips 11-16 (the creator, 2026-11-07; docs/difficulty-curve.md "Trips 11-16 (plan)"): trips 9 and
   // 10's shape and targets, no harder (x14 at South Africa's 45-55%); two of each trip's three marked boards
-  // big, never in the same two slots as the trip before; the 6x6 finales 180 and 210. NO NEW EVERYDAY ART
-  // (the creator): every picture from the library (TRIP_11_ON below), longest unseen first, and each
-  // postcard seated mid-board by the maker (no drop: lib.mts seatMidBoard)
-  // ---- trip 11, New Zealand (Art's places, docs/destinations-new-zealand.md): 160 and the finale 165 at 5x5
-  /* 151 */ { role: "relief", destination: "dest-lake-tekapo", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
-  /* 152 */ { role: "build", destination: "dest-ohakune-carrot", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
-  /* 153 */ { role: "build", destination: "dest-pohutu", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 154 */ { role: "build", destination: "dest-moeraki-boulders", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 155 */ { role: "hard",  destination: "dest-napier-art-deco", board: [4, 5], ...sq(12), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
-  /* 156 */ { role: "pace",  destination: "dest-wanaka-tree", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
-  /* 157 */ { role: "build", destination: "dest-rakiura-kiwi", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 158 */ { role: "build", destination: "dest-kaikoura-seals", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 159 */ { role: "build", destination: "dest-baldwin-street", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 160 */ { role: "hard",  destination: "dest-franz-josef", board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
-  /* 161 */ { role: "relief", destination: "dest-arrowtown", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
-  /* 162 */ { role: "build", destination: "dest-kea-arthurs-pass", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 163 */ { role: "build", destination: "dest-pancake-rocks", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 164 */ { role: "build", destination: "dest-curio-bay", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 165 */ { role: "super", destination: "dest-milford-sound", board: [5, 5], ...sq(14), careless: [0.08, 0.2], traps: [0, 4], chain: ANY },
-  // ---- trip 12, Spain & Portugal (Art's places, docs/destinations-spain-portugal.md): 170 at 5x5, the finale 180 at 6x6
-  /* 166 */ { role: "relief", destination: "dest-plaza-de-espana", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
-  /* 167 */ { role: "build", destination: "dest-costa-nova", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
-  /* 168 */ { role: "build", destination: "dest-consuegra-windmills", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 169 */ { role: "build", destination: "dest-belem-tower", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 170 */ { role: "hard",  destination: "dest-las-medulas", board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
-  /* 171 */ { role: "pace",  destination: "dest-ronda-bridge", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
-  /* 172 */ { role: "build", destination: "dest-guadix-caves", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 173 */ { role: "build", destination: "dest-pena-palace", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 174 */ { role: "build", destination: "dest-la-geria", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 175 */ { role: "hard",  destination: "dest-monsanto", board: [4, 5], ...sq(12), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
-  /* 176 */ { role: "relief", destination: "dest-palacio-de-cristal", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
-  /* 177 */ { role: "build", destination: "dest-alentejo-cork-oaks", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 178 */ { role: "build", destination: "dest-gulpiyuri", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 179 */ { role: "build", destination: "dest-benagil-cave", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 180 */ { role: "super", destination: "dest-porto-ribeira", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY },
-  // ---- trip 13, Morocco (Art's places, docs/destinations-morocco.md): 185 and 190 at 5x5, the finale 195 at 4x5
-  /* 181 */ { role: "relief", destination: "dest-chefchaouen", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
-  /* 182 */ { role: "build", destination: "dest-argan-goats", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
-  /* 183 */ { role: "build", destination: "dest-essaouira-boats", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 184 */ { role: "build", destination: "dest-volubilis", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 185 */ { role: "hard",  destination: "dest-ait-benhaddou", board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
-  /* 186 */ { role: "pace",  destination: "dest-todra-gorge", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
-  /* 187 */ { role: "build", destination: "dest-el-badi-storks", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 188 */ { role: "build", destination: "dest-imlil-toubkal", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 189 */ { role: "build", destination: "dest-fes-tanneries", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 190 */ { role: "hard",  destination: "dest-erg-chebbi", board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
-  /* 191 */ { role: "relief", destination: "dest-fes-donkey", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
-  /* 192 */ { role: "build", destination: "dest-menara-gardens", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 193 */ { role: "build", destination: "dest-paradise-valley", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 194 */ { role: "build", destination: "dest-dades-monkey-fingers", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 195 */ { role: "super", destination: "dest-bahia-palace", board: [4, 5], ...sq(12), careless: [0.08, 0.2], traps: [0, 4], chain: ANY },
-  // ---- trip 14, Vietnam & Thailand (Art's places, docs/destinations-vietnam-thailand.md): 205 at 5x5, the finale 210 at 6x6
-  /* 196 */ { role: "relief", destination: "dest-hoi-an-lanterns", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
-  /* 197 */ { role: "build", destination: "dest-maeklong-railway-market", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
-  /* 198 */ { role: "build", destination: "dest-erawan-falls", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 199 */ { role: "build", destination: "dest-ma-pi-leng", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 200 */ { role: "hard",  destination: "dest-phuket-old-town", board: [4, 5], ...sq(12), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
-  /* 201 */ { role: "pace",  destination: "dest-fairy-stream", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
-  /* 202 */ { role: "build", destination: "dest-damnoen-saduak", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 203 */ { role: "build", destination: "dest-cam-thanh-basket-boats", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 204 */ { role: "build", destination: "dest-ban-rak-thai", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 205 */ { role: "hard",  destination: "dest-sapa-terraces", board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
-  /* 206 */ { role: "relief", destination: "dest-koh-panyee", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
-  /* 207 */ { role: "build", destination: "dest-phong-nha-cave", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 208 */ { role: "build", destination: "dest-bo-sang-umbrellas", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 209 */ { role: "build", destination: "dest-maya-bay", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 210 */ { role: "super", destination: "dest-ha-long-bay", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY },
-  // ---- trip 15, Scandinavia & Iceland (Art's places, docs/destinations-scandinavia-iceland.md): 215 and the finale 225 at 5x5
-  /* 211 */ { role: "relief", destination: "dest-nyhavn", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
-  /* 212 */ { role: "build", destination: "dest-icelandic-horses", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
-  /* 213 */ { role: "build", destination: "dest-reine-lofoten", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 214 */ { role: "build", destination: "dest-mons-klint", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 215 */ { role: "hard",  destination: "dest-preikestolen", board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
-  /* 216 */ { role: "pace",  destination: "dest-skogafoss", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
-  /* 217 */ { role: "build", destination: "dest-avesta-dala-horse", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 218 */ { role: "build", destination: "dest-kronborg", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 219 */ { role: "build", destination: "dest-diamond-beach", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 220 */ { role: "hard",  destination: "dest-visby", board: [4, 5], ...sq(12), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
-  /* 221 */ { role: "relief", destination: "dest-atlantic-road", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
-  /* 222 */ { role: "build", destination: "dest-dalarna-cottages", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
-  /* 223 */ { role: "build", destination: "dest-iceland-puffins", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 224 */ { role: "build", destination: "dest-senja-segla", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
-  /* 225 */ { role: "super", destination: "dest-kirkjufell", board: [5, 5], ...sq(14), careless: [0.08, 0.2], traps: [0, 4], chain: ANY },
+  // big, never in the same two slots as the trip before or after; the 6x6 finales 195 and 225. NO NEW
+  // EVERYDAY ART (the creator): every picture from the library (TRIP_11_ON below), longest unseen first, and
+  // each postcard seated mid-board by the maker (no drop: lib.mts seatMidBoard). East Coast America was put
+  // in as trip 11 after the others were dealt (the creator: "get another American region in there, since it
+  // is and will probably stay our main audience"): the five after it moved back 15 boards, each board at the
+  // row of its postcard with its deal kept (make-campaign.mts, lib.mts alignByDestination)
+  // ---- trip 11, East Coast America: x5 155 and x10 160 at 5x5 (UK & Ireland had x5 and the finale, New
+  // Zealand x10 and the finale), the finale 165 at 4x5 (Art's places, docs/destinations-east-coast-america.md)
+  /* 151 */ { role: "relief", destination: "dest-portland-head-light", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 152 */ { role: "build", destination: "dest-albany-covered-bridge", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 153 */ { role: "build", destination: "dest-vermont-sugarhouse", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 154 */ { role: "build", destination: "dest-acorn-street", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 155 */ { role: "hard",  destination: "dest-flying-horse-carousel", board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 156 */ { role: "pace",  destination: "dest-thimble-islands", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
+  /* 157 */ { role: "build", destination: "dest-independence-hall", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 158 */ { role: "build", destination: "dest-delaware-horseshoe-crabs", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 159 */ { role: "build", destination: "dest-assateague-horses", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 160 */ { role: "hard",  destination: "dest-tidal-basin-blossoms", board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 161 */ { role: "relief", destination: "dest-carolina-flytraps", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 162 */ { role: "build", destination: "dest-rainbow-row", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 163 */ { role: "build", destination: "dest-driftwood-beach", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 164 */ { role: "build", destination: "dest-cape-coral-owls", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 165 */ { role: "super", destination: "dest-everglades-alligator", board: [4, 5], ...sq(12), careless: [0.08, 0.2], traps: [0, 4], chain: ANY },
+  // ---- trip 12, New Zealand (Art's places, docs/destinations-new-zealand.md): 175 and the finale 180 at 5x5
+  /* 166 */ { role: "relief", destination: "dest-lake-tekapo", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 167 */ { role: "build", destination: "dest-ohakune-carrot", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 168 */ { role: "build", destination: "dest-pohutu", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 169 */ { role: "build", destination: "dest-moeraki-boulders", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 170 */ { role: "hard",  destination: "dest-napier-art-deco", board: [4, 5], ...sq(12), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 171 */ { role: "pace",  destination: "dest-wanaka-tree", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
+  /* 172 */ { role: "build", destination: "dest-rakiura-kiwi", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 173 */ { role: "build", destination: "dest-kaikoura-seals", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 174 */ { role: "build", destination: "dest-baldwin-street", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 175 */ { role: "hard",  destination: "dest-franz-josef", board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 176 */ { role: "relief", destination: "dest-arrowtown", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 177 */ { role: "build", destination: "dest-kea-arthurs-pass", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 178 */ { role: "build", destination: "dest-pancake-rocks", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 179 */ { role: "build", destination: "dest-curio-bay", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 180 */ { role: "super", destination: "dest-milford-sound", board: [5, 5], ...sq(14), careless: [0.08, 0.2], traps: [0, 4], chain: ANY },
+  // ---- trip 13, Spain & Portugal (Art's places, docs/destinations-spain-portugal.md): 185 at 5x5, the finale 195 at 6x6
+  /* 181 */ { role: "relief", destination: "dest-plaza-de-espana", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 182 */ { role: "build", destination: "dest-costa-nova", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 183 */ { role: "build", destination: "dest-consuegra-windmills", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 184 */ { role: "build", destination: "dest-belem-tower", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 185 */ { role: "hard",  destination: "dest-las-medulas", board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 186 */ { role: "pace",  destination: "dest-ronda-bridge", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
+  /* 187 */ { role: "build", destination: "dest-guadix-caves", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 188 */ { role: "build", destination: "dest-pena-palace", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 189 */ { role: "build", destination: "dest-la-geria", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 190 */ { role: "hard",  destination: "dest-monsanto", board: [4, 5], ...sq(12), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 191 */ { role: "relief", destination: "dest-palacio-de-cristal", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 192 */ { role: "build", destination: "dest-alentejo-cork-oaks", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 193 */ { role: "build", destination: "dest-gulpiyuri", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 194 */ { role: "build", destination: "dest-benagil-cave", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 195 */ { role: "super", destination: "dest-porto-ribeira", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY },
+  // ---- trip 14, Morocco (Art's places, docs/destinations-morocco.md): 200 and 205 at 5x5, the finale 210 at 4x5
+  /* 196 */ { role: "relief", destination: "dest-chefchaouen", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 197 */ { role: "build", destination: "dest-argan-goats", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 198 */ { role: "build", destination: "dest-essaouira-boats", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 199 */ { role: "build", destination: "dest-volubilis", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 200 */ { role: "hard",  destination: "dest-ait-benhaddou", board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 201 */ { role: "pace",  destination: "dest-todra-gorge", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
+  /* 202 */ { role: "build", destination: "dest-el-badi-storks", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 203 */ { role: "build", destination: "dest-imlil-toubkal", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 204 */ { role: "build", destination: "dest-fes-tanneries", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 205 */ { role: "hard",  destination: "dest-erg-chebbi", board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 206 */ { role: "relief", destination: "dest-fes-donkey", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 207 */ { role: "build", destination: "dest-menara-gardens", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 208 */ { role: "build", destination: "dest-paradise-valley", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 209 */ { role: "build", destination: "dest-dades-monkey-fingers", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 210 */ { role: "super", destination: "dest-bahia-palace", board: [4, 5], ...sq(12), careless: [0.08, 0.2], traps: [0, 4], chain: ANY },
+  // ---- trip 15, Vietnam & Thailand (Art's places, docs/destinations-vietnam-thailand.md): 220 at 5x5, the finale 225 at 6x6
+  /* 211 */ { role: "relief", destination: "dest-hoi-an-lanterns", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 212 */ { role: "build", destination: "dest-maeklong-railway-market", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 213 */ { role: "build", destination: "dest-erawan-falls", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 214 */ { role: "build", destination: "dest-ma-pi-leng", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 215 */ { role: "hard",  destination: "dest-phuket-old-town", board: [4, 5], ...sq(12), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 216 */ { role: "pace",  destination: "dest-fairy-stream", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
+  /* 217 */ { role: "build", destination: "dest-damnoen-saduak", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 218 */ { role: "build", destination: "dest-cam-thanh-basket-boats", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 219 */ { role: "build", destination: "dest-ban-rak-thai", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 220 */ { role: "hard",  destination: "dest-sapa-terraces", board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 221 */ { role: "relief", destination: "dest-koh-panyee", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 222 */ { role: "build", destination: "dest-phong-nha-cave", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 223 */ { role: "build", destination: "dest-bo-sang-umbrellas", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 224 */ { role: "build", destination: "dest-maya-bay", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 225 */ { role: "super", destination: "dest-ha-long-bay", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY },
+  // ---- trip 16, Scandinavia & Iceland (Art's places, docs/destinations-scandinavia-iceland.md): 230 and the finale 240 at 5x5
+  /* 226 */ { role: "relief", destination: "dest-nyhavn", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 227 */ { role: "build", destination: "dest-icelandic-horses", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 228 */ { role: "build", destination: "dest-reine-lofoten", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 229 */ { role: "build", destination: "dest-mons-klint", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 230 */ { role: "hard",  destination: "dest-preikestolen", board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 231 */ { role: "pace",  destination: "dest-skogafoss", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
+  /* 232 */ { role: "build", destination: "dest-avesta-dala-horse", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 233 */ { role: "build", destination: "dest-kronborg", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 234 */ { role: "build", destination: "dest-diamond-beach", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 235 */ { role: "hard",  destination: "dest-visby", board: [4, 5], ...sq(12), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 236 */ { role: "relief", destination: "dest-atlantic-road", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 237 */ { role: "build", destination: "dest-dalarna-cottages", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 238 */ { role: "build", destination: "dest-iceland-puffins", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 239 */ { role: "build", destination: "dest-senja-segla", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 240 */ { role: "super", destination: "dest-kirkjufell", board: [5, 5], ...sq(14), careless: [0.08, 0.2], traps: [0, 4], chain: ANY },
 ];
 
 /**
@@ -426,11 +446,12 @@ export const TRIPS = [
   { id: "t9", name: "South Africa", from: 121, to: 135 },
   { id: "t10", name: "UK & Ireland", from: 136, to: 150 },
   // the creator's choices (2026-11-07; the names exactly as the lead gave them: UI's translators' copy is made from them)
-  { id: "t11", name: "New Zealand", from: 151, to: 165 },
-  { id: "t12", name: "Spain & Portugal", from: 166, to: 180 },
-  { id: "t13", name: "Morocco", from: 181, to: 195 },
-  { id: "t14", name: "Vietnam & Thailand", from: 196, to: 210 },
-  { id: "t15", name: "Scandinavia & Iceland", from: 211, to: 225 },
+  { id: "t11", name: "East Coast America", from: 151, to: 165 },
+  { id: "t12", name: "New Zealand", from: 166, to: 180 },
+  { id: "t13", name: "Spain & Portugal", from: 181, to: 195 },
+  { id: "t14", name: "Morocco", from: 196, to: 210 },
+  { id: "t15", name: "Vietnam & Thailand", from: 211, to: 225 },
+  { id: "t16", name: "Scandinavia & Iceland", from: 226, to: 240 },
 ];
 
 /** Roles that may trap from the first move; every other board starts safe (check.mts). */
@@ -458,7 +479,7 @@ export const NEXT_BATCH = "brugmansia";
 // LAST_BEFORE_T9, the catalogue's last before it) and the spares no board has shown; boards 91-120 never
 // take from that batch
 export const LAST_BEFORE_T9 = "drone";
-// boards 151 on (trips 11-15): no batch window, the whole library (TRIP_11_ON below)
+// boards 151 on (trips 11-16): no batch window, the whole library (TRIP_11_ON below)
 PLAN.forEach((row, i) => Object.assign(row, i < 30 ? { newTo: "foxgloves" } : i < 60 ? { newFrom: "marigolds", newTo: "foxgloves" } : i < 90 ? { newFrom: "foxgloves", newTo: NEXT_BATCH } : i < 120 ? { newFrom: NEXT_BATCH, newThrough: LAST_BEFORE_T9 } : i < 150 ? { newAfter: LAST_BEFORE_T9 } : {}));
 // HALF NEW on boards 121-150 (the creator, 2026-10-27): of each board's everyday pictures (all but the
 // postcard) half, rounded down, come back from boards 1-60 (BACK: pictures-back.json, those that meet
@@ -486,8 +507,8 @@ PLAN.forEach((row, i) => {
   Object.assign(row, { old: BACK, oldMost: back, oldLeast: back, also: ALSO });
 });
 /**
- * TRIP 11 ON (boards 151-225; the creator, 2026-11-07: "These levels will not feature new art, except for
- * the special ones required for the destination"; docs/difficulty-curve.md "Trips 11-15 (plan)"): every
+ * TRIP 11 ON (boards 151-240; the creator, 2026-11-07: "These levels will not feature new art, except for
+ * the special ones required for the destination"; docs/difficulty-curve.md "Trips 11-16 (plan)"): every
  * everyday picture from the library as it stands, by today's rules, none back within SPACING boards, and
  * the one the player saw LONGEST AGO first (`longest`: lib.mts spacedCost), a picture on no board first of
  * all. The pool is every clear picture (lib.mts poolOn) but those the row takes none of (`old` with
@@ -517,7 +538,7 @@ export const TRIP_11_ON = 150;
  * THE NEVER-SEEN PICTURES SHARED EVENLY across trips 11 on (lead, 2026-11-07): make-campaign.mts runs lib.mts
  * evenNew after the atmospheric pass, moving new pictures in place between the trips' boards.
  */
-export const EVEN_NEW = false;
+export const EVEN_NEW = true;
 PLAN.forEach((row, i) => {
   if (i < TRIP_11_ON) return;
   Object.assign(row, { old: NOT_ON_TRIP_11_ON, oldMost: 0, longest: true, busyLean: 3 });
