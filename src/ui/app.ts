@@ -1407,7 +1407,7 @@ restartBtn.addEventListener("click", () => {
 // ---------- the win card ----------
 
 type Win = (
-  | { kind: "campaign"; level: number; moves: number; ms: number; milestone: boolean; stamp?: string }
+  | { kind: "campaign"; level: number; moves: number; ms: number; milestone: boolean; stamp?: string; replay?: boolean }
   | { kind: "challenge"; c: Challenge; moves: number; ms: number; first: boolean; better: boolean }
   | { kind: "daily"; d: Daily; moves: number; ms: number; first: boolean }
   | { kind: "experiment"; x: Experiment; moves: number; ms: number }
@@ -1476,7 +1476,10 @@ on("board:solved", ({ moves, ms, line }) => {
     // the record (read before this win's claim) has not passed it yet; a replay never stamps
     const ending = tripEndingAt(play.level);
     const stamp = ending && !isPractice(play) && play.level >= campaignNext() ? ending.id : undefined;
-    win = { kind: "campaign", level: play.level, moves, ms, milestone, ...(stamp ? { stamp } : {}) };
+    // a level won before (Play again, or one carried on from before the campaign grew): Next goes on
+    // to the first level not won yet, when there is one (nextAfter)
+    const replay = !isPractice(play) && play.level < campaignNext();
+    win = { kind: "campaign", level: play.level, moves, ms, milestone, ...(stamp ? { stamp } : {}), ...(replay ? { replay } : {}) };
   } else if (play.kind === "souvenir") {
     // a Souvenir's first win puts its sticker in the passport (the record, read before this win's claim)
     win = { kind: "souvenir", s: play.s, moves, ms, first: souvenirBest(play.s.id) === undefined };
@@ -1806,10 +1809,19 @@ function flyTool(k: HelperKey, from: Element, delay: number): void {
   };
 }
 
+/**
+ * The campaign level a won one's Next opens: the one after it, round to Level 1 after the last
+ * (boardNumber), or, after a replay while a level is still to win (Play again carried on into a build
+ * with more trips, 2026-11-07), that level, as home's Next stop says.
+ */
+function nextAfter(w: Extract<Win, { kind: "campaign" }>): number {
+  return w.replay && campaignNext() <= levels() ? campaignNext() : w.level + 1;
+}
+
 function showWin(): void {
   if (!lastWin || !board) return;
   // the board Next opens, its pictures fetched while the card is up
-  if (lastWin.kind === "campaign") prefetchBoard(lastWin.level + 1);
+  if (lastWin.kind === "campaign") prefetchBoard(nextAfter(lastWin));
   else if (lastWin.kind === "challenge") prefetch(routeUi.after(lastWin.c)?.level);
   syncCardAspect();
   // board 1's finish card says more (the prize, the travel kit): its pictures take less of the height;
@@ -1825,7 +1837,8 @@ function showWin(): void {
   if (lastWin.kind === "experiment") return void (import.meta.env.MODE !== "release" && showExperimentWin(lastWin, gallery));
   if (lastWin.kind === "lesson") return void showLessonWin(gallery);
   if (lastWin.milestone) return void showMilestone(gallery);
-  const { level, moves, ms } = lastWin;
+  const won = lastWin;
+  const { level, moves, ms } = won;
   const practice = isPractice(lastWin);
   // the campaign's last board (each time round)
   const last = boardNumber(level) === levels();
@@ -1835,7 +1848,7 @@ function showWin(): void {
   const ended = lastWin.stamp ? tripById(lastWin.stamp) : undefined;
   const after: AfterStamp = last
     ? { label: t("passport.home"), icon: icon("home"), press: "passport.home", go: goHome }
-    : { label: t("passport.nextTrip"), icon: icon("next"), trailing: true, press: "passport.nextTrip", go: () => openPlay({ kind: "campaign", level: level + 1 }) };
+    : { label: t("passport.nextTrip"), icon: icon("next"), trailing: true, press: "passport.nextTrip", go: () => openPlay({ kind: "campaign", level: nextAfter(won) }) };
   // the trip's Souvenir beside it, once there is one (docs/souvenirs.md): Next trip stays the main action
   after.souvenir = true;
   // the stamp is down: what this win unlocked ("Stamped: <trip>") comes now, over the stamped page
@@ -1852,7 +1865,7 @@ function showWin(): void {
         }),
       )
     : withClick(button("amber next", "win.next", t("win.next"), icon("next")), () =>
-        leaveInto("win-next", () => openPlay({ kind: "campaign", level: level + 1, ...(practice ? { practice } : {}) })),
+        leaveInto("win-next", () => openPlay({ kind: "campaign", level: nextAfter(won), ...(practice ? { practice } : {}) })),
       );
   const toHome = () => leaveTo("win-home", goHome);
   winVeil.replaceChildren(

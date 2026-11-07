@@ -3,7 +3,9 @@
 //
 //   which exist      the boards Levels has made (Gameplay's loadSouvenirs), with Art's record of each
 //                    (catalogue.ts: the theme, the table it wears, the sticker); a trip with no board
-//                    or no record has no Souvenir yet
+//                    or no record has none: no offer at its stamp, no sticker on its page, no tile.
+//                    Trips 11-15 have none (the creator, 2026-11-07, "None for now"): only the data
+//                    says so, never a list of trips here
 //   which are open   a stamped trip's (the record's: its last board won), the same rule as the checker's
 //   which are won    the server's record (progress().souvenir: each won Souvenir's id, Server's), a
 //                    held win showing at once; a won one puts its sticker on the trip's passport page
