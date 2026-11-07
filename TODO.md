@@ -24,7 +24,7 @@
 
 ## The travelogue (2026-10-25)
 
-- **Trips 11–15 are made and on dev, waiting for the creator's word to release** (0.113.0; the order and what is untested are in `docs/release-record.md`, 2026-11-07). Trip 16 and on: the creator picks where. The library's 200 VIP-event pictures may join the campaign pool once their events have run. Art's cap is $105 (creator, 2026-10-30, for ~200 new clean pictures for the upcoming VIP events, after the library ran out of unseen ones; $90 earlier the same day for the redraw passes), with about $78.39 spent by 2026-10-30. Later trips grow through 5×5 and 6×6 boards, within the readable and careful-player rules (`docs/difficulty-curve.md`).
+- **Trips 11–15 are made and on dev, the creator trying them; on their word they go to test** (release build 0.113.0, uploaded; the order and what is untested are in `docs/release-record.md`, 2026-11-07). Trip 16 and on: the creator picks where. The library's 200 VIP-event pictures may join the campaign pool once their events have run. Art's cap is $105 (creator, 2026-10-30, for ~200 new clean pictures for the upcoming VIP events, after the library ran out of unseen ones; $90 earlier the same day for the redraw passes), with about $78.39 spent by 2026-10-30. Later trips grow through 5×5 and 6×6 boards, within the readable and careful-player rules (`docs/difficulty-curve.md`).
 - **The challenge route and daily** still deal some landmark pictures (`"landmark": true`). Swap them out when those are redone under the new picture rules.
 - **The old albums' code** is unreachable from home; remove it, and the albums' catalogue fields, when the passport has settled.
 
