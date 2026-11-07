@@ -2,6 +2,8 @@
 //   1. archives every board version in src/content/levels into
 //      functions/checker/data/archive.json (never removes one), so a player on
 //      an older build, whose board was dealt differently since, still verifies;
+//      a version marked "retired" (a dev-only deal whose id now names another
+//      board) still verifies but is answered "kept": no Coins, no progress;
 //   2. proves the Rust rules agree with rules.ts (tools/server/check.mts);
 //   3. cargo build for wasm32-unknown-unknown, then gemctl function package.
 //
@@ -54,6 +56,7 @@ for (const lane of LANES) {
     const old = byKey.get(key);
     if (old) {
       old.line ??= l.line;
+      delete old.retired; // dealt again as it was: in play once more
       continue;
     }
     archive.deals.push({ ...d, line: l.line });

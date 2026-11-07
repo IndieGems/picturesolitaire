@@ -224,8 +224,10 @@ for (const b of boards) {
 // every OLDER version of a board the checker still keeps (functions/checker/data/archive.json),
 // claimed with its own line: a player on an older build must still verify
 let older = 0;
+let retired = 0;
 {
   const current = new Set(boards.map((b) => `${b.lane}/${b.id}/${dealHash(b.deal)}`));
+  const campaignIds = new Set(boards.filter((b) => b.lane === "campaign").map((b) => b.id));
   const archive = JSON.parse(readFileSync(join(root, "functions/checker/data/archive.json"), "utf8")).deals;
   for (const d of archive) {
     const deal = { cols: d.cols, rows: d.rows, pictures: d.pictures, stacks: d.stacks, seed: d.seed, ...(d.board ? { board: d.board } : {}) };
@@ -236,7 +238,16 @@ let older = 0;
     games.push(g);
     const body = { v: 1, lane: d.lane, board: d.id, deal: dealHash(deal), line, ms: 90_000 };
     if (d.lane === "daily") body.date = d.id.slice(1);
-    claim(`${d.lane} ${d.id}: an older version, its own line`, body, { ok: true, moves: line.length, shuffles: 0, ms: Math.max(90_000, line.length * MIN_MS_PER_MOVE) });
+    // a campaign version pays at its id's position, unless it is retired (a dev-only deal whose
+    // id now names another board) or its id left the campaign: then it is "kept", never paid
+    const kept = d.lane === "campaign" ? { kept: !!d.retired || !campaignIds.has(d.id) } : {};
+    claim(`${d.lane} ${d.id}: an older version${d.retired ? " (retired)" : ""}, its own line`, body, { ok: true, moves: line.length, shuffles: 0, ms: Math.max(90_000, line.length * MIN_MS_PER_MOVE), ...kept });
+    // the build that dealt it named its position: still never paid as that position's board now
+    if (d.retired) {
+      const at = [...campaignIds].indexOf(d.id) + 1;
+      if (at) claim(`campaign ${d.id}: a retired version at its old position`, { ...body, n: at, id: `retired-${d.id}` }, { ok: true, moves: line.length, shuffles: 0, ms: Math.max(90_000, line.length * MIN_MS_PER_MOVE), kept: true });
+      retired++;
+    }
     older++;
   }
 }
@@ -331,4 +342,4 @@ const hashes = games.map((g) => ({ deal: g.deal, hash: dealHash(g.deal) }));
 
 writeFileSync(out, JSON.stringify({ arrangeFrom, games, claims, hashes, levels: levelsHash() }));
 const actions = games.reduce((n, g) => n + g.actions.length, 0);
-console.log(`vectors: ${games.length} games (${boards.length} shipped boards, ${older} older versions, ${GAMES} random, ${rescues} with a rescue shuffle), ${actions} actions, ${claims.length} claims; shuffles checked by ${arrangeFrom}`);
+console.log(`vectors: ${games.length} games (${boards.length} shipped boards, ${older} older versions (${retired} retired), ${GAMES} random, ${rescues} with a rescue shuffle), ${actions} actions, ${claims.length} claims; shuffles checked by ${arrangeFrom}`);

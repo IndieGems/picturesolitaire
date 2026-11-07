@@ -42,7 +42,7 @@ fn line_of(lane: &str, l: &Value) -> String {
 const LANES: [(&str, &str); 5] = [("campaign", "campaign"), ("challenge", "challenge"), ("daily", "daily"), ("souvenir", "souvenirs"), ("event", "event-levels")];
 
 fn compact(lane: &str, l: &Value) -> Value {
-    json!({
+    let mut d = json!({
         "lane": lane,
         "id": l["id"],
         "cols": l["cols"],
@@ -51,7 +51,12 @@ fn compact(lane: &str, l: &Value) -> Value {
         "pictures": l["pictures"].as_array().map(|ps| ps.iter().map(|p| json!({ "id": p["id"], "cols": p["cols"], "rows": p["rows"] })).collect::<Vec<_>>()),
         "stacks": l["stacks"],
         "board": l["board"],
-    })
+    });
+    // an archived dev-only version whose id now names another board: verified, never paid (claim.rs)
+    if !l["retired"].is_null() {
+        d["retired"] = json!(true);
+    }
+    d
 }
 
 fn main() {

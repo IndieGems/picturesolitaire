@@ -43,6 +43,11 @@ pub struct Known {
     pub id: String,
     pub hash: String,
     pub deal: Deal,
+    /// A dev-only campaign version whose id now names a different board (archive.json's
+    /// "retired", 2026-11-07: Levels 151-225 renumbered when East Coast America became
+    /// trip 11). Its win still verifies but has no position, so it is answered "kept":
+    /// it can never be paid, or move progress, as the board that holds the id now.
+    pub retired: bool,
 }
 
 /// Everything compiled in: every deal (build.rs gathers them) and the campaign's order.
@@ -76,6 +81,7 @@ fn known_of(data: &Value) -> Vec<Known> {
             id: d["id"].as_str().unwrap_or_default().to_string(),
             hash: deal_hash(&deal),
             deal,
+            retired: d["retired"] == true,
         };
         if !out.iter().any(|k| k.lane == known.lane && k.id == known.id && k.hash == known.hash) {
             out.push(known);
@@ -268,7 +274,7 @@ pub fn check(input: &[u8], data: &Data) -> Result<Win, Refusal> {
         _ => return Err(bad("a claim id that is not a short token")),
     };
     // a campaign win names its position; a claim from before positions plays the first round
-    let n = match lane {
+    let mut n = match lane {
         Lane::Campaign => {
             if let Some(at) = data.campaign.iter().position(|id| *id == board) {
                 let n = match &c["n"] {
@@ -295,7 +301,11 @@ pub fn check(input: &[u8], data: &Data) -> Result<Win, Refusal> {
         Lane::Souvenir => Some(data.souvenirs.iter().find(|(id, _)| *id == board).map(|(_, end)| *end).ok_or(Refusal::UnknownBoard)?),
         _ => None,
     };
-    let deal = &versions.iter().find(|k| k.hash == hash).ok_or(Refusal::UnknownDeal)?.deal;
+    let version = versions.iter().find(|k| k.hash == hash).ok_or(Refusal::UnknownDeal)?;
+    if version.retired {
+        n = None; // never paid as the board that holds this id now
+    }
+    let deal = &version.deal;
 
     let mut s = rules::start(deal).ok_or_else(|| bad("a deal the rules cannot start"))?;
     for (i, a) in line.iter().enumerate() {

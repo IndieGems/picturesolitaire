@@ -81,9 +81,10 @@ fn rust_rules_agree_with_typescript() {
                 let ok = want["ok"] == true
                     && want["moves"].as_u64() == Some(win.moves as u64)
                     && want["shuffles"].as_u64() == Some(win.shuffles as u64)
-                    && want["ms"].as_u64() == Some(win.ms);
+                    && want["ms"].as_u64() == Some(win.ms)
+                    && want["kept"].as_bool().map_or(true, |kept| kept == (win.lane == claim::Lane::Campaign && win.n.is_none()));
                 if !ok {
-                    failures.push(format!("claim {name}: accepted ({} moves, {} shuffles, {} ms), expected {want}", win.moves, win.shuffles, win.ms));
+                    failures.push(format!("claim {name}: accepted ({} moves, {} shuffles, {} ms, position {:?}), expected {want}", win.moves, win.shuffles, win.ms, win.n));
                 }
             }
             Err(r) => {
