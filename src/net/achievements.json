@@ -140,6 +140,41 @@
           "trip": "t10",
           "at": 10,
           "points": 15
+        },
+        {
+          "slug": "stamped-t11",
+          "id": "f49e9cf7-7b50-486b-96b6-bef64caba42c",
+          "trip": "t11",
+          "at": 11,
+          "points": 15
+        },
+        {
+          "slug": "stamped-t12",
+          "id": "aeff6c71-7a05-4eab-8822-088e803751b7",
+          "trip": "t12",
+          "at": 12,
+          "points": 15
+        },
+        {
+          "slug": "stamped-t13",
+          "id": "2cb6a3c3-2875-43a1-833f-44ea3f498c40",
+          "trip": "t13",
+          "at": 13,
+          "points": 15
+        },
+        {
+          "slug": "stamped-t14",
+          "id": "325818e8-29c6-4c59-8c7f-9c34f0aef977",
+          "trip": "t14",
+          "at": 14,
+          "points": 15
+        },
+        {
+          "slug": "stamped-t15",
+          "id": "e900339f-0e88-4513-b0cc-8e381d576ec4",
+          "trip": "t15",
+          "at": 15,
+          "points": 15
         }
       ]
     },

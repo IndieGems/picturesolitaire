@@ -724,7 +724,11 @@ if (ch.length) {
 }
 md.push(`- Daily: ${DAILY_COINS} once a day, on top.`);
 const sv = lane("souvenir");
-md.push(sv.length ? `- Souvenirs: ${sv.length} of ${TRIPS.length} trips dealt, ${sum(sv)} Coins in all, once each (${sv.map((r) => `${r.id} ${r.coins}`).join(", ")}).` : "- Souvenirs: none dealt yet (Levels' src/content/levels/souvenirs.json).");
+// a trip with no souvenirs.json entry has none (the creator, 2026-11-07: none for trips 11-15), so this
+// counts the trips that have one, never "N of all the trips"
+const svTrips = TRIPS.filter((t) => sv.some((r) => r.trip === t.id));
+const svNone = TRIPS.filter((t) => !svTrips.includes(t));
+md.push(sv.length ? `- Souvenirs: ${sv.length}, one each for ${svTrips.length} trips (${svTrips[0].id} to ${svTrips[svTrips.length - 1].id})${svNone.length ? `; ${svNone.map((t) => t.id).join(", ")} have none` : ""}. ${sum(sv)} Coins in all, once each (${sv.map((r) => `${r.id} ${r.coins}`).join(", ")}).` : "- Souvenirs: none dealt yet (Levels' src/content/levels/souvenirs.json).");
 const evs = lane("event");
 if (evs.length) {
   const avg = sum(evs) / evs.length;

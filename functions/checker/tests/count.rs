@@ -139,7 +139,14 @@ fn the_compiled_plan_counts_every_kind_once() {
     kinds.sort();
     kinds.dedup();
     assert_eq!(kinds.len(), 6, "{kinds:?}");
-    assert_eq!(p.trip_ends.len(), 10);
-    assert_eq!(p.marks.len(), 150);
+    // as many trips and boards as the level files hold (trips 11-15 took it past 10 and 150), and
+    // the last trip ends on the last board: a trip ending past it could never be stamped
+    let levels = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../src/content/levels");
+    let read = |f: &str| -> serde_json::Value { serde_json::from_str(&std::fs::read_to_string(levels.join(f)).unwrap()).unwrap() };
+    let trips = read("trips.json")["trips"].as_array().map_or(0, |t| t.len());
+    let boards = read("campaign.json")["levels"].as_array().map_or(0, |l| l.len());
+    assert_eq!(p.trip_ends.len(), trips);
+    assert_eq!(p.marks.len(), boards);
+    assert_eq!(p.trip_ends.last().copied(), Some(boards as u64), "the last trip ends on the last board");
     assert!(p.counters.iter().all(|c| c.id.len() == 36));
 }
