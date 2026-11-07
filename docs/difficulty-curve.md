@@ -491,6 +491,96 @@ traveller arriving in Cape Town would.
 | x14 | St Lucia's town hippos (silly) | Loch Ness and Urquhart Castle (silly) |
 | x15 | The Three Rondavels (famous, 5×5, the finale) | Edinburgh Castle (famous, the 6×6 finale) |
 
+## Trips 11-15 (plan)
+
+**The trips** (the creator's choices, 2026-11-07): New Zealand 151–165, Spain
+and Portugal 166–180, Morocco 181–195, Vietnam and Thailand 196–210, and
+Scandinavia and Iceland 211–225. All five ship together in one build.
+
+**No new everyday art** (the creator: "These levels will not feature new art,
+except for the special ones required for the destination"). Art paints the 75
+postcards and the five stamps. Every other picture comes from the library as
+it stands.
+
+**The shape and the targets are trips 9 and 10's, and no harder.** Where those
+two trips differ, these take the gentler target: x14 at 45–55%, as in South
+Africa. In release the leading players slowed at Level 70, which took 10 tries
+for 3 wins, so nothing here climbs past trip 10. The same two rules hold:
+
+- every unmarked board is readable: a player who draws by the face-up cards
+  wins it 85% or more;
+- every marked board is won by that player 1 in 4 or more.
+
+| In the trip | Role | Board, and its postcard | Pictures, the postcard's included | Careless target |
+|---|---|---|---|---|
+| x1 | relief | 4×5 | 10 | 80–100% |
+| x2 | build | 4×5 | 10 | 55–65% |
+| x3, x4 | build | 4×5 | 11 | 50–60% |
+| x5 | **hard** | 4×5 or 5×5 (below) | 12 on 4×5, 13 on 5×5 | 25–35% |
+| x6 | all long | 4×4, with a tall or wide window | 12 long | 85–100% |
+| x7 | build | 4×5 | 11 | 50–60% |
+| x8, x9 | build | 4×5 | 11 | 45–55% |
+| x10 | **hard** | 4×5 or 5×5 | 12 or 13 | 20–30% |
+| x11 | relief | 4×5 | 10 | 80–100% |
+| x12 | build | 4×5 | 11 | 50–60% |
+| x13, x14 | build | 4×5 | 11 | 45–55% |
+| x15 | **super**, the finale | 4×5, 5×5 or 6×6 | 12, 14 or 19 | 8–20% (6×6: 8–18%) |
+
+**The big boards.** Two of each trip's three marked boards are big: 10 of the
+15, close to the 65% held since board 10. They never sit in the same two slots
+as the trip before. Every other finale is 6×6 (150, then 180 and 210). New
+Zealand's follow Art's first draft of its places (160 and 165 at 5×5).
+
+| Trip | x5, hard | x10, hard | x15, super |
+|---|---|---|---|
+| 11, New Zealand | 155, 4×5, 12 pictures | 160, **5×5**, 13 | 165, **5×5**, 14 |
+| 12, Spain and Portugal | 170, **5×5**, 13 | 175, 4×5, 12 | 180, **6×6**, 19 |
+| 13, Morocco | 185, **5×5**, 13 | 190, **5×5**, 13 | 195, 4×5, 12 |
+| 14, Vietnam and Thailand | 200, 4×5, 12 | 205, **5×5**, 13 | 210, **6×6**, 19 |
+| 15, Scandinavia and Iceland | 215, **5×5**, 13 | 220, 4×5, 12 | 225, **5×5**, 14 |
+
+**The postcards Art paints.** Each is the size of its board, in 3:4 cards,
+and plays a 2×2 window, except on the all-long boards:
+
+- **60 at 4×5** (a 3:5 card): every board not named below;
+- **8 at 5×5** (3:4): 160, 165, 170, 185, 190, 205, 215 and 225;
+- **2 at 6×6** (3:4): 180 and 210;
+- **5 at 4×4** (3:4) with a two-card window, tall or wide as the place runs
+  (Art's choice): 156, 171, 186, 201 and 216;
+- the stamps t11 to t15.
+
+As on trips 9 and 10, each postcard takes the place of a picture finished
+mid-board on the proved line, never the first or last clear. So the deal and
+its proof stay as they were. Art gives a postcard the family of any library
+picture that looks like it, and that picture stays off the postcard's whole
+trip, as the ostrich and the standing stones did on trips 9 and 10.
+
+**The library pictures that meet today's rules: 1,270** (1,145 squares, 60
+tall and 64 wide; 2026-11-07). Each is clear, not atmospheric, not a landmark
+and not flagged. None waits for a redraw. Left out of the 1,627:
+
+- 165 atmospheric (they fill the one-a-board share, below);
+- 83 flagged;
+- 54 like one of the 150 postcards (the family rule: the standing stones,
+  Lunenburg's boathouse, the Highland cow…);
+- 25 from before the clear pictures;
+- 24 moved off by the people swap;
+- 5 landmarks;
+- 1 struck by eye.
+
+Of the 1,270, 381 are on no campaign board yet. 199 of those are the
+2026-10-30 new library (below), and 182 are others. The one-a-board
+atmospheric share takes 70 boards from 159 atmospheric squares, none on more
+than two boards.
+
+**The 200 "2026-10-30 new library" pictures were made for the VIP events.**
+Art made them "for Levels to swap into the three new events" (aed3a7f0), and
+190 of them are already on those events' levels (b11a2459). They are on Grand
+Train Journey (opens 15 Nov), Northern Lights (15 Dec) and Carnival (1 Jan).
+The pilot's 10 were on event levels already. They are the reason those events
+show a VIP mostly pictures they have not seen. The trial below is run both
+ways.
+
 ## The VIP events (Levels, 2026-10-30)
 
 Each event is a pack of 30 levels of its own (the creator; [vip.md](vip.md)), the same curve for every
