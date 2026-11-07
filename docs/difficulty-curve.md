@@ -491,15 +491,29 @@ traveller arriving in Cape Town would.
 | x14 | St Lucia's town hippos (silly) | Loch Ness and Urquhart Castle (silly) |
 | x15 | The Three Rondavels (famous, 5×5, the finale) | Edinburgh Castle (famous, the 6×6 finale) |
 
-## Trips 11-15 (plan)
+## Trips 11-16 (plan)
 
-**The trips** (the creator's choices, 2026-11-07): New Zealand 151–165, Spain
-and Portugal 166–180, Morocco 181–195, Vietnam and Thailand 196–210, and
-Scandinavia and Iceland 211–225. All five ship together in one build.
+(This section was "Trips 11-15 (plan)" until East Coast America came in.)
+
+**The trips** (the creator's choices, 2026-11-07):
+
+- East Coast America, 151–165;
+- New Zealand, 166–180;
+- Spain and Portugal, 181–195;
+- Morocco, 196–210;
+- Vietnam and Thailand, 211–225;
+- Scandinavia and Iceland, 226–240.
+
+All six ship together in one build. East Coast America came in after the other
+five were dealt (the creator: "get another American region in there, since it
+is and will probably stay our main audience. Lets go East Coast America and
+place it at Trip 11, moving the other new trips back 1"). Board numbers below
+are the new ones, except in the trial and the first deal, further down, which
+give the numbers of the time (151–225).
 
 **No new everyday art** (the creator: "These levels will not feature new art,
-except for the special ones required for the destination"). Art paints the 75
-postcards and the five stamps. Every other picture comes from the library as
+except for the special ones required for the destination"). Art paints the 90
+postcards and the six stamps. Every other picture comes from the library as
 it stands.
 
 **The shape and the targets are trips 9 and 10's, and no harder.** Where those
@@ -526,28 +540,59 @@ for 3 wins, so nothing here climbs past trip 10. The same two rules hold:
 | x13, x14 | build | 4×5 | 11 | 45–55% |
 | x15 | **super**, the finale | 4×5, 5×5 or 6×6 | 12, 14 or 19 | 8–20% (6×6: 8–18%) |
 
-**The big boards.** Two of each trip's three marked boards are big: 10 of the
-15, close to the 65% held since board 10. They never sit in the same two slots
-as the trip before. Every other finale is 6×6 (150, then 180 and 210). New
-Zealand's follow Art's first draft of its places (160 and 165 at 5×5).
+**The big boards.** Two of each trip's three marked boards are big: 12 of the
+18 (67%), close to the 65% held since board 10. They never sit in the same two
+slots as the trip on either side.
+
+- **East Coast America takes x5 and x10.** UK and Ireland had x5 and the
+  finale, and New Zealand x10 and the finale, so that pair is the only one
+  left. Its finale is 4×5, as Argentina's and Morocco's are.
+- **The finales run** 150 6×6, 165 4×5, 180 5×5, 195 6×6, 210 4×5, 225 6×6
+  and 240 5×5. Every other finale is 6×6 except at 165 and 180, two in a row
+  without one. That is the gentle side, never two 6×6 in a row, and the lead
+  accepted it to keep every painted postcard's shape.
 
 | Trip | x5, hard | x10, hard | x15, super |
 |---|---|---|---|
-| 11, New Zealand | 155, 4×5, 12 pictures | 160, **5×5**, 13 | 165, **5×5**, 14 |
-| 12, Spain and Portugal | 170, **5×5**, 13 | 175, 4×5, 12 | 180, **6×6**, 19 |
-| 13, Morocco | 185, **5×5**, 13 | 190, **5×5**, 13 | 195, 4×5, 12 |
-| 14, Vietnam and Thailand | 200, 4×5, 12 | 205, **5×5**, 13 | 210, **6×6**, 19 |
-| 15, Scandinavia and Iceland | 215, **5×5**, 13 | 220, 4×5, 12 | 225, **5×5**, 14 |
+| 11, East Coast America | 155, **5×5**, 13 pictures | 160, **5×5**, 13 | 165, 4×5, 12 |
+| 12, New Zealand | 170, 4×5, 12 | 175, **5×5**, 13 | 180, **5×5**, 14 |
+| 13, Spain and Portugal | 185, **5×5**, 13 | 190, 4×5, 12 | 195, **6×6**, 19 |
+| 14, Morocco | 200, **5×5**, 13 | 205, **5×5**, 13 | 210, 4×5, 12 |
+| 15, Vietnam and Thailand | 215, 4×5, 12 | 220, **5×5**, 13 | 225, **6×6**, 19 |
+| 16, Scandinavia and Iceland | 230, **5×5**, 13 | 235, 4×5, 12 | 240, **5×5**, 14 |
 
 **The postcards Art paints.** Each is the size of its board, in 3:4 cards,
-and plays a 2×2 window, except on the all-long boards:
+and plays a 2×2 window, except on the all-long boards. East Coast America's
+15 (2026-11-07):
 
-- **60 at 4×5** (a 3:5 card): every board not named below;
-- **8 at 5×5** (3:4): 160, 165, 170, 185, 190, 205, 215 and 225;
-- **2 at 6×6** (3:4): 180 and 210;
-- **5 at 4×4** (3:4) with a two-card window, tall or wide as the place runs
-  (Art's choice): 156, 171, 186, 201 and 216;
-- the stamps t11 to t15.
+- **12 at 4×5** (a 3:5 card): 151–154, 157–159 and 161–165;
+- **2 at 5×5** (3:4): 155 and 160;
+- **1 at 4×4** (3:4) with a two-card window, tall or wide as the place runs
+  (Art's choice): 156;
+- its stamp, t11.
+
+**The 75 painted for the other five keep their shapes** at their new numbers.
+Each trip moved back whole, so every slot is the same:
+
+- 4×5 on every board not named below;
+- 5×5 at 175, 180, 185, 200, 205, 220, 230 and 240;
+- 6×6 at 195 and 225;
+- 4×4 with a long window at 171, 186, 201, 216 and 231.
+
+The stamps go by trip number, so New Zealand's becomes t12, and so on to
+Scandinavia and Iceland's, t16.
+
+**The five trips dealt first moved back whole, deals and all** (the lead: keep
+them). The maker puts each board at the row that names its postcard and gives
+it its new number (`lib.mts` alignByDestination).
+
+- **The deal stays the same.** A deal's shuffle is seeded from the board's
+  number and its seed, and for each new number exactly one seed gives the same
+  shuffle (`rekeyed`). So every board keeps its cards, winning line and win
+  rates.
+- **The pictures stay too**, except for the in-place moves below.
+- **No picture comes back within 15 boards** on the moved trips: they keep
+  their spacing among themselves, and New Zealand is now further from trip 10.
 
 As on trips 9 and 10, each postcard takes the place of a picture finished
 mid-board on the proved line, never the first or last clear. So the deal and
@@ -653,7 +698,7 @@ pictures and postcards the boards get.
   and targets give the same seed. The exception is an all-long board given a
   different mix of tall and wide pictures, and those boards are always won.
 
-**The 200 stay off trips 11–15** (lead, 2026-11-07). The creator raised Art's
+**The 200 stay off trips 11–16** (lead, 2026-11-07). The creator raised Art's
 budget on 2026-10-30 to give the VIP events pictures nobody had seen, and the
 trips ship before Grand Train Journey opens. They may join a later trip once
 their events have been out a while. So these trips are the second column:
@@ -665,24 +710,31 @@ about a quarter of their pictures new to the player.
 - one row a board, each naming its postcard and no `drop`;
 - the trips in the trip list, with the lead's exact names;
 - every clear picture in the pool but the 200, any postcard's look-alike
-  (of any trip, so off all of 151–225), the early pictures, the people
+  (of any trip, so off all of 151–240), the early pictures, the people
   swap's, any waiting for a redraw, and any Art struck;
-- the one the player saw longest ago first (`spacedCost`'s `longest`);
+- the one the player saw longest ago first (`spacedCost`'s `longest`). For
+  a board dealt between boards already made (East Coast America), that is the
+  nearer gap, before or after;
 - a firm lean against busy pictures (`busyLean`);
 - each postcard seated by the maker in place of the picture finished
   nearest mid-board on the proved line (`seatMidBoard`), the deal unchanged;
-- no atmospheric picture on 151–225 looks like any postcard, and none like a
-  postcard of its own trip anywhere (`atmospheric.mts`);
+- no atmospheric picture on 151–240 looks like any postcard, and none like a
+  postcard of its own trip anywhere (`atmospheric.mts`). From 151 on, a board
+  makes room for its atmospheric picture by giving up one the player met
+  before, never one new to them;
 - a postcard painted after a board was dealt can turn one of its pictures
   into a look-alike. The next run swaps that picture in place (`route`'s
   `outOf`), the deal unchanged. Such a swap never brings in a picture the
-  pool leaves out.
+  pool leaves out;
+- the never-seen pictures shared evenly across trips 11–16 (`evenNew`,
+  below).
 
 The pictures a postcard or an atmospheric picture replace go back to the
 library unseen, so the next trip takes them first. `check.mts` fails any
 board from 151 on with a look-alike of a postcard on its own trip.
 
-**Dealt: all five trips, boards 151–225** (2026-11-07). Each board dealt on
+**Dealt: the first five trips, as boards 151–225** (2026-11-07; they are now
+166–240). Each board dealt on
 the first try with Art's postcards, at the trial's seed. So every measure is
 the trial's (the tables above). All 772 boards pass the release build's full
 re-proof, and boards 1–150 are unchanged.
@@ -697,8 +749,55 @@ re-proof, and boards 1–150 are unchanged.
   and 9–13%.
 - **Moved in place as the later postcards came in:** pictures on 154, 156,
   159, 162, 171, 178, 184, 188, 191 and 193, each with its deal unchanged.
-- **Still to come:** the server's checker rebuild. Until then
-  `npm run build` stops at levels-check.
+- The checker learned them as 151–225 (Server 78a31904); it relearns them at
+  their new numbers once East Coast America is in.
+
+**East Coast America's pictures, and never-seen pictures for every trip**
+(lead, 2026-11-07):
+
+- **No picture within 15 boards either way.** East Coast's boards avoid trip
+  10's pictures and New Zealand's, and take the ones the player met longest ago
+  or will meet furthest on.
+- **The new pictures were all on New Zealand onward.** The library had only 9
+  never-seen clear pictures left, so East Coast alone would have had 11 new
+  pictures, against New Zealand's 121. The lead: "don't leave East Coast with
+  only seen pictures. It's the first new trip a player reaches … Aim for every
+  trip 11-16 to have about the same share of never-seen pictures."
+- **So the maker evens them out, in place** (`lib.mts` evenNew, after the
+  atmospheric pass). While one trip has more than one picture over its share
+  and another is under, it moves a never-seen clear picture between them:
+  - on the board that takes it, the picture replaces one of the same shape
+    that the player met before, the most recently met first;
+  - the board that gives it up gets a picture the player met before, the one
+    met longest ago or next met furthest on;
+  - no picture comes back within 15 boards, each board keeps its picture rules
+    and its atmospheric picture, and every deal is unchanged.
+
+**Before and after, in the trial** (stand-in postcards; the never-seen
+pictures among each trip's everyday ones):
+
+| | East Coast | New Zealand | Spain and Portugal | Morocco | Vietnam and Thailand | Scandinavia and Iceland |
+|---|---|---|---|---|---|---|
+| Before | 11 of 168 | 121 of 154 | 15 of 159 | 26 of 153 | 9 of 159 | 7 of 154 |
+| After | 33 | 31 | 32 | 30 | 32 | 31 |
+
+That is 90 pictures moved, each from New Zealand to another trip, with a
+picture met before put in its place on New Zealand: about a fifth of each
+trip's pictures are new to the player.
+
+**East Coast's deals in the trial.** Every slot dealt on its row's targets.
+Builds are 49–60% careless and reliefs 99–100%, each readable (85% or more
+for a reader), and the all-long 156 is always won. The marked boards
+(careless, then reader):
+
+| Board | Careless | Reader |
+|---|---|---|
+| 155, hard, 5×5 | 35% | 37% |
+| 160, hard, 5×5 | 21% | 64% |
+| 165, super, 4×5 | 18% | 30% |
+
+All 240 boards of the trial pass the checker, the 75 moved ones at their new
+numbers.
 
 ## The VIP events (Levels, 2026-10-30)
 
