@@ -555,31 +555,119 @@ its proof stay as they were. Art gives a postcard the family of any library
 picture that looks like it, and that picture stays off the postcard's whole
 trip, as the ostrich and the standing stones did on trips 9 and 10.
 
-**The library pictures that meet today's rules: 1,270** (1,145 squares, 60
-tall and 64 wide; 2026-11-07). Each is clear, not atmospheric, not a landmark
-and not flagged. None waits for a redraw. Left out of the 1,627:
+**The library pictures that meet today's rules: 1,264** (1,139 squares, 60
+tall and 64 wide; 2026-11-07, with New Zealand's postcards in). Each is clear,
+not atmospheric, not a landmark and not flagged. None waits for a redraw. Left
+out of the 1,627:
 
 - 165 atmospheric (they fill the one-a-board share, below);
 - 83 flagged;
-- 54 like one of the 150 postcards (the family rule: the standing stones,
-  Lunenburg's boathouse, the Highland cow…);
+- 60 like one of the 165 postcards so far (the family rule: the standing
+  stones, Lunenburg's boathouse, the kiwi…);
 - 25 from before the clear pictures;
 - 24 moved off by the people swap;
 - 5 landmarks;
 - 1 struck by eye.
 
-Of the 1,270, 381 are on no campaign board yet. 199 of those are the
+Of the 1,264, 380 are on no campaign board yet. 198 of those are the
 2026-10-30 new library (below), and 182 are others. The one-a-board
 atmospheric share takes 70 boards from 159 atmospheric squares, none on more
-than two boards.
+than two boards. After board 225, 106 of those squares still have a board
+left.
 
 **The 200 "2026-10-30 new library" pictures were made for the VIP events.**
 Art made them "for Levels to swap into the three new events" (aed3a7f0), and
 190 of them are already on those events' levels (b11a2459). They are on Grand
 Train Journey (opens 15 Nov), Northern Lights (15 Dec) and Carnival (1 Jan).
 The pilot's 10 were on event levels already. They are the reason those events
-show a VIP mostly pictures they have not seen. The trial below is run both
-ways.
+show a VIP mostly pictures they have not seen. The events already repeat about
+70% of their other pictures from the campaign.
+
+**The trial (2026-11-07): all 75 boards picked and dealt, with stand-in
+postcards.** It used today's rules:
+
+- no picture back within 15 boards;
+- one atmospheric picture a board;
+- varied boards: no shared family or subject, an album at most a third of the
+  board and a style at most half;
+- nothing rated busy 2, and at most two rated busy at all;
+- the picture the player saw longest ago first, and one never seen before
+  that.
+
+It ran both ways:
+
+| | The new library allowed | The new library kept for the events |
+|---|---|---|
+| Boards that could not be filled | none | none |
+| Pictures on 151–225 | 779, none on two boards | 779, none on two boards |
+| Met there for the first time | 396 (51%) | 198 (25%) |
+| … a second time (after boards 1–150) | 302 | 424 |
+| … a third time | 81 | 157 |
+| A picture back on 151–225: soonest, median | 134, 155 boards later | 106, 131 boards later |
+| The average picture across 1–225 (1.37 across 1–150) | on 1.53 boards | on 1.77 boards |
+| Pictures left unused by 225 | none | none |
+
+- **No picture is on more than three of boards 1–225**, either way.
+- **The new pictures come first.** With the new library allowed, trip 11 is
+  all pictures the player has never met (154), and trip 12 nearly so (148).
+  Without it, trip 11 is (150), and trips 14 and 15 are only pictures met
+  before.
+
+**No board's mix gets thin:**
+
+- **People:** 11–21% a trip (trips 9 and 10: 17–18%), at most 4 on a board.
+- **Flowers:** 6–15% a trip (11–13%), at most 2 on a board with the new
+  library and 3 without.
+- **Busy pictures** (rated 1) are the one share that grows. Trips 13 and 14
+  reach 23–26% (trips 9 and 10: 9–13%), because the calm pictures are the
+  ones met most recently by then. Each board's cap of two holds. The real
+  picker will lean harder against busy pictures.
+- **Long pictures for the x6 boards:** 124 in the library (103 without the
+  new library), and each board takes 11. With the new library, 156 and 171
+  are all new to the player, and 186, 201 and 216 bring back long pictures
+  last seen 165–195 boards before (without it, 135–160).
+
+**The deals.** Every slot dealt on its row's targets, at its own board
+number. A deal reads only the pictures' shapes, so these hold for whichever
+pictures and postcards the boards get.
+
+- **Unmarked boards:** the reader wins 85–100%. Builds are 46–62% careless
+  and reliefs 80–100%. The all-long boards are always won (100%).
+- **No stack holds more than 13 cards after the opening.**
+- **Marked boards** (careless, then reader):
+
+| Board | Careless | Reader | | Board | Careless | Reader |
+|---|---|---|---|---|---|---|
+| 155, hard, 4×5 | 32% | 40% | | 195, super, 4×5 | 20% | 29% |
+| 160, hard, 5×5 | 21% | 64% | | 200, hard, 4×5 | 30% | 47% |
+| 165, super, 5×5 | 17% | 27% | | 205, hard, 5×5 | 23% | 34% |
+| 170, hard, 5×5 | 28% | 53% | | 210, super, 6×6 | 16% | 26% |
+| 175, hard, 4×5 | 22% | 28% | | 215, hard, 5×5 | 27% | 33% |
+| 180, super, 6×6 | 13% | 26% | | 220, hard, 4×5 | 23% | 39% |
+| 185, hard, 5×5 | 32% | 38% | | 225, super, 5×5 | 14% | 28% |
+| 190, hard, 5×5 | 25% | 38% | | | | |
+
+- **Each deal took seconds.** The two 6×6 finales took two to four minutes
+  each.
+- **The real deals should come out the same.** The same board number, shapes
+  and targets give the same seed. The exception is an all-long board given a
+  different mix of tall and wide pictures, and those boards are always won.
+
+**What the maker needs before dealing** (Levels' own files):
+
+- the 75 rows in `tools/levels/campaign-plan.mts`;
+- t11 to t15 in its trip list, with exactly the names "New Zealand",
+  "Spain & Portugal", "Morocco", "Vietnam & Thailand" and "Scandinavia &
+  Iceland";
+- the rows' picture pool: the whole library under the rules above, not a
+  batch window, and a postcard's look-alikes kept off its trip;
+- the picker's longest-unseen-first order: today it ranks every picture
+  outside the 15 boards alike, by how often it was used (`lib.mts`
+  `spacedCost`);
+- the firmer lean against busy pictures.
+
+Then come the server's checker rebuild and the release build's full re-proof
+of 75 more boards.
 
 ## The VIP events (Levels, 2026-10-30)
 
