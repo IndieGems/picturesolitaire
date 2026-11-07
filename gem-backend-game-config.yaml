@@ -2143,6 +2143,756 @@ progressions:
         - mode: on_complete
           amount: 40
           target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 2dd184c8-71cf-5d6d-9119-8629fbcbe8f6
+    slug: board_c151
+    display_name: "Campaign board 151"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 3aad4f74-255b-5e65-8c1d-11204f3cac27
+    slug: board_c152
+    display_name: "Campaign board 152"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 84a36592-5d27-5cb8-8171-b893971ba98d
+    slug: board_c153
+    display_name: "Campaign board 153"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 4df1ed1d-c460-5250-aed5-e7adaf962c43
+    slug: board_c154
+    display_name: "Campaign board 154"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 0c183392-4883-5d46-85c0-5898bffce900
+    slug: board_c155
+    display_name: "Campaign board 155"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: b8132c14-432f-5ec4-bfc0-16b4eff7ac64
+    slug: board_c156
+    display_name: "Campaign board 156"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 15
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: acbcb652-1ede-546c-a561-27ad0cfcdacf
+    slug: board_c157
+    display_name: "Campaign board 157"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: d86f0f96-9196-53a1-8aa8-2b638773e5d3
+    slug: board_c158
+    display_name: "Campaign board 158"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 68fcc129-2d14-532e-a9b0-532291b9a850
+    slug: board_c159
+    display_name: "Campaign board 159"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 3a5e0e7c-cc7f-5a7c-a030-32ae9efeb92b
+    slug: board_c160
+    display_name: "Campaign board 160"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 7b1279cf-944d-5cdd-97ab-be1dde5e3157
+    slug: board_c161
+    display_name: "Campaign board 161"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 04f1769c-9e1b-5c85-beaf-7a29aab12fb1
+    slug: board_c162
+    display_name: "Campaign board 162"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: b7c85de0-c33f-53b0-9b07-652f23004cc7
+    slug: board_c163
+    display_name: "Campaign board 163"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 20e12908-b677-55c3-a609-0a94d1ec548e
+    slug: board_c164
+    display_name: "Campaign board 164"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 80fef670-ed80-5f89-9a3b-165a0b80e790
+    slug: board_c165
+    display_name: "Campaign board 165"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 0ead0053-e618-508f-aae0-321a431056dc
+    slug: board_c166
+    display_name: "Campaign board 166"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 270f0de8-8037-5319-b652-9ee8a60245e9
+    slug: board_c167
+    display_name: "Campaign board 167"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 45f3881c-531e-53fa-b3c6-1eac2720c487
+    slug: board_c168
+    display_name: "Campaign board 168"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: ee7ca187-7390-5d05-badf-6fcdec47882d
+    slug: board_c169
+    display_name: "Campaign board 169"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 97fc196e-9656-5d2f-b546-c82496b7a6d4
+    slug: board_c170
+    display_name: "Campaign board 170"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 4f782cde-3e2a-56b9-b77b-80708b160237
+    slug: board_c171
+    display_name: "Campaign board 171"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 5ee477e1-fc15-5316-aaa7-df9b874ee2e6
+    slug: board_c172
+    display_name: "Campaign board 172"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 80960a82-221e-55e3-b536-0bc0da00aa9b
+    slug: board_c173
+    display_name: "Campaign board 173"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 235bbdf4-d549-52b6-92a2-4a1b28568ec6
+    slug: board_c174
+    display_name: "Campaign board 174"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: d8db89ea-c0bd-586e-897f-7599da8a1a44
+    slug: board_c175
+    display_name: "Campaign board 175"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 6b594bba-dc0b-522c-a29b-6ef039f011df
+    slug: board_c176
+    display_name: "Campaign board 176"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 2682e765-84c3-5c82-adf4-f9695b03a2b1
+    slug: board_c177
+    display_name: "Campaign board 177"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 1f92f7b8-c193-5527-957a-f51e17ddfda8
+    slug: board_c178
+    display_name: "Campaign board 178"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 310e8bdf-daa9-534b-ac2d-d7426b987655
+    slug: board_c179
+    display_name: "Campaign board 179"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 45f21128-a6ef-5670-a738-e213605c3e66
+    slug: board_c180
+    display_name: "Campaign board 180"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 11da2ac9-2472-5ecb-860d-ebe435cdec17
+    slug: board_c181
+    display_name: "Campaign board 181"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: a6287d91-c010-52e0-90a7-47c03f73062f
+    slug: board_c182
+    display_name: "Campaign board 182"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 17953e0d-bafc-5b1a-b503-36c22a6e544e
+    slug: board_c183
+    display_name: "Campaign board 183"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 9c5ea785-c556-54ef-a48f-47c85de6901c
+    slug: board_c184
+    display_name: "Campaign board 184"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 2f41e541-3a51-578b-ac21-6be4fe04948d
+    slug: board_c185
+    display_name: "Campaign board 185"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 43dee45c-c390-5948-a869-1ffc34a221dd
+    slug: board_c186
+    display_name: "Campaign board 186"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 20
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 9350b9f7-7c38-50dd-ac38-80c4ae8f9458
+    slug: board_c187
+    display_name: "Campaign board 187"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: a081f957-fb3a-5f8f-8df4-4fe6fe1610df
+    slug: board_c188
+    display_name: "Campaign board 188"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: e8c18238-0029-5073-aa51-84301e8c9126
+    slug: board_c189
+    display_name: "Campaign board 189"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 8b40a845-fd64-5fd0-bd63-4f17cae525b4
+    slug: board_c190
+    display_name: "Campaign board 190"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: a59d84f2-c831-5bb7-b56b-376b447d8838
+    slug: board_c191
+    display_name: "Campaign board 191"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 26d1cbae-4558-5dc6-9761-ce433028ab11
+    slug: board_c192
+    display_name: "Campaign board 192"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 1d519433-612d-5c46-a1f2-f710a8859205
+    slug: board_c193
+    display_name: "Campaign board 193"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 1b6e0f7b-b268-55e8-8225-115317bcf7c4
+    slug: board_c194
+    display_name: "Campaign board 194"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 8d3d5edc-6b46-5c02-9860-0374151d1824
+    slug: board_c195
+    display_name: "Campaign board 195"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 6cbef30a-03de-5944-8a12-c0312b2042a9
+    slug: board_c196
+    display_name: "Campaign board 196"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: f5e81b73-3208-56fb-9659-eab2ad20dd1f
+    slug: board_c197
+    display_name: "Campaign board 197"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 6053fb99-1bd1-5a8a-b487-a3cff6a73d3e
+    slug: board_c198
+    display_name: "Campaign board 198"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 219dd96a-56ca-5073-b120-e3a31f98d3c9
+    slug: board_c199
+    display_name: "Campaign board 199"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: b2c92a76-3254-5c84-8a28-a4535db1ead1
+    slug: board_c200
+    display_name: "Campaign board 200"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: d0f09af8-6c0f-5bb2-a0c9-23a5691900dd
+    slug: board_c201
+    display_name: "Campaign board 201"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 15
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 3b8990ea-ff6b-53e2-a832-827461079762
+    slug: board_c202
+    display_name: "Campaign board 202"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 59222e2e-8daa-5ee4-865f-eb486aeabd9e
+    slug: board_c203
+    display_name: "Campaign board 203"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 4b382dc9-5b1f-5ec7-b5d9-9884fefa2cae
+    slug: board_c204
+    display_name: "Campaign board 204"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: d96c231a-dc5f-5c59-aa4d-fc7f8234da55
+    slug: board_c205
+    display_name: "Campaign board 205"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 6bf2c47d-1d7a-5c5c-a8fa-9664b740a52e
+    slug: board_c206
+    display_name: "Campaign board 206"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 30
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 5fc65a8b-258e-592f-906f-69aed7a55174
+    slug: board_c207
+    display_name: "Campaign board 207"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 4cc47d9e-23bf-5275-b47b-e78359875227
+    slug: board_c208
+    display_name: "Campaign board 208"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 7b707a18-1327-56ab-abac-d05c900e3909
+    slug: board_c209
+    display_name: "Campaign board 209"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 4a914883-4a73-531b-96b6-2d46cf0ef153
+    slug: board_c210
+    display_name: "Campaign board 210"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 57e74ea3-782f-5f19-823f-40190aa8a1c9
+    slug: board_c211
+    display_name: "Campaign board 211"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 9d599b35-7125-55bb-9e81-02476e512859
+    slug: board_c212
+    display_name: "Campaign board 212"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: be95e23f-05d6-577e-9326-188e603babe9
+    slug: board_c213
+    display_name: "Campaign board 213"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 2fcf6ba3-4f27-5fd6-9d5f-bc89da9c7057
+    slug: board_c214
+    display_name: "Campaign board 214"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 200acbb4-ccdf-584a-b281-f4aa7db88a77
+    slug: board_c215
+    display_name: "Campaign board 215"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 942f819e-2d29-5e40-a5e4-722ab8fcf013
+    slug: board_c216
+    display_name: "Campaign board 216"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 15
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 8e73a194-6c44-5cff-95b2-cb2c996d5f4b
+    slug: board_c217
+    display_name: "Campaign board 217"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 18762456-de55-593a-a5a9-7256e90988c7
+    slug: board_c218
+    display_name: "Campaign board 218"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: eeb66637-33e8-54cb-b675-0b0dd0d5fee9
+    slug: board_c219
+    display_name: "Campaign board 219"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 3038ec8e-cd09-5bfe-904c-e0ce2f6e6856
+    slug: board_c220
+    display_name: "Campaign board 220"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: f7fedc31-6208-5b1a-896e-67829acf6535
+    slug: board_c221
+    display_name: "Campaign board 221"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 04a7c095-f3a5-571c-a758-cd6e6b30bef3
+    slug: board_c222
+    display_name: "Campaign board 222"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 82fdbc48-2089-5c40-a7cd-45e7bb0a0835
+    slug: board_c223
+    display_name: "Campaign board 223"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: e12371d4-1cef-55a1-aa78-6ba04f4b26cd
+    slug: board_c224
+    display_name: "Campaign board 224"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: eedd20c9-af9d-50cb-a364-4dc026e523e1
+    slug: board_c225
+    display_name: "Campaign board 225"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 414b94aa-f943-5cf1-a063-a6d0062b83a7
     slug: board_ch01
     display_name: "Challenge board 1"
@@ -4734,6 +5484,106 @@ progressions:
                       ru: { display_name: "Штамп: Великобритания и Ирландия", description: "Поставь в паспорт штамп «Великобритания и Ирландия»." }
                       tr: { display_name: "Damgalandı: Birleşik Krallık ve İrlanda", description: "Pasaportuna “Birleşik Krallık ve İrlanda” damgasını al." }
                       zh-Hans: { display_name: "已盖章：英国和爱尔兰", description: "在护照上盖上“英国和爱尔兰”印章。" }
+            - level: 11   # stamped-t11
+              threshold: 11
+              platform_grants:
+                - achievement:
+                    id: f49e9cf7-7b50-486b-96b6-bef64caba42c
+                    points: 15
+                    display_name: "Stamped: New Zealand"
+                    description: "Get the New Zealand stamp in your passport."
+                    localized:
+                      de: { display_name: "Gestempelt: Neuseeland", description: "Hol dir den Stempel „Neuseeland“ in deinen Reisepass." }
+                      es: { display_name: "Sellado: Nueva Zelanda", description: "Consigue el sello de «Nueva Zelanda» en tu pasaporte." }
+                      fr: { display_name: "Tamponné : Nouvelle-Zélande", description: "Obtiens le tampon « Nouvelle-Zélande » dans ton passeport." }
+                      it: { display_name: "Timbrato: Nuova Zelanda", description: "Ottieni il timbro «Nuova Zelanda» sul tuo passaporto." }
+                      ja: { display_name: "スタンプ獲得：ニュージーランド", description: "パスポートに「ニュージーランド」のスタンプを押す。" }
+                      ko: { display_name: "스탬프 획득: 뉴질랜드", description: "여권에 '뉴질랜드' 스탬프를 받으세요." }
+                      pl: { display_name: "Pieczątka: Nowa Zelandia", description: "Zdobądź pieczątkę „Nowa Zelandia” w paszporcie." }
+                      pt-BR: { display_name: "Carimbado: Nova Zelândia", description: "Ganhe o carimbo de “Nova Zelândia” no seu passaporte." }
+                      ru: { display_name: "Штамп: Новая Зеландия", description: "Поставь в паспорт штамп «Новая Зеландия»." }
+                      tr: { display_name: "Damgalandı: Yeni Zelanda", description: "Pasaportuna “Yeni Zelanda” damgasını al." }
+                      zh-Hans: { display_name: "已盖章：新西兰", description: "在护照上盖上“新西兰”印章。" }
+            - level: 12   # stamped-t12
+              threshold: 12
+              platform_grants:
+                - achievement:
+                    id: aeff6c71-7a05-4eab-8822-088e803751b7
+                    points: 15
+                    display_name: "Stamped: Spain & Portugal"
+                    description: "Get the Spain & Portugal stamp in your passport."
+                    localized:
+                      de: { display_name: "Gestempelt: Spanien & Portugal", description: "Hol dir den Stempel „Spanien & Portugal“ in deinen Reisepass." }
+                      es: { display_name: "Sellado: España y Portugal", description: "Consigue el sello de «España y Portugal» en tu pasaporte." }
+                      fr: { display_name: "Tamponné : Espagne et Portugal", description: "Obtiens le tampon « Espagne et Portugal » dans ton passeport." }
+                      it: { display_name: "Timbrato: Spagna e Portogallo", description: "Ottieni il timbro «Spagna e Portogallo» sul tuo passaporto." }
+                      ja: { display_name: "スタンプ獲得：スペインとポルトガル", description: "パスポートに「スペインとポルトガル」のスタンプを押す。" }
+                      ko: { display_name: "스탬프 획득: 스페인과 포르투갈", description: "여권에 '스페인과 포르투갈' 스탬프를 받으세요." }
+                      pl: { display_name: "Pieczątka: Hiszpania i Portugalia", description: "Zdobądź pieczątkę „Hiszpania i Portugalia” w paszporcie." }
+                      pt-BR: { display_name: "Carimbado: Espanha e Portugal", description: "Ganhe o carimbo de “Espanha e Portugal” no seu passaporte." }
+                      ru: { display_name: "Штамп: Испания и Португалия", description: "Поставь в паспорт штамп «Испания и Португалия»." }
+                      tr: { display_name: "Damgalandı: İspanya ve Portekiz", description: "Pasaportuna “İspanya ve Portekiz” damgasını al." }
+                      zh-Hans: { display_name: "已盖章：西班牙和葡萄牙", description: "在护照上盖上“西班牙和葡萄牙”印章。" }
+            - level: 13   # stamped-t13
+              threshold: 13
+              platform_grants:
+                - achievement:
+                    id: 2cb6a3c3-2875-43a1-833f-44ea3f498c40
+                    points: 15
+                    display_name: "Stamped: Morocco"
+                    description: "Get the Morocco stamp in your passport."
+                    localized:
+                      de: { display_name: "Gestempelt: Marokko", description: "Hol dir den Stempel „Marokko“ in deinen Reisepass." }
+                      es: { display_name: "Sellado: Marruecos", description: "Consigue el sello de «Marruecos» en tu pasaporte." }
+                      fr: { display_name: "Tamponné : Maroc", description: "Obtiens le tampon « Maroc » dans ton passeport." }
+                      it: { display_name: "Timbrato: Marocco", description: "Ottieni il timbro «Marocco» sul tuo passaporto." }
+                      ja: { display_name: "スタンプ獲得：モロッコ", description: "パスポートに「モロッコ」のスタンプを押す。" }
+                      ko: { display_name: "스탬프 획득: 모로코", description: "여권에 '모로코' 스탬프를 받으세요." }
+                      pl: { display_name: "Pieczątka: Maroko", description: "Zdobądź pieczątkę „Maroko” w paszporcie." }
+                      pt-BR: { display_name: "Carimbado: Marrocos", description: "Ganhe o carimbo de “Marrocos” no seu passaporte." }
+                      ru: { display_name: "Штамп: Марокко", description: "Поставь в паспорт штамп «Марокко»." }
+                      tr: { display_name: "Damgalandı: Fas", description: "Pasaportuna “Fas” damgasını al." }
+                      zh-Hans: { display_name: "已盖章：摩洛哥", description: "在护照上盖上“摩洛哥”印章。" }
+            - level: 14   # stamped-t14
+              threshold: 14
+              platform_grants:
+                - achievement:
+                    id: 325818e8-29c6-4c59-8c7f-9c34f0aef977
+                    points: 15
+                    display_name: "Stamped: Vietnam & Thailand"
+                    description: "Get the Vietnam & Thailand stamp in your passport."
+                    localized:
+                      de: { display_name: "Gestempelt: Vietnam & Thailand", description: "Hol dir den Stempel „Vietnam & Thailand“ in deinen Reisepass." }
+                      es: { display_name: "Sellado: Vietnam y Tailandia", description: "Consigue el sello de «Vietnam y Tailandia» en tu pasaporte." }
+                      fr: { display_name: "Tamponné : Vietnam et Thaïlande", description: "Obtiens le tampon « Vietnam et Thaïlande » dans ton passeport." }
+                      it: { display_name: "Timbrato: Vietnam e Thailandia", description: "Ottieni il timbro «Vietnam e Thailandia» sul tuo passaporto." }
+                      ja: { display_name: "スタンプ獲得：ベトナムとタイ", description: "パスポートに「ベトナムとタイ」のスタンプを押す。" }
+                      ko: { display_name: "스탬프 획득: 베트남과 태국", description: "여권에 '베트남과 태국' 스탬프를 받으세요." }
+                      pl: { display_name: "Pieczątka: Wietnam i Tajlandia", description: "Zdobądź pieczątkę „Wietnam i Tajlandia” w paszporcie." }
+                      pt-BR: { display_name: "Carimbado: Vietnã e Tailândia", description: "Ganhe o carimbo de “Vietnã e Tailândia” no seu passaporte." }
+                      ru: { display_name: "Штамп: Вьетнам и Таиланд", description: "Поставь в паспорт штамп «Вьетнам и Таиланд»." }
+                      tr: { display_name: "Damgalandı: Vietnam ve Tayland", description: "Pasaportuna “Vietnam ve Tayland” damgasını al." }
+                      zh-Hans: { display_name: "已盖章：越南和泰国", description: "在护照上盖上“越南和泰国”印章。" }
+            - level: 15   # stamped-t15
+              threshold: 15
+              platform_grants:
+                - achievement:
+                    id: e900339f-0e88-4513-b0cc-8e381d576ec4
+                    points: 15
+                    display_name: "Stamped: Scandinavia & Iceland"
+                    description: "Get the Scandinavia & Iceland stamp in your passport."
+                    localized:
+                      de: { display_name: "Gestempelt: Skandinavien & Island", description: "Hol dir den Stempel „Skandinavien & Island“ in deinen Reisepass." }
+                      es: { display_name: "Sellado: Escandinavia e Islandia", description: "Consigue el sello de «Escandinavia e Islandia» en tu pasaporte." }
+                      fr: { display_name: "Tamponné : Scandinavie et Islande", description: "Obtiens le tampon « Scandinavie et Islande » dans ton passeport." }
+                      it: { display_name: "Timbrato: Scandinavia e Islanda", description: "Ottieni il timbro «Scandinavia e Islanda» sul tuo passaporto." }
+                      ja: { display_name: "スタンプ獲得：スカンジナビアとアイスランド", description: "パスポートに「スカンジナビアとアイスランド」のスタンプを押す。" }
+                      ko: { display_name: "스탬프 획득: 스칸디나비아와 아이슬란드", description: "여권에 '스칸디나비아와 아이슬란드' 스탬프를 받으세요." }
+                      pl: { display_name: "Pieczątka: Skandynawia i Islandia", description: "Zdobądź pieczątkę „Skandynawia i Islandia” w paszporcie." }
+                      pt-BR: { display_name: "Carimbado: Escandinávia e Islândia", description: "Ganhe o carimbo de “Escandinávia e Islândia” no seu passaporte." }
+                      ru: { display_name: "Штамп: Скандинавия и Исландия", description: "Поставь в паспорт штамп «Скандинавия и Исландия»." }
+                      tr: { display_name: "Damgalandı: İskandinavya ve İzlanda", description: "Pasaportuna “İskandinavya ve İzlanda” damgasını al." }
+                      zh-Hans: { display_name: "已盖章：斯堪的纳维亚和冰岛", description: "在护照上盖上“斯堪的纳维亚和冰岛”印章。" }
   - id: c7176dad-ec41-54ae-944a-33b57ceb3723
     slug: souvenirs_finished
     display_name: "Souvenirs finished"

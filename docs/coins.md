@@ -20,13 +20,13 @@ and leaves the hourly rate where it is.
 
 ## The hourly maths (the standard: about 500 an hour of ordinary play)
 
-- Campaign: 150 boards, 5405 Coins in all (5305 without the onboarding prize).
+- Campaign: 225 boards, 8185 Coins in all (8085 without the onboarding prize).
   The design puts a relaxed board at 2 to 4 minutes. At 3 minutes a board, 36 a board
-  is about 712 Coins an hour; at 2 minutes 1068, at 4 minutes 534.
+  is about 722 Coins an hour; at 2 minutes 1083, at 4 minutes 541.
 - Challenge route: 20 boards, 540 Coins in all, 27 a board on average.
   At 4 minutes a board that is about 405 an hour; at 5 minutes 324.
 - Daily: 50 once a day, on top.
-- Souvenirs: 10 of 10 trips dealt, 350 Coins in all, once each (s1 20, s2 35, s3 30, s4 30, s5 40, s6 40, s7 40, s8 40, s9 35, s10 40).
+- Souvenirs: 10, one each for 10 trips (t1 to t10); t11, t12, t13, t14, t15 have none. 350 Coins in all, once each (s1 20, s2 35, s3 30, s4 30, s5 40, s6 40, s7 40, s8 40, s9 35, s10 40).
 - Events (VIPs only, docs/vip.md): 180 levels, 4220 Coins in all, once each, by the campaign's rule (halloween-2026 695, ski-trip-2026 690, train-journey-2026 700, winter-market-2026 710, northern-lights-2026 705, carnival-2027 720).
   23 a level: at 3 minutes a level about 469 an hour, the campaign's rate.
 - Event items (the creator, 2026-10-30): 50 Coins with each item found, once per item, 500 an event
@@ -221,6 +221,81 @@ none. The standard's ranges: a quick top-up 100 to 200 Gems, a one-time starter 
 | c148 | campaign 148 | 41 | 40 |
 | c149 | campaign 149 | 41 | 40 |
 | c150 | campaign 150 | 75 | 40 |
+| c151 | campaign 151 | 32 | 35 |
+| c152 | campaign 152 | 28 | 30 |
+| c153 | campaign 153 | 43 | 40 |
+| c154 | campaign 154 | 35 | 40 |
+| c155 | campaign 155 | 37 | 40 |
+| c156 | campaign 156 | 14 | 15 |
+| c157 | campaign 157 | 40 | 40 |
+| c158 | campaign 158 | 39 | 40 |
+| c159 | campaign 159 | 41 | 40 |
+| c160 | campaign 160 | 53 | 40 |
+| c161 | campaign 161 | 31 | 35 |
+| c162 | campaign 162 | 32 | 35 |
+| c163 | campaign 163 | 41 | 40 |
+| c164 | campaign 164 | 39 | 40 |
+| c165 | campaign 165 | 46 | 40 |
+| c166 | campaign 166 | 33 | 35 |
+| c167 | campaign 167 | 35 | 40 |
+| c168 | campaign 168 | 35 | 40 |
+| c169 | campaign 169 | 42 | 40 |
+| c170 | campaign 170 | 39 | 40 |
+| c171 | campaign 171 | 16 | 20 |
+| c172 | campaign 172 | 41 | 40 |
+| c173 | campaign 173 | 38 | 40 |
+| c174 | campaign 174 | 38 | 40 |
+| c175 | campaign 175 | 37 | 40 |
+| c176 | campaign 176 | 27 | 30 |
+| c177 | campaign 177 | 38 | 40 |
+| c178 | campaign 178 | 39 | 40 |
+| c179 | campaign 179 | 44 | 40 |
+| c180 | campaign 180 | 72 | 40 |
+| c181 | campaign 181 | 29 | 30 |
+| c182 | campaign 182 | 37 | 40 |
+| c183 | campaign 183 | 34 | 35 |
+| c184 | campaign 184 | 40 | 40 |
+| c185 | campaign 185 | 42 | 40 |
+| c186 | campaign 186 | 16 | 20 |
+| c187 | campaign 187 | 38 | 40 |
+| c188 | campaign 188 | 35 | 40 |
+| c189 | campaign 189 | 42 | 40 |
+| c190 | campaign 190 | 40 | 40 |
+| c191 | campaign 191 | 27 | 30 |
+| c192 | campaign 192 | 37 | 40 |
+| c193 | campaign 193 | 33 | 35 |
+| c194 | campaign 194 | 40 | 40 |
+| c195 | campaign 195 | 43 | 40 |
+| c196 | campaign 196 | 29 | 30 |
+| c197 | campaign 197 | 37 | 40 |
+| c198 | campaign 198 | 40 | 40 |
+| c199 | campaign 199 | 45 | 40 |
+| c200 | campaign 200 | 42 | 40 |
+| c201 | campaign 201 | 15 | 15 |
+| c202 | campaign 202 | 49 | 40 |
+| c203 | campaign 203 | 34 | 35 |
+| c204 | campaign 204 | 43 | 40 |
+| c205 | campaign 205 | 41 | 40 |
+| c206 | campaign 206 | 28 | 30 |
+| c207 | campaign 207 | 42 | 40 |
+| c208 | campaign 208 | 38 | 40 |
+| c209 | campaign 209 | 37 | 40 |
+| c210 | campaign 210 | 61 | 40 |
+| c211 | campaign 211 | 30 | 35 |
+| c212 | campaign 212 | 36 | 40 |
+| c213 | campaign 213 | 38 | 40 |
+| c214 | campaign 214 | 39 | 40 |
+| c215 | campaign 215 | 44 | 40 |
+| c216 | campaign 216 | 14 | 15 |
+| c217 | campaign 217 | 49 | 40 |
+| c218 | campaign 218 | 40 | 40 |
+| c219 | campaign 219 | 52 | 40 |
+| c220 | campaign 220 | 50 | 40 |
+| c221 | campaign 221 | 36 | 40 |
+| c222 | campaign 222 | 34 | 35 |
+| c223 | campaign 223 | 41 | 40 |
+| c224 | campaign 224 | 41 | 40 |
+| c225 | campaign 225 | 43 | 40 |
 | ch01 | challenge 1 | 19 | 20 |
 | ch02 | challenge 2 | 21 | 25 |
 | ch03 | challenge 3 | 19 | 20 |
