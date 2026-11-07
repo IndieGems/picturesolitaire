@@ -34,8 +34,8 @@
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { byId as byIdOf, catalogue, destById, famName, flags, lookalikes, readBoards, reserveLandmarks, root, route, spacingOf, usable, writeBoards } from "./lib.mts";
-import { BOARD, DISTINCT, MARKS, PLAN as FULL, PLAN_TAG, SPACING, TRIPS } from "./campaign-plan.mts";
+import { byId as byIdOf, catalogue, destById, destinations, famName, flags, lookalikes, readBoards, reserveLandmarks, root, route, spacingOf, usable, writeBoards } from "./lib.mts";
+import { BOARD, DISTINCT, MARKS, NOT_ON_TRIP_11_ON, PLAN as FULL, PLAN_TAG, SPACING, TRIP_11_ON, TRIPS } from "./campaign-plan.mts";
 import { atmosphericPass, isAtmospheric, writeRecord } from "./atmospheric.mts";
 
 const t0 = performance.now();
@@ -85,6 +85,9 @@ const made = route(PLAN, old, {
   redeal,
   reseat,
   landmarks: true,
+  // trips 11-15 keep clear of what their pool leaves out (campaign-plan.mts NOT_ON_TRIP_11_ON) even where it was
+  // ruled out after the board was dealt (a postcard painted later): such a clear picture is swapped in place
+  outOf: (i) => (i >= TRIP_11_ON ? (id) => NOT_ON_TRIP_11_ON.has(id) && !isAtmospheric(byIdOf.get(id)) : null),
   seedOf: (i) => 0xc0ffee + i * 7919,
   optsOf: (i) => ({
     id: `c${String(i + 1).padStart(2, "0")}`,
@@ -121,7 +124,8 @@ const withMark = (l, row) => {
 // last, the atmospheric pictures in place of clear squares (atmospheric.mts): deals and lines unchanged
 const atmos = atmosphericPass(
   made.map((l, i) => withMark(l, PLAN[i])),
-  { distinct: DISTINCT, spacing: SPACING },
+  // a postcard's look-alike stays off its trip; and from trip 11 on, no atmospheric picture looks like any postcard
+  { distinct: DISTINCT, spacing: SPACING, trips: TRIPS, wideFrom: TRIP_11_ON, postcardFamilies: new Set(destinations.map((d) => d.family ?? d.id)) },
 );
 const levels = atmos.levels;
 const ar = atmos.report;

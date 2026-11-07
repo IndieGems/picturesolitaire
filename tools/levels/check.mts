@@ -95,7 +95,7 @@ import { Game } from "../../src/game/solver/index.ts";
 import { along, CAREFUL, careless, chain, orderTraps, READABLE, reader, traps, unavoidable, wait } from "../../src/game/solver/metrics.ts";
 import { BIG, dealFor, deadFirstMoves, doomingFirstClears } from "../../src/game/levels/generate.ts";
 import { byId, clearOrder, destById, flags, itemById, itemClash, LESSON_MOVES, souvenirById, souvenirPictures } from "./lib.mts";
-import { CURRENT, DISTINCT, LAST_BEFORE_T9, MARKS, MAY_TRAP, SPACING, SPARES, TRIPS } from "./campaign-plan.mts";
+import { CURRENT, DISTINCT, LAST_BEFORE_T9, MARKS, MAY_TRAP, SPACING, SPARES, TRIP_11_ON, TRIPS } from "./campaign-plan.mts";
 import { FIRST as ATMOS_FIRST, isAtmospheric, MOST as ATMOS_MOST, MOST_BOARDS, shareOf, takesAtmospheric } from "./atmospheric.mts";
 import { RULES_FROM } from "./daily-plan.mts";
 import { EVENT_LEVELS, EVENT_MARKS, EVENT_MAY_TRAP, eventOf, ITEMS as EVENT_ITEMS, PLAN as EVENT_PLAN, planProblem, ROWS as EVENT_ROWS } from "./events.mts";
@@ -427,6 +427,18 @@ for (const file of files) {
       else if (isDeadEnd(s)) fail("the opening is a dead end");
       // a landmark (Art's "landmark": true) waits for its trip's destination: none on a campaign board (lead, 2026-10-25)
       if (file.endsWith("campaign.json")) for (const p of l.pictures) if (catalogue.get(p.id)?.landmark) fail(`${p.id} is a landmark, saved for a future trip's destination (make-campaign.mts swaps it out in place)`);
+      // a postcard's look-alike stays off its whole trip (Art gives the postcard its family), held from trip 11 on
+      // (campaign-plan.mts TRIP_11_ON; trips 9 and 10 kept theirs off by list, and a few earlier boards predate it)
+      if (file.endsWith("campaign.json") && data.levels.indexOf(l) >= TRIP_11_ON) {
+        const at = data.levels.indexOf(l) + 1;
+        const trip = TRIPS.find((t) => at >= t.from && at <= t.to);
+        const cards = trip ? data.levels.slice(trip.from - 1, trip.to).filter((e) => e !== l && e.destination) : [];
+        for (const p of l.pictures) {
+          const fam = catalogue.get(p.id)?.family;
+          const twin = fam && cards.find((e) => (destById.get(e.destination.id)?.family ?? e.destination.id) === fam);
+          if (twin) fail(`${p.id} looks like ${twin.destination.id}, the postcard of ${twin.id} on the same trip (family ${fam})`);
+        }
+      }
       // pictures rarely repeat: none on two of campaign boards 1-DISTINCT
       if (file.endsWith("campaign.json") && data.levels.indexOf(l) < DISTINCT) {
         for (const p of l.pictures) {

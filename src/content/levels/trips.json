@@ -10,5 +10,8 @@
 {"id":"t9","name":"South Africa","from":121,"to":135},
 {"id":"t10","name":"UK & Ireland","from":136,"to":150},
 {"id":"t11","name":"New Zealand","from":151,"to":165},
-{"id":"t12","name":"Spain & Portugal","from":166,"to":180}
+{"id":"t12","name":"Spain & Portugal","from":166,"to":180},
+{"id":"t13","name":"Morocco","from":181,"to":195},
+{"id":"t14","name":"Vietnam & Thailand","from":196,"to":210},
+{"id":"t15","name":"Scandinavia & Iceland","from":211,"to":225}
 ]}

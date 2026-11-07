@@ -670,21 +670,35 @@ about a quarter of their pictures new to the player.
 - the one the player saw longest ago first (`spacedCost`'s `longest`);
 - a firm lean against busy pictures (`busyLean`);
 - each postcard seated by the maker in place of the picture finished
-  nearest mid-board on the proved line (`seatMidBoard`), the deal unchanged.
+  nearest mid-board on the proved line (`seatMidBoard`), the deal unchanged;
+- no atmospheric picture on 151–225 looks like any postcard, and none like a
+  postcard of its own trip anywhere (`atmospheric.mts`);
+- a postcard painted after a board was dealt can turn one of its pictures
+  into a look-alike. The next run swaps that picture in place (`route`'s
+  `outOf`), the deal unchanged. Such a swap never brings in a picture the
+  pool leaves out.
 
 The pictures a postcard or an atmospheric picture replace go back to the
-library unseen, so the next trip takes them first. Then come the server's
-checker rebuild and the release build's full re-proof.
+library unseen, so the next trip takes them first. `check.mts` fails any
+board from 151 on with a look-alike of a postcard on its own trip.
 
-**Dealt: trips 11 and 12, boards 151–180** (2026-11-07). Each dealt on the
-first try with Art's postcards, at the trial's seeds and measures (the
-tables above), and all 30 are proved. Boards 1–150 are unchanged.
+**Dealt: all five trips, boards 151–225** (2026-11-07). Each board dealt on
+the first try with Art's postcards, at the trial's seed. So every measure is
+the trial's (the tables above). All 772 boards pass the release build's full
+re-proof, and boards 1–150 are unchanged.
 
-- 313 everyday pictures, 143 of them new to the player.
-- No picture comes back within 15 boards. The only repeat inside the two
-  trips is one atmospheric picture, 24 boards apart.
-- People 14%, flowers 13% and busy pictures 14% (the one atmospheric picture
-  a board included). Trips 9 and 10 had 17–18%, 11–13% and 9–13%.
+- **779 everyday pictures, 200 of them new to the player**, 124 on trip 11.
+  The average picture is on 1.79 of boards 1–225.
+- **No picture comes back within 15 boards.** 17 are on two of 151–225: 9
+  atmospheric pictures (each on two boards at most) and 8 clear ones 15–42
+  boards apart, brought by the in-place swaps.
+- **The mix:** people 15%, flowers 12% and busy pictures 14%, the one
+  atmospheric picture a board included. Trips 9 and 10 had 17–18%, 11–13%
+  and 9–13%.
+- **Moved in place as the later postcards came in:** pictures on 154, 156,
+  159, 162, 171, 178, 184, 188, 191 and 193, each with its deal unchanged.
+- **Still to come:** the server's checker rebuild. Until then
+  `npm run build` stops at levels-check.
 
 ## The VIP events (Levels, 2026-10-30)
 

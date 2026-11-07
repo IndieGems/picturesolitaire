@@ -59,7 +59,7 @@ const isSquare = (p) => p.cols === 2 && p.rows === 2;
  * The boards with the swap made (new objects only where a picture changed), the record, and a report.
  * `levels` are the boards as kept or made (their atmospheric pictures, if any, as the record left them).
  */
-export function atmosphericPass(levels, { distinct, spacing }) {
+export function atmosphericPass(levels, { distinct, spacing, trips = [], wideFrom = Infinity, postcardFamilies = new Set() }) {
   const record = readRecord();
   // 1. the clear pictures back where the record took them
   let boards = levels.map((l) => {
@@ -94,6 +94,13 @@ export function atmosphericPass(levels, { distinct, spacing }) {
     target.set(i, t);
   });
   const countOn = (i) => boards[i].pictures.filter((p) => isAtmospheric(byId.get(p.id))).length;
+  // a postcard's look-alike stays off its whole trip (Art gives the postcard its family; docs/difficulty-curve.md,
+  // trips 9 on), an atmospheric one too (2026-11-07: the argan-tree goats on 193, Morocco's argan-goats postcard on 182)
+  const tripFams = boards.map((_, i) => {
+    const t = trips.find((t) => i + 1 >= t.from && i + 1 <= t.to);
+    if (!t) return new Set();
+    return new Set(boards.slice(t.from - 1, t.to).filter((l, k) => t.from - 1 + k !== i && l.destination).map((l) => familyOf(l.destination.id)));
+  });
   /** Could atmospheric `a` take the place of picture j on board i? */
   const joins = (i, j, a) => {
     const l = boards[i];
@@ -102,6 +109,9 @@ export function atmosphericPass(levels, { distinct, spacing }) {
     if (l.pictures.some((p) => p.id === a.id)) return false;
     const fam = a.family ?? a.id;
     if (others.some((q) => familyOf(q.id) === fam)) return false;
+    if (tripFams[i].has(fam)) return false;
+    // from board `wideFrom` (trips 11-15) none looks like any postcard at all (`postcardFamilies`), as their clear pool
+    if (i >= wideFrom && postcardFamilies.has(fam)) return false;
     const words = wordsOf(a);
     if (others.some((q) => wordsOf(q).some((x) => words.some((y) => sameWord(x, y))))) return false;
     if (a.album && others.filter((q) => q.album === a.album).length >= Math.ceil(n / 3)) return false;

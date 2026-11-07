@@ -167,7 +167,7 @@ export function swappedInPlace(b, i, chosen, row, rule, out = isLandmark, orNull
   const all = [...catalogue, ...destinations];
   const spec = { ...specOf(row), keep: undefined };
   const banned = rule ? bannedOn(chosen, i, rule) : new Set();
-  const seen = rule ? spacedCost(chosen, i, rule.spacing) : new Map();
+  const seen = rule ? spacedCost(chosen, i, rule.spacing, row.longest) : new Map();
   const costOf = (r) => (seen.get(r.id) ?? 0) + (r.busy ?? 0);
   const onBoards = (id) => chosen.reduce((n, set, j) => n + (j !== i && set?.some((q) => q.id === id) ? 1 : 0), 0);
   const pictures = [...b.pictures];
@@ -175,8 +175,11 @@ export function swappedInPlace(b, i, chosen, row, rule, out = isLandmark, orNull
     if (!out(p.id)) continue;
     // a flower close-up only where the level has one already, and only when nothing else fits (isFlower)
     const flowery = pictures.some((q, j) => j !== k && isFlower(byId.get(q.id)));
+    // never more of the row's limited pictures (`old`) than it allows, under the loose rules too (trips 11-15:
+    // the pictures their pool leaves out, oldMost 0; 2026-11-07, a sweep had brought event pictures in)
+    const oldRoom = spec.old && spec.oldMost !== undefined ? spec.oldMost - pictures.filter((q, j) => j !== k && spec.old.has(q.id)).length : Infinity;
     const cands = usable
-      .filter((r) => r.cols === p.cols && r.rows === p.rows && r.look !== "atmospheric" && !r.landmark && !MOVED_OFF.has(r.id) && !banned.has(r.id) && !pictures.some((q) => q.id === r.id) && (flowery || !isFlower(r)))
+      .filter((r) => r.cols === p.cols && r.rows === p.rows && r.look !== "atmospheric" && !r.landmark && !MOVED_OFF.has(r.id) && !banned.has(r.id) && !pictures.some((q) => q.id === r.id) && (flowery || !isFlower(r)) && !(spec.old?.has(r.id) && oldRoom <= 0))
       // unseen first (on the fewest of the lane's boards: pictures rarely repeat), then a hash, not the id:
       // an alphabetical tie-break would hand every board the same "a..." pictures
       .sort((a, c) => isFlower(a) - isFlower(c) || costOf(a) - costOf(c) || onBoards(a.id) - onBoards(c.id) || hashId(`${b.id}~${a.id}`) - hashId(`${b.id}~${c.id}`));
@@ -817,7 +820,7 @@ function redealDestined(plan, i, b, chosen, uses, rule, opts, seed, held = new S
  * changed as can be), and make the plan's rows past the end. `optsOf(i)` gives
  * makeBoard's options for board i; `seedOf(i)` seeds a new board's pick.
  */
-export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repairOnly = false, redeal = new Set(), reseat = new Set(), landmarks = false }) {
+export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repairOnly = false, redeal = new Set(), reseat = new Set(), landmarks = false, outOf = undefined }) {
   if (old.length > plan.length) throw new Error(`the file has ${old.length} boards, the plan ${plan.length}`);
   const chosen = old.map((b) => b.pictures);
   // peek is no part of the deal (dealFor), so a kept board takes its row's peek with its deal and line
@@ -840,6 +843,19 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
       const d = swappedInPlace(b, i, chosen, plan[i] ?? {}, rule);
       if (d === b) return;
       console.log(`${b.id}: ${b.pictures.map((p, k) => (p.id !== d.pictures[k].id ? `${p.id} -> ${d.pictures[k].id}` : "")).filter(Boolean).join(", ")} in place (landmarks wait for their trips); the deal and line unchanged`);
+      levels[i] = d;
+      chosen[i] = d.pictures;
+    });
+  // `outOf(i)`: the pictures kept board i must not have (a predicate on ids, or null), ones it was dealt before
+  // they were ruled out (trips 11-15: a look-alike of a postcard painted after the board was dealt), each
+  // swapped in place for a clear picture of its shape within the row's rules: the deal and line unchanged
+  if (outOf)
+    levels.forEach((b, i) => {
+      const out = outOf(i);
+      if (!out) return;
+      const d = swappedInPlace(b, i, chosen, plan[i] ?? {}, rule, out);
+      if (d === b) return;
+      console.log(`${b.id}: ${b.pictures.map((p, k) => (p.id !== d.pictures[k].id ? `${p.id} -> ${d.pictures[k].id}` : "")).filter(Boolean).join(", ")} in place (ruled out since it was dealt); the deal and line unchanged`);
       levels[i] = d;
       chosen[i] = d.pictures;
     });
