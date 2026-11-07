@@ -653,21 +653,38 @@ pictures and postcards the boards get.
   and targets give the same seed. The exception is an all-long board given a
   different mix of tall and wide pictures, and those boards are always won.
 
-**What the maker needs before dealing** (Levels' own files):
+**The 200 stay off trips 11–15** (lead, 2026-11-07). The creator raised Art's
+budget on 2026-10-30 to give the VIP events pictures nobody had seen, and the
+trips ship before Grand Train Journey opens. They may join a later trip once
+their events have been out a while. So these trips are the second column:
+about a quarter of their pictures new to the player.
 
-- the 75 rows in `tools/levels/campaign-plan.mts`;
-- t11 to t15 in its trip list, with exactly the names "New Zealand",
-  "Spain & Portugal", "Morocco", "Vietnam & Thailand" and "Scandinavia &
-  Iceland";
-- the rows' picture pool: the whole library under the rules above, not a
-  batch window, and a postcard's look-alikes kept off its trip;
-- the picker's longest-unseen-first order: today it ranks every picture
-  outside the 15 boards alike, by how often it was used (`lib.mts`
-  `spacedCost`);
-- the firmer lean against busy pictures.
+**How the maker deals them** (`tools/levels/campaign-plan.mts` TRIP_11_ON,
+`lib.mts`):
 
-Then come the server's checker rebuild and the release build's full re-proof
-of 75 more boards.
+- one row a board, each naming its postcard and no `drop`;
+- the trips in the trip list, with the lead's exact names;
+- every clear picture in the pool but the 200, any postcard's look-alike
+  (of any trip, so off all of 151–225), the early pictures, the people
+  swap's, any waiting for a redraw, and any Art struck;
+- the one the player saw longest ago first (`spacedCost`'s `longest`);
+- a firm lean against busy pictures (`busyLean`);
+- each postcard seated by the maker in place of the picture finished
+  nearest mid-board on the proved line (`seatMidBoard`), the deal unchanged.
+
+The pictures a postcard or an atmospheric picture replace go back to the
+library unseen, so the next trip takes them first. Then come the server's
+checker rebuild and the release build's full re-proof.
+
+**Dealt: trips 11 and 12, boards 151–180** (2026-11-07). Each dealt on the
+first try with Art's postcards, at the trial's seeds and measures (the
+tables above), and all 30 are proved. Boards 1–150 are unchanged.
+
+- 313 everyday pictures, 143 of them new to the player.
+- No picture comes back within 15 boards. The only repeat inside the two
+  trips is one atmospheric picture, 24 boards apart.
+- People 14%, flowers 13% and busy pictures 14% (the one atmospheric picture
+  a board included). Trips 9 and 10 had 17–18%, 11–13% and 9–13%.
 
 ## The VIP events (Levels, 2026-10-30)
 

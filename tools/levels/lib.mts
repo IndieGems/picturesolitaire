@@ -217,6 +217,27 @@ export function destinedInPlace(b, row) {
   const pictures = b.pictures.map((p, i) => (i === k ? w : p));
   return withDestination({ ...b, pictures, ...(b.axes?.families ? { axes: { ...b.axes, families: pictures.map((p) => familyOf(p.id)) } } : {}) }, dest);
 }
+/**
+ * A NEW board's postcard seated in place (trips 11 on, lead 2026-11-07; trips 9 and 10 were seated by hand
+ * the same way, each row's `drop`): its window takes the spot of the picture of the window's shape finished
+ * nearest mid-board on the proved line, never the first or last clear, and of no family the postcard has
+ * (the pool keeps its look-alikes off anyway). A board of one shape deals the same from any pictures of it,
+ * so the deal, line and every measure stay as they are; the picture it replaces is on no board. Returns
+ * the board and the picture dropped, for the log.
+ */
+export function seatMidBoard(b, row) {
+  const w = destPicture(row.destination);
+  const fam = destById.get(row.destination)?.family ?? row.destination;
+  const order = clearOrder(b);
+  const mid = (order.length - 1) / 2;
+  const k = order
+    .map((p, at) => ({ p, at }))
+    .filter(({ p, at }) => at > 0 && at < order.length - 1 && b.pictures[p].cols === w.cols && b.pictures[p].rows === w.rows)
+    .filter(({ p }) => !b.pictures.some((q, j) => j !== p && familyOf(q.id) === fam))
+    .sort((x, y) => Math.abs(x.at - mid) - Math.abs(y.at - mid) || x.at - y.at)[0]?.p;
+  if (k === undefined) throw new Error(`${b.id}: no ${w.cols}x${w.rows} picture is finished mid-board for ${row.destination}'s window`);
+  return { board: destinedInPlace(b, { ...row, drop: b.pictures[k].id }), drop: b.pictures[k].id };
+}
 /** The board with its destination record right after its size (one key order in every file). */
 export function withDestination(board, dest) {
   const out = {};
@@ -417,10 +438,18 @@ const lastSeen = (chosen, i) => {
   return last;
 };
 
-/** The picker's cost of each usable picture on board i: 0 never met, then the longer unseen the cheaper. */
-export function spacedCost(chosen, i, spacing) {
+/**
+ * The picker's cost of each usable picture on board i: 0 never met, then the longer unseen the cheaper.
+ * Without `longest`, every picture met more than `spacing` boards ago costs the same but for its uses.
+ * With it (trips 11-15, lead 2026-11-07: no new everyday art, so every board brings pictures back), the
+ * one the player saw LONGEST AGO is the cheapest: 1 to 7 by how recently, LONGEST boards ago or more the
+ * least, and a little for each use.
+ */
+export const LONGEST = 210;
+export function spacedCost(chosen, i, spacing, longest = false) {
   const last = lastSeen(chosen, i);
   const uses = usesOf(chosen.slice(0, i));
+  if (longest) return new Map(usable.map((p) => [p.id, last.has(p.id) ? 1 + 6 * (1 - Math.min(i - last.get(p.id), LONGEST) / LONGEST) + uses.get(p.id) * 0.25 : 0]));
   return new Map(usable.map((p) => [p.id, last.has(p.id) ? 1 + Math.max(0, spacing - (i - last.get(p.id))) * 4 + uses.get(p.id) * 0.25 : 0]));
 }
 
@@ -454,6 +483,8 @@ export function balanceSpaced(plan, chosen, from, spacing, rule?) {
   for (let sweep = 0; sweep < 40; sweep++) {
     let better = false;
     for (let i = from; i < chosen.length; i++) {
+      // a row picked longest-unseen first (spacedCost) keeps its picks: evening the uses out would undo it
+      if (plan[i].longest) continue;
       for (let j = 0; j < chosen[i].length; j++) {
         const at = boardsOf(chosen);
         const out = chosen[i][j];
@@ -493,10 +524,11 @@ export function pickFrom(plan, chosen, from, seedOf, spacing?, rule?) {
   let done = 0;
   for (let i = from; i < plan.length; i++) {
     const recent = new Set((chosen[i - 1] ?? []).map((q) => q.id));
-    const base = spacing ? spacedCost(chosen, i, spacing) : onSchedule(uses, plan0, done / Math.max(1, slots));
+    const base = spacing ? spacedCost(chosen, i, spacing, plan[i].longest) : onSchedule(uses, plan0, done / Math.max(1, slots));
     // a picture the row limits (old) stands in only where the others run out, but one the row needs so
-    // many of (oldLeast: the pictures back on trips 9 and 10) comes first; calm a little before busy
-    const cost = new Map([...base].map(([id, v]) => [id, v + oldLean(plan[i], id) + ((byId.get(id)?.busy ?? 0) >= 1 ? 0.5 : 0)]));
+    // many of (oldLeast: the pictures back on trips 9 and 10) comes first; calm before busy, a little
+    // (0.5) or by the row's busyLean (trips 11-15: their longest-unseen pictures turn busy late on)
+    const cost = new Map([...base].map(([id, v]) => [id, v + oldLean(plan[i], id) + ((byId.get(id)?.busy ?? 0) >= 1 ? (plan[i].busyLean ?? 0.5) : 0)]));
     // strong costs leave the picker little room; when no set fits, soften them before giving up
     let pictures = null;
     const pool = poolOn(chosen, i, rule, plan[i]);
@@ -818,7 +850,7 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
   const near = spacing
     ? (i, id) => (bannedOn(chosen, i, rule).has(id) ? 1000 : 0) + chosen.reduce((n, set, k) => n + (k !== i && set?.some((q) => q.id === id) ? Math.max(0, spacing - Math.abs(k - i)) : 0), 0)
     : nearOf(chosen);
-  const seenOf = spacing ? (i) => spacedCost(chosen, i, spacing) : undefined;
+  const seenOf = spacing ? (i) => spacedCost(chosen, i, spacing, plan[i]?.longest) : undefined;
   old.forEach((_, i) => {
     const b = levels[i];
     const bad = flaggedOn(b.pictures);
@@ -895,7 +927,16 @@ export function route(plan, old, { optsOf, seedOf, spacing, distinct = 0, repair
     else balance(plan, chosen, old.length);
     if (process.env.PICKS_ONLY) return { picks: chosen };
     const u = usesOf(chosen);
-    for (let i = old.length; i < plan.length; i++) levels[i] = makeBoard(plan, i, chosen, u, { ...optsOf(i), seenOf, poolOf });
+    for (let i = old.length; i < plan.length; i++) {
+      levels[i] = makeBoard(plan, i, chosen, u, { ...optsOf(i), seenOf, poolOf });
+      // a row with a destination and no drop (trips 11 on): its postcard seated mid-board (seatMidBoard)
+      if (plan[i].destination && !plan[i].drop) {
+        const seated = seatMidBoard(levels[i], plan[i]);
+        console.log(`${levels[i].id}: ${plan[i].destination} in place of ${seated.drop}, finished mid-board; the deal and line unchanged`);
+        levels[i] = seated.board;
+        chosen[i] = seated.board.pictures;
+      }
+    }
   }
   return levels;
 }

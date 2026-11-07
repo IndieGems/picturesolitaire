@@ -85,6 +85,7 @@
 
 import { existsSync, readFileSync } from "node:fs";
 import { CAREFUL, READABLE } from "../../src/game/solver/metrics.ts";
+import { catalogue, destinations, MOVED_OFF } from "./lib.mts";
 
 /**
  * The plan's name, stored in campaign.json: the maker adds rows to a file only
@@ -313,6 +314,43 @@ export const PLAN = [
   /* 148 */ { role: "build", destination: "dest-keem-bay", drop: "coleus", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
   /* 149 */ { role: "build", destination: "dest-loch-ness", drop: "red-deer", board: [4, 5], ...sq(11), careless: [0.4, 0.5], chain: ANY },
   /* 150 */ { role: "super", destination: "dest-edinburgh-castle", drop: "tree-tent", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY },
+  // ---- trips 11-15 (the creator, 2026-11-07; docs/difficulty-curve.md "Trips 11-15 (plan)"): trips 9 and
+  // 10's shape and targets, no harder (x14 at South Africa's 45-55%); two of each trip's three marked boards
+  // big, never in the same two slots as the trip before; the 6x6 finales 180 and 210. NO NEW EVERYDAY ART
+  // (the creator): every picture from the library (TRIP_11_ON below), longest unseen first, and each
+  // postcard seated mid-board by the maker (no drop: lib.mts seatMidBoard)
+  // ---- trip 11, New Zealand (Art's places, docs/destinations-new-zealand.md): 160 and the finale 165 at 5x5
+  /* 151 */ { role: "relief", destination: "dest-lake-tekapo", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 152 */ { role: "build", destination: "dest-ohakune-carrot", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 153 */ { role: "build", destination: "dest-pohutu", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 154 */ { role: "build", destination: "dest-moeraki-boulders", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 155 */ { role: "hard",  destination: "dest-napier-art-deco", board: [4, 5], ...sq(12), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 156 */ { role: "pace",  destination: "dest-wanaka-tree", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
+  /* 157 */ { role: "build", destination: "dest-rakiura-kiwi", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 158 */ { role: "build", destination: "dest-kaikoura-seals", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 159 */ { role: "build", destination: "dest-baldwin-street", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 160 */ { role: "hard",  destination: "dest-franz-josef", board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 161 */ { role: "relief", destination: "dest-arrowtown", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 162 */ { role: "build", destination: "dest-kea-arthurs-pass", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 163 */ { role: "build", destination: "dest-pancake-rocks", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 164 */ { role: "build", destination: "dest-curio-bay", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 165 */ { role: "super", destination: "dest-milford-sound", board: [5, 5], ...sq(14), careless: [0.08, 0.2], traps: [0, 4], chain: ANY },
+  // ---- trip 12, Spain & Portugal (Art's places, docs/destinations-spain-portugal.md): 170 at 5x5, the finale 180 at 6x6
+  /* 166 */ { role: "relief", destination: "dest-plaza-de-espana", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 167 */ { role: "build", destination: "dest-costa-nova", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 168 */ { role: "build", destination: "dest-consuegra-windmills", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 169 */ { role: "build", destination: "dest-belem-tower", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 170 */ { role: "hard",  destination: "dest-las-medulas", board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 171 */ { role: "pace",  destination: "dest-ronda-bridge", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
+  /* 172 */ { role: "build", destination: "dest-guadix-caves", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 173 */ { role: "build", destination: "dest-pena-palace", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 174 */ { role: "build", destination: "dest-la-geria", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 175 */ { role: "hard",  destination: "dest-monsanto", board: [4, 5], ...sq(12), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 176 */ { role: "relief", destination: "dest-palacio-de-cristal", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 177 */ { role: "build", destination: "dest-alentejo-cork-oaks", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 178 */ { role: "build", destination: "dest-gulpiyuri", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 179 */ { role: "build", destination: "dest-benagil-cave", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 180 */ { role: "super", destination: "dest-porto-ribeira", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY },
 ];
 
 /**
@@ -339,6 +377,9 @@ export const TRIPS = [
   // the creator's choices (2026-10-27): South Africa, and the UK and Ireland (New Zealand in reserve)
   { id: "t9", name: "South Africa", from: 121, to: 135 },
   { id: "t10", name: "UK & Ireland", from: 136, to: 150 },
+  // the creator's choices (2026-11-07; the names exactly as the lead gave them: UI's translators' copy is made from them)
+  { id: "t11", name: "New Zealand", from: 151, to: 165 },
+  { id: "t12", name: "Spain & Portugal", from: 166, to: 180 },
 ];
 
 /** Roles that may trap from the first move; every other board starts safe (check.mts). */
@@ -366,7 +407,8 @@ export const NEXT_BATCH = "brugmansia";
 // LAST_BEFORE_T9, the catalogue's last before it) and the spares no board has shown; boards 91-120 never
 // take from that batch
 export const LAST_BEFORE_T9 = "drone";
-PLAN.forEach((row, i) => Object.assign(row, i < 30 ? { newTo: "foxgloves" } : i < 60 ? { newFrom: "marigolds", newTo: "foxgloves" } : i < 90 ? { newFrom: "foxgloves", newTo: NEXT_BATCH } : i < 120 ? { newFrom: NEXT_BATCH, newThrough: LAST_BEFORE_T9 } : { newAfter: LAST_BEFORE_T9 }));
+// boards 151 on (trips 11-15): no batch window, the whole library (TRIP_11_ON below)
+PLAN.forEach((row, i) => Object.assign(row, i < 30 ? { newTo: "foxgloves" } : i < 60 ? { newFrom: "marigolds", newTo: "foxgloves" } : i < 90 ? { newFrom: "foxgloves", newTo: NEXT_BATCH } : i < 120 ? { newFrom: NEXT_BATCH, newThrough: LAST_BEFORE_T9 } : i < 150 ? { newAfter: LAST_BEFORE_T9 } : {}));
 // HALF NEW on boards 121-150 (the creator, 2026-10-27): of each board's everyday pictures (all but the
 // postcard) half, rounded down, come back from boards 1-60 (BACK: pictures-back.json, those that meet
 // today's rules), exactly so many (oldLeast with oldMost); the rest, and the drop the postcard replaces,
@@ -376,10 +418,10 @@ export const BACK = new Set(BACK_FILE.back.filter((id) => !(id in BACK_FILE.stru
 export const SPARES = new Set(BACK_FILE.spares.filter((id) => !(id in BACK_FILE.struck)));
 const ALSO = new Set([...BACK, ...SPARES]);
 /**
- * TRIP 11 ON (creator, 2026-10-28): the clear pictures the atmospheric swap took out of boards 1-150 and
- * left on no board (atmospheric.json `freed`, written by make-campaign.mts), and those a swap-in batch
- * displaced (swap-ins.json, each batch's `freed`, written by swap-in.mts: the pen-and-ink pictures,
- * creator, 2026-10-29), are the next trips' stock, taken first (a row's `also`), then Art's new ones.
+ * The clear pictures the atmospheric swap took out of boards 1-150 and left on no board (atmospheric.json
+ * `freed`, written by make-campaign.mts), and those a swap-in batch displaced (swap-ins.json, each batch's
+ * `freed`, written by swap-in.mts: the pen-and-ink pictures, creator, 2026-10-29). Trips 11-15 take them
+ * first with no list of their own: in the whole-library pool (TRIP_11_ON) a picture on no board costs least.
  */
 const ATMOS_FILE = new URL("./atmospheric.json", import.meta.url);
 const SWAP_INS_FILE = new URL("./swap-ins.json", import.meta.url);
@@ -388,9 +430,41 @@ export const FREED = new Set([
   ...(existsSync(SWAP_INS_FILE) ? Object.values(JSON.parse(readFileSync(SWAP_INS_FILE, "utf8")).batches).flatMap((b) => b.freed) : []),
 ]);
 PLAN.forEach((row, i) => {
-  if (i < 120) return;
+  if (i < 120 || i >= 150) return;
   const back = Math.floor((row.count - 1) / 2);
   Object.assign(row, { old: BACK, oldMost: back, oldLeast: back, also: ALSO });
+});
+/**
+ * TRIP 11 ON (boards 151-225; the creator, 2026-11-07: "These levels will not feature new art, except for
+ * the special ones required for the destination"; docs/difficulty-curve.md "Trips 11-15 (plan)"): every
+ * everyday picture from the library as it stands, by today's rules, none back within SPACING boards, and
+ * the one the player saw LONGEST AGO first (`longest`: lib.mts spacedCost), a picture on no board first of
+ * all. The pool is every clear picture (lib.mts poolOn) but those the row takes none of (`old` with
+ * oldMost 0, so pick.ts holds it):
+ *   - the 2026-10-30 new library (Art's `batch`): made for the VIP events and on them (lead, 2026-11-07:
+ *     "keep the 200 event pictures off trips 11-15"; they may join a later trip once their events have
+ *     been out a while);
+ *   - any look-alike of a postcard, of any trip (Art gives a postcard its look-alike's family);
+ *   - those from before the clear pictures (CURRENT), those the people swap moved off (lib.mts MOVED_OFF),
+ *     those waiting for a redraw (picture-redraws.json), and those Art struck by eye (pictures-back.json).
+ * Calm before busy, firmly (`busyLean`: under longest-unseen-first the busy ones come due together late
+ * on, a quarter of trips 13 and 14 in the trial).
+ */
+const REDRAWS_FILE = new URL("../../src/content/picture-redraws.json", import.meta.url);
+const REDRAWING = existsSync(REDRAWS_FILE) ? Object.entries(JSON.parse(readFileSync(REDRAWS_FILE, "utf8")).pictures).filter(([, v]) => v.redraw).map(([id]) => id) : [];
+const POSTCARD_FAMILIES = new Map(destinations.map((d) => [d.family ?? d.id, d.id]));
+export const NOT_ON_TRIP_11_ON = new Set([
+  ...catalogue.filter((p) => p.batch === "2026-10-30 new library").map((p) => p.id),
+  ...catalogue.filter((p) => POSTCARD_FAMILIES.has(p.family) && POSTCARD_FAMILIES.get(p.family) !== p.id).map((p) => p.id),
+  ...CURRENT,
+  ...MOVED_OFF,
+  ...REDRAWING,
+  ...Object.keys(BACK_FILE.struck),
+]);
+export const TRIP_11_ON = 150;
+PLAN.forEach((row, i) => {
+  if (i < TRIP_11_ON) return;
+  Object.assign(row, { old: NOT_ON_TRIP_11_ON, oldMost: 0, longest: true, busyLean: 3 });
 });
 // every unmarked board is READABLE (creator, 2026-10-27, after "rigged"-feeling boards 18-19): a player who
 // draws by the face-up cards wins it 85% or more; hard and super hard boards may still hide the way. Where

@@ -828,6 +828,174 @@
     "clear": "trapeze",
     "atmospheric": "savanna-zebras"
    }
+  ],
+  "c151": [
+   {
+    "clear": "sea-glass",
+    "atmospheric": "cherry-bowl"
+   }
+  ],
+  "c152": [
+   {
+    "clear": "marigolds",
+    "atmospheric": "snowfall-bridge"
+   }
+  ],
+  "c153": [
+   {
+    "clear": "coleus",
+    "atmospheric": "orchestra-flautist"
+   }
+  ],
+  "c154": [
+   {
+    "clear": "bushbaby",
+    "atmospheric": "poppy-sunset"
+   }
+  ],
+  "c155": [
+   {
+    "clear": "pitcher-plant",
+    "atmospheric": "salmon-run"
+   }
+  ],
+  "c157": [
+   {
+    "clear": "queenslander",
+    "atmospheric": "jungle-river"
+   }
+  ],
+  "c158": [
+   {
+    "clear": "clover",
+    "atmospheric": "train-compartment"
+   }
+  ],
+  "c159": [
+   {
+    "clear": "windsock",
+    "atmospheric": "mokoro-papyrus"
+   }
+  ],
+  "c160": [
+   {
+    "clear": "canna",
+    "atmospheric": "poplar-river"
+   }
+  ],
+  "c161": [
+   {
+    "clear": "eagle-figurehead",
+    "atmospheric": "crows-winter-field"
+   }
+  ],
+  "c162": [
+   {
+    "clear": "zinnia",
+    "atmospheric": "luzzu-harbour"
+   }
+  ],
+  "c163": [
+   {
+    "clear": "panda",
+    "atmospheric": "lawn-tennis"
+   }
+  ],
+  "c164": [
+   {
+    "clear": "coffered-ceiling",
+    "atmospheric": "potato-harvest"
+   }
+  ],
+  "c165": [
+   {
+    "clear": "tiled-stairs",
+    "atmospheric": "arcaded-street"
+   }
+  ],
+  "c166": [
+   {
+    "clear": "pirate-ship-ride",
+    "atmospheric": "peat-cutting"
+   }
+  ],
+  "c167": [
+   {
+    "clear": "mussels",
+    "atmospheric": "peony-jug"
+   }
+  ],
+  "c168": [
+   {
+    "clear": "shell-grotto",
+    "atmospheric": "night-bridge-lights"
+   }
+  ],
+  "c169": [
+   {
+    "clear": "trapeze",
+    "atmospheric": "fishing-fleet"
+   }
+  ],
+  "c170": [
+   {
+    "clear": "chimney-pots",
+    "atmospheric": "winter-street-dome"
+   }
+  ],
+  "c172": [
+   {
+    "clear": "swing-ride",
+    "atmospheric": "sugarcane-harvest"
+   }
+  ],
+  "c173": [
+   {
+    "clear": "pumpkins",
+    "atmospheric": "badlands"
+   }
+  ],
+  "c174": [
+   {
+    "clear": "dining-car",
+    "atmospheric": "park-avenue-autumn"
+   }
+  ],
+  "c175": [
+   {
+    "clear": "blue-bicycle",
+    "atmospheric": "dune-fences"
+   }
+  ],
+  "c176": [
+   {
+    "clear": "braided-river",
+    "atmospheric": "gondola-lift"
+   }
+  ],
+  "c177": [
+   {
+    "clear": "fishmonger",
+    "atmospheric": "winter-village-dusk"
+   }
+  ],
+  "c178": [
+   {
+    "clear": "karst-peaks",
+    "atmospheric": "night-train"
+   }
+  ],
+  "c179": [
+   {
+    "clear": "stepwell",
+    "atmospheric": "salmon-run"
+   }
+  ],
+  "c180": [
+   {
+    "clear": "magnolia",
+    "atmospheric": "autumn-village"
+   }
   ]
  },
  "displaced": [
@@ -849,11 +1017,14 @@
   "braided-river",
   "breakdancer",
   "bumper-cars",
+  "bushbaby",
+  "canna",
   "car-carrier",
   "carnation",
   "chanterelles",
   "chimney-pots",
   "cinnamon-rolls",
+  "clover",
   "coffee-roaster",
   "coffered-ceiling",
   "coleus",
@@ -864,10 +1035,12 @@
   "dandelion-wish",
   "dewdrops",
   "digger",
+  "dining-car",
   "double-decker",
   "dovecote",
   "dragon-boat",
   "dragster",
+  "eagle-figurehead",
   "falafel",
   "falconer",
   "fishmonger",
@@ -896,6 +1069,7 @@
   "iron-gate",
   "jelly",
   "kangaroo",
+  "karst-peaks",
   "kasbah",
   "kick-scooter",
   "kite-maker",
@@ -906,6 +1080,7 @@
   "macaw",
   "magnolia",
   "maine-coon",
+  "marigolds",
   "mimosa",
   "mud-pots",
   "mussels",
@@ -947,6 +1122,7 @@
   "snowmobile",
   "stag-beetle",
   "stepping-stones",
+  "stepwell",
   "suitcase",
   "sundew",
   "sweet-william",
@@ -971,112 +1147,55 @@
  "freed": [
   "autumn-treetops",
   "baker",
-  "ballerina",
   "bananas",
-  "beehive-hut",
-  "beetroot",
-  "bibimbap",
-  "birdwatcher",
-  "black-eyed-susans",
   "blue-bicycle",
   "bluebonnets",
   "braided-river",
   "breakdancer",
-  "bumper-cars",
-  "car-carrier",
-  "carnation",
-  "chanterelles",
+  "bushbaby",
+  "canna",
   "chimney-pots",
-  "cinnamon-rolls",
-  "coffee-roaster",
+  "clover",
   "coffered-ceiling",
   "coleus",
-  "conductor",
-  "croissant",
-  "crown-imperial",
-  "crystal-cave",
-  "dandelion-wish",
   "dewdrops",
-  "dragon-boat",
-  "falafel",
-  "falconer",
+  "dining-car",
+  "eagle-figurehead",
   "fishmonger",
   "focaccia",
   "fruit-seller",
   "gaillardia",
-  "gazebo",
-  "giant-lily-pads",
   "glass-arcade",
-  "glazier",
   "gumball-machine",
-  "gyrocopter",
-  "harvest-moon",
   "hedge-maze",
-  "hedgehog",
-  "hibiscus",
-  "high-diver",
-  "hummingbird",
   "ice-cream-van",
-  "ice-hotel",
-  "jelly",
-  "kasbah",
-  "kite-maker",
-  "library-shelves",
-  "longtail-boat",
-  "lynx",
-  "macaw",
+  "karst-peaks",
   "magnolia",
-  "maine-coon",
-  "mimosa",
-  "mud-pots",
+  "marigolds",
   "mussels",
-  "nachos",
-  "nasturtiums",
-  "oleander",
-  "orange-grove",
-  "origami-crane",
-  "outrigger",
-  "pampas-grass",
   "panda",
-  "paper-plane",
   "patchwork-hills",
   "picnic-basket",
   "pirate-ship-ride",
   "pitcher-plant",
   "pizza",
-  "pretzel",
-  "pufferfish",
   "pumpkins",
-  "quad-bike",
   "queenslander",
   "rack-railway",
-  "rain-window",
-  "reed-bed",
   "rollerskater",
   "rooftop-garden",
-  "sandcastle",
   "scabious",
   "sea-glass",
   "shell-grotto",
-  "shooting-stars",
-  "signal-box",
-  "snorkel-mask",
-  "snowmobile",
-  "stag-beetle",
-  "stepping-stones",
-  "suitcase",
-  "sundew",
+  "stepwell",
   "sweet-william",
   "swing-ride",
   "tiled-stairs",
-  "torch-ginger",
   "town-square",
   "toymaker",
   "trapeze",
   "tree-house",
   "windsock",
-  "yarrow",
-  "yurt",
   "zinnia"
  ]
 }
