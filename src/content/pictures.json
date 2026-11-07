@@ -55235,6 +55235,681 @@
         "cream"
       ],
       "busy": 0
+    },
+    {
+      "id": "dest-chefchaouen",
+      "name": "Chefchaouen",
+      "place": "The Rif, Morocco",
+      "trip": "morocco",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-chefchaouen.webp",
+      "board": "pictures/destinations/dest-chefchaouen-board.webp",
+      "thumb": "pictures/destinations/dest-chefchaouen-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "gouache",
+      "family": "chefchaouen",
+      "subjects": [
+        "Chefchaouen",
+        "blue lanes"
+      ],
+      "palette": [
+        "blue",
+        "indigo",
+        "white",
+        "terracotta"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-argan-goats",
+      "name": "Goats in the argan trees",
+      "place": "The Souss, Morocco",
+      "trip": "morocco",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-argan-goats.webp",
+      "board": "pictures/destinations/dest-argan-goats-board.webp",
+      "thumb": "pictures/destinations/dest-argan-goats-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "argan-tree",
+      "subjects": [
+        "argan tree",
+        "climbing goats"
+      ],
+      "palette": [
+        "green",
+        "brown",
+        "red",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-essaouira-boats",
+      "name": "Essaouira's blue boats",
+      "place": "Essaouira, Morocco",
+      "trip": "morocco",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-essaouira-boats.webp",
+      "board": "pictures/destinations/dest-essaouira-boats-board.webp",
+      "thumb": "pictures/destinations/dest-essaouira-boats-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "luzzu-harbour",
+      "subjects": [
+        "Essaouira",
+        "blue fishing boats"
+      ],
+      "palette": [
+        "blue",
+        "honey",
+        "white",
+        "turquoise"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-volubilis",
+      "name": "Volubilis",
+      "place": "Meknes, Morocco",
+      "trip": "morocco",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-volubilis.webp",
+      "board": "pictures/destinations/dest-volubilis-board.webp",
+      "thumb": "pictures/destinations/dest-volubilis-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "volubilis",
+      "subjects": [
+        "Volubilis",
+        "Roman arch"
+      ],
+      "palette": [
+        "honey",
+        "green",
+        "yellow",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-ait-benhaddou",
+      "name": "Aït Benhaddou",
+      "place": "Ouarzazate, Morocco",
+      "trip": "morocco",
+      "tag": "famous",
+      "cols": 5,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-ait-benhaddou.webp",
+      "board": "pictures/destinations/dest-ait-benhaddou-board.webp",
+      "thumb": "pictures/destinations/dest-ait-benhaddou-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        1200,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "kasbah",
+      "subjects": [
+        "Aït Benhaddou",
+        "earthen ksar"
+      ],
+      "palette": [
+        "red",
+        "ochre",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-todra-gorge",
+      "name": "The Todra Gorge",
+      "place": "Tinghir, Morocco",
+      "trip": "morocco",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        2,
+        1
+      ],
+      "window": [
+        1,
+        2
+      ],
+      "file": "pictures/destinations/dest-todra-gorge.webp",
+      "board": "pictures/destinations/dest-todra-gorge-board.webp",
+      "thumb": "pictures/destinations/dest-todra-gorge-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "watercolour",
+      "family": "canyon-river-bend",
+      "subjects": [
+        "Todra Gorge",
+        "red cliffs"
+      ],
+      "palette": [
+        "red",
+        "orange",
+        "blue",
+        "grey"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-el-badi-storks",
+      "name": "El Badi's storks",
+      "place": "Marrakech, Morocco",
+      "trip": "morocco",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        2,
+        0
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-el-badi-storks.webp",
+      "board": "pictures/destinations/dest-el-badi-storks-board.webp",
+      "thumb": "pictures/destinations/dest-el-badi-storks-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "gouache",
+      "family": "stork",
+      "subjects": [
+        "storks",
+        "El Badi Palace"
+      ],
+      "palette": [
+        "white",
+        "rose",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-imlil-toubkal",
+      "name": "Imlil and Toubkal",
+      "place": "High Atlas, Morocco",
+      "trip": "morocco",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-imlil-toubkal.webp",
+      "board": "pictures/destinations/dest-imlil-toubkal-board.webp",
+      "thumb": "pictures/destinations/dest-imlil-toubkal-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "pastel",
+      "family": "imlil",
+      "subjects": [
+        "Imlil",
+        "Toubkal"
+      ],
+      "palette": [
+        "red",
+        "green",
+        "white",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-fes-tanneries",
+      "name": "The tanneries of Fes",
+      "place": "Fes, Morocco",
+      "trip": "morocco",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-fes-tanneries.webp",
+      "board": "pictures/destinations/dest-fes-tanneries-board.webp",
+      "thumb": "pictures/destinations/dest-fes-tanneries-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "fes-tanneries",
+      "subjects": [
+        "Chouara tannery",
+        "dye vats"
+      ],
+      "palette": [
+        "red",
+        "ochre",
+        "white",
+        "brown"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-erg-chebbi",
+      "name": "Erg Chebbi",
+      "place": "Merzouga, Morocco",
+      "trip": "morocco",
+      "tag": "famous",
+      "cols": 5,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-erg-chebbi.webp",
+      "board": "pictures/destinations/dest-erg-chebbi-board.webp",
+      "thumb": "pictures/destinations/dest-erg-chebbi-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        1200,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "warm-dusk",
+      "subjects": [
+        "Erg Chebbi",
+        "camel caravan"
+      ],
+      "palette": [
+        "orange",
+        "gold",
+        "brown",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-fes-donkey",
+      "name": "A donkey of Fes's medina",
+      "place": "Fes, Morocco",
+      "trip": "morocco",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-fes-donkey.webp",
+      "board": "pictures/destinations/dest-fes-donkey-board.webp",
+      "thumb": "pictures/destinations/dest-fes-donkey-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "gouache",
+      "family": "donkey",
+      "subjects": [
+        "donkey",
+        "Fes medina"
+      ],
+      "palette": [
+        "grey",
+        "ochre",
+        "orange",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-menara-gardens",
+      "name": "The Menara gardens",
+      "place": "Marrakech, Morocco",
+      "trip": "morocco",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-menara-gardens.webp",
+      "board": "pictures/destinations/dest-menara-gardens-board.webp",
+      "thumb": "pictures/destinations/dest-menara-gardens-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "pavilion",
+      "subjects": [
+        "Menara pavilion",
+        "Atlas"
+      ],
+      "palette": [
+        "rose",
+        "green",
+        "white",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-paradise-valley",
+      "name": "Paradise Valley",
+      "place": "Agadir, Morocco",
+      "trip": "morocco",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-paradise-valley.webp",
+      "board": "pictures/destinations/dest-paradise-valley-board.webp",
+      "thumb": "pictures/destinations/dest-paradise-valley-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "pastel",
+      "family": "oasis",
+      "subjects": [
+        "Paradise Valley",
+        "rock pools"
+      ],
+      "palette": [
+        "turquoise",
+        "gold",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-dades-monkey-fingers",
+      "name": "The Monkey Fingers of the Dades",
+      "place": "Dades Valley, Morocco",
+      "trip": "morocco",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-dades-monkey-fingers.webp",
+      "board": "pictures/destinations/dest-dades-monkey-fingers-board.webp",
+      "thumb": "pictures/destinations/dest-dades-monkey-fingers-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "gouache",
+      "family": "monkey-fingers",
+      "subjects": [
+        "Monkey Fingers",
+        "Dades Valley"
+      ],
+      "palette": [
+        "red",
+        "brown",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-bahia-palace",
+      "name": "The Bahia Palace",
+      "place": "Marrakech, Morocco",
+      "trip": "morocco",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-bahia-palace.webp",
+      "board": "pictures/destinations/dest-bahia-palace-board.webp",
+      "thumb": "pictures/destinations/dest-bahia-palace-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "jewel-tones",
+      "subjects": [
+        "Bahia Palace",
+        "zellige courtyard"
+      ],
+      "palette": [
+        "green",
+        "blue",
+        "ochre",
+        "white"
+      ],
+      "busy": 0
     }
   ],
   "items": [
