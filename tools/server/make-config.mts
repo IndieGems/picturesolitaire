@@ -287,7 +287,7 @@ const localeFile = (name) => {
 const STRINGS = Object.fromEntries(["en", ...LOCALES].map((l) => [l, { t: localeFile(l), names: localeFile(`names-${l}`) }]));
 /**
  * A counter's (no `a`) or an achievement's name and description in one locale: UI's keys, with a
- * stamp's {{trip}} filled from names-<lang>.json; in English, the file's own until UI's are in.
+ * stamp's {{trip}} filled from names-<lang>.json, and in English from trips.json.
  * A field the locale lacks is left out (the platform shows the English).
  */
 function copyOf(lang, c, a) {
@@ -297,7 +297,9 @@ function copyOf(lang, c, a) {
   let name = t[`${key}.name`] ?? (lang === "en" ? own?.name : undefined);
   let desc = t[`${key}.desc`] ?? (lang === "en" ? own?.desc : undefined);
   if (a?.trip) {
-    const trip = names[`trip.${a.trip}`] ?? (lang === "en" ? TRIPS.find((x) => x.id === a.trip)?.name : undefined);
+    // English names come from trips.json, their source: names-en.json is generated from it and can
+    // lag (2026-11-07: HEAD's still called t11 New Zealand after East Coast America took its place)
+    const trip = lang === "en" ? TRIPS.find((x) => x.id === a.trip)?.name ?? names[`trip.${a.trip}`] : names[`trip.${a.trip}`];
     const fill = (s) => (s === undefined || trip === undefined ? undefined : s.replace(/\{\{\s*trip\s*\}\}/g, trip));
     [name, desc] = [fill(name), fill(desc)];
   }

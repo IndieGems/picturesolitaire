@@ -2311,7 +2311,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 40
+          amount: 30
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 45f3881c-531e-53fa-b3c6-1eac2720c487
     slug: board_c168
@@ -2351,7 +2351,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 20
+          amount: 15
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 5ee477e1-fc15-5316-aaa7-df9b874ee2e6
     slug: board_c172
@@ -2401,7 +2401,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 30
+          amount: 35
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 2682e765-84c3-5c82-adf4-f9695b03a2b1
     slug: board_c177
@@ -2411,7 +2411,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 40
+          amount: 35
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 1f92f7b8-c193-5527-957a-f51e17ddfda8
     slug: board_c178
@@ -2451,7 +2451,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 30
+          amount: 35
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: a6287d91-c010-52e0-90a7-47c03f73062f
     slug: board_c182
@@ -2471,7 +2471,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 35
+          amount: 40
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 9c5ea785-c556-54ef-a48f-47c85de6901c
     slug: board_c184
@@ -2571,7 +2571,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 35
+          amount: 40
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 1b6e0f7b-b268-55e8-8225-115317bcf7c4
     slug: board_c194
@@ -2621,7 +2621,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 40
+          amount: 35
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 219dd96a-56ca-5073-b120-e3a31f98d3c9
     slug: board_c199
@@ -2651,7 +2651,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 15
+          amount: 20
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 3b8990ea-ff6b-53e2-a832-827461079762
     slug: board_c202
@@ -2671,7 +2671,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 35
+          amount: 40
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 4b382dc9-5b1f-5ec7-b5d9-9884fefa2cae
     slug: board_c204
@@ -2721,7 +2721,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 40
+          amount: 35
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 7b707a18-1327-56ab-abac-d05c900e3909
     slug: board_c209
@@ -2751,7 +2751,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 35
+          amount: 30
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 9d599b35-7125-55bb-9e81-02476e512859
     slug: board_c212
@@ -2821,7 +2821,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 40
+          amount: 35
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: eeb66637-33e8-54cb-b675-0b0dd0d5fee9
     slug: board_c219
@@ -2851,7 +2851,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 40
+          amount: 30
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 04a7c095-f3a5-571c-a758-cd6e6b30bef3
     slug: board_c222
@@ -2861,7 +2861,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 35
+          amount: 40
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 82fdbc48-2089-5c40-a7cd-45e7bb0a0835
     slug: board_c223
@@ -2886,6 +2886,156 @@ progressions:
   - id: eedd20c9-af9d-50cb-a364-4dc026e523e1
     slug: board_c225
     display_name: "Campaign board 225"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 04dbca61-ee84-5c3c-be2e-fe4073ef4ffe
+    slug: board_c226
+    display_name: "Campaign board 226"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 175f394c-2f7d-59f6-8687-52370468fb1e
+    slug: board_c227
+    display_name: "Campaign board 227"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: ce19aa7f-f34f-5a78-bc86-4c06aef98d79
+    slug: board_c228
+    display_name: "Campaign board 228"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 3aa38774-2ae9-554e-bd42-116f7041c457
+    slug: board_c229
+    display_name: "Campaign board 229"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: cdb224d1-151d-52cc-aa7f-93eab4958cfd
+    slug: board_c230
+    display_name: "Campaign board 230"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 13ca2212-ad13-5c29-ab6b-614502b91b57
+    slug: board_c231
+    display_name: "Campaign board 231"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 15
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 892abf68-5e5a-5228-b857-f10357f1a13a
+    slug: board_c232
+    display_name: "Campaign board 232"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 05b1e8bd-a05e-51b2-ae3a-3a54bcd668fe
+    slug: board_c233
+    display_name: "Campaign board 233"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 2de33648-93f8-5076-b041-fb44c91ef440
+    slug: board_c234
+    display_name: "Campaign board 234"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 90e7db1a-6f39-54b8-b626-0f5b440e3518
+    slug: board_c235
+    display_name: "Campaign board 235"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 73f9ac39-67ca-5e63-991f-96c0f1b6a124
+    slug: board_c236
+    display_name: "Campaign board 236"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 5e45e314-e76b-559a-b0b6-6ce206b16173
+    slug: board_c237
+    display_name: "Campaign board 237"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 35
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: fb785342-91cd-5321-94c2-c262a6098ab2
+    slug: board_c238
+    display_name: "Campaign board 238"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: e3dc617d-3edb-55d7-946e-f9afe96a3bc1
+    slug: board_c239
+    display_name: "Campaign board 239"
+    config:
+      completion_threshold: 1
+      function_may_grant: true
+      platform_grants:
+        - mode: on_complete
+          amount: 40
+          target: { platform_currency_slug: ARCADE_TICKETS }
+  - id: 02c3f5f8-3dd1-5ee3-9968-d73db5f10f97
+    slug: board_c240
+    display_name: "Campaign board 240"
     config:
       completion_threshold: 1
       function_may_grant: true
@@ -5490,6 +5640,26 @@ progressions:
                 - achievement:
                     id: f49e9cf7-7b50-486b-96b6-bef64caba42c
                     points: 15
+                    display_name: "Stamped: East Coast America"
+                    description: "Get the East Coast America stamp in your passport."
+                    localized:
+                      de: { display_name: "Gestempelt: Ostküste der USA", description: "Hol dir den Stempel „Ostküste der USA“ in deinen Reisepass." }
+                      es: { display_name: "Sellado: Costa Este de Estados Unidos", description: "Consigue el sello de «Costa Este de Estados Unidos» en tu pasaporte." }
+                      fr: { display_name: "Tamponné : Côte Est des États-Unis", description: "Obtiens le tampon « Côte Est des États-Unis » dans ton passeport." }
+                      it: { display_name: "Timbrato: Costa Est americana", description: "Ottieni il timbro «Costa Est americana» sul tuo passaporto." }
+                      ja: { display_name: "スタンプ獲得：アメリカ東海岸", description: "パスポートに「アメリカ東海岸」のスタンプを押す。" }
+                      ko: { display_name: "스탬프 획득: 미국 동부 해안", description: "여권에 '미국 동부 해안' 스탬프를 받으세요." }
+                      pl: { display_name: "Pieczątka: Wschodnie wybrzeże USA", description: "Zdobądź pieczątkę „Wschodnie wybrzeże USA” w paszporcie." }
+                      pt-BR: { display_name: "Carimbado: Costa Leste dos EUA", description: "Ganhe o carimbo de “Costa Leste dos EUA” no seu passaporte." }
+                      ru: { display_name: "Штамп: Восточное побережье США", description: "Поставь в паспорт штамп «Восточное побережье США»." }
+                      tr: { display_name: "Damgalandı: ABD Doğu Kıyısı", description: "Pasaportuna “ABD Doğu Kıyısı” damgasını al." }
+                      zh-Hans: { display_name: "已盖章：美国东海岸", description: "在护照上盖上“美国东海岸”印章。" }
+            - level: 12   # stamped-t12
+              threshold: 12
+              platform_grants:
+                - achievement:
+                    id: aeff6c71-7a05-4eab-8822-088e803751b7
+                    points: 15
                     display_name: "Stamped: New Zealand"
                     description: "Get the New Zealand stamp in your passport."
                     localized:
@@ -5504,11 +5674,11 @@ progressions:
                       ru: { display_name: "Штамп: Новая Зеландия", description: "Поставь в паспорт штамп «Новая Зеландия»." }
                       tr: { display_name: "Damgalandı: Yeni Zelanda", description: "Pasaportuna “Yeni Zelanda” damgasını al." }
                       zh-Hans: { display_name: "已盖章：新西兰", description: "在护照上盖上“新西兰”印章。" }
-            - level: 12   # stamped-t12
-              threshold: 12
+            - level: 13   # stamped-t13
+              threshold: 13
               platform_grants:
                 - achievement:
-                    id: aeff6c71-7a05-4eab-8822-088e803751b7
+                    id: 2cb6a3c3-2875-43a1-833f-44ea3f498c40
                     points: 15
                     display_name: "Stamped: Spain & Portugal"
                     description: "Get the Spain & Portugal stamp in your passport."
@@ -5524,11 +5694,11 @@ progressions:
                       ru: { display_name: "Штамп: Испания и Португалия", description: "Поставь в паспорт штамп «Испания и Португалия»." }
                       tr: { display_name: "Damgalandı: İspanya ve Portekiz", description: "Pasaportuna “İspanya ve Portekiz” damgasını al." }
                       zh-Hans: { display_name: "已盖章：西班牙和葡萄牙", description: "在护照上盖上“西班牙和葡萄牙”印章。" }
-            - level: 13   # stamped-t13
-              threshold: 13
+            - level: 14   # stamped-t14
+              threshold: 14
               platform_grants:
                 - achievement:
-                    id: 2cb6a3c3-2875-43a1-833f-44ea3f498c40
+                    id: 325818e8-29c6-4c59-8c7f-9c34f0aef977
                     points: 15
                     display_name: "Stamped: Morocco"
                     description: "Get the Morocco stamp in your passport."
@@ -5544,11 +5714,11 @@ progressions:
                       ru: { display_name: "Штамп: Марокко", description: "Поставь в паспорт штамп «Марокко»." }
                       tr: { display_name: "Damgalandı: Fas", description: "Pasaportuna “Fas” damgasını al." }
                       zh-Hans: { display_name: "已盖章：摩洛哥", description: "在护照上盖上“摩洛哥”印章。" }
-            - level: 14   # stamped-t14
-              threshold: 14
+            - level: 15   # stamped-t15
+              threshold: 15
               platform_grants:
                 - achievement:
-                    id: 325818e8-29c6-4c59-8c7f-9c34f0aef977
+                    id: e900339f-0e88-4513-b0cc-8e381d576ec4
                     points: 15
                     display_name: "Stamped: Vietnam & Thailand"
                     description: "Get the Vietnam & Thailand stamp in your passport."
@@ -5564,11 +5734,11 @@ progressions:
                       ru: { display_name: "Штамп: Вьетнам и Таиланд", description: "Поставь в паспорт штамп «Вьетнам и Таиланд»." }
                       tr: { display_name: "Damgalandı: Vietnam ve Tayland", description: "Pasaportuna “Vietnam ve Tayland” damgasını al." }
                       zh-Hans: { display_name: "已盖章：越南和泰国", description: "在护照上盖上“越南和泰国”印章。" }
-            - level: 15   # stamped-t15
-              threshold: 15
+            - level: 16   # stamped-t16
+              threshold: 16
               platform_grants:
                 - achievement:
-                    id: e900339f-0e88-4513-b0cc-8e381d576ec4
+                    id: db7482a0-395c-4b21-a29c-ff5cc53edcad
                     points: 15
                     display_name: "Stamped: Scandinavia & Iceland"
                     description: "Get the Scandinavia & Iceland stamp in your passport."

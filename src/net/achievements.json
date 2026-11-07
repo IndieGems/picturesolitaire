@@ -175,6 +175,13 @@
           "trip": "t15",
           "at": 15,
           "points": 15
+        },
+        {
+          "slug": "stamped-t16",
+          "id": "db7482a0-395c-4b21-a29c-ff5cc53edcad",
+          "trip": "t16",
+          "at": 16,
+          "points": 15
         }
       ]
     },
