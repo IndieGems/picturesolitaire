@@ -57,7 +57,7 @@ so the two never share a board:
 - Pōhutu takes *Geyser*.
 - Napier takes *Art Deco*.
 - The Wānaka tree takes *Lone Tree*.
-- The kiwi takes *Kiwi* (the bird).
+- The Stewart Island kiwi takes *Kiwi* (the bird).
 - Kaikōura's seals take *Seal Pup*.
 - Arrowtown takes *Maple Path*'s family (autumn-rust), as the Cabot Trail did.
 - The Pancake Rocks take *Sea Stack*.
@@ -85,7 +85,7 @@ so the two never share a board:
 | 4 | ✔ **The Moeraki Boulders**, Otago | famous | Huge round stones up to 2 m across, some cracked open like eggs, on Koekohe Beach. | One cracked boulder in the surf. | Scenic reserve: safe. | Yes. |
 | 5 | ✔ **Napier's Art Deco**, Hawke's Bay | hidden gem | A whole town rebuilt in Art Deco after the 1931 earthquake, in sunny pastels. | A pastel front with sunbursts and zigzags. | 1930s buildings: s 73. No lettering, shop signs or names on the fronts. | Yes. |
 | 6 | ✔ **The Wānaka tree**, Lake Wānaka | famous | A lone willow growing in the lake, from an old fence post, mirrored in still water. | A tall strip, tree and reflection (board 156). | Safe. | Yes. |
-| 7 | ✔ **A kiwi** in the bush | famous | The flightless, night-time national bird, on the forest floor among tree ferns. | The kiwi and its long beak. | Safe. | Yes. |
+| 7 | ✔ **A kiwi on Stewart Island** (Rakiura) | famous | The flightless national bird, on the one island where wild kiwi forage on the beach by day. | The kiwi and its long beak. | Safe. | Yes. |
 | 8 | ✔ **Kaikōura's fur seals** | hidden gem | Seals basking on the rocks, where snowy mountains drop straight to the sea. | A seal on its rock. | Safe. | Yes. |
 | 9 | ✔ **Baldwin Street**, Dunedin | silly | The world's steepest residential street (about 35%), its houses stepped like stairs. | The tilted houses. | Houses: s 73. No signs, cars' badges or people. | Yes. |
 | 10 | ✔ **Franz Josef Glacier**, West Coast | famous | A river of ice coming down from the Southern Alps towards rainforest, as it is today, retreated up its valley. | The ice tongue. | National park: safe. | Yes. |
@@ -125,7 +125,7 @@ so the two never share a board:
 | 154 | The Moeraki Boulders | famous | 4×5 | watercolour |
 | 155 | Napier's Art Deco | hidden gem | 4×5 | travel poster |
 | 156 | The Wānaka tree (all long, tall) | famous | 4×4 | pastel |
-| 157 | A kiwi in the bush | famous | 4×5 | gouache |
+| 157 | A kiwi on Stewart Island | famous | 4×5 | gouache |
 | 158 | Kaikōura's fur seals | hidden gem | 4×5 | oil painting |
 | 159 | Baldwin Street | silly | 4×5 | watercolour |
 | 160 | Franz Josef Glacier | famous | 5×5 | oil painting |

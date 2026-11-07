@@ -1,7 +1,8 @@
 """Picture library pipeline: plan -> generated image -> master -> shipped WebP -> catalogue.
 
     python tools/art/pictures.py prompt <id>              print the full prompt and size
-    python tools/art/pictures.py gen <raw-dir> <id>...    submit generations (gemforge, BILLS per id)
+    python tools/art/pictures.py gen <raw-dir> <id>...    submit generations (gemforge, BILLS per id); --quality=medium
+                                                          for postcards (trips 11-15: as good at postcard size, half the cost)
     python tools/art/pictures.py repaint <raw-dir> <id>... redraw a postcard from its own master in its plan
                                                           entry's "paint" style (gemforge edit, BILLS per id)
     python tools/art/pictures.py process <raw-dir> <id>... raw PNG -> tools/art/masters + public/pictures (+ thumb)
@@ -106,16 +107,18 @@ def cmd_prompt(pid):
     print(f"{w}x{h}\n{full_prompt(p, e)}")
 
 
-def cmd_gen(raw, ids):
+def cmd_gen(raw, ids, quality="high"):
+    import time
     p = plan()
     Path(raw).mkdir(parents=True, exist_ok=True)
     for pid in ids:
         e = entry(p, pid)
         w, h = GEN_SIZE[(e["cols"], e["rows"])]
         args = ["gemforge", "generate", "image", "--prompt", full_prompt(p, e), "--size", f"{w}x{h}",
-                "--quality", "high", "--out", str(raw), "--name", pid, "--flat", "--no-wait", "--json"]
+                "--quality", quality, "--out", str(raw), "--name", pid, "--flat", "--no-wait", "--json"]
         r = subprocess.run(args, capture_output=True, text=True, encoding="utf-8")
         print(pid, r.returncode, (r.stdout or r.stderr).strip().replace("\n", " ")[:300])
+        time.sleep(2)  # spaced: the account runs at most 10 jobs at once
         if e.get("mirrored"):  # drawn from the prompt it faces the other way: process flips it (see cmd_flip)
             (Path(raw) / f"{pid}.prompt-drawn").touch()
             print(f"  {pid} is mirrored in the plan: process will mirror this draw")
@@ -717,7 +720,9 @@ if __name__ == "__main__":
     if c == "prompt":
         cmd_prompt(rest[0])
     elif c == "gen":
-        cmd_gen(rest[0], rest[1:])
+        q = next((a.split("=", 1)[1] for a in rest if a.startswith("--quality=")), "high")
+        rest = [a for a in rest if not a.startswith("--quality=")]
+        cmd_gen(rest[0], rest[1:], q)
     elif c == "repaint":
         cmd_repaint(rest[0], rest[1:])
     elif c == "restyle":
