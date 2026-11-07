@@ -826,8 +826,9 @@ with Art's postcards, `docs/destinations-east-coast-america.md`):
 - **The mix, by trip:** people 12–18%, flowers 8–14% and busy pictures 10–16%.
   Trips 9 and 10 had 17–18%, 11–13% and 9–13%.
 - **Left as it is:** Level 144 (UK and Ireland, already released) has a covered
-  bridge, 8 levels before Albany's covered-bridge postcard on 152. Boards
-  before 151 keep their pictures.
+  bridge, 8 levels before Albany's covered-bridge postcard on 152. The lead:
+  leave it. The look-alike rule is about a board's own pictures, 8 levels
+  apart is fine, and a released level doesn't change for it.
 - **Still to come:** the server's checker learns the 240 (Server). Until then
   `npm run build` stops at levels-check.
 
