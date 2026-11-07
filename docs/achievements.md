@@ -6,7 +6,7 @@ Score. Six of them also award an Arcade avatar icon, a portrait or badge the pla
 anywhere on the Arcade. The SDK's `docs/achievements.md` is the how-to.
 
 **The points budget is lifetime.** The game may award 1,000 points in all, removed achievements
-included, and 20 icon-awarding achievements (`gemctl achievement limits`). This list spends 450
+included, and 20 icon-awarding achievements (`gemctl achievement limits`). This list spends 525
 points and 6 icons. The rest is kept for future trips and events, so never change a released
 achievement's points or rewards; add a new achievement instead.
 
@@ -16,7 +16,7 @@ achievement's points or rewards; add a new achievement instead.
 | Journey | Finding Your Feet | Finish 10 levels | 10 | |
 | Journey | Seasoned Traveller | Finish 50 levels | 25 | `ach-seasoned-traveller`: a Venice gondola |
 | Journey | Globetrotter | Finish 150 levels | 75 | `ach-globetrotter`: a globe circled by a plane, landmarks on its rim |
-| Stamps | Stamped: Travel America, Japan, Italy, American West, France, Canada, Argentina, Australia, South Africa, UK & Ireland (10) | Finish that trip (its passport stamp) | 15 each | |
+| Stamps | Stamped: Travel America, Japan, Italy, American West, France, Canada, Argentina, Australia, South Africa, UK & Ireland, New Zealand, Spain & Portugal, Morocco, Vietnam & Thailand, Scandinavia & Iceland (15) | Finish that trip (its passport stamp) | 15 each | |
 | Souvenirs | Something to Remember | Finish your first Souvenir level | 5 | |
 | Souvenirs | Full Suitcase | Finish 10 Souvenir levels | 40 | `ach-full-suitcase`: a suitcase bursting with a journey |
 | Hard | Up for a Challenge | Win a hard level | 10 | |
