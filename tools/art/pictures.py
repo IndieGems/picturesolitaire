@@ -94,7 +94,9 @@ def size_of(e):
 
 
 def full_prompt(p, e):
-    fam = p["families"].get(e.get("family") or "")
+    # A postcard's colours are its real place's (2026-11-07): its family only keeps a look-alike off its boards,
+    # so a colour family's palette words (sugared pastels, cool azure blues) are not added to its prompt.
+    fam = None if e.get("album") == "destinations" else p["families"].get(e.get("family") or "")
     parts = [e["prompt"], fam["prompt"] if fam else "", SHAPE_WORDS[(e["cols"], e["rows"])],
              p["suffix"][e.get("suffix", e["medium"])]]
     return " ".join(x for x in parts if x)

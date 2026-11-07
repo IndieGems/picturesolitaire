@@ -54560,6 +54560,681 @@
         "white"
       ],
       "busy": 0
+    },
+    {
+      "id": "dest-plaza-de-espana",
+      "name": "The Plaza de España",
+      "place": "Seville, Spain",
+      "trip": "spain-portugal",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-plaza-de-espana.webp",
+      "board": "pictures/destinations/dest-plaza-de-espana-board.webp",
+      "thumb": "pictures/destinations/dest-plaza-de-espana-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "plaza-de-espana",
+      "subjects": [
+        "Plaza de España",
+        "tiled bridge"
+      ],
+      "palette": [
+        "red",
+        "blue",
+        "yellow",
+        "white"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-costa-nova",
+      "name": "Costa Nova's striped houses",
+      "place": "Aveiro, Portugal",
+      "trip": "spain-portugal",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-costa-nova.webp",
+      "board": "pictures/destinations/dest-costa-nova-board.webp",
+      "thumb": "pictures/destinations/dest-costa-nova-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "gouache",
+      "family": "sugared-pastel",
+      "subjects": [
+        "Costa Nova",
+        "striped houses"
+      ],
+      "palette": [
+        "red",
+        "blue",
+        "green",
+        "yellow"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-consuegra-windmills",
+      "name": "The windmills of Consuegra",
+      "place": "La Mancha, Spain",
+      "trip": "spain-portugal",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-consuegra-windmills.webp",
+      "board": "pictures/destinations/dest-consuegra-windmills-board.webp",
+      "thumb": "pictures/destinations/dest-consuegra-windmills-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "windmill",
+      "subjects": [
+        "Consuegra",
+        "windmills"
+      ],
+      "palette": [
+        "white",
+        "ochre",
+        "black",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-belem-tower",
+      "name": "Belém Tower",
+      "place": "Lisbon, Portugal",
+      "trip": "spain-portugal",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-belem-tower.webp",
+      "board": "pictures/destinations/dest-belem-tower-board.webp",
+      "thumb": "pictures/destinations/dest-belem-tower-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "ceramic",
+      "family": "castle",
+      "subjects": [
+        "Belém Tower",
+        "Tagus"
+      ],
+      "palette": [
+        "blue",
+        "white",
+        "navy",
+        "pale blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-las-medulas",
+      "name": "Las Médulas",
+      "place": "León, Spain",
+      "trip": "spain-portugal",
+      "tag": "hidden gem",
+      "cols": 5,
+      "rows": 5,
+      "crop": [
+        2,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-las-medulas.webp",
+      "board": "pictures/destinations/dest-las-medulas-board.webp",
+      "thumb": "pictures/destinations/dest-las-medulas-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        1200,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "las-medulas",
+      "subjects": [
+        "Las Médulas",
+        "red peaks"
+      ],
+      "palette": [
+        "red",
+        "orange",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-ronda-bridge",
+      "name": "Ronda's Puente Nuevo",
+      "place": "Andalusia, Spain",
+      "trip": "spain-portugal",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        1,
+        2
+      ],
+      "file": "pictures/destinations/dest-ronda-bridge.webp",
+      "board": "pictures/destinations/dest-ronda-bridge-board.webp",
+      "thumb": "pictures/destinations/dest-ronda-bridge-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "watercolour",
+      "family": "viaduct",
+      "subjects": [
+        "Puente Nuevo",
+        "El Tajo gorge"
+      ],
+      "palette": [
+        "ochre",
+        "white",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-guadix-caves",
+      "name": "Guadix's cave houses",
+      "place": "Granada, Spain",
+      "trip": "spain-portugal",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-guadix-caves.webp",
+      "board": "pictures/destinations/dest-guadix-caves-board.webp",
+      "thumb": "pictures/destinations/dest-guadix-caves-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "gouache",
+      "family": "cave-houses",
+      "subjects": [
+        "Guadix",
+        "cave chimneys"
+      ],
+      "palette": [
+        "ochre",
+        "white",
+        "blue",
+        "brown"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-pena-palace",
+      "name": "Pena Palace",
+      "place": "Sintra, Portugal",
+      "trip": "spain-portugal",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-pena-palace.webp",
+      "board": "pictures/destinations/dest-pena-palace-board.webp",
+      "thumb": "pictures/destinations/dest-pena-palace-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "castle",
+      "subjects": [
+        "Pena Palace",
+        "Sintra"
+      ],
+      "palette": [
+        "yellow",
+        "red",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-la-geria",
+      "name": "La Geria's vineyards",
+      "place": "Lanzarote, Spain",
+      "trip": "spain-portugal",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-la-geria.webp",
+      "board": "pictures/destinations/dest-la-geria-board.webp",
+      "thumb": "pictures/destinations/dest-la-geria-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "pastel",
+      "family": "vineyard",
+      "subjects": [
+        "La Geria",
+        "vines in ash pits"
+      ],
+      "palette": [
+        "black",
+        "green",
+        "white",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-monsanto",
+      "name": "Monsanto",
+      "place": "Castelo Branco, Portugal",
+      "trip": "spain-portugal",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-monsanto.webp",
+      "board": "pictures/destinations/dest-monsanto-board.webp",
+      "thumb": "pictures/destinations/dest-monsanto-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "mossy-boulders",
+      "subjects": [
+        "Monsanto",
+        "boulder houses"
+      ],
+      "palette": [
+        "grey",
+        "orange",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-palacio-de-cristal",
+      "name": "Madrid's Crystal Palace",
+      "place": "Madrid, Spain",
+      "trip": "spain-portugal",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-palacio-de-cristal.webp",
+      "board": "pictures/destinations/dest-palacio-de-cristal-board.webp",
+      "thumb": "pictures/destinations/dest-palacio-de-cristal-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "conservatory",
+      "subjects": [
+        "Palacio de Cristal",
+        "Retiro Park"
+      ],
+      "palette": [
+        "white",
+        "blue",
+        "green",
+        "silver"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-alentejo-cork-oaks",
+      "name": "The cork oaks of the Alentejo",
+      "place": "Alentejo, Portugal",
+      "trip": "spain-portugal",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-alentejo-cork-oaks.webp",
+      "board": "pictures/destinations/dest-alentejo-cork-oaks-board.webp",
+      "thumb": "pictures/destinations/dest-alentejo-cork-oaks-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "gouache",
+      "family": "cork-oak",
+      "subjects": [
+        "cork oak",
+        "Alentejo"
+      ],
+      "palette": [
+        "red",
+        "gold",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-gulpiyuri",
+      "name": "Gulpiyuri",
+      "place": "Asturias, Spain",
+      "trip": "spain-portugal",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-gulpiyuri.webp",
+      "board": "pictures/destinations/dest-gulpiyuri-board.webp",
+      "thumb": "pictures/destinations/dest-gulpiyuri-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "pastel",
+      "family": "gulpiyuri",
+      "subjects": [
+        "Gulpiyuri",
+        "beach in a meadow"
+      ],
+      "palette": [
+        "green",
+        "sand",
+        "turquoise",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-benagil-cave",
+      "name": "The Benagil sea cave",
+      "place": "Algarve, Portugal",
+      "trip": "spain-portugal",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        0
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-benagil-cave.webp",
+      "board": "pictures/destinations/dest-benagil-cave-board.webp",
+      "thumb": "pictures/destinations/dest-benagil-cave-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "limestone-cave",
+      "subjects": [
+        "Benagil cave",
+        "Algarve"
+      ],
+      "palette": [
+        "orange",
+        "gold",
+        "turquoise",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-porto-ribeira",
+      "name": "Porto's Ribeira",
+      "place": "Porto, Portugal",
+      "trip": "spain-portugal",
+      "tag": "famous",
+      "cols": 6,
+      "rows": 6,
+      "crop": [
+        2,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-porto-ribeira.webp",
+      "board": "pictures/destinations/dest-porto-ribeira-board.webp",
+      "thumb": "pictures/destinations/dest-porto-ribeira-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        1440,
+        1920
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "sea-blue",
+      "subjects": [
+        "Ribeira",
+        "Dom Luís I bridge"
+      ],
+      "palette": [
+        "ochre",
+        "red",
+        "blue",
+        "cream"
+      ],
+      "busy": 0
     }
   ],
   "items": [

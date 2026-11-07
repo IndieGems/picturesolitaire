@@ -77,6 +77,7 @@ stamp-t8 (Australia, 2026-10-27): ... in golden ochre ink, a ring of small round
 stamp-t9 (South Africa, 2026-10-27): ... in deep magenta-pink ink, a ring of small daisies between the two rings, and in the centre a simple bold pictogram of a king protea flower in front of the long flat-topped Table Mountain. COMMON
 stamp-t10 (UK & Ireland, 2026-10-27): ... in deep burgundy ink, a ring of small raindrops between the two rings, and in the centre a simple bold pictogram of a cluster of hexagonal stone columns of different heights, like the Giant's Causeway, with small curling waves at their feet. COMMON
 stamp-t11 (New Zealand, 2026-11-07): ... in deep emerald-green ink, a ring of small three-toed bird footprints between the two rings, and in the centre a simple bold pictogram of a round kiwi bird with its long thin beak, standing in front of a tall pointed mountain peak rising from water. COMMON
+stamp-t12 (Spain & Portugal, 2026-11-07): ... in bright cobalt-blue ink, a ring of small four-petalled tile flowers between the two rings, and in the centre a simple bold pictogram of a round white La Mancha windmill with a conical cap and four lattice sails on a little hill, with a round sun beside it. COMMON
 
 postcards, trips 11-15 (2026-11-07): painted from the start, never the photo suffix: each plan entry's prompt + its suffix (postcard-oil, -gouache, -travel-poster, -watercolour, -pastel, -azulejo in pictures-plan.json), pictures.py gen --quality=medium, about $0.016 each (1536x2560).
 
