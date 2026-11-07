@@ -1,14 +1,14 @@
 # Vietnam & Thailand: candidate destinations
 
-Trip 14, boards 196–210 (creator, 2026-11-07). The trip adds no new art except its postcards
+Trip 15, boards 211–225 (creator, 2026-11-07). It moved back one trip on 2026-11-07, when East Coast America became trip 11. The trip adds no new art except its postcards
 and its stamp: every everyday picture comes from the library. Each board has one real place,
 shown as a postcard the size of the whole board. A 2×2 part of it, the **crop**, plays on the
 board. How postcards are made is in `docs/picture-direction.md` ("Destinations").
 
 **Shapes** (Levels, `docs/difficulty-curve.md`, "Trips 11-15 (plan)"):
 - Most boards are 4×5, with a tall 3:5 postcard.
-- 205 is 5×5 and the finale, 210, is 6×6, both with a 3:4 postcard.
-- 201 is the all-long board: a 4×4 postcard that plays as a two-card strip.
+- 220 is 5×5 and the finale, 225, is 6×6, both with a 3:4 postcard.
+- 216 is the all-long board: a 4×4 postcard that plays as a two-card strip.
 
 **Tags.** *famous* is a place everyone knows. *hidden gem* is a place few players will know
 but they'll want to visit. *silly* is something funny or odd. The mix is 8 famous, 4 gems and
@@ -82,7 +82,7 @@ so the two never share a board:
 | 2 | ✔ **Hội An's lanterns** (Vietnam) | famous | An old trading port of yellow houses, with silk lanterns strung across its lanes. | The lanterns. | 17th–19th century houses: safe. No Japanese Bridge or temples. | Yes. |
 | 3 | ✔ **The rice terraces of Sa Pa** (Vietnam) | famous | Terraced paddies stepping down green mountainsides in the far north. | The terraces. | Farmland: safe. No people. | Yes. |
 | 4 | ✔ **Phong Nha Cave** (Vietnam) | famous | A river cave entered by boat, its roof hung with stalactites. | The cave mouth. | National park, open to all: safe. | Yes. |
-| 5 | ✔ **The Fairy Stream**, Mũi Né (Vietnam) | hidden gem | A shallow, orange stream winding between red and white sand cliffs. | A tall strip down the stream (board 201). | Safe. | Yes. |
+| 5 | ✔ **The Fairy Stream**, Mũi Né (Vietnam) | hidden gem | A shallow, orange stream winding between red and white sand cliffs. | A tall strip down the stream (board 216). | Safe. | Yes. |
 | 6 | ✔ **The Mã Pí Lèng Pass**, Hà Giang (Vietnam) | hidden gem | A jade river deep in a canyon between steep green mountains in the far north. | The jade river. | Safe. | Yes. |
 | 7 | ✔ **The basket boats of Cẩm Thanh**, near Hội An (Vietnam) | silly | Round woven bamboo boats, like floating baskets, among water-coconut palms. | A basket boat. | Folk craft: safe. No people. | Yes. |
 | 8 | ✔ **Maya Bay**, Koh Phi Phi Leh (Thailand) | famous | A white beach in a bay walled by sheer limestone cliffs, closed from 2018 to 2022 so its reef could recover. | The beach and cliffs. | National park: safe. No film references. | Yes. |
@@ -117,21 +117,21 @@ so the two never share a board:
 
 | Board | Place | Tag | Shape | Style |
 | --- | --- | --- | --- | --- |
-| 196 | Hội An's lanterns (Vietnam) | famous | 4×5 | watercolour |
-| 197 | The Maeklong railway market (Thailand) | silly | 4×5 | gouache |
-| 198 | The Erawan Falls (Thailand) | famous | 4×5 | pastel |
-| 199 | The Mã Pí Lèng Pass (Vietnam) | hidden gem | 4×5 | oil painting |
-| 200 | Phuket's Old Town (Thailand) | famous | 4×5 | travel poster |
-| 201 | The Fairy Stream (Vietnam; all long, tall) | hidden gem | 4×4 | watercolour |
-| 202 | The Damnoen Saduak floating market (Thailand) | famous | 4×5 | gouache |
-| 203 | The basket boats of Cẩm Thanh (Vietnam) | silly | 4×5 | watercolour |
-| 204 | Ban Rak Thai (Thailand) | hidden gem | 4×5 | pastel |
-| 205 | The rice terraces of Sa Pa (Vietnam) | famous | 5×5 | oil painting |
-| 206 | Koh Panyee's floating football pitch (Thailand) | silly | 4×5 | gouache |
-| 207 | Phong Nha Cave (Vietnam) | famous | 4×5 | travel poster |
-| 208 | Bo Sang's umbrellas (Thailand) | hidden gem | 4×5 | watercolour |
-| 209 | Maya Bay (Thailand) | famous | 4×5 | pastel |
-| 210 | Hạ Long Bay (Vietnam; finale) | famous | 6×6 | oil painting |
+| 211 | Hội An's lanterns (Vietnam) | famous | 4×5 | watercolour |
+| 212 | The Maeklong railway market (Thailand) | silly | 4×5 | gouache |
+| 213 | The Erawan Falls (Thailand) | famous | 4×5 | pastel |
+| 214 | The Mã Pí Lèng Pass (Vietnam) | hidden gem | 4×5 | oil painting |
+| 215 | Phuket's Old Town (Thailand) | famous | 4×5 | travel poster |
+| 216 | The Fairy Stream (Vietnam; all long, tall) | hidden gem | 4×4 | watercolour |
+| 217 | The Damnoen Saduak floating market (Thailand) | famous | 4×5 | gouache |
+| 218 | The basket boats of Cẩm Thanh (Vietnam) | silly | 4×5 | watercolour |
+| 219 | Ban Rak Thai (Thailand) | hidden gem | 4×5 | pastel |
+| 220 | The rice terraces of Sa Pa (Vietnam) | famous | 5×5 | oil painting |
+| 221 | Koh Panyee's floating football pitch (Thailand) | silly | 4×5 | gouache |
+| 222 | Phong Nha Cave (Vietnam) | famous | 4×5 | travel poster |
+| 223 | Bo Sang's umbrellas (Thailand) | hidden gem | 4×5 | watercolour |
+| 224 | Maya Bay (Thailand) | famous | 4×5 | pastel |
+| 225 | Hạ Long Bay (Vietnam; finale) | famous | 6×6 | oil painting |
 
 That is 4 watercolours, 3 gouaches, 3 pastels, 3 oil paintings and 2 travel posters. The
 Vietnamese watercolours follow the soft washes of Vietnamese silk painting (lụa). The travel

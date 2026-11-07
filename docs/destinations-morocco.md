@@ -1,14 +1,14 @@
 # Morocco: candidate destinations
 
-Trip 13, boards 181–195 (creator, 2026-11-07). The trip adds no new art except its postcards
+Trip 14, boards 196–210 (creator, 2026-11-07). It moved back one trip on 2026-11-07, when East Coast America became trip 11. The trip adds no new art except its postcards
 and its stamp: every everyday picture comes from the library. Each board has one real place,
 shown as a postcard the size of the whole board. A 2×2 part of it, the **crop**, plays on the
 board. How postcards are made is in `docs/picture-direction.md` ("Destinations").
 
 **Shapes** (Levels, `docs/difficulty-curve.md`, "Trips 11-15 (plan)"):
 - Most boards are 4×5, with a tall 3:5 postcard.
-- 185 and 190 are 5×5, with a 3:4 postcard. The finale, 195, is 4×5.
-- 186 is the all-long board: a 4×4 postcard that plays as a two-card strip.
+- 200 and 205 are 5×5, with a 3:4 postcard. The finale, 210, is 4×5.
+- 201 is the all-long board: a 4×4 postcard that plays as a two-card strip.
 
 **Tags.** *famous* is a place everyone knows. *hidden gem* is a place few players will know
 but they'll want to visit. *silly* is something funny or odd. The mix is 8 famous, 4 gems and
@@ -57,7 +57,7 @@ so the two never share a board:
 **Earlier postcards it avoids repeating.**
 - Waterfalls (five already), so Ouzoud is a reserve.
 - Arches (four already), so Legzira and Akchour's God's Bridge are left out.
-- Hoi An's lanterns are coming in trip 14, so Marrakech's lantern souk is left out.
+- Hoi An's lanterns are coming in trip 15, so Marrakech's lantern souk is left out.
 
 ## The candidates
 
@@ -70,7 +70,7 @@ so the two never share a board:
 | 3 | ✔ **Essaouira's blue boats** | famous | A harbour packed with little blue fishing boats under the sea walls, gulls everywhere. | The boats. | 18th-century walls: safe. | Yes. |
 | 4 | ✔ **Volubilis**, Meknes | hidden gem | A Roman town's columns and triumphal arch standing in green fields and olive groves. | The arch and columns. | Roman: safe. | Yes. |
 | 5 | ✔ **Aït Benhaddou**, Ouarzazate | famous | A fortified village of earthen towers climbing a hill above a river. | The towers. | Old ksar, UNESCO: safe. No film sets. | Yes. |
-| 6 | ✔ **The Todra Gorge**, Tinghir | famous | Red rock walls 300 m high closing to a narrow slot over a stream. | A tall strip down the gorge (board 186). | Safe. | Yes. |
+| 6 | ✔ **The Todra Gorge**, Tinghir | famous | Red rock walls 300 m high closing to a narrow slot over a stream. | A tall strip down the gorge (board 201). | Safe. | Yes. |
 | 7 | ✔ **El Badi's storks**, Marrakech | silly | White storks nesting on top of the ruined walls of a 16th-century palace. | A stork on its nest. | 1578 ruin: safe. | Yes. |
 | 8 | ✔ **Imlil and Toubkal**, the High Atlas | hidden gem | A Berber village of earth houses on terraces of walnut trees below North Africa's highest peak. | The village and the snowy peak. | Safe. No mosque. | Yes. |
 | 9 | ✔ **The tanneries of Fes** | famous | A honeycomb of stone vats full of dyes, seen from the rooftops of the medieval medina. | The coloured vats. | Medieval works: safe. No people. | Yes. |
@@ -97,27 +97,27 @@ so the two never share a board:
 - **Ouarzazate's film studios:** film tie-ins.
 - **Jemaa el-Fnaa, the snake charmers and the monkey handlers:** people, and performing animals.
 - **Legzira and Akchour's arches, and the lantern souk:** too like earlier postcards, or like
-  trip 14's.
+  trip 15's.
 
 ## The suggested 15
 
 | Board | Place | Tag | Shape | Style |
 | --- | --- | --- | --- | --- |
-| 181 | Chefchaouen | famous | 4×5 | gouache |
-| 182 | Goats in the argan trees | silly | 4×5 | watercolour |
-| 183 | Essaouira's blue boats | famous | 4×5 | travel poster |
-| 184 | Volubilis | hidden gem | 4×5 | watercolour |
-| 185 | Aït Benhaddou | famous | 5×5 | oil painting |
-| 186 | The Todra Gorge (all long, tall) | famous | 4×4 | watercolour |
-| 187 | El Badi's storks | silly | 4×5 | gouache |
-| 188 | Imlil and Toubkal | hidden gem | 4×5 | pastel |
-| 189 | The tanneries of Fes | famous | 4×5 | watercolour |
-| 190 | Erg Chebbi | famous | 5×5 | oil painting |
-| 191 | A donkey of Fes's medina | silly | 4×5 | gouache |
-| 192 | The Menara gardens | famous | 4×5 | travel poster |
-| 193 | Paradise Valley | hidden gem | 4×5 | pastel |
-| 194 | The Monkey Fingers of the Dades Valley | hidden gem | 4×5 | gouache |
-| 195 | The Bahia Palace (finale) | famous | 4×5 | oil painting |
+| 196 | Chefchaouen | famous | 4×5 | gouache |
+| 197 | Goats in the argan trees | silly | 4×5 | watercolour |
+| 198 | Essaouira's blue boats | famous | 4×5 | travel poster |
+| 199 | Volubilis | hidden gem | 4×5 | watercolour |
+| 200 | Aït Benhaddou | famous | 5×5 | oil painting |
+| 201 | The Todra Gorge (all long, tall) | famous | 4×4 | watercolour |
+| 202 | El Badi's storks | silly | 4×5 | gouache |
+| 203 | Imlil and Toubkal | hidden gem | 4×5 | pastel |
+| 204 | The tanneries of Fes | famous | 4×5 | watercolour |
+| 205 | Erg Chebbi | famous | 5×5 | oil painting |
+| 206 | A donkey of Fes's medina | silly | 4×5 | gouache |
+| 207 | The Menara gardens | famous | 4×5 | travel poster |
+| 208 | Paradise Valley | hidden gem | 4×5 | pastel |
+| 209 | The Monkey Fingers of the Dades Valley | hidden gem | 4×5 | gouache |
+| 210 | The Bahia Palace (finale) | famous | 4×5 | oil painting |
 
 That is 4 watercolours, 4 gouaches, 3 oil paintings, 2 travel posters and 2 pastels. The
 travel posters follow the style of Morocco's 1930s tourism posters without copying one. Every

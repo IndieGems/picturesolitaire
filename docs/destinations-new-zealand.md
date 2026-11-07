@@ -1,6 +1,6 @@
 # New Zealand: candidate destinations
 
-Trip 11, boards 151–165 (creator, 2026-11-07). The trip adds no new art except its postcards
+Trip 12, boards 166–180 (creator, 2026-11-07). It moved back one trip on 2026-11-07, when East Coast America became trip 11. The trip adds no new art except its postcards
 and its stamp: every everyday picture comes from the library. Each board has one real place,
 shown as a postcard the size of the whole board. A 2×2 part of it, the **crop**, plays on the
 board. How postcards are made is in `docs/picture-direction.md` ("Destinations").
@@ -8,9 +8,8 @@ board. How postcards are made is in `docs/picture-direction.md` ("Destinations")
 **Shapes.** Levels is setting the slots (`docs/difficulty-curve.md`, "Trips 11-15 (plan)").
 Until then they are assumed to be trip 9's:
 - Most boards are 4×5, with a tall 3:5 postcard.
-- The x10 board (160) and the finale (165) are 5×5, with a 3:4 postcard. Only every other
-  finale is 6×6 (150, 180).
-- 156 is the all-long board: a 4×4 postcard that plays as a two-card strip.
+- The x10 board (175) and the finale (180) are 5×5, with a 3:4 postcard.
+- 171 is the all-long board: a 4×4 postcard that plays as a two-card strip.
 
 **Tags.** *famous* is a place everyone knows. *hidden gem* is a place few players will know
 but they'll want to visit. *silly* is something funny or odd. The mix is 8 famous, 4 gems and
@@ -84,7 +83,7 @@ so the two never share a board:
 | 3 | ✔ **Pōhutu geyser**, Rotorua | famous | The southern hemisphere's biggest active geyser, shooting up to 30 m over its silica terraces. | The plume. | See above. | Yes. |
 | 4 | ✔ **The Moeraki Boulders**, Otago | famous | Huge round stones up to 2 m across, some cracked open like eggs, on Koekohe Beach. | One cracked boulder in the surf. | Scenic reserve: safe. | Yes. |
 | 5 | ✔ **Napier's Art Deco**, Hawke's Bay | hidden gem | A whole town rebuilt in Art Deco after the 1931 earthquake, in sunny pastels. | A pastel front with sunbursts and zigzags. | 1930s buildings: s 73. No lettering, shop signs or names on the fronts. | Yes. |
-| 6 | ✔ **The Wānaka tree**, Lake Wānaka | famous | A lone willow growing in the lake, from an old fence post, mirrored in still water. | A tall strip, tree and reflection (board 156). | Safe. | Yes. |
+| 6 | ✔ **The Wānaka tree**, Lake Wānaka | famous | A lone willow growing in the lake, from an old fence post, mirrored in still water. | A tall strip, tree and reflection (board 171). | Safe. | Yes. |
 | 7 | ✔ **A kiwi on Stewart Island** (Rakiura) | famous | The flightless national bird, on the one island where wild kiwi forage on the beach by day. | The kiwi and its long beak. | Safe. | Yes. |
 | 8 | ✔ **Kaikōura's fur seals** | hidden gem | Seals basking on the rocks, where snowy mountains drop straight to the sea. | A seal on its rock. | Safe. | Yes. |
 | 9 | ✔ **Baldwin Street**, Dunedin | silly | The world's steepest residential street (about 35%), its houses stepped like stairs. | The tilted houses. | Houses: s 73. No signs, cars' badges or people. | Yes. |
@@ -119,21 +118,21 @@ so the two never share a board:
 
 | Board | Place | Tag | Shape | Style |
 | --- | --- | --- | --- | --- |
-| 151 | Lake Tekapo | famous | 4×5 | oil painting |
-| 152 | Ohakune's giant carrot | silly | 4×5 | gouache |
-| 153 | Pōhutu geyser | famous | 4×5 | travel poster |
-| 154 | The Moeraki Boulders | famous | 4×5 | watercolour |
-| 155 | Napier's Art Deco | hidden gem | 4×5 | travel poster |
-| 156 | The Wānaka tree (all long, tall) | famous | 4×4 | pastel |
-| 157 | A kiwi on Stewart Island | famous | 4×5 | gouache |
-| 158 | Kaikōura's fur seals | hidden gem | 4×5 | oil painting |
-| 159 | Baldwin Street | silly | 4×5 | watercolour |
-| 160 | Franz Josef Glacier | famous | 5×5 | oil painting |
-| 161 | Arrowtown in autumn | hidden gem | 4×5 | watercolour |
-| 162 | A kea raiding a car | silly | 4×5 | gouache |
-| 163 | The Pancake Rocks | famous | 4×5 | travel poster |
-| 164 | Curio Bay's petrified forest | hidden gem | 4×5 | pastel |
-| 165 | Milford Sound (finale) | famous | 5×5 | oil painting |
+| 166 | Lake Tekapo | famous | 4×5 | oil painting |
+| 167 | Ohakune's giant carrot | silly | 4×5 | gouache |
+| 168 | Pōhutu geyser | famous | 4×5 | travel poster |
+| 169 | The Moeraki Boulders | famous | 4×5 | watercolour |
+| 170 | Napier's Art Deco | hidden gem | 4×5 | travel poster |
+| 171 | The Wānaka tree (all long, tall) | famous | 4×4 | pastel |
+| 172 | A kiwi on Stewart Island | famous | 4×5 | gouache |
+| 173 | Kaikōura's fur seals | hidden gem | 4×5 | oil painting |
+| 174 | Baldwin Street | silly | 4×5 | watercolour |
+| 175 | Franz Josef Glacier | famous | 5×5 | oil painting |
+| 176 | Arrowtown in autumn | hidden gem | 4×5 | watercolour |
+| 177 | A kea raiding a car | silly | 4×5 | gouache |
+| 178 | The Pancake Rocks | famous | 4×5 | travel poster |
+| 179 | Curio Bay's petrified forest | hidden gem | 4×5 | pastel |
+| 180 | Milford Sound (finale) | famous | 5×5 | oil painting |
 
 That is 4 oil paintings, 3 travel posters, 3 watercolours, 3 gouaches and 2 pastels. The
 styles share the place's culture and period:

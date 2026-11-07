@@ -1,14 +1,14 @@
 # Scandinavia & Iceland: candidate destinations
 
-Trip 15, boards 211–225 (creator, 2026-11-07). The trip adds no new art except its postcards
+Trip 16, boards 226–240 (creator, 2026-11-07). It moved back one trip on 2026-11-07, when East Coast America became trip 11. The trip adds no new art except its postcards
 and its stamp: every everyday picture comes from the library. Each board has one real place,
 shown as a postcard the size of the whole board. A 2×2 part of it, the **crop**, plays on the
 board. How postcards are made is in `docs/picture-direction.md` ("Destinations").
 
 **Shapes** (Levels, `docs/difficulty-curve.md`, "Trips 11-15 (plan)"):
 - Most boards are 4×5, with a tall 3:5 postcard.
-- 215 and the finale, 225, are 5×5, with a 3:4 postcard. 220 is 4×5.
-- 216 is the all-long board: a 4×4 postcard that plays as a two-card strip.
+- 230 and the finale, 240, are 5×5, with a 3:4 postcard. 235 is 4×5.
+- 231 is the all-long board: a 4×4 postcard that plays as a two-card strip.
 
 **Tags.** *famous* is a place everyone knows. *hidden gem* is a place few players will know
 but they'll want to visit. *silly* is something funny or odd. The mix is 8 famous, 4 gems and
@@ -56,7 +56,7 @@ so the two never share a board:
 - The puffins take *Puffin*.
 
 **Earlier postcards it avoids repeating.**
-- The northern lights (Canada), polar bears (Canada) and Strokkur's geyser (Pōhutu, trip 11)
+- The northern lights (Canada), polar bears (Canada) and Strokkur's geyser (Pōhutu, trip 12)
   are left out.
 - Of the colourful waterfronts, Nyhavn stays, and Bergen's Bryggen and Stockholm's Gamla Stan
   are reserves.
@@ -79,7 +79,7 @@ so the two never share a board:
 | 8 | ✔ **Visby**, Gotland (Sweden) | famous | A medieval walled town: towers, gates and rose-covered cottages. | The wall and a tower. | Medieval: safe. No church or ruin of one. | Yes. |
 | 9 | ✔ **Dalarna's red cottages** by Lake Siljan (Sweden) | hidden gem | Falu-red wooden cottages with white trim among birches by a blue lake. | A red cottage. | Old houses: safe. | Yes. |
 | 10 | ✔ **The giant Dala horse**, Avesta (Sweden) | silly | A painted wooden-toy horse 13 m tall beside the road. | The horse's head. | A folk design: safe. | Yes. |
-| 11 | ✔ **Skógafoss** (Iceland) | famous | A broad curtain of water falling 60 m from a green cliff. | A tall strip of the fall (board 216). | Nature: safe. | Yes. |
+| 11 | ✔ **Skógafoss** (Iceland) | famous | A broad curtain of water falling 60 m from a green cliff. | A tall strip of the fall (board 231). | Nature: safe. | Yes. |
 | 12 | ✔ **Kirkjufell** (Iceland) | famous | A steep arrowhead mountain on its own by the sea at Grundarfjörður. | The peak. | Nature: safe. | Yes. |
 | 13 | ✔ **Iceland's puffins** | famous | Puffins with striped orange beaks on a grassy sea cliff. | A puffin. | Safe. | Yes. |
 | 14 | ✔ **Diamond Beach**, Jökulsárlón (Iceland) | hidden gem | Chunks of glacier ice washed up glittering on a black sand beach. | An ice chunk on the black sand. | Safe. | Yes. |
@@ -106,21 +106,21 @@ so the two never share a board:
 
 | Board | Place | Tag | Shape | Style |
 | --- | --- | --- | --- | --- |
-| 211 | Nyhavn (Denmark) | famous | 4×5 | oil painting |
-| 212 | Icelandic horses (Iceland) | silly | 4×5 | gouache |
-| 213 | Reine, Lofoten (Norway) | famous | 4×5 | travel poster |
-| 214 | Møns Klint (Denmark) | hidden gem | 4×5 | pastel |
-| 215 | Preikestolen (Norway) | famous | 5×5 | oil painting |
-| 216 | Skógafoss (Iceland; all long, tall) | famous | 4×4 | watercolour |
-| 217 | The giant Dala horse (Sweden) | silly | 4×5 | gouache |
-| 218 | Kronborg (Denmark) | famous | 4×5 | travel poster |
-| 219 | Diamond Beach (Iceland) | hidden gem | 4×5 | pastel |
-| 220 | Visby (Sweden) | famous | 4×5 | watercolour |
-| 221 | The Atlantic Road (Norway) | silly | 4×5 | gouache |
-| 222 | Dalarna's red cottages (Sweden) | hidden gem | 4×5 | oil painting |
-| 223 | Iceland's puffins (Iceland) | famous | 4×5 | watercolour |
-| 224 | Senja's Segla (Norway) | hidden gem | 4×5 | pastel |
-| 225 | Kirkjufell (Iceland; finale) | famous | 5×5 | oil painting |
+| 226 | Nyhavn (Denmark) | famous | 4×5 | oil painting |
+| 227 | Icelandic horses (Iceland) | silly | 4×5 | gouache |
+| 228 | Reine, Lofoten (Norway) | famous | 4×5 | travel poster |
+| 229 | Møns Klint (Denmark) | hidden gem | 4×5 | pastel |
+| 230 | Preikestolen (Norway) | famous | 5×5 | oil painting |
+| 231 | Skógafoss (Iceland; all long, tall) | famous | 4×4 | watercolour |
+| 232 | The giant Dala horse (Sweden) | silly | 4×5 | gouache |
+| 233 | Kronborg (Denmark) | famous | 4×5 | travel poster |
+| 234 | Diamond Beach (Iceland) | hidden gem | 4×5 | pastel |
+| 235 | Visby (Sweden) | famous | 4×5 | watercolour |
+| 236 | The Atlantic Road (Norway) | silly | 4×5 | gouache |
+| 237 | Dalarna's red cottages (Sweden) | hidden gem | 4×5 | oil painting |
+| 238 | Iceland's puffins (Iceland) | famous | 4×5 | watercolour |
+| 239 | Senja's Segla (Norway) | hidden gem | 4×5 | pastel |
+| 240 | Kirkjufell (Iceland; finale) | famous | 5×5 | oil painting |
 
 That is 4 oil paintings, 3 watercolours, 3 gouaches, 3 pastels and 2 travel posters. The
 styles share the place's culture and period:

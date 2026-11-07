@@ -1,6 +1,6 @@
 # Spain & Portugal: candidate destinations
 
-Trip 12, boards 166–180 (creator, 2026-11-07). The trip adds no new art except its postcards
+Trip 13, boards 181–195 (creator, 2026-11-07). It moved back one trip on 2026-11-07, when East Coast America became trip 11. The trip adds no new art except its postcards
 and its stamp: every everyday picture comes from the library. Each board has one real place,
 shown as a postcard the size of the whole board. A 2×2 part of it, the **crop**, plays on the
 board. How postcards are made is in `docs/picture-direction.md` ("Destinations").
@@ -8,8 +8,8 @@ board. How postcards are made is in `docs/picture-direction.md` ("Destinations")
 **Shapes.** Levels is setting the slots (`docs/difficulty-curve.md`, "Trips 11-15 (plan)").
 Until then they are assumed to be trip 10's:
 - Most boards are 4×5, with a tall 3:5 postcard.
-- The x5 board (170) is 5×5 and the finale (180) is 6×6, both with a 3:4 postcard.
-- 171 is the all-long board: a 4×4 postcard that plays as a two-card strip.
+- The x5 board (185) is 5×5 and the finale (195) is 6×6, both with a 3:4 postcard.
+- 186 is the all-long board: a 4×4 postcard that plays as a two-card strip.
 
 **Tags.** *famous* is a place everyone knows. *hidden gem* is a place few players will know
 but they'll want to visit. *silly* is something funny or odd. The mix is 8 famous, 4 gems and
@@ -83,7 +83,7 @@ so the two never share a board:
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | ✔ **The Plaza de España**, Seville (Spain) | famous | A great half-moon of brick and painted tiles round a canal with tiled bridges, built for the 1929 exposition. | A tiled bridge over the canal. | 1929, its architect died 1929; art. 35.2: safe. | Yes. |
 | 2 | ✔ **The windmills of Consuegra** (Spain) | famous | Twelve white windmills in a row on a ridge above La Mancha, by a castle: Don Quixote's giants. | One mill's cap and sails. | Safe. | Yes. |
-| 3 | ✔ **Ronda's Puente Nuevo** (Spain) | famous | A stone bridge (1793) standing almost 100 m tall in the El Tajo gorge, white houses on the cliffs. | A tall strip, bridge pier to deck (board 171). | Safe. | Yes. |
+| 3 | ✔ **Ronda's Puente Nuevo** (Spain) | famous | A stone bridge (1793) standing almost 100 m tall in the El Tajo gorge, white houses on the cliffs. | A tall strip, bridge pier to deck (board 186). | Safe. | Yes. |
 | 4 | ✔ **Madrid's Crystal Palace**, the Retiro (Spain) | famous | A glass-and-iron pavilion (1887) beside a pond in the park. | The glass dome. | 1887: safe. No artworks inside. | Yes. |
 | 5 | ✔ **Las Médulas**, León (Spain) | hidden gem | The Romans' biggest gold mine: they washed mountains away, leaving red-orange peaks among chestnut trees. | A red peak. | UNESCO site: safe. | Yes. |
 | 6 | ✔ **La Geria's vineyards**, Lanzarote (Spain) | hidden gem | Vines planted in pits in black volcanic ash, each sheltered by a little crescent wall of stone. | A vine in its pit. | Protected landscape: safe. No winery signs. | Yes. |
@@ -120,21 +120,21 @@ so the two never share a board:
 
 | Board | Place | Tag | Shape | Style |
 | --- | --- | --- | --- | --- |
-| 166 | The Plaza de España (Spain) | famous | 4×5 | travel poster |
-| 167 | Costa Nova's striped houses (Portugal) | hidden gem | 4×5 | gouache |
-| 168 | The windmills of Consuegra (Spain) | famous | 4×5 | watercolour |
-| 169 | Belém Tower (Portugal) | famous | 4×5 | azulejo tiles |
-| 170 | Las Médulas (Spain) | hidden gem | 5×5 | oil painting |
-| 171 | Ronda's Puente Nuevo (Spain; all long, tall) | famous | 4×4 | watercolour |
-| 172 | Guadix's cave houses (Spain) | silly | 4×5 | gouache |
-| 173 | Pena Palace (Portugal) | famous | 4×5 | oil painting |
-| 174 | La Geria's vineyards (Spain) | hidden gem | 4×5 | pastel |
-| 175 | Monsanto (Portugal) | silly | 4×5 | watercolour |
-| 176 | Madrid's Crystal Palace (Spain) | famous | 4×5 | oil painting |
-| 177 | The cork oaks of the Alentejo (Portugal) | hidden gem | 4×5 | gouache |
-| 178 | Gulpiyuri (Spain) | silly | 4×5 | pastel |
-| 179 | The Benagil sea cave (Portugal) | famous | 4×5 | travel poster |
-| 180 | Porto's Ribeira (Portugal; finale) | famous | 6×6 | oil painting |
+| 181 | The Plaza de España (Spain) | famous | 4×5 | travel poster |
+| 182 | Costa Nova's striped houses (Portugal) | hidden gem | 4×5 | gouache |
+| 183 | The windmills of Consuegra (Spain) | famous | 4×5 | watercolour |
+| 184 | Belém Tower (Portugal) | famous | 4×5 | azulejo tiles |
+| 185 | Las Médulas (Spain) | hidden gem | 5×5 | oil painting |
+| 186 | Ronda's Puente Nuevo (Spain; all long, tall) | famous | 4×4 | watercolour |
+| 187 | Guadix's cave houses (Spain) | silly | 4×5 | gouache |
+| 188 | Pena Palace (Portugal) | famous | 4×5 | oil painting |
+| 189 | La Geria's vineyards (Spain) | hidden gem | 4×5 | pastel |
+| 190 | Monsanto (Portugal) | silly | 4×5 | watercolour |
+| 191 | Madrid's Crystal Palace (Spain) | famous | 4×5 | oil painting |
+| 192 | The cork oaks of the Alentejo (Portugal) | hidden gem | 4×5 | gouache |
+| 193 | Gulpiyuri (Spain) | silly | 4×5 | pastel |
+| 194 | The Benagil sea cave (Portugal) | famous | 4×5 | travel poster |
+| 195 | Porto's Ribeira (Portugal; finale) | famous | 6×6 | oil painting |
 
 That is 4 oil paintings, 3 watercolours, 3 gouaches, 2 travel posters, 2 pastels and one
 azulejo panel. The styles share the place's culture and period:
