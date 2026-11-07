@@ -56585,6 +56585,681 @@
         "blue"
       ],
       "busy": 0
+    },
+    {
+      "id": "dest-nyhavn",
+      "name": "Nyhavn",
+      "place": "Copenhagen, Denmark",
+      "trip": "scandinavia-iceland",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-nyhavn.webp",
+      "board": "pictures/destinations/dest-nyhavn-board.webp",
+      "thumb": "pictures/destinations/dest-nyhavn-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "canal-house",
+      "subjects": [
+        "Nyhavn",
+        "gabled houses"
+      ],
+      "palette": [
+        "yellow",
+        "red",
+        "blue",
+        "orange"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-icelandic-horses",
+      "name": "Icelandic horses",
+      "place": "Iceland",
+      "trip": "scandinavia-iceland",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-icelandic-horses.webp",
+      "board": "pictures/destinations/dest-icelandic-horses-board.webp",
+      "thumb": "pictures/destinations/dest-icelandic-horses-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "gouache",
+      "family": "shetland-pony",
+      "subjects": [
+        "Icelandic horse",
+        "shaggy fringe"
+      ],
+      "palette": [
+        "chestnut",
+        "cream",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-reine-lofoten",
+      "name": "Reine, Lofoten",
+      "place": "Lofoten, Norway",
+      "trip": "scandinavia-iceland",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-reine-lofoten.webp",
+      "board": "pictures/destinations/dest-reine-lofoten-board.webp",
+      "thumb": "pictures/destinations/dest-reine-lofoten-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "red-waterside",
+      "subjects": [
+        "Reine",
+        "red rorbu cabins"
+      ],
+      "palette": [
+        "red",
+        "blue",
+        "grey",
+        "white"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-mons-klint",
+      "name": "Møns Klint",
+      "place": "Møn, Denmark",
+      "trip": "scandinavia-iceland",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-mons-klint.webp",
+      "board": "pictures/destinations/dest-mons-klint-board.webp",
+      "thumb": "pictures/destinations/dest-mons-klint-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "pastel",
+      "family": "sea-stack",
+      "subjects": [
+        "Møns Klint",
+        "chalk cliffs"
+      ],
+      "palette": [
+        "white",
+        "turquoise",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-preikestolen",
+      "name": "Preikestolen",
+      "place": "Lysefjord, Norway",
+      "trip": "scandinavia-iceland",
+      "tag": "famous",
+      "cols": 5,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-preikestolen.webp",
+      "board": "pictures/destinations/dest-preikestolen-board.webp",
+      "thumb": "pictures/destinations/dest-preikestolen-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        1200,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "preikestolen",
+      "subjects": [
+        "Preikestolen",
+        "Lysefjord"
+      ],
+      "palette": [
+        "grey",
+        "blue",
+        "green",
+        "white"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-skogafoss",
+      "name": "Skógafoss",
+      "place": "South Iceland",
+      "trip": "scandinavia-iceland",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        1,
+        2
+      ],
+      "file": "pictures/destinations/dest-skogafoss.webp",
+      "board": "pictures/destinations/dest-skogafoss-board.webp",
+      "thumb": "pictures/destinations/dest-skogafoss-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "watercolour",
+      "family": "ribbon-falls",
+      "subjects": [
+        "Skógafoss",
+        "waterfall"
+      ],
+      "palette": [
+        "white",
+        "green",
+        "blue",
+        "grey"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-avesta-dala-horse",
+      "name": "The giant Dala horse",
+      "place": "Avesta, Sweden",
+      "trip": "scandinavia-iceland",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-avesta-dala-horse.webp",
+      "board": "pictures/destinations/dest-avesta-dala-horse-board.webp",
+      "thumb": "pictures/destinations/dest-avesta-dala-horse-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "gouache",
+      "family": "rocking-horse",
+      "subjects": [
+        "Dala horse",
+        "folk art"
+      ],
+      "palette": [
+        "red",
+        "green",
+        "yellow",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-kronborg",
+      "name": "Kronborg",
+      "place": "Helsingør, Denmark",
+      "trip": "scandinavia-iceland",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-kronborg.webp",
+      "board": "pictures/destinations/dest-kronborg-board.webp",
+      "thumb": "pictures/destinations/dest-kronborg-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "castle",
+      "subjects": [
+        "Kronborg",
+        "Hamlet's castle"
+      ],
+      "palette": [
+        "cream",
+        "green",
+        "blue",
+        "grey"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-diamond-beach",
+      "name": "Diamond Beach",
+      "place": "Jökulsárlón, Iceland",
+      "trip": "scandinavia-iceland",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-diamond-beach.webp",
+      "board": "pictures/destinations/dest-diamond-beach-board.webp",
+      "thumb": "pictures/destinations/dest-diamond-beach-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "pastel",
+      "family": "iceberg",
+      "subjects": [
+        "Diamond Beach",
+        "glacier ice"
+      ],
+      "palette": [
+        "black",
+        "ice blue",
+        "white",
+        "grey"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-visby",
+      "name": "Visby",
+      "place": "Gotland, Sweden",
+      "trip": "scandinavia-iceland",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-visby.webp",
+      "board": "pictures/destinations/dest-visby-board.webp",
+      "thumb": "pictures/destinations/dest-visby-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "visby",
+      "subjects": [
+        "Visby",
+        "town wall"
+      ],
+      "palette": [
+        "grey",
+        "pink",
+        "red",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-atlantic-road",
+      "name": "The Atlantic Road",
+      "place": "Møre og Romsdal, Norway",
+      "trip": "scandinavia-iceland",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-atlantic-road.webp",
+      "board": "pictures/destinations/dest-atlantic-road-board.webp",
+      "thumb": "pictures/destinations/dest-atlantic-road-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "gouache",
+      "family": "viaduct",
+      "subjects": [
+        "Storseisundet Bridge",
+        "Atlantic Road"
+      ],
+      "palette": [
+        "grey",
+        "blue",
+        "green",
+        "white"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-dalarna-cottages",
+      "name": "Dalarna's red cottages",
+      "place": "Lake Siljan, Sweden",
+      "trip": "scandinavia-iceland",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-dalarna-cottages.webp",
+      "board": "pictures/destinations/dest-dalarna-cottages-board.webp",
+      "thumb": "pictures/destinations/dest-dalarna-cottages-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "red-barn",
+      "subjects": [
+        "red cottages",
+        "Lake Siljan"
+      ],
+      "palette": [
+        "red",
+        "white",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-iceland-puffins",
+      "name": "Iceland's puffins",
+      "place": "Iceland",
+      "trip": "scandinavia-iceland",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-iceland-puffins.webp",
+      "board": "pictures/destinations/dest-iceland-puffins-board.webp",
+      "thumb": "pictures/destinations/dest-iceland-puffins-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "puffin",
+      "subjects": [
+        "puffin",
+        "sea cliff"
+      ],
+      "palette": [
+        "black",
+        "white",
+        "orange",
+        "green"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-senja-segla",
+      "name": "Senja's Segla",
+      "place": "Senja, Norway",
+      "trip": "scandinavia-iceland",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-senja-segla.webp",
+      "board": "pictures/destinations/dest-senja-segla-board.webp",
+      "thumb": "pictures/destinations/dest-senja-segla-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "pastel",
+      "family": "senja-segla",
+      "subjects": [
+        "Segla",
+        "Senja"
+      ],
+      "palette": [
+        "grey",
+        "blue",
+        "green",
+        "white"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-kirkjufell",
+      "name": "Kirkjufell",
+      "place": "Grundarfjörður, Iceland",
+      "trip": "scandinavia-iceland",
+      "tag": "famous",
+      "cols": 5,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-kirkjufell.webp",
+      "board": "pictures/destinations/dest-kirkjufell-board.webp",
+      "thumb": "pictures/destinations/dest-kirkjufell-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        1200,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "kirkjufell",
+      "subjects": [
+        "Kirkjufell",
+        "arrowhead mountain"
+      ],
+      "palette": [
+        "green",
+        "brown",
+        "blue",
+        "white"
+      ],
+      "busy": 0
     }
   ],
   "items": [
