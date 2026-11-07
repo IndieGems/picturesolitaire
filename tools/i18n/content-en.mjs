@@ -13,13 +13,13 @@
 //                      table.<id>                         a table's name (the picker, a prize)
 //                      album.<id>                         an album's name
 //                      picture.<item id>                  an event item's name
-//   titles-en.json   every other picture a player can meet (the levels', the events' and the Souvenirs'):
+//   titles-en.json   every other picture a player can meet (the library's, whether dealt yet or not, and the Souvenirs'):
 //                      picture.<id>                       its title (the enlarged view, the win card)
 //
 //   node tools/i18n/content-en.mjs           write both
 //   node tools/i18n/content-en.mjs --check   exit 1 when either is out of date (tools/i18n/check.mjs)
 
-import { readFileSync, writeFileSync, readdirSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
@@ -53,14 +53,10 @@ export function contentEnglish() {
   for (const it of pictures.items ?? []) names[`picture.${it.id}`] = it.title ?? it.id;
   for (const m of events) for (const it of m.items ?? []) names[`picture.${it.id}`] ??= it.title;
 
-  // the pictures a player can meet: those the shipped levels deal (never the experiments, the dev
-  // menu's), and every Souvenir picture; a destination's is its place's name, an item's is above
-  const dealt = new Set();
-  for (const f of readdirSync(`${ROOT}src/content/levels`).filter((f) => f.endsWith(".json") && f !== "experiments.json")) {
-    const d = read(`src/content/levels/${f}`);
-    for (const l of Array.isArray(d.levels) ? d.levels : []) for (const p of l.pictures ?? []) dealt.add(p.id);
-  }
-  for (const p of pictures.pictures ?? []) if (dealt.has(p.id) && p.title) titles[`picture.${p.id}`] = p.title;
+  // the pictures a player can meet: the whole library, dealt yet or not (the lead, 2026-11-07, for
+  // trips 11-15: Levels deals from the library as it goes, so a title is translated before its level
+  // is), and every Souvenir picture; a destination's is its place's name, an item's is above
+  for (const p of pictures.pictures ?? []) if (p.title) titles[`picture.${p.id}`] = p.title;
   for (const p of pictures.souvenirPictures ?? []) if (p.title) titles[`picture.${p.id}`] = p.title;
   return { names: sorted(names), titles: sorted(titles) };
 }
