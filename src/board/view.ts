@@ -79,10 +79,13 @@ const dpr = () => (typeof devicePixelRatio === "number" && devicePixelRatio > 0 
 /**
  * The largest a card is drawn: a desktop with a mouse keeps the board at a
  * comfortable size in its letterbox (maxCard); on a touch screen the board
- * grows to fill its box (maxCardTouch), so a big tablet is not left 70% full.
+ * grows to fill its box (maxCardTouch), so a big tablet is not left 70% full,
+ * and so it does in the wide layout (src/ui/wide.ts, html.wide: the board
+ * centred at the window's full height, the creator's pick, 2026-11-09).
  */
 const coarse = typeof matchMedia === "function" ? matchMedia("(pointer: coarse)") : null;
-const cardCap = () => (coarse?.matches ? TUNING.maxCardTouch : TUNING.maxCard);
+const wideNow = () => typeof document !== "undefined" && document.documentElement.classList.contains("wide");
+const cardCap = () => (coarse?.matches || wideNow() ? TUNING.maxCardTouch : TUNING.maxCard);
 
 /** A card's width ÷ height, from the tuning (kept sane against a bad config value). */
 export const cardAspect = () => (Number.isFinite(TUNING.cardAspect) ? Math.min(2, Math.max(0.4, TUNING.cardAspect)) : 0.75);

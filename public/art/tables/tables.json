@@ -12,7 +12,9 @@
       "particleFrame": 64,
       "particleFrames": 4,
       "base": "#51c5fd",
-      "border": "sunny-day"
+      "border": "sunny-day",
+
+      "wide": "art/tables/sunny-day/sunny-day-wide.webp"
     },
     {
       "id": "table-winter-dusk",
@@ -28,7 +30,9 @@
       "particleFrames": 4,
       "base": "#2c3746",
       "panel": "#51637b",
-      "border": "winter-dusk"
+      "border": "winter-dusk",
+
+      "wide": "art/tables/winter-dusk/winter-dusk-wide.webp"
     },
     {
       "id": "table-autumn-study",
@@ -42,7 +46,9 @@
       "particleFrames": 4,
       "base": "#1d130f",
       "panel": "#835949",
-      "border": "autumn-study"
+      "border": "autumn-study",
+
+      "wide": "art/tables/autumn-study/autumn-study-wide.webp"
     },
     {
       "id": "table-ski-lodge",
@@ -56,7 +62,9 @@
       "particleFrames": 4,
       "base": "#20140f",
       "panel": "#875845",
-      "border": "ski-lodge"
+      "border": "ski-lodge",
+
+      "wide": "art/tables/ski-lodge/ski-lodge-wide.webp"
     },
     {
       "id": "table-winter-market",
@@ -78,7 +86,9 @@
       "stackBack": "art/tables/paris-cafe/paris-cafe-stack-back.webp",
       "thumb": "art/tables/paris-cafe/paris-cafe-thumb.webp",
       "base": "#d87d6d",
-      "border": "paris-cafe"
+      "border": "paris-cafe",
+
+      "wide": "art/tables/paris-cafe/paris-cafe-wide.webp"
     },
     {
       "id": "table-kyoto-blossom",
@@ -91,7 +101,9 @@
       "particleFrame": 64,
       "particleFrames": 4,
       "base": "#c78851",
-      "border": "kyoto-blossom"
+      "border": "kyoto-blossom",
+
+      "wide": "art/tables/kyoto-blossom/kyoto-blossom-wide.webp"
     },
     {
       "id": "table-buenos-aires",
@@ -104,7 +116,9 @@
       "particleFrame": 64,
       "particleFrames": 4,
       "base": "#43b0b6",
-      "border": "buenos-aires"
+      "border": "buenos-aires",
+
+      "wide": "art/tables/buenos-aires/buenos-aires-wide.webp"
     },
     {
       "id": "table-irish-coast",
@@ -113,7 +127,9 @@
       "stackBack": "art/tables/irish-coast/irish-coast-stack-back.webp",
       "thumb": "art/tables/irish-coast/irish-coast-thumb.webp",
       "base": "#609d6c",
-      "border": "irish-coast"
+      "border": "irish-coast",
+
+      "wide": "art/tables/irish-coast/irish-coast-wide.webp"
     },
     {
       "id": "table-pumpkin-porch",
@@ -126,7 +142,9 @@
       "particleFrame": 64,
       "particleFrames": 4,
       "base": "#a96845",
-      "border": "pumpkin-porch"
+      "border": "pumpkin-porch",
+
+      "wide": "art/tables/pumpkin-porch/pumpkin-porch-wide.webp"
     },
     {
       "id": "table-dining-car",
@@ -136,7 +154,9 @@
       "thumb": "art/tables/dining-car/dining-car-thumb.webp",
       "base": "#913e1d",
       "panel": "#a54b27",
-      "border": "dining-car"
+      "border": "dining-car",
+
+      "wide": "art/tables/dining-car/dining-car-wide.webp"
     },
     {
       "id": "table-arctic-cabin",
@@ -149,7 +169,9 @@
       "particleFrame": 32,
       "particleFrames": 4,
       "base": "#a3683e",
-      "border": "arctic-cabin"
+      "border": "arctic-cabin",
+
+      "wide": "art/tables/arctic-cabin/arctic-cabin-wide.webp"
     },
     {
       "id": "table-carnival",
@@ -163,7 +185,9 @@
       "particleFrames": 4,
       "base": "#990e1f",
       "panel": "#a52736",
-      "border": "carnival"
+      "border": "carnival",
+
+      "wide": "art/tables/carnival/carnival-wide.webp"
     },
     {
       "id": "table-souvenir-america",

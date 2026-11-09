@@ -20,7 +20,10 @@
 //
 // The top row is the standard's: the Gem's corner (top-left) left alone, the
 // level on the left, Back then the gear at the right end, all level with the
-// Gem. The board itself, its rules and animations are the gameplay member's,
+// Gem. A WIDE WINDOW (wide.ts: 1000 x 600 and 5:4 or more, never a phone) lays
+// the same screens out for itself (wide.css): the trip beside the board
+// (trip-side.ts), the tools in a labelled column, home's places in a sidebar,
+// the win card wide (wideRoom, arrangeWinCard). The keys are keys.ts's. The board itself, its rules and animations are the gameplay member's,
 // opened through board-api.ts and heard through src/events.ts.
 //
 // A ONE-OFF (friend challenges, the creator 2026-10-28; docs/friend-challenges.md): a friend's
@@ -47,6 +50,8 @@
 // know) are a fourth kind of board, practice always.
 
 import "./style.css";
+// the wide layout (html.wide) is decided before any screen is built (wide.ts)
+import { isWide, onWide } from "./wide";
 import { gem, onArcadePause, onPlayerPrefs } from "../gem";
 import { emit, on } from "../events";
 import { closeSettings, mountSettings } from "../settings-screen";
@@ -116,6 +121,8 @@ import { ensure, ensureSuitcase, fileUrl, holdBoard, resident, warmIndex } from 
 import { mountParticles, setWeather } from "./particles";
 import { boardFiles, levelCount, openBoard, type BoardHandle, type BoardPicture } from "./board-api";
 import type { DevMenu } from "./dev-menu";
+import { TOOL_KEYS, watchKeys, type Tool } from "./keys";
+import { createTripSide } from "./trip-side";
 
 // ---------- a little DOM ----------
 
@@ -252,14 +259,28 @@ const pillPar = h("span", { class: "par" });
 const back = button("round top-back", "board.back", icon("back"));
 liveAttr(back, "aria-label", "board.back");
 const host = h("div", { class: "board-host" });
-const restartBtn = button("restart", "board.restart", icon("restart"), liveText(h("span"), "board.restart"));
+/**
+ * A tool's name and key (keys.ts), drawn only where they are wanted (wide.css): its name beside its glyph in
+ * the wide layout; its key, as a chip there and as a tooltip over the column's round buttons, only where the
+ * pointer hovers. Restart says its name already. In the column on a phone none of them is drawn.
+ */
+function toolHints(k: Tool): Node[] {
+  return [
+    ...(k === "restart" ? [] : [liveText(h("span", { class: "tool-name" }), `board.${k}`)]),
+    h("kbd", { class: "key", "aria-hidden": "true" }, TOOL_KEYS[k]),
+    h("span", { class: "tip", "aria-hidden": "true" }, liveText(h("span"), `board.${k}`), h("kbd", { class: "key" }, TOOL_KEYS[k])),
+  ];
+}
+const restartBtn = button("restart", "board.restart", icon("restart"), liveText(h("span"), "board.restart"), ...toolHints("restart"));
+restartBtn.setAttribute("aria-keyshortcuts", TOOL_KEYS.restart);
 
 type HelperKey = HelperKind;
 const helperBtns = {} as Record<HelperKey, { btn: HTMLButtonElement; badge: HTMLElement }>;
 function helper(key: HelperKey, name: IconName, label: string): HTMLButtonElement {
   const badge = h("span", { class: "badge", "aria-hidden": "true" });
-  const btn = button(`round helper ${key}`, `board.${key}`, icon(name), badge);
+  const btn = button(`round helper ${key}`, `board.${key}`, icon(name), badge, ...toolHints(key));
   btn.setAttribute("aria-label", label);
+  btn.setAttribute("aria-keyshortcuts", key === "undo" ? "Z Control+Z" : TOOL_KEYS[key]);
   helperBtns[key] = { btn, badge };
   return btn;
 }
@@ -278,7 +299,9 @@ const stuckNote = h("div", { class: "stuck-note glass", role: "status", hidden: 
 const markBanner = h("div", { class: "mark-banner", "aria-hidden": "true", hidden: "" });
 // a finished destination's name over the top of its postcard (destination.ts), taking no touch
 const destBanner = createDestinationBanner();
-const boardScreen = h("section", { class: "screen board-screen", hidden: "" }, levelPill, back, host, stuckNote, helpers, markBanner, destBanner.element);
+// the wide layout's column left of the board: a campaign level's trip and its postcards (trip-side.ts)
+const tripSide = createTripSide();
+const boardScreen = h("section", { class: "screen board-screen", hidden: "" }, levelPill, back, tripSide.element, host, stuckNote, helpers, markBanner, destBanner.element);
 
 // the cards
 const winVeil = h("div", { class: "veil win", hidden: "", role: "dialog", "aria-modal": "true" });
@@ -913,6 +936,7 @@ function openLoaded(next: Play): void {
     movesSoFar = null;
     unstick();
     drawPill();
+    tripSide.show(next.kind === "campaign" ? next.level : null);
     canUndoNow = false;
     guide.cancel();
     lessons.cancel();
@@ -1858,6 +1882,7 @@ function showWin(): void {
   const tripEnd = lastWin.kind === "campaign" && (!!lastWin.stamp || boardNumber(lastWin.level) === levels());
   const share = lastWin.kind === "campaign" && lastWin.milestone ? 0.2 : tripEnd ? 0.17 : dare || lastWin.kind === "oneoff" ? 0.28 : 0.34;
   const pics = board.pictures();
+  winPics = { pics, share };
   const gallery = layoutGallery(pics, share);
   if (lastWin.kind === "oneoff") return void showOneOffWin(lastWin, gallery);
   if (lastWin.kind === "souvenir") return void showSouvenirWin(lastWin, gallery);
@@ -2478,30 +2503,81 @@ function showDare(o: OneOff, notYet: string | null): void {
 const GAP = 10;
 const TAP = 36;
 const STRIP_U = 60;
+
+/**
+ * THE WIDE WIN CARD (the creator's pick, 2026-11-09: the PC mockups' (b), on every win card; wide.css): the
+ * level's pictures big on the card's left, as big as its room allows, up to WIDE_U a card's height (a 2x2
+ * picture 240 x 320), its words and buttons in a column on its right. The room the pictures have, the
+ * stylesheet drawing the card from the same numbers (--win-side, --win-pad, --win-gap on the veil); null in
+ * the column, whose card is as it always was.
+ */
+const WIDE_U = 160;
+function wideRoom(): { width: number; height: number } | null {
+  if (!isWide()) return null;
+  const v = getComputedStyle(winVeil);
+  const pad = 32;
+  const gap = 40;
+  const side = Math.round(Math.max(380, Math.min(440, app.clientWidth * 0.26)));
+  const card = Math.min(1440, app.clientWidth - parseFloat(v.paddingLeft) - parseFloat(v.paddingRight) - 32);
+  winVeil.style.setProperty("--win-side", `${side}px`);
+  winVeil.style.setProperty("--win-pad", `${pad}px`);
+  winVeil.style.setProperty("--win-gap", `${gap}px`);
+  return {
+    width: Math.floor(card - side - gap - 2 * pad),
+    height: Math.floor(app.clientHeight - parseFloat(v.paddingTop) - parseFloat(v.paddingBottom) - 2 * pad),
+  };
+}
+
+/** The wide card's right column (wide.css): its words and buttons in order, a row each, beside the pictures. */
+function arrangeWinCard(): void {
+  if (!isWide()) return;
+  const card = winVeil.querySelector<HTMLElement>(":scope > .card");
+  if (!card) return;
+  const items = [...card.children]
+    .flatMap((c) => (c.classList.contains("card-body") ? [...c.children] : [c]))
+    .filter((c): c is HTMLElement => c instanceof HTMLElement && !c.classList.contains("gallery") && !["absolute", "fixed"].includes(getComputedStyle(c).position));
+  items.forEach((c, i) => {
+    c.classList.add("side-item");
+    c.style.setProperty("--row", String(i + 2));
+  });
+  card.style.setProperty("--side-n", String(Math.max(1, items.length)));
+}
+new MutationObserver(arrangeWinCard).observe(winVeil, { childList: true, subtree: true });
+/** The win card up now's pictures, to lay out again when the window turns wide or back. */
+let winPics: { pics: BoardPicture[]; share: number } | null = null;
+onWide(() => {
+  if (winVeil.hidden || !winPics) return;
+  winVeil.querySelector(".gallery")?.replaceWith(layoutGallery(winPics.pics, winPics.share));
+  arrangeWinCard();
+});
+
 function layoutGallery(pics: BoardPicture[], share = 0.34, room?: number): HTMLElement {
   // the gallery has the card's width and a third of the height (a phone held sideways is asked to
   // turn upright by the Arcade: the game is laid out upright only); `room`: a height it must keep to
-  // (settleGallery), the pictures then no smaller than tappable
-  const width = Math.min(360, app.clientWidth - 32) - 44 - 4;
-  const height = room !== undefined ? Math.max(60, room) : Math.max(110, Math.min(300, app.clientHeight * share));
+  // (settleGallery), the pictures then no smaller than tappable. Wide: the card's left side (wideRoom)
+  const wide = room === undefined ? wideRoom() : null;
+  const width = wide ? wide.width : Math.min(360, app.clientWidth - 32) - 44 - 4;
+  const height = wide ? wide.height : room !== undefined ? Math.max(60, room) : Math.max(110, Math.min(300, app.clientHeight * share));
+  const most = wide ? WIDE_U : 54;
   const aspect = cardAspect();
   let best: { u: number; rows: BoardPicture[][] } = { u: 0, rows: [pics] };
-  for (let n = 1; n <= Math.min(3, pics.length); n++) {
+  for (let n = 1; n <= Math.min(wide ? 8 : 3, pics.length); n++) {
     // fill n rows, each picture into the row with the fewest columns so far (biggest first)
     const rows: BoardPicture[][] = Array.from({ length: n }, () => []);
     const cols = (row: BoardPicture[]) => row.reduce((sum, p) => sum + p.cols, 0);
     for (const p of [...pics].sort((a, b) => b.cols - a.cols)) rows.reduce((a, b) => (cols(b) < cols(a) ? b : a)).push(p);
     const byWidth = Math.min(...rows.map((r) => (width - GAP * (r.length - 1)) / Math.max(1, cols(r) * aspect)));
     const tall = rows.reduce((sum, r) => sum + Math.max(0, ...r.map((p) => p.rows)), 0);
-    const u = Math.min(54, byWidth, (height - GAP * (n - 1)) / Math.max(1, tall));
+    const u = Math.min(most, byWidth, (height - GAP * (n - 1)) / Math.max(1, tall));
     if (u > best.u + 0.5) best = { u, rows };
   }
   // the card height that keeps every picture's narrow side tappable
   const uTap = Math.max(0, ...pics.map((p) => TAP / Math.min(p.cols * aspect, p.rows)));
   // too many for rows at a size worth tapping: a mosaic may still show them all at one look (QA,
   // 0.48.0: a Souvenir's twelve long pictures ran off the card as a strip); only past that, the strip
-  const mosaic = best.u < uTap ? bestMosaic(pics, width, height, aspect, uTap) : null;
-  if (mosaic) {
+  // (wide: whichever shows them bigger, the rows or the mosaic)
+  const mosaic = best.u < uTap || wide ? bestMosaic(pics, width, height, aspect, uTap, most) : null;
+  if (mosaic && (best.u < uTap || mosaic.u > best.u + 0.5)) {
     const gallery = h("div", { class: "gallery mosaic", style: `--u:${Math.floor(mosaic.u)}px;--gap:${MOSAIC_GAP}px;--k:${mosaic.k}` });
     const line = h("div", { class: "line" });
     mosaic.order.forEach((p, i) => line.append(galleryPicture(p, i, { u: Math.floor(mosaic.u), aspect })));
@@ -2541,7 +2617,7 @@ const MOSAIC_GAP = 8;
  * that is under `uTap` (the sideways strip then). Each picture keeps its own shape: it sits centred
  * in its cells, which a span widens by the gaps it crosses.
  */
-function bestMosaic(pics: BoardPicture[], width: number, height: number, aspect: number, uTap: number): { u: number; k: number; order: BoardPicture[] } | null {
+function bestMosaic(pics: BoardPicture[], width: number, height: number, aspect: number, uTap: number, most = 54): { u: number; k: number; order: BoardPicture[] } | null {
   const order = pics
     .map((p, i) => ({ p, i }))
     .sort((a, b) => b.p.cols * b.p.rows - a.p.cols * a.p.rows || a.i - b.i)
@@ -2562,7 +2638,7 @@ function bestMosaic(pics: BoardPicture[], width: number, height: number, aspect:
       for (let dr = 0; dr < p.rows; dr++) for (let dc = 0; dc < p.cols; dc++) (used[r + dr] ??= [])[c + dc] = true;
     }
     const rows = used.length;
-    const u = Math.min(54, (width - MOSAIC_GAP * (k - 1)) / k / aspect, (height - MOSAIC_GAP * (rows - 1)) / rows);
+    const u = Math.min(most, (width - MOSAIC_GAP * (k - 1)) / k / aspect, (height - MOSAIC_GAP * (rows - 1)) / rows);
     if (!best || u > best.u + 0.5) best = { u, k, order };
   }
   return best && best.u >= uTap ? best : null;
@@ -2633,6 +2709,7 @@ function withClick(b: HTMLButtonElement, fn: () => void): HTMLButtonElement {
 /** Show a card; `escape` is its corner key's way out, for Escape (dialogs.ts). */
 function showCard(veil: HTMLElement, escape?: () => void): void {
   veil.hidden = false;
+  if (veil === winVeil) arrangeWinCard();
   // to a keyboard (dialogs.ts): Escape on the restart card keeps playing; on a win card, its corner key
   opened(veil, veil === restartVeil ? () => hideCard(restartVeil) : escape);
   screenChanged();
@@ -2905,6 +2982,12 @@ export async function startApp(): Promise<void> {
   keepFitted(pillName, true);
   keepFitted(pillPar, true);
   keepFitted(stuckNote);
+  // the keys (keys.ts): the board's tools while a board is the screen, Esc for Back, Enter for the main action
+  watchKeys({
+    root: app,
+    tools: () => (screen === "board" && board && !boardWon ? { undo: helperBtns.undo.btn, hint: helperBtns.hint.btn, shuffle: helperBtns.shuffle.btn, restart: restartBtn } : null),
+    main: () => (screen === "home" ? home.querySelector<HTMLElement>(".play") : null),
+  });
 
   // The creator's dev menu: never in a release build (`npm run build:release` drops this branch
   // and the chunk; tools/no-dev-menu.mjs checks), and at run time only on the dev channel, or

@@ -94,6 +94,8 @@ export function createHomeShop(shop: Shop) {
     // the Gems bundles first (the Starter Kit at their top, until bought), then the Coins rows
     const { rows, room } = bundleRows(shop, pressBundle);
     if (rows.length || room) {
+      // (the wide layout draws the bundles and the helpers side by side: wide.css)
+      card.classList.add("with-bundles");
       const line = el("p", "item-say bundle-say");
       line.setAttribute("role", "status");
       line.textContent = bundleSaid?.text ?? "";

@@ -42,6 +42,8 @@
 //                  after Jigsaw Drop's flat blue): the table's `panel` colour, else its `base`
 //   --home-img     home's own picture (`desk`) --home-base its colour: unset, home is
 //                  see-through to the table
+//   --table-wide   its PC picture (`wide`), across the window in the wide layout (wide.css), home
+//                  included; unset, the wide layout covers the window with --table-img
 // Until they are set, style.css draws the built-in table, the same files.
 
 import { gem } from "../gem";
@@ -82,6 +84,12 @@ export interface TableArt {
    * page carries it. A table without one shows the Arcade's own bars.
    */
   border?: string;
+  /**
+   * Its picture across a wide window (the wide layout, wide.ts and wide.css; the lead, 2026-11-09): its store
+   * page border re-encoded (public/art/tables/<x>/<x>-wide.webp, 1920 wide: a calm middle, detail at the edges).
+   * Fetched only where the layout is wide. Without one, the wide layout covers the window with `table`.
+   */
+  wide?: string;
 }
 
 /** The table every player has, and the one drawn before anything is read (style.css draws its files until then). */
@@ -298,10 +306,15 @@ async function paint(a: TableArt): Promise<void> {
   const at = ++painting;
   const img = new Image();
   img.src = url(a.table);
-  await img.decode().catch(() => undefined);
+  // in the wide layout its wide picture is the one shown, so that too (nowhere else is it fetched)
+  const wide = a.wide && document.documentElement.classList.contains("wide") ? new Image() : null;
+  if (wide && a.wide) wide.src = url(a.wide);
+  await Promise.all([img.decode().catch(() => undefined), wide?.decode().catch(() => undefined)]);
   if (at !== painting) return;
   const root = document.documentElement.style;
   root.setProperty("--table-img", `url("${url(a.table)}")`);
+  if (a.wide) root.setProperty("--table-wide", `url("${url(a.wide)}")`);
+  else root.removeProperty("--table-wide");
   root.setProperty("--table-base", a.base);
   root.setProperty("--table-panel", a.panel ?? a.base);
   root.setProperty("--stack-back", `url("${url(a.stackBack)}")`);

@@ -318,8 +318,9 @@ html.less-motion .vb-glint, html.battery-saver .vb-glint { display: none; }
   .vb-glint { display: none; }
 }
 
-/* the itinerary: frosted glass (information), with a travel stub's two notches at the tear under its head */
-.home .itinerary {
+/* the itinerary (itinerary.ts): frosted glass (information), with a travel stub's two notches at the tear under its
+   head; home's, and the wide layout's beside a level (trip-side.ts, wide.css) */
+:is(.home, .trip-side) .itinerary {
   --tear: calc(58px * var(--k)); --notch: calc(10px * var(--k));
   flex: none; position: relative; width: min(100%, calc(380px * var(--k)));
   padding: 0 calc(12px * var(--k)) calc(10px * var(--k)); border-radius: calc(24px * var(--k));
@@ -328,7 +329,7 @@ html.less-motion .vb-glint, html.battery-saver .vb-glint { display: none; }
   mask: radial-gradient(circle var(--notch) at 0 var(--tear), #0000 95%, #000) left / 51% 100% no-repeat,
     radial-gradient(circle var(--notch) at 100% var(--tear), #0000 95%, #000) right / 51% 100% no-repeat;
 }
-.home .itinerary[hidden] { display: none; }
+:is(.home, .trip-side) .itinerary[hidden] { display: none; }
 .itinerary-head {
   display: flex; align-items: center; gap: calc(11px * var(--k)); height: var(--tear); margin: 0 calc(6px * var(--k));
   padding: 0 calc(4px * var(--k)); border-bottom: 2px dashed rgba(85, 101, 124, 0.38);
@@ -410,6 +411,9 @@ html.less-motion .tr-stop.here .tr-pin::after { display: none; }
 .home .play .words b { font: 600 calc(25px * var(--k))/1 var(--round); }
 .home .play .words small { font: 600 calc(14px * var(--k))/1 var(--round); }
 
+/* the event's strip and the dock, held together for the wide layout's sidebar (wide.css); in the column they
+   are home's own items, as if nothing held them */
+.home-side { display: contents; }
 /* the dock: Daily (daily.ts), the passport's booklet and its stamps, the challenge route, the Shop; up to four tiles */
 .home .dock { flex: none; display: flex; justify-content: center; gap: calc(10px * var(--k)); width: min(100%, calc(380px * var(--k))); }
 .btn.tile-btn {
@@ -467,6 +471,11 @@ html.less-motion .tr-stop.here .tr-pin::after { display: none; }
   padding: 6px max(14px, var(--safe-right)) calc(var(--foot) + 4px) max(14px, var(--safe-left));
 }
 .helpers .spacer { flex: 1; }
+/* a tool's name, key and tooltip (app.ts, toolHints): drawn only in the wide layout and where the pointer hovers
+   (wide.css); never in the column on a phone */
+.btn > :is(.tool-name, .key, .tip) { display: none; }
+/* the trip beside the board: the wide layout's only (trip-side.ts, wide.css); home's sizes at a phone's 1 */
+.trip-side { display: none; --k: 1; --pin: 44px; }
 /* the stuck notice (app.ts, drawStuck): information, at the board's foot just above the helpers, never
    across its middle; "Stuck! No way to finish from here." over the one way out, its arrow on the lit
    button. A helper's refusal ("No better mix right now") borrows it for a moment. */

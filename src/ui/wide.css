@@ -1,0 +1,211 @@
+/* THE WIDE LAYOUT (wide.ts: html.wide, a window at least 1000 x 600 and 5:4; the creator's pick, 2026-11-09,
+   of design/pc-mockups/: (a) the side columns, with (b)'s wide win card). Every rule here is under html.wide,
+   or under a pointer that hovers, or for what only those draw (the trip beside the board, a key's chip: hidden
+   in the column, style.css), so a phone is drawn exactly as before. The two materials hold:
+   a button is opaque frosted white (amber for the main action) on its lip; a panel, a count or a key's name
+   is flat frosted glass. Targets stay 44 px and more, text 12 px and more: a tablet held sideways and a TV
+   reach this layout too, by touch or a remote, so nothing in it waits on a hover.
+
+   THE ROOM: the table across the whole window, its wide picture where it has one (tables.ts: --table-wide,
+   Art's PC art for that table, a calm middle and detail at the edges), else its own picture covering it.
+   Every screen's top row runs across the window: its title clear of the Arcade's Gem and wallet top left
+   (top-row.ts measures them), Back at the top right. */
+html.wide {
+  --wide-gutter: clamp(16px, 1.8vw, 36px);
+  /* under the top row, and over the foot */
+  --wide-top: calc(var(--row-bottom) + 14px);
+  --wide-foot: max(18px, var(--foot));
+  /* the board's column: as wide as a board drawn at full height needs (3:4 cards, its stacks over them,
+     its panel's margin), leaving each side column a quarter of the window, 220 to 340 px, at the least */
+  --wide-side-min: clamp(220px, 24vw, 340px);
+  --wide-mid: min(calc(100vw - 2 * var(--wide-side-min) - 4 * var(--wide-gutter)), calc((100dvh - var(--wide-top) - var(--wide-foot)) * 0.68 + 56px));
+  /* a screen with no wide layout of its own: today's column, centred over the table */
+  --wide-col: min(100vw, 62dvh, 680px);
+}
+html.wide #app {
+  max-width: none; box-shadow: none;
+  background: var(--table-base, var(--table)) var(--table-wide, var(--table-img, url("/art/tables/sunny-day/sunny-day-table.webp"))) center / cover no-repeat;
+}
+
+/* ---------- A LEVEL: the trip and its postcards | the board, full height | the tools ---------- */
+
+/* (never on a hidden screen: .screen[hidden] is display: none, and this would beat it) */
+html.wide .board-screen:not([hidden]) {
+  display: grid; grid-template-columns: minmax(0, 1fr) var(--wide-mid) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr);
+  column-gap: var(--wide-gutter); padding: var(--wide-top) var(--wide-gutter) var(--wide-foot);
+}
+html.wide .board-screen > .trip-side { grid-area: 1 / 1; }
+html.wide .board-screen > .board-host { grid-area: 1 / 2; }
+html.wide .board-screen > .helpers { grid-area: 1 / 3; }
+/* the level over the board's column, level with the Gem */
+html.wide .board-screen > .top-pill { left: 50%; right: auto; width: max-content; max-width: min(var(--wide-mid), 520px); transform: translateX(-50%); }
+
+/* the board's panel: the table's calm colour round the board itself (its stacks and grid), with a margin and
+   round corners, the wide picture showing round it; the board fits its column as ever (src/board) */
+html.wide .board-host {
+  background: none; box-shadow: none; contain: layout;
+  overflow: clip; overflow-clip-margin: 40px;
+  /* the panel's margin, inside the column: the board fits the box this leaves */
+  margin: 22px 24px;
+}
+html.wide .bd-plane::before {
+  content: ""; position: absolute; inset: -22px -24px; border-radius: 28px; pointer-events: none;
+  background: var(--table-panel, var(--table-base, var(--table)));
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.4), 0 12px 34px rgba(6, 12, 24, 0.28);
+}
+/* stuck: the panel dims, not the table round it */
+html.wide .board-host.stuck::after { display: none; }
+html.wide .board-host.stuck .bd-plane::after {
+  content: ""; position: absolute; inset: -22px -24px; z-index: 40; border-radius: 28px; pointer-events: none;
+  background: rgba(12, 18, 30, 0.3); animation: veil-in 0.4s ease both;
+}
+html.wide.less-motion .board-host.stuck .bd-plane::after { animation: none; }
+/* the stuck notice and a helper's refusal: over the board's foot (its arrow only where the lit button is under it: app.ts) */
+html.wide .stuck-note { bottom: calc(var(--wide-foot) + 34px); max-width: min(calc(var(--wide-mid) - 24px), 520px); }
+
+/* THE TOOLS: a column of labelled buttons beside the board, Undo, Hint and Shuffle with their counts, then
+   Restart a little apart; each one's key on it where the pointer hovers (below) */
+html.wide .board-screen > .helpers {
+  flex-direction: column; align-items: stretch; justify-content: center; align-self: center; justify-self: center;
+  gap: 16px; width: min(100%, 300px); padding: 0;
+}
+html.wide .helpers .spacer { order: 1; flex: none; height: 8px; }
+html.wide .helpers .restart { order: 2; }
+html.wide .helpers .btn {
+  width: 100%; height: 64px; min-height: 64px; border-radius: 999px;
+  justify-content: flex-start; gap: 12px; padding: 0 16px 0 20px; font: 600 19px/1 var(--round);
+}
+html.wide .helpers .btn :is(svg, .ico) { width: 26px; height: 26px; }
+html.wide .helper > .tool-name { display: block; order: 1; white-space: nowrap; }
+html.wide .helper > .badge { position: static; order: 2; box-shadow: 0 0 0 2px var(--frost-hi), 0 1px 3px rgba(0, 0, 0, 0.3); }
+html.wide .helpers .btn > .key { order: 3; margin-left: auto; }
+/* lit (stuck's way out), the Hint's nudge: the ring follows the pill */
+html.wide .btn.helper.nudge::after { border-radius: 999px; }
+/* the Hint's nudge and mercy help's note, over the Hint (their scripts set how far up, and the arrow): over
+   the tools' column, their right edges together */
+html.wide .hint-tip {
+  --side: calc((100vw - var(--wide-mid)) / 2 - 2 * var(--wide-gutter));
+  right: calc(var(--wide-gutter) + var(--side) / 2 - min(var(--side), 300px) / 2); max-width: min(300px, var(--side));
+}
+
+/* THE TRIP, left of the board (trip-side.ts): home's itinerary, then its postcards; a narrow column keeps
+   the trip's name and its postcards and leaves the route out */
+html.wide .board-screen > .trip-side:not(.empty) {
+  display: flex; flex-direction: column; justify-content: center; gap: 16px;
+  justify-self: center; width: min(100%, 440px); min-height: 0; overflow: hidden;
+  container: trip-side / size;
+}
+.trip-side .itinerary { width: 100%; }
+.ts-postcards { display: flex; flex-direction: column; gap: 12px; padding: 14px 16px 16px; border-radius: 24px; }
+.ts-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.ts-head h3 { margin: 0; font: 600 19px/1.15 var(--round); }
+.ts-count { font: 500 14px/1.2 var(--round); color: var(--ink-soft); white-space: nowrap; }
+.ts-cards { display: flex; justify-content: center; align-items: flex-start; gap: 14px; }
+/* each as tall as the column leaves it once the trip is drawn (about 400 px of it), never wider than half */
+.ts-cards .pc { flex: none; width: min(calc(50% - 7px), 200px, max(80px, calc((100cqh - 420px) * 0.75 * var(--c) / var(--r)))); }
+@container trip-side (width < 300px) {
+  .trip-side .tr-route { display: none; }
+  .ts-cards .pc { width: min(calc(50% - 7px), 200px, max(80px, calc((100cqh - 240px) * 0.75 * var(--c) / var(--r)))); }
+}
+
+/* ---------- HOME: the places to go in a sidebar | the title, the trip and Next stop ---------- */
+
+html.wide .screen.home {
+  --side-w: clamp(280px, 25vw, 460px);
+  padding: calc(var(--row-bottom) + 12px) var(--wide-gutter) var(--wide-foot) calc(var(--side-w) + 2 * var(--wide-gutter));
+  /* the table's wide picture is home's too */
+  background: none;
+}
+html.wide .home-side {
+  display: flex; flex-direction: column; gap: 12px;
+  position: absolute; left: var(--wide-gutter); top: 50%; translate: 0 -50%;
+  width: var(--side-w); max-height: calc(100% - var(--row-bottom) - var(--wide-foot) - 24px); overflow-y: auto; scrollbar-width: none;
+  padding: 18px; border-radius: 30px;
+  background: var(--glass); border: 1.5px solid var(--glass-line); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+}
+html.wide .home-side .btn.event-strip { order: 1; width: 100%; margin-top: 6px; }
+/* (no :has() in this file: even unmatched, one changed how a phone's win card rasterised, a pixel off; so
+   the column's four-tile rules, which use it, are outranked here by !important on what they set) */
+html.wide .home .dock { flex-direction: column; width: 100%; gap: 12px !important; }
+/* each place a wide tile: its picture, then its name over its line, read from the left */
+html.wide .home .dock .btn.tile-btn {
+  flex: none; display: grid; grid-template-columns: calc(52px * var(--k)) minmax(0, 1fr); align-content: center; justify-items: start;
+  column-gap: calc(14px * var(--k)); row-gap: 3px; width: 100%; max-width: none; min-height: calc(74px * var(--k));
+  padding: calc(8px * var(--k)) calc(18px * var(--k)) !important; border-radius: calc(24px * var(--k)); text-align: left;
+}
+html.wide .home .dock .btn.tile-btn[hidden] { display: none; }
+html.wide .home .dock .btn.tile-btn > :first-child { grid-row: 1 / span 2; justify-self: center; }
+html.wide .home .dock .btn.tile-btn > .words { grid-row: 1 / span 2; align-items: flex-start; }
+html.wide .home .dock .btn.tile-btn :is(.label, .words b) { font-size: calc(17px * var(--k)) !important; }
+html.wide .home .dock .btn.tile-btn :is(small, .words span) { font-size: calc(13px * var(--k)); }
+
+/* ---------- THE WIN CARD (app.ts, wideRoom and arrangeWinCard): the level's pictures big on its left,
+   its words and buttons in a column on its right, centred down it, in their order ---------- */
+
+html.wide .veil.win > .card {
+  position: relative; display: grid; grid-template-columns: auto var(--win-side, 360px);
+  grid-template-rows: minmax(0, 1fr) repeat(var(--side-n, 1), auto) minmax(0, 1fr);
+  column-gap: var(--win-gap, 40px); align-items: center;
+  width: max-content; max-width: 100%; max-height: 100%; padding: var(--win-pad, 32px); border-radius: 34px;
+}
+html.wide .veil.win > .card > .card-body { display: contents; }
+html.wide .veil.win .card .gallery { grid-column: 1; grid-row: 1 / -1; margin: 0; }
+html.wide .veil.win .card .side-item { grid-column: 2; grid-row: var(--row); }
+html.wide .veil.win .card.pinned > .next { justify-self: center; margin-top: 8px; }
+html.wide .win .gallery .pic { --fr: 16px; --fw: 3px; }
+
+/* ---------- THE CARDS: centred windows over the dimmed window ---------- */
+
+/* home's shop in two columns: the Gems bundles, then the Coins helpers */
+html.wide .home-shop-card.with-bundles {
+  display: block; width: min(100%, 860px); columns: 2; column-gap: 28px; column-fill: balance;
+}
+html.wide .home-shop-card.with-bundles > * { break-inside: avoid; margin: 0 0 8px; }
+html.wide .home-shop-card.with-bundles > h2 { column-span: all; margin: 0 0 12px; }
+html.wide .home-shop-card.with-bundles > h3.bundle-head:last-of-type { break-before: column; margin-top: 0; }
+html.wide .home-shop-card.with-bundles > .bundle-head { margin: 0 0 6px; }
+
+/* ---------- EVERY OTHER SCREEN: its column, centred over the table; its top row across the window ---------- */
+
+html.wide .menu-screen .scroll { padding-left: max(16px, calc((100% - var(--wide-col)) / 2)); padding-right: max(16px, calc((100% - var(--wide-col)) / 2)); }
+/* the Daily page's band at its foot: the column's width, its top corners round, its sides open */
+html.wide .daily-screen > .daily-band { align-self: center; width: min(100%, calc(var(--wide-col) + 64px)); border-width: 1.5px 1.5px 0; }
+
+/* ---------- WHERE THE POINTER HOVERS (a mouse or a trackpad; never a finger, never a remote) ---------- */
+
+@keyframes tip-in { from { opacity: 0; } }
+kbd.key {
+  display: inline-grid; place-items: center; flex: none; min-width: 24px; height: 22px; padding: 0 6px; border-radius: 7px;
+  font: 700 12px/1 var(--round); color: var(--ink-soft); background: rgba(255, 255, 255, 0.55); border: 1.5px solid rgba(85, 101, 124, 0.32);
+}
+@media (hover: hover) and (pointer: fine) {
+  /* a button lights a little under the pointer */
+  .btn:hover:not(:disabled):not(:active):not(.pressed) { filter: brightness(1.05) saturate(1.04); }
+  .pc.visited:hover .pc-card { filter: brightness(1.05); }
+
+  /* the column: a tool's name and key over it, a moment after the pointer rests there; not there at all
+     until then (nothing laid out, unseen, over the board) */
+  html:not(.wide) .helpers .btn:hover > .tip {
+    position: absolute; z-index: 5; bottom: calc(100% + 14px); left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 8px; padding: 7px 10px 7px 14px; border-radius: 14px; white-space: nowrap; pointer-events: none;
+    font: 600 15px/1 var(--round); color: var(--ink); background: rgba(240, 245, 251, 0.96); border: 1.5px solid var(--glass-line);
+    box-shadow: 0 6px 16px rgba(6, 12, 24, 0.3); animation: tip-in 0.12s ease 0.35s backwards;
+  }
+  /* the row's ends: held inside the column */
+  html:not(.wide) .helpers .btn.restart > .tip { left: 0; transform: none; }
+  html:not(.wide) .helpers .btn:last-child > .tip { left: auto; right: 0; transform: none; }
+
+  /* wide: each tool's key on it, Back's and the main actions' keys at their corner */
+  html.wide .helpers .btn > .key { display: inline-grid; }
+  html.wide .btn.top-back { padding-right: 12px; }
+  html.wide .btn.top-back::after {
+    content: var(--key-esc, "Esc"); display: inline-grid; place-items: center; height: 22px; padding: 0 6px; margin-left: 4px; border-radius: 7px;
+    font: 700 12px/1 var(--round); color: #fff; background: rgba(255, 255, 255, 0.16); border: 1.5px solid rgba(255, 255, 255, 0.45);
+  }
+  html.wide :is(.home .play, .veil .next)::after {
+    content: var(--key-enter, "Enter"); position: absolute; top: -11px; right: 18px; display: inline-grid; place-items: center; height: 22px; padding: 0 7px;
+    border-radius: 7px; font: 700 12px/1 var(--round); color: var(--amber-lip); text-shadow: none;
+    background: #fff; border: 1.5px solid rgba(173, 100, 36, 0.45); box-shadow: 0 1px 3px rgba(6, 12, 24, 0.25);
+  }
+  html.wide .veil .btn.next:not(.amber)::after { color: var(--ink-soft); border-color: rgba(85, 101, 124, 0.32); }
+}

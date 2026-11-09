@@ -37,6 +37,7 @@ import { on } from "../events";
 import { t } from "./i18n";
 import { guideDone, waitForProgress } from "../net/progress";
 import { guideStep, guided, holdForGuide, waitForGuideSave } from "./guide-save";
+import { isWide } from "./wide";
 
 export type GuideMode = "line" | "hold" | null;
 
@@ -143,7 +144,14 @@ export function createGuide(d: Deps) {
 
   /** The open part of the screen: the board for a board step, the Hint button for the Hint step. */
   function hole(): DOMRect {
-    return (STEPS[step]!.board === "hold" ? d.hint : d.host).getBoundingClientRect();
+    if (STEPS[step]!.board === "hold") return d.hint.getBoundingClientRect();
+    // the wide layout: the board's panel round its stacks and grid (wide.css), its column being wider than the board
+    const plane = isWide() ? d.host.querySelector(".bd-plane") : null;
+    if (plane) {
+      const p = plane.getBoundingClientRect();
+      return new DOMRect(p.left - 24, p.top - 22, p.width + 48, p.height + 44);
+    }
+    return d.host.getBoundingClientRect();
   }
 
   function layout(): void {
