@@ -1,13 +1,13 @@
 # The relaxed campaign
 
-What each of the 240 boards asks of the player, axis by axis. Made by
+What each of the 300 boards asks of the player, axis by axis. Made by
 `node tools/levels/make-campaign.mts` from the plan in
 `tools/levels/campaign-plan.mts`; every board's winning line is re-proved by
 `node tools/levels/check.mts`. Do not edit this table by hand: change the plan
 and run the maker. The challenge route is in [challenge.md](challenge.md), the
 daily puzzle in [daily.md](daily.md).
 
-- **Destination**: the board's real place (lead, 2026-10-25: the game is a travelogue), a postcard the size of the board of which one window plays as an ordinary picture and unfolds into the whole postcard when finished. It took the place of one of the board's pictures, at the same spot and shape, so the deal and every measure below are as they were. The trips: Travel America (1-15), Japan (16-30), Italy (31-45), American West (46-60), France (61-75), Canada (76-90), Argentina (91-105), Australia (106-120), South Africa (121-135), UK & Ireland (136-150), East Coast America (151-165), New Zealand (166-180), Spain & Portugal (181-195), Morocco (196-210), Vietnam & Thailand (211-225), Scandinavia & Iceland (226-240).
+- **Destination**: the board's real place (lead, 2026-10-25: the game is a travelogue), a postcard the size of the board of which one window plays as an ordinary picture and unfolds into the whole postcard when finished. It took the place of one of the board's pictures, at the same spot and shape, so the deal and every measure below are as they were. The trips: Travel America (1-15), Japan (16-30), Italy (31-45), American West (46-60), France (61-75), Canada (76-90), Argentina (91-105), Australia (106-120), South Africa (121-135), UK & Ireland (136-150), East Coast America (151-165), New Zealand (166-180), Spain & Portugal (181-195), Morocco (196-210), Vietnam & Thailand (211-225), Scandinavia & Iceland (226-240), Brazil (241-255), Germany, Austria & Switzerland (256-270), South Korea (271-285), Poland (286-300).
 - **Role**: the board's place in the sawtooth ([difficulty-curve.md](difficulty-curve.md)): teach, bite (the first hard-for-a-beginner board), build, relief, hard, peak, super (super hard), pace (all long pictures, a change of pace). Every board but hard, peak and super starts safe: no first move or first clear dooms it. Players see a mark on hard and peak boards ("hard") and super ones ("super").
 - **Lookalikes**: pictures from the same family (they share colours and subjects).
 - **Cards per picture**: the pieces each picture is cut into.
@@ -260,10 +260,70 @@ daily puzzle in [daily.md](daily.md).
 | 238 | Iceland's puffins | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 46% | 0 | 41 |
 | 239 | Senja's Segla | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 50% | 0 | 41 |
 | 240 | Kirkjufell | super (marked super) | 14 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 5x5 | 56 (31) | 0 | 5 | 14% | 3 | 43 |
+| 241 | Sugarloaf Mountain | relief | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 3 | 97% | 0 | 26 |
+| 242 | Paraty at high tide | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 5 | 62% | 0 | 29 |
+| 243 | The Cup of Vila Velha | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 53% | 3 | 38 |
+| 244 | The Hercílio Luz Bridge | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 52% | 3 | 34 |
+| 245 | Bonito's clear rivers | hard (marked hard) | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 6 | 28% | 3 | 34 |
+| 246 | A Pantanal jaguar | pace | 12 | none | 2 2 2 2 2 2 2 2 2 2 2 2 | 1x2 2x1 | 4x4 | 24 (8) | 0 | 2 | 100% | 0 | 15 |
+| 247 | Hyacinth macaws | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 59% | 1 | 42 |
+| 248 | The Lacerda Elevator | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 52% | 1 | 36 |
+| 249 | A sloth in Bahia's cocoa forest | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 51% | 1 | 36 |
+| 250 | The giant cashew tree of Pirangi | hard (marked hard) | 13 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 5x5 | 52 (27) | 0 | 4 | 27% | 1 | 45 |
+| 251 | The jangadas of Canoa Quebrada | relief | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 3 | 89% | 0 | 29 |
+| 252 | Lençóis Maranhenses | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 56% | 4 | 38 |
+| 253 | Ver-o-Peso market | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 51% | 1 | 46 |
+| 254 | The pink river dolphins | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 53% | 0 | 41 |
+| 255 | The Theatro Amazonas | super (marked super) | 19 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 6x6 | 76 (40) | 0 | 4 | 18% | 3 | 61 |
+| 256 | The Speicherstadt | relief | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 3 | 92% | 0 | 35 |
+| 257 | The beach chairs of Warnemünde | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 3 | 63% | 3 | 36 |
+| 258 | The Brandenburg Gate | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 55% | 2 | 42 |
+| 259 | The Rakotz Bridge | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 53% | 0 | 41 |
+| 260 | The Wuppertal Schwebebahn | hard (marked hard) | 13 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 5x5 | 52 (27) | 0 | 4 | 35% | 1 | 48 |
+| 261 | Pfalzgrafenstein | pace | 12 | none | 2 2 2 2 2 2 2 2 2 2 2 2 | 1x2 2x1 | 4x4 | 24 (8) | 0 | 2 | 100% | 0 | 13 |
+| 262 | Rothenburg's Plönlein | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 56% | 4 | 39 |
+| 263 | The St Bernard dogs | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 45% | 0 | 40 |
+| 264 | Bern's bears | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 51% | 4 | 45 |
+| 265 | The Chapel Bridge | hard (marked hard) | 13 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 5x5 | 52 (27) | 0 | 4 | 22% | 2 | 45 |
+| 266 | Guarda | relief | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 3 | 100% | 0 | 31 |
+| 267 | The Golden Roof | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 51% | 3 | 40 |
+| 268 | The marmots of the Grossglockner | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 50% | 2 | 47 |
+| 269 | Grüner See | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 48% | 0 | 48 |
+| 270 | The Vienna State Opera | super (marked super) | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 12% | 3 | 40 |
+| 271 | Gwanghwamun | relief | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 4 | 96% | 0 | 33 |
+| 272 | Bukchon Hanok Village | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 5 | 64% | 0 | 36 |
+| 273 | Hwahongmun | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 59% | 1 | 34 |
+| 274 | The reed fields of Seocheon | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 51% | 4 | 42 |
+| 275 | Sunchang's chilli-paste jars | hard (marked hard) | 13 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 5x5 | 52 (27) | 0 | 4 | 28% | 2 | 48 |
+| 276 | The mudskippers of Suncheon Bay | pace | 12 | none | 2 2 2 2 2 2 2 2 2 2 2 2 | 1x2 2x1 | 4x4 | 24 (8) | 0 | 2 | 100% | 0 | 17 |
+| 277 | Sancheong's persimmon curtains | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 53% | 3 | 43 |
+| 278 | Gamcheon Culture Village | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 51% | 3 | 39 |
+| 279 | Cheomseongdae | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 51% | 1 | 44 |
+| 280 | Hahoe Folk Village | hard (marked hard) | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 5 | 28% | 1 | 43 |
+| 281 | The log bridge of Museom | relief | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 3 | 93% | 0 | 33 |
+| 282 | Ulsanbawi | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 52% | 1 | 39 |
+| 283 | Anbandegi's cabbage fields | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 54% | 2 | 36 |
+| 284 | Jeju's knobbly tangerines | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 51% | 1 | 37 |
+| 285 | Seongsan Ilchulbong | super (marked super) | 19 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 6x6 | 76 (40) | 0 | 4 | 18% | 0 | 60 |
+| 286 | The Crooked Forest | relief | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 4 | 99% | 1 | 34 |
+| 287 | The Crane of Gdańsk | build | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 4 | 63% | 1 | 43 |
+| 288 | Malbork Castle | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 52% | 1 | 46 |
+| 289 | The Elbląg Canal's ship railway | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 3 | 60% | 1 | 48 |
+| 290 | Ciechocinek's graduation towers | hard (marked hard) | 12 | none | 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 48 (28) | 0 | 4 | 33% | 1 | 37 |
+| 291 | Biskupin | pace | 12 | none | 2 2 2 2 2 2 2 2 2 2 2 2 | 1x2 2x1 | 4x4 | 24 (8) | 0 | 2 | 100% | 0 | 13 |
+| 292 | The goats of Poznań | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 50% | 3 | 48 |
+| 293 | Wrocław's Old Town Hall | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 54% | 0 | 38 |
+| 294 | Nikiszowiec | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 52% | 0 | 42 |
+| 295 | Łazienki's Palace on the Isle | hard (marked hard) | 13 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 5x5 | 52 (27) | 0 | 4 | 23% | 2 | 48 |
+| 296 | Białowieża's wild bison | relief | 10 | none | 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 40 (20) | 0 | 4 | 88% | 0 | 35 |
+| 297 | Kazimierz Dolny | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 56% | 2 | 32 |
+| 298 | Zalipie, the painted village | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 4 | 50% | 0 | 41 |
+| 299 | Zakopane's wooden villas | build | 11 | none | 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 4x5 | 44 (24) | 0 | 5 | 54% | 0 | 34 |
+| 300 | Kraków's Cloth Hall | super (marked super) | 14 | none | 4 4 4 4 4 4 4 4 4 4 4 4 4 4 | 2x2 | 5x5 | 56 (31) | 0 | 5 | 14% | 2 | 61 |
 
-**Atmospheric pictures** (creator, 2026-10-28; at most one a level, 2026-10-29): one of each board's pictures, from board 3 on (none on an all-long board), is atmospheric, each in a clear square's place with the deal unchanged (`tools/levels/atmospheric.mts`). Per trip: Travel America 12 of 106, Japan 14 of 154, Italy 14 of 160, American West 14 of 172, France 14 of 168, Canada 14 of 176, Argentina 14 of 168, Australia 14 of 174, South Africa 14 of 169, UK & Ireland 14 of 174, East Coast America 14 of 168, New Zealand 14 of 169, Spain & Portugal 14 of 174, Morocco 14 of 168, Vietnam & Thailand 14 of 174, Scandinavia & Iceland 14 of 169. The clear pictures they displaced: 163, of which 15 are on no board now, the stock trips 11 on take first (`tools/levels/atmospheric.json`).
+**Atmospheric pictures** (creator, 2026-10-28; at most one a level, 2026-10-29): one of each board's pictures, from board 3 on (none on an all-long board), is atmospheric, each in a clear square's place with the deal unchanged (`tools/levels/atmospheric.mts`). Per trip: Travel America 12 of 106, Japan 14 of 154, Italy 14 of 160, American West 14 of 172, France 14 of 168, Canada 14 of 176, Argentina 14 of 168, Australia 14 of 174, South Africa 14 of 169, UK & Ireland 14 of 174, East Coast America 14 of 168, New Zealand 14 of 169, Spain & Portugal 14 of 174, Morocco 14 of 168, Vietnam & Thailand 14 of 174, Scandinavia & Iceland 14 of 169, Brazil 14 of 174, Germany, Austria & Switzerland 14 of 168, South Korea 14 of 174, Poland 14 of 169. The clear pictures they displaced: 195, of which 11 are on no board now, the stock trips 11 on take first (`tools/levels/atmospheric.json`).
 
-Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture comes back 15 boards later at the soonest (median 76). Every board made since 2026-10-25 keeps the rule: no picture on two of boards 1-13, none back within 15 boards; 0 of 1143 returns are sooner than 15, on boards kept from before it.
+Every picture's appearances across the 300 boards: 0 to 4 (mean 2.0). A picture comes back 15 boards later at the soonest (median 105). Every board made since 2026-10-25 keeps the rule: no picture on two of boards 1-13, none back within 15 boards; 0 of 1756 returns are sooner than 15, on boards kept from before it.
 
 | picture | boards |
 |---|---|
@@ -309,7 +369,7 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | canal-bicycle (2x3, lemon yellow) FLAGGED: don't use |  |
 | snow-chalets (3x2, snow ice) FLAGGED: don't use |  |
 | skating-day (3x3, snow ice) FLAGGED: don't use |  |
-| frost-hellebores (2x2, snow ice, atmospheric) | 64 |
+| frost-hellebores (2x2, snow ice, atmospheric) | 64, 290 |
 | winter-stream (1x2, snow ice) FLAGGED: don't use |  |
 | riad-court (2x3, jewel tones) FLAGGED: don't use |  |
 | carpet-bazaar (2x2, jewel tones, atmospheric) | 110 |
@@ -329,51 +389,51 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | olive-grove (2x2, stone sage, atmospheric) | 59 |
 | tiled-house (2x2, sea blue) |  |
 | fjord-evening (2x2, blue hour) |  |
-| vintage-camera (2x2, vintage camera) | 1, 30, 188 |
-| red-scooter (2x2, red scooter) | 2, 28, 185 |
-| sailboat (2x2, sailboat) | 3, 122 |
-| cactus-bloom (2x2, cactus bloom) | 3, 29, 188 |
+| vintage-camera (2x2, vintage camera) | 1, 30, 188, 297 |
+| red-scooter (2x2, red scooter) | 2, 28, 185, 295 |
+| sailboat (2x2, sailboat) | 3, 122, 247 |
+| cactus-bloom (2x2, cactus bloom) | 3, 29, 188, 297 |
 | cliff-lighthouse (2x2, cliff lighthouse) | 23 |
 | blue-headscarf (2x2, blue headscarf) FLAGGED: don't use |  |
-| pink-lotus (2x2, pink lotus) | 27, 125 |
+| pink-lotus (2x2, pink lotus) | 27, 125, 248 |
 | yellow-raincoat (2x2, yellow raincoat) FLAGGED: don't use |  |
 | blue-bicycle (2x2, blue bicycle) | 220 |
 | mount-fuji (2x2, mount fuji) FLAGGED: don't use |  |
-| ice-cream (2x2, ice cream) | 3, 30, 188 |
-| paper-balloon (2x2, paper balloon) | 1, 150 |
+| ice-cream (2x2, ice cream) | 3, 30, 188, 298 |
+| paper-balloon (2x2, paper balloon) | 1, 150, 263 |
 | ginger-cat (2x2, ginger cat) | 6, 29, 187 |
-| golden-puppy (2x2, golden puppy) | 4, 146 |
-| chestnut-horse (2x2, chestnut horse) | 10, 139 |
-| orchid (2x2, orchid) | 5, 147 |
-| calla-lilies (2x2, calla lilies) | 12, 30, 188 |
+| golden-puppy (2x2, golden puppy) | 4, 146, 262 |
+| chestnut-horse (2x2, chestnut horse) | 10, 139, 257 |
+| orchid (2x2, orchid) | 5, 147, 262 |
+| calla-lilies (2x2, calla lilies) | 12, 30, 188, 297 |
 | irises (2x2, irises) | 189 |
-| protea (2x2, protea) | 10, 123 |
+| protea (2x2, protea) | 10, 123, 247 |
 | monstera (2x2, monstera) | 9, 30, 198 |
-| dahlia (2x2, dahlia) | 10, 179 |
-| bird-of-paradise (2x2, bird of paradise) | 8, 29, 187 |
-| magnolia (2x2, magnolia) |  |
-| bonsai (2x2, bonsai) | 7, 178 |
-| toadstools (2x2, toadstools) | 13, 179 |
-| watermelon (2x2, watermelon) | 5, 150 |
+| dahlia (2x2, dahlia) | 10, 179, 273 |
+| bird-of-paradise (2x2, bird of paradise) | 8, 29, 187, 297 |
+| magnolia (2x2, magnolia) | 243 |
+| bonsai (2x2, bonsai) | 7, 178, 275 |
+| toadstools (2x2, toadstools) | 13, 179, 274 |
+| watermelon (2x2, watermelon) | 5, 150, 264 |
 | cappuccino (2x2, cappuccino) | 87, 152, 214 |
-| pancakes (2x2, pancakes) | 28, 134 |
-| doughnut (2x2, doughnut) | 9, 140 |
-| pineapple (2x2, pineapple) | 13, 130 |
-| delft-teapot (2x2, delft teapot) | 9, 129 |
-| ramen (2x2, ramen) | 13, 180 |
+| pancakes (2x2, pancakes) | 28, 134, 288 |
+| doughnut (2x2, doughnut) | 9, 140, 289 |
+| pineapple (2x2, pineapple) | 13, 130, 251 |
+| delft-teapot (2x2, delft teapot) | 9, 129, 252 |
+| ramen (2x2, ramen) | 13, 180, 277 |
 | pizza (2x2, pizza) | 227 |
-| gramophone (2x2, gramophone) | 7, 137 |
-| violin (2x2, violin) | 13, 179 |
-| armchair (2x2, armchair) | 8, 148 |
-| rubber-duck (2x2, rubber duck) | 12, 28, 187 |
-| teddy-bear (2x2, teddy bear) | 5, 128 |
-| camper-van (2x2, camper van) | 6, 29, 187 |
+| gramophone (2x2, gramophone) | 7, 137, 255 |
+| violin (2x2, violin) | 13, 179, 275 |
+| armchair (2x2, armchair) | 8, 148, 263 |
+| rubber-duck (2x2, rubber duck) | 12, 28, 187, 296 |
+| teddy-bear (2x2, teddy bear) | 5, 128, 250 |
+| camper-van (2x2, camper van) | 6, 29, 187, 296 |
 | steam-train (2x2, steam train) | 30 |
 | classic-car (2x2, classic car) | 13, 29, 188 |
-| biplane (2x2, biplane) | 7, 198 |
-| cable-car (2x2, cable car) | 12, 143 |
-| suitcase (2x2, suitcase) | 167 |
-| rickshaw (2x2, rickshaw) | 10, 28, 187 |
+| biplane (2x2, biplane) | 7, 198, 299 |
+| cable-car (2x2, cable car) | 12, 143, 259 |
+| suitcase (2x2, suitcase) | 167, 290 |
+| rickshaw (2x2, rickshaw) | 10, 28, 187, 297 |
 | paper-parasol (2x2, paper parasol) | 13, 30 |
 | eiffel-tower (2x2, eiffel tower) FLAGGED: don't use |  |
 | golden-gate (2x2, golden gate) FLAGGED: don't use |  |
@@ -384,25 +444,25 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | yellow-door (2x2, yellow door) | 6, 28 |
 | red-barn (2x2, red barn) | 3, 29 |
 | moai (2x2, moai) FLAGGED: don't use |  |
-| eagle-figurehead (2x2, eagle figurehead) | 198 |
+| eagle-figurehead (2x2, eagle figurehead) | 198, 284 |
 | palm-island (2x2, palm island) | 151, 211 |
 | sandstone-arch (2x2, sandstone arch) | 8, 29 |
 | iceberg (2x2, iceberg) | 30 |
 | baobab (2x2, baobab) | 29 |
-| redwoods (2x2, redwoods) | 7, 130 |
-| rainbow (2x2, rainbow) | 10, 179 |
-| sandcastle (2x2, sandcastle) | 204 |
+| redwoods (2x2, redwoods) | 7, 130, 251 |
+| rainbow (2x2, rainbow) | 10, 179, 275 |
+| sandcastle (2x2, sandcastle) | 204, 296 |
 | chef (2x2, chef) FLAGGED: don't use |  |
 | ballerina (2x2, ballerina) | 225 |
-| red-kite (2x2, red kite) | 9, 131 |
+| red-kite (2x2, red kite) | 9, 131, 253 |
 | cowboy (2x2, cowboy) FLAGGED: don't use |  |
 | painter (2x2, painter) FLAGGED: don't use |  |
 | bubbles (2x2, bubbles) FLAGGED: don't use |  |
-| saxophonist (2x2, saxophonist) | 4, 28, 185 |
-| skier (2x2, skier) | 3, 129 |
+| saxophonist (2x2, saxophonist) | 4, 28, 185, 296 |
+| skier (2x2, skier) | 3, 129, 250 |
 | owl (2x2, owl) | 7, 133 |
 | macaw (2x2, macaw) | 187 |
-| giraffe (1x2, giraffe) | 21, 126 |
+| giraffe (1x2, giraffe) | 21, 126, 261 |
 | milkshake (1x2, milkshake) | 21, 216 |
 | sunflower (1x2, sunflower) | 21, 186 |
 | skyscraper (1x2, skyscraper) | 21 |
@@ -411,66 +471,66 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | ribbon-falls (1x2, ribbon falls) | 21 |
 | canal-house (1x2, canal house) | 11, 141 |
 | ice-lolly (1x2, ice lolly) | 11, 201 |
-| lily-window (1x2, lily window) | 21, 141 |
-| guitar (1x2, guitar) | 11, 171 |
+| lily-window (1x2, lily window) | 21, 141, 276 |
+| guitar (1x2, guitar) | 11, 171, 291 |
 | grand-piano (2x1, grand piano) | 21, 186 |
 | sewing-machine (2x1, sewing machine) | 21, 186 |
-| tractor (2x1, tractor) | 11, 171 |
+| tractor (2x1, tractor) | 11, 171, 291 |
 | canoe (2x1, canoe) | 21, 186 |
 | hammock (2x1, hammock) | 11, 171 |
-| wheelbarrow (2x1, wheelbarrow) | 21, 141 |
+| wheelbarrow (2x1, wheelbarrow) | 21, 141, 276 |
 | rocking-horse (2x1, rocking horse) | 11 |
 | paddle-steamer (2x1, paddle steamer) | 171 |
-| dachshund (2x1, dachshund) | 171 |
-| sidecar (2x1, sidecar) | 21, 171 |
+| dachshund (2x1, dachshund) | 171, 291 |
+| sidecar (2x1, sidecar) | 21, 171, 291 |
 | houseboat (2x1, houseboat) | 11, 126 |
-| wok-chef (2x2, wok chef) | 5, 178 |
+| wok-chef (2x2, wok chef) | 5, 178, 274 |
 | fence-cowboy (2x2, fence cowboy) |  |
 | plein-air (2x2, plein air) FLAGGED: don't use |  |
 | apple-ladder (2x2, apple ladder) |  |
-| lobster-pot (2x2, lobster pot) | 2, 125 |
-| dandelion-wish (2x2, dandelion wish) | 195 |
+| lobster-pot (2x2, lobster pot) | 2, 125, 247 |
+| dandelion-wish (2x2, dandelion wish) | 195, 282 |
 | carrot-harvest (2x2, carrot harvest) |  |
 | towpath-cyclist (2x3, towpath cyclist) |  |
-| book-reader (2x2, book reader) | 2, 178 |
-| passion-flower (2x2, passion flower) | 17, 134 |
+| book-reader (2x2, book reader) | 2, 178, 274 |
+| passion-flower (2x2, passion flower) | 17, 134, 254 |
 | hibiscus (2x2, hibiscus) | 240 |
-| sweet-peas (2x2, sweet peas) | 22, 182 |
-| ranunculus (2x2, ranunculus) | 26, 148 |
-| thistle (2x2, thistle) | 25, 183 |
-| cornflowers (2x2, cornflowers) | 18, 134 |
-| echeveria (2x2, echeveria) | 24, 182 |
+| sweet-peas (2x2, sweet peas) | 22, 182, 278 |
+| ranunculus (2x2, ranunculus) | 26, 148, 262 |
+| thistle (2x2, thistle) | 25, 183, 279 |
+| cornflowers (2x2, cornflowers) | 18, 134, 254 |
+| echeveria (2x2, echeveria) | 24, 182, 279 |
 | flytrap (2x2, flytrap) | 18 |
-| allium (2x2, allium) | 10, 179 |
-| chrysanthemum (2x2, chrysanthemum) | 22, 150 |
-| fuchsia (2x2, fuchsia) | 15, 180 |
+| allium (2x2, allium) | 10, 179, 274 |
+| chrysanthemum (2x2, chrysanthemum) | 22, 150, 262 |
+| fuchsia (2x2, fuchsia) | 15, 180, 275 |
 | lupins (2x2, lupins) | 22, 140 |
-| clematis (2x2, clematis) | 168 |
-| pansy (2x2, pansy) | 24, 130 |
-| fiddlehead (2x2, fiddlehead) | 20, 144 |
-| ginkgo (2x2, ginkgo) | 19, 180 |
+| clematis (2x2, clematis) | 168, 266 |
+| pansy (2x2, pansy) | 24, 130, 251 |
+| fiddlehead (2x2, fiddlehead) | 20, 144, 259 |
+| ginkgo (2x2, ginkgo) | 19, 180, 277 |
 | terrarium (2x2, terrarium) | 154 |
-| amaryllis (2x2, amaryllis) | 12, 28, 185 |
+| amaryllis (2x2, amaryllis) | 12, 28, 185, 285 |
 | camellia-plate (2x2, camellia plate) FLAGGED: don't use |  |
-| sushi (2x2, sushi) | 24, 148 |
+| sushi (2x2, sushi) | 24, 148, 262 |
 | croissant (2x2, croissant) | 212 |
-| avocado (2x2, avocado) | 25, 168 |
-| burger (2x2, burger) | 22, 181 |
-| pretzel (2x2, pretzel) | 190 |
-| jelly (2x2, jelly) | 161 |
-| egg-cup (2x2, egg cup) | 19, 143 |
-| hot-chocolate (2x2, hot chocolate) | 25, 133 |
-| majolica-jug (2x2, majolica jug) | 27, 184 |
-| desk-globe (2x2, desk globe) | 25, 183 |
+| avocado (2x2, avocado) | 25, 168, 269 |
+| burger (2x2, burger) | 22, 181, 275 |
+| pretzel (2x2, pretzel) | 190, 278 |
+| jelly (2x2, jelly) | 161, 290 |
+| egg-cup (2x2, egg cup) | 19, 143, 258 |
+| hot-chocolate (2x2, hot chocolate) | 25, 133, 254 |
+| majolica-jug (2x2, majolica jug) | 27, 184, 280 |
+| desk-globe (2x2, desk globe) | 25, 183, 292 |
 | roller-skate (2x2, roller skate) | 238 |
 | mussels (2x2, mussels) | 228 |
-| corn-cob (2x2, corn cob) | 191 |
-| chillies (2x2, chillies) | 15, 30, 189 |
-| nesting-dolls (2x2, nesting dolls) | 18, 121 |
-| tin-robot (2x2, tin robot) | 20, 181 |
-| accordion (2x2, accordion) | 15, 150 |
-| trumpet (2x2, trumpet) | 27, 128 |
-| origami-crane (2x2, origami crane) | 160 |
+| corn-cob (2x2, corn cob) | 191, 278 |
+| chillies (2x2, chillies) | 15, 30, 189, 299 |
+| nesting-dolls (2x2, nesting dolls) | 18, 121, 247 |
+| tin-robot (2x2, tin robot) | 20, 181, 277 |
+| accordion (2x2, accordion) | 15, 150, 264 |
+| trumpet (2x2, trumpet) | 27, 128, 250 |
+| origami-crane (2x2, origami crane) | 160, 264 |
 | bento (2x2, bento) | 222 |
 | volcano (2x2, volcano) | 17, 143 |
 | aurora (2x2, aurora) | 20, 138 |
@@ -479,320 +539,320 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | basalt-columns (2x2, basalt columns) | 16 |
 | karst-peaks (2x2, karst peaks) |  |
 | matterhorn (2x2, matterhorn) FLAGGED: don't use |  |
-| pebble-cairn (2x2, pebble cairn) | 5, 179 |
-| oak-acorns (2x2, oak acorns) | 26, 183 |
-| thunderstorm (2x2, thunderstorm) | 27, 168 |
-| harvest-moon (2x2, harvest moon) | 158 |
-| birches (2x2, birches) | 16, 142 |
-| amethyst (2x2, amethyst) | 26, 145 |
-| bamboo (2x2, bamboo) | 24, 198 |
+| pebble-cairn (2x2, pebble cairn) | 5, 179, 275 |
+| oak-acorns (2x2, oak acorns) | 26, 183, 281 |
+| thunderstorm (2x2, thunderstorm) | 27, 168, 269 |
+| harvest-moon (2x2, harvest moon) | 158, 264 |
+| birches (2x2, birches) | 16, 142, 257 |
+| amethyst (2x2, amethyst) | 26, 145, 260 |
+| bamboo (2x2, bamboo) | 24, 198, 298 |
 | sea-stack (2x2, sea stack) | 26 |
 | crystal-cave (2x2, crystal cave) | 190 |
-| rope-bridge (2x2, rope bridge) | 16, 180 |
+| rope-bridge (2x2, rope bridge) | 16, 180, 277 |
 | standing-stones (2x2, standing stones) | 123 |
-| beekeeper (2x2, beekeeper) | 17, 149 |
+| beekeeper (2x2, beekeeper) | 17, 149, 264 |
 | cellist (2x2, cellist) FLAGGED: don't use |  |
 | glassblower (2x2, glassblower) |  |
 | baker (2x2, baker) FLAGGED: don't use |  |
-| surfer (2x2, surfer) | 25, 184 |
-| knitting (2x2, knitting) | 17, 140 |
-| climber (2x2, climber) | 16, 180 |
-| tyre-swing (2x2, tyre swing) | 25, 183 |
-| blacksmith (2x2, blacksmith) | 18, 132 |
-| hiker (2x2, hiker) | 24, 183 |
-| juggler (2x2, juggler) | 25, 150 |
+| surfer (2x2, surfer) | 25, 184, 281 |
+| knitting (2x2, knitting) | 17, 140, 258 |
+| climber (2x2, climber) | 16, 180, 275 |
+| tyre-swing (2x2, tyre swing) | 25, 183, 293 |
+| blacksmith (2x2, blacksmith) | 18, 132, 288 |
+| hiker (2x2, hiker) | 24, 183, 278 |
+| juggler (2x2, juggler) | 25, 150, 264 |
 | fly-fisher (2x2, fly fisher) |  |
-| tennis-player (2x2, tennis player) | 19, 181 |
+| tennis-player (2x2, tennis player) | 19, 181, 277 |
 | washing-line (2x2, washing line) FLAGGED: don't use |  |
-| airship (2x2, airship) | 14, 132 |
-| skateboard (2x2, skateboard) | 17, 180 |
+| airship (2x2, airship) | 14, 132, 253 |
+| skateboard (2x2, skateboard) | 17, 180, 278 |
 | double-decker (2x2, double decker) | 64, 211 |
-| tugboat (2x2, tugboat) | 14, 135 |
-| junk-boat (2x2, junk boat) | 27, 184 |
-| ocean-liner (2x2, ocean liner) | 20, 181 |
+| tugboat (2x2, tugboat) | 14, 135, 255 |
+| junk-boat (2x2, junk boat) | 27, 184, 280 |
+| ocean-liner (2x2, ocean liner) | 20, 181, 277 |
 | galleon (2x2, galleon) | 230 |
-| campfire (2x2, campfire) | 19, 138 |
-| fire-engine (2x2, fire engine) | 15, 30, 187 |
-| penny-farthing (2x2, penny farthing) | 24, 149 |
+| campfire (2x2, campfire) | 19, 138, 256 |
+| fire-engine (2x2, fire engine) | 15, 30, 187, 298 |
+| penny-farthing (2x2, penny farthing) | 24, 149, 263 |
 | longtail-boat (2x2, longtail boat) | 217 |
-| seaplane (2x2, seaplane) | 19, 125 |
-| bullet-train (2x2, bullet train) | 20, 144 |
-| safari-truck (2x2, safari truck) | 20, 127 |
-| bow-top-wagon (2x2, bow top wagon) | 18, 199 |
-| binoculars (2x2, binoculars) | 24 |
-| speedboat (2x2, speedboat) | 23, 136 |
+| seaplane (2x2, seaplane) | 19, 125, 247 |
+| bullet-train (2x2, bullet train) | 20, 144, 258 |
+| safari-truck (2x2, safari truck) | 20, 127, 249 |
+| bow-top-wagon (2x2, bow top wagon) | 18, 199, 298 |
+| binoculars (2x2, binoculars) | 24, 241 |
+| speedboat (2x2, speedboat) | 23, 136, 255 |
 | pier (2x2, pier) | 226 |
-| roller-coaster (2x2, roller coaster) | 19, 122 |
-| tent (2x2, tent) | 23, 182 |
+| roller-coaster (2x2, roller coaster) | 19, 122, 244 |
+| tent (2x2, tent) | 23, 182, 278 |
 | castle (2x2, castle) |  |
-| igloo (2x2, igloo) | 27, 184 |
+| igloo (2x2, igloo) | 27, 184, 280 |
 | pyramids (2x2, pyramids) FLAGGED: don't use |  |
-| greek-temple (2x2, greek temple) | 25, 121 |
+| greek-temple (2x2, greek temple) | 25, 121, 245 |
 | torii (2x2, torii) FLAGGED: don't use |  |
-| yurt (2x2, yurt) | 154 |
+| yurt (2x2, yurt) | 154, 289 |
 | covered-bridge (2x2, covered bridge) | 25, 144 |
-| moon-gate (2x2, moon gate) | 23, 132 |
-| lifeguard-tower (2x2, lifeguard tower) | 22, 182 |
+| moon-gate (2x2, moon gate) | 23, 132, 253 |
+| lifeguard-tower (2x2, lifeguard tower) | 22, 182, 280 |
 | half-timbered (2x2, half timbered) | 15, 146 |
 | stepwell (2x2, stepwell) | 215 |
-| circus-tent (2x2, circus tent) | 22, 130 |
-| observatory (2x2, observatory) | 27, 137 |
-| adobe (2x2, adobe) | 23, 177 |
+| circus-tent (2x2, circus tent) | 22, 130, 252 |
+| observatory (2x2, observatory) | 27, 137, 255 |
+| adobe (2x2, adobe) | 23, 177, 273 |
 | petra (2x2, petra) |  |
 | stave-church (2x2, stave church) | 180 |
 | watermill (2x2, watermill) | 38 |
-| bandstand (2x2, bandstand) | 14, 29, 187 |
-| fox (2x2, fox) | 20, 127 |
+| bandstand (2x2, bandstand) | 14, 29, 187, 296 |
+| fox (2x2, fox) | 20, 127, 250 |
 | hedgehog (2x2, hedgehog) | 220 |
 | flamingo (2x2, flamingo) | 26 |
 | panda (2x2, panda) | 151, 211 |
-| tortoise (2x2, tortoise) | 44, 190 |
+| tortoise (2x2, tortoise) | 44, 190, 285 |
 | peacock (2x2, peacock) |  |
-| cow-nose (2x2, cow nose) | 181 |
+| cow-nose (2x2, cow nose) | 181, 270 |
 | rabbit (2x2, rabbit) | 22 |
-| koala (2x2, koala) | 16, 123 |
+| koala (2x2, koala) | 16, 123, 247 |
 | penguin (2x2, penguin) | 14, 123 |
-| chameleon (2x2, chameleon) | 14, 150 |
-| rooster (2x2, rooster) | 27, 135 |
+| chameleon (2x2, chameleon) | 14, 150, 263 |
+| rooster (2x2, rooster) | 27, 135, 254 |
 | heron (1x2, heron) | 36, 186 |
 | hollyhocks (1x2, hollyhocks) | 186 |
 | whale (2x1, whale) |  |
 | otter (2x1, otter) | 186 |
-| marigolds (2x2, marigolds) | 151 |
+| marigolds (2x2, marigolds) | 151, 259 |
 | bleeding-heart (2x2, bleeding heart) | 234 |
-| gerbera (2x2, gerbera) | 49, 133 |
+| gerbera (2x2, gerbera) | 49, 133, 253 |
 | forget-me-nots (2x2, forget me nots) | 238 |
 | snowdrops (2x2, snowdrops) | 39, 58, 203 |
-| bluebells (2x2, bluebells) | 52, 193 |
-| plum-blossom (2x2, plum blossom) | 33, 53, 195 |
+| bluebells (2x2, bluebells) | 52, 193, 295 |
+| plum-blossom (2x2, plum blossom) | 33, 53, 195, 300 |
 | carnation (2x2, carnation) | 208 |
-| zinnia (2x2, zinnia) | 159, 196 |
-| cosmos (2x2, cosmos) | 37, 53, 195 |
+| zinnia (2x2, zinnia) | 159, 196, 296 |
+| cosmos (2x2, cosmos) | 37, 53, 195, 300 |
 | morning-glory (2x2, morning glory) FLAGGED: don't use |  |
-| air-plant (2x2, air plant) | 119, 137 |
-| frangipani (2x2, frangipani) | 50, 191 |
-| edelweiss (2x2, edelweiss) | 134 |
+| air-plant (2x2, air plant) | 119, 137, 288 |
+| frangipani (2x2, frangipani) | 50, 191, 294 |
+| edelweiss (2x2, edelweiss) | 134, 286 |
 | crocus (2x2, crocus) FLAGGED: don't use |  |
-| hyacinth (2x2, hyacinth) | 32, 53, 195 |
+| hyacinth (2x2, hyacinth) | 32, 53, 195, 299 |
 | bougainvillea (2x2, bougainvillea) | 37, 53, 199 |
-| lily-of-the-valley (2x2, lily of the valley) | 45, 139 |
-| pitcher-plant (2x2, pitcher plant) | 196 |
+| lily-of-the-valley (2x2, lily of the valley) | 45, 139, 256 |
+| pitcher-plant (2x2, pitcher plant) | 196, 293 |
 | anthurium (2x2, anthurium) FLAGGED: don't use |  |
-| prickly-pear (2x2, prickly pear) | 43, 166 |
+| prickly-pear (2x2, prickly pear) | 43, 166, 268 |
 | coneflower (2x2, coneflower) | 39, 57, 203 |
-| nasturtiums (2x2, nasturtiums) | 153 |
+| nasturtiums (2x2, nasturtiums) | 153, 289 |
 | snapdragons (2x2, snapdragons) FLAGGED: don't use |  |
 | columbine (2x2, columbine) | 31, 60, 206 |
-| kangaroo-paw (2x2, kangaroo paw) | 59, 131 |
-| cyclamen (2x2, cyclamen) | 50, 140 |
-| banksia (2x2, banksia) | 48, 131 |
-| sea-holly (2x2, sea holly) | 59, 143 |
-| black-eyed-susans (2x2, black eyed susans) | 175 |
-| delphinium (1x2, delphinium) | 51, 141 |
-| gladiolus (1x2, gladiolus) | 36 |
+| kangaroo-paw (2x2, kangaroo paw) | 59, 131, 252 |
+| cyclamen (2x2, cyclamen) | 50, 140, 257 |
+| banksia (2x2, banksia) | 48, 131, 251 |
+| sea-holly (2x2, sea holly) | 59, 143, 258 |
+| black-eyed-susans (2x2, black eyed susans) | 175, 268 |
+| delphinium (1x2, delphinium) | 51, 141, 276 |
+| gladiolus (1x2, gladiolus) | 36, 246 |
 | window-geraniums (2x1, window geraniums) | 36, 186 |
-| dumplings (2x2, dumplings) | 135 |
+| dumplings (2x2, dumplings) | 135, 248 |
 | tacos (2x2, tacos) | 38, 60, 204 |
-| churros (2x2, churros) | 43, 190 |
+| churros (2x2, churros) | 43, 190, 285 |
 | honey-jar (2x2, honey jar) | 42, 60, 205 |
-| strawberry-basket (2x2, strawberry basket) | 44, 139 |
+| strawberry-basket (2x2, strawberry basket) | 44, 139, 256 |
 | blueberries (2x2, blueberries) | 31, 59, 204 |
 | peaches (2x2, peaches) | 47, 199 |
 | kiwi-slices (2x2, kiwi slices) | 41, 57, 202 |
-| blooming-tea (2x2, blooming tea) | 147 |
+| blooming-tea (2x2, blooming tea) | 147, 288 |
 | smoothie-bowl (2x2, smoothie bowl) | 40, 58, 203 |
-| popcorn (2x2, popcorn) | 33, 185 |
-| cotton-candy (2x2, cotton candy) | 45, 190 |
-| waffles (2x2, waffles) | 33, 53, 195 |
-| apple-pie (2x2, apple pie) | 35, 173 |
+| popcorn (2x2, popcorn) | 33, 185, 282 |
+| cotton-candy (2x2, cotton candy) | 45, 190, 294 |
+| waffles (2x2, waffles) | 33, 53, 195, 300 |
+| apple-pie (2x2, apple pie) | 35, 173, 270 |
 | bananas (2x2, bananas) |  |
-| mango (2x2, mango) | 44, 191 |
-| coconut (2x2, coconut) | 57, 194 |
-| dragon-fruit (2x2, dragon fruit) | 45, 122 |
-| artichokes (2x2, artichokes) | 48, 192 |
-| chanterelles (2x2, chanterelles) | 157 |
+| mango (2x2, mango) | 44, 191, 294 |
+| coconut (2x2, coconut) | 57, 194, 285 |
+| dragon-fruit (2x2, dragon fruit) | 45, 122, 247 |
+| artichokes (2x2, artichokes) | 48, 192, 294 |
+| chanterelles (2x2, chanterelles) | 157, 289 |
 | garlic (2x2, garlic) | 50, 192 |
-| vine-tomatoes (2x2, vine tomatoes) | 41, 189 |
-| lychees (2x2, lychees) | 49, 199 |
-| bubble-tea (2x2, bubble tea) | 47, 172 |
-| matcha (2x2, matcha) | 52, 193 |
-| lollipops (2x2, lollipops) | 34, 133 |
-| chocolate-truffles (2x2, chocolate truffles) | 161 |
+| vine-tomatoes (2x2, vine tomatoes) | 41, 189, 285 |
+| lychees (2x2, lychees) | 49, 199, 297 |
+| bubble-tea (2x2, bubble tea) | 47, 172, 272 |
+| matcha (2x2, matcha) | 52, 193, 295 |
+| lollipops (2x2, lollipops) | 34, 133, 255 |
+| chocolate-truffles (2x2, chocolate truffles) | 161, 265 |
 | hourglass (2x2, hourglass) | 40, 55, 200 |
 | vintage-radio (2x2, vintage radio) | 39, 56, 202 |
-| rotary-phone (2x2, rotary phone) | 45, 191 |
+| rotary-phone (2x2, rotary phone) | 45, 191, 285 |
 | music-box (2x2, music box) | 38, 57, 202 |
-| kaleidoscope (2x2, kaleidoscope) | 35, 54, 195 |
-| paper-fan (2x2, paper fan) | 43, 199 |
+| kaleidoscope (2x2, kaleidoscope) | 35, 54, 195, 300 |
+| paper-fan (2x2, paper fan) | 43, 199, 299 |
 | yarn-balls (2x2, yarn balls) | 221 |
-| spinning-top (2x2, spinning top) | 39, 122 |
-| parfait (1x2, parfait) | 51, 126 |
+| spinning-top (2x2, spinning top) | 39, 122, 286 |
+| parfait (1x2, parfait) | 51, 126, 276 |
 | kebab-skewer (2x1, kebab skewer) | 51, 201 |
-| baguette-sandwich (2x1, baguette sandwich) | 126 |
+| baguette-sandwich (2x1, baguette sandwich) | 126, 261 |
 | lone-tree (2x2, lone tree) | 48, 124 |
-| frozen-lake (2x2, frozen lake) | 46, 128 |
-| mangrove-roots (2x2, mangrove roots) | 43, 132 |
+| frozen-lake (2x2, frozen lake) | 46, 128, 250 |
+| mangrove-roots (2x2, mangrove roots) | 43, 132, 253 |
 | oasis (2x2, oasis) | 53 |
-| hot-spring (2x2, hot spring) | 135 |
+| hot-spring (2x2, hot spring) | 135, 249 |
 | tide-flats (2x2, tide flats) | 46, 142 |
 | mossy-boulders (2x2, mossy boulders) | 34, 53 |
-| weeping-willow (2x2, weeping willow) | 34, 184 |
-| rainbow-eucalyptus (2x2, rainbow eucalyptus) | 38, 185 |
+| weeping-willow (2x2, weeping willow) | 34, 184, 281 |
+| rainbow-eucalyptus (2x2, rainbow eucalyptus) | 38, 185, 282 |
 | dragon-tree (2x2, dragon tree) | 32, 60, 205 |
-| rapeseed-fields (2x2, rapeseed fields) | 43, 136 |
-| black-sand-beach (2x2, black sand beach) | 48, 125 |
+| rapeseed-fields (2x2, rapeseed fields) | 43, 136, 255 |
+| black-sand-beach (2x2, black sand beach) | 48, 125, 249 |
 | sandbar (2x2, sandbar) | 31, 129 |
 | giant-lily-pads (2x2, giant lily pads) | 211 |
-| frosted-web (2x2, frosted web) | 40, 124 |
-| autumn-leaves-water (2x2, autumn leaves water) | 41, 127 |
+| frosted-web (2x2, frosted web) | 40, 124, 247 |
+| autumn-leaves-water (2x2, autumn leaves water) | 41, 127, 249 |
 | snowy-fence (2x2, snowy fence) | 32, 57, 202 |
 | seashells (2x2, seashells) | 234 |
-| scarecrow (2x2, scarecrow) | 45, 124 |
-| braided-river (2x2, braided river) |  |
-| larch-forest (2x2, larch forest) | 37, 143 |
-| heather-moor (2x2, heather moor) | 47, 134 |
+| scarecrow (2x2, scarecrow) | 45, 124, 248 |
+| braided-river (2x2, braided river) | 242 |
+| larch-forest (2x2, larch forest) | 37, 143, 259 |
+| heather-moor (2x2, heather moor) | 47, 134, 288 |
 | snowflake (2x2, snowflake) | 35, 56, 203 |
 | cranberry-bog (2x2, cranberry bog) | 188 |
-| pine-cone (2x2, pine cone) | 57, 194 |
+| pine-cone (2x2, pine cone) | 57, 194, 294 |
 | shipwreck (2x2, shipwreck) | 42, 59, 204 |
 | frozen-bubble (2x2, frozen bubble) | 33, 56 |
 | stepping-stones (2x2, stepping stones) | 223 |
-| dewdrops (2x2, dewdrops) | 196 |
+| dewdrops (2x2, dewdrops) | 196, 282 |
 | rowboat-lake (2x2, rowboat lake) | 143 |
 | glowing-waves (2x2, glowing waves) | 37, 54, 195 |
-| icy-berries (2x2, icy berries) | 52, 178 |
+| icy-berries (2x2, icy berries) | 52, 178, 273 |
 | snowy-pine (1x2, snowy pine) | 36, 201 |
-| hay-bales (2x1, hay bales) | 51, 141 |
-| tea-pourer (2x2, tea pourer) | 35, 172 |
-| candle-maker (2x2, candle maker) | 41, 149 |
+| hay-bales (2x1, hay bales) | 51, 141, 276 |
+| tea-pourer (2x2, tea pourer) | 35, 172, 270 |
+| candle-maker (2x2, candle maker) | 41, 149, 263 |
 | florist (2x2, florist) FLAGGED: don't use |  |
-| cobbler (2x2, cobbler) | 47, 191 |
+| cobbler (2x2, cobbler) | 47, 191, 285 |
 | violin-maker (2x2, violin maker) FLAGGED: don't use |  |
 | tailor (2x2, tailor) | 149 |
 | pizzaiolo (2x2, pizzaiolo) | 43, 58, 204 |
 | watering-garden (2x2, watering garden) |  |
 | rope-sailor (2x2, rope sailor) |  |
-| woodcarver (2x2, woodcarver) | 47, 139 |
+| woodcarver (2x2, woodcarver) | 47, 139, 256 |
 | shepherd-lambs (2x2, shepherd lambs) | 48 |
 | fruit-seller (2x2, fruit seller) | 213 |
-| feeding-ducks (2x2, feeding ducks) | 41, 121 |
+| feeding-ducks (2x2, feeding ducks) | 41, 121, 244 |
 | pier-fishing (2x2, pier fishing) |  |
 | high-diver (2x2, high diver) | 176 |
 | taiko (2x2, taiko) | 35, 54, 200 |
-| lumberjack (2x2, lumberjack) | 32, 145 |
+| lumberjack (2x2, lumberjack) | 32, 145, 260 |
 | weaver (2x2, weaver) FLAGGED: don't use |  |
 | pastry-chef (2x2, pastry chef) | 35, 55, 200 |
 | photographer (2x2, photographer) |  |
-| paper-boat (2x2, paper boat) | 49, 130 |
-| snowboarder (2x2, snowboarder) | 46, 136 |
-| swimmer (2x2, swimmer) | 40, 132 |
-| chess-move (2x2, chess move) | 44, 145 |
-| harpist (2x2, harpist) | 56, 193 |
+| paper-boat (2x2, paper boat) | 49, 130, 250 |
+| snowboarder (2x2, snowboarder) | 46, 136, 256 |
+| swimmer (2x2, swimmer) | 40, 132, 254 |
+| chess-move (2x2, chess move) | 44, 145, 260 |
+| harpist (2x2, harpist) | 56, 193, 295 |
 | double-bass (2x2, double bass) | 40, 55, 200 |
 | lantern-maker (2x2, lantern maker) |  |
-| mountain-biker (2x2, mountain biker) | 44, 189 |
+| mountain-biker (2x2, mountain biker) | 44, 189, 284 |
 | stilt-walker (1x2, stilt walker) | 51, 201 |
 | pole-vaulter (1x2, pole vaulter) FLAGGED: don't use |  |
 | rower-scull (2x1, rower scull) FLAGGED: don't use |  |
-| brass-compass (2x2, brass compass) | 50, 192 |
-| helicopter (2x2, helicopter) | 52, 128 |
+| brass-compass (2x2, brass compass) | 50, 192, 294 |
+| helicopter (2x2, helicopter) | 52, 128, 249 |
 | hovercraft (2x2, hovercraft) | 37, 56, 202 |
 | submarine (2x2, submarine) | 41, 60, 205 |
-| jet-ski (2x2, jet ski) | 34, 145 |
-| kick-scooter (2x2, kick scooter) | 147 |
-| tandem (2x2, tandem) | 32, 138 |
+| jet-ski (2x2, jet ski) | 34, 145, 260 |
+| kick-scooter (2x2, kick scooter) | 147, 288 |
+| tandem (2x2, tandem) | 32, 138, 255 |
 | river-raft (2x2, river raft) | 184 |
-| swan-pedalo (2x2, swan pedalo) | 42, 144 |
-| ferris-wheel (2x2, ferris wheel) | 39, 188 |
+| swan-pedalo (2x2, swan pedalo) | 42, 144, 259 |
+| ferris-wheel (2x2, ferris wheel) | 39, 188, 283 |
 | carousel-horse (2x2, carousel horse) | 60 |
-| harbour-buoy (2x2, harbour buoy) | 46, 140 |
+| harbour-buoy (2x2, harbour buoy) | 46, 140, 256 |
 | ships-wheel (2x2, ships wheel) | 33, 55, 202 |
-| life-ring (2x2, life ring) | 46, 190 |
-| deck-chair (2x2, deck chair) | 48, 127 |
-| camping-lantern (2x2, camping lantern) | 40, 124 |
+| life-ring (2x2, life ring) | 46, 190, 285 |
+| deck-chair (2x2, deck chair) | 48, 127, 249 |
+| camping-lantern (2x2, camping lantern) | 40, 124, 245 |
 | hiking-boots (2x2, hiking boots) | 37, 55, 200 |
-| backpack (2x2, backpack) | 49, 148 |
+| backpack (2x2, backpack) | 49, 148, 262 |
 | chairlift (2x2, chairlift) | 38, 54, 151, 226 |
-| icebreaker (2x2, icebreaker) | 52, 193 |
-| container-ship (2x2, container ship) | 152 |
-| combine (2x2, combine) | 48, 174 |
-| ice-cream-van (2x2, ice cream van) | 198 |
-| food-truck (2x2, food truck) | 49, 147 |
+| icebreaker (2x2, icebreaker) | 52, 193, 295 |
+| container-ship (2x2, container ship) | 152, 258 |
+| combine (2x2, combine) | 48, 174, 270 |
+| ice-cream-van (2x2, ice cream van) | 198, 282 |
+| food-truck (2x2, food truck) | 49, 147, 260 |
 | teardrop-caravan (2x2, teardrop caravan) | 38, 55, 200 |
 | dhow (2x2, dhow) | 50, 148 |
-| catamaran (2x2, catamaran) | 48, 142 |
+| catamaran (2x2, catamaran) | 48, 142, 258 |
 | snowmobile (2x2, snowmobile) | 230 |
-| monster-truck (2x2, monster truck) | 37, 54, 195 |
-| unicycle (2x2, unicycle) | 45, 136 |
-| propeller-plane (2x2, propeller plane) | 34, 54, 195 |
+| monster-truck (2x2, monster truck) | 37, 54, 195, 299 |
+| unicycle (2x2, unicycle) | 45, 136, 255 |
+| propeller-plane (2x2, propeller plane) | 34, 54, 195, 300 |
 | dog-sled (2x2, dog sled) FLAGGED: don't use |  |
 | hot-air-balloon (1x2, hot air balloon) | 51, 201 |
 | vintage-motorcycle (2x1, vintage motorcycle) | 36, 201 |
 | racing-car (2x1, racing car) | 51, 216 |
 | horse-carriage (2x1, horse carriage) | 51, 201 |
-| dovecote (2x2, dovecote) | 140 |
-| spiral-staircase (2x2, spiral staircase) | 39, 54, 194 |
-| grain-silos (2x2, grain silos) | 42, 189 |
-| geodesic-dome (2x2, geodesic dome) | 50, 123 |
+| dovecote (2x2, dovecote) | 140, 287 |
+| spiral-staircase (2x2, spiral staircase) | 39, 54, 194, 300 |
+| grain-silos (2x2, grain silos) | 42, 189, 283 |
+| geodesic-dome (2x2, geodesic dome) | 50, 123, 245 |
 | stilt-house (2x2, stilt house) | 60, 146 |
-| fire-lookout (2x2, fire lookout) | 42, 133 |
-| drawbridge (2x2, drawbridge) | 52, 144 |
+| fire-lookout (2x2, fire lookout) | 42, 133, 253 |
+| drawbridge (2x2, drawbridge) | 52, 144, 259 |
 | viaduct (2x2, viaduct) | 38, 54 |
 | chimney-pots (2x2, chimney pots) | 209 |
 | library-shelves (2x2, library shelves) | 195 |
-| garden-fountain (2x2, garden fountain) | 101, 166 |
-| a-frame-cabin (2x2, a frame cabin) | 42, 189 |
-| shepherds-hut (2x2, shepherds hut) | 129, 144 |
+| garden-fountain (2x2, garden fountain) | 101, 166, 267 |
+| a-frame-cabin (2x2, a frame cabin) | 42, 189, 285 |
+| shepherds-hut (2x2, shepherds hut) | 129, 144, 259 |
 | turf-house (2x2, turf house) | 14, 180 |
-| abbey-arch (2x2, abbey arch) | 50, 150 |
-| teahouse (2x2, teahouse) | 49, 145 |
+| abbey-arch (2x2, abbey arch) | 50, 150, 265 |
+| teahouse (2x2, teahouse) | 49, 145, 260 |
 | boathouse (2x2, red waterside) | 34 |
 | palace-window (2x2, palace window) | 169 |
-| skylight (2x2, skylight) | 47, 190 |
+| skylight (2x2, skylight) | 47, 190, 284 |
 | round-tower (2x2, round tower) | 32, 55, 195 |
 | potting-shed (2x2, potting shed) | 43, 58, 203 |
 | mailbox (2x2, mailbox) | 32, 58, 202 |
-| hedge-maze (2x2, hedge maze) |  |
+| hedge-maze (2x2, hedge maze) | 288 |
 | theatre-stage (2x2, theatre stage) | 40, 59, 204 |
 | fishing-shack (2x2, red waterside) | 39, 54 |
-| birdhouse (2x2, birdhouse) | 38, 55, 195 |
+| birdhouse (2x2, birdhouse) | 38, 55, 195, 300 |
 | red-cabin (2x2, red waterside) | 41, 58 |
 | lido (2x2, lido) | 71, 206 |
-| rondavel (2x2, rondavel) | 46, 138 |
+| rondavel (2x2, rondavel) | 46, 138, 255 |
 | porch-rocker (2x2, porch rocker) | 235 |
 | lamppost-snow (1x2, lamppost snow) | 36, 201 |
 | water-tower (1x2, water tower) | 36, 186 |
 | thatched-cottage (2x1, thatched cottage) | 36, 126 |
 | conservatory (2x1, conservatory) | 51, 126 |
-| toucan (2x2, toucan) | 49, 192 |
+| toucan (2x2, toucan) | 49, 192, 285 |
 | red-panda (2x2, red panda) | 35, 56, 200 |
 | sloth (2x2, sloth) | 35, 185 |
 | puffin (2x2, puffin) |  |
 | polar-bear (2x2, polar bear) | 45 |
 | hummingbird (2x2, hummingbird) | 228 |
-| octopus (2x2, octopus) | 42, 189 |
-| axolotl (2x2, axolotl) | 130 |
-| tree-frog (2x2, tree frog) | 33, 53, 194 |
-| ladybird (2x2, ladybird) | 50, 192 |
-| bumblebee (2x2, bumblebee) | 45, 135 |
-| monarch (2x2, monarch) | 158 |
+| octopus (2x2, octopus) | 42, 189, 284 |
+| axolotl (2x2, axolotl) | 130, 245 |
+| tree-frog (2x2, tree frog) | 33, 53, 194, 300 |
+| ladybird (2x2, ladybird) | 50, 192, 285 |
+| bumblebee (2x2, bumblebee) | 45, 135, 255 |
+| monarch (2x2, monarch) | 158, 263 |
 | snail (2x2, snail) | 40, 56, 200 |
-| goldfish (2x2, goldfish) | 35, 128 |
-| sea-turtle (2x2, sea turtle) | 45, 190 |
+| goldfish (2x2, goldfish) | 35, 128, 250 |
+| sea-turtle (2x2, sea turtle) | 45, 190, 284 |
 | lamb (2x2, lamb) | 48 |
-| alpaca (2x2, alpaca) | 40, 139 |
+| alpaca (2x2, alpaca) | 40, 139, 256 |
 | highland-cow (2x2, highland cow) | 57 |
-| piglet (2x2, piglet) | 44, 142 |
-| ducklings (2x2, ducklings) | 43, 137 |
-| kingfisher (2x2, kingfisher) | 32, 52, 194 |
+| piglet (2x2, piglet) | 44, 142, 257 |
+| ducklings (2x2, ducklings) | 43, 137, 257 |
+| kingfisher (2x2, kingfisher) | 32, 52, 194, 299 |
 | robin (2x2, robin) | 31, 58, 204 |
 | swan (2x2, swan) | 34, 59, 204 |
-| zebra (2x2, zebra) | 45, 125 |
+| zebra (2x2, zebra) | 45, 125, 286 |
 | baby-elephant (2x2, baby elephant) | 55 |
 | tiger (2x2, tiger) | 42, 59, 205 |
 | raccoon (2x2, raccoon) | 44, 60, 203 |
-| squirrel (2x2, squirrel) | 50, 129 |
-| dalmatian (2x2, dalmatian) | 52, 199 |
+| squirrel (2x2, squirrel) | 50, 129, 250 |
+| dalmatian (2x2, dalmatian) | 52, 199, 298 |
 | meerkat (1x2, meerkat) |  |
 | seahorse (1x2, seahorse) | 51, 216 |
 | ostrich (1x2, ostrich) | 36 |
@@ -804,20 +864,20 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | dogwood (2x2, dogwood) | 64, 79, 214 |
 | azaleas (2x2, azaleas) | 63, 84, 219 |
 | primroses (2x2, primroses) | 67, 82, 215 |
-| poinsettia (2x2, poinsettia) | 72, 153 |
+| poinsettia (2x2, poinsettia) | 72, 153, 265 |
 | heliconia (2x2, heliconia) FLAGGED: don't use |  |
-| gardenia (2x2, gardenia) | 65, 166 |
-| freesias (2x2, freesias) | 164 |
+| gardenia (2x2, gardenia) | 65, 166, 268 |
+| freesias (2x2, freesias) | 164, 266 |
 | tiger-lily (2x2, tiger lily) | 68, 83, 220 |
 | love-in-a-mist (2x2, love in a mist) | 74, 207 |
 | scabious (2x2, scabious) FLAGGED: don't use |  |
 | sweet-violets (2x2, sweet violets) FLAGGED: don't use |  |
-| petunias (2x2, petunias) | 63, 80, 170 |
-| begonias (2x2, begonias) | 68, 203 |
+| petunias (2x2, petunias) | 63, 80, 170, 292 |
+| begonias (2x2, begonias) | 68, 203, 299 |
 | bromeliad (2x2, bromeliad) | 63, 84, 221 |
 | bottlebrush (2x2, bottlebrush) | 77, 210 |
-| cockscomb (2x2, cockscomb) | 150 |
-| crown-imperial (2x2, crown imperial) | 170 |
+| cockscomb (2x2, cockscomb) | 150, 257 |
+| crown-imperial (2x2, crown imperial) | 170, 267 |
 | chamomile (2x2, chamomile) | 73, 90, 157, 227 |
 | borage (2x2, borage) FLAGGED: don't use |  |
 | grape-hyacinths (2x2, blue spikes) | 62, 82, 219 |
@@ -826,23 +886,23 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | lantana (2x2, lantana) | 78, 209 |
 | salvia (2x2, blue spikes) FLAGGED: don't use |  |
 | sundew (2x2, sundew) | 237 |
-| clivia (2x2, clivia) | 135 |
+| clivia (2x2, clivia) | 135, 248 |
 | buttercups (2x2, buttercups) | 61, 85, 222 |
-| statice (2x2, statice) | 77, 175 |
+| statice (2x2, statice) | 77, 175, 272 |
 | cotton-bolls (2x2, cotton bolls) | 75, 207 |
 | iceland-poppies (2x2, iceland poppies) | 61, 90, 225 |
-| asparagus (1x2, asparagus) | 126 |
+| asparagus (1x2, asparagus) | 126, 261 |
 | macarons (2x1, macarons) | 81, 156, 231 |
 | xylophone (2x1, xylophone) | 66, 216 |
-| cinnamon-rolls (2x2, cinnamon rolls) | 183 |
+| cinnamon-rolls (2x2, cinnamon rolls) | 183, 273 |
 | paella (2x2, paella) | 148 |
 | bagels (2x2, bagels) | 80, 213 |
-| olives (2x2, olives) | 73, 88, 164 |
+| olives (2x2, olives) | 73, 88, 164, 270 |
 | cupcakes (2x2, cupcakes) | 83, 153, 213 |
 | jam-jars (2x2, jam jars) | 67, 85, 155, 227 |
 | spaghetti (2x2, spaghetti) | 76, 210 |
 | tempura (2x2, tempura) | 72, 87, 155, 223 |
-| bao-buns (2x2, bao buns) | 62, 170 |
+| bao-buns (2x2, bao buns) | 62, 170, 269 |
 | mochi (2x2, mochi) | 61, 85, 219 |
 | persimmons (2x2, persimmons) | 150 |
 | blood-oranges (2x2, blood oranges) | 72, 89, 158, 224 |
@@ -852,7 +912,7 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | radishes (2x2, radishes) | 75, 207 |
 | pumpkins (2x2, pumpkins) | 207 |
 | pea-pod (2x2, pea pod) | 70, 89, 158, 225 |
-| cocoa-pod (2x2, cocoa pod) | 136 |
+| cocoa-pod (2x2, cocoa pod) | 136, 250 |
 | coffee-beans (2x2, coffee beans) | 69, 84, 154, 226 |
 | candy-apples (2x2, candy apples) | 64, 82, 218 |
 | gumball-machine (2x2, gumball machine) | 200 |
@@ -861,10 +921,10 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | empanadas (2x2, empanadas) | 78, 152, 213 |
 | ravioli (2x2, ravioli) | 61, 80, 215 |
 | scones (2x2, scones) | 67, 87, 220 |
-| snow-globe (2x2, snow globe) | 74, 206 |
+| snow-globe (2x2, snow globe) | 74, 206, 300 |
 | ship-in-bottle (2x2, ship in bottle) | 65, 82, 218 |
 | ukulele (2x2, ukulele) | 77, 209 |
-| jack-in-the-box (2x2, jack in the box) | 68, 84, 168 |
+| jack-in-the-box (2x2, jack in the box) | 68, 84, 168, 274 |
 | mortar-pestle (2x2, mortar pestle) | 64, 86, 155, 222 |
 | kelp-forest (1x2, kelp forest) | 81, 156, 231 |
 | saguaro (1x2, desert cactus) | 66, 216 |
@@ -874,11 +934,11 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | vineyard (2x2, vineyard) | 68 |
 | rice-paddies (2x2, rice paddies) | 71, 88 |
 | cypress-swamp (2x2, cypress swamp) | 65, 85, 154, 227 |
-| fern-forest (2x2, green forest) | 60, 195 |
+| fern-forest (2x2, green forest) | 60, 195, 295 |
 | aspen-grove (2x2, aspen grove) | 82, 213 |
 | cracked-earth (2x2, cracked ground) | 64, 89 |
-| hoarfrost (2x2, white snow) | 145 |
-| termite-mound (2x2, termite mound) | 60, 195 |
+| hoarfrost (2x2, white snow) | 145, 255 |
+| termite-mound (2x2, termite mound) | 60, 195, 294 |
 | saturn (2x2, space) | 68, 83, 217 |
 | nebula (2x2, space) | 79, 213 |
 | desert-bloom (2x2, wildflowers) |  |
@@ -897,15 +957,15 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | barrel-cacti (2x2, desert cactus) | 219 |
 | ski-tracks (2x2, white snow) | 63, 80, 217 |
 | sunbeam-forest (2x2, green forest) | 74, 89, 158, 224 |
-| zen-garden (2x2, zen garden) | 192 |
+| zen-garden (2x2, zen garden) | 192, 280 |
 | palm-moonrise (2x2, palm moonrise) | 63, 88, 155, 222 |
 | pop-sunset (2x2, pop sunset) | 213 |
 | windmill (1x2, windmill) | 66 |
-| container-house (1x2, container house) | 66, 156 |
+| container-house (1x2, container house) | 66, 156, 291 |
 | station-roof (2x1, iron glass) | 81, 156, 231 |
 | arch-bridge (2x1, arch bridge) | 81, 156, 231 |
 | hanok-eaves (2x2, hanok eaves) | 73, 208 |
-| gazebo (2x2, gazebo) | 153 |
+| gazebo (2x2, gazebo) | 153, 260 |
 | pergola (2x2, pergola) | 72, 88, 223 |
 | brownstone (2x2, brick city) | 86 |
 | fire-escape (2x2, brick city) | 70, 85 |
@@ -916,10 +976,10 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | horreo (2x2, horreo) | 73, 205 |
 | oast-house (2x2, oast house) | 70, 88, 155, 223 |
 | zigzag-bridge (2x2, zigzag bridge) | 76, 208 |
-| door-knocker (2x2, door knocker) | 155 |
+| door-knocker (2x2, door knocker) | 155, 259 |
 | weathervane (2x2, weathervane) | 73, 90, 157, 225 |
-| blue-shutters (2x2, blue shutters) | 44, 190 |
-| iron-gate (2x2, iron gate) | 52, 192 |
+| blue-shutters (2x2, blue shutters) | 44, 190, 284 |
+| iron-gate (2x2, iron gate) | 52, 192, 285 |
 | tiled-stairs (2x2, tiled stairs) | 218 |
 | glass-arcade (2x2, iron glass) | 198 |
 | stone-well (2x2, stone well) | 71, 89, 158, 223 |
@@ -933,25 +993,25 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | town-square (2x2, town square) | 212 |
 | painted-facade (2x2, painted facade) | 78, 210 |
 | tiled-fountain (2x2, tiled fountain) | 75, 207 |
-| lattice-window (2x2, lattice window) | 133, 148 |
-| jellyfish (1x2, jellyfish) | 66, 171 |
+| lattice-window (2x2, lattice window) | 133, 148, 262 |
+| jellyfish (1x2, jellyfish) | 66, 171, 291 |
 | red-crowned-crane (1x2, red crowned crane) | 66, 216 |
 | dolphin (2x1, dolphin) | 81, 156, 231 |
-| cheetah (2x1, cheetah) | 66 |
-| lynx (2x2, snow cat) | 178 |
+| cheetah (2x1, cheetah) | 66, 291 |
+| lynx (2x2, snow cat) | 178, 290 |
 | wolf (2x2, wolf) | 68, 86, 222 |
 | bison (2x2, bison) | 61, 195 |
 | beaver (2x2, beaver) | 69, 84, 220 |
 | narwhal (2x2, narwhal) | 73, 88, 155, 223 |
-| manta-ray (2x2, manta ray) | 138 |
+| manta-ray (2x2, manta ray) | 138, 252 |
 | clownfish (2x2, clownfish) | 71, 86, 221 |
 | walrus (2x2, walrus) | 74, 89, 159, 223 |
 | seal-pup (2x2, seal pup) | 70, 87 |
 | pelican (2x2, pelican) | 72, 205 |
-| cockatoo (2x2, cockatoo) | 62, 195 |
+| cockatoo (2x2, cockatoo) | 62, 195, 297 |
 | hoopoe (2x2, hoopoe) | 75, 209 |
 | bee-eater (2x2, bee eater) | 75, 208 |
-| mandarin-duck (2x2, mandarin duck) | 73, 206 |
+| mandarin-duck (2x2, mandarin duck) | 73, 206, 300 |
 | kangaroo (2x2, kangaroo) | 62 |
 | quokka (2x2, quokka) | 75 |
 | lemur (2x2, lemur) | 74, 90, 159, 224 |
@@ -964,11 +1024,11 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | mountain-goat (2x2, mountain goat) | 63, 82, 217 |
 | donkey (2x2, donkey) | 69 |
 | hare (2x2, hare) | 79, 212 |
-| armadillo (2x2, armadillo) | 68, 176 |
+| armadillo (2x2, armadillo) | 68, 176, 272 |
 | pangolin (2x2, pangolin) | 68, 85, 221 |
-| gecko (2x2, gecko) | 199 |
+| gecko (2x2, gecko) | 199, 285 |
 | blue-morpho (2x2, blue morpho) | 65, 84, 220 |
-| corgi (2x2, corgi) | 73, 89, 159 |
+| corgi (2x2, corgi) | 73, 89, 159, 267 |
 | bagpiper (1x2, bagpiper) | 81, 156, 231 |
 | window-cleaner (1x2, window cleaner) FLAGGED: don't use |  |
 | curler (2x1, curler) | 66, 216 |
@@ -980,9 +1040,9 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | barista (2x2, barista) | 62, 85, 221 |
 | ice-fisher (2x2, ice fisher) |  |
 | dog-walker (2x2, dog walker) |  |
-| kite-flyer (2x2, kite flyer) | 79, 154 |
+| kite-flyer (2x2, kite flyer) | 79, 154, 265 |
 | mail-carrier (2x2, mail carrier) | 64, 83, 218 |
-| tap-dancer (2x2, tap dancer) | 65, 202 |
+| tap-dancer (2x2, tap dancer) | 65, 202, 300 |
 | breakdancer (2x2, breakdancer) FLAGGED: don't use |  |
 | gymnast (2x2, gymnast) | 70, 90, 157, 225 |
 | archer (2x2, archer) | 78, 212 |
@@ -991,14 +1051,14 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | scuba-diver (2x2, scuba diver) FLAGGED: don't use |  |
 | sledding (2x2, snow kids) | 69, 86, 222 |
 | snowman-builders (2x2, snow kids) | 71, 205 |
-| tai-chi (2x2, tai chi) | 74, 90, 160 |
+| tai-chi (2x2, tai chi) | 74, 90, 160, 269 |
 | show-jumper (2x2, show jumper) | 67, 84, 220 |
 | cabinetmaker (2x2, cabinetmaker) |  |
 | stonemason (2x2, stonemason) |  |
 | thatcher (2x2, thatcher) | 68 |
 | fishmonger (2x2, fishmonger) | 205 |
 | noodle-maker (2x2, noodle maker) | 65, 89, 224 |
-| falconer (2x2, falconer) | 173 |
+| falconer (2x2, falconer) | 173, 266 |
 | microscope (2x2, microscope) | 63, 80, 215 |
 | quilter (2x2, quilter) FLAGGED: don't use |  |
 | puppeteer (2x2, puppeteer) | 70, 90, 157, 225 |
@@ -1007,116 +1067,116 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | rocket (1x2, rocket) | 66, 216 |
 | plane-window (2x1, plane window) | 81, 231 |
 | floating-market (2x1, floating market) | 81 |
-| glider (2x2, sky plane) | 124, 174 |
-| paraglider (2x2, paraglider) | 67, 204 |
+| glider (2x2, sky plane) | 124, 174, 273 |
+| paraglider (2x2, paraglider) | 67, 204, 300 |
 | airliner (2x2, sky plane) | 182 |
 | lifeboat (2x2, lifeboat) | 76, 209 |
 | monorail (2x2, monorail) | 69, 88, 168 |
 | handcar (2x2, handcar) | 62, 84, 220 |
 | caboose (2x2, red railcar) | 72, 87, 158, 224 |
 | picnic-basket (2x2, picnic basket) | 232 |
-| snorkel-mask (2x2, snorkel mask) | 189 |
+| snorkel-mask (2x2, snorkel mask) | 189, 293 |
 | flip-flops (2x2, flip flops) | 78, 209 |
 | cargo-bike (2x2, cargo bike) | 73, 90, 158, 225 |
-| toboggan (2x2, toboggan) | 58, 194 |
+| toboggan (2x2, toboggan) | 58, 194, 295 |
 | snowshoes (2x2, snowshoes) | 70, 86, 221 |
 | anchor (2x2, anchor) | 75, 207 |
 | dining-car (2x2, dining car) | 151 |
 | bumper-cars (2x2, bumper cars) | 179 |
 | teacup-ride (2x2, teacup ride) | 70, 211 |
-| swing-ride (2x2, swing ride) |  |
+| swing-ride (2x2, swing ride) | 287 |
 | water-slide (2x2, water slide) | 80, 153, 214 |
 | go-kart (2x2, go kart) | 67, 82, 218 |
 | beach-buggy (2x2, beach buggy) | 74, 90, 159, 225 |
 | tuk-tuk (2x2, tuk tuk) | 235 |
 | parachute (2x2, parachute) | 76, 208 |
 | surfboards (2x2, surfboards) | 69, 85, 221 |
-| beach-ball (2x2, beach ball) | 123, 177 |
+| beach-ball (2x2, beach ball) | 123, 177, 292 |
 | thermos (2x2, thermos) | 77, 210 |
-| rack-railway (2x2, red railcar) | 197 |
+| rack-railway (2x2, red railcar) | 197, 283 |
 | pedal-car (2x2, pedal car) | 70, 85, 222 |
 | sleigh (2x2, sleigh) | 62, 83, 218 |
 | dragon-boat (2x2, dragon boat) | 181 |
-| land-yacht (2x2, land yacht) | 61, 195 |
+| land-yacht (2x2, land yacht) | 61, 195, 297 |
 | sweet-william (2x2, sweet william) FLAGGED: don't use |  |
 | flame-lily (2x2, flame lily) | 75, 208 |
 | agapanthus (2x2, agapanthus) FLAGGED: don't use |  |
-| brioche (2x2, brioche) | 10, 178 |
-| pistachios (2x2, pistachios) | 142 |
+| brioche (2x2, brioche) | 10, 178, 292 |
+| pistachios (2x2, pistachios) | 142, 252 |
 | kumquats (2x2, kumquats) | 75, 207 |
 | abacus (2x2, abacus) | 90, 217 |
 | foxtails (2x2, golden wheat) | 50 |
 | switchbacks (2x2, switchbacks) | 40 |
-| river-meander (2x2, river meander) | 20, 138 |
+| river-meander (2x2, river meander) | 20, 138, 255 |
 | carved-door (2x2, carved door) | 90, 217 |
-| window-seat (2x2, window seat) | 20, 181 |
-| dormer-roof (2x2, dormer roof) | 45, 177 |
-| pufferfish (2x2, pufferfish) | 187 |
-| dormouse (2x2, dormouse) | 10, 179 |
-| tamarin (2x2, tamarin) | 65, 203 |
-| farrier (2x2, farrier) | 85, 152 |
+| window-seat (2x2, window seat) | 20, 181, 277 |
+| dormer-roof (2x2, dormer roof) | 45, 177, 273 |
+| pufferfish (2x2, pufferfish) | 187, 292 |
+| dormouse (2x2, dormouse) | 10, 179, 275 |
+| tamarin (2x2, tamarin) | 65, 203, 299 |
+| farrier (2x2, farrier) | 85, 152, 265 |
 | hairdresser (2x2, hairdresser) FLAGGED: don't use |  |
-| seedlings (2x2, seedlings) | 60, 194 |
-| luggage-trolley (2x2, luggage trolley) | 30, 135 |
+| seedlings (2x2, seedlings) | 60, 194, 294 |
+| luggage-trolley (2x2, luggage trolley) | 30, 135, 254 |
 | beach-hat (2x2, beach hat) | 90, 166, 219 |
-| satchel (2x2, satchel) | 10, 198 |
+| satchel (2x2, satchel) | 10, 198, 298 |
 | fritillary (2x2, fritillary) FLAGGED: don't use |  |
-| nerine (2x2, nerine) | 60, 127 |
-| rhubarb (2x2, rhubarb) | 125, 175 |
-| eclairs (2x2, eclairs) | 182 |
+| nerine (2x2, nerine) | 60, 127, 250 |
+| rhubarb (2x2, rhubarb) | 125, 175, 290 |
+| eclairs (2x2, eclairs) | 182, 290 |
 | hazelnuts (2x2, hazelnuts) | 30, 123 |
 | sextant (2x2, sextant) | 107, 163, 230 |
-| juniper (2x2, juniper) | 90, 152 |
-| flax-field (2x2, flax field) | 30, 185 |
-| stile (2x2, stile) | 60, 134 |
+| juniper (2x2, juniper) | 90, 152, 265 |
+| flax-field (2x2, flax field) | 30, 185, 281 |
+| stile (2x2, stile) | 60, 134, 254 |
 | clay-oven (2x2, clay oven) | 90, 153, 217 |
-| frilled-lizard (2x2, frilled lizard) | 30, 184 |
-| stag-beetle (2x2, stag beetle) | 175 |
-| wren (2x2, wren) | 60, 146 |
+| frilled-lizard (2x2, frilled lizard) | 30, 184, 280 |
+| stag-beetle (2x2, stag beetle) | 175, 268 |
+| wren (2x2, wren) | 60, 146, 289 |
 | cooper (2x2, cooper) FLAGGED: don't use |  |
-| skipping (2x2, skipping) | 60, 129 |
-| moped (2x2, moped) | 30, 137 |
-| brugmansia (1x2, brugmansia) | 141 |
-| lobelia (2x1, lobelia) | 96, 171 |
-| verbena (2x2, verbena) | 93, 119 |
+| skipping (2x2, skipping) | 60, 129, 252 |
+| moped (2x2, moped) | 30, 137, 255 |
+| brugmansia (1x2, brugmansia) | 141, 276 |
+| lobelia (2x1, lobelia) | 96, 171, 291 |
+| verbena (2x2, verbena) | 93, 119, 242 |
 | lisianthus (2x2, lisianthus) | 104, 162, 229 |
-| gaillardia (2x2, gaillardia) | 197 |
-| ixora (2x2, ixora) | 104, 120 |
+| gaillardia (2x2, gaillardia) | 197, 283 |
+| ixora (2x2, ixora) | 104, 120, 243 |
 | plumbago (2x2, plumbago) | 91, 154, 219 |
-| canna (2x2, canna) | 196 |
+| canna (2x2, canna) | 196, 293 |
 | stocks (2x2, stocks) | 101, 159, 225 |
-| gazania (2x2, gazania) | 108, 164 |
+| gazania (2x2, gazania) | 108, 164, 267 |
 | osteospermum (2x2, osteospermum) FLAGGED: don't use |  |
 | echinops (2x2, echinops) | 107, 162, 230 |
-| astrantia (2x2, astrantia) | 109, 175 |
-| campsis (2x2, campsis) | 101, 119 |
-| kniphofia (1x2, kniphofia) | 96 |
+| astrantia (2x2, astrantia) | 109, 175, 272 |
+| campsis (2x2, campsis) | 101, 119, 242 |
+| kniphofia (1x2, kniphofia) | 96, 246 |
 | quince-blossom (2x2, quince blossom) | 95, 113, 238 |
 | cymbidium (2x2, cymbidium) | 107, 170, 232 |
-| waratah (2x2, waratah) | 103, 118 |
-| desert-pea (2x2, desert pea) | 98, 166 |
+| waratah (2x2, waratah) | 103, 118, 241 |
+| desert-pea (2x2, desert pea) | 98, 166, 268 |
 | craspedia (2x2, craspedia) | 104, 160, 229 |
 | calendula (2x2, calendula) | 103, 160, 230 |
 | meconopsis (2x2, meconopsis) | 105, 161, 229 |
 | hemerocallis (2x2, hemerocallis) | 110, 165, 234 |
 | moonflower (2x2, moonflower) | 99, 115, 239 |
-| jasmine (2x2, jasmine) | 102, 120 |
-| oleander (2x2, oleander) | 177 |
+| jasmine (2x2, jasmine) | 102, 120, 244 |
+| oleander (2x2, oleander) | 177, 290 |
 | hoya (2x2, hoya) | 93, 112, 238 |
 | asters (2x2, asters) | 95, 112, 237 |
 | goldenrod (2x2, goldenrod) | 229 |
-| armeria (2x2, armeria) | 100, 119 |
+| armeria (2x2, armeria) | 100, 119, 243 |
 | gorse (2x2, gorse) FLAGGED: don't use |  |
-| clover (2x2, clover) | 197 |
+| clover (2x2, clover) | 197, 283 |
 | aloe-bloom (2x2, aloe bloom) | 98, 114, 240 |
-| croquembouche (1x2, croquembouche) | 111 |
-| madeleines (2x1, madeleines) | 111 |
-| dominoes (2x1, dominoes) | 111 |
+| croquembouche (1x2, croquembouche) | 111, 261 |
+| madeleines (2x1, madeleines) | 111, 261 |
+| dominoes (2x1, dominoes) | 111, 246 |
 | sourdough (2x2, sourdough) | 109, 169, 234 |
-| focaccia (2x2, focaccia) | 197 |
+| focaccia (2x2, focaccia) | 197, 281 |
 | pierogi (2x2, pierogi) | 104, 161, 230 |
 | tamales (2x2, tamales) | 105, 160, 230 |
-| arepas (2x2, arepas) | 91, 120 |
+| arepas (2x2, arepas) | 91, 120, 244 |
 | pasteis-de-nata (2x2, pasteis de nata) | 100, 159, 225 |
 | pavlova (2x2, pavlova) | 91, 215 |
 | lamingtons (2x2, lamingtons) | 105, 169, 230 |
@@ -1126,68 +1186,68 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | creme-brulee (2x2, creme brulee) | 92, 112, 237 |
 | onigiri (2x2, onigiri) | 94, 110, 237 |
 | takoyaki (2x2, takoyaki) | 103, 160, 229 |
-| dango (2x2, dango) | 97, 113, 177 |
-| pho (2x2, pho) | 124, 145 |
+| dango (2x2, dango) | 97, 113, 177, 280 |
+| pho (2x2, pho) | 124, 145, 260 |
 | bibimbap (2x2, bibimbap) | 193 |
-| nachos (2x2, nachos) | 176 |
+| nachos (2x2, nachos) | 176, 268 |
 | crepes (2x2, crepes) | 105, 172, 229 |
-| fudge (2x2, fudge) | 113, 165 |
+| fudge (2x2, fudge) | 113, 165, 267 |
 | liquorice (2x2, liquorice) | 108, 163, 235 |
 | papaya (2x2, papaya) | 91, 113, 239 |
 | jackfruit (2x2, jackfruit) | 103, 160, 228 |
 | rambutan (2x2, rambutan) | 97, 112, 236 |
-| gooseberries (2x2, gooseberries) | 105, 120 |
+| gooseberries (2x2, gooseberries) | 105, 120, 241 |
 | romanesco (2x2, romanesco) | 95, 114, 240 |
 | aubergines (2x2, aubergines) | 92, 110, 236 |
 | banjo (2x2, banjo) | 109, 164, 234 |
 | magnifying-glass (2x2, magnifying glass) | 106, 163, 229 |
 | marbles (2x2, marbles) | 95, 114, 239 |
-| inkwell (2x2, inkwell) | 97, 120 |
-| lemonade (2x2, lemonade) | 102, 170 |
+| inkwell (2x2, inkwell) | 97, 120, 244 |
+| lemonade (2x2, lemonade) | 102, 170, 290 |
 | jungle-vines (1x2, jungle vines) | 111 |
-| gum-trees (1x2, gum trees) | 111 |
-| milky-way (2x1, night sky) | 96 |
+| gum-trees (1x2, gum trees) | 111, 246 |
+| milky-way (2x1, night sky) | 96, 246 |
 | alpenglow (2x1, alpenglow) | 96, 201 |
-| shooting-stars (2x2, night sky) | 188 |
+| shooting-stars (2x2, night sky) | 188, 278 |
 | eclipse (2x2, space) | 92, 154, 226 |
 | jupiter (2x2, space) | 100, 166, 225 |
-| moss-carpet (2x2, moss carpet) | 98, 117, 169 |
+| moss-carpet (2x2, moss carpet) | 98, 117, 169, 274 |
 | beech-woods (2x2, beech woods) |  |
-| date-palms (2x2, date palms) | 94, 166 |
-| outback-track (2x2, outback) | 98, 116, 165 |
+| date-palms (2x2, date palms) | 94, 166, 267 |
+| outback-track (2x2, outback) | 98, 116, 165, 271 |
 | spinifex (2x2, spinifex) | 103, 160, 228 |
 | pampas-grass (2x2, tall grass) | 166 |
-| fogbow (2x2, fogbow) | 98, 114, 175 |
-| tumbleweed (2x2, tumbleweed) | 94, 175 |
-| frosty-meadow (2x2, winter fog) | 99, 118 |
+| fogbow (2x2, fogbow) | 98, 114, 175, 280 |
+| tumbleweed (2x2, tumbleweed) | 94, 175, 271 |
+| frosty-meadow (2x2, winter fog) | 99, 118, 241 |
 | winter-fog (2x2, winter fog) | 108, 163, 233 |
 | driftwood (2x2, driftwood) |  |
-| sea-glass (2x2, sea glass) | 197 |
+| sea-glass (2x2, sea glass) | 197, 282 |
 | opal (2x2, gemstone) | 108, 163, 233 |
 | malachite (2x2, gemstone) | 115, 174, 235 |
-| ammonite (2x2, ammonite) | 118, 172 |
-| snow-gums (2x2, gum trees) | 100, 117, 178 |
+| ammonite (2x2, ammonite) | 118, 172, 270 |
+| snow-gums (2x2, gum trees) | 100, 117, 178, 281 |
 | bluebonnets (2x2, bluebonnets) FLAGGED: don't use |  |
-| ripples (2x2, ripples) | 100, 116, 165 |
+| ripples (2x2, ripples) | 100, 116, 165, 271 |
 | reed-bed (2x2, tall grass) | 217 |
-| glowworm-cave (2x2, night sky) | 103, 180 |
+| glowworm-cave (2x2, night sky) | 103, 180, 279 |
 | autumn-treetops (2x2, autumn treetops) FLAGGED: don't use |  |
 | sunrays (2x2, sunrays) | 97, 114, 239 |
-| monsoon-rain (2x2, monsoon rain) | 104, 119 |
+| monsoon-rain (2x2, monsoon rain) | 104, 119, 243 |
 | mirage (2x2, outback) | 91, 110, 235 |
 | waterspout (2x2, waterspout) | 97, 115, 240 |
 | hedgerow (2x2, hedgerow) FLAGGED: don't use |  |
 | islet (2x2, islet) | 101, 120 |
-| windpump (1x2, windpump) | 111 |
-| chandelier (1x2, chandelier) | 96 |
-| colonnade (2x1, colonnade) | 96 |
+| windpump (1x2, windpump) | 111, 246 |
+| chandelier (1x2, chandelier) | 96, 246 |
+| colonnade (2x1, colonnade) | 96, 246 |
 | shophouses (2x1, shophouses) |  |
-| queenslander (2x2, verandah) | 197 |
+| queenslander (2x2, verandah) | 197, 284 |
 | shearing-shed (2x2, shearing shed) | 100, 115, 239 |
-| estancia (2x2, ranch house) | 98, 115, 165 |
+| estancia (2x2, ranch house) | 98, 115, 165, 271 |
 | lacework-verandah (2x2, verandah) | 108, 164, 232 |
 | rotunda (2x2, rotunda) | 98, 117, 240 |
-| bothy (2x2, bothy) | 91, 119 |
+| bothy (2x2, bothy) | 91, 119, 243 |
 | pavilion (2x2, pavilion) | 100, 116 |
 | loggia (2x2, loggia) | 95, 116, 240 |
 | deco-facade (2x2, deco facade) | 105, 120 |
@@ -1200,41 +1260,41 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | beach-cabana (2x2, beach thatch) | 106, 162, 232 |
 | overwater-bungalow (2x2, beach thatch) | 107, 161, 233 |
 | beehive-hut (2x2, beehive hut) | 194 |
-| white-gables (2x2, white gables) | 92, 120 |
-| promenade-shelter (2x2, promenade shelter) | 98, 116, 175 |
+| white-gables (2x2, white gables) | 92, 120, 244 |
+| promenade-shelter (2x2, promenade shelter) | 98, 116, 175, 280 |
 | rooftop-garden (2x2, rooftop garden) | 226 |
-| rainwater-tank (2x2, rainwater tank) | 116, 170 |
+| rainwater-tank (2x2, rainwater tank) | 116, 170, 270 |
 | ranch-gate (2x2, ranch gate) | 110, 167, 235 |
 | hacienda (2x2, ranch house) | 95, 113, 238 |
 | folly (2x2, rotunda) | 102, 167, 227 |
 | inglenook (2x2, inglenook) | 99, 169, 225 |
 | grand-stairway (2x2, grand stairway) FLAGGED: don't use |  |
 | hammam (2x2, hammam) | 99, 167, 225 |
-| boulevard (2x2, boulevard) | 93, 155 |
-| metro-station (2x2, metro station) | 91, 154 |
-| lyrebird (1x2, lyrebird) | 111 |
+| boulevard (2x2, boulevard) | 93, 155, 265 |
+| metro-station (2x2, metro station) | 91, 154, 265 |
+| lyrebird (1x2, lyrebird) | 111, 261 |
 | stork (1x2, stork) | 111 |
-| condor (2x1, raptor) | 96, 171 |
-| dragonfly (2x1, dragonfly) | 111 |
+| condor (2x1, raptor) | 96, 171, 291 |
+| dragonfly (2x1, dragonfly) | 111, 246 |
 | wombat (2x2, wombat) | 94, 154, 220 |
-| echidna (2x2, echidna) | 97, 117, 178 |
-| platypus (2x2, platypus) | 107, 163 |
-| tasmanian-devil (2x2, tasmanian devil) | 102, 117, 172 |
+| echidna (2x2, echidna) | 97, 117, 178, 283 |
+| platypus (2x2, platypus) | 107, 163, 267 |
+| tasmanian-devil (2x2, tasmanian devil) | 102, 117, 172, 277 |
 | emu (2x2, ratite) | 236 |
-| cassowary (2x2, ratite) | 105, 120 |
+| cassowary (2x2, ratite) | 105, 120, 243 |
 | kookaburra (2x2, kookaburra) | 104, 161, 228 |
 | lorikeet (2x2, parrot) | 99, 158, 228 |
-| sugar-glider (2x2, sugar glider) | 105, 167 |
-| anteater (2x2, anteater) | 109, 173 |
+| sugar-glider (2x2, sugar glider) | 105, 167, 269 |
+| anteater (2x2, anteater) | 109, 173, 270 |
 | mara (2x2, mara) | 93, 115, 240 |
-| vizcacha (2x2, vizcacha) | 103, 120 |
+| vizcacha (2x2, vizcacha) | 103, 120, 244 |
 | tapir (2x2, tapir) | 221 |
 | siamese-cat (2x2, siamese cat) | 107, 215 |
 | border-collie (2x2, border collie) | 102, 160, 228 |
-| poodle (2x2, poodle) | 100, 118 |
-| guinea-pig (2x2, guinea pig) | 105, 120 |
-| budgies (2x2, parrot) | 130, 149 |
-| golden-eagle (2x2, raptor) | 155 |
+| poodle (2x2, poodle) | 100, 118, 242 |
+| guinea-pig (2x2, guinea pig) | 105, 120, 245 |
+| budgies (2x2, parrot) | 130, 149, 264 |
+| golden-eagle (2x2, raptor) | 155, 263 |
 | scarlet-ibis (2x2, scarlet ibis) | 109, 172, 234 |
 | toad (2x2, toad) | 106, 162, 230 |
 | fire-salamander (2x2, fire salamander) | 109, 173, 234 |
@@ -1244,254 +1304,254 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | swallowtail (2x2, wings) | 99, 167, 225 |
 | atlas-moth (2x2, wings) | 106, 162, 232 |
 | fruit-bat (2x2, fruit bat) | 114, 173, 235 |
-| gorilla (2x2, gorilla) | 97, 119 |
-| badger (2x2, badger) | 103, 118 |
+| gorilla (2x2, gorilla) | 97, 119, 242 |
+| badger (2x2, badger) | 103, 118, 243 |
 | pixel-pheasant (2x2, pixel pheasant) | 107, 214 |
-| tango (1x2, tango) | 96 |
+| tango (1x2, tango) | 96, 246 |
 | chimney-sweep (1x2, chimney sweep) | 96, 171 |
-| polo-player (2x1, polo player) | 111 |
+| polo-player (2x1, polo player) | 111, 261 |
 | gaucho (2x2, gaucho) |  |
 | surf-lifesaver (2x2, surf lifesaver) | 120 |
-| shearer (2x2, shearer) | 138 |
+| shearer (2x2, shearer) | 138, 287 |
 | asador (2x2, asador) FLAGGED: don't use |  |
-| skateboarder (2x2, skating) | 93, 118 |
-| rollerskater (2x2, skating) | 196 |
-| hula-hoop (2x2, hula hoop) | 140 |
-| cheesemaker (2x2, cheesemaker) | 102, 119 |
-| pasta-maker (2x2, dough hands) | 107, 170 |
+| skateboarder (2x2, skating) | 93, 118, 241 |
+| rollerskater (2x2, skating) | 196, 283 |
+| hula-hoop (2x2, hula hoop) | 140, 253 |
+| cheesemaker (2x2, cheesemaker) | 102, 119, 286 |
+| pasta-maker (2x2, dough hands) | 107, 170, 270 |
 | tortilla-maker (2x2, dough hands) | 109, 164, 233 |
-| coffee-roaster (2x2, coffee roaster) | 177 |
+| coffee-roaster (2x2, coffee roaster) | 177, 268 |
 | grape-picker (2x2, grape picker) FLAGGED: don't use |  |
 | milking (2x2, milking) |  |
 | dog-groomer (2x2, dog groomer) |  |
 | hockey-player (2x2, hockey player) | 92, 167, 219 |
-| sprinter (2x2, sprinter) | 104, 120 |
+| sprinter (2x2, sprinter) | 104, 120, 243 |
 | golfer (2x2, golfer) |  |
 | cricketer (2x2, cricketer) | 110, 174, 235 |
 | karate (2x2, karate) | 93, 115, 240 |
 | dressmaker (2x2, dressmaker) FLAGGED: don't use |  |
 | milliner (2x2, milliner) |  |
-| glazier (2x2, glazier) | 193 |
+| glazier (2x2, glazier) | 193, 293 |
 | mosaic-artist (2x2, mosaic artist) |  |
 | woodturner (2x2, woodturner) | 97, 114, 239 |
 | wheelwright (2x2, wheelwright) | 97, 112, 237 |
 | bricklayer (2x2, bricklayer) FLAGGED: don't use |  |
 | kite-maker (2x2, kite maker) | 192 |
 | toymaker (2x2, toymaker) | 233 |
-| beachcomber (2x2, beachcomber) | 101, 160 |
-| birdwatcher (2x2, birdwatcher) | 173 |
+| beachcomber (2x2, beachcomber) | 101, 160, 266 |
+| birdwatcher (2x2, birdwatcher) | 173, 267 |
 | cellar-singer (2x2, cellar singer) | 94, 118, 240 |
-| zip-line (1x2, zip line) | 111 |
+| zip-line (1x2, zip line) | 111, 261 |
 | road-train (2x1, road train) | 96, 171 |
-| freight-train (2x1, freight train) | 96 |
-| rooftop-tent (2x2, rooftop tent) | 110, 165 |
-| ferry (2x2, ferry) | 94, 118 |
-| outrigger (2x2, paddle boat) | 202 |
-| kayak (2x2, paddle boat) | 94, 169 |
-| windsurfer (2x2, sail) | 93, 115, 176 |
+| freight-train (2x1, freight train) | 96, 246 |
+| rooftop-tent (2x2, rooftop tent) | 110, 165, 268 |
+| ferry (2x2, ferry) | 94, 118, 241 |
+| outrigger (2x2, paddle boat) | 202, 295 |
+| kayak (2x2, paddle boat) | 94, 169, 269 |
+| windsurfer (2x2, sail) | 93, 115, 176, 281 |
 | lunar-lander (2x2, spacecraft) | 108, 162, 233 |
 | satellite (2x2, spacecraft) | 109, 164, 234 |
-| trolleybus (2x2, bus) | 106, 170 |
-| vintage-coach (2x2, bus) | 93, 117, 168 |
+| trolleybus (2x2, bus) | 106, 170, 290 |
+| vintage-coach (2x2, bus) | 93, 117, 168, 272 |
 | bobsleigh (2x2, bobsleigh) | 98, 113, 238 |
-| quad-bike (2x2, quad bike) | 172 |
-| gyrocopter (2x2, gyrocopter) | 164 |
+| quad-bike (2x2, quad bike) | 172, 266 |
+| gyrocopter (2x2, gyrocopter) | 164, 290 |
 | microcar (2x2, microcar) | 99, 114, 238 |
-| pickup-truck (2x2, pickup truck) | 102, 117, 174 |
-| steam-roller (2x2, steam roller) | 196 |
+| pickup-truck (2x2, pickup truck) | 102, 117, 174, 279 |
+| steam-roller (2x2, steam roller) | 196, 283 |
 | digger (2x2, construction) | 108, 162, 233 |
-| cement-mixer (2x2, construction) | 102, 160 |
+| cement-mixer (2x2, construction) | 102, 160, 266 |
 | pirate-ship-ride (2x2, pirate ship ride) | 199 |
 | log-flume (2x2, log flume) FLAGGED: don't use |  |
-| sleeping-bag (2x2, sleeping bag) | 92, 120 |
+| sleeping-bag (2x2, sleeping bag) | 92, 120, 245 |
 | camping-stove (2x2, camping stove) | 227 |
 | beach-umbrella (2x2, beach umbrella) | 100, 115, 240 |
-| bucket-spade (2x2, bucket spade) | 95, 113, 165 |
-| jetpack (2x2, jetpack) | 40, 188 |
+| bucket-spade (2x2, bucket spade) | 95, 113, 165, 272 |
+| jetpack (2x2, jetpack) | 40, 188, 283 |
 | trawler (2x2, trawler) | 95, 110, 236 |
-| hydrofoil (2x2, hydrofoil) | 99, 116, 172 |
+| hydrofoil (2x2, hydrofoil) | 99, 116, 172, 278 |
 | golf-cart (2x2, golf cart) | 108, 163, 233 |
-| dragster (2x2, dragster) | 24, 183 |
-| train-set (2x2, train set) | 104, 120 |
-| spinnaker (2x2, sail) | 101, 118 |
-| tricycle (2x2, tricycle) | 102, 117, 173 |
+| dragster (2x2, dragster) | 24, 183, 279 |
+| train-set (2x2, train set) | 104, 120, 242 |
+| spinnaker (2x2, sail) | 101, 118, 242 |
+| tricycle (2x2, tricycle) | 102, 117, 173, 279 |
 | drone (2x2, drone) | 105, 168, 232 |
-| rose (2x2, rose) | 134 |
+| rose (2x2, rose) | 134, 248 |
 | gentian (2x2, gentian) FLAGGED: don't use |  |
-| pussy-willow (2x2, pussy willow) | 137 |
-| laburnum (1x2, laburnum) | 126 |
-| physalis (2x2, physalis) | 139 |
-| honesty (2x2, honesty) | 127 |
-| coleus (2x2, coleus) | 197 |
-| staghorn (2x2, staghorn) | 137 |
+| pussy-willow (2x2, pussy willow) | 137, 251 |
+| laburnum (1x2, laburnum) | 126, 261 |
+| physalis (2x2, physalis) | 139, 254 |
+| honesty (2x2, honesty) | 127, 241 |
+| coleus (2x2, coleus) | 197, 282 |
+| staghorn (2x2, staghorn) | 137, 251 |
 | torch-ginger (2x2, torch ginger) | 237 |
-| lotus-pod (2x2, lotus pod) | 145 |
-| alstroemeria (2x2, alstroemeria) | 143 |
-| phlox (2x2, phlox) | 131 |
+| lotus-pod (2x2, lotus pod) | 145, 288 |
+| alstroemeria (2x2, alstroemeria) | 143, 255 |
+| phlox (2x2, phlox) | 131, 245 |
 | penstemon (2x2, foxgloves) | 143 |
 | campanula (2x2, bluebells) FLAGGED: don't use |  |
 | yarrow (2x2, yarrow) | 227 |
-| forsythia (2x1, forsythia) | 126 |
-| koeksisters (2x2, koeksisters) | 140 |
-| milk-tart (2x2, milk tart) | 130 |
-| fish-chips (2x2, fish chips) | 136 |
-| victoria-sponge (2x2, victoria sponge) | 130 |
-| shortbread (2x2, shortbread) | 125, 175 |
+| forsythia (2x1, forsythia) | 126, 261 |
+| koeksisters (2x2, koeksisters) | 140, 252 |
+| milk-tart (2x2, milk tart) | 130, 245 |
+| fish-chips (2x2, fish chips) | 136, 248 |
+| victoria-sponge (2x2, victoria sponge) | 130, 286 |
+| shortbread (2x2, shortbread) | 125, 175, 272 |
 | soda-bread (2x2, soda bread) | 124, 240 |
-| welsh-cakes (2x2, welsh cakes) | 123, 176 |
-| tiramisu (2x2, tiramisu) | 130, 150 |
-| cannoli (2x2, cannoli) | 148 |
+| welsh-cakes (2x2, welsh cakes) | 123, 176, 274 |
+| tiramisu (2x2, tiramisu) | 130, 150, 289 |
+| cannoli (2x2, cannoli) | 148, 258 |
 | mooncakes (2x2, mooncakes) | 150 |
 | falafel (2x2, falafel) | 236 |
-| moka-pot (2x2, moka pot) | 138 |
-| cuckoo-clock (2x2, cuckoo clock) | 125, 176 |
-| typewriter (2x2, typewriter) | 138 |
-| leeks (1x2, leeks) | 126 |
-| spring-rolls (2x1, spring rolls) | 141 |
-| warthog (2x2, warthog) | 132 |
-| wild-dog (2x2, wild dog) | 135 |
-| bushbaby (2x2, bushbaby) | 163 |
-| secretary-bird (2x2, secretary bird) | 124, 168 |
-| hornbill (2x2, toucan) | 140 |
-| aardvark (2x2, aardvark) | 94, 146 |
+| moka-pot (2x2, moka pot) | 138, 287 |
+| cuckoo-clock (2x2, cuckoo clock) | 125, 176, 271 |
+| typewriter (2x2, typewriter) | 138, 287 |
+| leeks (1x2, leeks) | 126, 276 |
+| spring-rolls (2x1, spring rolls) | 141, 276 |
+| warthog (2x2, warthog) | 132, 248 |
+| wild-dog (2x2, wild dog) | 135, 249 |
+| bushbaby (2x2, bushbaby) | 163, 290 |
+| secretary-bird (2x2, secretary bird) | 124, 168, 269 |
+| hornbill (2x2, toucan) | 140, 252 |
+| aardvark (2x2, aardvark) | 94, 146, 289 |
 | dung-beetle (2x2, dung beetle) FLAGGED: don't use |  |
-| weaverbird (2x2, weaverbird) | 135, 150 |
-| red-deer (2x2, red deer) | 130 |
+| weaverbird (2x2, weaverbird) | 135, 150, 264 |
+| red-deer (2x2, red deer) | 130, 286 |
 | shetland-pony (2x2, shetland pony) | 136 |
-| pine-marten (2x2, pine marten) | 135, 150 |
-| magpie (2x2, magpie) | 129 |
+| pine-marten (2x2, pine marten) | 135, 150, 264 |
+| magpie (2x2, magpie) | 129, 244 |
 | maine-coon (2x2, maine coon) | 222 |
-| beagle (2x2, beagle) | 132 |
+| beagle (2x2, beagle) | 132, 247 |
 | springbok (1x2, springbok) | 216 |
 | orca (2x1, orca) | 216 |
-| funicular (1x2, red railcar) | 141 |
-| punt (2x2, punt) | 134 |
-| hot-rod (2x2, hot rod) | 150 |
-| snowcat (2x2, snowcat) | 128, 145 |
-| fireboat (2x2, fireboat) | 140 |
-| felucca (2x2, sail) | 127 |
-| sampan (2x2, sampan) | 137 |
+| funicular (1x2, red railcar) | 141, 276 |
+| punt (2x2, punt) | 134, 287 |
+| hot-rod (2x2, hot rod) | 150, 258 |
+| snowcat (2x2, snowcat) | 128, 145, 259 |
+| fireboat (2x2, fireboat) | 140, 288 |
+| felucca (2x2, sail) | 127, 241 |
+| sampan (2x2, sampan) | 137, 251 |
 | school-bus (2x2, bus) | 122, 238 |
 | bmx (2x2, bmx) | 239 |
-| space-shuttle (2x2, rocket) | 131 |
-| moon-buggy (2x2, spacecraft) | 139 |
-| tow-truck (2x2, tow truck) | 194 |
+| space-shuttle (2x2, rocket) | 131, 286 |
+| moon-buggy (2x2, spacecraft) | 139, 251 |
+| tow-truck (2x2, tow truck) | 194, 282 |
 | car-carrier (2x2, car carrier) | 191 |
 | paper-plane (2x2, paper plane) | 240 |
-| windsock (2x2, windsock) | 197 |
-| cable-ferry (2x1, cable ferry) | 156 |
-| quiver-tree (1x2, quiver tree) | 126 |
-| ice-cave (2x2, ice cave) | 132, 149 |
-| mud-pots (2x2, mud pots) | 163 |
-| icicles (2x2, icicles) | 211 |
+| windsock (2x2, windsock) | 197, 284 |
+| cable-ferry (2x1, cable ferry) | 156, 291 |
+| quiver-tree (1x2, quiver tree) | 126, 261 |
+| ice-cave (2x2, ice cave) | 132, 149, 289 |
+| mud-pots (2x2, mud pots) | 163, 266 |
+| icicles (2x2, icicles) | 211, 298 |
 | cork-oak (2x2, cork oak) | 139 |
 | trilobite (2x2, trilobite) | 224 |
 | seagrass (2x2, seagrass) | 121, 238 |
-| atoll (2x2, atoll) | 162 |
-| blowhole (2x2, blowhole) | 146 |
-| crevasse (2x2, crevasse) | 134 |
+| atoll (2x2, atoll) | 162, 265 |
+| blowhole (2x2, blowhole) | 146, 256 |
+| crevasse (2x2, crevasse) | 134, 286 |
 | comet (2x2, space) | 121, 237 |
-| mars (2x2, space) | 131 |
-| whirlpool (2x2, whirlpool) | 127, 144 |
-| cotton-grass (2x2, cotton grass) | 149 |
-| jetty (2x2, jetty) | 140 |
-| pebble-beach (2x1, pebble beach) | 141 |
-| tube-house (1x2, tube house) | 141 |
-| windcatcher (2x2, windcatcher) | 129, 147 |
-| palapa (2x2, palapa) | 132 |
+| mars (2x2, space) | 131, 245 |
+| whirlpool (2x2, whirlpool) | 127, 144, 258 |
+| cotton-grass (2x2, cotton grass) | 149, 257 |
+| jetty (2x2, jetty) | 140, 253 |
+| pebble-beach (2x1, pebble beach) | 141, 291 |
+| tube-house (1x2, tube house) | 141, 276 |
+| windcatcher (2x2, windcatcher) | 129, 147, 262 |
+| palapa (2x2, palapa) | 132, 245 |
 | market-hall (2x2, sunflower) | 143 |
-| porthole (2x2, porthole) | 139 |
+| porthole (2x2, porthole) | 139, 252 |
 | flower-balcony (2x2, window geraniums) | 182 |
 | ice-hotel (2x2, igloo) | 228 |
 | shell-grotto (2x2, shell grotto) | 206 |
-| sundial (2x2, sundial) | 147 |
+| sundial (2x2, sundial) | 147, 255 |
 | sleeping-pods (2x2, sleeping pods) | 150 |
-| tree-tent (2x2, tree tent) | 133 |
+| tree-tent (2x2, tree tent) | 133, 249 |
 | log-cabin (2x2, log cabin) | 122 |
 | tower-crane (2x2, construction) | 239 |
-| signal-box (2x2, signal box) | 183 |
+| signal-box (2x2, signal box) | 183, 271 |
 | round-barn (2x2, red barn) | 128 |
-| bathing-machine (2x2, bathing machine) | 142 |
-| watchmaker (2x2, watchmaker) | 84, 153 |
+| bathing-machine (2x2, bathing machine) | 142, 254 |
+| watchmaker (2x2, watchmaker) | 84, 153, 265 |
 | mapmaker (2x2, mapmaker) | 125 |
-| tile-painter (2x2, tile painter) | 122, 165 |
+| tile-painter (2x2, tile painter) | 122, 165, 268 |
 | lamplighter (2x2, lamplighter) FLAGGED: don't use |  |
-| magician (2x2, magician) | 133, 148 |
+| magician (2x2, magician) | 133, 148, 262 |
 | trapeze (2x2, trapeze) |  |
 | conductor (2x2, conductor) | 226 |
 | irish-dancer (2x2, irish dancer) FLAGGED: don't use |  |
-| kitesurfer (2x2, kitesurfer) | 123, 176 |
-| sandboarder (2x2, sandboarder) | 129, 146 |
+| kitesurfer (2x2, kitesurfer) | 123, 176, 273 |
+| sandboarder (2x2, sandboarder) | 129, 146, 260 |
 | caver (2x2, caver) | 224 |
-| oyster-farmer (2x2, oyster farmer) | 147 |
-| astronaut (2x2, astronaut) | 128, 144 |
+| oyster-farmer (2x2, oyster farmer) | 147, 255 |
+| astronaut (2x2, astronaut) | 128, 144, 260 |
 | rugby (2x2, rugby) | 87, 152, 214 |
-| hurling (2x2, hurling) | 135 |
-| tightrope (2x1, tightrope) | 141 |
-| pointillist-promenade (2x2, pointillist promenade, atmospheric) | 42 |
-| seaweed-gatherers (2x2, seaweed gatherers, atmospheric) | 142 |
+| hurling (2x2, hurling) | 135, 249 |
+| tightrope (2x1, tightrope) | 141, 276 |
+| pointillist-promenade (2x2, pointillist promenade, atmospheric) | 42, 300 |
+| seaweed-gatherers (2x2, seaweed gatherers, atmospheric) | 142, 257 |
 | spice-stalls (2x2, spice stalls, atmospheric) | 18 |
-| hanami-picnic (2x2, hanami picnic, atmospheric) |  |
+| hanami-picnic (2x2, hanami picnic, atmospheric) | 278 |
 | horse-fair (2x2, horse fair, atmospheric) | 97 |
 | fireflies-meadow (2x2, fireflies meadow, atmospheric) | 9, 232 |
 | dune-fences (2x2, dune fences, atmospheric) | 14, 190 |
 | barn-dance (2x2, barn dance, atmospheric) | 137 |
 | luzzu-harbour (2x2, luzzu harbour, atmospheric) |  |
-| wild-ponies-heath (2x2, wild ponies heath, atmospheric) | 105 |
-| village-downpour (2x2, village downpour, atmospheric) | 87 |
-| wedding-procession (2x2, wedding procession, atmospheric) | 115 |
-| drive-in-cinema (2x2, drive in cinema, atmospheric) | 93 |
+| wild-ponies-heath (2x2, wild ponies heath, atmospheric) | 105, 260 |
+| village-downpour (2x2, village downpour, atmospheric) | 87, 245 |
+| wedding-procession (2x2, wedding procession, atmospheric) | 115, 293 |
+| drive-in-cinema (2x2, drive in cinema, atmospheric) | 93, 273 |
 | stilt-fishermen (2x2, stilt fishermen, atmospheric) | 76, 155 |
-| open-air-dance (2x2, open air dance, atmospheric) | 62 |
+| open-air-dance (2x2, open air dance, atmospheric) | 62, 292 |
 | caravanserai (2x2, caravanserai, atmospheric) | 72, 177 |
-| cliff-walk (2x2, cliff walk, atmospheric) | 85 |
+| cliff-walk (2x2, cliff walk, atmospheric) | 85, 244 |
 | sugarcane-harvest (2x2, sugarcane harvest, atmospheric) | 47, 187 |
-| sheep-market (2x2, sheep market, atmospheric) | 79 |
+| sheep-market (2x2, sheep market, atmospheric) | 79, 298 |
 | carnival-parade (2x2, carnival parade, atmospheric) | 34 |
 | night-train (2x2, night train, atmospheric) | 41, 193 |
-| arctic-village (2x2, arctic village, atmospheric) | 118 |
+| arctic-village (2x2, arctic village, atmospheric) | 118, 265 |
 | boat-hauling (2x2, boat hauling, atmospheric) | 100, 237 |
 | argan-tree (2x2, argan tree, atmospheric) | 25 |
 | fishing-fleet (2x2, fishing fleet, atmospheric) | 184, 240 |
 | train-compartment (2x2, train compartment, atmospheric) | 173, 205 |
-| maypole-dance (2x2, maypole dance, atmospheric) | 3 |
-| murmuration (2x2, murmuration, atmospheric) | 101 |
+| maypole-dance (2x2, maypole dance, atmospheric) | 3, 289 |
+| murmuration (2x2, murmuration, atmospheric) | 101, 254 |
 | misty-pass-road (2x2, misty pass road, atmospheric) | 113, 163 |
 | flooded-village (2x2, flooded village, atmospheric) | 133 |
 | research-station (2x2, research station, atmospheric) | 40, 207 |
 | paddling-children (2x2, paddling children, atmospheric) | 74, 153 |
 | salmon-run (2x2, salmon run, atmospheric) | 170, 194 |
-| cow-parade (2x2, cow parade, atmospheric) | 52 |
+| cow-parade (2x2, cow parade, atmospheric) | 52, 285 |
 | potato-harvest (2x2, potato harvest, atmospheric) | 179, 203 |
 | badlands (2x2, badlands, atmospheric) | 80, 188 |
-| apple-press (2x2, apple press, atmospheric) | 143 |
-| terrace-breakfast (2x2, terrace breakfast, atmospheric) | 131 |
-| mushroom-pickers (2x2, mushroom pickers, atmospheric) | 7 |
-| tidal-island (2x2, tidal island, atmospheric) | 112 |
-| highland-games (2x2, highland games, atmospheric) |  |
-| river-horse-bathing (2x2, river horse bathing, atmospheric) | 26 |
-| boatyard (2x2, boatyard, atmospheric) | 103 |
-| goose-girl (2x2, goose girl, atmospheric) | 148 |
-| trajineras (2x2, trajineras, atmospheric) |  |
+| apple-press (2x2, apple press, atmospheric) | 143, 297 |
+| terrace-breakfast (2x2, terrace breakfast, atmospheric) | 131, 266 |
+| mushroom-pickers (2x2, mushroom pickers, atmospheric) | 7, 242 |
+| tidal-island (2x2, tidal island, atmospheric) | 112, 243 |
+| highland-games (2x2, highland games, atmospheric) | 283, 299 |
+| river-horse-bathing (2x2, river horse bathing, atmospheric) | 26, 272 |
+| boatyard (2x2, boatyard, atmospheric) | 103, 256 |
+| goose-girl (2x2, goose girl, atmospheric) | 148, 247 |
+| trajineras (2x2, trajineras, atmospheric) | 281 |
 | post-bus (2x2, post bus, atmospheric) | 49, 233 |
-| city-view-dusk (2x2, city view dusk, atmospheric) |  |
+| city-view-dusk (2x2, city view dusk, atmospheric) | 277 |
 | snowfall-bridge (2x2, snowfall bridge, atmospheric) | 167, 182 |
 | dawn-market-wagons (2x2, dawn market wagons, atmospheric) FLAGGED: don't use |  |
 | peat-cutting (2x2, peat cutting, atmospheric) | 181, 238 |
 | seawall-train (2x2, seawall train, atmospheric) | 71, 228 |
-| mokoro-papyrus (2x2, mokoro papyrus, atmospheric) | 174 |
+| mokoro-papyrus (2x2, mokoro papyrus, atmospheric) | 174, 264 |
 | midsummer-bonfire (2x2, midsummer bonfire, atmospheric) | 132, 221 |
 | lake-town-night (2x2, lake town night, atmospheric) | 22, 196 |
-| rodeo (2x2, rodeo, atmospheric) |  |
+| rodeo (2x2, rodeo, atmospheric) | 279 |
 | poplar-river (2x2, poplar river, atmospheric) | 160, 175 |
 | reed-boats (2x2, reed boats, atmospheric) | 78, 214 |
 | flea-market (2x2, flea market, atmospheric) | 149 |
-| riverside-picnic (2x2, riverside picnic, atmospheric) | 12 |
+| riverside-picnic (2x2, riverside picnic, atmospheric) | 12, 288 |
 | ballet-rehearsal (2x2, ballet rehearsal, atmospheric) | 116, 217 |
 | winter-street-dome (2x2, winter street dome, atmospheric) | 70, 185 |
-| polder (2x2, polder, atmospheric) | 88 |
+| polder (2x2, polder, atmospheric) | 88, 269 |
 | alpine-train (2x2, alpine train, atmospheric) | 77, 218 |
-| ghost-town (2x2, ghost town, atmospheric) | 43 |
+| ghost-town (2x2, ghost town, atmospheric) | 43, 248 |
 | fauvist-port (2x2, fauvist port, atmospheric) | 89 |
 | sheepdog-trial (2x2, sheepdog trial, atmospheric) | 84, 235 |
 | river-shower-boats (2x2, river shower boats, atmospheric) | 50, 206 |
@@ -1500,24 +1560,24 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | cycle-race (2x2, cycle race, atmospheric) | 120 |
 | racehorses (2x2, racehorses, atmospheric) | 67, 161 |
 | coast-road-cove (2x2, coast road cove, atmospheric) | 127, 215 |
-| river-barges (2x2, river barges, atmospheric) | 58 |
+| river-barges (2x2, river barges, atmospheric) | 58, 262 |
 | leg-rowers (2x2, leg rowers, atmospheric) | 20, 151 |
-| village-fete (2x2, village fete, atmospheric) |  |
+| village-fete (2x2, village fete, atmospheric) | 282 |
 | lake-summer-houses (2x2, lake summer houses, atmospheric) | 27, 239 |
-| fish-landing (2x2, fish landing, atmospheric) | 106 |
+| fish-landing (2x2, fish landing, atmospheric) | 106, 294 |
 | alpine-pass-mules (2x2, alpine pass mules, atmospheric) | 31, 220 |
 | autumn-village (2x2, autumn village, atmospheric) | 98, 195 |
 | crows-winter-field (2x2, crows winter field, atmospheric) | 176, 230 |
 | hayracks (2x2, hayracks, atmospheric) | 60, 159 |
 | pottery-market (2x2, pottery market, atmospheric) | 122 |
-| moonlit-bay (2x2, moonlit bay, atmospheric) | 69 |
+| moonlit-bay (2x2, moonlit bay, atmospheric) | 69, 249 |
 | midnight-sun (2x2, midnight sun, atmospheric) | 140, 222 |
-| full-moon-reeds (2x2, full moon reeds, atmospheric) | 73 |
-| fish-market-dutch (2x2, fish market dutch, atmospheric) |  |
-| petanque (2x2, petanque, atmospheric) | 37 |
+| full-moon-reeds (2x2, full moon reeds, atmospheric) | 73, 267 |
+| fish-market-dutch (2x2, fish market dutch, atmospheric) | 280 |
+| petanque (2x2, petanque, atmospheric) | 37, 251 |
 | island-market (2x2, island market, atmospheric) | 53 |
-| hay-barn-meadow (2x2, hay barn meadow, atmospheric) | 125 |
-| cattle-ford (2x2, cattle ford, atmospheric) | 90 |
+| hay-barn-meadow (2x2, hay barn meadow, atmospheric) | 125, 259 |
+| cattle-ford (2x2, cattle ford, atmospheric) | 90, 270 |
 | willows-misty-river (2x2, willows misty river, atmospheric) | 139, 210 |
 | rowing-race-crowd (2x2, rowing race crowd, atmospheric) | 63 |
 | hillside-harbour-town (2x2, hillside harbour town, atmospheric) | 92 |
@@ -1525,42 +1585,42 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | hill-town-ochre (2x2, hill town ochre, atmospheric) | 136, 225 |
 | canyon-river-bend (2x2, canyon river bend, atmospheric) | 46 |
 | desert-mesas (2x2, desert mesas, atmospheric) | 33, 152 |
-| stormy-swell (2x2, stormy swell, atmospheric) | 55 |
+| stormy-swell (2x2, stormy swell, atmospheric) | 55, 241 |
 | river-town-bridge (2x2, river town bridge, atmospheric) | 114, 164 |
 | rainy-street-night (2x2, rainy street night, atmospheric) | 82 |
 | village-pond (2x2, village pond, atmospheric) | 8, 227 |
 | night-bridge-lights (2x2, night bridge lights, atmospheric) | 162, 183 |
 | winter-village-dusk (2x2, winter village dusk, atmospheric) | 68, 192 |
 | autumn-valley-print (2x2, autumn valley print, atmospheric) | 61, 202 |
-| city-park-boating (2x2, city park boating, atmospheric) | 135 |
+| city-park-boating (2x2, city park boating, atmospheric) | 135, 287 |
 | schooner-harbour (2x2, schooner harbour, atmospheric) | 65 |
 | cantilever-nets (2x2, cantilever nets, atmospheric) | 17, 224 |
 | clifftop-sheep (2x2, clifftop sheep, atmospheric) | 39, 219 |
-| market-square-livestock (2x2, market square livestock, atmospheric) |  |
+| market-square-livestock (2x2, market square livestock, atmospheric) | 284 |
 | park-avenue-autumn (2x2, park avenue autumn, atmospheric) | 86, 189 |
 | papel-picado-plaza (2x2, papel picado plaza, atmospheric) | 6 |
-| steam-cranes-dock (2x2, steam cranes dock, atmospheric) | 56 |
+| steam-cranes-dock (2x2, steam cranes dock, atmospheric) | 56, 286 |
 | jungle-river (2x2, jungle river, atmospheric) | 172, 198 |
 | cafe-interior (2x2, cafe interior, atmospheric) | 144 |
 | lava-moss-field (2x2, lava moss field, atmospheric) | 134, 157 |
-| lawn-tennis (2x2, lawn tennis, atmospheric) | 178 |
-| river-village-willows (2x2, river village willows, atmospheric) | 32 |
+| lawn-tennis (2x2, lawn tennis, atmospheric) | 178, 263 |
+| river-village-willows (2x2, river village willows, atmospheric) | 32, 253 |
 | allotments-summer (2x2, allotments summer, atmospheric) | 119 |
 | ochre-sails-lagoon (2x2, ochre sails lagoon, atmospheric) | 23, 208 |
 | gondola-lift (2x2, gondola lift, atmospheric) | 75, 191 |
 | river-valley (2x2, river valley, atmospheric) | 5, 154 |
 | glacial-lake-tents (2x2, glacial lake tents, atmospheric) | 44, 236 |
 | fireworks-river (2x2, fireworks river, atmospheric) | 48 |
-| narrowboats-towpath (2x2, narrowboats towpath, atmospheric) | 130 |
+| narrowboats-towpath (2x2, narrowboats towpath, atmospheric) | 130, 252 |
 | layered-hills-dawn (2x2, layered hills dawn, atmospheric) | 13, 234 |
-| shrimp-fishers (2x2, shrimp fishers, atmospheric) | 109 |
-| savanna-zebras (2x2, savanna zebras, atmospheric) | 150 |
+| shrimp-fishers (2x2, shrimp fishers, atmospheric) | 109, 268 |
+| savanna-zebras (2x2, savanna zebras, atmospheric) | 150, 258 |
 | log-drivers (2x2, log drivers, atmospheric) | 83 |
 | arcaded-street (2x2, arcaded street, atmospheric) | 165, 180 |
-| andean-terraces (2x2, andean terraces, atmospheric) | 19 |
-| rooftops-laundry (2x2, rooftops laundry, atmospheric) | 91 |
+| andean-terraces (2x2, andean terraces, atmospheric) | 19, 255 |
+| rooftops-laundry (2x2, rooftops laundry, atmospheric) | 91, 295 |
 | threshing-day (2x2, threshing day, atmospheric) FLAGGED: don't use |  |
-| winding-road-hills (2x2, winding road hills, atmospheric) | 121 |
+| winding-road-hills (2x2, winding road hills, atmospheric) | 121, 271 |
 | street-musicians (2x2, street musicians, atmospheric) | 102, 204 |
 | autumn-ploughing (2x2, autumn ploughing, atmospheric) | 124, 169 |
 | wax-print-market (2x2, wax print market, atmospheric) | 38 |
@@ -1569,96 +1629,96 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | chateau-lake (2x2, chateau lake, atmospheric) | 54, 213 |
 | cricket-green (2x2, cricket green, atmospheric) | 129, 226 |
 | lakeside-inn (2x2, lakeside inn, atmospheric) | 57, 200 |
-| alpine-hut-hikers (2x2, alpine hut hikers, atmospheric) | 45 |
+| alpine-hut-hikers (2x2, alpine hut hikers, atmospheric) | 45, 275 |
 | rocky-cove (2x2, rocky cove, atmospheric) FLAGGED: don't use |  |
-| regatta-headland (2x2, regatta headland, atmospheric) | 35 |
-| autumn-lake-reflections (2x2, autumn lake reflections, atmospheric) | 28 |
+| regatta-headland (2x2, regatta headland, atmospheric) | 35, 296 |
+| autumn-lake-reflections (2x2, autumn lake reflections, atmospheric) | 28, 274 |
 | winter-farmyard (2x2, winter farmyard, atmospheric) | 147, 229 |
 | squid-boats-night (2x2, squid boats night, atmospheric) | 4, 158 |
-| street-of-steps (2x2, street of steps, atmospheric) | 10 |
+| street-of-steps (2x2, street of steps, atmospheric) | 10, 250 |
 | thermal-pools (2x2, thermal pools, atmospheric) | 123, 197 |
 | hop-picking (2x2, hop picking, atmospheric) | 16 |
 | ink-haircut (2x2, ink haircut) | 17, 211 |
-| ink-icing-cake (2x2, ink icing cake) | 49, 191 |
+| ink-icing-cake (2x2, ink icing cake) | 49, 191, 285 |
 | ink-spaniel (2x2, ink spaniel) | 71, 212 |
-| ink-thread-pins (2x2, ink thread pins) | 122, 177 |
-| ink-pram (2x2, ink pram) | 20, 180 |
+| ink-thread-pins (2x2, ink thread pins) | 122, 177, 274 |
+| ink-pram (2x2, ink pram) | 20, 180, 292 |
 | ink-model-yacht (2x2, ink model yacht) | 109 |
 | ink-ironing (2x2, ink ironing) | 112, 169, 235 |
-| ink-shoeshine (2x2, ink shoeshine) | 28, 198 |
-| ink-bowler (2x2, ink bowler) | 33, 170 |
-| ink-waiter (2x2, ink waiter) | 185 |
+| ink-shoeshine (2x2, ink shoeshine) | 28, 198, 298 |
+| ink-bowler (2x2, ink bowler) | 33, 170, 269 |
+| ink-waiter (2x2, ink waiter) | 185, 273 |
 | ink-badminton (2x2, ink badminton) | 93, 155, 220 |
 | ink-puncture (2x2, ink puncture) | 85, 152, 215 |
-| ink-cutting-roses (2x2, ink cutting roses) | 9, 179 |
-| ink-wallpaper (2x2, ink wallpaper) | 133 |
+| ink-cutting-roses (2x2, ink cutting roses) | 9, 179, 275 |
+| ink-wallpaper (2x2, ink wallpaper) | 133, 248 |
 | ink-projectionist (2x2, ink projectionist) | 232 |
-| ink-switchboard (2x2, ink switchboard) | 53, 193 |
+| ink-switchboard (2x2, ink switchboard) | 53, 193, 295 |
 | ink-croquet (2x2, ink croquet) | 58, 193 |
 | ink-pug (2x2, ink pug) | 117, 176, 236 |
-| ink-terrier (2x2, ink terrier) | 47, 191 |
-| ink-greyhound (2x2, ink greyhound) | 12, 180 |
+| ink-terrier (2x2, ink terrier) | 47, 191, 285 |
+| ink-greyhound (2x2, ink greyhound) | 12, 180, 292 |
 | ink-bulldog (2x2, ink bulldog) | 106, 161, 230 |
 | ink-hamster (2x2, ink hamster) | 104, 161, 229 |
-| ink-woodpecker (2x2, ink woodpecker) | 63, 200 |
+| ink-woodpecker (2x2, ink woodpecker) | 63, 200, 299 |
 | ink-gull (2x2, ink gull) | 99, 167, 225 |
 | ink-field-mouse (2x2, ink field mouse) | 77, 210 |
 | ink-lobster (2x2, ink lobster) FLAGGED: don't use |  |
-| ink-boxing-gloves (2x2, ink boxing gloves) | 23, 183 |
-| ink-birdcage (2x2, ink birdcage) | 149 |
-| ink-garden-gnome (2x2, ink garden gnome) | 42, 189 |
+| ink-boxing-gloves (2x2, ink boxing gloves) | 23, 183, 279 |
+| ink-birdcage (2x2, ink birdcage) | 149, 257 |
+| ink-garden-gnome (2x2, ink garden gnome) | 42, 189, 285 |
 | ink-perfume (2x2, ink perfume) | 128 |
-| ink-handbell (2x2, ink handbell) | 26, 177 |
-| ink-pepper-mill (2x2, ink pepper mill) | 39, 199 |
-| ink-toy-plane (2x2, ink toy plane) | 44, 190 |
-| ink-door-knocker (2x2, ink door knocker) | 147 |
-| ink-sundae (2x2, ink sundae) | 37, 185 |
-| ink-sardines (2x2, ink sardines) | 55, 193 |
-| ink-trifle (2x2, ink trifle) | 69, 174 |
-| ink-porridge (2x2, ink porridge) | 125, 174 |
+| ink-handbell (2x2, ink handbell) | 26, 177, 275 |
+| ink-pepper-mill (2x2, ink pepper mill) | 39, 199, 298 |
+| ink-toy-plane (2x2, ink toy plane) | 44, 190, 285 |
+| ink-door-knocker (2x2, ink door knocker) | 147, 255 |
+| ink-sundae (2x2, ink sundae) | 37, 185, 293 |
+| ink-sardines (2x2, ink sardines) | 55, 193, 296 |
+| ink-trifle (2x2, ink trifle) | 69, 174, 272 |
+| ink-porridge (2x2, ink porridge) | 125, 174, 271 |
 | ink-battenberg (2x2, ink battenberg) | 83, 213 |
-| ink-crumpets (2x2, ink crumpets) | 60, 177 |
+| ink-crumpets (2x2, ink crumpets) | 60, 177, 274 |
 | ink-crumble (2x2, ink crumble) FLAGGED: don't use |  |
 | ink-cauliflower (2x2, ink cauliflower) | 131 |
-| ink-raspberries (2x2, ink raspberries) | 115, 175 |
-| ink-taxi (2x2, ink taxi) | 87, 153 |
-| ink-roadster (2x2, ink roadster) | 31, 184 |
-| ink-milk-float (2x2, ink milk float) | 79 |
-| ink-soapbox (2x2, ink soapbox) | 101, 172 |
-| ink-traction-engine (2x2, ink traction engine) | 142 |
-| ink-snowplough (2x2, ink snowplough) | 196 |
-| ink-forklift (2x2, ink forklift) | 136 |
-| ink-dodgems (2x2, ink dodgems) | 4, 178 |
+| ink-raspberries (2x2, ink raspberries) | 115, 175, 273 |
+| ink-taxi (2x2, ink taxi) | 87, 153, 265 |
+| ink-roadster (2x2, ink roadster) | 31, 184, 280 |
+| ink-milk-float (2x2, ink milk float) | 79, 293 |
+| ink-soapbox (2x2, ink soapbox) | 101, 172, 270 |
+| ink-traction-engine (2x2, ink traction engine) | 142, 253 |
+| ink-snowplough (2x2, ink snowplough) | 196, 293 |
+| ink-forklift (2x2, ink forklift) | 136, 250 |
+| ink-dodgems (2x2, ink dodgems) | 4, 178, 275 |
 | ink-pigeons (2x2, ink pigeons) | 88 |
 | ink-hydrant (2x2, ink hydrant) | 6, 236 |
-| ink-sprinkler (2x2, ink sprinkler) | 95 |
-| ink-seesaw (2x2, ink seesaw) | 67 |
+| ink-sprinkler (2x2, ink sprinkler) | 95, 295 |
+| ink-seesaw (2x2, ink seesaw) | 67, 292 |
 | ink-station-master (2x2, ink station master) | 90 |
 | ink-level-crossing (2x2, ink level crossing) | 120 |
 | ink-fireside (2x2, ink fireside) | 74 |
 | ink-kennel (2x2, ink kennel) | 15, 175 |
 | ink-bird-table (2x2, ink bird table) | 144 |
-| prize-marrow (2x2, prize marrow) | 20, 181 |
+| prize-marrow (2x2, prize marrow) | 20, 181, 293 |
 | mechanic (2x2, mechanic) | 72, 206 |
 | hayfield-farmer (2x2, hayfield farmer) | 211 |
-| plaiting-hair (2x2, plaiting hair) | 47, 131 |
-| meadow-daydream (2x2, meadow daydream) | 91, 113, 174 |
-| wall-balance (2x2, wall balance) | 7, 147 |
-| cafe-regular (2x2, cafe regular) | 49, 149 |
+| plaiting-hair (2x2, plaiting hair) | 47, 131, 287 |
+| meadow-daydream (2x2, meadow daydream) | 91, 113, 174, 278 |
+| wall-balance (2x2, wall balance) | 7, 147, 260 |
+| cafe-regular (2x2, cafe regular) | 49, 149, 263 |
 | greengrocer (2x2, greengrocer) | 43, 142 |
 | orchestra-flautist (2x2, orchestra flautist, atmospheric) | 168, 223 |
 | toddler-lift (2x2, toddler lift) | 34, 59, 205 |
-| butcher-stall (2x2, butcher stall) | 46 |
-| garden-secret (2x2, garden secret) | 30, 185 |
-| snowy-lane (2x2, snowy lane) | 198 |
-| basketball-dunk (2x2, basketball dunk) | 185 |
-| jazz-drummer (2x2, jazz drummer) | 23, 124 |
-| kitchen-dance (2x2, kitchen dance) | 55, 150 |
+| butcher-stall (2x2, butcher stall) | 46, 294 |
+| garden-secret (2x2, garden secret) | 30, 185, 279 |
+| snowy-lane (2x2, snowy lane) | 198, 284 |
+| basketball-dunk (2x2, basketball dunk) | 185, 292 |
+| jazz-drummer (2x2, jazz drummer) | 23, 124, 248 |
+| kitchen-dance (2x2, kitchen dance) | 55, 150, 263 |
 | bus-window (2x2, bus window) | 33, 59 |
 | baby-rug (2x2, baby rug) | 38, 60, 205 |
 | upholsterer (2x2, upholsterer) | 103 |
 | rain-coat (2x2, rain coat) | 75, 208 |
-| big-boots (2x2, big boots) | 100, 120 |
+| big-boots (2x2, big boots) | 100, 120, 243 |
 | beach-dog (2x2, beach dog) | 78, 210 |
 | cartwheel (2x2, cartwheel) | 65, 89, 157, 224 |
 | windowsill-peek (2x2, windowsill peek) | 31, 57, 200 |
@@ -1669,30 +1729,30 @@ Every picture's appearances across the 240 boards: 0 to 4 (mean 1.6). A picture 
 | vet-puppy (2x2, vet puppy) | 110, 164, 234 |
 | hill-roll (2x2, hill roll) FLAGGED: don't use |  |
 | hilltop-dusk (2x2, hilltop dusk) | 87, 151, 214 |
-| crab-catch (2x2, crab catch) | 50, 192 |
+| crab-catch (2x2, crab catch) | 50, 192, 295 |
 | gondolier (2x2, gondolier) | 19, 150 |
-| bartender (2x2, bartender) | 116, 173 |
-| armchair-nap (2x2, armchair nap) | 121, 170 |
-| crayons (2x2, crayons) | 6, 121 |
-| leaf-jump (2x2, leaf jump) | 112, 165 |
-| broom-doorway (2x2, broom doorway) | 23, 182 |
+| bartender (2x2, bartender) | 116, 173, 271 |
+| armchair-nap (2x2, armchair nap) | 121, 170, 269 |
+| crayons (2x2, crayons) | 6, 121, 244 |
+| leaf-jump (2x2, leaf jump) | 112, 165, 267 |
+| broom-doorway (2x2, broom doorway) | 23, 182, 279 |
 | rowing-family (2x1, rowing family) | 36, 186, 201 |
 | finish-line (2x2, finish line) | 100, 119 |
-| baking-together (2x2, baking together) | 30, 184 |
-| cloud-sea (2x2, cloud sea) | 127 |
+| baking-together (2x2, baking together) | 30, 184, 282 |
+| cloud-sea (2x2, cloud sea) | 127, 242 |
 | family-dinner (2x2, family dinner) | 114 |
-| party-lights (2x2, party lights) | 135 |
+| party-lights (2x2, party lights) | 135, 287 |
 | sailing-helm (2x2, sailing helm) | 214 |
-| bike-shop (2x2, bike shop) | 65, 80 |
-| marching-band (2x2, marching band) | 69, 86 |
+| bike-shop (2x2, bike shop) | 65, 80, 281 |
+| marching-band (2x2, marching band) | 69, 86, 296 |
 | beach-twirl (2x2, beach twirl) | 121, 237 |
 | rolling-chapatis (2x2, rolling chapatis) | 203 |
-| learning-to-ride (2x2, learning to ride) | 15, 180 |
+| learning-to-ride (2x2, learning to ride) | 15, 180, 277 |
 | koi-pair (2x2, koi pair) | 233 |
 | french-horn (2x2, french horn) | 214 |
-| firefighter (2x2, firefighter) | 159 |
-| jukebox (2x2, jukebox) | 169 |
-| puffer-fish (2x2, puffer fish) | 174, 196 |
+| firefighter (2x2, firefighter) | 159, 289 |
+| jukebox (2x2, jukebox) | 169, 266 |
+| puffer-fish (2x2, puffer fish) | 174, 196, 297 |
 | limes (2x2, limes) | 218 |
 | manatee (2x1, manatee) |  |
 | black-panther (2x2, black panther) |  |

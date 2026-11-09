@@ -35,7 +35,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { alignByDestination, byId as byIdOf, catalogue, destById, destinations, evenNew, famName, flags, lookalikes, readBoards, reserveLandmarks, root, route, spacingOf, usable, writeBoards } from "./lib.mts";
-import { BOARD, DISTINCT, EVEN_NEW, MARKS, NOT_ON_TRIP_11_ON, PLAN as FULL, PLAN_TAG, SPACING, TRIP_11_ON, TRIPS } from "./campaign-plan.mts";
+import { BOARD, DISTINCT, EVEN_NEW, EVEN_NEW_TO, MARKS, notOnBoard, PLAN as FULL, PLAN_TAG, POSTCARDS_TO_16, SPACING, TRIP_11_ON, TRIP_17_ON, TRIPS } from "./campaign-plan.mts";
 import { atmosphericPass, isAtmospheric, writeRecord } from "./atmospheric.mts";
 
 const t0 = performance.now();
@@ -91,9 +91,10 @@ const made = route(PLAN, old, {
   redeal,
   reseat,
   landmarks: true,
-  // trips 11-15 keep clear of what their pool leaves out (campaign-plan.mts NOT_ON_TRIP_11_ON) even where it was
-  // ruled out after the board was dealt (a postcard painted later): such a clear picture is swapped in place
-  outOf: (i) => (i >= TRIP_11_ON ? (id) => NOT_ON_TRIP_11_ON.has(id) && !isAtmospheric(byIdOf.get(id)) : null),
+  // trips 11 on keep clear of what their pool leaves out (campaign-plan.mts notOnBoard) even where it was
+  // ruled out after the board was dealt (a postcard painted later): such a clear picture is swapped in place.
+  // Boards 151-240 answer to trips 1-16's postcards only (TRIP_17_ON), so trips 17 on never change them
+  outOf: (i) => (notOnBoard(i) ? (id) => notOnBoard(i).has(id) && !isAtmospheric(byIdOf.get(id)) : null),
   seedOf: (i) => 0xc0ffee + i * 7919,
   optsOf: (i) => ({
     id: `c${String(i + 1).padStart(2, "0")}`,
@@ -128,17 +129,20 @@ const withMark = (l, row) => {
   return out;
 };
 // last, the atmospheric pictures in place of clear squares (atmospheric.mts): deals and lines unchanged
+const ALL_FAMILIES = new Set(destinations.map((d) => d.family ?? d.id));
+const FAMILIES_TO_16 = new Set(destinations.filter((d) => POSTCARDS_TO_16.has(d.id)).map((d) => d.family ?? d.id));
 const atmos = atmosphericPass(
   made.map((l, i) => withMark(l, PLAN[i])),
   // a postcard's look-alike stays off its trip; and from trip 11 on, no atmospheric picture looks like any postcard
-  { distinct: DISTINCT, spacing: SPACING, trips: TRIPS, wideFrom: TRIP_11_ON, postcardFamilies: new Set(destinations.map((d) => d.family ?? d.id)), renames },
+  // (on boards 151-240, any of trips 1-16's: TRIP_17_ON)
+  { distinct: DISTINCT, spacing: SPACING, trips: TRIPS, wideFrom: TRIP_11_ON, postcardFamilies: (i) => (i >= TRIP_17_ON ? ALL_FAMILIES : FAMILIES_TO_16), renames },
 );
 let levels = atmos.levels;
-// then the never-seen pictures shared evenly across trips 11 on (campaign-plan.mts EVEN_NEW; lib.mts evenNew),
+// then the never-seen pictures shared evenly across trips 11-16 (campaign-plan.mts EVEN_NEW, EVEN_NEW_TO; lib.mts evenNew),
 // each move in place: the deals unchanged. The clear pictures atmospheric ones hide stay off their boards
 if (EVEN_NEW) {
   const hidden = new Map(Object.entries(atmos.record.swaps).map(([id, s]) => [id, new Set(s.map((x) => x.clear))]));
-  const even = evenNew(levels, PLAN, { trips: TRIPS.filter((t) => t.from > TRIP_11_ON && t.to <= levels.length), spacing: SPACING, hidden });
+  const even = evenNew(levels, PLAN, { trips: TRIPS.filter((t) => t.from > TRIP_11_ON && t.to <= Math.min(levels.length, EVEN_NEW_TO)), spacing: SPACING, hidden });
   levels = even.levels;
   const text = (cs) => cs.map((c) => `${c.n}/${c.every}`).join(" ");
   console.log(`never-seen pictures by trip from ${TRIP_11_ON + 1}: ${text(even.before)} -> ${text(even.after)} (targets ${even.target.map((t) => t.toFixed(1)).join(" ")}); ${even.moves.length} moved in place`);

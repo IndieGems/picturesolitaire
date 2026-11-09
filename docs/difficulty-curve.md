@@ -895,6 +895,66 @@ As before, each postcard takes the place of a picture finished mid-board on
 the proved line, so the deal and its proof stay as they were. A library
 picture that looks like a postcard stays off that postcard's trip.
 
+**The trial (2026-11-08): all 90 boards picked and dealt, with stand-in
+postcards,** by trips 11–16's rules. It ran both ways:
+
+| | The 200 kept off (the plan) | The 200 allowed |
+|---|---|---|
+| Boards that could not be filled | none | none |
+| Pictures on 241–330 | 937, none on two boards | 937, none on two boards |
+| Met there for the first time | 14 | 210 |
+| … a second time | 311 | 262 |
+| … a third time | 445 | 401 |
+| … a fourth time | 167 | 64 |
+| A picture back on 241–330: soonest, median | 50, 111 boards later | 50, 132 boards later |
+| The average picture across 1–330 (1.91 across 1–240) | on 2.62 boards | on 2.27 boards |
+| The most boards one picture is on | 4 | 4 |
+
+- **The 200 stay off** (lead, 2026-11-08: "deal with the 200 kept off … No
+  picture back within 50 levels is fine, and the oldest pictures being the 4th
+  showings is the right way round"). The 14 never-seen pictures stay where the
+  picker puts them (Brazil 6, South Korea 8). They aren't evened out, and
+  trips 11–16 keep theirs.
+- **The fourth showings are pictures first met on boards 1–150** (median
+  board 63).
+- **The mix holds:** people 14–23% a trip, flowers 11–15%, busy pictures
+  8–13%. No board has more than 5 people (a third of its pictures at most).
+- **Long pictures for the x6 boards:** 95 for 66 slots. Every one is met
+  before, last seen 120–210 boards earlier, each on its second or third board.
+- **Atmospheric pictures:** the one-a-board share holds, with 5 squares left
+  after 330.
+- **The deals:** every slot dealt on its row's targets. Builds are 45–64%
+  careless, reliefs 84–100%, and every unmarked board is readable (85% or
+  more). The all-long boards are always won. The marked boards (careless,
+  then reader):
+
+| Board | Careless | Reader | | Board | Careless | Reader |
+|---|---|---|---|---|---|---|
+| 245, hard, 4×5 | 28% | 44% | | 290, hard, 4×5 | 33% | 99% |
+| 250, hard, 5×5 | 27% | 36% | | 295, hard, 5×5 | 23% | 42% |
+| 255, super, 6×6 | 18% | 26% | | 300, super, 5×5 | 14% | 28% |
+| 260, hard, 5×5 | 35% | 38% | | 305, hard, 5×5 | 27% | 44% |
+| 265, hard, 5×5 | 22% | 44% | | 310, hard, 4×5 | 27% | 32% |
+| 270, super, 4×5 | 12% | 30% | | 315, super, 6×6 | 12% | 29% |
+| 275, hard, 5×5 | 28% | 58% | | 320, hard, 5×5 | 27% | 28% |
+| 280, hard, 4×5 | 28% | 40% | | 325, hard, 5×5 | 22% | 34% |
+| 285, super, 6×6 | 18% | 28% | | 330, super, 4×5 | 15% | 27% |
+
+- **The 6×6 finales are slow to find:** 255 took 3 minutes, 285 took 11 and
+  315 took 32. Every other board took seconds.
+
+**Boards 151–240 stay as they are** (they went to test with the win checker
+on 2026-11-07). The maker holds them to trips 1–16's postcards only
+(`campaign-plan.mts` TRIP_17_ON, `notOnBoard`):
+
+- a later trip's postcard never swaps a picture out of them, clear or
+  atmospheric;
+- the never-seen even-out (`evenNew`) covers trips 11–16 only (EVEN_NEW_TO);
+- boards 241 on keep clear of every postcard's look-alikes.
+
+This follows the lead's ruling on Level 144: the look-alike rule is about a
+board's own pictures, and a level already out doesn't change for it.
+
 ## The VIP events (Levels, 2026-10-30)
 
 Each event is a pack of 30 levels of its own (the creator; [vip.md](vip.md)), the same curve for every

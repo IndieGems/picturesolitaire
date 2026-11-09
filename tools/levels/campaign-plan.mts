@@ -419,6 +419,72 @@ export const PLAN = [
   /* 238 */ { role: "build", destination: "dest-iceland-puffins", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
   /* 239 */ { role: "build", destination: "dest-senja-segla", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
   /* 240 */ { role: "super", destination: "dest-kirkjufell", board: [5, 5], ...sq(14), careless: [0.08, 0.2], traps: [0, 4], chain: ANY },
+  // ---- trip 17, Brazil (the creator, 2026-11-08; Art's places, docs/destinations-brazil.md; docs/difficulty-curve.md
+  // "Trips 17-22 (plan)": trips 11-16's slots and targets): 250 at 5x5, the finale 255 at 6x6
+  /* 241 */ { role: "relief", destination: "dest-sugarloaf", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 242 */ { role: "build", destination: "dest-paraty", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 243 */ { role: "build", destination: "dest-vila-velha-cup", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 244 */ { role: "build", destination: "dest-hercilio-luz-bridge", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 245 */ { role: "hard",  destination: "dest-bonito-rivers", board: [4, 5], ...sq(12), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 246 */ { role: "pace",  destination: "dest-pantanal-jaguar", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
+  /* 247 */ { role: "build", destination: "dest-hyacinth-macaws", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 248 */ { role: "build", destination: "dest-lacerda-elevator", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 249 */ { role: "build", destination: "dest-bahia-cocoa-sloth", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 250 */ { role: "hard",  destination: "dest-pirangi-cashew", board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 251 */ { role: "relief", destination: "dest-canoa-quebrada-jangadas", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 252 */ { role: "build", destination: "dest-lencois-maranhenses", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 253 */ { role: "build", destination: "dest-ver-o-peso", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 254 */ { role: "build", destination: "dest-amazon-pink-dolphins", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 255 */ { role: "super", destination: "dest-theatro-amazonas", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY },
+  // ---- trip 18, Germany, Austria & Switzerland (Art's places, docs/destinations-germany-austria-switzerland.md):
+  // 260 and 265 at 5x5, the finale 270 at 4x5
+  /* 256 */ { role: "relief", destination: "dest-speicherstadt", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 257 */ { role: "build", destination: "dest-warnemunde-beach-chairs", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 258 */ { role: "build", destination: "dest-brandenburg-gate", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 259 */ { role: "build", destination: "dest-rakotz-bridge", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 260 */ { role: "hard",  destination: "dest-wuppertal-schwebebahn", board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 261 */ { role: "pace",  destination: "dest-pfalzgrafenstein", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
+  /* 262 */ { role: "build", destination: "dest-rothenburg-plonlein", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 263 */ { role: "build", destination: "dest-st-bernard-dogs", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 264 */ { role: "build", destination: "dest-bern-bears", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 265 */ { role: "hard",  destination: "dest-chapel-bridge", board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 266 */ { role: "relief", destination: "dest-guarda", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 267 */ { role: "build", destination: "dest-golden-roof", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 268 */ { role: "build", destination: "dest-grossglockner-marmots", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 269 */ { role: "build", destination: "dest-gruner-see", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 270 */ { role: "super", destination: "dest-vienna-state-opera", board: [4, 5], ...sq(12), careless: [0.08, 0.2], traps: [0, 4], chain: ANY },
+  // ---- trip 19, South Korea (Art's places, docs/destinations-south-korea.md): 275 at 5x5, the finale 285 at 6x6
+  /* 271 */ { role: "relief", destination: "dest-gwanghwamun", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 272 */ { role: "build", destination: "dest-bukchon", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 273 */ { role: "build", destination: "dest-hwahongmun", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 274 */ { role: "build", destination: "dest-seocheon-reeds", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 275 */ { role: "hard",  destination: "dest-sunchang-onggi", board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 276 */ { role: "pace",  destination: "dest-suncheon-mudskippers", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
+  /* 277 */ { role: "build", destination: "dest-sancheong-persimmons", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 278 */ { role: "build", destination: "dest-gamcheon", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 279 */ { role: "build", destination: "dest-cheomseongdae", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 280 */ { role: "hard",  destination: "dest-hahoe", board: [4, 5], ...sq(12), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 281 */ { role: "relief", destination: "dest-museom-log-bridge", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 282 */ { role: "build", destination: "dest-ulsanbawi", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 283 */ { role: "build", destination: "dest-anbandegi", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 284 */ { role: "build", destination: "dest-jeju-tangerines", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 285 */ { role: "super", destination: "dest-seongsan-ilchulbong", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY },
+  // ---- trip 20, Poland (Art's places, docs/destinations-poland.md): 295 and the finale 300 at 5x5
+  /* 286 */ { role: "relief", destination: "dest-crooked-forest", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 287 */ { role: "build", destination: "dest-gdansk-crane", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 288 */ { role: "build", destination: "dest-malbork-castle", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 289 */ { role: "build", destination: "dest-elblag-canal", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 290 */ { role: "hard",  destination: "dest-ciechocinek-towers", board: [4, 5], ...sq(12), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 291 */ { role: "pace",  destination: "dest-biskupin", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
+  /* 292 */ { role: "build", destination: "dest-poznan-goats", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 293 */ { role: "build", destination: "dest-wroclaw-town-hall", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 294 */ { role: "build", destination: "dest-nikiszowiec", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 295 */ { role: "hard",  destination: "dest-lazienki-palace", board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 296 */ { role: "relief", destination: "dest-bialowieza-bison", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 297 */ { role: "build", destination: "dest-kazimierz-dolny", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 298 */ { role: "build", destination: "dest-zalipie", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 299 */ { role: "build", destination: "dest-zakopane-villas", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 300 */ { role: "super", destination: "dest-krakow-cloth-hall", board: [5, 5], ...sq(14), careless: [0.08, 0.2], traps: [0, 4], chain: ANY },
 ];
 
 /**
@@ -452,6 +518,12 @@ export const TRIPS = [
   { id: "t14", name: "Morocco", from: 196, to: 210 },
   { id: "t15", name: "Vietnam & Thailand", from: 211, to: 225 },
   { id: "t16", name: "Scandinavia & Iceland", from: 226, to: 240 },
+  // the creator's choices (2026-11-08: "go ahead and do them all except russia"; the names exactly as the lead gave
+  // them; t21 is "Türkiye", in English too), each added as its boards are dealt
+  { id: "t17", name: "Brazil", from: 241, to: 255 },
+  { id: "t18", name: "Germany, Austria & Switzerland", from: 256, to: 270 },
+  { id: "t19", name: "South Korea", from: 271, to: 285 },
+  { id: "t20", name: "Poland", from: 286, to: 300 },
 ];
 
 /** Roles that may trap from the first move; every other board starts safe (check.mts). */
@@ -516,7 +588,8 @@ PLAN.forEach((row, i) => {
  *   - the 2026-10-30 new library (Art's `batch`): made for the VIP events and on them (lead, 2026-11-07:
  *     "keep the 200 event pictures off trips 11-15"; they may join a later trip once their events have
  *     been out a while);
- *   - any look-alike of a postcard, of any trip (Art gives a postcard its look-alike's family);
+ *   - any look-alike of a postcard, of any trip (Art gives a postcard its look-alike's family; on boards
+ *     151-240, of trips 1-16 only: TRIP_17_ON below);
  *   - those from before the clear pictures (CURRENT), those the people swap moved off (lib.mts MOVED_OFF),
  *     those waiting for a redraw (picture-redraws.json), and those Art struck by eye (pictures-back.json).
  * Calm before busy, firmly (`busyLean`: under longest-unseen-first the busy ones come due together late
@@ -524,24 +597,41 @@ PLAN.forEach((row, i) => {
  */
 const REDRAWS_FILE = new URL("../../src/content/picture-redraws.json", import.meta.url);
 const REDRAWING = existsSync(REDRAWS_FILE) ? Object.entries(JSON.parse(readFileSync(REDRAWS_FILE, "utf8")).pictures).filter(([, v]) => v.redraw).map(([id]) => id) : [];
-const POSTCARD_FAMILIES = new Map(destinations.map((d) => [d.family ?? d.id, d.id]));
-export const NOT_ON_TRIP_11_ON = new Set([
+const lookalikesOf = (ds) => {
+  const families = new Map(ds.map((d) => [d.family ?? d.id, d.id]));
+  return catalogue.filter((p) => families.has(p.family) && families.get(p.family) !== p.id).map((p) => p.id);
+};
+const NEVER_FROM_11 = [
   ...catalogue.filter((p) => p.batch === "2026-10-30 new library").map((p) => p.id),
-  ...catalogue.filter((p) => POSTCARD_FAMILIES.has(p.family) && POSTCARD_FAMILIES.get(p.family) !== p.id).map((p) => p.id),
   ...CURRENT,
   ...MOVED_OFF,
   ...REDRAWING,
   ...Object.keys(BACK_FILE.struck),
-]);
+];
 export const TRIP_11_ON = 150;
 /**
- * THE NEVER-SEEN PICTURES SHARED EVENLY across trips 11 on (lead, 2026-11-07): make-campaign.mts runs lib.mts
- * evenNew after the atmospheric pass, moving new pictures in place between the trips' boards.
+ * TRIP 17 ON (boards 241-330; the creator, 2026-11-08; docs/difficulty-curve.md "Trips 17-22 (plan)"): trip 11's
+ * rules, the 200 still off (lead, 2026-11-08: Grand Train Journey has not run). Boards 151-240 went to test
+ * with the win checker before trips 17-22's postcards were painted, so they keep clear of trips 1-16's
+ * postcards' look-alikes only (POSTCARDS_TO_16: the postcards on rows 1-240), and a later postcard never
+ * changes them (route's outOf, the atmospheric pass, evenNew); boards 241 on keep clear of every postcard's.
+ */
+export const TRIP_17_ON = 240;
+export const POSTCARDS_TO_16 = new Set(PLAN.slice(0, TRIP_17_ON).map((r) => r.destination).filter(Boolean));
+export const NOT_ON_TRIP_11_ON = new Set([...NEVER_FROM_11, ...lookalikesOf(destinations.filter((d) => POSTCARDS_TO_16.has(d.id)))]);
+export const NOT_ON_TRIP_17_ON = new Set([...NEVER_FROM_11, ...lookalikesOf(destinations)]);
+/** The pool limit of board i (0-based) from trip 11 on, or null before it. */
+export const notOnBoard = (i) => (i >= TRIP_17_ON ? NOT_ON_TRIP_17_ON : i >= TRIP_11_ON ? NOT_ON_TRIP_11_ON : null);
+/**
+ * THE NEVER-SEEN PICTURES SHARED EVENLY across trips 11-16 (lead, 2026-11-07): make-campaign.mts runs lib.mts
+ * evenNew after the atmospheric pass, moving new pictures in place between the trips' boards. Not on trips
+ * 17 on (lead, 2026-11-08: 14 never-seen pictures were left for them, kept where the picker puts them).
  */
 export const EVEN_NEW = true;
+export const EVEN_NEW_TO = TRIP_17_ON;
 PLAN.forEach((row, i) => {
   if (i < TRIP_11_ON) return;
-  Object.assign(row, { old: NOT_ON_TRIP_11_ON, oldMost: 0, longest: true, busyLean: 3 });
+  Object.assign(row, { old: notOnBoard(i), oldMost: 0, longest: true, busyLean: 3 });
 });
 // every unmarked board is READABLE (creator, 2026-10-27, after "rigged"-feeling boards 18-19): a player who
 // draws by the face-up cards wins it 85% or more; hard and super hard boards may still hide the way. Where

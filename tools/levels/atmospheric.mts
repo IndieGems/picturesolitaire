@@ -117,8 +117,8 @@ export function atmosphericPass(levels, { distinct, spacing, trips = [], wideFro
     const fam = a.family ?? a.id;
     if (others.some((q) => familyOf(q.id) === fam)) return false;
     if (tripFams[i].has(fam)) return false;
-    // from board `wideFrom` (trips 11-15) none looks like any postcard at all (`postcardFamilies`), as their clear pool
-    if (i >= wideFrom && postcardFamilies.has(fam)) return false;
+    // from board `wideFrom` (trips 11 on) none looks like any postcard at all (`postcardFamilies`, a set or one a board), as their clear pool
+    if (i >= wideFrom && (typeof postcardFamilies === "function" ? postcardFamilies(i) : postcardFamilies).has(fam)) return false;
     const words = wordsOf(a);
     if (others.some((q) => wordsOf(q).some((x) => words.some((y) => sameWord(x, y))))) return false;
     if (a.album && others.filter((q) => q.album === a.album).length >= Math.ceil(n / 3)) return false;
