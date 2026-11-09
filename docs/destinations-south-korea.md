@@ -67,8 +67,10 @@ so the two never share a board:
 - The onggi jars take *Kimchi Making*.
 - Sancheong's persimmons take *Persimmons*.
 - Jeju's tangerines take *Orange Grove*.
+- Hahoe takes *Thatched Cottage*.
 
-The other nine get families of their own.
+The other eight get families of their own. The tangerine card doesn't use the name
+*hallabong*: whether it is a trade mark is unclear.
 
 **Shipped postcards, not repeated.**
 - **Hahoe is not Shirakawa-go.** Its thatch is low, rounded and golden, on single-storey houses
