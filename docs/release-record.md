@@ -75,8 +75,24 @@ Dev: build 0.56.0 (9849bcb, Gem Web SDK 16.0.0), store page 11, config 42, check
     - a new guest opens on Level 1, with no dev menu;
     - store page 18.
   - **Untested live:** a real paid claim on 151, and a stamped page from a real record (no account reaches 151 without a reset; check.mts replays every new board's claims).
-  - **Found, older:** on a 360x640 phone a trip-end win card with a mark line is taller than the screen, so Stamp your passport sits below the fold and needs a scroll (TODO.md).
+  - **Found, older:** on a 360x640 phone a trip-end win card with a mark line is taller than the screen, so Stamp your passport sits below the fold and needs a scroll. Fixed in 0.120.0 (below).
   - **Another developer moves test to release; this task force never promotes to release.** Release serves 0.111.0, checker 0.1.50, config 59 and store page 16.
+- 2026-11-09: **trips 17–22, Levels 241–330, joined trips 11–16 on test** (the creator, 2026-11-08, on a trip for each of our 12 languages that had none: "go ahead and do them all except russia", "Use Turkiye for US players as well please", then "after this is done push to dev and a clean version to test"). The trips are Brazil, Germany, Austria & Switzerland, South Korea, Poland, Türkiye and China. Test's 0.120.0 replaced 0.115.0, so the other developer tests trips 11–22 together.
+  - **Art:** 90 painted postcards and 6 stamps are the only new art (places vetted per trip, `docs/destinations-*.md`); every everyday picture comes from the library, the 200 VIP-event pictures still kept off.
+  - **Levels:** 90 levels, no harder than trips 9–10 (Levels b8beb913, f498a39e; the plan is in `docs/difficulty-curve.md`).
+  - **Server:** checker 0.1.53 (Levels 1–330) and config 62: Coins for 241–330 (the campaign pays 12,085 in all, `docs/coins.md`) and six more Stamped achievements, so 630 of 1,000 points are used once released and 370 are left.
+  - **Text and store:** all 12 locales. "Türkiye" in en, tr and ko (튀르키예); the other languages keep their own name (Türkei, Turquie, トルコ…). Store page 19 lists the six new trips.
+  - **Fit fixes at 360 px** (UI 1f0ec09a, from QA's first pass): passport captions never break mid-word (115 did, in trips 1–16 too; a too-long name shrinks to 12 px, then de and ru break at a marked compound join and ko between a name's parts); a trip-end card keeps Stamp your passport on screen with Challenge/Share above it (the older fold bug, ad093827 and 1f0ec09a); a level's tag goes under its number when it can't sit beside it (de, fr, it, pl, pt-BR, ja and ru were cut). Left: at 320 px wide, below the 360 px we measure at, the stacked label still doesn't fit.
+  - **Test has** 0.120.0 (`build:release` of 1f0ec09a, all 877 proved afresh, no dev menu), checker 0.1.53, config 62 and store page 19, promoted in that order. Dev has 0.119.0, its plain build, with the same function, config and store page.
+  - **QA PASS** on the release builds of 10f164ce, then of 1f0ec09a:
+    - Levels 241, 246, 256, 271, 286, 301, 306, 316, 255, 315 and 330 open, draw and unfold;
+    - 255's Stamp lands the toucan and Next trip opens 256; 240 leads to 241; 330 is the last level ("every level for now", Home);
+    - a 22-page passport with stamps t17–t22;
+    - ko, zh, tr and de fit; the three fit fixes above measured on every page and card concerned;
+    - a new test guest opens on Level 1 with no dev menu and its win is paid by 0.1.53 (100 Coins, 3 of each helper);
+    - store page 19 in en and de.
+  - **Untested live:** as for trips 11–16, a real paid claim on 241 and on, and a stamped page from a real record (check.mts replays every new board's claims).
+  - **Moving it to release:** checker 0.1.53, config 62 and store page 19 before the build, as always. Release serves 0.111.0, checker 0.1.50, config 59 and store page 16.
 - 2026-10-30: a bug found after the candidate. A revisited level's own picture could break on its win card or enlarged view (the pack let it go while on screen), fixed in 53865f31 (dev 0.80.0). Test's 0.67.0 still has it, so the next release candidate must include the fix.
 - GSR-018: the creator bought a soundtrack on dev; cosmetic_bought was counted, and the cosmetics funnel reached every step (the release reviewer read it).
 - Russian "монет" for Coins is correct: it is only ever read after a price. A price ending in 1, or in 2–4 outside 11–14, would need another form.
