@@ -59285,6 +59285,681 @@
         "blue"
       ],
       "busy": 0
+    },
+    {
+      "id": "dest-gwanghwamun",
+      "name": "Gwanghwamun",
+      "place": "Gyeongbokgung, Seoul",
+      "trip": "south-korea",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-gwanghwamun.webp",
+      "board": "pictures/destinations/dest-gwanghwamun-board.webp",
+      "thumb": "pictures/destinations/dest-gwanghwamun-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "palace-gate",
+      "subjects": [
+        "Gwanghwamun",
+        "palace gate"
+      ],
+      "palette": [
+        "grey",
+        "red",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-bukchon",
+      "name": "Bukchon Hanok Village",
+      "place": "Seoul, Korea",
+      "trip": "south-korea",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-bukchon.webp",
+      "board": "pictures/destinations/dest-bukchon-board.webp",
+      "thumb": "pictures/destinations/dest-bukchon-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "hanok-eaves",
+      "subjects": [
+        "Bukchon",
+        "hanok roofs"
+      ],
+      "palette": [
+        "grey",
+        "brown",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-hwahongmun",
+      "name": "Hwahongmun",
+      "place": "Hwaseong Fortress, Suwon",
+      "trip": "south-korea",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-hwahongmun.webp",
+      "board": "pictures/destinations/dest-hwahongmun-board.webp",
+      "thumb": "pictures/destinations/dest-hwahongmun-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "water-gate",
+      "subjects": [
+        "Hwahongmun",
+        "water gate"
+      ],
+      "palette": [
+        "grey",
+        "red",
+        "green",
+        "white"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-seocheon-reeds",
+      "name": "The reed fields of Seocheon",
+      "place": "Seocheon, South Chungcheong",
+      "trip": "south-korea",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-seocheon-reeds.webp",
+      "board": "pictures/destinations/dest-seocheon-reeds-board.webp",
+      "thumb": "pictures/destinations/dest-seocheon-reeds-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "pastel",
+      "family": "tall-grass",
+      "subjects": [
+        "reed field",
+        "Geum River estuary"
+      ],
+      "palette": [
+        "gold",
+        "silver",
+        "blue",
+        "grey"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-sunchang-onggi",
+      "name": "Sunchang's chilli-paste jars",
+      "place": "Sunchang, North Jeolla",
+      "trip": "south-korea",
+      "tag": "silly",
+      "cols": 5,
+      "rows": 5,
+      "crop": [
+        0,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-sunchang-onggi.webp",
+      "board": "pictures/destinations/dest-sunchang-onggi-board.webp",
+      "thumb": "pictures/destinations/dest-sunchang-onggi-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        1200,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "kimchi-making",
+      "subjects": [
+        "onggi jars",
+        "gochujang"
+      ],
+      "palette": [
+        "brown",
+        "red",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-suncheon-mudskippers",
+      "name": "The mudskippers of Suncheon Bay",
+      "place": "Suncheon, South Jeolla",
+      "trip": "south-korea",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        1
+      ],
+      "file": "pictures/destinations/dest-suncheon-mudskippers.webp",
+      "board": "pictures/destinations/dest-suncheon-mudskippers-board.webp",
+      "thumb": "pictures/destinations/dest-suncheon-mudskippers-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "mudskipper",
+      "subjects": [
+        "mudskippers",
+        "Suncheon Bay mudflats"
+      ],
+      "palette": [
+        "grey",
+        "brown",
+        "blue",
+        "gold"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-sancheong-persimmons",
+      "name": "Sancheong's persimmon curtains",
+      "place": "Sancheong, South Gyeongsang",
+      "trip": "south-korea",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-sancheong-persimmons.webp",
+      "board": "pictures/destinations/dest-sancheong-persimmons-board.webp",
+      "thumb": "pictures/destinations/dest-sancheong-persimmons-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "gouache",
+      "family": "persimmons",
+      "subjects": [
+        "drying persimmons",
+        "Jirisan"
+      ],
+      "palette": [
+        "orange",
+        "brown",
+        "blue",
+        "grey"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-gamcheon",
+      "name": "Gamcheon Culture Village",
+      "place": "Busan, Korea",
+      "trip": "south-korea",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-gamcheon.webp",
+      "board": "pictures/destinations/dest-gamcheon-board.webp",
+      "thumb": "pictures/destinations/dest-gamcheon-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "hillside-houses",
+      "subjects": [
+        "Gamcheon",
+        "hillside houses"
+      ],
+      "palette": [
+        "blue",
+        "pink",
+        "yellow",
+        "mint"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-cheomseongdae",
+      "name": "Cheomseongdae",
+      "place": "Gyeongju, North Gyeongsang",
+      "trip": "south-korea",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-cheomseongdae.webp",
+      "board": "pictures/destinations/dest-cheomseongdae-board.webp",
+      "thumb": "pictures/destinations/dest-cheomseongdae-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "stone-observatory",
+      "subjects": [
+        "Cheomseongdae",
+        "stone observatory"
+      ],
+      "palette": [
+        "grey",
+        "green",
+        "pink",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-hahoe",
+      "name": "Hahoe Folk Village",
+      "place": "Andong, North Gyeongsang",
+      "trip": "south-korea",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-hahoe.webp",
+      "board": "pictures/destinations/dest-hahoe-board.webp",
+      "thumb": "pictures/destinations/dest-hahoe-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "thatched-cottage",
+      "subjects": [
+        "Hahoe",
+        "thatched village"
+      ],
+      "palette": [
+        "gold",
+        "grey",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-museom-log-bridge",
+      "name": "The log bridge of Museom",
+      "place": "Yeongju, North Gyeongsang",
+      "trip": "south-korea",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-museom-log-bridge.webp",
+      "board": "pictures/destinations/dest-museom-log-bridge-board.webp",
+      "thumb": "pictures/destinations/dest-museom-log-bridge-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "log-bridge",
+      "subjects": [
+        "Museom log bridge",
+        "sandy stream"
+      ],
+      "palette": [
+        "brown",
+        "gold",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-ulsanbawi",
+      "name": "Ulsanbawi",
+      "place": "Seoraksan, Gangwon",
+      "trip": "south-korea",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-ulsanbawi.webp",
+      "board": "pictures/destinations/dest-ulsanbawi-board.webp",
+      "thumb": "pictures/destinations/dest-ulsanbawi-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "granite-ridge",
+      "subjects": [
+        "Ulsanbawi",
+        "granite peaks"
+      ],
+      "palette": [
+        "grey",
+        "green",
+        "blue",
+        "white"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-anbandegi",
+      "name": "Anbandegi's cabbage fields",
+      "place": "Gangneung, Gangwon",
+      "trip": "south-korea",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-anbandegi.webp",
+      "board": "pictures/destinations/dest-anbandegi-board.webp",
+      "thumb": "pictures/destinations/dest-anbandegi-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "cabbage-field",
+      "subjects": [
+        "cabbage fields",
+        "wind turbines"
+      ],
+      "palette": [
+        "green",
+        "red-brown",
+        "white",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-jeju-tangerines",
+      "name": "Jeju's knobbly tangerines",
+      "place": "Jeju, Korea",
+      "trip": "south-korea",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-jeju-tangerines.webp",
+      "board": "pictures/destinations/dest-jeju-tangerines-board.webp",
+      "thumb": "pictures/destinations/dest-jeju-tangerines-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "orange-grove",
+      "subjects": [
+        "knobbly tangerines",
+        "lava-stone wall"
+      ],
+      "palette": [
+        "orange",
+        "green",
+        "black",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-seongsan-ilchulbong",
+      "name": "Seongsan Ilchulbong",
+      "place": "Jeju, Korea",
+      "trip": "south-korea",
+      "tag": "famous",
+      "cols": 6,
+      "rows": 6,
+      "crop": [
+        2,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-seongsan-ilchulbong.webp",
+      "board": "pictures/destinations/dest-seongsan-ilchulbong-board.webp",
+      "thumb": "pictures/destinations/dest-seongsan-ilchulbong-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        1440,
+        1920
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "tuff-cone",
+      "subjects": [
+        "Seongsan Ilchulbong",
+        "crater"
+      ],
+      "palette": [
+        "green",
+        "brown",
+        "blue",
+        "gold"
+      ],
+      "busy": 0
     }
   ],
   "items": [
