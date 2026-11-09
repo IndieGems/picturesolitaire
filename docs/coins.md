@@ -12,6 +12,17 @@ board's is its par, the fewest moves found. Its length stands in for how long th
 takes. Campaign board 1 pays the onboarding prize instead, 100. The daily puzzle pays
 50, once a day.
 
+**The welcome** (the creator, 2026-11-09: "We want to have given out at least 500 [Coins] within
+the first 5 levels"; "Just make 1-5 give out 100, and the achievement will make it 600 altogether"):
+campaign boards 1 to 5 pay 100 each, 500 in all (until config 63 they paid 100/10/25/20/30, 185),
+and finishing the first level pays First Steps' prize, 100 more, as a second grant on board 1's
+progression (the platform takes no Coins on an achievement's own level): 600 Coins by Level 5.
+100 is the most Coins the platform pays in one grant (its max_per_event), so each is one grant at
+the cap, never more. At 3 minutes a level this is far above the standard's 250 to 1,000 an hour for
+its first quarter hour: **a deliberate front-loaded welcome, on the creator's word**, not a rate to
+flag at the release review. Each board pays once, ever, so a player who had already won any of
+boards 1 to 5 keeps what it paid then and is not topped up.
+
 **A Souvenir** (the optional all-long bonus board after each trip, `docs/souvenirs.md`) pays
 what the better-paying of its trip's relief boards pays, once, ever (the lead, 2026-10-28: the
 creator's "Coins like a relief board", a bonus for the detour). By the rule its short line, about
@@ -20,9 +31,10 @@ and leaves the hourly rate where it is.
 
 ## The hourly maths (the standard: about 500 an hour of ordinary play)
 
-- Campaign: 330 boards, 12085 Coins in all (11985 without the onboarding prize).
-  The design puts a relaxed board at 2 to 4 minutes. At 3 minutes a board, 36 a board
-  is about 729 Coins an hour; at 2 minutes 1093, at 4 minutes 546.
+- Campaign: 330 boards, 12400 Coins in all, plus First Steps' 100 (11900 from board 6 on, by the rule).
+  Boards 1 to 5, the welcome: 600 with First Steps, about 2400 an hour at 3 minutes a level, on the creator's word.
+  From board 6: the design puts a relaxed board at 2 to 4 minutes. At 3 minutes a board, 37 a board
+  is about 732 Coins an hour; at 2 minutes 1098, at 4 minutes 549.
 - Challenge route: 20 boards, 540 Coins in all, 27 a board on average.
   At 4 minutes a board that is about 405 an hour; at 5 minutes 324.
 - Daily: 50 once a day, on top.
@@ -35,7 +47,7 @@ and leaves the hourly rate where it is.
   its levels (about 703), an event pays about 1203 over its 30 levels: at 3 minutes a level,
   about 802 an hour while playing an event, inside the standard's 250 to 1,000. Two events a
   month add 1000 Coins of finds a month to a VIP who finishes both.
-- One-time: the onboarding prize. Replays and campaign boards past the last pay nothing.
+- One-time: the welcome (boards 1 to 5), the onboarding prize and First Steps' prize. Replays and campaign boards past the last pay nothing.
 - **Still to measure**: real minutes per board once the creator has played some (the lead's
   note): if boards run much faster or slower than 2 to 4 minutes, change the rule here.
 
@@ -71,11 +83,11 @@ none. The standard's ranges: a quick top-up 100 to 200 Gems, a one-time starter 
 
 | board | lane | stored winning line (moves) | Coins |
 |---|---|---|---|
-| c01 | campaign 1 | 7 | 100 (onboarding prize) |
-| c02 | campaign 2 | 11 | 10 |
-| c03 | campaign 3 | 22 | 25 |
-| c04 | campaign 4 | 18 | 20 |
-| c05 | campaign 5 | 25 | 30 |
+| c01 | campaign 1 | 7 | 100 (onboarding prize) + 100 (First Steps' prize) |
+| c02 | campaign 2 | 11 | 100 (the welcome; 10 by the rule) |
+| c03 | campaign 3 | 22 | 100 (the welcome; 25 by the rule) |
+| c04 | campaign 4 | 18 | 100 (the welcome; 20 by the rule) |
+| c05 | campaign 5 | 25 | 100 (the welcome; 30 by the rule) |
 | c06 | campaign 6 | 23 | 25 |
 | c07 | campaign 7 | 26 | 30 |
 | c08 | campaign 8 | 15 | 15 |

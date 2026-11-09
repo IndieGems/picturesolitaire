@@ -19,7 +19,8 @@
 // campaign board's stored line is A winning line, not the shortest; a challenge
 // board's is its par (the fewest moves found). The line's length stands in for
 // how long a board takes until real minutes per board are measured. The first campaign board, where onboarding is played, pays the
-// onboarding prize instead: 100. The daily pays 50, once a day.
+// onboarding prize instead: 100. Campaign boards 2 to 5 pay the welcome, 100 each (WELCOME below:
+// the creator, 2026-11-09). The daily pays 50, once a day.
 // Every progression is written only by the function (function_may_grant): it
 // replays the win before it moves one.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
@@ -58,6 +59,22 @@ const DAILY_RUN = "daily_result";
 /** The onboarding prize: the keepsake table entry in src/net/tables.json says which board and how many Coins (the game shows the same number). */
 const KEEP = TABLES_FILE().find((t) => t.award === "onboarding");
 const ONBOARDING = { board: KEEP?.board ?? "c01", coins: KEEP?.coins ?? 100 };
+/**
+ * The welcome (the creator, 2026-11-09: "We want to have given out at least 500 [Coins] within the
+ * first 5 levels"; "Just make 1-5 give out 100"): campaign boards 1 to 5 pay 100 each, the most the
+ * platform pays in one grant (Coins' max_per_event), 500 in all, board 1's being the onboarding prize.
+ * A deliberate front-loaded welcome, above the standard's hourly band on the creator's word. The rule's
+ * own amount stays each board's `base`, which a Souvenir's "like a relief board" reads.
+ */
+const WELCOME = { boards: 5, coins: 100 };
+/**
+ * First Steps' prize (the creator, 2026-11-09: "the achievement will make it 600 altogether"): 100
+ * Coins more when the first level is finished, which is always the onboarding board's first win. The
+ * platform takes no Coins on an achievement's level (a level's platform_grants hold achievements only),
+ * so it is a second grant on that board's own progression, beside the onboarding prize: each its own
+ * firing of at most 100. Paid once ever, with the board, so never to a player already past board 1.
+ */
+const FIRST_STEPS = { board: ONBOARDING.board, coins: 100, achievement: "first-steps" };
 const DAILY_COINS = 50;
 /** The daily challenge's copy, which the Arcade shows (platform_display: challenge): English, then UI's
  * translations (the translation pass, 2026-11-02). Players read "level", never "board". The copy is
@@ -344,19 +361,22 @@ const souvenirCoins = (l, most) => {
   const trip = TRIPS.find((t) => t.id === l.trip);
   if (!trip) throw new Error(`make-config: souvenir ${l.id}: its trip ${l.trip} is not in trips.json`);
   const relief = rows.filter((r) => r.lane === "campaign" && r.n >= trip.from && r.n <= trip.to && CAMPAIGN[r.n - 1]?.axes?.role === "relief");
-  return relief.length ? Math.max(...relief.map((r) => r.coins)) : coinsFor(l.line.length, most);
+  // by the rule's amount, never the welcome's: the welcome is a one-off, not what a relief board pays
+  return relief.length ? Math.max(...relief.map((r) => r.base)) : coinsFor(l.line.length, most);
 };
 for (const [lane, { label, most, file: name }] of Object.entries(LANES)) {
   const file = join(root, "src/content/levels", `${name ?? lane}.json`);
   if (!existsSync(file)) continue;
   JSON.parse(readFileSync(file, "utf8")).levels.forEach((l, i) => {
     const moves = l.line.length;
-    const coins = l.id === ONBOARDING.board ? ONBOARDING.coins : lane === "souvenir" ? souvenirCoins(l, most) : coinsFor(moves, most);
+    const base = l.id === ONBOARDING.board ? ONBOARDING.coins : lane === "souvenir" ? souvenirCoins(l, most) : coinsFor(moves, most);
+    const welcome = lane === "campaign" && i < WELCOME.boards && l.id !== ONBOARDING.board;
+    const coins = welcome ? WELCOME.coins : base;
     // an event level is named by its event and its place in it ("Haunted Holiday level 4")
     const ev = lane === "event" ? EVENTS.find((e) => (e.levels ?? []).includes(l.id)) : undefined;
     if (lane === "event" && !ev) throw new Error(`make-config: event level ${l.id}: no event in events.json lists it`);
     const name = ev ? `${ev.theme} level ${ev.levels.indexOf(l.id) + 1}` : `${label} ${i + 1}`;
-    rows.push({ lane, id: l.id, n: i + 1, label: name, moves, coins, onboarding: l.id === ONBOARDING.board, ...(l.trip ? { trip: l.trip } : {}), ...(ev ? { event: ev.id } : {}) });
+    rows.push({ lane, id: l.id, n: i + 1, label: name, moves, coins, base, welcome, onboarding: l.id === ONBOARDING.board, ...(l.trip ? { trip: l.trip } : {}), ...(ev ? { event: ev.id } : {}) });
   });
 }
 
@@ -377,6 +397,11 @@ for (const r of rows) {
   y.push(`        - mode: on_complete${r.onboarding ? "   # the onboarding prize: onboarding is played on this board" : ""}`);
   y.push(`          amount: ${r.coins}`);
   y.push("          target: { platform_currency_slug: ARCADE_TICKETS }");
+  if (r.lane === "campaign" && r.id === FIRST_STEPS.board) {
+    y.push(`        - mode: on_complete   # First Steps' prize (the creator, 2026-11-09): its own grant, beside the onboarding prize`);
+    y.push(`          amount: ${FIRST_STEPS.coins}`);
+    y.push("          target: { platform_currency_slug: ARCADE_TICKETS }");
+  }
   const granted = TABLES.filter((t) => r.lane === "campaign" && t.board === r.id);
   if (granted.length) {
     y.push("      # granted with the prize, once (src/net/tables.json)");
@@ -704,6 +729,21 @@ md.push("board's is its par, the fewest moves found. Its length stands in for ho
 md.push(`takes. Campaign board 1 pays the onboarding prize instead, ${ONBOARDING.coins}. The daily puzzle pays`);
 md.push(`${DAILY_COINS}, once a day.`);
 md.push("");
+{
+  const w = rows.filter((r) => r.lane === "campaign" && r.n <= WELCOME.boards);
+  const was = w.map((r) => r.base);
+  md.push(`**The welcome** (the creator, 2026-11-09: "We want to have given out at least 500 [Coins] within`);
+  md.push(`the first 5 levels"; "Just make 1-5 give out 100, and the achievement will make it 600 altogether"):`);
+  md.push(`campaign boards 1 to ${WELCOME.boards} pay ${WELCOME.coins} each, ${sum(w)} in all (until config 63 they paid ${was.join("/")}, ${was.reduce((a, b) => a + b, 0)}),`);
+  md.push(`and finishing the first level pays First Steps' prize, ${FIRST_STEPS.coins} more, as a second grant on board 1's`);
+  md.push(`progression (the platform takes no Coins on an achievement's own level): ${sum(w) + FIRST_STEPS.coins} Coins by Level ${WELCOME.boards}.`);
+  md.push(`${WELCOME.coins} is the most Coins the platform pays in one grant (its max_per_event), so each is one grant at`);
+  md.push("the cap, never more. At 3 minutes a level this is far above the standard's 250 to 1,000 an hour for");
+  md.push("its first quarter hour: **a deliberate front-loaded welcome, on the creator's word**, not a rate to");
+  md.push("flag at the release review. Each board pays once, ever, so a player who had already won any of");
+  md.push("boards 1 to 5 keeps what it paid then and is not topped up.");
+  md.push("");
+}
 md.push("**A Souvenir** (the optional all-long bonus board after each trip, `docs/souvenirs.md`) pays");
 md.push("what the better-paying of its trip's relief boards pays, once, ever (the lead, 2026-10-28: the");
 md.push("creator's \"Coins like a relief board\", a bonus for the detour). By the rule its short line, about");
@@ -713,10 +753,11 @@ md.push("");
 md.push("## The hourly maths (the standard: about 500 an hour of ordinary play)");
 md.push("");
 if (camp.length) {
-  const paid = camp.filter((r) => !r.onboarding);
+  const paid = camp.filter((r) => !r.onboarding && !r.welcome);
   const avg = sum(paid) / paid.length;
-  md.push(`- Campaign: ${camp.length} boards, ${sum(camp)} Coins in all (${sum(paid)} without the onboarding prize).`);
-  md.push(`  The design puts a relaxed board at 2 to 4 minutes. At 3 minutes a board, ${Math.round(avg)} a board`);
+  md.push(`- Campaign: ${camp.length} boards, ${sum(camp)} Coins in all, plus First Steps' ${FIRST_STEPS.coins} (${sum(paid)} from board ${WELCOME.boards + 1} on, by the rule).`);
+  md.push(`  Boards 1 to ${WELCOME.boards}, the welcome: ${sum(camp.filter((r) => r.n <= WELCOME.boards)) + FIRST_STEPS.coins} with First Steps, about ${Math.round(((sum(camp.filter((r) => r.n <= WELCOME.boards)) + FIRST_STEPS.coins) * 60) / (3 * WELCOME.boards))} an hour at 3 minutes a level, on the creator's word.`);
+  md.push(`  From board ${WELCOME.boards + 1}: the design puts a relaxed board at 2 to 4 minutes. At 3 minutes a board, ${Math.round(avg)} a board`);
   md.push(`  is about ${Math.round((avg * 60) / 3)} Coins an hour; at 2 minutes ${Math.round((avg * 60) / 2)}, at 4 minutes ${Math.round((avg * 60) / 4)}.`);
 }
 if (ch.length) {
@@ -752,7 +793,7 @@ if (evs.length) {
 } else {
   md.push("- Events: none dealt yet (Levels' src/content/levels/event-levels.json).");
 }
-md.push("- One-time: the onboarding prize. Replays and campaign boards past the last pay nothing.");
+md.push(`- One-time: the welcome (boards 1 to ${WELCOME.boards}), the onboarding prize and First Steps' prize. Replays and campaign boards past the last pay nothing.`);
 md.push("- **Still to measure**: real minutes per board once the creator has played some (the lead's");
 md.push("  note): if boards run much faster or slower than 2 to 4 minutes, change the rule here.");
 md.push("");
@@ -810,7 +851,10 @@ md.push("## Board by board");
 md.push("");
 md.push("| board | lane | stored winning line (moves) | Coins |");
 md.push("|---|---|---|---|");
-for (const r of rows) md.push(`| ${r.id} | ${r.lane} ${r.n} | ${r.moves} | ${r.coins}${r.onboarding ? " (onboarding prize)" : ""} |`);
+for (const r of rows) {
+  const why = r.onboarding ? ` (onboarding prize)${r.id === FIRST_STEPS.board ? ` + ${FIRST_STEPS.coins} (First Steps' prize)` : ""}` : r.welcome ? ` (the welcome; ${r.base} by the rule)` : "";
+  md.push(`| ${r.id} | ${r.lane} ${r.n} | ${r.moves} | ${r.coins}${why} |`);
+}
 md.push("");
 writeFileSync(join(root, "docs/coins.md"), md.join("\n"));
 console.log(`config: ${rows.length} board progressions (${camp.length} campaign, ${ch.length} challenge, ${lane("souvenir").length} souvenir, ${lane("event").length} event), the daily, its run type and board; docs/coins.md`);

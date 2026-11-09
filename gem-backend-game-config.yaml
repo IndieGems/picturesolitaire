@@ -648,6 +648,9 @@ progressions:
         - mode: on_complete   # the onboarding prize: onboarding is played on this board
           amount: 100
           target: { platform_currency_slug: ARCADE_TICKETS }
+        - mode: on_complete   # First Steps' prize (the creator, 2026-11-09): its own grant, beside the onboarding prize
+          amount: 100
+          target: { platform_currency_slug: ARCADE_TICKETS }
       # granted with the prize, once (src/net/tables.json)
       rewards_on_complete:
         - type: item_grant
@@ -661,7 +664,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 10
+          amount: 100
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: 7841de30-136b-5920-9344-6731bb37161e
     slug: board_c03
@@ -671,7 +674,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 25
+          amount: 100
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: d2891d67-a801-50da-a720-88af1ae9c6a1
     slug: board_c04
@@ -681,7 +684,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 20
+          amount: 100
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: b15bdb8e-52e9-5d9b-a970-c9ec5690632f
     slug: board_c05
@@ -691,7 +694,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_complete
-          amount: 30
+          amount: 100
           target: { platform_currency_slug: ARCADE_TICKETS }
   - id: ac45270b-05b8-50a7-ab5f-6e7978daa60a
     slug: board_c06

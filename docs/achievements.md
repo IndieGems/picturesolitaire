@@ -12,7 +12,7 @@ achievement's points or rewards; add a new achievement instead.
 
 | Group | Achievement | Earned by | Points | Icon |
 | --- | --- | --- | --- | --- |
-| Journey | First Steps | Finish your first level | 5 | `ach-first-steps`: the Statue of Liberty at sunrise |
+| Journey | First Steps | Finish your first level (also pays 100 Coins, below) | 5 | `ach-first-steps`: the Statue of Liberty at sunrise |
 | Journey | Finding Your Feet | Finish 10 levels | 10 | |
 | Journey | Seasoned Traveller | Finish 50 levels | 25 | `ach-seasoned-traveller`: a Venice gondola |
 | Journey | Globetrotter | Finish 150 levels | 75 | `ach-globetrotter`: a globe circled by a plane, landmarks on its rim |
@@ -36,6 +36,11 @@ How each is counted:
   who earned some before achievements existed gets them on their next verified win: the checker counts
   from the player's progress.
 - **Each achievement's id is stable forever.** Server keeps the ids in the config's source.
+- **First Steps pays 100 Coins** (the creator, 2026-11-09: "Just make 1-5 give out 100, and the
+  achievement will make it 600 altogether"). The platform takes no Coins on an achievement's own level,
+  so it is a second 100-Coin grant on Level 1's board progression, paid with Level 1's first win (the
+  moment First Steps unlocks), once ever: never to a player already past Level 1. The achievement's
+  points and icon are as released. The welcome's sums are in `docs/coins.md`.
 
 Who builds what (2026-10-30):
 - **Server:** the counter progressions and the achievement entries, written by make-config; the checker
