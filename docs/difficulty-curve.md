@@ -832,6 +832,69 @@ with Art's postcards, `docs/destinations-east-coast-america.md`):
 - **Still to come:** the server's checker learns the 240 (Server). Until then
   `npm run build` stops at levels-check.
 
+## Trips 17-22 (plan)
+
+**The trips** (the creator's choices, 2026-11-08: "go ahead and do them all
+except russia"). Each gives one of the game's languages a trip of its own:
+
+- Brazil, 241–255;
+- Germany, Austria and Switzerland, 256–270;
+- South Korea, 271–285;
+- Poland, 286–300;
+- Türkiye, 301–315 (the creator: "Türkiye", in English too);
+- China, 316–330.
+
+All six ship together in one build, as trips 11–16 did. The same rules hold:
+
+- **No new everyday art.** Art paints the 90 postcards and the six stamps,
+  and every other picture comes from the library as it stands.
+- **No Souvenir.**
+- **The 200 VIP-event pictures stay off.** Grand Train Journey (15 Nov) has
+  not run yet, so the reason still holds.
+- **No harder than trips 9 and 10:** every unmarked board is readable (85%
+  or more by the face-up cards), and every marked board is won by that
+  player 1 in 4 or more.
+
+**The slots are trips 11–16's** (the table in "Trips 11-16 (plan)"): the
+same 15-board rhythm, picture counts and careless targets, slot for slot.
+
+**The big boards.** Two of each trip's three marked boards are big (12 of 18,
+67%), and no trip has its big boards in the same two slots as the trip on
+either side.
+
+- **The 6×6 finale comes every other trip** from trip 16, whose finale
+  (240) is 5×5. So 255, 285 and 315 are 6×6.
+- **The other three finales** take turns: 270 at 4×5, 300 at 5×5 and 330
+  at 4×5.
+- **Trips 11–16 rotated their big pair** (x5 and x10, then x10 and the
+  finale, then x5 and the finale). Here the 6×6 finales come every other
+  trip, which a rotation of three can't keep, so each pair is the one the
+  trip before didn't have.
+
+| Trip | x5, hard | x10, hard | x15, super |
+|---|---|---|---|
+| 17, Brazil | 245, 4×5, 12 pictures | 250, **5×5**, 13 | 255, **6×6**, 19 |
+| 18, Germany, Austria and Switzerland | 260, **5×5**, 13 | 265, **5×5**, 13 | 270, 4×5, 12 |
+| 19, South Korea | 275, **5×5**, 13 | 280, 4×5, 12 | 285, **6×6**, 19 |
+| 20, Poland | 290, 4×5, 12 | 295, **5×5**, 13 | 300, **5×5**, 14 |
+| 21, Türkiye | 305, **5×5**, 13 | 310, 4×5, 12 | 315, **6×6**, 19 |
+| 22, China | 320, **5×5**, 13 | 325, **5×5**, 13 | 330, 4×5, 12 |
+
+**The postcards Art paints** (sent to the lead 2026-11-08). Each is the size
+of its board, in 3:4 cards, and plays a 2×2 window, except on the all-long
+boards:
+
+- **4×5** (a 3:5 card) on every board not named below, 12 a trip;
+- **5×5** (3:4) at 250, 260, 265, 275, 295, 300, 305, 320 and 325;
+- **6×6** (3:4) at 255, 285 and 315;
+- **4×4** (3:4), with a two-card window, tall or wide as the place runs
+  (Art's choice), at 246, 261, 276, 291, 306 and 321;
+- the stamps, t17 to t22.
+
+As before, each postcard takes the place of a picture finished mid-board on
+the proved line, so the deal and its proof stay as they were. A library
+picture that looks like a postcard stays off that postcard's trip.
+
 ## The VIP events (Levels, 2026-10-30)
 
 Each event is a pack of 30 levels of its own (the creator; [vip.md](vip.md)), the same curve for every
