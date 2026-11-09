@@ -59960,6 +59960,681 @@
         "gold"
       ],
       "busy": 0
+    },
+    {
+      "id": "dest-crooked-forest",
+      "name": "The Crooked Forest",
+      "place": "Nowe Czarnowo, West Pomerania",
+      "trip": "poland",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        3
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-crooked-forest.webp",
+      "board": "pictures/destinations/dest-crooked-forest-board.webp",
+      "thumb": "pictures/destinations/dest-crooked-forest-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "gouache",
+      "family": "crooked-pines",
+      "subjects": [
+        "Crooked Forest",
+        "bent pines"
+      ],
+      "palette": [
+        "brown",
+        "green",
+        "gold",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-gdansk-crane",
+      "name": "The Crane of Gdańsk",
+      "place": "Gdańsk, Pomerania",
+      "trip": "poland",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-gdansk-crane.webp",
+      "board": "pictures/destinations/dest-gdansk-crane-board.webp",
+      "thumb": "pictures/destinations/dest-gdansk-crane-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "canal-house",
+      "subjects": [
+        "Gdańsk Crane",
+        "Motława"
+      ],
+      "palette": [
+        "brown",
+        "red",
+        "cream",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-malbork-castle",
+      "name": "Malbork Castle",
+      "place": "Malbork, Pomerania",
+      "trip": "poland",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-malbork-castle.webp",
+      "board": "pictures/destinations/dest-malbork-castle-board.webp",
+      "thumb": "pictures/destinations/dest-malbork-castle-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "castle",
+      "subjects": [
+        "Malbork Castle",
+        "Nogat"
+      ],
+      "palette": [
+        "red",
+        "brown",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-elblag-canal",
+      "name": "The Elbląg Canal's ship railway",
+      "place": "Warmia-Masuria, Poland",
+      "trip": "poland",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-elblag-canal.webp",
+      "board": "pictures/destinations/dest-elblag-canal-board.webp",
+      "thumb": "pictures/destinations/dest-elblag-canal-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "ship-railway",
+      "subjects": [
+        "Elbląg Canal",
+        "ship on rails"
+      ],
+      "palette": [
+        "white",
+        "green",
+        "blue",
+        "grey"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-ciechocinek-towers",
+      "name": "Ciechocinek's graduation towers",
+      "place": "Ciechocinek, Kuyavia",
+      "trip": "poland",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-ciechocinek-towers.webp",
+      "board": "pictures/destinations/dest-ciechocinek-towers-board.webp",
+      "thumb": "pictures/destinations/dest-ciechocinek-towers-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "graduation-tower",
+      "subjects": [
+        "graduation tower",
+        "spa park"
+      ],
+      "palette": [
+        "brown",
+        "white",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-biskupin",
+      "name": "Biskupin",
+      "place": "Greater Poland",
+      "trip": "poland",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        1
+      ],
+      "file": "pictures/destinations/dest-biskupin.webp",
+      "board": "pictures/destinations/dest-biskupin-board.webp",
+      "thumb": "pictures/destinations/dest-biskupin-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "gouache",
+      "family": "palisade",
+      "subjects": [
+        "Biskupin",
+        "Iron Age rampart"
+      ],
+      "palette": [
+        "brown",
+        "gold",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-poznan-goats",
+      "name": "The goats of Poznań",
+      "place": "Poznań, Greater Poland",
+      "trip": "poland",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-poznan-goats.webp",
+      "board": "pictures/destinations/dest-poznan-goats-board.webp",
+      "thumb": "pictures/destinations/dest-poznan-goats-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "mountain-goat",
+      "subjects": [
+        "Poznań goats",
+        "town hall"
+      ],
+      "palette": [
+        "white",
+        "gold",
+        "blue",
+        "red"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-wroclaw-town-hall",
+      "name": "Wrocław's Old Town Hall",
+      "place": "Wrocław, Lower Silesia",
+      "trip": "poland",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-wroclaw-town-hall.webp",
+      "board": "pictures/destinations/dest-wroclaw-town-hall-board.webp",
+      "thumb": "pictures/destinations/dest-wroclaw-town-hall-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "town-hall",
+      "subjects": [
+        "Wrocław Town Hall",
+        "Market Square"
+      ],
+      "palette": [
+        "red",
+        "cream",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-nikiszowiec",
+      "name": "Nikiszowiec",
+      "place": "Katowice, Silesia",
+      "trip": "poland",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-nikiszowiec.webp",
+      "board": "pictures/destinations/dest-nikiszowiec-board.webp",
+      "thumb": "pictures/destinations/dest-nikiszowiec-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "brick-estate",
+      "subjects": [
+        "Nikiszowiec",
+        "miners' estate"
+      ],
+      "palette": [
+        "red",
+        "brown",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-lazienki-palace",
+      "name": "Łazienki's Palace on the Isle",
+      "place": "Warsaw, Masovia",
+      "trip": "poland",
+      "tag": "famous",
+      "cols": 5,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-lazienki-palace.webp",
+      "board": "pictures/destinations/dest-lazienki-palace-board.webp",
+      "thumb": "pictures/destinations/dest-lazienki-palace-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        1200,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "chateau-lake",
+      "subjects": [
+        "Palace on the Isle",
+        "Łazienki Park"
+      ],
+      "palette": [
+        "cream",
+        "green",
+        "white",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-bialowieza-bison",
+      "name": "Białowieża's wild bison",
+      "place": "Białowieża Forest, Podlaskie",
+      "trip": "poland",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-bialowieza-bison.webp",
+      "board": "pictures/destinations/dest-bialowieza-bison-board.webp",
+      "thumb": "pictures/destinations/dest-bialowieza-bison-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "bison",
+      "subjects": [
+        "European bison",
+        "primeval forest"
+      ],
+      "palette": [
+        "brown",
+        "green",
+        "gold",
+        "grey"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-kazimierz-dolny",
+      "name": "Kazimierz Dolny",
+      "place": "Lublin, Poland",
+      "trip": "poland",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-kazimierz-dolny.webp",
+      "board": "pictures/destinations/dest-kazimierz-dolny-board.webp",
+      "thumb": "pictures/destinations/dest-kazimierz-dolny-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "market-well",
+      "subjects": [
+        "Kazimierz Dolny",
+        "market well"
+      ],
+      "palette": [
+        "brown",
+        "ochre",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-zalipie",
+      "name": "Zalipie, the painted village",
+      "place": "Lesser Poland",
+      "trip": "poland",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-zalipie.webp",
+      "board": "pictures/destinations/dest-zalipie-board.webp",
+      "thumb": "pictures/destinations/dest-zalipie-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "painted-facade",
+      "subjects": [
+        "Zalipie",
+        "painted cottage"
+      ],
+      "palette": [
+        "white",
+        "blue",
+        "red",
+        "yellow"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-zakopane-villas",
+      "name": "Zakopane's wooden villas",
+      "place": "Zakopane, Lesser Poland",
+      "trip": "poland",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-zakopane-villas.webp",
+      "board": "pictures/destinations/dest-zakopane-villas-board.webp",
+      "thumb": "pictures/destinations/dest-zakopane-villas-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "pastel",
+      "family": "wooden-villa",
+      "subjects": [
+        "Zakopane style villa",
+        "Tatras"
+      ],
+      "palette": [
+        "gold",
+        "brown",
+        "grey",
+        "green"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-krakow-cloth-hall",
+      "name": "Kraków's Cloth Hall",
+      "place": "Kraków, Lesser Poland",
+      "trip": "poland",
+      "tag": "famous",
+      "cols": 5,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-krakow-cloth-hall.webp",
+      "board": "pictures/destinations/dest-krakow-cloth-hall-board.webp",
+      "thumb": "pictures/destinations/dest-krakow-cloth-hall-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        1200,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "pastel",
+      "family": "cloth-hall",
+      "subjects": [
+        "Cloth Hall",
+        "Main Market Square"
+      ],
+      "palette": [
+        "ochre",
+        "cream",
+        "grey",
+        "blue"
+      ],
+      "busy": 0
     }
   ],
   "items": [
