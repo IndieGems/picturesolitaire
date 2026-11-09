@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PC layout mockups</title>
+<style>
+  :root { --ink: #1f2d40; --soft: #55657c; --line: #d5dee9; --bg: #f3f7fb; }
+  body { margin: 0; padding: 32px 16px 64px; background: var(--bg); color: var(--ink); font: 16px/1.45 system-ui, sans-serif; }
+  main { max-width: 1200px; margin: 0 auto; }
+  h1 { margin: 0 0 6px; font-size: 28px; }
+  h2 { margin: 48px 0 4px; font-size: 22px; }
+  p { margin: 4px 0; color: var(--soft); max-width: 900px; }
+  p b { color: var(--ink); }
+  figure { margin: 18px 0 0; }
+  figure img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 10px; }
+  figcaption { margin-top: 6px; font-size: 14px; color: var(--soft); }
+  .pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr)); gap: 16px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>PC layout mockups</h1>
+  <p>Picture Passport on a PC window, 1920x1080, with each level screen also at 1366x768. These are pictures only: the phone is untouched. Every card, postcard and button is the game's own, laid out per direction. The Gem button and wallet at top left are the Arcade's, drawn where the SDK puts them.</p>
+
+  <h2>Today</h2>
+  <p>The Arcade letterboxes the game: a 9:16 column with the portrait border art on either side. If the game were handed the whole window instead, it would draw the same column on a dark backdrop.</p>
+  <div class="pair">
+    <figure><img src="0-today-arcade-home.png" alt=""><figcaption>Home, as the Arcade shows it</figcaption></figure>
+    <figure><img src="0-today-arcade-level.png" alt=""><figcaption>Level 250, as the Arcade shows it</figcaption></figure>
+    <figure><img src="0-today-wide-window-home.png" alt=""><figcaption>Home, handed the wide window today</figcaption></figure>
+    <figure><img src="0-today-wide-window-level.png" alt=""><figcaption>Level 250, handed the wide window today</figcaption></figure>
+  </div>
+
+  <h2>(a) Side columns</h2>
+  <p><b>What it is:</b> the board is centred and as tall as the window, with the trip and its postcards on the left and the tools on the right as big labelled buttons, each with its key. Home is a hub: the places to go in a sidebar, the trip big beside it. Dialogs are centred windows over the dimmed screen.</p>
+  <p><b>To build:</b> a wide layout for the level, home and dialogs, switched on by a wide window and a mouse. It reuses home's trip card, the passport's postcards and the shop. It also needs keyboard shortcuts for the tools, the store page declaring the tablet both ways, and the new words in 12 languages.</p>
+  <div class="pair">
+    <figure><img src="a-side-columns-home.png" alt=""><figcaption>Home</figcaption></figure>
+    <figure><img src="a-side-columns-shop.png" alt=""><figcaption>The shop as a centred window, in two columns</figcaption></figure>
+    <figure><img src="a-side-columns-level.png" alt=""><figcaption>Level 250, the pointer on a card</figcaption></figure>
+    <figure><img src="a-side-columns-win.png" alt=""><figcaption>Level 255, the trip's end</figcaption></figure>
+    <figure><img src="a-side-columns-level-1366.png" alt=""><figcaption>Level 250 at 1366x768</figcaption></figure>
+  </div>
+
+  <h2>(b) Toolbar</h2>
+  <p><b>What it is:</b> a slim toolbar of labelled commands with their keys, the board under it, and a foldable drawer of the trip's postcards. Home is the trip map, with the places to go as a row of buttons at the top. The win card is wide and shows every picture of the level big.</p>
+  <p><b>To build:</b> everything (a) needs, plus three new layouts: the drawer, the map home and a new picture layout for the wide win card (today's is sized for a phone card). The stacks stay on their columns, since each one refills its own.</p>
+  <div class="pair">
+    <figure><img src="b-toolbar-home.png" alt=""><figcaption>Home, the trip map, the pointer on the next stop</figcaption></figure>
+    <figure><img src="b-toolbar-level.png" alt=""><figcaption>Level 250</figcaption></figure>
+    <figure><img src="b-toolbar-win.png" alt=""><figcaption>Level 255, the trip's end, the level's pictures big</figcaption></figure>
+    <figure><img src="b-toolbar-level-1366.png" alt=""><figcaption>Level 250 at 1366x768</figcaption></figure>
+  </div>
+
+  <h2>(c) Hybrid</h2>
+  <p><b>What it is:</b> today's column, untouched, in the middle of the wide window, with panels either side. In play: the trip and its postcards on one side, the keys on the other. On home: the passport's stamps, and the places to go as big tiles.</p>
+  <p><b>To build:</b> the cheapest wide option, since no screen in the column changes. The side panels are new, and the store page and the new words are needed as in (a). It still reads as a phone column with extras.</p>
+  <div class="pair">
+    <figure><img src="c-hybrid-home.png" alt=""><figcaption>Home</figcaption></figure>
+    <figure><img src="c-hybrid-level.png" alt=""><figcaption>Level 250</figcaption></figure>
+    <figure><img src="c-hybrid-win.png" alt=""><figcaption>Level 255, the trip's end</figcaption></figure>
+    <figure><img src="c-hybrid-level-1366.png" alt=""><figcaption>Level 250 at 1366x768</figcaption></figure>
+  </div>
+
+  <h2>(d) Today's box, polished</h2>
+  <p><b>What it is:</b> today's letterboxed column, made for a mouse: buttons light up under the pointer, tooltips name each tool and its key, Esc goes back, Enter takes the main action, and the tools are a little smaller.</p>
+  <p><b>To build:</b> the smallest job. There's no store page change and nothing moves: hover states, tooltips, keyboard shortcuts, and smaller tools with a mouse only. It's also the least change in feel, since it is still a phone-shaped column.</p>
+  <div class="pair">
+    <figure><img src="d-box-polished-home.png" alt=""><figcaption>Home, the pointer on Passport</figcaption></figure>
+    <figure><img src="d-box-polished-level.png" alt=""><figcaption>Level 250, the pointer on Hint</figcaption></figure>
+    <figure><img src="d-box-polished-win.png" alt=""><figcaption>Level 255, the trip's end</figcaption></figure>
+    <figure><img src="d-box-polished-level-1366.png" alt=""><figcaption>Level 250 at 1366x768</figcaption></figure>
+  </div>
+</main>
+</body>
+</html>
