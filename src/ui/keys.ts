@@ -10,8 +10,14 @@
 // (the restart card), and before one there is nothing to lose. A key held down presses once (auto-repeat
 // is ignored, so holding H never spends two Hints); with Ctrl, Alt or Meta held a key does nothing (Ctrl+R
 // still reloads) except Ctrl+Z; nothing while typing in a field, or while a <dialog> is open (the settings,
-// the dev menu: the browser's own Esc closes those). Enter on a focused button is the browser's: it
-// presses that button.
+// the dev menu: the browser's own Esc closes those).
+//
+// Enter and Space never press again a button the POINTER left focused (QA, 2026-11-09): Chrome keeps
+// the focus on a clicked button, and a card gives it back to its opener as it closes (dialogs.ts, the
+// <dialog>s natively), so Enter after a click on Hint spent a second Hint from the player's own stock,
+// and Enter after closing Settings with Esc opened it again. Only a focus the keyboard moved (Tab, until
+// the next pointer press) keeps the browser's own Enter and Space, so a player tabbing to a button still
+// presses it; anywhere else Enter is the main action and Space nothing.
 //
 // The keys' hints (the chips on the wide layout's buttons, the tooltips over the column's) show only where
 // the pointer hovers (wide.css). Enter and Esc are named in the player's language (locales, keys.*), as
@@ -38,6 +44,26 @@ function press(el: HTMLElement): void {
   el.classList.add("pressed");
   setTimeout(() => el.classList.remove("pressed"), 120);
   el.click();
+}
+
+/** What Enter or Space would press (the browser's activation), were the focus on it. */
+const CONTROL =
+  "button, a[href], summary, [role=button], [role=switch], [role=tab], [role=menuitem], input[type=checkbox], input[type=radio], input[type=button], input[type=submit], input[type=reset]";
+
+// Tab hands the focus to the keyboard until the pointer is pressed again; each focus that arrives
+// meanwhile (the Tab's own, a card's or a <dialog>'s moving it after a key) is the keyboard's.
+let keyboardLed = false;
+let keyFocused: EventTarget | null = null;
+if (typeof document !== "undefined") {
+  document.addEventListener("keydown", (e) => e.key === "Tab" && (keyboardLed = true), true);
+  document.addEventListener("pointerdown", () => (keyboardLed = false), true);
+  document.addEventListener("focusin", (e) => (keyFocused = keyboardLed ? e.target : null), true);
+}
+
+/** The focused control, when the pointer left it focused (not the keyboard): Enter or Space must not press it. */
+function pointerFocused(): HTMLElement | null {
+  const a = document.activeElement;
+  return a instanceof HTMLElement && a !== document.body && a !== keyFocused && a.matches(CONTROL) ? a : null;
 }
 
 const typing = (el: Element | null): boolean =>
@@ -75,10 +101,20 @@ export function watchKeys(o: {
 }): void {
   nameKeys();
   onLocaleChange(nameKeys);
+  // Space presses on its release: stopped there too, for a control the pointer left focused
+  document.addEventListener("keyup", (e) => {
+    if (e.key === " " && pointerFocused()) e.preventDefault();
+  });
   document.addEventListener("keydown", (e) => {
-    if (e.defaultPrevented || e.repeat || e.isComposing) return;
-    if (typing(document.activeElement) || document.querySelector("dialog[open]")) return;
+    if (e.defaultPrevented || e.isComposing) return;
     const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    // not the browser's press of a control the pointer left focused, held down or not, in a <dialog> too
+    if ((key === "Enter" || key === " ") && pointerFocused()) {
+      e.preventDefault();
+      if (key === " ") return;
+    }
+    if (e.repeat) return;
+    if (typing(document.activeElement) || document.querySelector("dialog[open]")) return;
     const held = e.ctrlKey || e.altKey || e.metaKey;
     const undoChord = key === "z" && !e.altKey && !e.shiftKey && (mac ? e.metaKey !== e.ctrlKey : e.ctrlKey && !e.metaKey);
     if (held && !undoChord) return;
@@ -95,9 +131,9 @@ export function watchKeys(o: {
     }
 
     if (key === "Enter") {
-      // a focused button, link or field answers Enter itself
+      // what the keyboard focused answers Enter itself (the browser presses a button tabbed to)
       const a = document.activeElement;
-      if (a && a !== document.body && a.matches("button, a[href], input, select, textarea, [tabindex]")) return;
+      if (a && a !== document.body && a === keyFocused) return;
       const main = card ? card.querySelector<HTMLElement>(".next") : o.main();
       if (!pressable(main)) return;
       e.preventDefault();
