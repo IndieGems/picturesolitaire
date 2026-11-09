@@ -160,7 +160,18 @@ function inkedStamp(url: string, name: string, label: string): HTMLElement {
   img.draggable = false;
   img.addEventListener("error", () => {
     s.classList.remove("art");
-    s.replaceChildren(el("i", "star"), el("b", "", name), el("i", "star"));
+    const b = el("b", "", name);
+    s.replaceChildren(el("i", "star"), b, el("i", "star"));
+    // a long word (SWITZERLAND, ÖSTERREICH) set smaller rather than broken mid-word ("SWITZERL / AND",
+    // 2026-11-08, trip 18 before its drawing), down to 8px, once the ring is laid out on the page
+    const fit = new ResizeObserver(() => {
+      if (!b.clientWidth) return; // not shown yet: the next size it gets
+      fit.disconnect();
+      b.style.overflowWrap = "normal";
+      for (let px = 12; px > 8 && b.scrollWidth > b.clientWidth + 1; ) b.style.fontSize = `${--px}px`;
+      b.style.removeProperty("overflow-wrap");
+    });
+    fit.observe(b);
   }, { once: true });
   img.src = url;
   s.append(img);
