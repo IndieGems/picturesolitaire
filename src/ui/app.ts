@@ -1827,7 +1827,9 @@ function showWin(): void {
   // board 1's finish card says more (the prize, the travel kit): its pictures take less of the height;
   // so does a card with the friends' row (Challenge a friend, Share)
   const dare = dareOf(lastWin);
-  const share = lastWin.kind === "campaign" && lastWin.milestone ? 0.2 : dare || lastWin.kind === "oneoff" ? 0.28 : 0.34;
+  // so does a trip's last level's (the trip done, and on the last level that there are no more yet)
+  const tripEnd = lastWin.kind === "campaign" && (!!lastWin.stamp || boardNumber(lastWin.level) === levels());
+  const share = lastWin.kind === "campaign" && lastWin.milestone ? 0.2 : tripEnd ? 0.17 : dare || lastWin.kind === "oneoff" ? 0.28 : 0.34;
   const gallery = layoutGallery(board.pictures(), share);
   if (lastWin.kind === "oneoff") return void showOneOffWin(lastWin, gallery);
   if (lastWin.kind === "souvenir") return void showSouvenirWin(lastWin, gallery);
@@ -1868,23 +1870,24 @@ function showWin(): void {
         leaveInto("win-next", () => openPlay({ kind: "campaign", level: nextAfter(won), ...(practice ? { practice } : {}) })),
       );
   const toHome = () => leaveTo("win-home", goHome);
+  // a trip's end says so under the title, where it is read first, before the pictures
   winVeil.replaceChildren(
-    h(
-      "div",
-      { class: "card" },
-      cornerKey("home", t("win.home"), "win.home", toHome),
-      h("h2", {}, t("win.title")),
-      mark ? h("p", { class: `mark-beaten ${mark}` }, t(mark === "hard" ? "win.beatHard" : "win.beatSuper")) : null,
-      gallery,
-      h(
-        "div",
-        { class: "stats" },
-        h("div", { class: "stat glass" }, h("b", {}, String(moves)), h("span", {}, t("win.moves"))),
-        h("div", { class: "stat glass" }, h("b", {}, clock(ms)), h("span", {}, t("win.time"))),
-      ),
-      ended ? h("p", { class: "trip-done" }, t("win.tripDone", { trip: tripPlace(ended) })) : null,
-      last ? h("p", {}, t("win.allDone")) : null,
-      dare ? friendCards.socialRow(dare) : null,
+    pinnedCard(
+      `card${ended || last ? " trip-end" : ""}`,
+      [cornerKey("home", t("win.home"), "win.home", toHome), h("h2", {}, t("win.title"))],
+      [
+        mark ? h("p", { class: `mark-beaten ${mark}` }, t(mark === "hard" ? "win.beatHard" : "win.beatSuper")) : null,
+        ended ? h("p", { class: "trip-done" }, t("win.tripDone", { trip: tripPlace(ended) })) : null,
+        gallery,
+        h(
+          "div",
+          { class: "stats" },
+          h("div", { class: "stat glass" }, h("b", {}, String(moves)), h("span", {}, t("win.moves"))),
+          h("div", { class: "stat glass" }, h("b", {}, clock(ms)), h("span", {}, t("win.time"))),
+        ),
+        last ? h("p", { class: "all-done" }, t("win.allDone")) : null,
+        dare ? friendCards.socialRow(dare) : null,
+      ],
       next,
     ),
   );
@@ -2459,7 +2462,10 @@ function layoutGallery(pics: BoardPicture[], share = 0.34): HTMLElement {
   const gallery = h("div", { class: `gallery${strip ? " strip" : ""}`, style: `--u:${Math.floor(u)}px;--gap:${GAP}px` });
   const drawn = { u: Math.floor(u), aspect };
   let i = 0;
-  for (const row of strip ? [pics] : best.rows) {
+  // the strip as tall as its tallest picture (a destination's postcard, 6x6 among 2x2s): that one first,
+  // in view, rather than leaving an empty band round the small ones while it waits off the end
+  const inStrip = [...pics].sort((a, b) => b.rows - a.rows);
+  for (const row of strip ? [inStrip] : best.rows) {
     if (!row.length) continue;
     const line = h("div", { class: "line" });
     for (const p of row) line.append(galleryPicture(p, i++, drawn));
@@ -2547,6 +2553,23 @@ function keepEdges(line: HTMLElement): void {
   );
 }
 
+/**
+ * A win card whose main action never leaves the screen: `head` (the corner key, the title) and `main`
+ * stay put, and `body`, what is between them, scrolls inside the card when the whole would pass the
+ * screen (style.css, .card.pinned: the card is never taller than its veil), faded at an edge while there
+ * is more that way. QA, 2026-11-07: at 360x640 a trip's last level, with its mark, the trip's line and
+ * Challenge a friend, made the card 690 px tall (710 in Russian), and Stamp your passport sat below the fold.
+ */
+function pinnedCard(cls: string, head: Array<Node | null>, body: Array<Node | null>, main: HTMLElement): HTMLElement {
+  const middle = h("div", { class: "card-body" }, ...body);
+  const edges = () => {
+    middle.classList.toggle("more-up", middle.scrollTop > 2);
+    middle.classList.toggle("more-down", middle.scrollTop + middle.clientHeight < middle.scrollHeight - 2);
+  };
+  middle.addEventListener("scroll", edges, { passive: true });
+  new ResizeObserver(edges).observe(middle);
+  return h("div", { class: `${cls} pinned` }, ...head, middle, main);
+}
 
 // ---------- cards ----------
 

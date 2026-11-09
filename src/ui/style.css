@@ -600,6 +600,34 @@ button.pic:focus-visible { outline: 3px solid var(--amber-hi); outline-offset: 3
 .win .stat b { font: 600 22px/1 var(--round); }
 .win .stat span { font-size: 13px; font-weight: 500; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.08em; }
 .win .next { min-width: 200px; min-height: 60px; font-size: 22px; }
+/* a win card with its main action pinned (app.ts, pinnedCard): never taller than the screen, its title
+   and main action kept, what is between them scrolling inside when it must (a small phone, a long
+   language), faded at the edge with more beyond. The veil's one row is its height, so the card's
+   100% is the room between the top row and the foot. */
+.veil.win:has(> .card.pinned) { grid-template-rows: minmax(0, 1fr); }
+.win .card.pinned { display: flex; flex-direction: column; max-height: 100%; }
+.win .card.pinned > .card-body {
+  flex: 0 1 auto; min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none;
+  /* to the card's edges, and past the last row by its buttons' shadow (the main action's top overlaps
+     that band, as it did the shadow before), so neither the pictures' nor the buttons' shadows are cut */
+  margin: 0 -22px; padding: 2px 22px 16px;
+}
+.win .card.pinned > .card-body::-webkit-scrollbar { display: none; }
+.win .card.pinned > .card-body.more-down { -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent); }
+.win .card.pinned > .card-body.more-up { -webkit-mask-image: linear-gradient(to top, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to top, #000 calc(100% - 28px), transparent); }
+.win .card.pinned > .card-body.more-up.more-down {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 28px, #000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 28px, #000 calc(100% - 28px), transparent);
+}
+.win .card.pinned > .next { flex: none; align-self: center; margin-top: -16px; }
+/* a trip's last level says more (its trip done, the passport next): closer together */
+.win .card.trip-end h2 { margin-bottom: 4px; }
+.win .card.trip-end .gallery { margin: 10px 0 12px; }
+.win .card.trip-end .stats { margin-bottom: 10px; }
+.win .card.trip-end .stat { padding: 6px 16px; }
+.win .card.trip-end .social { margin: -2px 0 10px; }
+.win .card.trip-end p.trip-done { margin: 6px 0 0; color: var(--ink); font-weight: 600; }
+.win .card.trip-end p.all-done { margin-bottom: 12px; font-size: 15px; }
 
 /* no connection: over every card but the board in hand, nothing to press, and it goes by itself */
 .veil.offline { z-index: 45; }
