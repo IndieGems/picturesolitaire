@@ -955,6 +955,34 @@ on 2026-11-07). The maker holds them to trips 1–16's postcards only
 This follows the lead's ruling on Level 144: the look-alike rule is about a
 board's own pictures, and a level already out doesn't change for it.
 
+**Dealt: trips 17–22, Levels 241–330** (2026-11-08, with Art's postcards
+as each trip's came in; `docs/destinations-brazil.md` to
+`docs/destinations-china.md`):
+
+- **Every level dealt at the trial's seed**, with its postcard opening
+  mid-level, so the win rates are the trial's (the table above, within a
+  point or two careless). The six trips came in as four runs of the maker.
+  **Boards 1–240 are byte-identical** after each one.
+- **One in-place swap on the new boards:** China's Hongcun postcard
+  (river-village-willows) took the river-village picture off 253, which got
+  a dovecote. Its atmospheric picture moved too (jetty for hop-picking). The
+  deal is unchanged.
+- **Pictures new to the player, by trip:** Brazil 2, Germany, Austria and
+  Switzerland 0, South Korea 8, Poland 2, Türkiye 0, China 1. They aren't
+  evened out (lead).
+- **How often the 937 have been met before:** a second showing 295, a third
+  441, a fourth 176, and a fifth 12. The fifth showings are on 328–330, each
+  of those pictures first met on 63–74 (France) and last on 222–225.
+- **Comebacks:** no clear picture back within 34 boards (the dovecote, 253
+  then 287), and the median is 106. The atmospheric pictures come back sooner
+  (16 to 45 boards; highland-games, 283 then 299, is the soonest, and the lead
+  is content with it). Their stock is nearly used up, each on two boards at
+  most. The rule of 15 holds everywhere.
+- **The average picture is on 2.62 of boards 1–330**, and none is on more than
+  five.
+- **The mix, by trip:** people 15–22%, flowers 11–16% and busy pictures 8–14%.
+  The most people on one board are 5 of 13 (260) and 6 of 19 (315).
+
 ## The VIP events (Levels, 2026-10-30)
 
 Each event is a pack of 30 levels of its own (the creator; [vip.md](vip.md)), the same curve for every

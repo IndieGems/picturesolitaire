@@ -485,6 +485,38 @@ export const PLAN = [
   /* 298 */ { role: "build", destination: "dest-zalipie", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
   /* 299 */ { role: "build", destination: "dest-zakopane-villas", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
   /* 300 */ { role: "super", destination: "dest-krakow-cloth-hall", board: [5, 5], ...sq(14), careless: [0.08, 0.2], traps: [0, 4], chain: ANY },
+  // ---- trip 21, Türkiye (Art's places, docs/destinations-turkiye.md): 305 at 5x5, the finale 315 at 6x6
+  /* 301 */ { role: "relief", destination: "dest-galata-tower", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 302 */ { role: "build", destination: "dest-maidens-tower", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 303 */ { role: "build", destination: "dest-basilica-cistern", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 304 */ { role: "build", destination: "dest-safranbolu", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 305 */ { role: "hard",  destination: "dest-ayder-plateau", board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 306 */ { role: "pace",  destination: "dest-black-sea-beehives", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
+  /* 307 */ { role: "build", destination: "dest-van-cat", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 308 */ { role: "build", destination: "dest-hattusa-lion-gate", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 309 */ { role: "build", destination: "dest-ephesus-celsus", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 310 */ { role: "hard",  destination: "dest-sirince", board: [4, 5], ...sq(12), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 311 */ { role: "relief", destination: "dest-pamukkale", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 312 */ { role: "build", destination: "dest-butterfly-valley", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 313 */ { role: "build", destination: "dest-aspendos", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 314 */ { role: "build", destination: "dest-chimaera-flames", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 315 */ { role: "super", destination: "dest-cappadocia-balloons", board: [6, 6], ...sq(19), careless: [0.08, 0.18], traps: [0, 4], chain: ANY },
+  // ---- trip 22, China (Art's places, docs/destinations-china.md): 320 and 325 at 5x5, the finale 330 at 4x5
+  /* 316 */ { role: "relief", destination: "dest-kaiping-diaolou", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 317 */ { role: "build", destination: "dest-fujian-tulou", board: [4, 5], ...sq(10), careless: [0.55, 0.65], chain: ANY },
+  /* 318 */ { role: "build", destination: "dest-huangling-harvest", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 319 */ { role: "build", destination: "dest-hongcun", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 320 */ { role: "hard",  destination: "dest-west-lake", board: [5, 5], ...sq(13), careless: [0.25, 0.35], traps: [0, 4], chain: ANY },
+  /* 321 */ { role: "pace",  destination: "dest-golden-monkeys", count: 12, alike: [], sizes: [2], cards: [24, 24], careless: [0.85, 1], chain: ANY },
+  /* 322 */ { role: "build", destination: "dest-zhangjiajie", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 323 */ { role: "build", destination: "dest-fenghuang", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 324 */ { role: "build", destination: "dest-shaxi", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 325 */ { role: "hard",  destination: "dest-xian-bell-tower", board: [5, 5], ...sq(13), careless: [0.2, 0.3], traps: [0, 4], chain: ANY },
+  /* 326 */ { role: "relief", destination: "dest-giant-salamander", board: [4, 5], ...sq(10), careless: [0.8, 1], chain: ANY },
+  /* 327 */ { role: "build", destination: "dest-pingyao", board: [4, 5], ...sq(11), careless: [0.5, 0.6], chain: ANY },
+  /* 328 */ { role: "build", destination: "dest-bactrian-camels", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 329 */ { role: "build", destination: "dest-jilin-rime", board: [4, 5], ...sq(11), careless: [0.45, 0.55], chain: ANY },
+  /* 330 */ { role: "super", destination: "dest-great-wall", board: [4, 5], ...sq(12), careless: [0.08, 0.2], traps: [0, 4], chain: ANY },
 ];
 
 /**
@@ -524,6 +556,8 @@ export const TRIPS = [
   { id: "t18", name: "Germany, Austria & Switzerland", from: 256, to: 270 },
   { id: "t19", name: "South Korea", from: 271, to: 285 },
   { id: "t20", name: "Poland", from: 286, to: 300 },
+  { id: "t21", name: "Türkiye", from: 301, to: 315 },
+  { id: "t22", name: "China", from: 316, to: 330 },
 ];
 
 /** Roles that may trap from the first move; every other board starts safe (check.mts). */

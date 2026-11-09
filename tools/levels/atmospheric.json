@@ -1401,8 +1401,8 @@
   ],
   "c253": [
    {
-    "clear": "dovecote",
-    "atmospheric": "river-village-willows"
+    "clear": "jetty",
+    "atmospheric": "hop-picking"
    }
   ],
   "c254": [
@@ -1668,6 +1668,174 @@
     "clear": "sailing-helm",
     "atmospheric": "pointillist-promenade"
    }
+  ],
+  "c301": [
+   {
+    "clear": "trapeze",
+    "atmospheric": "barn-dance"
+   }
+  ],
+  "c302": [
+   {
+    "clear": "ink-pigeons",
+    "atmospheric": "fireworks-river"
+   }
+  ],
+  "c303": [
+   {
+    "clear": "ink-station-master",
+    "atmospheric": "allotments-summer"
+   }
+  ],
+  "c304": [
+   {
+    "clear": "upholsterer",
+    "atmospheric": "papel-picado-plaza"
+   }
+  ],
+  "c305": [
+   {
+    "clear": "pantry",
+    "atmospheric": "trajineras"
+   }
+  ],
+  "c307": [
+   {
+    "clear": "ink-model-yacht",
+    "atmospheric": "horse-fair"
+   }
+  ],
+  "c308": [
+   {
+    "clear": "family-dinner",
+    "atmospheric": "wax-print-market"
+   }
+  ],
+  "c309": [
+   {
+    "clear": "barber-pole",
+    "atmospheric": "hillside-harbour-town"
+   }
+  ],
+  "c310": [
+   {
+    "clear": "barrel-cacti",
+    "atmospheric": "cycle-race"
+   }
+  ],
+  "c311": [
+   {
+    "clear": "gingerbread-house",
+    "atmospheric": "fish-market-dutch"
+   }
+  ],
+  "c312": [
+   {
+    "clear": "ink-spaniel",
+    "atmospheric": "island-market"
+   }
+  ],
+  "c313": [
+   {
+    "clear": "yarn-balls",
+    "atmospheric": "rainy-street-night"
+   }
+  ],
+  "c314": [
+   {
+    "clear": "rain-window",
+    "atmospheric": "city-view-dusk"
+   }
+  ],
+  "c315": [
+   {
+    "clear": "ink-level-crossing",
+    "atmospheric": "flea-market"
+   }
+  ],
+  "c316": [
+   {
+    "clear": "coffered-ceiling",
+    "atmospheric": "pergola-lunch"
+   }
+  ],
+  "c317": [
+   {
+    "clear": "ink-pigeons",
+    "atmospheric": "fauvist-port"
+   }
+  ],
+  "c318": [
+   {
+    "clear": "ink-station-master",
+    "atmospheric": "spice-stalls"
+   }
+  ],
+  "c319": [
+   {
+    "clear": "family-dinner",
+    "atmospheric": "carnival-parade"
+   }
+  ],
+  "c320": [
+   {
+    "clear": "ink-level-crossing",
+    "atmospheric": "hanami-picnic"
+   }
+  ],
+  "c322": [
+   {
+    "clear": "emu",
+    "atmospheric": "village-fete"
+   }
+  ],
+  "c323": [
+   {
+    "clear": "tower-crane",
+    "atmospheric": "log-drivers"
+   }
+  ],
+  "c324": [
+   {
+    "clear": "hibiscus",
+    "atmospheric": "rodeo"
+   }
+  ],
+  "c325": [
+   {
+    "clear": "paper-plane",
+    "atmospheric": "schooner-harbour"
+   }
+  ],
+  "c326": [
+   {
+    "clear": "kookaburra",
+    "atmospheric": "olive-grove"
+   }
+  ],
+  "c327": [
+   {
+    "clear": "comet",
+    "atmospheric": "cafe-interior"
+   }
+  ],
+  "c328": [
+   {
+    "clear": "ink-bird-table",
+    "atmospheric": "rowing-race-crowd"
+   }
+  ],
+  "c329": [
+   {
+    "clear": "market-hall",
+    "atmospheric": "market-square-livestock"
+   }
+  ],
+  "c330": [
+   {
+    "clear": "golf-cart",
+    "atmospheric": "pottery-market"
+   }
   ]
  },
  "displaced": [
@@ -1680,6 +1848,8 @@
   "ballerina",
   "bananas",
   "baobab",
+  "barber-pole",
+  "barrel-cacti",
   "bartender",
   "basketball-dunk",
   "beachcomber",
@@ -1709,6 +1879,7 @@
   "coffee-roaster",
   "coffered-ceiling",
   "coleus",
+  "comet",
   "conductor",
   "crevasse",
   "cricketer",
@@ -1728,8 +1899,10 @@
   "drone",
   "eagle-figurehead",
   "eclairs",
+  "emu",
   "falafel",
   "falconer",
+  "family-dinner",
   "fireboat",
   "firefighter",
   "fishmonger",
@@ -1742,9 +1915,11 @@
   "gazebo",
   "gecko",
   "giant-lily-pads",
+  "gingerbread-house",
   "glass-arcade",
   "glazier",
   "glider",
+  "golf-cart",
   "grain-silos",
   "gumball-machine",
   "gyrocopter",
@@ -1760,25 +1935,31 @@
   "ice-cream-van",
   "ice-hotel",
   "inglenook",
+  "ink-bird-table",
   "ink-cauliflower",
   "ink-fireside",
   "ink-greyhound",
   "ink-kennel",
+  "ink-level-crossing",
   "ink-milk-float",
+  "ink-model-yacht",
   "ink-perfume",
   "ink-pigeons",
   "ink-porridge",
   "ink-seesaw",
   "ink-soapbox",
+  "ink-spaniel",
   "ink-sprinkler",
   "ink-station-master",
   "iron-gate",
   "jelly",
+  "jetty",
   "kangaroo",
   "karst-peaks",
   "kasbah",
   "kick-scooter",
   "kite-maker",
+  "kookaburra",
   "library-shelves",
   "lido",
   "lock-gates",
@@ -1790,6 +1971,7 @@
   "maine-coon",
   "marching-band",
   "marigolds",
+  "market-hall",
   "mimosa",
   "moka-pot",
   "mooncakes",
@@ -1803,6 +1985,7 @@
   "outrigger",
   "pampas-grass",
   "panda",
+  "pantry",
   "paper-plane",
   "party-lights",
   "patchwork-hills",
@@ -1853,6 +2036,7 @@
   "toboggan",
   "torch-ginger",
   "tortoise",
+  "tower-crane",
   "town-square",
   "toymaker",
   "trapeze",
@@ -1863,6 +2047,7 @@
   "watermill",
   "welsh-cakes",
   "windsock",
+  "yarn-balls",
   "yarrow",
   "yurt",
   "zinnia"
@@ -1877,7 +2062,6 @@
   "karst-peaks",
   "kasbah",
   "scabious",
-  "sweet-william",
-  "trapeze"
+  "sweet-william"
  ]
 }

@@ -18,5 +18,7 @@
 {"id":"t17","name":"Brazil","from":241,"to":255},
 {"id":"t18","name":"Germany, Austria & Switzerland","from":256,"to":270},
 {"id":"t19","name":"South Korea","from":271,"to":285},
-{"id":"t20","name":"Poland","from":286,"to":300}
+{"id":"t20","name":"Poland","from":286,"to":300},
+{"id":"t21","name":"Türkiye","from":301,"to":315},
+{"id":"t22","name":"China","from":316,"to":330}
 ]}
