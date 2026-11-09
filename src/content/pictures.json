@@ -58610,6 +58610,681 @@
         "gold"
       ],
       "busy": 0
+    },
+    {
+      "id": "dest-speicherstadt",
+      "name": "The Speicherstadt",
+      "place": "Hamburg, Germany",
+      "trip": "germany-austria-switzerland",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-speicherstadt.webp",
+      "board": "pictures/destinations/dest-speicherstadt-board.webp",
+      "thumb": "pictures/destinations/dest-speicherstadt-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "copper-teal",
+      "subjects": [
+        "Speicherstadt",
+        "warehouse canal"
+      ],
+      "palette": [
+        "red",
+        "green",
+        "blue",
+        "gold"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-warnemunde-beach-chairs",
+      "name": "The beach chairs of Warnemünde",
+      "place": "Warnemünde, Germany",
+      "trip": "germany-austria-switzerland",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-warnemunde-beach-chairs.webp",
+      "board": "pictures/destinations/dest-warnemunde-beach-chairs-board.webp",
+      "thumb": "pictures/destinations/dest-warnemunde-beach-chairs-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "sugared-pastel",
+      "subjects": [
+        "Strandkörbe",
+        "Baltic beach"
+      ],
+      "palette": [
+        "white",
+        "blue",
+        "sand",
+        "red"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-brandenburg-gate",
+      "name": "The Brandenburg Gate",
+      "place": "Berlin, Germany",
+      "trip": "germany-austria-switzerland",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-brandenburg-gate.webp",
+      "board": "pictures/destinations/dest-brandenburg-gate-board.webp",
+      "thumb": "pictures/destinations/dest-brandenburg-gate-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "brandenburg-gate",
+      "subjects": [
+        "Brandenburg Gate",
+        "Quadriga"
+      ],
+      "palette": [
+        "sandstone",
+        "green",
+        "blue",
+        "grey"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-rakotz-bridge",
+      "name": "The Rakotz Bridge",
+      "place": "Kromlau, Saxony",
+      "trip": "germany-austria-switzerland",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-rakotz-bridge.webp",
+      "board": "pictures/destinations/dest-rakotz-bridge-board.webp",
+      "thumb": "pictures/destinations/dest-rakotz-bridge-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "arch-bridge",
+      "subjects": [
+        "Rakotz Bridge",
+        "reflection"
+      ],
+      "palette": [
+        "grey",
+        "pink",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-wuppertal-schwebebahn",
+      "name": "The Wuppertal Schwebebahn",
+      "place": "Wuppertal, Germany",
+      "trip": "germany-austria-switzerland",
+      "tag": "silly",
+      "cols": 5,
+      "rows": 5,
+      "crop": [
+        1,
+        0
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-wuppertal-schwebebahn.webp",
+      "board": "pictures/destinations/dest-wuppertal-schwebebahn-board.webp",
+      "thumb": "pictures/destinations/dest-wuppertal-schwebebahn-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        1200,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "retro",
+      "family": "monorail",
+      "subjects": [
+        "Schwebebahn",
+        "river Wupper"
+      ],
+      "palette": [
+        "green",
+        "cream",
+        "blue",
+        "grey"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-pfalzgrafenstein",
+      "name": "Pfalzgrafenstein",
+      "place": "Kaub, Rhineland-Palatinate",
+      "trip": "germany-austria-switzerland",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        1
+      ],
+      "file": "pictures/destinations/dest-pfalzgrafenstein.webp",
+      "board": "pictures/destinations/dest-pfalzgrafenstein-board.webp",
+      "thumb": "pictures/destinations/dest-pfalzgrafenstein-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "watercolour",
+      "family": "castle",
+      "subjects": [
+        "Pfalzgrafenstein",
+        "Rhine"
+      ],
+      "palette": [
+        "white",
+        "grey",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-rothenburg-plonlein",
+      "name": "Rothenburg's Plönlein",
+      "place": "Rothenburg ob der Tauber, Bavaria",
+      "trip": "germany-austria-switzerland",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-rothenburg-plonlein.webp",
+      "board": "pictures/destinations/dest-rothenburg-plonlein-board.webp",
+      "thumb": "pictures/destinations/dest-rothenburg-plonlein-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "pastel",
+      "family": "half-timbered",
+      "subjects": [
+        "Plönlein",
+        "Rothenburg"
+      ],
+      "palette": [
+        "yellow",
+        "brown",
+        "red",
+        "grey"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-st-bernard-dogs",
+      "name": "The St Bernard dogs",
+      "place": "Great St Bernard Pass, Switzerland",
+      "trip": "germany-austria-switzerland",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-st-bernard-dogs.webp",
+      "board": "pictures/destinations/dest-st-bernard-dogs-board.webp",
+      "thumb": "pictures/destinations/dest-st-bernard-dogs-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "st-bernard",
+      "subjects": [
+        "St Bernard dog",
+        "Great St Bernard Pass"
+      ],
+      "palette": [
+        "red-brown",
+        "white",
+        "blue",
+        "grey"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-bern-bears",
+      "name": "Bern's bears",
+      "place": "Bern, Switzerland",
+      "trip": "germany-austria-switzerland",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-bern-bears.webp",
+      "board": "pictures/destinations/dest-bern-bears-board.webp",
+      "thumb": "pictures/destinations/dest-bern-bears-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "brown-bear",
+      "subjects": [
+        "Bern bears",
+        "river Aare"
+      ],
+      "palette": [
+        "brown",
+        "green",
+        "turquoise",
+        "red"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-chapel-bridge",
+      "name": "The Chapel Bridge",
+      "place": "Lucerne, Switzerland",
+      "trip": "germany-austria-switzerland",
+      "tag": "famous",
+      "cols": 5,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-chapel-bridge.webp",
+      "board": "pictures/destinations/dest-chapel-bridge-board.webp",
+      "thumb": "pictures/destinations/dest-chapel-bridge-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        1200,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "gouache",
+      "family": "covered-bridge",
+      "subjects": [
+        "Chapel Bridge",
+        "Water Tower"
+      ],
+      "palette": [
+        "brown",
+        "red",
+        "blue",
+        "green"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-guarda",
+      "name": "Guarda",
+      "place": "Lower Engadin, Switzerland",
+      "trip": "germany-austria-switzerland",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-guarda.webp",
+      "board": "pictures/destinations/dest-guarda-board.webp",
+      "thumb": "pictures/destinations/dest-guarda-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "gouache",
+      "family": "painted-facade",
+      "subjects": [
+        "Guarda",
+        "sgraffito house"
+      ],
+      "palette": [
+        "white",
+        "grey",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-golden-roof",
+      "name": "The Golden Roof",
+      "place": "Innsbruck, Austria",
+      "trip": "germany-austria-switzerland",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-golden-roof.webp",
+      "board": "pictures/destinations/dest-golden-roof-board.webp",
+      "thumb": "pictures/destinations/dest-golden-roof-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "palace-window",
+      "subjects": [
+        "Golden Roof",
+        "Innsbruck"
+      ],
+      "palette": [
+        "gold",
+        "cream",
+        "red",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-grossglockner-marmots",
+      "name": "The marmots of the Grossglockner",
+      "place": "Hohe Tauern, Austria",
+      "trip": "germany-austria-switzerland",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-grossglockner-marmots.webp",
+      "board": "pictures/destinations/dest-grossglockner-marmots-board.webp",
+      "thumb": "pictures/destinations/dest-grossglockner-marmots-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "gouache",
+      "family": "meerkat",
+      "subjects": [
+        "alpine marmots",
+        "Grossglockner"
+      ],
+      "palette": [
+        "brown",
+        "green",
+        "white",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-gruner-see",
+      "name": "Grüner See",
+      "place": "Tragöß, Styria",
+      "trip": "germany-austria-switzerland",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-gruner-see.webp",
+      "board": "pictures/destinations/dest-gruner-see-board.webp",
+      "thumb": "pictures/destinations/dest-gruner-see-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "pastel",
+      "family": "copper-teal",
+      "subjects": [
+        "Grüner See",
+        "drowned bench"
+      ],
+      "palette": [
+        "emerald",
+        "green",
+        "grey",
+        "brown"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-vienna-state-opera",
+      "name": "The Vienna State Opera",
+      "place": "Vienna, Austria",
+      "trip": "germany-austria-switzerland",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-vienna-state-opera.webp",
+      "board": "pictures/destinations/dest-vienna-state-opera-board.webp",
+      "thumb": "pictures/destinations/dest-vienna-state-opera-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "vienna-opera",
+      "subjects": [
+        "Vienna State Opera",
+        "Ringstrasse"
+      ],
+      "palette": [
+        "sandstone",
+        "green",
+        "gold",
+        "blue"
+      ],
+      "busy": 0
     }
   ],
   "items": [
