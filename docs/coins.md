@@ -20,13 +20,13 @@ and leaves the hourly rate where it is.
 
 ## The hourly maths (the standard: about 500 an hour of ordinary play)
 
-- Campaign: 240 boards, 8735 Coins in all (8635 without the onboarding prize).
+- Campaign: 330 boards, 12085 Coins in all (11985 without the onboarding prize).
   The design puts a relaxed board at 2 to 4 minutes. At 3 minutes a board, 36 a board
-  is about 723 Coins an hour; at 2 minutes 1084, at 4 minutes 542.
+  is about 729 Coins an hour; at 2 minutes 1093, at 4 minutes 546.
 - Challenge route: 20 boards, 540 Coins in all, 27 a board on average.
   At 4 minutes a board that is about 405 an hour; at 5 minutes 324.
 - Daily: 50 once a day, on top.
-- Souvenirs: 10, one each for 10 trips (t1 to t10); t11, t12, t13, t14, t15, t16 have none. 350 Coins in all, once each (s1 20, s2 35, s3 30, s4 30, s5 40, s6 40, s7 40, s8 40, s9 35, s10 40).
+- Souvenirs: 10, one each for 10 trips (t1 to t10); t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22 have none. 350 Coins in all, once each (s1 20, s2 35, s3 30, s4 30, s5 40, s6 40, s7 40, s8 40, s9 35, s10 40).
 - Events (VIPs only, docs/vip.md): 180 levels, 4220 Coins in all, once each, by the campaign's rule (halloween-2026 695, ski-trip-2026 690, train-journey-2026 700, winter-market-2026 710, northern-lights-2026 705, carnival-2027 720).
   23 a level: at 3 minutes a level about 469 an hour, the campaign's rate.
 - Event items (the creator, 2026-10-30): 50 Coins with each item found, once per item, 500 an event
@@ -311,6 +311,96 @@ none. The standard's ranges: a quick top-up 100 to 200 Gems, a one-time starter 
 | c238 | campaign 238 | 41 | 40 |
 | c239 | campaign 239 | 41 | 40 |
 | c240 | campaign 240 | 43 | 40 |
+| c241 | campaign 241 | 26 | 30 |
+| c242 | campaign 242 | 29 | 30 |
+| c243 | campaign 243 | 38 | 40 |
+| c244 | campaign 244 | 34 | 35 |
+| c245 | campaign 245 | 34 | 35 |
+| c246 | campaign 246 | 15 | 15 |
+| c247 | campaign 247 | 42 | 40 |
+| c248 | campaign 248 | 36 | 40 |
+| c249 | campaign 249 | 36 | 40 |
+| c250 | campaign 250 | 45 | 40 |
+| c251 | campaign 251 | 29 | 30 |
+| c252 | campaign 252 | 38 | 40 |
+| c253 | campaign 253 | 46 | 40 |
+| c254 | campaign 254 | 41 | 40 |
+| c255 | campaign 255 | 61 | 40 |
+| c256 | campaign 256 | 35 | 40 |
+| c257 | campaign 257 | 36 | 40 |
+| c258 | campaign 258 | 42 | 40 |
+| c259 | campaign 259 | 41 | 40 |
+| c260 | campaign 260 | 48 | 40 |
+| c261 | campaign 261 | 13 | 15 |
+| c262 | campaign 262 | 39 | 40 |
+| c263 | campaign 263 | 40 | 40 |
+| c264 | campaign 264 | 45 | 40 |
+| c265 | campaign 265 | 45 | 40 |
+| c266 | campaign 266 | 31 | 35 |
+| c267 | campaign 267 | 40 | 40 |
+| c268 | campaign 268 | 47 | 40 |
+| c269 | campaign 269 | 48 | 40 |
+| c270 | campaign 270 | 40 | 40 |
+| c271 | campaign 271 | 33 | 35 |
+| c272 | campaign 272 | 36 | 40 |
+| c273 | campaign 273 | 34 | 35 |
+| c274 | campaign 274 | 42 | 40 |
+| c275 | campaign 275 | 48 | 40 |
+| c276 | campaign 276 | 17 | 20 |
+| c277 | campaign 277 | 43 | 40 |
+| c278 | campaign 278 | 39 | 40 |
+| c279 | campaign 279 | 44 | 40 |
+| c280 | campaign 280 | 43 | 40 |
+| c281 | campaign 281 | 33 | 35 |
+| c282 | campaign 282 | 39 | 40 |
+| c283 | campaign 283 | 36 | 40 |
+| c284 | campaign 284 | 37 | 40 |
+| c285 | campaign 285 | 60 | 40 |
+| c286 | campaign 286 | 34 | 35 |
+| c287 | campaign 287 | 43 | 40 |
+| c288 | campaign 288 | 46 | 40 |
+| c289 | campaign 289 | 48 | 40 |
+| c290 | campaign 290 | 37 | 40 |
+| c291 | campaign 291 | 13 | 15 |
+| c292 | campaign 292 | 48 | 40 |
+| c293 | campaign 293 | 38 | 40 |
+| c294 | campaign 294 | 42 | 40 |
+| c295 | campaign 295 | 48 | 40 |
+| c296 | campaign 296 | 35 | 40 |
+| c297 | campaign 297 | 32 | 35 |
+| c298 | campaign 298 | 41 | 40 |
+| c299 | campaign 299 | 34 | 35 |
+| c300 | campaign 300 | 61 | 40 |
+| c301 | campaign 301 | 36 | 40 |
+| c302 | campaign 302 | 40 | 40 |
+| c303 | campaign 303 | 38 | 40 |
+| c304 | campaign 304 | 35 | 40 |
+| c305 | campaign 305 | 51 | 40 |
+| c306 | campaign 306 | 13 | 15 |
+| c307 | campaign 307 | 40 | 40 |
+| c308 | campaign 308 | 38 | 40 |
+| c309 | campaign 309 | 57 | 40 |
+| c310 | campaign 310 | 47 | 40 |
+| c311 | campaign 311 | 33 | 35 |
+| c312 | campaign 312 | 40 | 40 |
+| c313 | campaign 313 | 35 | 40 |
+| c314 | campaign 314 | 35 | 40 |
+| c315 | campaign 315 | 64 | 40 |
+| c316 | campaign 316 | 32 | 35 |
+| c317 | campaign 317 | 29 | 30 |
+| c318 | campaign 318 | 46 | 40 |
+| c319 | campaign 319 | 36 | 40 |
+| c320 | campaign 320 | 41 | 40 |
+| c321 | campaign 321 | 17 | 20 |
+| c322 | campaign 322 | 42 | 40 |
+| c323 | campaign 323 | 38 | 40 |
+| c324 | campaign 324 | 45 | 40 |
+| c325 | campaign 325 | 46 | 40 |
+| c326 | campaign 326 | 29 | 30 |
+| c327 | campaign 327 | 34 | 35 |
+| c328 | campaign 328 | 37 | 40 |
+| c329 | campaign 329 | 41 | 40 |
+| c330 | campaign 330 | 41 | 40 |
 | ch01 | challenge 1 | 19 | 20 |
 | ch02 | challenge 2 | 21 | 25 |
 | ch03 | challenge 3 | 19 | 20 |
