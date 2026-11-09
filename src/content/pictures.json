@@ -60635,6 +60635,681 @@
         "blue"
       ],
       "busy": 0
+    },
+    {
+      "id": "dest-galata-tower",
+      "name": "The Galata Tower",
+      "place": "Istanbul, Türkiye",
+      "trip": "turkiye",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        0
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-galata-tower.webp",
+      "board": "pictures/destinations/dest-galata-tower-board.webp",
+      "thumb": "pictures/destinations/dest-galata-tower-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "round-tower",
+      "subjects": [
+        "Galata Tower",
+        "Golden Horn"
+      ],
+      "palette": [
+        "grey",
+        "red",
+        "blue",
+        "green"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-maidens-tower",
+      "name": "The Maiden's Tower",
+      "place": "Bosphorus, Istanbul",
+      "trip": "turkiye",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-maidens-tower.webp",
+      "board": "pictures/destinations/dest-maidens-tower-board.webp",
+      "thumb": "pictures/destinations/dest-maidens-tower-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "maidens-tower",
+      "subjects": [
+        "Maiden's Tower",
+        "Bosphorus"
+      ],
+      "palette": [
+        "white",
+        "blue",
+        "grey",
+        "gold"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-basilica-cistern",
+      "name": "The Basilica Cistern",
+      "place": "Istanbul, Türkiye",
+      "trip": "turkiye",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-basilica-cistern.webp",
+      "board": "pictures/destinations/dest-basilica-cistern-board.webp",
+      "thumb": "pictures/destinations/dest-basilica-cistern-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "cistern",
+      "subjects": [
+        "Basilica Cistern",
+        "Medusa head"
+      ],
+      "palette": [
+        "amber",
+        "brown",
+        "black",
+        "gold"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-safranbolu",
+      "name": "Safranbolu",
+      "place": "Karabük, Türkiye",
+      "trip": "turkiye",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-safranbolu.webp",
+      "board": "pictures/destinations/dest-safranbolu-board.webp",
+      "thumb": "pictures/destinations/dest-safranbolu-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "timber-house",
+      "subjects": [
+        "Safranbolu",
+        "Ottoman houses"
+      ],
+      "palette": [
+        "white",
+        "brown",
+        "red",
+        "green"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-ayder-plateau",
+      "name": "The Ayder plateau",
+      "place": "Rize, Türkiye",
+      "trip": "turkiye",
+      "tag": "hidden gem",
+      "cols": 5,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-ayder-plateau.webp",
+      "board": "pictures/destinations/dest-ayder-plateau-board.webp",
+      "thumb": "pictures/destinations/dest-ayder-plateau-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        1200,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "pastel",
+      "family": "clouds",
+      "subjects": [
+        "Ayder plateau",
+        "sea of clouds"
+      ],
+      "palette": [
+        "green",
+        "brown",
+        "white",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-black-sea-beehives",
+      "name": "The bear-proof beehives",
+      "place": "Artvin, Türkiye",
+      "trip": "turkiye",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        2,
+        0
+      ],
+      "window": [
+        1,
+        2
+      ],
+      "file": "pictures/destinations/dest-black-sea-beehives.webp",
+      "board": "pictures/destinations/dest-black-sea-beehives-board.webp",
+      "thumb": "pictures/destinations/dest-black-sea-beehives-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "gouache",
+      "family": "log-hives",
+      "subjects": [
+        "log beehives",
+        "brown bear"
+      ],
+      "palette": [
+        "brown",
+        "green",
+        "pink",
+        "grey"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-van-cat",
+      "name": "The Van cat",
+      "place": "Lake Van, Türkiye",
+      "trip": "turkiye",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-van-cat.webp",
+      "board": "pictures/destinations/dest-van-cat-board.webp",
+      "thumb": "pictures/destinations/dest-van-cat-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "ginger-cat",
+      "subjects": [
+        "Van cat",
+        "Lake Van"
+      ],
+      "palette": [
+        "white",
+        "blue",
+        "amber",
+        "green"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-hattusa-lion-gate",
+      "name": "Hattusa's Lion Gate",
+      "place": "Çorum, Türkiye",
+      "trip": "turkiye",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-hattusa-lion-gate.webp",
+      "board": "pictures/destinations/dest-hattusa-lion-gate-board.webp",
+      "thumb": "pictures/destinations/dest-hattusa-lion-gate-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "lion-gate",
+      "subjects": [
+        "Lion Gate",
+        "Hattusa"
+      ],
+      "palette": [
+        "grey",
+        "gold",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-ephesus-celsus",
+      "name": "Ephesus, the Library of Celsus",
+      "place": "İzmir, Türkiye",
+      "trip": "turkiye",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-ephesus-celsus.webp",
+      "board": "pictures/destinations/dest-ephesus-celsus-board.webp",
+      "thumb": "pictures/destinations/dest-ephesus-celsus-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "celsus",
+      "subjects": [
+        "Library of Celsus",
+        "Ephesus"
+      ],
+      "palette": [
+        "cream",
+        "gold",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-sirince",
+      "name": "Şirince",
+      "place": "İzmir, Türkiye",
+      "trip": "turkiye",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-sirince.webp",
+      "board": "pictures/destinations/dest-sirince-board.webp",
+      "thumb": "pictures/destinations/dest-sirince-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "pastel",
+      "family": "hill-village",
+      "subjects": [
+        "Şirince",
+        "hill village"
+      ],
+      "palette": [
+        "white",
+        "red",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-pamukkale",
+      "name": "Pamukkale",
+      "place": "Denizli, Türkiye",
+      "trip": "turkiye",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-pamukkale.webp",
+      "board": "pictures/destinations/dest-pamukkale-board.webp",
+      "thumb": "pictures/destinations/dest-pamukkale-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "travertine",
+      "subjects": [
+        "Pamukkale",
+        "travertine terraces"
+      ],
+      "palette": [
+        "white",
+        "turquoise",
+        "blue",
+        "green"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-butterfly-valley",
+      "name": "Butterfly Valley",
+      "place": "Fethiye, Muğla",
+      "trip": "turkiye",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        3
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-butterfly-valley.webp",
+      "board": "pictures/destinations/dest-butterfly-valley-board.webp",
+      "thumb": "pictures/destinations/dest-butterfly-valley-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "gouache",
+      "family": "canyon-beach",
+      "subjects": [
+        "Butterfly Valley",
+        "tiger moths"
+      ],
+      "palette": [
+        "grey",
+        "turquoise",
+        "orange",
+        "green"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-aspendos",
+      "name": "The theatre of Aspendos",
+      "place": "Antalya, Türkiye",
+      "trip": "turkiye",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-aspendos.webp",
+      "board": "pictures/destinations/dest-aspendos-board.webp",
+      "thumb": "pictures/destinations/dest-aspendos-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "colosseum",
+      "subjects": [
+        "Aspendos theatre",
+        "stage building"
+      ],
+      "palette": [
+        "gold",
+        "brown",
+        "blue",
+        "green"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-chimaera-flames",
+      "name": "The Chimaera's flames",
+      "place": "Olympos, Antalya",
+      "trip": "turkiye",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-chimaera-flames.webp",
+      "board": "pictures/destinations/dest-chimaera-flames-board.webp",
+      "thumb": "pictures/destinations/dest-chimaera-flames-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "flames",
+      "subjects": [
+        "Chimaera flames",
+        "Olympos"
+      ],
+      "palette": [
+        "orange",
+        "grey",
+        "green",
+        "pink"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-cappadocia-balloons",
+      "name": "Cappadocia's balloons",
+      "place": "Nevşehir, Türkiye",
+      "trip": "turkiye",
+      "tag": "famous",
+      "cols": 6,
+      "rows": 6,
+      "crop": [
+        2,
+        0
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-cappadocia-balloons.webp",
+      "board": "pictures/destinations/dest-cappadocia-balloons-board.webp",
+      "thumb": "pictures/destinations/dest-cappadocia-balloons-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        1440,
+        1920
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "hot-air-balloon",
+      "subjects": [
+        "hot-air balloons",
+        "fairy chimneys"
+      ],
+      "palette": [
+        "red",
+        "yellow",
+        "cream",
+        "blue"
+      ],
+      "busy": 0
     }
   ],
   "items": [
