@@ -174,8 +174,8 @@ acrylic. The 108 photographic ones were redrawn from our own postcards (`picture
 study of the postcard plus one of our pictures already painted that way; the entry's `paint` names the
 style, PAINT in pictures.py its words). A new postcard is painted from the start: never the plan's photo
 suffix `suffix.postcard`, which made the old ones. The same goes for a library picture of a real landmark. Trips
-11–16's postcards (2026-11-07) take the plan's painted suffixes (`postcard-oil`, `-gouache`, `-travel-poster`,
-`-watercolour`, `-pastel`, `-azulejo`, `-folk`) at medium quality (`pictures.py gen --quality=medium`, about $0.016 a postcard),
+11–22's postcards (2026-11-07 on) take the plan's painted suffixes (`postcard-oil`, `-gouache`, `-travel-poster`,
+`-watercolour`, `-pastel`, `-azulejo`, `-folk`, `-naif`) at medium quality (`pictures.py gen --quality=medium`, about $0.016 a postcard),
 which is as good at postcard size. `docs/destinations-america.md` has the
 first trip's candidates and the rights rules.
 

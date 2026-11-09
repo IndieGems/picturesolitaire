@@ -57935,6 +57935,681 @@
         "black"
       ],
       "busy": 0
+    },
+    {
+      "id": "dest-sugarloaf",
+      "name": "Sugarloaf Mountain",
+      "place": "Rio de Janeiro, Brazil",
+      "trip": "brazil",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        0
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-sugarloaf.webp",
+      "board": "pictures/destinations/dest-sugarloaf-board.webp",
+      "thumb": "pictures/destinations/dest-sugarloaf-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "sugarloaf",
+      "subjects": [
+        "Sugarloaf Mountain",
+        "Botafogo Bay"
+      ],
+      "palette": [
+        "grey",
+        "green",
+        "blue",
+        "gold"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-paraty",
+      "name": "Paraty at high tide",
+      "place": "Paraty, Rio de Janeiro",
+      "trip": "brazil",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-paraty.webp",
+      "board": "pictures/destinations/dest-paraty-board.webp",
+      "thumb": "pictures/destinations/dest-paraty-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "flooded-village",
+      "subjects": [
+        "Paraty",
+        "flooded street"
+      ],
+      "palette": [
+        "white",
+        "blue",
+        "yellow",
+        "green"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-vila-velha-cup",
+      "name": "The Cup of Vila Velha",
+      "place": "Ponta Grossa, Paraná",
+      "trip": "brazil",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-vila-velha-cup.webp",
+      "board": "pictures/destinations/dest-vila-velha-cup-board.webp",
+      "thumb": "pictures/destinations/dest-vila-velha-cup-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "goblet-rock",
+      "subjects": [
+        "Vila Velha",
+        "sandstone goblet"
+      ],
+      "palette": [
+        "red",
+        "ochre",
+        "green",
+        "blue"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-hercilio-luz-bridge",
+      "name": "The Hercílio Luz Bridge",
+      "place": "Florianópolis, Santa Catarina",
+      "trip": "brazil",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-hercilio-luz-bridge.webp",
+      "board": "pictures/destinations/dest-hercilio-luz-bridge-board.webp",
+      "thumb": "pictures/destinations/dest-hercilio-luz-bridge-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "golden-gate",
+      "subjects": [
+        "Hercílio Luz Bridge",
+        "Florianópolis"
+      ],
+      "palette": [
+        "silver",
+        "blue",
+        "green",
+        "orange"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-bonito-rivers",
+      "name": "Bonito's clear rivers",
+      "place": "Bonito, Mato Grosso do Sul",
+      "trip": "brazil",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-bonito-rivers.webp",
+      "board": "pictures/destinations/dest-bonito-rivers-board.webp",
+      "thumb": "pictures/destinations/dest-bonito-rivers-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "gouache",
+      "family": "clear-river",
+      "subjects": [
+        "Bonito river",
+        "dourado fish"
+      ],
+      "palette": [
+        "green",
+        "gold",
+        "blue",
+        "silver"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-pantanal-jaguar",
+      "name": "A Pantanal jaguar",
+      "place": "Cuiabá River, Mato Grosso",
+      "trip": "brazil",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 4,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        1
+      ],
+      "file": "pictures/destinations/dest-pantanal-jaguar.webp",
+      "board": "pictures/destinations/dest-pantanal-jaguar-board.webp",
+      "thumb": "pictures/destinations/dest-pantanal-jaguar-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        960,
+        1280
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "ocelot",
+      "subjects": [
+        "jaguar",
+        "Pantanal riverbank"
+      ],
+      "palette": [
+        "gold",
+        "black",
+        "green",
+        "brown"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-hyacinth-macaws",
+      "name": "Hyacinth macaws",
+      "place": "Pantanal, Mato Grosso do Sul",
+      "trip": "brazil",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        0
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-hyacinth-macaws.webp",
+      "board": "pictures/destinations/dest-hyacinth-macaws-board.webp",
+      "thumb": "pictures/destinations/dest-hyacinth-macaws-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "macaw",
+      "subjects": [
+        "hyacinth macaws",
+        "acuri palm"
+      ],
+      "palette": [
+        "cobalt blue",
+        "yellow",
+        "green",
+        "brown"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-lacerda-elevator",
+      "name": "The Lacerda Elevator",
+      "place": "Salvador, Bahia",
+      "trip": "brazil",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-lacerda-elevator.webp",
+      "board": "pictures/destinations/dest-lacerda-elevator-board.webp",
+      "thumb": "pictures/destinations/dest-lacerda-elevator-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "retro",
+      "family": "lacerda",
+      "subjects": [
+        "Lacerda Elevator",
+        "All Saints Bay"
+      ],
+      "palette": [
+        "white",
+        "blue",
+        "ochre",
+        "green"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-bahia-cocoa-sloth",
+      "name": "A sloth in Bahia's cocoa forest",
+      "place": "Southern Bahia",
+      "trip": "brazil",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        0
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-bahia-cocoa-sloth.webp",
+      "board": "pictures/destinations/dest-bahia-cocoa-sloth-board.webp",
+      "thumb": "pictures/destinations/dest-bahia-cocoa-sloth-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "sloth",
+      "subjects": [
+        "sloth",
+        "cocoa pods"
+      ],
+      "palette": [
+        "brown",
+        "green",
+        "yellow",
+        "orange"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-pirangi-cashew",
+      "name": "The giant cashew tree of Pirangi",
+      "place": "Parnamirim, Rio Grande do Norte",
+      "trip": "brazil",
+      "tag": "silly",
+      "cols": 5,
+      "rows": 5,
+      "crop": [
+        1,
+        0
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-pirangi-cashew.webp",
+      "board": "pictures/destinations/dest-pirangi-cashew-board.webp",
+      "thumb": "pictures/destinations/dest-pirangi-cashew-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        1200,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "cashew",
+      "subjects": [
+        "cashew tree",
+        "cashew apples"
+      ],
+      "palette": [
+        "green",
+        "red",
+        "yellow",
+        "sand"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-canoa-quebrada-jangadas",
+      "name": "The jangadas of Canoa Quebrada",
+      "place": "Aracati, Ceará",
+      "trip": "brazil",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-canoa-quebrada-jangadas.webp",
+      "board": "pictures/destinations/dest-canoa-quebrada-jangadas-board.webp",
+      "thumb": "pictures/destinations/dest-canoa-quebrada-jangadas-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "painting",
+      "family": "dhow",
+      "subjects": [
+        "jangadas",
+        "red cliffs"
+      ],
+      "palette": [
+        "white",
+        "red",
+        "turquoise",
+        "ochre"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-lencois-maranhenses",
+      "name": "Lençóis Maranhenses",
+      "place": "Maranhão, Brazil",
+      "trip": "brazil",
+      "tag": "famous",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        0,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-lencois-maranhenses.webp",
+      "board": "pictures/destinations/dest-lencois-maranhenses-board.webp",
+      "thumb": "pictures/destinations/dest-lencois-maranhenses-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "gouache",
+      "family": "white-dunes",
+      "subjects": [
+        "Lençóis Maranhenses",
+        "dune lagoon"
+      ],
+      "palette": [
+        "white",
+        "turquoise",
+        "blue",
+        "sand"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-ver-o-peso",
+      "name": "Ver-o-Peso market",
+      "place": "Belém, Pará",
+      "trip": "brazil",
+      "tag": "hidden gem",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-ver-o-peso.webp",
+      "board": "pictures/destinations/dest-ver-o-peso-board.webp",
+      "thumb": "pictures/destinations/dest-ver-o-peso-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "watercolour",
+      "family": "iron-market",
+      "subjects": [
+        "Ver-o-Peso",
+        "açaí boats"
+      ],
+      "palette": [
+        "blue",
+        "grey",
+        "purple",
+        "ochre"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-amazon-pink-dolphins",
+      "name": "The pink river dolphins",
+      "place": "Rio Negro, Amazonas",
+      "trip": "brazil",
+      "tag": "silly",
+      "cols": 4,
+      "rows": 5,
+      "crop": [
+        1,
+        2
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-amazon-pink-dolphins.webp",
+      "board": "pictures/destinations/dest-amazon-pink-dolphins-board.webp",
+      "thumb": "pictures/destinations/dest-amazon-pink-dolphins-thumb.webp",
+      "px": [
+        1536,
+        2560
+      ],
+      "boardPx": [
+        960,
+        1600
+      ],
+      "thumbPx": [
+        300,
+        500
+      ],
+      "medium": "gouache",
+      "family": "dolphin",
+      "subjects": [
+        "pink river dolphin",
+        "flooded forest"
+      ],
+      "palette": [
+        "pink",
+        "black",
+        "green",
+        "amber"
+      ],
+      "busy": 0
+    },
+    {
+      "id": "dest-theatro-amazonas",
+      "name": "The Theatro Amazonas",
+      "place": "Manaus, Amazonas",
+      "trip": "brazil",
+      "tag": "famous",
+      "cols": 6,
+      "rows": 6,
+      "crop": [
+        2,
+        1
+      ],
+      "window": [
+        2,
+        2
+      ],
+      "file": "pictures/destinations/dest-theatro-amazonas.webp",
+      "board": "pictures/destinations/dest-theatro-amazonas-board.webp",
+      "thumb": "pictures/destinations/dest-theatro-amazonas-thumb.webp",
+      "px": [
+        1536,
+        2048
+      ],
+      "boardPx": [
+        1440,
+        1920
+      ],
+      "thumbPx": [
+        300,
+        400
+      ],
+      "medium": "painting",
+      "family": "theatro",
+      "subjects": [
+        "Theatro Amazonas",
+        "tiled dome"
+      ],
+      "palette": [
+        "pink",
+        "white",
+        "green",
+        "gold"
+      ],
+      "busy": 0
     }
   ],
   "items": [
