@@ -69,3 +69,11 @@ place alone, for a sentence or a short label ("Level 8 · America"). Every other
 | t14 | Morocco | Marokko | Marruecos | Maroc | Marocco | モロッコ | 모로코 | Maroko | Marrocos | Марокко | Fas | 摩洛哥 |
 | t15 | Vietnam & Thailand | Vietnam & Thailand | Vietnam y Tailandia | Vietnam et Thaïlande | Vietnam e Thailandia | ベトナムとタイ | 베트남과 태국 | Wietnam i Tajlandia | Vietnã e Tailândia | Вьетнам и Таиланд | Vietnam ve Tayland | 越南和泰国 |
 | t16 | Scandinavia & Iceland | Skandinavien & Island | Escandinavia e Islandia | Scandinavie et Islande | Scandinavia e Islanda | スカンジナビアとアイスランド | 스칸디나비아와 아이슬란드 | Skandynawia i Islandia | Escandinávia e Islândia | Скандинавия и Исландия | İskandinavya ve İzlanda | 斯堪的纳维亚和冰岛 |
+| t17 | Brazil | Brasilien | Brasil | Brésil | Brasile | ブラジル | 브라질 | Brazylia | Brasil | Бразилия | Brezilya | 巴西 |
+| t18 | Germany, Austria & Switzerland | Deutschland, Österreich & Schweiz | Alemania, Austria y Suiza | Allemagne, Autriche et Suisse | Germania, Austria e Svizzera | ドイツ・オーストリア・スイス | 독일·오스트리아·스위스 | Niemcy, Austria i Szwajcaria | Alemanha, Áustria e Suíça | Германия, Австрия и Швейцария | Almanya, Avusturya ve İsviçre | 德国、奥地利和瑞士 |
+| t19 | South Korea | Südkorea | Corea del Sur | Corée du Sud | Corea del Sud | 韓国 | 한국 | Korea Południowa | Coreia do Sul | Южная Корея | Güney Kore | 韩国 |
+| t20 | Poland | Polen | Polonia | Pologne | Polonia | ポーランド | 폴란드 | Polska | Polônia | Польша | Polonya | 波兰 |
+| t21 | Türkiye | Türkei | Turquía | Turquie | Turchia | トルコ | 튀르키예 | Turcja | Turquia | Турция | Türkiye | 土耳其 |
+| t22 | China | China | China | Chine | Cina | 中国 | 중국 | Chiny | China | Китай | Çin | 中国 |
+
+t21: Türkiye in English (the creator, 2026-11-08) and Turkish, 튀르키예 in Korean (its government's form since 2022); the other languages keep their own established name for the country (Türkei, Turquie, トルコ, 土耳其…), as their governments still write it. The adjective stays Turkish.
