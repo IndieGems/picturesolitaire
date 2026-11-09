@@ -486,14 +486,16 @@ input_methods:
   kb_mouse: full
   gamepad: none
 
-# Portrait-only (AGENTS.md ruling): a PC or TV letterboxes the game between the portrait borders.
+# The phone is portrait-only (sideways gets the Arcade's turn-upright panel); the tablet plays both
+# ways, so a PC or TV is not letterboxed and gets the game's own wide layout (AGENTS.md ruling,
+# the creator, 2026-11-09). The tablet answer decides the letterbox on PC and TV.
 orientations:
   phone:
     portrait: full
     landscape: none
   tablet:
     portrait: full
-    landscape: none
+    landscape: full
 
 modes:
   singleplayer: { min: 1, max: 1 }
