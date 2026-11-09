@@ -1019,6 +1019,33 @@ function showBanners(list: Banner[]): void {
   next(0);
 }
 
+/**
+ * A level's tags go under its number when there are two, or when the one doesn't fit beside it even with
+ * the number at its least size, 12 px (QA, 2026-11-08: ru "Уровень 255" by "Очень сложный" at 360 px was
+ * cut at both ends); otherwise they stay side by side and fit.ts sizes the row as before. Again whenever
+ * the row changes width.
+ */
+function stackPill(): void {
+  const tags = levelPill.querySelector(":scope > .tags");
+  levelPill.classList.remove("stacked");
+  if (!tags) return;
+  if (tags.childElementCount > 1) return void levelPill.classList.add("stacked");
+  if (!levelPill.clientWidth) return;
+  const was = levelPill.style.fontSize;
+  levelPill.style.fontSize = "12px";
+  const box = levelPill.getBoundingClientRect();
+  const cs = getComputedStyle(levelPill);
+  const from = box.left + parseFloat(cs.paddingLeft) - 0.5;
+  const to = box.right - parseFloat(cs.paddingRight) + 0.5;
+  const wide = [...levelPill.children].some((c) => {
+    const r = c.getBoundingClientRect();
+    return r.left < from || r.right > to;
+  });
+  levelPill.style.fontSize = was;
+  levelPill.classList.toggle("stacked", wide);
+}
+new ResizeObserver(stackPill).observe(levelPill);
+
 /** The top row's information: the level; on a challenge or the daily, its name over the par and the moves so far. */
 function drawPill(): void {
   if (!play) return;
@@ -1031,8 +1058,8 @@ function drawPill(): void {
     const name = h("span", { class: "level-name" }, t("board.level", { level: boardNumber(play.level) }));
     // a hard board's tag by the number (marks.ts); with the practice tag too, both under the number
     const tags = [...(mark ? [markTag(mark, true)] : []), ...(tag ? [tag] : [])];
-    levelPill.classList.toggle("stacked", tags.length > 1);
-    levelPill.replaceChildren(name, ...(tags.length > 1 ? [h("span", { class: "tags" }, ...tags)] : tags));
+    levelPill.replaceChildren(name, ...(tags.length ? [h("span", { class: "tags" }, ...tags)] : []));
+    stackPill();
     return;
   }
   if (play.kind === "experiment") {
@@ -1830,7 +1857,8 @@ function showWin(): void {
   // so does a trip's last level's (the trip done, and on the last level that there are no more yet)
   const tripEnd = lastWin.kind === "campaign" && (!!lastWin.stamp || boardNumber(lastWin.level) === levels());
   const share = lastWin.kind === "campaign" && lastWin.milestone ? 0.2 : tripEnd ? 0.17 : dare || lastWin.kind === "oneoff" ? 0.28 : 0.34;
-  const gallery = layoutGallery(board.pictures(), share);
+  const pics = board.pictures();
+  const gallery = layoutGallery(pics, share);
   if (lastWin.kind === "oneoff") return void showOneOffWin(lastWin, gallery);
   if (lastWin.kind === "souvenir") return void showSouvenirWin(lastWin, gallery);
   if (lastWin.kind === "event") return void showEventWin(lastWin, gallery);
@@ -1892,7 +1920,30 @@ function showWin(): void {
     ),
   );
   showCard(winVeil, toHome);
+  settleCard(gallery, pics, share);
   drawCoins(lastWin);
+}
+
+/**
+ * A pinned card whose middle runs past its room (a long language, a small phone) tightens before it scrolls,
+ * so nothing at rest sits under the main action (QA, 2026-11-08: ru Level 255, Challenge a friend half under
+ * Stamp your passport): first its spacing closes up (.snug), then its pictures give the rest back, down to
+ * the least size still worth tapping (layoutGallery; a layout no shorter is not used). Only past that does
+ * the middle scroll (pinnedCard). Measured as the card opens, before it is painted.
+ */
+function settleCard(gallery: HTMLElement, pics: BoardPicture[], share: number): void {
+  const body = gallery.parentElement;
+  const card = body?.parentElement;
+  if (!body?.classList.contains("card-body") || !card || !body.clientHeight) return;
+  const over = () => body.scrollHeight - body.clientHeight;
+  if (over() <= 1) return;
+  card.classList.add("snug");
+  const left = over();
+  if (left <= 1) return;
+  const was = gallery.offsetHeight;
+  const less = layoutGallery(pics, share, was - left);
+  gallery.replaceWith(less);
+  if (less.offsetHeight >= was) less.replaceWith(gallery);
 }
 
 /**
@@ -2427,11 +2478,12 @@ function showDare(o: OneOff, notYet: string | null): void {
 const GAP = 10;
 const TAP = 36;
 const STRIP_U = 60;
-function layoutGallery(pics: BoardPicture[], share = 0.34): HTMLElement {
+function layoutGallery(pics: BoardPicture[], share = 0.34, room?: number): HTMLElement {
   // the gallery has the card's width and a third of the height (a phone held sideways is asked to
-  // turn upright by the Arcade: the game is laid out upright only)
+  // turn upright by the Arcade: the game is laid out upright only); `room`: a height it must keep to
+  // (settleGallery), the pictures then no smaller than tappable
   const width = Math.min(360, app.clientWidth - 32) - 44 - 4;
-  const height = Math.max(110, Math.min(300, app.clientHeight * share));
+  const height = room !== undefined ? Math.max(60, room) : Math.max(110, Math.min(300, app.clientHeight * share));
   const aspect = cardAspect();
   let best: { u: number; rows: BoardPicture[][] } = { u: 0, rows: [pics] };
   for (let n = 1; n <= Math.min(3, pics.length); n++) {
@@ -2563,6 +2615,7 @@ function keepEdges(line: HTMLElement): void {
 function pinnedCard(cls: string, head: Array<Node | null>, body: Array<Node | null>, main: HTMLElement): HTMLElement {
   const middle = h("div", { class: "card-body" }, ...body);
   const edges = () => {
+    middle.classList.toggle("scrolls", middle.scrollHeight > middle.clientHeight + 2);
     middle.classList.toggle("more-up", middle.scrollTop > 2);
     middle.classList.toggle("more-down", middle.scrollTop + middle.clientHeight < middle.scrollHeight - 2);
   };

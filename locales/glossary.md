@@ -15,6 +15,12 @@ Rules every language follows:
   placeholder that cannot change.
 - **Plural forms follow the language** (i18next keys `_one`, `_few`, `_many`, `_other`): Polish and
   Russian need `_few` and `_many`; Japanese, Korean and Chinese take `_other` only.
+- **Soft hyphens (U+00AD, invisible) in a postcard's name or place mark where a long word may break**
+  in the passport's narrow captions, at a compound's join (Pfeilschwanz|krebse, Пфальц|графен|штайн;
+  Korean at a join of a long name's parts, 그레이트|오션로드, with no hyphen drawn). The passport first
+  tries the word whole at 12 px; the mark is used only when it can't fit (QA, 2026-11-08). Keep them
+  when editing a line; a new word wider than about 7 Korean syllables or 15 Latin letters needs one.
+  Searching the names files for such a word finds it only with the mark in it.
 
 ## Core terms
 

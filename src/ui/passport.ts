@@ -135,6 +135,48 @@ const cardSizes = new ResizeObserver((entries) => {
   }
 });
 
+/**
+ * A postcard's caption keeps every word whole where it can (QA, 2026-11-08: "Pfalzgrafenste|in" at 360 px).
+ * A word wider than its column takes the name down to the place's 12 px (never smaller), then a little less
+ * letter spacing. A word still too wide breaks only where its translation marks a soft hyphen, at a
+ * compound's join ("Pfeilschwanz-krebse"; Korean at a join of its parts, with no hyphen drawn); the
+ * browser's break-word stays the last resort, so nothing is ever cut. Measured with those marks switched
+ * off (.fitting), so a word that can fit whole is never hyphenated. Again whenever the columns change width.
+ */
+const TIGHTER = ["-0.01em", "-0.02em", "-0.03em"];
+const fitRange = document.createRange();
+function wordOver(c: HTMLElement): boolean {
+  fitRange.selectNodeContents(c);
+  return fitRange.getBoundingClientRect().width > c.getBoundingClientRect().width + 0.02;
+}
+function fitCaptions(grid: HTMLElement): void {
+  const caps = [...grid.querySelectorAll<HTMLElement>(".pc-name, .pc-place")];
+  if (!caps.length || !grid.isConnected || !grid.clientWidth) return;
+  for (const c of caps) {
+    c.style.removeProperty("font-size");
+    c.style.removeProperty("letter-spacing");
+  }
+  grid.classList.add("fitting");
+  for (const c of caps) {
+    if (!wordOver(c)) continue;
+    if (c.classList.contains("pc-name")) c.style.fontSize = "12px";
+    for (const ls of TIGHTER) {
+      if (!wordOver(c)) break;
+      c.style.letterSpacing = ls;
+    }
+  }
+  grid.classList.remove("fitting");
+}
+const gridWidths = new WeakMap<Element, number>();
+const captionFit = new ResizeObserver((entries) => {
+  for (const { target } of entries) {
+    const w = Math.round((target as HTMLElement).clientWidth);
+    if (!w || gridWidths.get(target) === w) continue;
+    gridWidths.set(target, w);
+    fitCaptions(target as HTMLElement);
+  }
+});
+
 /** Art's stamp for a trip (home draws it too, at the route's last stop). */
 export const stampUrl = (tr: Trip) => `${import.meta.env.BASE_URL}art/stamps/stamp-${tr.id}.webp`;
 
@@ -411,6 +453,7 @@ export function createPassport(nav: Nav) {
   function draw(): void {
     const tr = trips[at];
     for (const c of page.querySelectorAll(".pc-card")) cardSizes.unobserve(c);
+    for (const g of page.querySelectorAll(".pp-grid")) captionFit.unobserve(g);
     if (!tr) return void content.replaceChildren();
     const { done, all } = tripCount(tr);
     const head = el("div", "pp-head");
@@ -458,6 +501,9 @@ export function createPassport(nav: Nav) {
         () => {},
       );
     content.replaceChildren(head, grid);
+    captionFit.observe(grid);
+    // the round type may land after the page is drawn: fit again once it has
+    void document.fonts.ready.then(() => fitCaptions(grid));
     page.setAttribute("aria-label", tripName(tr));
     where.textContent = t("passport.page", { n: at + 1, all: trips.length });
     prev.disabled = at === 0;
