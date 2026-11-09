@@ -16,7 +16,7 @@ achievement's points or rewards; add a new achievement instead.
 | Journey | Finding Your Feet | Finish 10 levels | 10 | |
 | Journey | Seasoned Traveller | Finish 50 levels | 25 | `ach-seasoned-traveller`: a Venice gondola |
 | Journey | Globetrotter | Finish 150 levels | 75 | `ach-globetrotter`: a globe circled by a plane, landmarks on its rim |
-| Stamps | Stamped: Travel America, Japan, Italy, American West, France, Canada, Argentina, Australia, South Africa, UK & Ireland, East Coast America, New Zealand, Spain & Portugal, Morocco, Vietnam & Thailand, Scandinavia & Iceland, Brazil, Germany, Austria & Switzerland, South Korea, Poland, Turkey, China (22; trips 17-22 the creator's, 2026-11-08) | Finish that trip (its passport stamp) | 15 each | |
+| Stamps | Stamped: Travel America, Japan, Italy, American West, France, Canada, Argentina, Australia, South Africa, UK & Ireland, East Coast America, New Zealand, Spain & Portugal, Morocco, Vietnam & Thailand, Scandinavia & Iceland, Brazil, Germany, Austria & Switzerland, South Korea, Poland, Türkiye, China (22; trips 17-22 the creator's, 2026-11-08) | Finish that trip (its passport stamp) | 15 each | |
 | Souvenirs | Something to Remember | Finish your first Souvenir level | 5 | |
 | Souvenirs | Full Suitcase | Finish 10 Souvenir levels | 40 | `ach-full-suitcase`: a suitcase bursting with a journey |
 | Hard | Up for a Challenge | Win a hard level | 10 | |
