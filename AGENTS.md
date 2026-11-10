@@ -87,7 +87,7 @@ check it can make, and never stop processes by name, port or pattern.
   address. It has no player and no saves: check those on the page
   `gemctl serve start . --dev` prints.
 - Its console is in its own output, not `gemctl serve log`.
-- ⚠️ A signed-in check plays as a test guest or test account, never the creator: under `gemctl serve run --as …` never `page.reload()` (the one-load token is spent and the page silently becomes the developer's account, 2026-10-29); open the serve link again, and check the player id before any move. Never attach a `serve run` to the Editor's own host (the creator's Play): one stopped it on 2026-10-30. Use a host of your own, or wait.
+- ⚠️ A signed-in check plays as a test guest or test account, never the creator: under `gemctl serve run --as …` never `page.reload()` (the one-load token is spent and the page silently becomes the developer's account, 2026-10-29); open the serve link again, and check the player id before any move. Never attach a `serve run` to the Editor's own host (the creator's Play): one stopped it on 2026-10-30. Use a host of your own, or wait, and never `serve start` or `stop` in this folder while any host serves it: a `serve start . --as new-guest` here took the project's host from the Editor's Play (2026-11-10). Serve a scratch copy of the project instead (`git checkout-index` into your scratchpad).
 - Screenshots go in an OS temp scratch folder; delete it when done.
 
 A script driving its own headless Chromium launches it through
