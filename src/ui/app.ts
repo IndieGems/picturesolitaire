@@ -113,7 +113,7 @@ import { onVipGift, pretendVip, VIP_DAILY, VIP_WELCOME, type VipGift } from "../
 import { createVipGifts } from "./vip-gifts";
 import { createVipAbout, createVipBadge, pretendVipEnds } from "./vip-about";
 import { onVipTagPress, vipRewardTag, vipSide, type VipSide } from "./vip-tag";
-import { baseCoins, vipExtraForBoard } from "../net/rewards";
+import { baseCoins, eventItemCoins, vipExtraForBoard } from "../net/rewards";
 import { vipExtraCoins, vipHelpers } from "../net/vip";
 import { wearBackWords } from "./back";
 import { createArchive } from "./daily-archive";
@@ -2161,7 +2161,7 @@ function showEventWin(w: Extract<Win, { kind: "event" }>, gallery: HTMLElement):
     if (r) {
       const it: SuitItem = { id: r.item.id, title: r.item.title };
       // as a real account's 10th item pays it
-      const fin: Finished = { event: r.pack.id, table: r.pack.prize.table, coins: EVENT_ITEM_COINS };
+      const fin: Finished = { event: r.pack.id, table: r.pack.prize.table, coins: eventItemCoins() ?? EVENT_ITEM_COINS };
       packedOnCard(line, it, dayItem?.id === it.id ? dayItem.url : "", r.pack.found, r.pack.items.length, r.pack.complete ? { event: r.pack.id, done: () => finishUi.add(fin) } : null);
     } else {
       const pack = suitcases.get(w.e.event);

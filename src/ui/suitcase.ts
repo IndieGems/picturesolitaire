@@ -139,13 +139,18 @@ const ART = {
   small: `${import.meta.env.BASE_URL}art/suitcase-closed-small.webp`,
 };
 
-/** What one item found pays: the channel's config (Server's rewards.ts), else the figure the game was built with. */
-const itemCoins = (): number => eventItemCoins() ?? EVENT_ITEM_COINS;
+/**
+ * What one item found pays: the channel's config (Server's rewards.ts) and nothing else, so null (and nothing said)
+ * until it is read. Never a figure of the game's own: the creator retunes it in the config (50, then 20, 2026-11-10)
+ * and a built-in copy would say the old one. Only the dev menu's stand-in events, unframed, say the stand-in's.
+ */
+const itemCoins = (): number | null => eventItemCoins() ?? (suitcases.pretending() ? EVENT_ITEM_COINS : null);
 
 /** VIP's tag on what an item pays (vip-tag.ts), before it is won: while some of `e`'s items are still to find. */
 function itemTag(e: { items: { found?: boolean }[] }): HTMLElement | null {
-  if (e.items.length && e.items.every((i) => i.found)) return null;
-  return vipRewardTag({ coins: vipExtraCoins(itemCoins()) }, vipSide());
+  const coins = itemCoins();
+  if (coins === null || (e.items.length && e.items.every((i) => i.found))) return null;
+  return vipRewardTag({ coins: vipExtraCoins(coins) }, vipSide());
 }
 
 /** A closed suitcase, Art's: the small one (a level's mark, the win card), or the strip's and the list's. */
@@ -351,10 +356,12 @@ export function createSuitcase(nav: Nav) {
     const table = own ? prizeTableName(e.prize, e.prize.tableTitle ?? knownTable(e.prize.table)?.title ?? "") : "";
     const count = e.items.length;
     const steps = el("ol");
-    const coinsLine = el("li", "", t("case.how.coins", { count: itemCoins() }));
+    // what each item pays, once the config has said (no line until then)
+    const coins = itemCoins();
+    const coinsLine = coins === null ? null : el("li", "", t("case.how.coins", { count: coins }));
     // VIP's tag on what each item pays, while some are still to find (before it is won: vip-tag.ts)
     const tag = itemTag(e);
-    if (tag) coinsLine.append(" ", tag);
+    if (coinsLine && tag) coinsLine.append(" ", tag);
     for (const line of [
       t("case.how.levels", { count: e.levels.length || EVENT_LEVELS }),
       t("case.how.items", { count }),
@@ -362,14 +369,14 @@ export function createSuitcase(nav: Nav) {
       coinsLine,
       t("case.how.keep"),
     ])
-      steps.append(typeof line === "string" ? el("li", "", line) : line);
+      if (line) steps.append(typeof line === "string" ? el("li", "", line) : line);
     box.append(head, steps);
     return box;
   }
 
   /**
    * The prize (docs/vip.md): the event's table and its Passport stamp, for finding all 10, and the Coins
-   * its items pay as they are found ("50 Coins for every item found", "500 Coins found" once complete).
+   * its items pay as they are found ("20 Coins for every item found", the config's figure: no row until it is read).
    */
   function prize(e: { id: string; theme: string; items: EventItem[]; prize: Prize; paid: boolean }): HTMLElement {
     const box = el("div", `case-prize glass${e.paid ? " won" : ""}`);
@@ -399,9 +406,10 @@ export function createSuitcase(nav: Nav) {
     rows.append(stampRow);
     // the Coins: with each item found, while some are still to find. Once all are, nothing: the platform's suitcase
     // keeps no receipt of what each find paid (a guest's paid none), so "500 Coins found" would be made up (QA, 2026-11-02)
-    if (!(e.items.length && e.items.every((i) => i.found))) {
+    const each = itemCoins();
+    if (each !== null && !(e.items.length && e.items.every((i) => i.found))) {
       const coinRow = el("div", "prize-row prize-coins");
-      const words = el("span", "", t("case.prizeCoinsEach", { count: itemCoins() }));
+      const words = el("span", "", t("case.prizeCoinsEach", { count: each }));
       coinRow.append(el("span", "prize-coin", ""), words);
       coinRow.firstElementChild!.append(coinIcon(28));
       const tag = itemTag(e);

@@ -208,11 +208,11 @@ export function eventNamed(id: string): { id: string; theme: string } | null {
 }
 
 /**
- * The Coins an event item pays as it is found (the creator, 2026-10-30: 50 with each, 500 an event in all,
- * because the Arcade pays at most 100 Coins at once), when the platform does not say. The event's prize
- * itself is its table and its Passport stamp.
+ * The dev menu's stand-in figure for what an event item pays (its stand-in events and previews), never what a
+ * player reads: that is the channel's config only (src/net/rewards.ts eventItemCoins; the creator, 2026-11-10:
+ * 20 an item). The event's prize itself is its table and its Passport stamp.
  */
-export const EVENT_ITEM_COINS = 50;
+export const EVENT_ITEM_COINS = 20;
 
 /** What event `id` pays: its table (and its title), and its Coins in all (its items'); the platform's once read, else Levels' schedule. */
 export function eventPrize(id: string): { table: string; tableTitle?: string; coins: number } | null {
