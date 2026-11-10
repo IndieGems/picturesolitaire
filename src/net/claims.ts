@@ -88,8 +88,24 @@ interface Answered {
   board: string;
   /** Moves in the line, counted by the server. */
   moves: number;
-  /** Coins this win paid now (0 on "kept" and "late"). */
+  /** Coins this answer paid now, all of them: the base and the VIP extra (0 on "kept" and "late"). */
   coins: number;
+  /**
+   * THE VIP EXTRA (the creator, 2026-11-10; docs/vip.md; a checker from before it sends none of these).
+   * `base`: the base Coins that landed (coins = base + vipExtra). `vipExtra`: the VIP extra's Coins that
+   * landed (+50% of each payout, 0 for a player not VIP), earlier wins' held extras included (vipLate).
+   * `vipHelpers`: the VIP extra's helpers that landed (the doubling), counted in `helpers` too.
+   * `vipLate`: of vipExtra and vipHelpers, what came from earlier wins whose VIP read had failed.
+   * `vipRead`: this answer's pass read, "yes", "no" or "unknown"; absent when it needed none (nothing
+   * paid, nothing held). `vipHeld`: an extra is held (VIP unknown, or its order failed): it lands with a
+   * later answer, as `vipLate`, if the player is VIP then, and never for a player who is not.
+   */
+  base?: number;
+  vipExtra?: number;
+  vipHelpers?: Record<HelperKind, number>;
+  vipLate?: { coins: number; helpers: Record<HelperKind, number> };
+  vipRead?: "yes" | "no" | "unknown";
+  vipHeld?: boolean;
   /** Items this win granted now, by slug: the onboarding keepsake table, on campaign board 1 (src/net/tables.ts). */
   items?: string[];
   /** Helpers that LANDED now, after the cap's clamp (src/net/helpers.ts): 0s when none were given. */
@@ -353,6 +369,7 @@ async function send(h: Held): Promise<void> {
       board,
       moves: Number(answer.moves) || 0,
       coins: Number(answer.coins) || 0,
+      ...vipOf(answer),
       ...(items.length ? { items } : {}),
       ...(typeof answer.date === "string" ? { date: answer.date } : {}),
       ...(typeof answer.ms === "number" ? { ms: answer.ms } : {}),
@@ -379,6 +396,20 @@ function landedOf(x: unknown): Record<HelperKind, number> {
   const h = (x && typeof x === "object" ? x : {}) as Partial<Record<HelperKind, unknown>>;
   const n = (v: unknown): number => Math.max(0, Math.floor(Number(v) || 0));
   return { hint: n(h.hint), undo: n(h.undo), shuffle: n(h.shuffle) };
+}
+
+/** The VIP extra's fields of a paying answer (Answered's), only those the checker sent. */
+function vipOf(a: Record<string, unknown>): Pick<Answered, "base" | "vipExtra" | "vipHelpers" | "vipLate" | "vipRead" | "vipHeld"> {
+  const n = (v: unknown): number => Math.max(0, Math.floor(Number(v) || 0));
+  const late = (a.vipLate && typeof a.vipLate === "object" ? a.vipLate : null) as { coins?: unknown; helpers?: unknown } | null;
+  return {
+    ...(a.base !== undefined ? { base: n(a.base) } : {}),
+    ...(a.vipExtra !== undefined ? { vipExtra: n(a.vipExtra) } : {}),
+    ...(a.vipHelpers !== undefined ? { vipHelpers: landedOf(a.vipHelpers) } : {}),
+    ...(late ? { vipLate: { coins: n(late.coins), helpers: landedOf(late.helpers) } } : {}),
+    ...(a.vipRead === "yes" || a.vipRead === "no" || a.vipRead === "unknown" ? { vipRead: a.vipRead } : {}),
+    ...(a.vipHeld === true ? { vipHeld: true } : {}),
+  };
 }
 
 /** Send what is due, one claim at a time (a player's calls are budgeted per minute). */

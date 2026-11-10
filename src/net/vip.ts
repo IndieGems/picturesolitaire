@@ -33,6 +33,9 @@
 //                       before anything listens is handed to the first listener. Returns the unsubscribe
 //   VIP_WELCOME, VIP_DAILY, VIP_WELCOME_SIZE, VIP_DAILY_SIZE   the gifts' sizes (src/net/helper-ids.json,
 //                       the copy the checker compiles in), for the screens' words
+//   vipExtraCoins(base), vipHelpers(gift), VIP_HELPER_FACTOR, VIP_EXTRA_GAME_PAYS   THE VIP EXTRA's
+//                       previews (the creator, 2026-11-10: +50% Coins, double helpers), from
+//                       src/net/vip-extra.json, the copy the checker pays from (below)
 //
 // The checker is asked at boot (the events read, src/net/suitcase.ts, says VIP; with the events off,
 // loadVip asks), again when the toggle moves, by recheckVip, and an answer that asked says too (`vip`
@@ -49,6 +52,7 @@ import { readChoices } from "../ui/choices";
 import HELPERS from "./helper-ids.json";
 import type { HelperKind } from "./helpers";
 import IDS from "./suitcase-ids.json";
+import RULE from "./vip-extra.json";
 
 /** Framed by the platform: another origin's frame (as src/net/helpers.ts). */
 const framed = ((): boolean => {
@@ -403,3 +407,33 @@ async function askGiftNow(): Promise<void> {
   if (again) giftLater(backoff(++giftFails, 5000));
   else if (giftAgain) askGift();
 }
+
+// ------------------------------------------------------------------ the VIP extra's previews
+
+/**
+ * THE VIP EXTRA (the creator, 2026-11-10; docs/vip.md): +50% on every Coin payout and double on every
+ * helper reward, for a VIP, paid by the win checker beside the base (functions/checker/src/pay.rs).
+ * These are the previews UI shows BEFORE a reward is won; what landed is the verdict's (claims.ts:
+ * vipExtra, vipHelpers, vipLate). One copy of the rule, src/net/vip-extra.json, read here and by the
+ * checker. A coming SDK may have the Arcade tell the game its exact VIP extra (the creator): its figure
+ * replaces the rule at this one seam, vipExtraCoins, as at pay.rs's vip_extra_coins, and
+ * VIP_EXTRA_GAME_PAYS turns false there, so a VIP is never paid twice.
+ */
+
+/** The VIP extra on one Coin payout of `base`: ceil(base / 2), so 25 shows +13, 50 +25, 100 +50. Per payout: a board with two grants adds each one's. */
+export function vipExtraCoins(base: number): number {
+  const b = Math.max(0, Math.floor(Number(base) || 0));
+  return Math.ceil((b * RULE.coins.num) / RULE.coins.den);
+}
+
+/** Each helper reward is multiplied by this for a VIP (2: double). */
+export const VIP_HELPER_FACTOR: number = RULE.helpers;
+
+/** What a VIP gets in all of a helper reward (the kit's 3 of each shows 6 of each): `gift` times VIP_HELPER_FACTOR. The cap of 20 still clamps it when paid. */
+export function vipHelpers(gift: Partial<Record<HelperKind, number>>): Record<HelperKind, number> {
+  const s = sizes(gift);
+  return { hint: s.hint * VIP_HELPER_FACTOR, undo: s.undo * VIP_HELPER_FACTOR, shuffle: s.shuffle * VIP_HELPER_FACTOR };
+}
+
+/** The game pays the extra itself (true now); false once the Arcade pays it (the seam above). */
+export const VIP_EXTRA_GAME_PAYS: boolean = RULE.gamePays === true;
