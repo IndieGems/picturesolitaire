@@ -105,6 +105,16 @@ Dev: build 0.56.0 (9849bcb, Gem Web SDK 16.0.0), store page 11, config 42, check
   - **VIP content for everyone.** That covers the events, past events and the daily archive (Server 910de415, UI 4a03650d).
   - **VIP extras.** A VIP gets +50% on every Coin payout, rounded up, as its own grant, and double every helper reward (Server 3f0dae5c, 7bb2da1b). A gold VIP tag shows the extra beside every reward. For a non-VIP it's a button to the VIP screen, except on Level 1's finish card (the creator's pick); for a VIP it shows what landed (UI 4c33d757). The new lines are in all 12 languages (UI c516d36c).
   - **On test only on the creator's word**, as a `build:release`. Moving it to release then needs checker 0.1.54 and config 64 before the build.
+- 2026-11-10 (later): **dev has 0.126.0** (the plain build of cc62ed99), checker 0.1.58 and config 67, store page 20:
+  - **The VIP extra is paid inside the reward's own order.** 0.1.54's second order was always suppressed, because the platform pays once per call. The achievement counters are folded into the same order (Server 20a2614d). QA PASS on 0.125.0: Level 1 paid 200 + 100, Level 2 100 + 50, the daily 50 + 25, and an event level 60 + 30.
+  - **The event page has two tabs**, "This event" and "Past events", and events are played in order with one Play button (the creator's pick; UI 672706b7). The checker refuses a level out of order (tests/suitcase.rs). QA PASS.
+  - **Lower Coin rates** (the creator: "about 500/hr and VIPs 750"; Server 54bd16bc and docs/coins.md):
+    - trip levels from Level 6 pay 0.75 a move, 10-30;
+    - event levels pay 0.45 a move, 5-15, plus 15 an item;
+    - a past day pays 15;
+    - the challenge route is a third lower.
+    Levels 1-5, First Steps and today's daily are unchanged.
+  - **Moving it to release** needs checker 0.1.58 and config 67 before the build.
 - 2026-10-30: a bug found after the candidate. A revisited level's own picture could break on its win card or enlarged view (the pack let it go while on screen), fixed in 53865f31 (dev 0.80.0). Test's 0.67.0 still has it, so the next release candidate must include the fix.
 - GSR-018: the creator bought a soundtrack on dev; cosmetic_bought was counted, and the cosmetics funnel reached every step (the release reviewer read it).
 - Russian "монет" for Coins is correct: it is only ever read after a price. A price ending in 1, or in 2–4 outside 11–14, would need another form.
