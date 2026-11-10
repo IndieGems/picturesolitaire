@@ -6110,6 +6110,18 @@ progressions:
         - mode: on_add
           per_unit: 50
           target: { platform_currency_slug: ARCADE_TICKETS }
+  # THE VIP EXTRA (docs/vip.md; the creator, 2026-11-10): +50% on every Coin payout for a VIP, as its
+  # own grant beside the base: the checker adds the extra's Coins here, 1 Coin a unit, in an order keyed
+  # by the reward it rides with (vipx:<key>), so once ever. Only the win checker writes it.
+  - id: 38072584-41bb-4cb2-95cc-8a0455af63a5
+    slug: vip_coins
+    display_name: "VIP extra Coins"
+    config:
+      function_may_grant: true
+      platform_grants:
+        - mode: on_add
+          per_unit: 1
+          target: { platform_currency_slug: ARCADE_TICKETS }
   # THE EVENTS (docs/vip.md): packs of 30 levels each, everyone's (their Coins: the board progressions
   # above), with 10 items hidden one per level. This old challenge stays declared and is written by
   # nothing; the checker packs a level's item on its first win and pays each event's prize once (the marks below).

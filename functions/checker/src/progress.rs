@@ -24,6 +24,9 @@
 //!     "owed": { "2026-10-03": { "coins": true, "pack": false } },  a past day decided and not yet
 //!                                             confirmed paid (lib.rs, the archive): sent again, then cleared
 //!                                             ("pack" is always false now: a daily packs nothing)
+//!     "vipOwed": { "daily:2026-11-10": { "coins": 25, "helpers": {...} } },  VIP extras held (docs/vip.md):
+//!                                             VIP unknown at the reward, or its order failed; paid (or, not
+//!                                             VIP, dropped) by a later call that reads VIP; absent when none
 //!     "imported": { "from": "campaign" },   only on a record begun before 0.1.28 from an old device save; read by nothing
 //!     "seen": ["<claim id>", ...] }          the last claims applied, so a resent claim changes nothing
 
@@ -224,6 +227,34 @@ pub fn settle(doc: &mut Value, date: &str) {
         o.remove(date);
         if o.is_empty() {
             doc.as_object_mut().map(|m| m.remove("owed"));
+        }
+    }
+}
+
+/// THE VIP EXTRAS HELD (docs/vip.md): a reward paid while the player's VIP could not be read (or whose
+/// extra's own order failed) keeps what its extra would be, by its key (the nonce of the order that
+/// paid the reward), until a later call reads VIP: then it is paid (pay::vip_extra_order, once ever)
+/// or, for a player not VIP, dropped. Held twice under one key, it is still one.
+pub fn hold_extra(doc: &mut Value, key: &str, extra: &crate::pay::Extra) {
+    if !doc["vipOwed"].is_object() {
+        doc["vipOwed"] = json!({});
+    }
+    doc["vipOwed"][key] = extra.to_json();
+}
+
+/// The extras held, by key, in key order.
+pub fn held_extras(doc: &Value) -> Vec<(String, crate::pay::Extra)> {
+    doc["vipOwed"].as_object().map(|m| m.iter().map(|(k, v)| (k.clone(), crate::pay::Extra::from_json(v))).collect()).unwrap_or_default()
+}
+
+/// One held extra settled (paid, or dropped for a player not VIP). The last one takes the list with it.
+pub fn drop_extra(doc: &mut Value, key: &str) {
+    if let Some(m) = doc["vipOwed"].as_object_mut() {
+        m.remove(key);
+        if m.is_empty() {
+            if let Some(d) = doc.as_object_mut() {
+                d.remove("vipOwed");
+            }
         }
     }
 }

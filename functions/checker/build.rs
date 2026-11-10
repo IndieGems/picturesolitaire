@@ -130,7 +130,8 @@ fn main() {
     // WHAT A WIN PAYS WITH (OUT_DIR/pay.json): each board's progression id (the config's, from
     // tools/server/make-config.mts's uuid5, so an order can name it), the campaign boards whose
     // first win gives a gift ("hard": a hard or super mark; "stamp": a trip's last board, which
-    // wins over "hard"), and the helper ids and gift sizes (src/net/helper-ids.json).
+    // wins over "hard"), the helper ids and gift sizes (src/net/helper-ids.json), and the VIP extra's
+    // rule (src/net/vip-extra.json, its one copy: pay.rs vip_extra_*).
     let mut boards = serde_json::Map::new();
     let mut gifts = serde_json::Map::new();
     let read = |p: &Path| -> Value {
@@ -159,7 +160,8 @@ fn main() {
         }
     }
     let helpers = read(&Path::new(&here).join("../../src/net/helper-ids.json"));
-    let pay = json!({ "boards": boards, "gifts": gifts, "helpers": helpers });
+    let vip_extra = read(&Path::new(&here).join("../../src/net/vip-extra.json"));
+    let pay = json!({ "boards": boards, "gifts": gifts, "helpers": helpers, "vipExtra": vip_extra });
     fs::write(Path::new(&env::var("OUT_DIR").unwrap()).join("pay.json"), pay.to_string()).unwrap();
 
     // THE ACHIEVEMENTS' COUNTERS (OUT_DIR/counts.json, read by src/count.rs): each counter's slug,

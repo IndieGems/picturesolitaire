@@ -43,6 +43,16 @@
 //! own order, clamped at the cap; the answer lists what it paid and what landed. Not VIP: nothing.
 //! VIP unknown (the pass read failed): nothing, and "retry".
 //!
+//! THE VIP EXTRA (pay.rs, docs/vip.md; the creator, 2026-11-10): for a VIP, every reward a verified win
+//! pays (each Coin grant that landed, each helper gift asked) pays +50% Coins and as many helpers again,
+//! in an order of its own right after the reward's, keyed "vipx:<the reward's order nonce>", so once
+//! ever. The pass is read at most once a call, and only by a call that paid something or holds an
+//! extra. Read and not VIP: nothing. A read that fails holds the extra in the record ("vipOwed",
+//! progress.rs), and a later call that reads VIP pays it, or drops it for a player not VIP. The verdict
+//! says what landed: coins (all), base, vipExtra, helpers (all), vipHelpers, vipLate (held extras that
+//! landed now), vipRead (yes, no, unknown) and vipHeld. src/net/vip-extra.json's gamePays false pays
+//! none of it (the Arcade's, then).
+//!
 //! THE ACHIEVEMENTS (count.rs, docs/achievements.md): after a verified win is paid, one more order
 //! sets every counter to what the record says (progression_max), so earlier wins count too; the
 //! platform unlocks an achievement from it (on release only), and the verdict lists what it
@@ -177,6 +187,30 @@ mod function {
         }
     }
 
+    /// A reward this call paid: its key (the nonce of the order that paid it), what each Coin grant
+    /// of it landed, and the helpers it asked: what its VIP extra is reckoned from (pay::Extra::of).
+    struct Paid {
+        key: String,
+        grants: Vec<i64>,
+        asked: Value,
+    }
+
+    thread_local! {
+        /// The rewards this call has paid, in order: each order that pays one notes it here (pay_win,
+        /// an event item's own order, a past day's), and verified() pays their VIP extras after. A
+        /// function instance runs one call at a time; verified() empties it first.
+        static PAID: std::cell::RefCell<Vec<Paid>> = const { std::cell::RefCell::new(Vec::new()) };
+    }
+
+    /// Note a reward an order just paid (its receipt's `changes`), unless it paid nothing at all.
+    fn note_paid(key: &str, changes: &[Value], asked: Value) {
+        let grants = pay::grants_landed(changes);
+        if grants.is_empty() && pay::KINDS.iter().all(|k| asked[*k].as_u64().unwrap_or(0) == 0) {
+            return;
+        }
+        PAID.with(|p| p.borrow_mut().push(Paid { key: key.to_string(), grants, asked }));
+    }
+
     /// A progression's value for the player, by id (0 when never written). Err: the verdict.
     fn value_of(player: &str, id: &str) -> Result<f64, Value> {
         let res = api("GET", format!("/v1/inventory/players/{player}/progressions/{id}"), None).map_err(|e| {
@@ -227,6 +261,7 @@ mod function {
             return Err(retry(if passing(res.status) { "platform" } else { "config" }));
         }
         let changes = res.body["changes"].as_array().cloned().unwrap_or_default();
+        note_paid(&order.nonce, &changes, pay::asked(&order));
         let mut g = Granted { first, helpers: pay::landed(&changes), gifts: order.gifts.clone(), changes: changes.clone(), ..Granted::nothing() };
         for ch in &changes {
             if ch["type"] == "item" && ch["quantity_after"].as_i64().unwrap_or(0) > ch["quantity_before"].as_i64().unwrap_or(0) {
@@ -629,6 +664,7 @@ mod function {
                 match api("POST", format!("/v1/inventory/players/{player}/orders"), Some(body)) {
                     Ok(res) if (200..300).contains(&res.status) && res.body["status"] != "failed" => {
                         g.changes = res.body["changes"].as_array().cloned().unwrap_or_default();
+                        note_paid(&nonce, &g.changes, pay::none());
                         // its Coins (the find's): counted with what this win paid
                         g.coins += g.changes.iter().filter(|ch| ch["type"] == "platform_grant").map(|ch| ch["granted"].as_i64().unwrap_or(0)).sum::<i64>();
                         before = Some(c);
@@ -801,6 +837,7 @@ mod function {
         let mut d = doc.clone();
         if let Some(m) = d.as_object_mut() {
             m.remove("seen");
+            m.remove("vipOwed");
         }
         d
     }
@@ -847,6 +884,7 @@ mod function {
             host::log(LogLevel::Info, &format!("order {nonce}: landed before"));
             return verdict;
         }
+        note_paid(&nonce, res.body["changes"].as_array().map(|v| v.as_slice()).unwrap_or(&[]), pay::none());
         let mut paid_coins = 0;
         for ch in res.body["changes"].as_array().into_iter().flatten() {
             if ch["type"] == "platform_grant" {
@@ -859,9 +897,55 @@ mod function {
         verdict
     }
 
+    /// One reward's VIP extra, in its own order (pay::vip_extra_order, "vipx:<key>"). Ok(what landed:
+    /// nothing for one that landed before), or Err (not placed, or no answer): the caller holds it.
+    fn place_extra(player: &str, key: &str, x: &pay::Extra) -> Result<pay::Extra, Value> {
+        let Some(o) = pay::vip_extra_order(key, x) else { return Ok(pay::Extra::zero()) };
+        match crate::gift::Platform::place(&Live { player }, &o)? {
+            Some(changes) => {
+                let got = pay::Extra::landed(&changes);
+                host::log(LogLevel::Info, &format!("vip extra {key}: {} Coins of {}, helpers {}", got.coins, x.coins, got.helpers));
+                Ok(got)
+            }
+            None => Ok(pay::Extra::zero()),
+        }
+    }
+
+    /// The record's held VIP extras (earlier calls whose VIP read failed), settled now that this call
+    /// reads VIP: paid (a few a call at most), or dropped for a player who is not VIP; kept while VIP is
+    /// still unknown. Adds what landed to `late`. True when the record changed.
+    fn settle_held(player: &str, doc: &mut Value, vip: VipWord, late: &mut pay::Extra) -> bool {
+        let held = progress::held_extras(doc);
+        let mut changed = false;
+        match vip() {
+            Ok(true) => {
+                for (key, x) in held.into_iter().take(4) {
+                    match place_extra(player, &key, &x) {
+                        Ok(got) => {
+                            late.add(&got);
+                            progress::drop_extra(doc, &key);
+                            changed = true;
+                        }
+                        Err(_) => break,
+                    }
+                }
+            }
+            Ok(false) => {
+                // never paid to a player who is not VIP
+                for (key, _) in held {
+                    progress::drop_extra(doc, &key);
+                    changed = true;
+                }
+            }
+            Err(_) => {}
+        }
+        changed
+    }
+
     /// A verified win: the record first, then the payment, so a payment never
     /// lands without its progress, and a resent claim changes the record once.
-    fn verified(game: &str, player: &str, win: &Win, boards: u64) -> Value {
+    fn verified(game: &str, player: &str, win: &Win, boards: u64, vip: VipWord) -> Value {
+        PAID.with(|p| p.borrow_mut().clear());
         let day = match win.lane {
             Lane::Daily => match daily_kind(player, win) {
                 Ok(d) => d,
@@ -897,6 +981,15 @@ mod function {
         if owes {
             progress::owe(&mut doc, &date, true, false);
         }
+        // VIP extras held by earlier calls (their progress recorded already): settled first, with the
+        // pass read this call makes anyway
+        let mut late = pay::Extra::zero();
+        let mut read_vip = false;
+        let mut settled = false;
+        if pay::vip_game_pays() && !progress::held_extras(&doc).is_empty() {
+            read_vip = true;
+            settled = settle_held(player, &mut doc, vip, &mut late);
+        }
         // THE KIT is due once the player is past board 1 (this win included) and its mark
         // still reads 0: board 1's first win, or the next win of a player who was past it
         // before the kit existed. The record notes a mark read as 1, so it is read no more.
@@ -917,7 +1010,7 @@ mod function {
         let counts = count::summary(&doc, count::plan());
         let recounted = doc["counts"] != counts;
         doc["counts"] = counts;
-        if changed || marked || recounted || owes || !stored {
+        if changed || marked || recounted || owes || settled || !stored {
             if let Err(v) = write_save(player, crate::PROGRESS, &doc) {
                 return v;
             }
@@ -929,6 +1022,9 @@ mod function {
             (Lane::Event, _, Some(e)) => event_win(game, player, win, e, kit),
             _ => board_win(player, win, kit),
         };
+        if matches!(verdict["status"].as_str(), Some("paid" | "kept" | "late")) {
+            vip_extras(player, &mut doc, vip, &mut verdict, late, read_vip);
+        }
         if verdict["status"] != "retry" {
             verdict["progress"] = public(&doc);
         }
@@ -939,6 +1035,74 @@ mod function {
             }
         }
         verdict
+    }
+
+    /// THE VIP EXTRA of what this call paid (PAID), paid now for a VIP (each its own order), held in the
+    /// record while VIP is unknown or when its order fails, nothing for a player not VIP; then the
+    /// verdict says it all: coins (base + vipExtra), base, vipExtra, helpers (all), vipHelpers, vipLate
+    /// (`late`: held extras paid now), vipRead and vipHeld.
+    fn vip_extras(player: &str, doc: &mut Value, vip: VipWord, verdict: &mut Value, late: pay::Extra, mut read_vip: bool) {
+        let rewards = PAID.with(|p| std::mem::take(&mut *p.borrow_mut()));
+        let mut now = pay::Extra::zero();
+        let mut held_now = false;
+        if pay::vip_game_pays() && !rewards.is_empty() {
+            read_vip = true;
+            let word = vip();
+            for r in &rewards {
+                let x = pay::Extra::of(&r.grants, &r.asked);
+                if x.nothing() {
+                    continue;
+                }
+                let held = match word {
+                    Ok(true) => match place_extra(player, &r.key, &x) {
+                        Ok(got) => {
+                            now.add(&got);
+                            false
+                        }
+                        Err(_) => true,
+                    },
+                    Ok(false) => false,
+                    Err(_) => true,
+                };
+                if held {
+                    progress::hold_extra(doc, &r.key, &x);
+                    held_now = true;
+                }
+            }
+            if held_now && write_save(player, crate::PROGRESS, doc).is_err() {
+                // the record could not keep them: a resend of this claim pays no reward again, so they are lost
+                host::log(LogLevel::Warn, "vip extras: held, but the record could not be written: lost");
+                for r in &rewards {
+                    progress::drop_extra(doc, &r.key);
+                }
+            }
+        }
+        let mut extra = now;
+        extra.add(&late);
+        let base = verdict["coins"].as_i64().unwrap_or(0);
+        verdict["base"] = json!(base);
+        verdict["vipExtra"] = json!(extra.coins);
+        verdict["coins"] = json!(base + extra.coins);
+        let mut helpers = if verdict["helpers"].is_object() { verdict["helpers"].clone() } else { pay::none() };
+        add(&mut helpers, &extra.helpers);
+        verdict["helpers"] = helpers;
+        verdict["vipHelpers"] = extra.helpers.clone();
+        if !late.nothing() {
+            verdict["vipLate"] = late.to_json();
+        }
+        if read_vip {
+            verdict["vipRead"] = json!(match vip() {
+                Ok(true) => "yes",
+                Ok(false) => "no",
+                Err(_) => "unknown",
+            });
+        }
+        if !progress::held_extras(doc).is_empty() {
+            verdict["vipHeld"] = json!(true);
+        }
+        if verdict["status"] == "kept" && !extra.nothing() {
+            verdict["status"] = json!("paid");
+        }
     }
 
     /// The gift's platform (gift.rs): the live calls, for the player who called.
@@ -979,6 +1143,10 @@ mod function {
             host::log(LogLevel::Info, line);
         }
     }
+
+    /// VIP for this call, read at most once and only when the call needs it: Ok(VIP or not), or
+    /// Err(why it is unknown).
+    type VipWord<'a> = &'a dyn Fn() -> Result<bool, &'static str>;
 
     /// THE PLATFORM'S WORD ON VIP (vip.rs; docs/vip.md): the passes of the player who called (the
     /// route's "me" is the function's invoker). Ok(holds `vip`), or Err when the read failed:
@@ -1023,7 +1191,7 @@ mod function {
             }
             let asked = serde_json::from_slice::<Value>(&input).unwrap_or(Value::Null);
             // VIP for this call (vip.rs), asked of the platform once, and only by a call that needs it
-            // (the VIP ask, the VIP gift, the events read). An answer that asked says it, so the game
+            // (the VIP ask, the VIP gift, the events read, a claim that paid or holds a VIP extra). An answer that asked says it, so the game
             // follows the server; one that did not, or could not, says nothing about VIP, and the
             // game keeps what it had.
             let read: std::cell::OnceCell<Result<vip::Passes, &'static str>> = std::cell::OnceCell::new();
@@ -1078,7 +1246,7 @@ mod function {
                 }
                 Ok(win) => {
                     host::log(LogLevel::Info, &format!("won {} {} in {} moves, {} shuffles", win.lane.name(), win.board, win.moves, win.shuffles));
-                    verified(&ctx.game_id, &player, &win, data.campaign.len() as u64)
+                    verified(&ctx.game_id, &player, &win, data.campaign.len() as u64, &vip)
                 }
             };
             said(verdict)

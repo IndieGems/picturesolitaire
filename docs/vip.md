@@ -52,11 +52,10 @@ VIP's alone, behind locked doors (the plan of 2026-10-30, in `git log` of this f
 
 ## What VIP adds
 
-Items 1 and 2 are being built (2026-11-10) and pay from the checker after 0.1.54; until then a VIP
-gets the gifts (3) alone.
+Items 1 and 2 pay from checker 0.1.54 and config 64 (dev first, 2026-11-10).
 
-1. **The VIP extra on Coins: +50% of every Coin payout**, paid as its own grant beside the base, in
-   the same order (the platform caps one grant at 100, so a 100 pays 100 + 50). The rule is
+1. **The VIP extra on Coins: +50% of every Coin payout**, paid as its own grant, in an order of its
+   own right after the base's (the platform caps one grant at 100, so a 100 pays 100, then 50). The rule is
    **ceil(base / 2)**: 25 pays +13, 50 pays +25, 100 pays +50. It covers every Coin payout: each
    lane's first win (the campaign, the welcome boards 1–5 included, Souvenirs, the challenge route,
    event levels), First Steps' prize, the daily's 50, a past day's 50, and each event item's 50.
@@ -86,18 +85,19 @@ so a board won earlier as a non-VIP never pays it later. Every level stays winna
 
 ## The VIP extra, in the checker
 
-- **One place computes it**: `functions/checker/src/pay.rs` (`vip_extra_coins`, `vip_helpers`), from
+- **One place computes it**: `functions/checker/src/pay.rs` (`vip_extra_coins`, `vip_extra_helpers`), from
   `src/net/vip-extra.json`, the one copy of the rule, which `src/net/vip.ts` reads too for the
   previews UI shows before a reward is won (`vipExtraCoins(base)`, `vipHelpers(gift)`).
 - **The seam for the Arcade's figure**: the creator expects a coming SDK to have the Arcade tell the
   game the exact VIP extra. That figure replaces the rule at this one place, and **`gamePays`** in
   `vip-extra.json` turns the game's own payment off, so a VIP is never paid twice.
-- **Each extra pays once, ever**, in the same order (and so under the same key) as the reward it
-  rides with: a resent claim or a replay pays nothing more.
+- **Each extra pays once, ever**: its order's key is `vipx:<key>`, `<key>` the key of the order that
+  paid its reward, whichever call places it; a resent claim or a replay pays nothing more. It is
+  reckoned from what LANDED of the reward (a grant trimmed by a ceiling has a smaller extra), on the
+  config's `vip_coins` progression (on_add, 1 Coin a unit, written only by the checker).
 - **At most one pass read per claim.** A read that fails holds the extra: the base pays now, and the
   record (`vipOwed` in the progress slot) keeps what the extra would be; a later answer that reads
-  VIP pays it (its own key, `vipx:<what>`), one that reads not VIP drops it. Never lost, never paid
-  to a non-VIP.
+  VIP pays it (the same key), one that reads not VIP drops it. Never lost, never paid to a non-VIP.
 - **The answer says what landed**: `coins` (all), `base`, `vipExtra`, `helpers` (all), `vipHelpers`,
   `vipRead` (`yes`, `no` or `unknown`) and `vipHeld` (an extra waits). `src/net/claims.ts` types them.
 - **The platform's day cap**: 4,000 Coins a day per game (`gemctl platform config`). A VIP reaches it

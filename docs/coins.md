@@ -48,6 +48,12 @@ and leaves the hourly rate where it is.
   about 802 an hour while playing an event, inside the standard's 250 to 1,000. Two events a
   month add 1000 Coins of finds a month to a player who finishes both.
 - One-time: the welcome (boards 1 to 5), the onboarding prize and First Steps' prize. Replays and campaign boards past the last pay nothing.
+- **VIP** (the creator, 2026-11-10; docs/vip.md): every payout above pays a VIP 1/2 more, rounded up, as its own
+  grant (25 +13, 50 +25, 100 +50), and every helper reward 2 times over. From board 6 a VIP's board
+  averages 55, about 1100 an hour at 3 minutes, against about 732 without VIP: above the standard's
+  band for ordinary play, on purpose. **VIP +50% is the Gem Arcade's rule, relayed by the creator on 2026-11-10;
+  they saw the ~1,100 an hour before approving** (through the lead, 2026-11-10). The platform's 4,000 a day per
+  game still holds: a VIP reaches it sooner, and the receipts (so the win card) say what landed.
 - **Still to measure**: real minutes per board once the creator has played some (the lead's
   note): if boards run much faster or slower than 2 to 4 minutes, change the rule here.
 

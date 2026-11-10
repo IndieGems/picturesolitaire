@@ -12,6 +12,9 @@
 //!     same order, so it lands with the kit or not at all.
 //!   - VIP's GIFTS are not a win's (the creator, 2026-11-01, docs/vip.md): their own call, their own
 //!     orders (vip_order), sizes from helper-ids.json `vip`.
+//!   - THE VIP EXTRA (the creator, 2026-11-10, docs/vip.md): +50% on every Coin payout and double on
+//!     every helper reward, for a VIP, computed in ONE place (below, from src/net/vip-extra.json) and
+//!     paid in an order of its own right after its reward (vip_extra_order, "vipx:<key>").
 //!
 //! The helpers are the game's own currencies (src/net/helper-ids.json), granted into
 //! their "earned" bucket and clamped at the cap, by the function's own write: unlike a
@@ -229,4 +232,132 @@ pub fn landed(changes: &[Value]) -> Value {
 /// Nothing landed: { hint: 0, undo: 0, shuffle: 0 }.
 pub fn none() -> Value {
     landed(&[])
+}
+
+// ------------------------------------------------------------------ THE VIP EXTRA
+
+// THE VIP EXTRA (the creator, 2026-11-10; docs/vip.md): +50% on every Coin payout and double on every
+// helper reward, for a VIP, paid by this checker beside the base. THE ONE PLACE it is computed, from
+// src/net/vip-extra.json (the rule's one copy; src/net/vip.ts shows the same figures as previews).
+// A coming SDK may have the Arcade tell the game its exact VIP extra (the creator): that figure
+// replaces the rule HERE (vip_extra_coins, vip_extra_helpers), and `gamePays` goes false, so a VIP
+// is never paid twice (vip_game_pays: lib.rs then places nothing and reads no pass for it).
+
+fn vip_rule() -> &'static Value {
+    &data()["vipExtra"]
+}
+
+/// The game pays the VIP extra itself (vip-extra.json `gamePays`). False: the Arcade pays it, and
+/// this checker pays none.
+pub fn vip_game_pays() -> bool {
+    vip_rule()["gamePays"].as_bool() == Some(true)
+}
+
+/// THE SEAM, Coins: the VIP extra on one Coin payout of `base` (what landed of it): ceil(base * num /
+/// den), so 25 pays 13, 50 pays 25, 100 pays 50. Per payout: a reward of two grants adds each one's.
+pub fn vip_extra_coins(base: i64) -> i64 {
+    let r = &vip_rule()["coins"];
+    let num = r["num"].as_i64().unwrap_or(0).max(0);
+    let den = r["den"].as_i64().unwrap_or(1).max(1);
+    (base.max(0) * num + den - 1) / den
+}
+
+/// THE SEAM, helpers: the VIP extra on a helper reward of `asked` (its sizes before the cap): the
+/// reward again (factor - 1) times, so double pays as much again.
+pub fn vip_extra_helpers(asked: &Value) -> Value {
+    let more = vip_rule()["helpers"].as_u64().unwrap_or(1).saturating_sub(1);
+    let mut out = none();
+    for kind in KINDS {
+        out[kind] = json!(asked[kind].as_u64().unwrap_or(0) * more);
+    }
+    out
+}
+
+/// The VIP extra Coins' progression (vip-extra.json `progression`, declared by make-config: on_add,
+/// 1 Coin a unit): its id.
+pub fn vip_coins_id() -> &'static str {
+    vip_rule()["progression"]["id"].as_str().unwrap_or_default()
+}
+
+/// One reward's VIP extra: Coins, and helpers { hint, undo, shuffle }.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Extra {
+    pub coins: i64,
+    pub helpers: Value,
+}
+
+impl Extra {
+    /// Nothing at all.
+    pub fn zero() -> Extra {
+        Extra { coins: 0, helpers: none() }
+    }
+    /// A reward's extra: each Coin grant that landed (`grants`) its own vip_extra_coins, added, and
+    /// the helpers it asked (`asked`) vip_extra_helpers.
+    pub fn of(grants: &[i64], asked: &Value) -> Extra {
+        Extra { coins: grants.iter().map(|g| vip_extra_coins(*g)).sum(), helpers: vip_extra_helpers(asked) }
+    }
+    pub fn nothing(&self) -> bool {
+        self.coins <= 0 && KINDS.iter().all(|k| self.helpers[*k].as_u64().unwrap_or(0) == 0)
+    }
+    /// Add another's.
+    pub fn add(&mut self, o: &Extra) {
+        self.coins += o.coins.max(0);
+        for kind in KINDS {
+            self.helpers[kind] = json!(self.helpers[kind].as_u64().unwrap_or(0) + o.helpers[kind].as_u64().unwrap_or(0));
+        }
+    }
+    /// As the progress record holds it, and as the verdict says it.
+    pub fn to_json(&self) -> Value {
+        json!({ "coins": self.coins.max(0), "helpers": self.helpers })
+    }
+    pub fn from_json(v: &Value) -> Extra {
+        Extra { coins: v["coins"].as_i64().unwrap_or(0).max(0), helpers: sizes(&v["helpers"]) }
+    }
+    /// What an order's receipt says landed: its Coin grants and its helpers.
+    pub fn landed(changes: &[Value]) -> Extra {
+        Extra { coins: grants_landed(changes).iter().sum(), helpers: landed(changes) }
+    }
+}
+
+/// One reward's VIP extra as an order of its own, nonce "vipx:<key>": `key` is the nonce of the order
+/// that paid the reward, so the extra pays once ever, whichever call places it (now, or later from
+/// the record's held extras). Its Coins go on the extra's progression in adds of at most `maxGrant`
+/// (the platform's most in one grant), its helpers into "earned", clamped at the cap. None when the
+/// extra is nothing.
+pub fn vip_extra_order(key: &str, extra: &Extra) -> Option<Order> {
+    if extra.nothing() {
+        return None;
+    }
+    let most = vip_rule()["maxGrant"].as_i64().unwrap_or(100).max(1);
+    let why = format!("vip extra: {key}");
+    let mut o = Order { nonce: format!("vipx:{key}"), ..Order::default() };
+    let mut left = extra.coins.max(0);
+    while left > 0 {
+        let n = left.min(most);
+        o.operations.push(json!({ "type": "progression_add", "progression_definition_id": vip_coins_id(), "amount": n, "reason": why }));
+        left -= n;
+    }
+    for kind in KINDS {
+        let n = extra.helpers[kind].as_u64().unwrap_or(0);
+        if n > 0 {
+            o.operations.push(grant(kind, n, why.clone()));
+        }
+    }
+    Some(o)
+}
+
+/// What each Coin grant of a receipt paid (`granted`: what landed, after any ceiling), in its order.
+pub fn grants_landed(changes: &[Value]) -> Vec<i64> {
+    changes.iter().filter(|c| c["type"] == "platform_grant").map(|c| c["granted"].as_i64().unwrap_or(0)).filter(|g| *g > 0).collect()
+}
+
+/// The helpers an order asks for (its grants, before the cap's clamp): { hint, undo, shuffle }.
+pub fn asked(o: &Order) -> Value {
+    let mut out = none();
+    for kind in KINDS {
+        let id = currency(kind);
+        let n: u64 = o.operations.iter().filter(|op| op["type"] == "currency_grant" && op["currency_id"] == id).filter_map(|op| op["amount"].as_u64()).sum();
+        out[kind] = json!(n);
+    }
+    out
 }

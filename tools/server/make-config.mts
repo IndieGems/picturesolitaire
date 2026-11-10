@@ -482,6 +482,21 @@ y.push("      platform_grants:");
 y.push("        - mode: on_add");
 y.push(`          per_unit: ${DAILY_COINS}`);
 y.push("          target: { platform_currency_slug: ARCADE_TICKETS }");
+// THE VIP EXTRA (docs/vip.md; src/net/vip-extra.json, the rule's one copy): the checker adds a VIP's
+// extra Coins here, 1 Coin a unit, in an order of its own keyed by the reward it rides with.
+const VX = JSON.parse(readFileSync(join(root, "src/net/vip-extra.json"), "utf8"));
+y.push("  # THE VIP EXTRA (docs/vip.md; the creator, 2026-11-10): +50% on every Coin payout for a VIP, as its");
+y.push("  # own grant beside the base: the checker adds the extra's Coins here, 1 Coin a unit, in an order keyed");
+y.push("  # by the reward it rides with (vipx:<key>), so once ever. Only the win checker writes it.");
+y.push(`  - id: ${VX.progression.id}`);
+y.push(`    slug: ${VX.progression.slug}`);
+y.push(`    display_name: "VIP extra Coins"`);
+y.push("    config:");
+y.push("      function_may_grant: true");
+y.push("      platform_grants:");
+y.push("        - mode: on_add");
+y.push("          per_unit: 1");
+y.push("          target: { platform_currency_slug: ARCADE_TICKETS }");
 if (EVENTS.length || RETIRED.length) {
   y.push("  # THE EVENTS (docs/vip.md): packs of 30 levels each, everyone's (their Coins: the board progressions");
   y.push("  # above), with 10 items hidden one per level. This old challenge stays declared and is written by");
@@ -794,6 +809,19 @@ if (evs.length) {
   md.push("- Events: none dealt yet (Levels' src/content/levels/event-levels.json).");
 }
 md.push(`- One-time: the welcome (boards 1 to ${WELCOME.boards}), the onboarding prize and First Steps' prize. Replays and campaign boards past the last pay nothing.`);
+{
+  // THE VIP EXTRA (the creator, 2026-11-10; docs/vip.md): each payout's own ceil(base * num / den), beside it
+  const VR = JSON.parse(readFileSync(join(root, "src/net/vip-extra.json"), "utf8"));
+  const x = (n) => Math.ceil((n * VR.coins.num) / VR.coins.den);
+  const paid = camp.filter((r) => !r.onboarding && !r.welcome);
+  const vavg = paid.reduce((a, r) => a + r.coins + x(r.coins), 0) / Math.max(1, paid.length);
+  md.push(`- **VIP** (the creator, 2026-11-10; docs/vip.md): every payout above pays a VIP ${VR.coins.num}/${VR.coins.den} more, rounded up, as its own`);
+  md.push(`  grant (25 +${x(25)}, 50 +${x(50)}, 100 +${x(100)}), and every helper reward ${VR.helpers} times over. From board ${WELCOME.boards + 1} a VIP's board`);
+  md.push(`  averages ${Math.round(vavg)}, about ${Math.round((vavg * 60) / 3)} an hour at 3 minutes, against about ${Math.round((paid.reduce((a, r) => a + r.coins, 0) / Math.max(1, paid.length) * 60) / 3)} without VIP: above the standard's`);
+  md.push("  band for ordinary play, on purpose. **VIP +50% is the Gem Arcade's rule, relayed by the creator on 2026-11-10;");
+  md.push("  they saw the ~1,100 an hour before approving** (through the lead, 2026-11-10). The platform's 4,000 a day per");
+  md.push("  game still holds: a VIP reaches it sooner, and the receipts (so the win card) say what landed.");
+}
 md.push("- **Still to measure**: real minutes per board once the creator has played some (the lead's");
 md.push("  note): if boards run much faster or slower than 2 to 4 minutes, change the rule here.");
 md.push("");
