@@ -43,6 +43,11 @@ VIP's alone, behind locked doors (the plan of 2026-10-30, in `git log` of this f
   the 1st and the 15th: Haunted Holiday (15 Oct), Ski Trip (1 Nov), Grand Train Journey (15 Nov),
   Winter Market (1 Dec), Northern Lights (15 Dec), Carnival (1 Jan 2027).
 - **The event archive** is every past event, still playable and winnable.
+- **An event is played in order** (the creator, 2026-11-10): level N pays only once levels 1 to N-1
+  of that event are won, in current and past events alike; otherwise the checker refuses it
+  `out_of_order` and names the level that is next (`next`). A level won already is never refused,
+  whatever the order it was won in (a replay, or a win from before the rule), and nothing won is
+  taken away. The event page offers one Play, for the lowest level not won (UI's).
 - **The daily archive**: past days' dailies from a calendar opened from home's Daily tile, over the
   game standard's window: the player's current month and the two before it, in their own months.
   Each past day pays its Coins once, as it would have on the day; the server pays nothing older
@@ -52,10 +57,12 @@ VIP's alone, behind locked doors (the plan of 2026-10-30, in `git log` of this f
 
 ## What VIP adds
 
-Items 1 and 2 pay from checker 0.1.54 and config 64 (dev first, 2026-11-10).
+Items 1 and 2 pay from checker 0.1.55 and config 65 (dev first). 0.1.54 paid the extra's Coins in an
+order of its own, which the platform suppressed (one call pays once; QA, 2026-11-10): its helpers
+landed, its Coins did not.
 
-1. **The VIP extra on Coins: +50% of every Coin payout**, paid as its own grant, in an order of its
-   own right after the base's (the platform caps one grant at 100, so a 100 pays 100, then 50). The rule is
+1. **The VIP extra on Coins: +50% of every Coin payout**, paid as its own grant inside the reward's own
+   order (the platform caps one grant at 100, so a 100 pays 100 and 50). The rule is
    **ceil(base / 2)**: 25 pays +13, 50 pays +25, 100 pays +50. It covers every Coin payout: each
    lane's first win (the campaign, the welcome boards 1–5 included, Souvenirs, the challenge route,
    event levels), First Steps' prize, the daily's 50, a past day's 50, and each event item's 50.
@@ -91,15 +98,27 @@ so a board won earlier as a non-VIP never pays it later. Every level stays winna
 - **The seam for the Arcade's figure**: the creator expects a coming SDK to have the Arcade tell the
   game the exact VIP extra. That figure replaces the rule at this one place, and **`gamePays`** in
   `vip-extra.json` turns the game's own payment off, so a VIP is never paid twice.
-- **Each extra pays once, ever**: its order's key is `vipx:<key>`, `<key>` the key of the order that
-  paid its reward, whichever call places it; a resent claim or a replay pays nothing more. It is
-  reckoned from what LANDED of the reward (a grant trimmed by a ceiling has a smaller extra), on the
-  config's `vip_coins` progression (on_add, 1 Coin a unit, written only by the checker).
-- **At most one pass read per claim.** A read that fails holds the extra: the base pays now, and the
-  record (`vipOwed` in the progress slot) keeps what the extra would be; a later answer that reads
-  VIP pays it (the same key), one that reads not VIP drops it. Never lost, never paid to a non-VIP.
+- **One call pays once** (the platform: "a second paying order in the same call is suppressed",
+  `function_invocation_already_granted`, SDK `inventory-and-catalogs.md`). So the extra rides INSIDE
+  the reward's own order, under its key: it pays with the reward, once ever, and a resent claim or a
+  replay pays nothing more. The achievements' counters ride in the same order (0.1.55 on), for the
+  same reason. It goes on the config's `vip_coins` progression (on_add, 1 Coin a unit, written only
+  by the checker).
+- **Reckoned before the order, from what the config pays**: `functions/checker/data/coins.json`,
+  written by make-config with the config, compiled into the checker. `levels-check` (in
+  `npm run build`) stops the game build when that file changed after the uploaded checker was built,
+  as it does for the level data. A ceiling (the day's cap) trims the extra's grant like any other, and
+  the receipt says what landed.
+- **At most one pass read per claim**, just before the order, and only when the claim pays. A passing
+  hiccup reading it (no answer, 429, 5xx) holds the claim, and base and extra pay together later. Any
+  other failure pays the base and holds the extra in the record (`vipOwed` in the progress slot); it
+  is paid inside a later paying claim's order, with the held mark (`vip_extra_held`) raised in it, so
+  the mark, not the record, says what is paid; a claim that reads not VIP drops it. Never lost, never
+  paid to a non-VIP.
 - **The answer says what landed**: `coins` (all), `base`, `vipExtra`, `helpers` (all), `vipHelpers`,
-  `vipRead` (`yes`, `no` or `unknown`) and `vipHeld` (an extra waits). `src/net/claims.ts` types them.
+  `vipLate` (held extras that landed now), `vipRead` (`yes`, `no` or `unknown`) and `vipHeld` (an
+  extra waits). `src/net/claims.ts` types them. The function's log names every grant, base or VIP extra,
+  with its outcome (fired, clamped or suppressed, and why); a short extra is a warning.
 - **The platform's day cap**: 4,000 Coins a day per game (`gemctl platform config`). A VIP reaches it
   sooner; a grant past it is trimmed, and the receipts (so the answer) say what landed.
 

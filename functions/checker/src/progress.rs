@@ -231,30 +231,47 @@ pub fn settle(doc: &mut Value, date: &str) {
     }
 }
 
-/// THE VIP EXTRAS HELD (docs/vip.md): a reward paid while the player's VIP could not be read (or whose
-/// extra's own order failed) keeps what its extra would be, by its key (the nonce of the order that
-/// paid the reward), until a later call reads VIP: then it is paid (pay::vip_extra_order, once ever)
-/// or, for a player not VIP, dropped. Held twice under one key, it is still one.
+/// THE VIP EXTRAS HELD (docs/vip.md): a reward paid while the player's VIP could not be read (anything
+/// but a passing hiccup, which holds the whole claim instead) keeps what its extra would be, by its key
+/// (the nonce of the order that paid the reward) and a number (1, 2, ... in the order held), until a
+/// later paying claim reads VIP: then they are paid inside that claim's order with the held mark
+/// (pay::add_held) raised to the highest number paid, so the mark, never this list, says what is paid;
+/// for a player not VIP they are dropped. Held twice under one key, it is still one.
 pub fn hold_extra(doc: &mut Value, key: &str, extra: &crate::pay::Extra) {
     if !doc["vipOwed"].is_object() {
         doc["vipOwed"] = json!({});
     }
-    doc["vipOwed"][key] = extra.to_json();
+    if doc["vipOwed"].get(key).is_some() {
+        return;
+    }
+    let n = doc["vipOwedSeq"].as_u64().unwrap_or(0) + 1;
+    doc["vipOwedSeq"] = json!(n);
+    let mut v = extra.to_json();
+    v["n"] = json!(n);
+    doc["vipOwed"][key] = v;
 }
 
-/// The extras held, by key, in key order.
-pub fn held_extras(doc: &Value) -> Vec<(String, crate::pay::Extra)> {
-    doc["vipOwed"].as_object().map(|m| m.iter().map(|(k, v)| (k.clone(), crate::pay::Extra::from_json(v))).collect()).unwrap_or_default()
+/// The extras held: (key, extra, number), by number.
+pub fn held_extras(doc: &Value) -> Vec<(String, crate::pay::Extra, u64)> {
+    let mut out: Vec<(String, crate::pay::Extra, u64)> = doc["vipOwed"]
+        .as_object()
+        .map(|m| m.iter().map(|(k, v)| (k.clone(), crate::pay::Extra::from_json(v), v["n"].as_u64().unwrap_or(0))).collect())
+        .unwrap_or_default();
+    out.sort_by_key(|(_, _, n)| *n);
+    out
 }
 
-/// One held extra settled (paid, or dropped for a player not VIP). The last one takes the list with it.
-pub fn drop_extra(doc: &mut Value, key: &str) {
-    if let Some(m) = doc["vipOwed"].as_object_mut() {
-        m.remove(key);
-        if m.is_empty() {
-            if let Some(d) = doc.as_object_mut() {
-                d.remove("vipOwed");
-            }
+/// Drop the held extras numbered `upto` or lower (paid: the held mark reads at least that). True if
+/// any went. The last one takes the list with it (the number keeps counting).
+pub fn drop_held(doc: &mut Value, upto: u64) -> bool {
+    let Some(m) = doc["vipOwed"].as_object_mut() else { return false };
+    let before = m.len();
+    m.retain(|_, v| v["n"].as_u64().unwrap_or(0) > upto);
+    let gone = m.len() != before;
+    if m.is_empty() {
+        if let Some(d) = doc.as_object_mut() {
+            d.remove("vipOwed");
         }
     }
+    gone
 }

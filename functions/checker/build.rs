@@ -161,7 +161,16 @@ fn main() {
     }
     let helpers = read(&Path::new(&here).join("../../src/net/helper-ids.json"));
     let vip_extra = read(&Path::new(&here).join("../../src/net/vip-extra.json"));
-    let pay = json!({ "boards": boards, "gifts": gifts, "helpers": helpers, "vipExtra": vip_extra });
+    // WHAT EACH PAYING PROGRESSION PAYS (data/coins.json, make-config's, the config's figures): the VIP
+    // extra is reckoned from it before the reward's order (the platform pays one order a call). Its
+    // fingerprint goes in the "levels" answer, and levels-check stops the game build when the file
+    // changed after the uploaded checker was built.
+    let coins_file = Path::new(&here).join("data/coins.json");
+    println!("cargo:rerun-if-changed={}", coins_file.display());
+    let coins_text = fs::read_to_string(&coins_file).unwrap_or_else(|e| panic!("{}: {e}", coins_file.display())).replace('\r', "");
+    println!("cargo:rustc-env=PICTURE_MEND_COINS={}", fnv32(&coins_text));
+    let coins: Value = serde_json::from_str(&coins_text).unwrap_or_else(|e| panic!("{}: {e}", coins_file.display()));
+    let pay = json!({ "boards": boards, "gifts": gifts, "helpers": helpers, "vipExtra": vip_extra, "coins": coins });
     fs::write(Path::new(&env::var("OUT_DIR").unwrap()).join("pay.json"), pay.to_string()).unwrap();
 
     // THE ACHIEVEMENTS' COUNTERS (OUT_DIR/counts.json, read by src/count.rs): each counter's slug,

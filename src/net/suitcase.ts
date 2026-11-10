@@ -110,6 +110,8 @@ let prize: { event: string } | null = null;
 let reading: Promise<void> | null = null;
 /** When the last read landed (Date.now()), 0 before one: a refresh within FRESH_MS answers from memory. */
 let readAt = 0;
+/** The player's date the last read answered for (its `today`): a day change to the same date reads nothing again. */
+let readFor: string | null = null;
 const FRESH_MS = 5 * 60_000;
 let tries = 0;
 let again: (() => void) | null = null;
@@ -180,6 +182,7 @@ async function read(): Promise<void> {
     }
     tries = 0;
     readAt = Date.now();
+    readFor = a.today;
     if (Array.isArray(a.stamps)) stamp(a.stamps);
     list = (Array.isArray(a.events) ? a.events : []).map(view).filter((e): e is EventPack => e !== null);
     const ids = Array.isArray(a.prizes) ? (a.prizes as string[]) : [];
@@ -262,8 +265,13 @@ export async function loadSuitcase(): Promise<void> {
 }
 
 if (framed && on) {
-  // a new day may release an event
-  onDailyChange(() => void refresh(true));
+  // a new day may release an event. The day's first platform answer at boot is a change too (from the
+  // device's guess), for the date the boot read just answered for: no second read then (QA, 0.124.0:
+  // two identical reads 400 ms apart). A read still out answers for it (refresh shares it).
+  onDailyChange((d) => {
+    if (d.guessed || d.date === readFor) return;
+    void refresh(true);
+  });
   onOnline((up) => {
     if (up && tries > 0) void refresh(true);
   });

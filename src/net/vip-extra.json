@@ -1,8 +1,18 @@
 {
-  "note": "THE VIP EXTRA's one copy (the creator, 2026-11-10; docs/vip.md): what a VIP gets on top of every reward, read by the win checker (functions/checker/build.rs into pay.rs, which pays it) and by src/net/vip.ts (the previews UI shows before a reward is won). `coins`: the extra on each Coin payout, ceil(base * num / den), so 25 pays +13, 50 +25, 100 +50, paid as its own grant beside the base on the progression `progression` (on_add, 1 Coin a unit, written only by the checker; declared by tools/server/make-config.mts). `helpers`: each helper reward is multiplied by this (2: double), the extra being (helpers - 1) times the reward. `gamePays`: the game pays the extra itself. A coming SDK may have the Arcade tell the game the exact VIP extra (the creator): then the Arcade's figure replaces this rule at its one seam on each side (pay.rs vip_extra_coins, vip.ts vipExtraCoins) and `gamePays` goes false, so a VIP is never paid twice. `maxGrant`: the platform's most Coins in one grant (max_per_event, `gemctl platform config`): an extra past it is split.",
+  "note": "THE VIP EXTRA's one copy (the creator, 2026-11-10; docs/vip.md): what a VIP gets on top of every reward, read by the win checker (functions/checker/build.rs into pay.rs, which pays it) and by src/net/vip.ts (the previews UI shows before a reward is won). `coins`: the extra on each Coin payout, ceil(base * num / den), so 25 pays +13, 50 +25, 100 +50, paid as its own grant INSIDE the reward's own order (the platform pays one order a call), on the progression `progression` (on_add, 1 Coin a unit, written only by the checker; declared by tools/server/make-config.mts). `helpers`: each helper reward is multiplied by this (2: double), the extra being (helpers - 1) times the reward. `gamePays`: the game pays the extra itself. A coming SDK may have the Arcade tell the game the exact VIP extra (the creator): then the Arcade's figure replaces this rule at its one seam on each side (pay.rs vip_extra_coins, vip.ts vipExtraCoins) and `gamePays` goes false, so a VIP is never paid twice. `maxGrant`: the platform's most Coins in one grant (max_per_event, `gemctl platform config`): an extra past it is split. `heldMark`: the progression whose value is the highest held extra paid (an extra held while VIP could not be read, paid inside a later claim's order with this mark raised in it).",
   "gamePays": true,
-  "coins": { "num": 1, "den": 2 },
+  "coins": {
+    "num": 1,
+    "den": 2
+  },
   "helpers": 2,
   "maxGrant": 100,
-  "progression": { "id": "38072584-41bb-4cb2-95cc-8a0455af63a5", "slug": "vip_coins" }
+  "progression": {
+    "id": "38072584-41bb-4cb2-95cc-8a0455af63a5",
+    "slug": "vip_coins"
+  },
+  "heldMark": {
+    "id": "25879b21-0671-472e-8f4e-644ffc4cf1f4",
+    "slug": "vip_extra_held"
+  }
 }

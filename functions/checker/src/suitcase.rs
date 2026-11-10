@@ -127,6 +127,18 @@ pub fn position(e: Event, level: &str) -> u32 {
     levels(e).iter().position(|l| l == level).map_or(0, |i| i as u32 + 1)
 }
 
+/// THE EVENTS ARE PLAYED IN ORDER (the creator, 2026-11-10): the lowest of an event's levels not won
+/// yet (`won` says which are: the progress record's "event"), or None once every one is.
+pub fn next_level(e: Event, won: impl Fn(&str) -> bool) -> Option<&'static str> {
+    levels(e).iter().filter_map(Value::as_str).find(|l| !won(l))
+}
+
+/// May a win of `level` pay: it is won already (a replay, or a win from before the rule: never taken
+/// away), or every level before it in its event is.
+pub fn in_order(e: Event, level: &str, won: impl Fn(&str) -> bool) -> bool {
+    won(level) || levels(e).iter().filter_map(Value::as_str).take_while(|l| *l != level).all(|l| won(l))
+}
+
 /// The slot of the item hidden in this level of the event, if it holds one.
 pub fn item_at(e: Event, level: &str) -> Option<usize> {
     items(e).iter().position(|i| i["level"] == level)

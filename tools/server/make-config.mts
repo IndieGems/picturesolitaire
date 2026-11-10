@@ -486,8 +486,8 @@ y.push("          target: { platform_currency_slug: ARCADE_TICKETS }");
 // extra Coins here, 1 Coin a unit, in an order of its own keyed by the reward it rides with.
 const VX = JSON.parse(readFileSync(join(root, "src/net/vip-extra.json"), "utf8"));
 y.push("  # THE VIP EXTRA (docs/vip.md; the creator, 2026-11-10): +50% on every Coin payout for a VIP, as its");
-y.push("  # own grant beside the base: the checker adds the extra's Coins here, 1 Coin a unit, in an order keyed");
-y.push("  # by the reward it rides with (vipx:<key>), so once ever. Only the win checker writes it.");
+y.push("  # own grant INSIDE the reward's own order (the platform pays one order a call): the checker adds the");
+y.push("  # extra's Coins here, 1 Coin a unit, so it pays with its reward, once ever. Only the win checker writes it.");
 y.push(`  - id: ${VX.progression.id}`);
 y.push(`    slug: ${VX.progression.slug}`);
 y.push(`    display_name: "VIP extra Coins"`);
@@ -497,6 +497,12 @@ y.push("      platform_grants:");
 y.push("        - mode: on_add");
 y.push("          per_unit: 1");
 y.push("          target: { platform_currency_slug: ARCADE_TICKETS }");
+y.push("  # THE VIP EXTRAS HELD (docs/vip.md): the highest held extra (VIP unreadable at its win) paid since,");
+y.push("  # raised by the win checker in the order that pays them. Only the checker writes it.");
+y.push(`  - id: ${VX.heldMark.id}`);
+y.push(`    slug: ${VX.heldMark.slug}`);
+y.push(`    display_name: "VIP extras held, paid"`);
+y.push("    config: {}");
 if (EVENTS.length || RETIRED.length) {
   y.push("  # THE EVENTS (docs/vip.md): packs of 30 levels each, everyone's (their Coins: the board progressions");
   y.push("  # above), with 10 items hidden one per level. This old challenge stays declared and is written by");
@@ -723,6 +729,25 @@ else text = text.replace(/\n*$/, "\n\n") + block + "\n";
   }
 }
 writeFileSync(CONFIG, text);
+
+// WHAT EACH PAYING PROGRESSION PAYS, for the win checker (functions/checker/data/coins.json, compiled in
+// by its build.rs): the VIP extra rides INSIDE the reward's own order (the platform pays one order a
+// call), so the checker reckons it from these before it orders. The same figures as the config above.
+// tools/server/levels-check.mts stops the game build when this file changed after the uploaded checker
+// was built (its hash is in functions/checker/data/levels-stamp.json): rebuild and upload it then.
+{
+  const P = {};
+  for (const r of rows) {
+    P[uuid5(`board:${r.lane}:${r.id}`)] = { complete: r.lane === "campaign" && r.id === FIRST_STEPS.board ? [r.coins, FIRST_STEPS.coins] : [r.coins] };
+  }
+  P[DAILY_ID] = { complete: [DAILY_COINS] };
+  P[ARCHIVE_ID] = { unit: DAILY_COINS };
+  if (SUITCASE.finds) P[SUITCASE.finds.id] = { unit: SUITCASE.finds.coins };
+  const note = "What each paying progression pays in Coins, written by tools/server/make-config.mts with the config (do not edit by hand): complete, an on_complete's grants; unit, an on_add's per unit. Read by the win checker (pay.rs base_grants) to reckon the VIP extra.";
+  // one progression a line, so a diff shows which payout moved
+  const lines = Object.entries(P).map(([id, v]) => `  ${JSON.stringify(id)}: ${JSON.stringify(v)}`);
+  writeFileSync(join(root, "functions/checker/data/coins.json"), `{\n "note": ${JSON.stringify(note)},\n "progressions": {\n${lines.join(",\n")}\n }\n}\n`);
+}
 
 // ---------------------------------------------------------------- docs/coins.md
 const lane = (name) => rows.filter((r) => r.lane === name);

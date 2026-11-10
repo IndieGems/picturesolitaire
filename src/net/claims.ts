@@ -63,7 +63,9 @@ import { heardVip, vipFields, vipReady } from "./vip";
  * "souvenir": the bonus board after a trip (docs/souvenirs.md), sent once its trip is stamped; no n, no date.
  * "event": one of an event's 30 levels (docs/vip.md; board "halloween-2026-04"), anyone's from its
  * release on (VIP or not, since 2026-11-10): an unreleased one is refused "not_released", any while
- * the events are switched off "events_off" (an older checker said "vip_only"); no n, no date.
+ * the events are switched off "events_off" (an older checker said "vip_only"), and one whose earlier
+ * levels are not all won "out_of_order" (0.1.55 on, the creator, 2026-11-10: events are played in order;
+ * the refusal names `event` and the level `next`); no n, no date.
  */
 export type Lane = "campaign" | "challenge" | "daily" | "souvenir" | "event";
 

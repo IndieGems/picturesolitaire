@@ -45,6 +45,30 @@ fn a_full_suitcase_pays_its_prize_to_anyone_while_the_events_are_on() {
 }
 
 #[test]
+fn an_events_levels_are_played_in_order() {
+    // the creator, 2026-11-10: level N pays once levels 1 to N-1 are won; a level won is never refused
+    for e in suitcase::events() {
+        let ls: Vec<&str> = suitcase::levels(e).iter().filter_map(Value::as_str).collect();
+        if ls.len() < 3 {
+            continue;
+        }
+        let none = |_: &str| false;
+        assert!(suitcase::in_order(e, ls[0], none), "level 1 is always open");
+        assert!(!suitcase::in_order(e, ls[1], none), "level 2 waits for level 1");
+        assert_eq!(suitcase::next_level(e, none), Some(ls[0]));
+        let first = |l: &str| l == ls[0];
+        assert!(suitcase::in_order(e, ls[1], first));
+        assert!(!suitcase::in_order(e, ls[2], first));
+        assert_eq!(suitcase::next_level(e, first), Some(ls[1]));
+        // won before the rule, out of order: never refused, and the gap is next
+        let gap = |l: &str| l == ls[2];
+        assert!(suitcase::in_order(e, ls[2], gap));
+        assert_eq!(suitcase::next_level(e, gap), Some(ls[0]));
+        assert_eq!(suitcase::next_level(e, |_: &str| true), None);
+    }
+}
+
+#[test]
 fn an_event_opens_on_its_release_date_and_never_closes() {
     for e in suitcase::events() {
         let r = suitcase::release(e);

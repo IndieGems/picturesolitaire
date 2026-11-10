@@ -14,7 +14,8 @@
 //!     orders (vip_order), sizes from helper-ids.json `vip`.
 //!   - THE VIP EXTRA (the creator, 2026-11-10, docs/vip.md): +50% on every Coin payout and double on
 //!     every helper reward, for a VIP, computed in ONE place (below, from src/net/vip-extra.json) and
-//!     paid in an order of its own right after its reward (vip_extra_order, "vipx:<key>").
+//!     paid INSIDE its reward's own order (the platform pays one order a call: add_extra), reckoned
+//!     from what the reward pays by the config (data/coins.json: base_grants).
 //!
 //! The helpers are the game's own currencies (src/net/helper-ids.json), granted into
 //! their "earned" bucket and clamped at the cap, by the function's own write: unlike a
@@ -29,6 +30,10 @@ use std::sync::OnceLock;
 use serde_json::{json, Value};
 
 use crate::claim::Lane;
+
+/// The fingerprint of data/coins.json as this checker was built with it (build.rs): the "levels"
+/// answer says it, upload.mts stamps it, levels-check compares it with the file.
+pub const COINS: &str = env!("PICTURE_MEND_COINS");
 
 /// The helper kinds, in the order the verdict lists them.
 pub const KINDS: [&str; 3] = ["hint", "undo", "shuffle"];
@@ -286,6 +291,12 @@ pub struct Extra {
     pub helpers: Value,
 }
 
+impl Default for Extra {
+    fn default() -> Extra {
+        Extra::zero()
+    }
+}
+
 impl Extra {
     /// Nothing at all.
     pub fn zero() -> Extra {
@@ -319,31 +330,94 @@ impl Extra {
     }
 }
 
-/// One reward's VIP extra as an order of its own, nonce "vipx:<key>": `key` is the nonce of the order
-/// that paid the reward, so the extra pays once ever, whichever call places it (now, or later from
-/// the record's held extras). Its Coins go on the extra's progression in adds of at most `maxGrant`
-/// (the platform's most in one grant), its helpers into "earned", clamped at the cap. None when the
-/// extra is nothing.
-pub fn vip_extra_order(key: &str, extra: &Extra) -> Option<Order> {
-    if extra.nothing() {
-        return None;
+/// What each paying progression pays (functions/checker/data/coins.json, written by make-config from
+/// the same figures as the config, compiled in by build.rs): an `on_complete`'s Coins grant by grant
+/// ("complete"), or what one unit of an `on_add` pays ("unit"). levels-check stops the game build when
+/// the file changed after the uploaded checker was built (its hash, COINS_HASH, is in the stamp).
+fn coins() -> &'static Value {
+    &data()["coins"]["progressions"]
+}
+
+/// The Coins an order's reward pays, grant by grant, as the config says (before any ceiling): each
+/// progression_max to 1 on a progression with `on_complete` grants (a board's or the daily's first win),
+/// and each progression_add on one paying per unit (a past day, an event item).
+pub fn base_grants(o: &Order) -> Vec<i64> {
+    let mut out = Vec::new();
+    for op in &o.operations {
+        let p = &coins()[op["progression_definition_id"].as_str().unwrap_or_default()];
+        match op["type"].as_str() {
+            Some("progression_max") if op["value"].as_i64() == Some(1) => {
+                out.extend(p["complete"].as_array().into_iter().flatten().filter_map(Value::as_i64).filter(|n| *n > 0));
+            }
+            Some("progression_add") => {
+                if let Some(u) = p["unit"].as_i64() {
+                    let n = u * op["amount"].as_i64().unwrap_or(0);
+                    if n > 0 {
+                        out.push(n);
+                    }
+                }
+            }
+            _ => {}
+        }
     }
+    out
+}
+
+/// A reward order's VIP extra: each Coin grant it pays its own vip_extra_coins, added, and the helpers
+/// it asks as many again (vip_extra_helpers).
+pub fn extra_of(o: &Order) -> Extra {
+    Extra::of(&base_grants(o), &asked(o))
+}
+
+/// ONE CALL PAYS ONCE (the platform, SDK inventory-and-catalogs.md: "a second paying order in the same
+/// call is suppressed", function_invocation_already_granted): so the VIP extra goes INTO the reward's
+/// own order, never one after it, and pays with it under its key, once ever. Its Coins on the extra's
+/// progression in adds of at most `maxGrant` (the platform's most in one grant), its helpers into
+/// "earned", clamped at the cap. Nothing for nothing.
+pub fn add_extra(o: &mut Order, x: &Extra, why: &str) {
     let most = vip_rule()["maxGrant"].as_i64().unwrap_or(100).max(1);
-    let why = format!("vip extra: {key}");
-    let mut o = Order { nonce: format!("vipx:{key}"), ..Order::default() };
-    let mut left = extra.coins.max(0);
+    let mut left = x.coins.max(0);
     while left > 0 {
         let n = left.min(most);
         o.operations.push(json!({ "type": "progression_add", "progression_definition_id": vip_coins_id(), "amount": n, "reason": why }));
         left -= n;
     }
     for kind in KINDS {
-        let n = extra.helpers[kind].as_u64().unwrap_or(0);
+        let n = x.helpers[kind].as_u64().unwrap_or(0);
         if n > 0 {
-            o.operations.push(grant(kind, n, why.clone()));
+            o.operations.push(grant(kind, n, why.to_string()));
         }
     }
-    Some(o)
+}
+
+/// The held extras' mark (vip-extra.json `heldMark`, declared by make-config): its value is the highest
+/// held extra (by its number in the record) paid. Raised in the same order that pays them, so a held
+/// extra pays once, whatever the record says afterwards.
+pub fn held_mark_id() -> &'static str {
+    vip_rule()["heldMark"]["id"].as_str().unwrap_or_default()
+}
+
+/// Pay held extras (`held`: what they come to, added; `upto`: the highest number among them) inside a
+/// paying order, with the held mark raised to `upto` in it.
+pub fn add_held(o: &mut Order, held: &Extra, upto: u64) {
+    add_extra(o, held, "vip extra: held from an earlier win");
+    o.operations.push(json!({ "type": "progression_max", "progression_definition_id": held_mark_id(), "value": upto, "reason": "vip extras held, paid" }));
+}
+
+/// The Coins a receipt's grants on the VIP extra's progression landed (`granted`), and every other
+/// grant's: (extra, base).
+pub fn split_landed(changes: &[Value]) -> (i64, i64) {
+    let mut extra = 0;
+    let mut base = 0;
+    for c in changes.iter().filter(|c| c["type"] == "platform_grant") {
+        let g = c["granted"].as_i64().unwrap_or(0).max(0);
+        if c["progression_definition_id"] == vip_coins_id() {
+            extra += g;
+        } else {
+            base += g;
+        }
+    }
+    (extra, base)
 }
 
 /// What each Coin grant of a receipt paid (`granted`: what landed, after any ceiling), in its order.
