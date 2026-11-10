@@ -21,9 +21,9 @@
 // nothing said. No reliable answer: nothing said, the panel drawn from the stock as read
 // again (bought after all: the helper is used). A purchase is never retried by itself.
 //
-// Under them, "Or get a bundle": the Gems bundles that fit (bundle-rows.ts, the creator,
-// 2026-11-01), each with its Gems price; one bought closes the panel and uses the helper at once,
-// as a Coins buy does. One that would pass the cap is left out, with one line saying why.
+// Under them, "Or get a bundle": the bundles that fit (bundle-rows.ts, the creator, 2026-11-01),
+// each with its Coins price (since 2026-11-10); one bought closes the panel and uses the helper at
+// once, as a single's buy does; short of Coins, the panel says "Not enough Coins yet." and stays. One that would pass the cap is left out, with one line saying why.
 //
 // It is a card like the others (dialogs.ts): the focus goes in, Escape closes it, and its
 // corner key is the way out. Information is glass; only the prices are buttons.
@@ -62,11 +62,13 @@ export interface Shop {
   cap: number;
   /** Buy one or a pack from shop `where`; the stock is read again before it answers (a purchase taken is counted: helper_bought). */
   buy(k: HelperKind, pack?: Pack, where?: ShopWhere): Promise<BuyAnswer>;
-  /** The Gems bundles on sale here now, in order (bundle-rows.ts). */
+  /** The bundles on sale here now, in order (bundle-rows.ts). */
   bundles(): Bundle[];
   /** The helpers a bundle would carry past the cap (empty: it fits). */
   bundleFits(slug: BundleSlug): HelperKind[];
-  /** Buy a bundle for Gems, in the press's own turn (the Arcade's sheet). */
+  /** Do the player's Coins cover a bundle? null while unknown (only for greying its button). */
+  bundleAffordable(slug: BundleSlug): boolean | null;
+  /** Buy a bundle for Coins, in the press's own turn (the Arcade's sheet where it draws one). */
   buyBundle(slug: BundleSlug, where?: ShopWhere): Promise<BundleAnswer>;
 }
 
@@ -176,7 +178,7 @@ export function createRunOut(shop: Shop, bought: (k: HelperKind) => void) {
     if (short && price !== null) earn.append(...sayPrice("shop.need", price), " ");
     earn.append(t("shop.earn"));
     card.append(buttons, earn);
-    // the Gems bundles that fit, compact, under the Coins
+    // the bundles that fit, compact, under the singles
     const { rows, room } = bundleRows(shop, pressBundle, true);
     if (rows.length || room) {
       const list = el("div", "bundle-list");
@@ -188,7 +190,7 @@ export function createRunOut(shop: Shop, bought: (k: HelperKind) => void) {
     veil.replaceChildren(card);
   }
 
-  /** A bundle's Buy: the Arcade's sheet, asked first thing in the press; bought, the helper is used at once. */
+  /** A bundle's Buy: asked first thing in the press (the Arcade's sheet where it draws one); bought, the helper is used at once. */
   function pressBundle(b: Bundle, button: HTMLButtonElement): void {
     if (busy) return;
     busy = true;

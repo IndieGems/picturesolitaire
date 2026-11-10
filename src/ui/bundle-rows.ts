@@ -1,15 +1,17 @@
-// THE GEMS BUNDLES OF HELPERS (the creator, 2026-11-01), as rows in home's shop (home-shop.ts) and on
-// the panel a player meets when out of a helper on a board (helper-shop.ts, createRunOut):
+// THE BUNDLES OF HELPERS (the creator, 2026-11-01; in Coins since 2026-11-10, "no Gems", at 100 Gems
+// to 500 Coins), as rows in home's shop (home-shop.ts) and on the panel a player meets when out of a
+// helper on a board (helper-shop.ts, createRunOut):
 //
-//   Starter Kit (once per player) 200 Gems, 5 of each; Small 100 Gems, 2 Hints, 1 Undo, 1 Shuffle;
-//   Medium 200 Gems, 3 of each; Large 500 Gems, 8 of each (Server's src/net/helpers.ts and the config:
+//   Starter Kit (once per player) 1,000 Coins, 5 of each; Small 500, 2 Hints, 1 Undo, 1 Shuffle;
+//   Medium 1,000, 3 of each; Large 2,500, 8 of each (Server's src/net/helpers.ts and the config:
 //   nothing of it is written here but the order they come in).
 //
 // Each row: Art's picture (art/bundle-<slug>.webp), the bundle's name (the Starter Kit tagged "One time
-// only", first, until it is bought) and its contents in words, and one button: its Gems price exactly as
-// the config gives it, with the Arcade's Gem (coin.ts gemIcon). Information is glass; only the price is a
-// button. The player's Gems are never drawn: the Arcade's wallet shows them, and the Arcade's own sheet
-// confirms the spend in its words and price.
+// only", first, until it is bought) and its contents in words, and one button: its Coins price exactly
+// as the config gives it, with the Arcade's Coin (coin.ts priceTag), greyed but still pressable when the
+// player's Coins fall short, as the Coins rows are. Information is glass; only the price is a button.
+// The player's Coins are never drawn: the Arcade's wallet shows them. Short of Coins, the answer says so
+// in the shop's own words ("Not enough Coins yet."), and never opens a store.
 //
 //   - A bundle that would pass the cap (HELPER_CAP, src/net/helper-ids.json) is LEFT OUT, never a faded
 //     Buy; one line says why ("Use some Undos first to make room for the other bundles. You can carry
@@ -17,12 +19,12 @@
 //   - A row shows only once the config has priced it on this channel, and none where the Arcade cannot
 //     draw its purchase sheet (a TV, an older Arcade); the Starter Kit only once the platform has said
 //     it is still the player's to buy.
-//   - The press calls the Arcade at once (stock.buyBundle). declined (the sheet closed, or another
+//   - The press buys at once (stock.buyBundle). declined (the sheet closed, or another
 //     Arcade sheet open) shows nothing; unknown (they may have paid) shows nothing but
 //     the stock as re-read; the new stock shows as soon as it lands (the shop redraws on stock.onChange).
 
 import { locale, t } from "./i18n";
-import { gemPriceTag } from "./coin";
+import { priceTag } from "./coin";
 import { el, type HelperKind } from "./helper-shop";
 import type { Bundle, BundleAnswer, BundleSlug } from "./stock";
 
@@ -32,6 +34,8 @@ export interface BundleShop {
   bundles(): Bundle[];
   /** The helpers a bundle would carry past the cap (empty: it fits). */
   bundleFits(slug: BundleSlug): HelperKind[];
+  /** Do the player's Coins cover a bundle? null while unknown (only for greying its button). */
+  bundleAffordable(slug: BundleSlug): boolean | null;
   /** The most of one helper a player can carry. */
   cap: number;
 }
@@ -65,7 +69,7 @@ const helperList = (kinds: HelperKind[]): string =>
 /** A bundle answer in the shop's own words (nothing where nothing is to be said). */
 export function bundleWords(answer: BundleAnswer, b: Bundle | undefined): { text: string; good: boolean } | null {
   if (answer === "ok" && b) return { text: t("bundle.got", { contents: contentsWords(b.contents) }), good: true };
-  if (answer === "short") return { text: t("bundle.short"), good: false };
+  if (answer === "short") return { text: t("shop.short"), good: false };
   if (answer === "failed") return { text: t("shop.failed"), good: false };
   // declined (closed, or another Arcade sheet open), unknown (the stock re-read says it), full and gone (the
   // row goes, and the room line says why): nothing
@@ -88,7 +92,7 @@ export function bundleRows(shop: BundleShop, press: (b: Bundle, button: HTMLButt
       for (const k of over) blocked.add(k);
       continue;
     }
-    rows.push(row(b, press, compact));
+    rows.push(row(b, press, compact, shop.bundleAffordable(b.slug) === false));
   }
   let room: HTMLElement | null = null;
   if (left) {
@@ -99,7 +103,7 @@ export function bundleRows(shop: BundleShop, press: (b: Bundle, button: HTMLButt
   return { rows, room };
 }
 
-function row(b: Bundle, press: (b: Bundle, button: HTMLButtonElement) => void, compact: boolean): HTMLElement {
+function row(b: Bundle, press: (b: Bundle, button: HTMLButtonElement) => void, compact: boolean, short: boolean): HTMLElement {
   const item = el("section", `shop-item bundle-item glass${b.once ? " once" : ""}${compact ? " compact" : ""}`);
   item.dataset.bundle = b.slug;
   const pic = el("span", "item-pic");
@@ -110,14 +114,14 @@ function row(b: Bundle, press: (b: Bundle, button: HTMLButtonElement) => void, c
   words.append(name);
   if (b.once) words.append(el("span", "bundle-once", t("bundle.once")));
   words.append(el("span", "item-have", contentsWords(b.contents)));
-  const buy = el("button", "btn shop-buy bundle-buy");
+  const buy = el("button", `btn shop-buy bundle-buy${short ? " short" : ""}`);
   buy.type = "button";
   buy.dataset.press = `bundle.buy.${b.slug}`;
   const label = el("span", "buy-words");
-  // the price as the config gives it, with the Arcade's Gem; read aloud in full
-  if (b.gems !== null) {
-    label.append(gemPriceTag(b.gems));
-    buy.setAttribute("aria-label", t("bundle.buyAria", { name: t(`bundle.${b.slug}`), price: `${b.gems.toLocaleString(locale())} ${t("gems.unit", { count: b.gems })}` }));
+  // the price as the config gives it, with the Arcade's Coin; read aloud in full
+  if (b.coins !== null) {
+    label.append(priceTag(b.coins));
+    buy.setAttribute("aria-label", t("bundle.buyAria", { name: t(`bundle.${b.slug}`), price: `${b.coins.toLocaleString(locale())} ${t("coins.unit", { count: b.coins })}` }));
   }
   buy.append(label);
   buy.addEventListener("click", () => press(b, buy));

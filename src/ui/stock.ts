@@ -1,6 +1,6 @@
 // The player's helpers as the screens see them: how many Hints, Undos and Shuffles they
 // carry, what one (or a pack of 3) costs, whether their Coins cover it, the spend and the
-// purchase, and the Gems bundles (bundle-rows.ts). The record is the platform's (the helpers are
+// purchase, and the bundles, in Coins too (bundle-rows.ts). The record is the platform's (the helpers are
 // Arcade-held game currencies, capped at HELPER_CAP each, src/net/helper-ids.json, never in the
 // save), read and written by Server's src/net/helpers.ts,
 // which also keeps a spend that got no answer and sends it again until it lands. This file
@@ -47,13 +47,16 @@ async function buyNow(k: HelperKind, pack: Pack): Promise<BuyAnswer> {
   return "ok";
 }
 
-/** The stand-in's bundle purchase: the answer it was told to give, else the bundle added (the kit once). */
+/** The stand-in's bundle purchase: the answer it was told to give, else short of Coins, else the bundle added (the kit once). */
 async function pretendBundle(b: Bundle): Promise<BundleAnswer> {
   const p = pretend!;
   if (b.once && p.kitGone) return "gone";
   if (stock.bundleFits(b.slug).length) return "full";
   await new Promise((r) => setTimeout(r, 500));
   if (p.bundle !== "ok") return p.bundle;
+  if (b.coins === null) return "failed";
+  if (p.coins < b.coins) return "short";
+  p.coins -= b.coins;
   for (const k of KINDS) p.counts[k] += b.contents[k];
   if (b.once) p.kitGone = true;
   said();
@@ -94,13 +97,18 @@ export const stock = {
     return answer;
   },
   /**
-   * The Gems bundles on sale to this player here, now, in order: priced on this channel's config, only
-   * where the Arcade can draw its purchase sheet, and the Starter Kit only once the platform has said it
-   * is still theirs to buy (unknown: left out until onChange says).
+   * The bundles on sale to this player now, in order: priced in Coins on this channel's config, and the
+   * Starter Kit only once the platform has said it is still theirs to buy (unknown: left out until
+   * onChange says).
    */
   bundles(): Bundle[] {
-    if (!helpers.bundlesOffered()) return [];
-    return helpers.bundles().filter((b) => b.gems !== null && (!b.once || (pretend ? !pretend.kitGone : helpers.bundleOpen(b.slug) === true)));
+    return helpers.bundles().filter((b) => b.coins !== null && (!b.once || (pretend ? !pretend.kitGone : helpers.bundleOpen(b.slug) === true)));
+  },
+  /** Do the player's Coins cover bundle `slug`? null while unknown (only for greying its button). */
+  bundleAffordable(slug: BundleSlug): boolean | null {
+    if (!pretend) return helpers.bundleAffordable(slug);
+    const price = bundleOf(slug)?.coins ?? null;
+    return price === null ? null : pretend.coins >= price;
   },
   /** The helpers bundle `slug` would carry past the cap, with what is carried now (empty: it fits). */
   bundleFits(slug: BundleSlug): HelperKind[] {
@@ -109,15 +117,16 @@ export const stock = {
     return b ? KINDS.filter((k) => stock.count(k) + b.contents[k] > HELPER_CAP) : [];
   },
   /**
-   * Buy bundle `slug` for Gems from shop `where`. Call it in the Buy press's own turn: the Arcade is
-   * asked first thing, nothing awaited before it (Server's helpers.buyBundle: the Arcade's sheet). A
-   * purchase taken is counted (helper_bought: helper "all", pack its slug, price its Gems).
+   * Buy bundle `slug` for Coins from shop `where`. Call it in the Buy press's own turn: the Arcade is
+   * asked first thing, nothing awaited before it (Server's helpers.buyBundle: the Arcade's sheet where it
+   * draws one, else a direct Coins purchase; short of Coins it answers "short" and opens nothing). A
+   * purchase taken is counted (helper_bought: helper "all", pack its slug, price its Coins).
    */
   buyBundle(slug: BundleSlug, where?: ShopWhere): Promise<BundleAnswer> {
     const b = bundleOf(slug);
     const asked = pretend && b ? pretendBundle(b) : helpers.buyBundle(slug);
     return asked.then((answer) => {
-      if (answer === "ok" && where && b) shopStats.bundleBought(where, slug, b.gems);
+      if (answer === "ok" && where && b) shopStats.bundleBought(where, slug, b.coins);
       return answer;
     });
   },

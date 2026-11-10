@@ -9,7 +9,7 @@
 //   (the cap, HELPER_CAP)", "Room for 2 more Hints"); and after a purchase, what came ("+3 Hints"). One line
 //   at the foot: "Hard boards and trips also give free tools."
 //
-// Above them, "Bundles" (the creator, 2026-11-01): the Gems bundles of all three (bundle-rows.ts), the
+// Above them, "Bundles" (the creator, 2026-11-01): the bundles of all three, in Coins (bundle-rows.ts), the
 // Starter Kit first, tagged "One time only", until it is bought; a bundle that would pass the cap is
 // left out, with one line saying why; after a purchase, what came ("Added: 3 of each"). The Coins rows
 // follow under "Helpers".
@@ -91,7 +91,7 @@ export function createHomeShop(shop: Shop) {
     const head = el("h2", "", t("shop.title"));
     head.id = "home-shop-title";
     card.append(cornerKey("close", t("shop.close"), "shop.close", close), head);
-    // the Gems bundles first (the Starter Kit at their top, until bought), then the Coins rows
+    // the bundles first (the Starter Kit at their top, until bought), then the single helpers' rows
     const { rows, room } = bundleRows(shop, pressBundle);
     if (rows.length || room) {
       // (the wide layout draws the bundles and the helpers side by side: wide.css)
@@ -113,7 +113,7 @@ export function createHomeShop(shop: Shop) {
     if (focused) card.querySelector<HTMLElement>(`[data-press="${focused}"]`)?.focus();
   }
 
-  /** A bundle's Buy: the Arcade's sheet, asked first thing in the press; the stock shows as it lands. */
+  /** A bundle's Buy: asked first thing in the press (the Arcade's sheet where it draws one); the stock shows as it lands. */
   function pressBundle(b: Bundle, button: HTMLButtonElement): void {
     if (busy) return;
     busy = true;
