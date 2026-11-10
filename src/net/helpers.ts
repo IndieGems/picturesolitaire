@@ -66,10 +66,6 @@ export interface Bundle {
   contents: Readonly<Record<HelperKind, number>>;
   /** Its Coins price, from the game config; null until read (or not on sale on this channel). */
   coins: number | null;
-  /**
-   * @deprecated The same Coins price, for UI's switch to `coins` (2026-11-10): goes once UI reads `coins`.
-   */
-  gems: number | null;
   /** Sold once per player, ever (the Starter Kit). */
   once: boolean;
 }
@@ -589,7 +585,7 @@ export const helpers = {
   bundles: (): Bundle[] =>
     BUNDLES.map((b) => {
       const coins = bundlePrice.get(b.name) ?? null;
-      return { slug: b.name, contents: { ...b.grants }, coins, gems: coins, once: b.once };
+      return { slug: b.name, contents: { ...b.grants }, coins, once: b.once };
     }),
   /** The player's Coins cover this bundle; null while either is unknown. For greying a row only: it stays pressable. */
   bundleAffordable: (slug: BundleSlug): boolean | null => {
@@ -614,11 +610,6 @@ export const helpers = {
     const b = bundleOf(slug);
     return b ? overCap(b) : [];
   },
-  /**
-   * Always true since the bundles are Coins buys (2026-11-10): where the Arcade draws no sheet, the
-   * direct purchase buys them, as it does a pack. Kept for UI until its rows stop asking.
-   */
-  bundlesOffered: (): boolean => true,
   /**
    * Buy a bundle for Coins, by the same route as a pack (pay(): the Arcade's sheet, which confirms the
    * spend in its own words and price and shows a guest its sign-up card, else the direct purchase).
