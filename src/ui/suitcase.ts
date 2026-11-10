@@ -41,6 +41,10 @@ import { shortDate } from "./format";
 import { markTag } from "./marks";
 import { loadItems, suitcaseItem } from "./catalogue";
 import { ensureSuitcase, fileUrl, resident } from "../packs";
+import { vipRewardTag, vipSide, type VipSide } from "./vip-tag";
+import { onVip } from "./vip-view";
+import { vipExtraCoins } from "../net/vip";
+import { eventItemCoins, onRewardsChange } from "../net/rewards";
 
 type Nav = {
   home(): void;
@@ -129,6 +133,15 @@ const ART = {
   closed: `${import.meta.env.BASE_URL}art/suitcase-closed.webp`,
   small: `${import.meta.env.BASE_URL}art/suitcase-closed-small.webp`,
 };
+
+/** What one item found pays: the channel's config (Server's rewards.ts), else the figure the game was built with. */
+const itemCoins = (): number => eventItemCoins() ?? EVENT_ITEM_COINS;
+
+/** VIP's tag on what an item pays (vip-tag.ts), before it is won: while some of `e`'s items are still to find. */
+function itemTag(e: { items: { found?: boolean }[] }): HTMLElement | null {
+  if (e.items.length && e.items.every((i) => i.found)) return null;
+  return vipRewardTag({ coins: vipExtraCoins(itemCoins()) }, vipSide());
+}
 
 /** Coins as "+50" and the Arcade's coin (information; read aloud as "50 Coins"). */
 function coinsChip(n: number, cls = ""): HTMLElement {
@@ -294,14 +307,18 @@ export function createSuitcase(nav: Nav) {
     const table = own ? prizeTableName(e.prize, e.prize.tableTitle ?? knownTable(e.prize.table)?.title ?? "") : "";
     const count = e.items.length;
     const steps = el("ol");
+    const coinsLine = el("li", "", t("case.how.coins", { count: itemCoins() }));
+    // VIP's tag on what each item pays, while some are still to find (before it is won: vip-tag.ts)
+    const tag = itemTag(e);
+    if (tag) coinsLine.append(" ", tag);
     for (const line of [
       t("case.how.levels", { count: e.levels.length || EVENT_LEVELS }),
       t("case.how.items", { count }),
       table ? t("case.how.prizeTable", { count, table }) : t("case.how.prizeStamp", { count }),
-      t("case.how.coins", { count: EVENT_ITEM_COINS }),
+      coinsLine,
       t("case.how.keep"),
     ])
-      steps.append(el("li", "", line));
+      steps.append(typeof line === "string" ? el("li", "", line) : line);
     box.append(head, steps);
     return box;
   }
@@ -340,8 +357,11 @@ export function createSuitcase(nav: Nav) {
     // keeps no receipt of what each find paid (a guest's paid none), so "500 Coins found" would be made up (QA, 2026-11-02)
     if (!(e.items.length && e.items.every((i) => i.found))) {
       const coinRow = el("div", "prize-row prize-coins");
-      coinRow.append(el("span", "prize-coin", ""), el("span", "", t("case.prizeCoinsEach", { count: EVENT_ITEM_COINS })));
+      const words = el("span", "", t("case.prizeCoinsEach", { count: itemCoins() }));
+      coinRow.append(el("span", "prize-coin", ""), words);
       coinRow.firstElementChild!.append(coinIcon(28));
+      const tag = itemTag(e);
+      if (tag) words.append(" ", tag);
       rows.append(coinRow);
     }
     box.append(rows);
@@ -476,7 +496,14 @@ export function createSuitcase(nav: Nav) {
   }
 
   suitcases.onChange(() => draw());
-  // VIP came or went: the strip locks or opens; a VIP's page up when VIP ends goes home
+  // VIP came or went, or the config's figures landed: the page's VIP tags say so
+  onVip(() => {
+    if (!screen.hidden) draw();
+  });
+  onRewardsChange(() => {
+    if (!screen.hidden) draw();
+  });
+  // the event switched on or off (a pretend month): a page up when it goes off goes home
   onEventShown(() => {
     if (!screen.hidden && !eventShown()) return nav.home();
     draw();
@@ -525,6 +552,8 @@ export function packedOnCard(
   full: { event: string; done?: () => void } | null = null,
   /** The Coins the item paid ("+50" beside the line; 0: none said). */
   coins = EVENT_ITEM_COINS,
+  /** VIP's figure on them, for its tag (vip-tag.ts; null: the verdict says nothing of VIP, no tag). */
+  vip: { side: VipSide; extra: number } | null = null,
 ): void {
   const mini = miniCase("on-card");
   const words = el("span", "packed-words");
@@ -532,6 +561,8 @@ export function packedOnCard(
   words.append(said);
   // the find's Coins at the end of the line, never on a line of its own
   if (coins > 0) words.append(" ", coinsChip(coins, "packed-coins"));
+  const tag = coins > 0 && vip ? vipRewardTag({ coins: vip.extra }, vip.side) : null;
+  if (tag) words.append(" ", tag);
   line.replaceChildren(mini, words);
   line.classList.add("packed");
   /** It has landed: the latch (Audio's), and the full suitcase's word when this was the 10th, then its card. */

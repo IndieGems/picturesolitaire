@@ -22,6 +22,11 @@
 //                left on the pass, else a thank-you, the perks and the other games' line, and no Get VIP. It
 //                follows VIP coming or going while it is up.
 //
+// OVER A CARD (openOver): a reward's VIP tag (vip-tag.ts vipRewardTag) opens this screen over whatever is up, a
+// win card, the event's finish card or page, home, as a layer of its own (z-index over every card but No
+// connection), never a screen change: its Back and Escape close it, and the player is where they were, the
+// card and the board's table still there under it.
+//
 // The days left are for show only, from the SDK's pass reading (gem.me.passes: the same reading the game's
 // VIP listener hears, src/net/vip.ts), never a decision: who is VIP is the server's word (vipNow). Read once
 // a session where nothing has said yet, never retried, and never while the platform has asked everyone to
@@ -31,6 +36,7 @@ import { gem } from "../gem";
 import { held } from "../net/pace";
 import { ICONS } from "./icons";
 import { liveAttr, liveText, onLocaleChange, t } from "./i18n";
+import { closed, opened } from "./dialogs";
 import { onVip, vipButton, vipNow } from "./vip-view";
 import { vipCoinsPct, vipPerks, vipTag } from "./vip-tag";
 import { helperPic } from "./helper-shop";
@@ -178,7 +184,7 @@ export function createVipAbout(nav: Nav) {
   back.dataset.press = "vipAbout.back";
   back.innerHTML = ICONS.back;
   liveAttr(back, "aria-label", "vip.back");
-  back.addEventListener("click", () => nav.home());
+  back.addEventListener("click", () => (over ? closeOver() : nav.home()));
   const body = el("div", "vip-body vip-about");
   const scroll = el("div", "scroll");
   scroll.append(body);
@@ -258,6 +264,16 @@ export function createVipAbout(nav: Nav) {
     body.replaceChildren(picture(), note, perks);
   }
 
+  /** Up as a layer over a card (openOver), not as the app's screen. */
+  let over = false;
+  function closeOver(): void {
+    if (!over) return;
+    over = false;
+    screen.hidden = true;
+    screen.classList.remove("over");
+    closed(screen);
+  }
+
   // VIP came or went, or Get VIP came, went or became Sign in; the pass's end was read
   onVip(() => {
     if (!screen.hidden) draw();
@@ -270,10 +286,25 @@ export function createVipAbout(nav: Nav) {
     screen,
     /** Open the screen. */
     open(): void {
+      closeOver();
       draw();
       nav.show();
       scroll.scrollTop = 0;
     },
+    /** Open it over whatever is up (a reward's VIP tag): Back and Escape close it, and the player is where they were. */
+    openOver(): void {
+      if (over) return;
+      over = true;
+      screen.classList.add("over");
+      draw();
+      screen.hidden = false;
+      scroll.scrollTop = 0;
+      opened(screen, closeOver);
+    },
+    /** The layer is up (a card, to the app's other cards: they wait). */
+    isOver: (): boolean => over,
+    /** Take the layer down (the app changed screen under it). */
+    closeOver,
     /** The words changed. */
     redraw(): void {
       if (!screen.hidden) draw();

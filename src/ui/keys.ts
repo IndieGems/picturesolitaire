@@ -69,11 +69,11 @@ function pointerFocused(): HTMLElement | null {
 const typing = (el: Element | null): boolean =>
   !!el && (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement || (el as HTMLElement).isContentEditable);
 
-/** The card on top: the shown veil (or a picture seen big) drawn highest (z-index, then the later in the page). */
+/** The card on top: the shown veil (or a picture seen big, or the VIP screen up over a card) drawn highest (z-index, then the later in the page). */
 function topCard(root: ParentNode): HTMLElement | null {
   let best: HTMLElement | null = null;
   let bestZ = -Infinity;
-  for (const v of root.querySelectorAll<HTMLElement>(".veil, .viewer")) {
+  for (const v of root.querySelectorAll<HTMLElement>(".veil, .viewer, .screen.over")) {
     if (v.hidden || !v.getClientRects().length) continue;
     const z = Number.parseInt(getComputedStyle(v).zIndex, 10) || 0;
     if (z >= bestZ) {

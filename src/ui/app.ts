@@ -112,6 +112,9 @@ import { currentDaily, today as dailyToday } from "../net/daily";
 import { onVipGift, pretendVip, VIP_DAILY, VIP_WELCOME, type VipGift } from "../net/vip";
 import { createVipGifts } from "./vip-gifts";
 import { createVipAbout, createVipBadge, pretendVipEnds } from "./vip-about";
+import { onVipTagPress, vipRewardTag, vipSide, type VipSide } from "./vip-tag";
+import { baseCoins, vipExtraForBoard } from "../net/rewards";
+import { vipExtraCoins, vipHelpers } from "../net/vip";
 import { wearBackWords } from "./back";
 import { createArchive } from "./daily-archive";
 import { forceVipSale } from "./vip-view";
@@ -204,6 +207,8 @@ const souvenirTile = createSouvenirTile((trip) => playSouvenir(trip));
 // guided start, and the screen it opens: what VIP gives here, and that other Gem Arcade games give VIP rewards too
 const vipAboutUi = createVipAbout({ home: () => backFrom("vipAbout"), show: () => show("vipAbout") });
 const vipBadge = createVipBadge(() => vipAboutUi.open());
+// a reward's VIP tag (vip-tag.ts): the VIP screen over whatever is up, its Back back to it
+onVipTagPress(() => vipAboutUi.openOver());
 const homeUi = createHome(
   {
     play: () => void playNext(),
@@ -540,6 +545,8 @@ function backFrom(s: Screen): void {
 }
 
 function show(next: Screen): void {
+  // the VIP screen up over a card (a reward's tag) goes with any change of screen
+  vipAboutUi.closeOver();
   if (RETURNS.includes(next) && next !== screen) openedFrom[next] = screen;
   screen = next;
   // the table's weather on home and the menus only, never on a board, its win card or a stamp moment
@@ -721,12 +728,21 @@ onVerdict((v) => {
   if (screen === "home") drawHomeNote();
 });
 let homeNoteTimer = 0;
-/** "Your last win counted: +25 Coins", once, when home is up; nothing for a win that paid nothing. */
+/** "Your last win counted: +25 Coins", once, when home is up; nothing for a win that paid nothing. With VIP's tag beside it (vip-tag.ts). */
 function drawHomeNote(): void {
   if (!lastWins.length) return;
   const paid = lastWins.splice(0);
   const coin = coinIcon(20, false, "coin");
-  homeNote.replaceChildren(coin, h("span", {}, t("home.lastWin", { count: paid.reduce((sum, v) => sum + (v.status === "paid" ? v.coins : 0), 0) })));
+  // the base Coins, the tag saying the VIP extra on them (as the verdicts say; none says: the totals, no tag)
+  const vips = paid.map(vipOfVerdict);
+  const said = vips.every((x) => x) ? vips : null;
+  const count = said ? said.reduce((sum, x) => sum + x!.base, 0) : paid.reduce((sum, v) => sum + (v.status === "paid" ? v.coins : 0), 0);
+  homeNote.replaceChildren(coin, h("span", {}, t("home.lastWin", { count })));
+  if (said) {
+    const side: VipSide = said.some((x) => x!.side === "unknown") ? "unknown" : said.every((x) => x!.side === "yes") ? "yes" : "no";
+    const tag = vipRewardTag({ coins: said.reduce((sum, x) => sum + x!.extra, 0) }, side);
+    if (tag) homeNote.append(tag);
+  }
   homeNote.hidden = false;
   for (const v of paid) cueCoins(v, coin);
   // it says its piece, then goes
@@ -1669,7 +1685,14 @@ function packedMoment(v: Verdict, line: HTMLElement): void {
   const fin = finishedOf(v);
   // the find's own Coins ("+50", Server's packed.coins), beside the line
   // the find's Coins as the receipt says they were paid: none said, none shown (never a made-up 50)
-  packedOnCard(line, it, dayItem?.id === p.item ? dayItem.url : "", packed, s?.items.length ?? 10, fin ? { event: fin.event, done: () => finishUi.add(fin) } : null, typeof p.coins === "number" ? p.coins : 0);
+  const coins = typeof p.coins === "number" ? p.coins : 0;
+  packedOnCard(line, it, dayItem?.id === p.item ? dayItem.url : "", packed, s?.items.length ?? 10, fin ? { event: fin.event, done: () => finishUi.add(fin) } : null, coins, itemVip(v, coins));
+}
+
+/** An event item's own VIP figure (vip-tag.ts): the rule on its Coins, whose as the verdict says; null where it says nothing of VIP. */
+function itemVip(v: Verdict, coins: number): { side: VipSide; extra: number } | null {
+  const vip = vipOfVerdict(v);
+  return vip && coins > 0 ? { side: vip.side, extra: vipExtraCoins(coins) } : null;
 }
 
 /**
@@ -1683,7 +1706,9 @@ function finishedOf(v: Verdict): Finished | null {
   if (!event) return null;
   const table = said.prize?.table ?? said.suitcase?.prize.table ?? eventPrize(event)?.table;
   const landed = !!table && (said.items ?? []).includes(table);
-  return { event, ...(landed && table ? { table } : {}), ...(typeof said.packed?.coins === "number" ? { coins: said.packed.coins } : {}) };
+  const coins = typeof said.packed?.coins === "number" ? said.packed.coins : 0;
+  const vip = itemVip(v, coins);
+  return { event, ...(landed && table ? { table } : {}), ...(coins ? { coins } : {}), ...(vip ? { vip } : {}) };
 }
 
 /** An event level's card line: the checker's refusal said plainly, else where the player is in the event. */
@@ -1733,17 +1758,29 @@ function drawCoins(win: Win, fresh = false): void {
   if (kit) {
     // the keepsake table, said only if it landed
     settlePrize(card, v, fresh);
+    const vip = vipOfVerdict(v);
     if (v.coins > 0 && !card.querySelector(".coins-chip")) {
       const coin = coinIcon(24, false, "coin");
-      card.append(h("div", { class: "coins-chip glass", role: "status" }, coin, h("span", {}, t("win.coins", { count: v.coins }))));
+      const chip = h("div", { class: "coins-chip glass", role: "status" }, coin, h("span", { class: "cc-coins" }, t("win.coins", { count: vip ? vip.base : v.coins })));
+      // Level 1's finish: VIP's tag as information, never a button (vip-tag.ts: nothing leaves the guided start)
+      const tag = vip ? vipRewardTag({ coins: vip.extra }, vip.side, { still: true }) : null;
+      if (tag) chip.append(tag);
+      card.append(chip);
+      fitChip(chip, card);
       if (!win.cued) win.cued = cueCoins(v, coin) || true;
     }
     for (const k of KINDS) {
       const tool = kit?.querySelector<HTMLElement>(`.tool.${k}`);
       if (!tool || !tools[k]) continue;
       tool.classList.add("landed");
+      // what landed (a VIP's kit is doubled), in place of what was said up front
+      const n = tool.querySelector<HTMLElement>(".n");
+      if (n) n.textContent = `×${tools[k]}`;
       if (!win.flown) flyTool(k, tool.querySelector(".ico") ?? tool, 0);
     }
+    // the kit's VIP tag as the verdict says (up front it was this player's VIP as known then)
+    const kitTag = vip && KINDS.some((k) => tools[k]) ? vipRewardTag({ helpers: true }, vip.side, { still: true, cls: "kit-vip" }) : null;
+    if (kitTag) kit.querySelector(".kit-vip")?.replaceWith(kitTag);
     win.flown = true;
     return;
   }
@@ -1752,7 +1789,13 @@ function drawCoins(win: Win, fresh = false): void {
   // helper that landed (the travel kit, a hard board's gift, a trip's stamp), which flies to its button
   const chip = h("div", { class: "coins-chip glass", role: "status" });
   const coin = coinIcon(24, false, "coin");
-  if (v.coins > 0) chip.append(coin, h("span", {}, t("win.coins", { count: v.coins })));
+  // the base Coins (the checker's), VIP's tag saying the extra on them (vip-tag.ts); a verdict saying nothing of VIP: the total, no tag
+  const vip = vipOfVerdict(v);
+  const shown = vip ? vip.base : v.coins;
+  if (v.coins > 0) chip.append(coin);
+  if (shown > 0) chip.append(h("span", { class: "cc-coins" }, t("win.coins", { count: shown })));
+  const coinTag = vip ? vipRewardTag({ coins: vip.extra }, vip.side) : null;
+  if (coinTag) chip.append(coinTag);
   const glyphs: Array<[HelperKey, Element]> = [];
   for (const k of KINDS) {
     const n = tools[k];
@@ -1770,11 +1813,58 @@ function drawCoins(win: Win, fresh = false): void {
   // the daily's first win of the day pays a helper (Server's rotation): said, for a screen reader, as what it is
   else if (gifts.includes("daily") && glyphs.length)
     chip.setAttribute("aria-label", `${v.coins > 0 ? `${t("win.coins", { count: v.coins })}, ` : ""}${t("win.gift.daily")}: ${glyphs.map(([k]) => t(`win.gift.${k}`, { count: tools[k]! })).join(", ")}`);
+  // the helpers' VIP tag: a VIP's only where the doubling landed (the cap may have taken it), anyone else's where any helper did
+  const doubled = !!v.vipHelpers && KINDS.some((k) => (v.vipHelpers?.[k] ?? 0) > 0);
+  if (vip && glyphs.length && (vip.side !== "yes" || doubled)) chip.append(vipRewardTag({ helpers: true }, vip.side)!);
   card.querySelector(".coins-chip")?.remove();
   card.append(chip);
+  fitChip(chip, card);
   if (v.coins > 0 && !win.cued) win.cued = cueCoins(v, coin) || true;
   if (!win.flown) glyphs.forEach(([k, g], i) => flyTool(k, g, 250 + i * 120));
   win.flown = true;
+}
+
+/**
+ * What a paid verdict says of VIP, for its tags (vip-tag.ts): whose it was (the claim's own pass read), the base
+ * Coins to show (the tag says the extra), and the extra: a VIP's as LANDED (the checker's vipExtra, an earlier
+ * win's held extra included; an item level's, the level's and the item's summed), anyone else's (or a held one's)
+ * what VIP adds, each payout's own (Server's rewards.ts, else the rule on the whole). Null where the verdict
+ * says nothing of VIP (an older checker): the plain card.
+ */
+function vipOfVerdict(v: Verdict): { side: VipSide; base: number; extra: number } | null {
+  if (v.status !== "paid" || !v.vipRead) return null;
+  const base = typeof v.base === "number" ? v.base : v.coins;
+  // landed only when the answer says so: a VIP and nothing held (Server, 2026-11-10)
+  if (v.vipRead === "yes" && !v.vipHeld) return { side: "yes", base, extra: v.vipExtra ?? 0 };
+  // held (VIP unknown, or a VIP's extra not landed yet: it comes with a later answer, as vipLate): the plain tag, the rule's figure
+  const side: VipSide = v.vipRead === "no" ? "no" : "unknown";
+  const board = base > 0 && baseCoins(v.lane, v.board) === base ? vipExtraForBoard(v.lane, v.board) : null;
+  return { side, base, extra: board ?? vipExtraCoins(base) };
+}
+
+/**
+ * A win card's chip with its VIP tags, kept clear of the card's corner key on a narrow card (a 360 px phone), in
+ * steps, each only where the one before was not enough: its Coins say "+40" beside the coin (the coin then reads
+ * "Coins" aloud), not "+40 Coins"; then the chip goes compact (a smaller coin and figure, 26 px tall), and if it
+ * still runs over the key it rises just clear of the key's top, on the card's edge all the same.
+ */
+function fitChip(chip: HTMLElement, card: HTMLElement): void {
+  if (!chip.querySelector(".vip-reward")) return;
+  const key = card.querySelector<HTMLElement>(".corner-key");
+  const room = () => (key ? key.offsetLeft : card.clientWidth - 12) - chip.offsetLeft - 6;
+  if (chip.offsetWidth <= room()) return;
+  const words = chip.querySelector<HTMLElement>(".cc-coins");
+  const n = (words?.textContent ?? "").match(/[+]?[\d.,\s\u00a0\u202f]*\d/)?.[0]?.trim();
+  if (words && n) {
+    words.textContent = n.startsWith("+") ? n : `+${n}`;
+    const coin = chip.querySelector<HTMLImageElement>("img.coin");
+    if (coin) coin.alt = t("coins.name");
+    if (chip.offsetWidth <= room()) return;
+  }
+  chip.classList.add("compact");
+  if (!key || chip.offsetWidth <= room()) return;
+  const clear = key.offsetTop - 2 - chip.offsetHeight;
+  if (chip.offsetTop > clear) chip.style.top = `${Math.max(clear, -24)}px`;
 }
 
 /** The helpers a verdict says LANDED (after the cap's clamp), by kind; nothing where none did. */
@@ -1973,7 +2063,9 @@ function settlePrize(card: HTMLElement, v: Extract<Verdict, { status: "paid" }>,
 function showMilestone(gallery: HTMLElement): void {
   const prize = guidePrize();
   // the travel kit, said up front (the checker grants it with this win: one copy of its size, Server's
-  // helpers.ts); each tool is ringed as it lands, and flies to its button
+  // helpers.ts; a VIP's doubled, vipHelpers); each tool is ringed as it lands, and flies to its button
+  const side = vipSide();
+  const kitSize = side === "yes" ? vipHelpers(KIT) : KIT;
   const kit = h(
     "div",
     { class: "kit" },
@@ -1981,9 +2073,12 @@ function showMilestone(gallery: HTMLElement): void {
     h(
       "div",
       { class: "kit-row" },
-      ...KINDS.map((k) => h("span", { class: `tool ${k} glass`, "aria-label": t(`win.gift.${k}`, { count: KIT[k] }) }, icon(k), h("span", { "aria-hidden": "true" }, `×${KIT[k]}`))),
+      ...KINDS.map((k) => h("span", { class: `tool ${k} glass`, "aria-label": t(`win.gift.${k}`, { count: kitSize[k] }) }, icon(k), h("span", { class: "n", "aria-hidden": "true" }, `×${kitSize[k]}`))),
     ),
   );
+  // VIP's tag by the kit, as information (vip-tag.ts: nothing leaves the guided start), as this player's VIP is known now
+  const kitTag = vipRewardTag({ helpers: true }, side, { still: true, cls: "kit-vip" });
+  if (kitTag) kit.querySelector(".kit-head")?.after(kitTag);
   const card = h(
     "div",
     { class: "card milestone" },
@@ -2382,7 +2477,7 @@ async function greetLaunch(): Promise<void> {
 }
 
 /** A card (or the settings) is over the screen now. */
-const cardUp = (): boolean => [...app.querySelectorAll<HTMLElement>(".veil")].some((v) => !v.hidden) || !!document.querySelector("dialog[open]");
+const cardUp = (): boolean => [...app.querySelectorAll<HTMLElement>(".veil")].some((v) => !v.hidden) || vipAboutUi.isOver() || !!document.querySelector("dialog[open]");
 
 /**
  * The challenge card, once home is up with nothing over it and the player's record has landed and
@@ -3051,17 +3146,17 @@ export async function startApp(): Promise<void> {
       },
       guide,
       /** Home's note as if a win from last time had paid `coins` (nothing is paid: the checker alone pays). */
-      lastWin(coins: number) {
-        lastWins.push({ status: "paid", lane: "campaign", board: "dev", moves: 0, coins, resumed: true });
+      lastWin(coins: number, vip: Partial<Extract<Verdict, { status: "paid" }>> = {}) {
+        lastWins.push({ status: "paid", lane: "campaign", board: "dev", moves: 0, coins, resumed: true, ...vip });
         if (screen === "home") drawHomeNote();
       },
-      /** The card up now shows what a paid verdict of `coins` looks like (no Coins move: the checker alone pays); `items` as granted. */
-      paid(coins: number, items?: string[], helpers?: Partial<Record<HelperKey, number>>, gifts?: string[]) {
+      /** The card up now shows what a paid verdict of `coins` looks like (no Coins move: the checker alone pays); `items` as granted; `vip` the verdict's VIP fields (base, vipExtra, vipRead...). */
+      paid(coins: number, items?: string[], helpers?: Partial<Record<HelperKey, number>>, gifts?: string[], vip: Partial<Extract<Verdict, { status: "paid" }>> = {}) {
         if (!lastWin) return;
         // the card as a real player's would be (a "Win now" win is practice, which shows nothing paid)
         lastWin.practice = false;
         winVeil.querySelector(".coins-chip")?.remove();
-        lastWin.verdict = { status: "paid", lane: "campaign", board: "dev", moves: lastWin.moves, coins, ...(items ? { items } : {}), ...(helpers ? { helpers, gifts } : {}) } as Verdict;
+        lastWin.verdict = { status: "paid", lane: "campaign", board: "dev", moves: lastWin.moves, coins, ...(items ? { items } : {}), ...(helpers ? { helpers, gifts } : {}), ...vip } as Verdict;
         drawCoins(lastWin);
       },
       /** The helper stock as if the platform said so (null: its own word again), for this page only. */
@@ -3152,15 +3247,15 @@ export async function startApp(): Promise<void> {
        * with it; `coins`: what its receipt says the find paid, 50 as a real account's, 0 a guest's, null not said): the
        * flight, nothing sent.
        */
-      packed(item: string, event: string, full = false, coins: number | null = EVENT_ITEM_COINS) {
+      packed(item: string, event: string, full = false, coins: number | null = EVENT_ITEM_COINS, vip: Partial<Extract<Verdict, { status: "paid" }>> = {}) {
         const line = winVeil.querySelector<HTMLElement>(".event-line");
         const table = eventPrize(event)?.table;
         const prize = full && table ? { gifts: ["suitcase"], items: [table], prize: { event, table, stamp: event } } : {};
         const paid = coins === null ? {} : { coins };
-        if (line) packedMoment({ status: "paid", lane: "event", board: "dev", moves: 0, ...paid, packed: { item, count: 1, ...paid }, event, ...prize } as unknown as Verdict, line);
+        if (line) packedMoment({ status: "paid", lane: "event", board: "dev", moves: 0, ...paid, packed: { item, count: 1, ...paid }, event, ...prize, ...vip } as unknown as Verdict, line);
       },
       /** The event finish card for `event` (its table, the last item's Coins, its stamp landing), as after its 10th item (`coins` as `packed`'s): nothing sent. */
-      eventFinish: (event: string, coins: number | null = EVENT_ITEM_COINS) => finishUi.preview(event, coins),
+      eventFinish: (event: string, coins: number | null = EVENT_ITEM_COINS, vip?: { side: VipSide; extra: number }) => finishUi.preview(event, coins, vip),
     };
     // ?restored=id,id shows those pictures as restored in the albums (never saved)
     const fake = new URLSearchParams(location.search).get("restored");
