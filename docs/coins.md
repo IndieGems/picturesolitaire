@@ -1,6 +1,6 @@
 # What a win pays
 
-Coins only, never Gems. Every payout is made by the win checker (`functions/checker`)
+Coins only. Every payout is made by the win checker (`functions/checker`)
 after it has replayed the board's winning line on the rules, through one progression per
 board in the game config, so **each board pays once, ever**, and a resent claim or a
 replay pays nothing. Written by `node tools/server/make-config.mts`; do not edit by hand.
@@ -54,7 +54,7 @@ and leaves the hourly rate where it is.
 ## The helper shop (cap 20 of each)
 
 Prices are the config's alone (`gem-backend-game-config.yaml`, the helpers catalog), at the standard's
-500 Coins and 100 Gems to the dollar. Every buy is refused at the cap before anything is charged.
+500 Coins to the dollar. Every buy is refused at the cap before anything is charged.
 
 | product | Coins | worth |
 |---|---|---|
@@ -65,19 +65,20 @@ Prices are the config's alone (`gem-backend-game-config.yaml`, the helpers catal
 | 1 Shuffle | 250 | $0.50 |
 | 3 Shuffles | 675 | $1.35 ($0.45 each) |
 
-**The Gems bundles** (the creator, 2026-11-01): all three helpers at once, bought through the Arcade's
-purchase sheet. Each sits at the Coins value of its helpers plus a bundle bonus, on purpose, so that
-Gems never buy less than Coins would. The counterpart (the standard's "Gems price like the hit
-games do"): Candy Crush sells a booster at about $1 to $2 alone and about $0.50 each in bulk;
-ours cost less a helper because a helper is smaller than a booster, and every board is winnable with
-none. The standard's ranges: a quick top-up 100 to 200 Gems, a one-time starter pack 200 to 500.
+**The bundles** (the creator, 2026-11-01): all three helpers at once, bought the same way as a
+pack (the Arcade's purchase sheet, or the direct purchase where it has none), each for less than
+its helpers bought one at a time. **In Coins since config 64** (the creator, 2026-11-10: no Gems in
+the Arcade), at the old Gems price times five (100 Gems was 500 Coins), on the same recipes, so a
+Starter Kit bought with Gems still counts its one use and can't be bought again. The counterpart:
+Candy Crush sells a booster at about $1 to $2 alone and about $0.50 each in bulk; ours cost less a
+helper because a helper is smaller than a booster, and every board is winnable with none.
 
-| bundle | gives | Gems | worth in Coins | bonus | a helper costs | counterpart |
+| bundle | gives | Coins | worth in Coins, one at a time | saves | a helper costs | counterpart |
 |---|---|---|---|---|---|---|
-| Starter Kit | 5 Hints, 5 Undos, 5 Shuffles | 200 ($2.00) | 2500 ($5.00) | +150% | $0.13 | a hit game's one-time starter pack (200 to 500 Gems); once per player, ever |
-| Small | 2 Hints, 1 Undo, 1 Shuffle | 100 ($1.00) | 650 ($1.30) | +30% | $0.25 | a quick top-up (100 to 200 Gems) |
-| Medium | 3 Hints, 3 Undos, 3 Shuffles | 200 ($2.00) | 1500 ($3.00) | +50% | $0.22 | Candy Crush's boosters in bulk, about $0.50 each |
-| Large | 8 Hints, 8 Undos, 8 Shuffles | 500 ($5.00) | 4000 ($8.00) | +60% | $0.21 | a big booster pack, the best rate but the Starter Kit's |
+| Starter Kit | 5 Hints, 5 Undos, 5 Shuffles | 1000 ($2.00) | 2500 ($5.00) | 60% | $0.13 | a hit game's one-time starter pack; once per player, ever |
+| Small | 2 Hints, 1 Undo, 1 Shuffle | 500 ($1.00) | 650 ($1.30) | 23% | $0.25 | a quick top-up |
+| Medium | 3 Hints, 3 Undos, 3 Shuffles | 1000 ($2.00) | 1500 ($3.00) | 33% | $0.22 | Candy Crush's boosters in bulk, about $0.50 each |
+| Large | 8 Hints, 8 Undos, 8 Shuffles | 2500 ($5.00) | 4000 ($8.00) | 38% | $0.21 | a big booster pack, the best rate but the Starter Kit's |
 
 ## Board by board
 
