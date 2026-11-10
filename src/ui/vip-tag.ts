@@ -118,7 +118,11 @@ export function vipRewardTag(what: { coins: number } | { helpers: true }, side: 
   const words = el("span", "vr-words", t(coins ? "vip.reward.coins" : "vip.reward.helpers", { n }));
   const cls = ["vip-reward", side === "yes" ? "member" : side === "no" ? "locked" : "unsure", o.cls ?? ""].filter(Boolean).join(" ");
   // read aloud: a VIP's says what came, anyone else's what VIP would give
-  const said = t(side === "yes" ? (coins ? "vip.reward.gotCoins" : "vip.reward.gotHelpers") : coins ? "vip.reward.withCoins" : "vip.reward.withHelpers", { n });
+  // the Coin lines are plurals ("1 more Coin", Polish "o 2 monety", "o 5 monet"): the count picks the form, {{n}} shows it
+  const said = t(
+    side === "yes" ? (coins ? "vip.reward.gotCoins" : "vip.reward.gotHelpers") : coins ? "vip.reward.withCoins" : "vip.reward.withHelpers",
+    coins ? { n, count: Math.round(what.coins) } : { n },
+  );
   const glyph = (name: "lock" | "check") => {
     const g = el("span", "vr-ico");
     g.innerHTML = ICONS[name];

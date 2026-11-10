@@ -117,8 +117,8 @@ export function pretendVipEnds(ms: number | null | undefined): void {
 }
 
 /**
- * What VIP gives here, best first, as the boarding pass's stamped lines: every event with its prize table, the
- * daily archive, the day's gift, and (`welcome`) the welcome gift. The pass's own words, wherever they are said.
+ * What VIP gives here, best first, as the boarding pass's stamped lines: more Coins on every reward, double helpers
+ * on every helper reward, the day's gift, and (`welcome`) the welcome gift. The pass's own words, wherever they are said.
  */
 export function vipPassLines(welcome = true): HTMLUListElement {
   const lines = el("ul", "vip-pass-lines");
