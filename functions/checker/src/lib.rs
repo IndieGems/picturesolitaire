@@ -1324,7 +1324,7 @@ mod function {
                 return Err("this function checks a player's own win: call it as a player".into());
             };
             if serde_json::from_slice::<Value>(&input).ok().and_then(|v| v.get("what").cloned()) == Some(json!("levels")) {
-                return Ok(json!({ "v": 1, "levels": claim::LEVELS }).to_string().into_bytes());
+                return Ok(json!({ "v": 1, "levels": claim::LEVELS, "coins": crate::pay::COINS }).to_string().into_bytes());
             }
             let asked = serde_json::from_slice::<Value>(&input).unwrap_or(Value::Null);
             // VIP for this call (vip.rs), asked of the platform once, and only by a call that needs it
