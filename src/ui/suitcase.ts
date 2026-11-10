@@ -141,7 +141,7 @@ const ART = {
 
 /**
  * What one item found pays: the channel's config (Server's rewards.ts) and nothing else, so null (and nothing said)
- * until it is read. Never a figure of the game's own: the creator retunes it in the config (50, then 20, 2026-11-10)
+ * until it is read. Never a figure of the game's own: the creator retunes it in the config (three times on 2026-11-10)
  * and a built-in copy would say the old one. Only the dev menu's stand-in events, unframed, say the stand-in's.
  */
 const itemCoins = (): number | null => eventItemCoins() ?? (suitcases.pretending() ? EVENT_ITEM_COINS : null);
@@ -376,7 +376,7 @@ export function createSuitcase(nav: Nav) {
 
   /**
    * The prize (docs/vip.md): the event's table and its Passport stamp, for finding all 10, and the Coins
-   * its items pay as they are found ("20 Coins for every item found", the config's figure: no row until it is read).
+   * its items pay as they are found ("N Coins for every item found", N the config's figure: no row until it is read).
    */
   function prize(e: { id: string; theme: string; items: EventItem[]; prize: Prize; paid: boolean }): HTMLElement {
     const box = el("div", `case-prize glass${e.paid ? " won" : ""}`);

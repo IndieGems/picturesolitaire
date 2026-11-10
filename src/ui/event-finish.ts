@@ -2,7 +2,7 @@
 // its table and its Passport stamp (its Coins come with each item found, the config's figure each time: the
 // Arcade pays at most 100 at once), and that is the game standard's biggest celebration: a card of its own, fireworks
 // over it (none under less motion) and its sound (Audio's milestone, on milestone:show "event"), the
-// event's name, the table won, the last item's Coins as paid ("+20", none when the receipt says none) with the Arcade's coin, and the
+// event's name, the table won, the last item's Coins as paid ("+N", none when the receipt says none) with the Arcade's coin, and the
 // event's stamp landing on the card as the passport's trip stamps do (the same thud and sparkle, and
 // trip:stamp, for the same thump, as it lands). Continue carries on; See your passport opens its Event
 // stamps page.
