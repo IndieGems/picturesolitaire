@@ -131,7 +131,7 @@ if (framed) {
   });
 }
 
-// ---------------------------------------------------------------- the archive (VIP, docs/vip.md)
+// ---------------------------------------------------------------- the archive (everyone's since 2026-11-10, docs/vip.md)
 
 /** A "YYYY-MM-DD" date `n` days after `date` (n may be negative), in the calendar alone. */
 export function addDays(date: string, n: number): string {
@@ -143,7 +143,7 @@ export function addDays(date: string, n: number): string {
 /**
  * The archive of past dailies for a player whose date is `today` (the game standard: this month and
  * the two before, counted in the player's own months): from the 1st of the month two before, to
- * yesterday. The win checker pays a VIP's past day inside it, with a day of slack (the window of
+ * yesterday. The win checker pays a past day inside it (anyone's), with a day of slack (the window of
  * the day before also counts), and nothing older (functions/checker/src/vip.rs, archive_start).
  */
 export function archiveWindow(today: string): { first: string; last: string } {

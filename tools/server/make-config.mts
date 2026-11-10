@@ -98,7 +98,7 @@ const DAILY_COPY = {
   } as Record<string, [string, string]>,
 };
 // souvenir: the bonus board after each trip, in souvenirs.json (docs/souvenirs.md); paid as its trip's relief board (below)
-// event: an event's 30 levels (docs/vip.md, VIP packs), in event-levels.json; paid by the campaign's rule, once each
+// event: an event's 30 levels (docs/vip.md; everyone's since 2026-11-10), in event-levels.json; paid by the campaign's rule, once each
 const LANES = {
   campaign: { label: "Campaign board", most: 40 },
   challenge: { label: "Challenge board", most: 50 },
@@ -120,7 +120,7 @@ function uuid5(name) {
   return `${x.slice(0, 8)}-${x.slice(8, 12)}-${x.slice(12, 16)}-${x.slice(16, 20)}-${x.slice(20, 32)}`;
 }
 
-// THE EVENTS (docs/vip.md; functions/checker/src/suitcase.rs): Levels' VIP packs
+// THE EVENTS (docs/vip.md; functions/checker/src/suitcase.rs): Levels' event packs
 // (src/content/levels/events.json: 30 levels and 10 items each) and the fixed ids
 // (src/net/suitcase-ids.json). Each event's table that is not the built-in one is a table item: its
 // entry in src/net/tables.json is added here (award "suitcase", the event), its id made once from
@@ -467,10 +467,10 @@ y.push("      platform_grants:");
 y.push("        - mode: on_complete");
 y.push(`          amount: ${DAILY_COINS}`);
 y.push("          target: { platform_currency_slug: ARCADE_TICKETS }");
-// THE DAILY ARCHIVE (docs/vip.md; functions/checker/src/lib.rs ARCHIVE_ID): a VIP's first win of a
-// past day in the archive adds one, which pays that day's Coins, as the day itself would have.
+// THE DAILY ARCHIVE (docs/vip.md; functions/checker/src/lib.rs ARCHIVE_ID): the first win of a
+// past day (anyone's since 2026-11-10) in the archive adds one, which pays that day's Coins, as the day itself would have.
 const ARCHIVE_ID = "795d5832-be77-44b1-a949-6ae8ec1c629d";
-y.push("  # THE DAILY ARCHIVE (docs/vip.md): a VIP's first verified win of a past day in the archive (this");
+y.push("  # THE DAILY ARCHIVE (docs/vip.md): the first verified win of a past day in the archive, anyone's (this");
 y.push("  # month and the two before, with a day of slack) adds one day here, which pays that day's Coins,");
 y.push("  # once (the checker's record says which days were paid). Only the win checker writes it.");
 y.push(`  - id: ${ARCHIVE_ID}`);
@@ -483,7 +483,7 @@ y.push("        - mode: on_add");
 y.push(`          per_unit: ${DAILY_COINS}`);
 y.push("          target: { platform_currency_slug: ARCADE_TICKETS }");
 if (EVENTS.length || RETIRED.length) {
-  y.push("  # THE EVENTS (docs/vip.md): VIP packs of 30 levels each (their Coins: the board progressions");
+  y.push("  # THE EVENTS (docs/vip.md): packs of 30 levels each, everyone's (their Coins: the board progressions");
   y.push("  # above), with 10 items hidden one per level. This old challenge stays declared and is written by");
   y.push("  # nothing; the checker packs a level's item on its first win and pays each event's prize once (the marks below).");
   y.push(`  - id: ${SUITCASE.event.id}`);
@@ -776,7 +776,7 @@ const evs = lane("event");
 if (evs.length) {
   const avg = sum(evs) / evs.length;
   const per = EVENTS.filter((e) => (e.levels ?? []).length).map((e) => `${e.id} ${sum(evs.filter((r) => r.event === e.id))}`);
-  md.push(`- Events (VIPs only, docs/vip.md): ${evs.length} levels, ${sum(evs)} Coins in all, once each, by the campaign's rule (${per.join(", ")}).`);
+  md.push(`- Events (everyone's since 2026-11-10, docs/vip.md): ${evs.length} levels, ${sum(evs)} Coins in all, once each, by the campaign's rule (${per.join(", ")}).`);
   md.push(`  ${Math.round(avg)} a level: at 3 minutes a level about ${Math.round((avg * 60) / 3)} an hour, the campaign's rate.`);
   const F = SUITCASE.finds;
   if (F) {
@@ -788,7 +788,7 @@ if (evs.length) {
     md.push("  prize for finding all 10 is the event's table and its Passport stamp, no Coins and no helpers. With");
     md.push(`  its levels (about ${perEvent}), an event pays about ${perEvent + bonus} over its 30 levels: at 3 minutes a level,`);
     md.push(`  about ${Math.round(((perEvent + bonus) * 60) / 90)} an hour while playing an event, inside the standard's 250 to 1,000. Two events a`);
-    md.push(`  month add ${2 * bonus} Coins of finds a month to a VIP who finishes both.`);
+    md.push(`  month add ${2 * bonus} Coins of finds a month to a player who finishes both.`);
   }
 } else {
   md.push("- Events: none dealt yet (Levels' src/content/levels/event-levels.json).");

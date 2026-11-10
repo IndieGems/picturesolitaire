@@ -1,36 +1,37 @@
-// THE EVENTS, the platform's word: VIP content packs (docs/vip.md, the creator, 2026-10-30). Each event
-// is 30 levels of its own, with 10 items hidden one per level; each item found pays 50 Coins with it,
-// and finding all 10 wins the event's table and its Passport stamp, once (the creator, 2026-10-30). Open to a VIP from its release date on, for good: no deadline, no swap, no
-// spares, and nothing from the dailies. The screens (src/ui/suitcase.ts, through
-// src/ui/suitcase-data.ts) draw from events() and redraw on onChange.
+// THE EVENTS, the platform's word: content packs (docs/vip.md, the creator, 2026-10-30), open to
+// everyone since 2026-11-10 (the creator: VIP gates no content, it gets better rewards instead). Each
+// event is 30 levels of its own, with 10 items hidden one per level; each item found pays 50 Coins with
+// it, and finding all 10 wins the event's table and its Passport stamp, once (the creator, 2026-10-30).
+// Open from its release date on, for good: no deadline, no swap, no spares, and nothing from the
+// dailies. The screens (src/ui/suitcase.ts, through src/ui/suitcase-data.ts) draw from events() and
+// redraw on onChange.
 //
 // Everything in it is the server's: the win checker (functions/checker/src/suitcase.rs) refuses an
-// event level to anyone who is not VIP ("vip_only") or before its release ("not_released"), pays its
+// event level before its release ("not_released") or while the events are switched off
+// ("events_off"; an older checker said "vip_only" to a player not VIP), pays its
 // Coins once, packs its item on its first verified win, and pays a full suitcase's prize once (the
 // event's own mark, never a flag of ours). Which event levels are won is the progress record's
 // (src/net/progress.ts eventBest). This file adds only what the player reads: the theme, the item
 // titles and the table's title (Levels' src/content/levels/events.json).
 //
 //   suitcase.events()        the events released for this player, newest first, each an EventPack;
-//                            [] until read, unless VIP, or with the switch off
+//                            [] until read, or with the switch off
 //   suitcase.event(id)       one of them
-//   suitcase.upcoming()      the events announced but not released yet by the player's date (no VIP needed)
+//   suitcase.upcoming()      the events announced but not released yet by the player's date
 //   suitcase.lastPrize()     a prize that landed since last asked ({ event }), once (its table is in the
 //                            level's verdict's `items`, and the verdict's `prize` names table and stamp)
 //   suitcase.stamps()        the ids of the events whose prize (table and Passport stamp) is paid, newest
-//                            release first, WHOEVER the player is: a VIP who lapsed keeps what they earned
-//                            (the Passport's Event stamps page). [] until read, or unframed. Kept by the
-//                            boot read (the checker answers `stamps` to anyone) and by a verdict that pays
-//                            a prize; never cleared when VIP turns off, unlike events()
+//                            release first (the Passport's Event stamps page). [] until read, or
+//                            unframed. Kept by every read and by a verdict that pays a prize
 //   suitcase.refresh()       read again (when the events screen opens): from memory if the last read
 //                            was under 5 minutes ago (every verdict keeps it current), else one read,
 //                            one at a time, paced
 //   suitcase.onChange(fn)    hear any change. Returns the unsubscribe.
 //
 // Read from the checker ({"v":1,"what":"suitcase"}, which also pays a full suitcase found unpaid)
-// when the game starts (whoever the player is: the answer says VIP too, so src/net/vip.ts asks
-// nothing of its own), when VIP turns on, when the player's day turns (an event may have been
-// released), and after an event level is refused; a verdict that carries its event (claims.ts)
+// when the game starts (the answer says VIP too, so src/net/vip.ts asks nothing of its own), when
+// the player's day turns (an event may have been released), and after an event level is refused; a
+// verdict that carries its event (claims.ts)
 // keeps it current with no read. A read that gets no answer is tried again with a
 // backoff, and at once when the connection comes back. Unframed (a plain tab, the play-test tool)
 // there is no platform: no events.
@@ -42,7 +43,7 @@ import { currentDaily, onDailyChange } from "./daily";
 import { noAnswer, refusalOf } from "./no-answer";
 import { backoff, heard as hearRefusal, whenDue } from "./pace";
 import { onOnline, suspect } from "../ui/online";
-import { heardVip, isVip, onVipChange, vipFields, vipKnown, vipReady } from "./vip";
+import { heardVip, vipFields, vipReady } from "./vip";
 
 export type EventItem = {
   id: string;
@@ -58,7 +59,7 @@ export type EventPack = {
   id: string;
   /** "Haunted Holiday". */
   theme: string;
-  /** "YYYY-MM-DD": the day it became playable (for VIPs, for good). */
+  /** "YYYY-MM-DD": the day it became playable (for everyone, for good). */
   release: string;
   /** Its levels' ids ("halloween-2026-01"…), in play order: board ids of the "event" lane. */
   levels: string[];
@@ -99,13 +100,12 @@ const framed = ((): boolean => {
     return true;
   }
 })();
-/** The events' switch (src/net/suitcase-ids.json): on means on for VIPs. Off, the checker is never asked. */
+/** The events' switch (src/net/suitcase-ids.json): on means on for everyone. Off, the checker is never asked. */
 const on = (IDS as { on?: boolean }).on === true;
 const heard = new Set<() => void>();
 let list: EventPack[] = [];
-/** The events stamped (prize paid), newest release first; and whether the server's list has landed this session. */
+/** The events stamped (prize paid), newest release first. */
 let stamps: string[] = [];
-let stampsRead = false;
 let prize: { event: string } | null = null;
 let reading: Promise<void> | null = null;
 /** When the last read landed (Date.now()), 0 before one: a refresh within FRESH_MS answers from memory. */
@@ -180,10 +180,7 @@ async function read(): Promise<void> {
     }
     tries = 0;
     readAt = Date.now();
-    if (Array.isArray(a.stamps)) {
-      stamp(a.stamps);
-      stampsRead = true;
-    }
+    if (Array.isArray(a.stamps)) stamp(a.stamps);
     list = (Array.isArray(a.events) ? a.events : []).map(view).filter((e): e is EventPack => e !== null);
     const ids = Array.isArray(a.prizes) ? (a.prizes as string[]) : [];
     landed(ids[0], a.gifts);
@@ -203,12 +200,11 @@ async function read(): Promise<void> {
 }
 
 /**
- * Read the events again (at most one read at a time): for a VIP, while VIP is not known yet (the
- * read says), or until the stamps have been read once (anyone's). `force` reads even within
- * FRESH_MS of the last read (VIP turned on, a new day, a refusal).
+ * Read the events again (at most one read at a time), for anyone. `force` reads even within FRESH_MS
+ * of the last read (a new day, a refusal).
  */
 function refresh(force = false): Promise<void> {
-  if (!framed || !on || (!isVip() && vipKnown() && stampsRead)) return Promise.resolve();
+  if (!framed || !on) return Promise.resolve();
   if (!force && !reading && readAt && Date.now() - readAt < FRESH_MS) return Promise.resolve();
   reading ??= read();
   return reading;
@@ -223,10 +219,6 @@ export function accept(answer: Record<string, unknown>): void {
   // a prize paid now ({ event, table, stamp }) is a stamp, whoever reads the page later
   const paid = (answer.prize && typeof answer.prize === "object" ? answer.prize : {}) as { event?: unknown };
   const stamped = typeof paid.event === "string" && !stamps.includes(paid.event) && stamp([...stamps, paid.event]);
-  if (!isVip()) {
-    if (stamped) say();
-    return;
-  }
   if (answer.suitcase && typeof answer.suitcase === "object") {
     const e = view(answer.suitcase);
     if (e) place(e);
@@ -274,14 +266,5 @@ if (framed && on) {
   onDailyChange(() => void refresh(true));
   onOnline((up) => {
     if (up && tries > 0) void refresh(true);
-  });
-  // VIP on: read them; VIP off: none of it is the player's to see
-  onVipChange((vip) => {
-    if (vip) {
-      void refresh(true);
-    } else {
-      list = [];
-      say();
-    }
   });
 }

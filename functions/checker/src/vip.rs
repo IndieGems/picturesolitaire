@@ -1,11 +1,11 @@
-//! WHO IS VIP, and the daily archive VIPs may play (the creator, 2026-10-30; docs/vip.md). Pure:
+//! WHO IS VIP, and the daily archive's window (the creator, 2026-10-30; open to everyone since 2026-11-10; docs/vip.md). Pure:
 //! lib.rs asks the platform, this decides. tests/vip.rs runs it on this machine.
 //!
 //! Gem Arcade VIP is the Arcade's own pass, `vip` (on sale since 2026-11-01). lib.rs's `platform_vip`
 //! asks the platform which passes the player who called holds (GET /v1/games/{game}/players/me/passes,
 //! gem-api#4337; SDK 19.0.0's arcade-and-store.md, section 11), and `passes` reads the answer: VIP is
 //! a `vip` entry with `held: true`; listed and not held, or not listed at all, is not VIP. A read that
-//! failed is UNKNOWN (None), never "not VIP" and never VIP: lib.rs holds a claim that needs it to try
+//! failed is UNKNOWN (None), never "not VIP" and never VIP: lib.rs holds what needs it (a gift) to try
 //! again and says nothing about VIP, so the game keeps what it had. On the dev channel only, a call
 //! carrying `pretend_vip: true` (the dev menu's "Pretend I'm VIP", src/net/vip.ts) is VIP, so the
 //! creator and QA can see every perk; on any other channel the flag is ignored.

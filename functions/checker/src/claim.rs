@@ -165,7 +165,7 @@ pub enum Lane {
     Daily,
     /// The optional bonus board after a trip (docs/souvenirs.md): paid once, its sticker in the record.
     Souvenir,
-    /// One of an event's 30 levels (docs/vip.md): a VIP's, from its release on; paid once, its item
+    /// One of an event's 30 levels (docs/vip.md): anyone's (VIP or not, since 2026-11-10), from its release on; paid once, its item
     /// packed on its first win (lib.rs, suitcase.rs).
     Event,
 }

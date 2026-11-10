@@ -61,8 +61,9 @@ import { heardVip, vipFields, vipReady } from "./vip";
 
 /**
  * "souvenir": the bonus board after a trip (docs/souvenirs.md), sent once its trip is stamped; no n, no date.
- * "event": one of an event's 30 levels (docs/vip.md; board "halloween-2026-04"), a VIP's, from its
- * release on: anyone else's is refused "vip_only", an unreleased one "not_released"; no n, no date.
+ * "event": one of an event's 30 levels (docs/vip.md; board "halloween-2026-04"), anyone's from its
+ * release on (VIP or not, since 2026-11-10): an unreleased one is refused "not_released", any while
+ * the events are switched off "events_off" (an older checker said "vip_only"); no n, no date.
  */
 export type Lane = "campaign" | "challenge" | "daily" | "souvenir" | "event";
 
@@ -110,10 +111,9 @@ interface Answered {
   /** Platform achievements this win unlocked (release only), earlier wins' catch-ups included: by id (src/net/achievements.json), with the points credited. src/net/achievements.ts's onUnlock hears them. */
   achievements?: { id: string; points: number }[];
   /**
-   * Daily only, a VIP's past day (docs/vip.md): "paid", its Coins paid now (`coins` is what landed);
+   * Daily only, a past day in the archive (docs/vip.md; anyone's since 2026-11-10): "paid", its Coins paid now (`coins` is what landed);
    * "won_before", won already, nothing more ("event_only" is never sent now: the dailies carry no
-   * event items). A past day for a player who is not VIP is refused "vip_only", and a VIP's day older
-   * than the archive "too_old".
+   * event items). A day older than the archive is refused "too_old".
    */
   archive?: "paid" | "won_before" | "event_only";
   /** Daily only: the date, the time the board shows, whether the result is on the day's board, whether it is this player's first of the day. */
@@ -369,7 +369,7 @@ async function send(h: Held): Promise<void> {
     }, answer.progress);
   }
   console.warn(`[claims] ${lane} ${board} refused: ${String(answer.reason)}`);
-  // an event level refused (no longer VIP, not released): read the events again
+  // an event level refused (not released, the events switched off): read the events again
   if (lane === "event") acceptSuitcase(answer);
   return settle(h, { status: "refused", lane, board, reason: String(answer.reason ?? "unknown") });
 }

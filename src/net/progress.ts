@@ -10,7 +10,7 @@
 //   progress().challenge[id]   best (fewest) moves on a cleared challenge board
 //   progress().daily[date]     the first verified result of that date { moves, ms }
 //   progress().souvenir[id]    best (fewest) moves on a Souvenir won ("s1"): its sticker (docs/souvenirs.md)
-//   progress().event[id]       best (fewest) moves on an event level won ("halloween-2026-04"; a VIP's, docs/vip.md)
+//   progress().event[id]       best (fewest) moves on an event level won ("halloween-2026-04"; docs/vip.md)
 //   progress().restored        pictures of boards won
 //   progress().counts          the achievements' counters as the checker last set them, by counter slug
 //                              (src/net/achievements.ts); absent on a record from before checker 0.1.35
@@ -44,7 +44,7 @@ export interface Progress {
   daily: Record<string, { moves: number; ms: number }>;
   /** Souvenirs won, by id: best (fewest) moves. Won when present. */
   souvenir: Record<string, number>;
-  /** Event levels won (a VIP's, docs/vip.md), by id: best (fewest) moves. Won when present. */
+  /** Event levels won (docs/vip.md), by id: best (fewest) moves. Won when present. */
   event: Record<string, number>;
   restored: string[];
   /** The achievements' counters as the checker last set them (functions/checker/src/count.rs), by counter slug; absent on a record from before them. Held wins never change it. */
@@ -147,7 +147,7 @@ export const isRestored = (pictureId: string): boolean => progress().restored.in
 export const guideDone = (): boolean => progress().campaign.next > 1;
 /** A Souvenir is won (its sticker shows) once its id is in the record: its best moves, or undefined. */
 export const souvenirBest = (id: string): number | undefined => progress().souvenir[id];
-/** An event level's best (fewest) moves, once won (a VIP's: the checker refuses anyone else's). */
+/** An event level's best (fewest) moves, once won. */
 export const eventBest = (id: string): number | undefined => progress().event[id];
 export const dailyResult = (date: string): { moves: number; ms: number } | undefined => progress().daily[date];
 /** Every counter at 0: a new player's (src/net/achievements.json's counters). */

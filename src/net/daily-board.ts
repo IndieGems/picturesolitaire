@@ -7,8 +7,8 @@
 // Every score on it is the server's. The win checker (functions/checker, daily_win) posts the player's
 // FIRST verified win of the day as the day's run (one run id per player per date), and nothing else:
 // a replay with fewer moves changes nothing (the platform keeps every run as a row and has no "best
-// of", so a second run would be a second row of the same player), practice and a VIP's past day post
-// nothing, and the client never can. The time on a row is the game's own clock, which the checker only
+// of", so a second run would be a second row of the same player), practice and a past day from the archive
+// post nothing (yesterday's excepted: it still goes on yesterday's board), and the client never can. The time on a row is the game's own clock, which the checker only
 // bounds: show it if you like, it never decides a place.
 //
 // Reading it (docs: leaderboards.md, "Friends"): gem.leaderboards.friends("daily") is the platform's
@@ -126,7 +126,7 @@ async function read(back: number): Promise<DailyBoard | null> {
     let rows = lb.entries.map(rowOf);
     let me = rows.find((r) => r.isViewer) ?? null;
     const played = !!dailyResult(date);
-    // only today's and yesterday's wins post a run (a VIP's older day from the archive posts none)
+    // only today's and yesterday's wins post a run (an older day from the archive posts none)
     if (!me && played && back <= 1) {
       // their win may be newer than this rendering: their own run, exactly
       const own = await gem.leaderboards.mine(DAILY_BOARD, { ...period, limit: 1 });

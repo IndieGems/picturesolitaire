@@ -1,135 +1,124 @@
 # VIP: what Gem Arcade VIP members get in Picture Passport
 
-The creator's plan (2026-10-30). VIP is the Gem Arcade's real-money pass, sold by the Arcade Store.
-The game never prices it or describes the Arcade's own perks; the SDK's `docs/arcade-and-store.md`
-(19.0.0, sections 10 and 11) has the rules. VIP went on sale on 2026-11-01 (gem-web#4375): the pass
-`vip`, sold as `vip_pass_30d`, 30 days.
+VIP is the Gem Arcade's real-money pass, sold by the Arcade Store (the pass `vip`, sold as
+`vip_pass_30d`, 30 days; on sale since 2026-11-01, gem-web#4375). The game never prices it or
+describes the Arcade's own perks; the SDK's `docs/arcade-and-store.md` (sections 10 and 11) has the
+rules.
+
+**The rule since 2026-11-10** (the creator): **VIP gates no content.** Events, past events and the
+daily archive are open to everyone; a VIP gets better rewards for playing them instead: **+50% on
+every Coin payout and double on every helper reward.** Until then the events and the archive were
+VIP's alone, behind locked doors (the plan of 2026-10-30, in `git log` of this file).
 
 ## Who is VIP
 
 - **The server decides, never the client.** The win checker (`functions/checker`, `vip.rs` and
   `platform_vip` in `lib.rs`) asks the platform which passes the player who called holds
   (`GET /v1/games/{game}/players/me/passes`, gem-api#4337): VIP is a `vip` entry with `held: true`.
-  Listed and not held, or not listed at all, is not VIP. It asks only on a call that needs it (the
-  VIP ask, the VIP gift, the events read, an event level, a past daily), and logs, once per read and with no
-  player id, whether `vip` was in the list at all: the platform lists only passes it has marked
-  visible to games, and an unmarked `vip` would read as nobody holding it.
-- **A failed read is unknown, never "not VIP" and never VIP.** An event level's or a past daily's
-  claim is held and sent again (`retry`, reason `platform` or `vip_unknown`), never refused
-  `vip_only`, so a holder is never locked out. The VIP ask and the events read answer `retry` too,
-  and an answer that could not ask carries no `vip`: the game keeps what it had (`src/net/vip.ts`).
+  Listed and not held, or not listed at all, is not VIP. It asks at most once a call, and only on a
+  call that needs it (the VIP ask, the VIP gift, the events read, and a claim that pays), and logs,
+  once per read and with no player id, whether `vip` was in the list at all: the platform lists only
+  passes it has marked visible to games, and an unmarked `vip` would read as nobody holding it.
+- **A failed read is unknown, never "not VIP" and never VIP.** The VIP ask and the gift answer
+  `retry`; any other answer that could not ask carries no `vip`, and the game keeps what it had
+  (`src/net/vip.ts`). What a claim's VIP extra does then is under "The VIP extra" below.
 - **The browser only says when to ask again.** `src/net/vip.ts` listens to the SDK's own pass reads
   (`gem.me.passes.on("changed")`: after a store purchase, on resume, after a sign-in, when a pass
   ends) and asks the checker again when the reading differs from the checker's last word;
-  `recheckVip()` does the same after Get VIP's sheet or a sign-in (`src/ui/vip-view.ts`). The doors
-  open on the checker's answer alone.
-- **On dev, a dev-menu "Pretend I'm VIP" toggle** lets the creator and QA see and test every perk.
-  The server honours it on dev only, and a release build carries none of it (`tools/no-dev-menu.mjs`).
+  `recheckVip()` does the same after Get VIP's sheet or a sign-in (`src/ui/vip-view.ts`).
+- **On dev, a dev-menu "Pretend I'm VIP" toggle** lets the creator and QA see and test every perk,
+  the extras included. The server honours it on dev only, and a release build carries none of it
+  (`tools/no-dev-menu.mjs`).
 
-## The perks
+## What everyone gets (no VIP needed)
 
-1. **VIP gives helpers** (the creator, 2026-11-01, after Jade Match, replacing free and unlimited
-   helpers). A VIP's Hint, Undo and Shuffle spend stock like anyone's, with no cooldown, and mercy
-   help (the announced free helper after repeated stuck tries) applies to VIPs again.
-   - **A daily VIP gift: 2 helpers a day**, on the player's own date (the platform's, never the
-     device's), once a date. It follows the day of the player's week, Monday first, so a week brings
-     5 Hints, 4 Undos and 5 Shuffles: Monday Hint + Undo, Tuesday Shuffle + Hint, Wednesday Undo +
-     Shuffle, Thursday Hint + Undo, Friday Shuffle + Hint, Saturday Undo + Shuffle, Sunday Hint +
-     Shuffle. A day the player doesn't open the game is not saved up.
-   - **A welcome gift, once a membership: 3 Hints, 2 Undos, 3 Shuffles (8).** A membership is told
-     by its end date: the server keeps the end date of the membership it last welcomed
-     (`vip_welcome_end`), and one ending later is a new one. So a membership bought after the last
-     one ended is welcomed again, one extended before it ends is not, and one membership is never
-     welcomed twice. A pass with no end (granted by support) is welcomed once, for good.
-   - **Helpers only**, never Coins or Gems: a membership bought with money pays none of the Arcade's
-     currencies. Each gift is clamped at the cap of 20, as every other gift is, and the game is told
-     what actually landed, so a full stock shows as full rather than as a gift.
-   - **Who pays and when.** The win checker pays both (`{"v":1,"what":"vip_gift"}`,
-     `functions/checker/src/gift.rs`; who is VIP and when a gift is due: `vip.rs` `due`). What is
-     owed is read from two marks the server keeps, the day last given its gift (`vip_gift_day`) and
-     the end of the membership last welcomed (`vip_welcome_end`), and each gift is paid in its own
-     order that raises its mark, with its own key (`vip:<date>`, `vip-welcome:<end day>`), so asking
-     twice pays once and lists nothing the second time. The marks decide, not the key: the platform
-     answers a reused key as a success that changed nothing (QA, 2026-11-02), so an empty receipt is
-     read as paid before. It reads the pass itself: not VIP pays nothing, and a failed read pays nothing and is
-     asked again. The game (`src/net/vip.ts`) asks once the server says VIP (at boot, after a
-     purchase or a sign-in) and again whenever the Arcade's pass reading changes while it says VIP,
-     which also brings a new day's gift on coming back to the game. It hands each gift paid to the
-     gift cards (UI's) and reads the stock again. The sizes are `src/net/helper-ids.json` `vip`, the
-     copy the checker compiles in. With the dev Pretend on, the server welcomes the pretend once
-     every 30 days, as a 30-day membership.
-   - Every level stays winnable with no helper (AGENTS.md), so VIP never decides whether a level can
-     be won.
-2. **The daily archive.**
-   - VIPs can play past days' dailies from a calendar opened from home's Daily tile.
-   - It starts with about the past month, then follows the game standard's window: the player's
-     current month and the two before it, counted in the player's own months.
-   - Each past day pays its Coins once, the same as it would have on the day. The server pays
-     nothing outside the window (with the standard's day of slack) and nothing to a non-VIP.
-3. **Events are VIP content packs of their own** (the creator, 2026-10-30, replacing events in the dailies):
-   - Each event is **30 levels of its own**, never the dailies, made from library pictures: pictures on no other level first, and none twice within an event.
-   - Each has **10 items, one hidden in each of 10 of its levels**, spread across the 30, so an item never repeats and there is no swap.
-   - Each item found pays **50 Coins** (500 an event; the Arcade caps one payout at 100, so no lump at the end), and
-     finding all 10 wins the event's table and its **stamp in the Passport** (its own "Event stamps" page), once
-     (the creator, 2026-10-30: helpers mean nothing to a VIP, so none). Its levels pay the usual
-     level Coins.
-   - Which levels hide items is never shown: a won item level wears a suitcase. Items sit on seeded random levels
-     (`itemLevels` in `events-plan.json`), at least one in levels 1–5, never on 25 or 30.
-   - A VIP can play any event at any time; a new event arrives on the schedule (`events-plan.json`, every two weeks or as set), and old ones stay playable.
-   - The dailies carry no event items.
-4. **The event archive** is simply every past event, still playable and winnable by VIPs.
-   **The schedule** (the creator, 2026-10-30): a new event every two weeks, on the 1st and the 15th. Haunted Holiday
-   (15 Oct, the archive's first), Ski Trip (1 Nov), Grand Train Journey (15 Nov), Winter Market (1 Dec), Northern
-   Lights (15 Dec), Carnival (1 Jan 2027). Six in all; the themes come from `docs/daily-suitcase.md`'s approved list.
-5. **Every Cosmetic is wearable: OFF since 2026-11-02** (the creator: "disable that but keep it in
-   case we go back to it"). A VIP buys tables and soundtracks like anyone, Cosmetics shows no VIP
-   banner or marks, and the VIP door lists four perks. The code is kept behind UI's one switch
-   (`VIP_WEARS_ALL` in `src/ui/vip-view.ts`, fe7b1ed5); a VIP wearing a borrowed one when it went off falls back to their own.
-   As it was, and would be again with the switch on:
-   - A VIP can choose any table and soundtrack sold in Cosmetics.
-   - What a player buys stays in their Arcade inventory, before VIP or during it.
-   - When VIP ends, they keep everything they paid for. A table or track they were only borrowing
-     switches back to one they own (Sunny Day if none).
-   - Event tables stay event prizes: VIP wears the sold Cosmetics, not other events' prizes.
-   - Buying for keeps stays open to VIPs.
+- **The events.** Each event is **30 levels of its own**, never the dailies, made from library
+  pictures (none on another level first, none twice within an event), with **10 items, one hidden in
+  each of 10 of its levels** (seeded, `itemLevels` in `events-plan.json`: at least one in levels 1–5,
+  never 25 or 30). Which levels hide items is never shown: a won item level wears a suitcase. Each
+  item found pays **50 Coins** (500 an event: the Arcade caps one payout at 100, so no lump at the
+  end), and finding all 10 wins the event's table and its **stamp in the Passport** (its "Event
+  stamps" page), once. Its levels pay the usual level Coins. An event is playable from its release
+  on, for good; the dailies carry no items. **The schedule** (the creator, 2026-10-30): a new event on
+  the 1st and the 15th: Haunted Holiday (15 Oct), Ski Trip (1 Nov), Grand Train Journey (15 Nov),
+  Winter Market (1 Dec), Northern Lights (15 Dec), Carnival (1 Jan 2027).
+- **The event archive** is every past event, still playable and winnable.
+- **The daily archive**: past days' dailies from a calendar opened from home's Daily tile, over the
+  game standard's window: the player's current month and the two before it, in their own months.
+  Each past day pays its Coins once, as it would have on the day; the server pays nothing older
+  (with the standard's day of slack). Yesterday's result still goes on yesterday's friends board.
+- The checker no longer refuses anything as `vip_only` (0.1.54 on): an event level while the events
+  are switched off is `events_off`, a day older than the archive `too_old`.
 
-**Players without VIP see locked doors** (the creator, 2026-10-30, after Untangled): the archive and
-the event wear a padlock and a gold VIP tag, and a tap opens a full screen of what's inside with Back.
-Its Get VIP opens the Arcade's own offer sheet (`gem.store.showOffer`, UI's `src/ui/vip-view.ts`),
-which says what VIP is and what it costs; the game shows no price and no perks of the Arcade's, and a
-buyer's doors open when the checker says so, with no reload. Untangled (`../yarn`: `src/vip.ts`,
-`showVip`) is the model. The dev toggle is kept in the save, so it holds across reloads.
+## What VIP adds
 
-**What a player without VIP is shown** (the creator, 2026-11-02):
-- The event's locked door lists the past events still in the archive under Get VIP ("Also in the event
-  archive": suitcase, name, prize table, VIP tag; at most 3, then "and N more"), as information
-  (UI, 64fcf0c3).
-- The Passport's Event stamps page draws the running and past events' stamps as empty outlines with the
-  VIP tag, never "Finish an event", which they cannot (a32955bb).
-- **Home's VIP badge** (after Cosmic Commute's): a round gold VIP button beside the wordmark, from the
-  first level done, with a shake and a glint every 6 s (none with less motion), still with a tick for a
-  member. It opens the VIP screen: for a player who is not VIP, a gold VIP boarding pass ("FIRST CLASS
-  ✈ VIP", Passenger: You!, Seat 1A; the creator picked it of four looks, cc6a2e42) whose stamped lines
-  are what VIP gives here, best first (the creator: the events, the daily archive, then the two gifts; fbc37a5a, the doors' list too), then "Other Gem Arcade games give VIP rewards too!" in red on its stub, never
-  naming a game or a reward (the Arcade's sheet lists its own perks), and "Get VIP: board now!"; no
-  price, no "free", no hurry. A member reads "You're VIP" and the days left (display only, from the
-  SDK's pass reading), the perks (`vipPerks()`, the doors' list) and no Get VIP (e9e325a3).
+Items 1 and 2 are being built (2026-11-10) and pay from the checker after 0.1.54; until then a VIP
+gets the gifts (3) alone.
 
-**What a member is shown** (the creator, 2026-11-02: "keep VIP visible so they know the things they are getting", above all for a member who brought VIP from another game):
-- the gold VIP tag without its padlock and one line, "Included with your VIP", on home's event strip, the
-  event page, the Daily page's archive, the archive calendar and the Passport's Event stamps (UI, c94d3345),
-  beside home's badge with its tick and the gift cards;
-- **a welcome card** the first time the checker pays their welcome (once a membership, again after a lapse;
-  no flag of ours): "Welcome, VIP!", what VIP gives here best first, "Show me the events!" or "Later"; either
-  brings the welcome gift card at once, then the event page or home (35498fa5).
+1. **The VIP extra on Coins: +50% of every Coin payout**, paid as its own grant beside the base, in
+   the same order (the platform caps one grant at 100, so a 100 pays 100 + 50). The rule is
+   **ceil(base / 2)**: 25 pays +13, 50 pays +25, 100 pays +50. It covers every Coin payout: each
+   lane's first win (the campaign, the welcome boards 1–5 included, Souvenirs, the challenge route,
+   event levels), First Steps' prize, the daily's 50, a past day's 50, and each event item's 50.
+2. **Double helpers on every helper reward**: the guided start's kit (3 of each becomes 6), a hard
+   board's first win, a stamp, and the daily's first win. Each grant is clamped at the cap of 20.
+3. **VIP's own gifts, unchanged** (the creator, 2026-11-01, after Jade Match):
+   - **a daily VIP gift of 2 helpers** on the player's own date (the platform's), once a date, by the
+     day of their week, Monday first: a week brings 5 Hints, 4 Undos and 5 Shuffles (Monday Hint +
+     Undo, Tuesday Shuffle + Hint, Wednesday Undo + Shuffle, Thursday Hint + Undo, Friday Shuffle +
+     Hint, Saturday Undo + Shuffle, Sunday Hint + Shuffle); a day not opened is not saved up;
+   - **a welcome gift once a membership: 3 Hints, 2 Undos, 3 Shuffles (8).** A membership is told by
+     its end date (`vip_welcome_end`): one bought after the last ended is welcomed again, one extended
+     before it ends is not, a pass with no end (support's) once for good. With the dev Pretend on, the
+     server welcomes the pretend once every 30 days.
+   - Paid by the checker (`{"v":1,"what":"vip_gift"}`, `gift.rs`; when a gift is due: `vip.rs`
+     `due`) from two marks it keeps (`vip_gift_day`, `vip_welcome_end`), each gift in its own order
+     with its own key (`vip:<date>`, `vip-welcome:<end day>`), so asking twice pays once. The marks
+     decide, not the key: the platform answers a reused key as a success that changed nothing (QA,
+     2026-11-02). The game (`src/net/vip.ts`) asks once the server says VIP and whenever the Arcade's
+     pass reading changes while it does, hands each gift to the gift cards (UI's) and reads the stock
+     again. Sizes: `src/net/helper-ids.json` `vip`, the copy the checker compiles in.
 
-**When VIP ends** the doors lock again, and the player keeps what they earned or bought: every
-event's stamp they won (the Passport's Event stamps page reads `suitcase.stamps()`, which the
-checker answers to anyone, VIP or not), every event table they won and everything bought (all are
-Arcade inventory items, never taken back), and the Coins paid. (With perk 5's switch on, a table or
-soundtrack they were only borrowing switches back to one they own.)
+**Unchanged on purpose** (the creator, 2026-11-10): mercy help is the same for everyone; every price
+is the same for everyone; and **no back pay**: the extra comes only with rewards received while VIP,
+so a board won earlier as a non-VIP never pays it later. Every level stays winnable with no helper
+(AGENTS.md), so VIP never decides whether a level can be won.
 
-**The daily's friends leaderboard** (the creator, 2026-10-30): fewest moves, ties to the earlier finish; every
-verified first win of the day posts, helpers or not (the creator's final word).
+## The VIP extra, in the checker
+
+- **One place computes it**: `functions/checker/src/pay.rs` (`vip_extra_coins`, `vip_helpers`), from
+  `src/net/vip-extra.json`, the one copy of the rule, which `src/net/vip.ts` reads too for the
+  previews UI shows before a reward is won (`vipExtraCoins(base)`, `vipHelpers(gift)`).
+- **The seam for the Arcade's figure**: the creator expects a coming SDK to have the Arcade tell the
+  game the exact VIP extra. That figure replaces the rule at this one place, and **`gamePays`** in
+  `vip-extra.json` turns the game's own payment off, so a VIP is never paid twice.
+- **Each extra pays once, ever**, in the same order (and so under the same key) as the reward it
+  rides with: a resent claim or a replay pays nothing more.
+- **At most one pass read per claim.** A read that fails holds the extra: the base pays now, and the
+  record (`vipOwed` in the progress slot) keeps what the extra would be; a later answer that reads
+  VIP pays it (its own key, `vipx:<what>`), one that reads not VIP drops it. Never lost, never paid
+  to a non-VIP.
+- **The answer says what landed**: `coins` (all), `base`, `vipExtra`, `helpers` (all), `vipHelpers`,
+  `vipRead` (`yes`, `no` or `unknown`) and `vipHeld` (an extra waits). `src/net/claims.ts` types them.
+- **The platform's day cap**: 4,000 Coins a day per game (`gemctl platform config`). A VIP reaches it
+  sooner; a grant past it is trimmed, and the receipts (so the answer) say what landed.
+
+## What the game shows (UI's)
+
+No locked doors: the events, their archive and the daily archive open for everyone. VIP shows as the
+better reward, a "VIP +13"-style tag beside a reward before and after it is won (from the previews
+and the answer's fields), and home's VIP badge opens the VIP screen (`src/ui/vip-view.ts`): what VIP
+gives here, "Other Gem Arcade games give VIP rewards too!" (never naming a game or a reward), and Get
+VIP, which opens the Arcade's own offer sheet (`gem.store.showOffer`); no price, no "free", no
+hurry. A member is shown their VIP where it gives them something, and a welcome card the first time
+the checker pays their welcome (once a membership). When VIP ends, the player keeps everything:
+stamps, tables, helpers and Coins.
+
+**Every Cosmetic is wearable: OFF since 2026-11-02** (the creator: "disable that but keep it in case
+we go back to it"). A VIP buys tables and soundtracks like anyone; the code is behind UI's one switch
+(`VIP_WEARS_ALL` in `src/ui/vip-view.ts`, fe7b1ed5).
+
+**The daily's friends leaderboard** (the creator, 2026-10-30): fewest moves, ties to the earlier
+finish; every verified first win of the day posts, helpers or not.
 
 Not now (the creator, 2026-10-30): a VIP-only table or soundtrack, a VIP passport.

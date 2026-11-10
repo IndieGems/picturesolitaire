@@ -31,18 +31,16 @@ fn all(e: suitcase::Event, v: u32) -> Vec<u32> {
 }
 
 #[test]
-fn the_events_are_on_for_vips_only() {
+fn the_events_follow_their_switch_alone() {
     let ids = read("src/net/suitcase-ids.json");
     assert_eq!(suitcase::on(), ids["on"] == json!(true));
-    assert!(!suitcase::open(false), "never for a player who is not VIP");
-    assert_eq!(suitcase::open(true), suitcase::on());
 }
 
 #[test]
-fn no_prize_for_a_player_who_is_not_vip_however_full_the_suitcase() {
+fn a_full_suitcase_pays_its_prize_to_anyone_while_the_events_are_on() {
+    // VIP or not (the creator, 2026-11-10): the prize no longer asks who the player is
     for e in suitcase::events() {
-        assert!(suitcase::prize(e, false).is_none(), "{}", suitcase::name(e));
-        assert_eq!(suitcase::prize(e, true).is_some(), suitcase::on());
+        assert_eq!(suitcase::prize(e).is_some(), suitcase::on(), "{}", suitcase::name(e));
     }
 }
 

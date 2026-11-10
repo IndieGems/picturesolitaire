@@ -21,7 +21,7 @@
 //!                                             VIP's): absent until the first
 //!     "packed": { "halloween-2026": ["2026-10-15", ...] },  from when events were dailies (until 0.1.40):
 //!                                             the days whose item was packed; kept, written by nothing now
-//!     "owed": { "2026-10-03": { "coins": true, "pack": false } },  a VIP's past day decided and not yet
+//!     "owed": { "2026-10-03": { "coins": true, "pack": false } },  a past day decided and not yet
 //!                                             confirmed paid (lib.rs, the archive): sent again, then cleared
 //!                                             ("pack" is always false now: a daily packs nothing)
 //!     "imported": { "from": "campaign" },   only on a record begun before 0.1.28 from an old device save; read by nothing

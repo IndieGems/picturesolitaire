@@ -7,11 +7,12 @@
 //!     accepted once its trip is stamped): move that board's progression ("board_<id>",
 //!     completion 1, never resets) to 1, which pays its Coins on completion,
 //!     so once per board, ever (the config says how many: gem-backend-game-config.yaml);
-//!   - daily: check the date is the player's own today (or yesterday, late),
-//!     post the result (moves, time) to the "daily" board under that date, and
-//!     move "daily_picture" to 1, which pays once per day;
-//!   - an event level (docs/vip.md: a VIP's, from its event's release on): its board progression,
-//!     as a campaign board's, and on its first win the item hidden in it (suitcase.rs).
+//!   - daily: check the date is the player's own today, post the result (moves, time) to the
+//!     "daily" board under that date, and move "daily_picture" to 1, which pays once per day; a
+//!     past day in the archive (vip.rs's window, for everyone since 2026-11-10) pays once through
+//!     the archive's progression;
+//!   - an event level (docs/vip.md: anyone's since 2026-11-10, from its event's release on): its
+//!     board progression, as a campaign board's, and on its first win the item hidden in it (suitcase.rs).
 //! That move goes in ONE order with the helper gifts due (pay.rs: board 1's kit, a
 //! hard board's or a trip's last board's gift), and the verdict says what landed.
 //! The verdict goes back as JSON; the device follows it, never the other way.
@@ -27,13 +28,14 @@
 //! starts empty: no slot the player can write is ever taken in (GSR-006; the old
 //! device "campaign" slot was, before 0.1.28). {"v":1,"what":"progress"} only reads it.
 //!
-//! THE EVENTS (suitcase.rs, docs/vip.md): VIP packs of 30 levels each, with 10 items hidden one per
-//! level. A VIP's first verified win of an item's level packs it, in that win's one order;
-//! {"v":1,"what":"suitcase"} reads every released event with what the player holds. An event found
-//! full and unpaid, by either, pays its prize (its table and helpers) in an order of its own, once.
-//! There is no swap any more ({"v":1,"what":"swap"} answers "closed"), and the dailies pack nothing.
-//! While src/net/suitcase-ids.json says `"on": false`, or for a player who is not VIP, an event
-//! level is refused "vip_only", the read answers no events ("off": true), and no prize is paid.
+//! THE EVENTS (suitcase.rs, docs/vip.md): packs of 30 levels each, with 10 items hidden one per
+//! level, open to everyone (the creator, 2026-11-10: VIP gates no content). The first verified win of
+//! an item's level packs it, in that win's one order; {"v":1,"what":"suitcase"} reads every released
+//! event with what the player holds. An event found full and unpaid, by either, pays its prize (its
+//! table and stamp) in an order of its own, once. There is no swap any more ({"v":1,"what":"swap"}
+//! answers "closed"), and the dailies pack nothing. While src/net/suitcase-ids.json says
+//! `"on": false`, an event level is refused "events_off", the read answers no events ("off": true),
+//! and no prize is paid.
 //!
 //! VIP'S GIFTS (vip.rs `due`, pay.rs `vip_order`; docs/vip.md; the creator, 2026-11-01): a VIP's
 //! helpers are not free; {"v":1,"what":"vip_gift"} pays a VIP, on their own date, the day's gift (2
@@ -66,7 +68,7 @@ pub mod vip;
 pub const DAILY_ID: &str = "6d1f3b0e-8a52-4c7e-9f14-2b6e0d9a7c31";
 pub const DAILY_SLUG: &str = "daily_picture";
 /// The daily archive's progression (gem-backend-game-config.yaml, make-config.mts has the same):
-/// one added per past day a VIP's first win pays, which pays that day's Coins (its on_add mapping).
+/// one added per past day whose first win pays (anyone's since 2026-11-10), which pays that day's Coins (its on_add mapping).
 pub const ARCHIVE_ID: &str = "795d5832-be77-44b1-a949-6ae8ec1c629d";
 /// The run type the daily's results are posted as, and its board.
 pub const DAILY_RUN: &str = "daily_result";
@@ -332,17 +334,16 @@ mod function {
     enum Day {
         /// The player's today.
         Today,
-        /// Yesterday, for a player who is not VIP: recorded, unpaid.
-        Late,
-        /// A VIP's past day in the archive (vip.rs): its Coins, if it was never won.
-        Past,
+        /// A past day in the archive (vip.rs), anyone's since 2026-11-10: its Coins, if it was never won.
+        /// True for the player's yesterday, whose result still goes on that day's board.
+        Past(bool),
     }
 
-    /// The claim's day. Err: the verdict: a date after today ("wrong_day"); a past day for a player
-    /// who is not VIP ("vip_only", yesterday excepted); a VIP's day older than the archive ("too_old");
-    /// a past day while VIP is unknown ("retry": held, never refused, so a holder is never locked out).
-    /// VIP is asked only for a past day.
-    fn daily_kind(player: &str, win: &Win, vip: VipWord) -> Result<Day, Value> {
+    /// The claim's day. Err: the verdict: a date after today ("wrong_day"), a day older than the
+    /// archive ("too_old"). Yesterday is in the archive, so a board finished just after midnight pays
+    /// as a past day, and its result still goes on yesterday's board (until 2026-11-10 a player not VIP
+    /// had it "late": recorded, unpaid; a VIP had it paid, not recorded).
+    fn daily_kind(player: &str, win: &Win) -> Result<Day, Value> {
         let date = win.date.clone().unwrap_or_default();
         let today = match daily_date(player, 0)? {
             Some(d) => d,
@@ -355,19 +356,16 @@ mod function {
         if date.as_str() > today.as_str() {
             return Err(refused("wrong_day"));
         }
-        if vip().map_err(retry)? {
-            return if vip::in_archive(&date, &today) { Ok(Day::Past) } else { Err(refused("too_old")) };
-        }
-        match daily_date(player, 1)? {
-            Some(d) if d == date => Ok(Day::Late),
-            _ => Err(refused("vip_only")),
+        if vip::in_archive(&date, &today) {
+            Ok(Day::Past(vip::add_days(&today, -1).as_deref() == Some(date.as_str())))
+        } else {
+            Err(refused("too_old"))
         }
     }
 
-    fn daily_win(game: &str, player: &str, win: &Win, late: bool, kit: bool) -> Value {
-        let date = win.date.clone().unwrap_or_default();
-
-        // the result, on the date's board (moves, then time); the first one a day stands
+    /// The result, on the date's board (moves, then time); the first one a day stands. Ok((recorded,
+    /// first)): recorded false when the day has closed for this player. Err: the verdict.
+    fn post_run(game: &str, player: &str, win: &Win, date: &str) -> Result<(bool, bool), Value> {
         let run = json!({ "runs": [{
             "run_id": crate::daily_run_id(player, &date),
             "entity_type": "player",
@@ -377,31 +375,25 @@ mod function {
             "int_value_2": win.ms,
             "period_id": date,
         }]});
-        let posted = match api("POST", format!("/v1/games/{game}/runs"), Some(run)) {
-            Ok(a) => a,
-            Err(_) => return retry("platform"),
-        };
+        let posted = api("POST", format!("/v1/games/{game}/runs"), Some(run)).map_err(|_| retry("platform"))?;
         let recorded = match posted.status {
             200..=299 => true,
             409 => false, // run_period_closed: the day has closed for this player
-            s if passing(s) => return retry("platform"),
+            s if passing(s) => return Err(retry("platform")),
             s => {
                 host::log(LogLevel::Warn, &format!("runs answered {s}: {}", posted.body));
-                return retry("config");
+                return Err(retry("config"));
             }
         };
-        let first = posted.body["inserted"].as_i64() == Some(1);
+        Ok((recorded, posted.body["inserted"].as_i64() == Some(1)))
+    }
 
-        if late {
-            // the platform files a progression write under the period it arrives in,
-            // so yesterday's daily can no longer be marked or paid
-            // (a kit still due waits for the next win)
-            return json!({
-                "v": 1, "status": "late", "lane": "daily", "board": win.board, "date": date,
-                "moves": win.moves, "ms": win.ms, "coins": 0, "recorded": recorded, "first": first,
-                "helpers": pay::none(), "gifts": [],
-            });
-        }
+    fn daily_win(game: &str, player: &str, win: &Win, kit: bool) -> Value {
+        let date = win.date.clone().unwrap_or_default();
+        let (recorded, first) = match post_run(game, player, win, &date) {
+            Ok(r) => r,
+            Err(v) => return v,
+        };
         // the date is the platform's (the player's own day), so the nonce keys one daily a day;
         // the day's first win pays the day's helper (pay::daily_gift) with the day's mark
         let g = match pay_win(player, crate::DAILY_ID, &format!("daily {date}"), &format!("daily:{date}"), pay::daily_gift(&date), &mut || Ok(Vec::new()), kit) {
@@ -459,9 +451,9 @@ mod function {
     /// A full event's prize, unless its mark says it is paid: Ok(Some((what landed of each helper,
     /// the items it granted now: its table, by id))) when it is paid now, Ok(None) when it was paid
     /// before. Err: not paid yet.
-    fn settle_prize(player: &str, m: suitcase::Event, vip: bool) -> Result<Option<(Value, Vec<String>)>, Value> {
-        // the event not open to this player: no prize, however full the suitcase held
-        let Some(o) = suitcase::prize(m, vip) else { return Err(json!({ "v": 1, "status": "closed", "off": true })) };
+    fn settle_prize(player: &str, m: suitcase::Event) -> Result<Option<(Value, Vec<String>)>, Value> {
+        // the events switched off: no prize, however full the suitcase held
+        let Some(o) = suitcase::prize(m) else { return Err(json!({ "v": 1, "status": "closed", "off": true })) };
         if value_of(player, suitcase::mark(m))? >= 1.0 {
             return Ok(None);
         }
@@ -512,7 +504,7 @@ mod function {
     }
 
     /// The events whose prize is paid (their mark: the Passport stamp, with the table), newest
-    /// release first, whoever the player is: a lapsed VIP keeps what they earned. Err: the verdict.
+    /// release first. Err: the verdict.
     fn stamps_of(player: &str, today: &str) -> Result<Vec<&'static str>, Value> {
         let mut out = Vec::new();
         for e in suitcase::shown(today) {
@@ -524,17 +516,17 @@ mod function {
     }
 
     /// {"v":1,"what":"suitcase"}: every event released by the player's today, newest first, with the
-    /// items they hold, for a VIP; a full one whose prize is still unpaid is paid now (a few a call at
+    /// items they hold, for anyone; a full one whose prize is still unpaid is paid now (a few a call at
     /// most). `current` (the newest) and `past` (the rest) repeat `events` for a build from before.
-    /// `stamps`, for every player, VIP or not: the events whose prize is paid (stamps_of).
-    fn suitcase_read(player: &str, vip: bool) -> Value {
+    /// `stamps`: the events whose prize is paid (stamps_of).
+    fn suitcase_read(player: &str) -> Value {
         let today = match today_of(player) {
             Ok(d) => d,
             Err(v) => return v,
         };
-        if !suitcase::open(vip) {
-            // not open to this player: no events, and nothing is paid (the items held stay put), but
-            // the stamps they earned stay theirs. `today` keeps a build from asking again and again.
+        if !suitcase::on() {
+            // switched off: no events, and nothing is paid (the items held stay put), but the stamps
+            // earned stay theirs. `today` keeps a build from asking again and again.
             let stamps = match stamps_of(player, &today) {
                 Ok(s) => s,
                 Err(v) => return v,
@@ -554,7 +546,7 @@ mod function {
             if suitcase::complete(e, &c) {
                 paid = match value_of(player, suitcase::mark(e)) {
                     Ok(v) if v >= 1.0 => true,
-                    Ok(_) if prizes.len() < 3 => match settle_prize(player, e, vip) {
+                    Ok(_) if prizes.len() < 3 => match settle_prize(player, e) {
                         Ok(landed) => {
                             if let Some((l, _)) = landed {
                                 add(&mut helpers, &l);
@@ -577,16 +569,13 @@ mod function {
     }
 
     /// An event level's claim may be paid: its event (the level is one of an event's), the events
-    /// open to this player (switched on, VIP), and the event released by their today. Err: the verdict;
-    /// while VIP is unknown, "retry" (held, never "vip_only").
-    fn event_gate(player: &str, win: &Win, vip: VipWord) -> Result<suitcase::Event, Value> {
+    /// switched on, and the event released by their today: anyone's, VIP or not (the creator,
+    /// 2026-11-10). Err: the verdict.
+    fn event_gate(player: &str, win: &Win) -> Result<suitcase::Event, Value> {
         let refused = |why: &str| json!({ "v": 1, "status": "refused", "reason": why, "lane": "event", "board": win.board });
         let Some(e) = suitcase::of_level(&win.board) else { return Err(refused("unknown_event")) };
         if !suitcase::on() {
-            return Err(refused("vip_only"));
-        }
-        if !suitcase::open(vip().map_err(retry)?) {
-            return Err(refused("vip_only"));
+            return Err(refused("events_off"));
         }
         let today = today_of(player)?;
         if !suitcase::released(e, &today) {
@@ -598,12 +587,12 @@ mod function {
         Ok(e)
     }
 
-    /// A VIP's win of an event level: its Coins once (its board progression, as a campaign board's),
+    /// A win of an event level: its Coins once (its board progression, as a campaign board's),
     /// and on that first win the item hidden in it, in the same one order; a later win of a level
     /// whose item is still not held packs it then, in an order of its own (an item can move to a level
     /// already won: Levels' random placement, bfe50f2), once per item. Then, if every item of the
     /// event is held, its prize (settle_prize), once.
-    fn event_win(game: &str, player: &str, win: &Win, e: suitcase::Event, kit: bool, vip: bool) -> Value {
+    fn event_win(game: &str, player: &str, win: &Win, e: suitcase::Event, kit: bool) -> Value {
         let Some(progression) = pay::board_id(&win.board) else {
             host::log(LogLevel::Warn, &format!("no progression for event level {}", win.board));
             return retry("config");
@@ -679,7 +668,7 @@ mod function {
             )];
             let mut paid = false;
             if suitcase::complete(e, &now) {
-                match settle_prize(player, e, vip) {
+                match settle_prize(player, e) {
                     Ok(landed) => {
                         paid = true;
                         if let Some((l, granted)) = landed {
@@ -816,16 +805,19 @@ mod function {
         d
     }
 
-    /// A VIP's past day (Day::Past, vip.rs), whose payment the record already notes as owed: its
+    /// A past day (Day::Past, vip.rs), whose payment the record already notes as owed: its
     /// Coins (the archive's progression, one day more, which pays that day's Coins), in an order of
     /// its own ("past:<date>"). Once the platform confirms it landed, the record's owed mark is
-    /// cleared. `in_archive` is always true now (a VIP's day older than the archive is refused); a
+    /// cleared. `in_archive` is always true now (a day older than the archive is refused); a
     /// day won before pays nothing ("won_before").
-    fn past_win(player: &str, win: &Win, doc: &mut Value, coins: bool) -> Value {
+    fn past_win(game: &str, player: &str, win: &Win, doc: &mut Value, coins: bool, yesterday: bool) -> Value {
         let date = win.date.clone().unwrap_or_default();
+        // yesterday's result still goes on yesterday's board (the platform keeps the first run of a
+        // day and says when that day has closed); never in the way of its Coins
+        let (recorded, first) = if yesterday { post_run(game, player, win, &date).unwrap_or((false, false)) } else { (false, false) };
         let mut verdict = json!({
             "v": 1, "status": "kept", "lane": "daily", "board": win.board, "date": date, "moves": win.moves, "ms": win.ms,
-            "coins": 0, "items": [], "recorded": false, "first": false, "helpers": pay::none(), "gifts": [],
+            "coins": 0, "items": [], "recorded": recorded, "first": first, "helpers": pay::none(), "gifts": [],
             "archive": if coins { "paid" } else { "won_before" },
         });
         if !coins {
@@ -869,17 +861,17 @@ mod function {
 
     /// A verified win: the record first, then the payment, so a payment never
     /// lands without its progress, and a resent claim changes the record once.
-    fn verified(game: &str, player: &str, win: &Win, boards: u64, vip: VipWord) -> Value {
+    fn verified(game: &str, player: &str, win: &Win, boards: u64) -> Value {
         let day = match win.lane {
-            Lane::Daily => match daily_kind(player, win, vip) {
+            Lane::Daily => match daily_kind(player, win) {
                 Ok(d) => d,
                 Err(v) => return v,
             },
             _ => Day::Today,
         };
-        // an event level: VIP, its event released, before anything is recorded
+        // an event level: its events switched on and it released, before anything is recorded
         let event = match win.lane {
-            Lane::Event => match event_gate(player, win, vip) {
+            Lane::Event => match event_gate(player, win) {
                 Ok(e) => Some(e),
                 Err(v) => return v,
             },
@@ -890,10 +882,10 @@ mod function {
             Err(v) => return v,
         };
         let date = win.date.clone().unwrap_or_default();
-        // what a VIP's past day owes, decided before this win is applied (its Coins if it was never
+        // what a past day owes, decided before this win is applied (its Coins if it was never
         // won), and what an earlier try of it still owes
         let mut past_coins = false;
-        if let Day::Past = day {
+        if let Day::Past(_) = day {
             let (owed_coins, _) = progress::owed(&doc, &date);
             past_coins = doc["daily"].get(&date).is_none() || owed_coins;
         }
@@ -932,10 +924,9 @@ mod function {
         }
         let mut verdict = match (win.lane.clone(), day, event) {
             // a past day pays no kit (it waits for the next win)
-            (Lane::Daily, Day::Past, _) => past_win(player, win, &mut doc, past_coins),
-            (Lane::Daily, d, _) => daily_win(game, player, win, matches!(d, Day::Late), kit),
-            // past event_gate, the word is a VIP's (read once: this asks nothing more)
-            (Lane::Event, _, Some(e)) => event_win(game, player, win, e, kit, vip().unwrap_or(false)),
+            (Lane::Daily, Day::Past(yesterday), _) => past_win(game, player, win, &mut doc, past_coins, yesterday),
+            (Lane::Daily, Day::Today, _) => daily_win(game, player, win, kit),
+            (Lane::Event, _, Some(e)) => event_win(game, player, win, e, kit),
             _ => board_win(player, win, kit),
         };
         if verdict["status"] != "retry" {
@@ -989,10 +980,6 @@ mod function {
         }
     }
 
-    /// VIP for this call, read at most once and only when the call needs it: Ok(VIP or not), or
-    /// Err(why it is unknown), the reason of the "retry" that holds a claim needing it.
-    type VipWord<'a> = &'a dyn Fn() -> Result<bool, &'static str>;
-
     /// THE PLATFORM'S WORD ON VIP (vip.rs; docs/vip.md): the passes of the player who called (the
     /// route's "me" is the function's invoker). Ok(holds `vip`), or Err when the read failed:
     /// "platform" for a hiccup (no answer, 429, 5xx), "vip_unknown" for anything else (a refusal, a
@@ -1036,9 +1023,9 @@ mod function {
             }
             let asked = serde_json::from_slice::<Value>(&input).unwrap_or(Value::Null);
             // VIP for this call (vip.rs), asked of the platform once, and only by a call that needs it
-            // (the VIP ask, the VIP gift, the events read, an event level, a past daily). An answer that asked says
-            // it, so the game follows the server; one that did not, or could not, says nothing about
-            // VIP, and the game keeps what it had.
+            // (the VIP ask, the VIP gift, the events read). An answer that asked says it, so the game
+            // follows the server; one that did not, or could not, says nothing about VIP, and the
+            // game keeps what it had.
             let read: std::cell::OnceCell<Result<vip::Passes, &'static str>> = std::cell::OnceCell::new();
             let platform = || *read.get_or_init(|| platform_vip(&ctx.game_id));
             let vip = || -> Result<bool, &'static str> {
@@ -1066,10 +1053,11 @@ mod function {
                 return said(crate::gift::vip_gift(&Live { player: &player }, vip(), platform().ok()));
             }
             if asked["what"] == "suitcase" {
-                return said(match vip() {
-                    Ok(v) => suitcase_read(&player, v),
-                    Err(why) => retry(why),
-                });
+                // the events are everyone's, so what this answers never depends on VIP; the pass is
+                // still read, once, so the answer says VIP for the game's boot (src/net/vip.ts asks
+                // nothing of its own while the events are on), and a failed read only leaves `vip` out
+                let _ = vip();
+                return said(suitcase_read(&player));
             }
             if asked["what"] == "swap" {
                 // no swap since the events became level packs (docs/vip.md, 2026-10-30)
@@ -1090,7 +1078,7 @@ mod function {
                 }
                 Ok(win) => {
                     host::log(LogLevel::Info, &format!("won {} {} in {} moves, {} shuffles", win.lane.name(), win.board, win.moves, win.shuffles));
-                    verified(&ctx.game_id, &player, &win, data.campaign.len() as u64, &vip)
+                    verified(&ctx.game_id, &player, &win, data.campaign.len() as u64)
                 }
             };
             said(verdict)

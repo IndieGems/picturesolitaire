@@ -1,25 +1,25 @@
-//! THE EVENTS, VIP content packs (docs/vip.md, the creator, 2026-10-30): each event is 30 levels of
+//! THE EVENTS, content packs for everyone (docs/vip.md; the creator, 2026-10-30, and open to all since
+//! 2026-11-10, when VIP stopped gating content and got better rewards instead): each event is 30 levels of
 //! its own (Levels' src/content/levels/events.json and event-levels.json, compiled in by build.rs),
 //! with 10 items, each hidden in exactly one of its levels. Pure, like pay.rs: lib.rs makes the
 //! platform calls, this decides what they write.
 //!
 //! What says what, all of it the platform's:
 //!   - each item is a game item (declared by the config): held or not is its count;
-//!   - an item is packed by a VIP's first verified win of its level, in that win's one order with the
+//!   - an item is packed by the first verified win of its level, in that win's one order with the
 //!     level's Coins (the level's own progression says "first"), so it lands with them or not at all;
 //!   - each item found pays its Coins with it: one more on the event-items-found progression
 //!     (src/net/suitcase-ids.json `finds`, on_add, 50 a unit: the creator, 2026-10-30, 500 an event
 //!     paid as the items land, since the platform pays at most 100 in one grant), in the same order;
 //!   - all of an event's items held pays its prize once: the event's own mark (a progression,
 //!     threshold 1, which is also its Passport stamp) moved to 1 in the same order as the event's
-//!     table, and the mark is what says "paid". No helpers (VIPs have them free), no flag of the
-//!     game's own.
+//!     table, and the mark is what says "paid". No helpers, no flag of the game's own.
 //! An event is open from its release date (the player's own date, the platform's) on, for good: no
 //! deadline, no window. No spares and no swap. The dailies carry no items.
 //!
-//! THE SWITCH (src/net/suitcase-ids.json `on`, compiled in by build.rs): on means on FOR VIPS
-//! (vip.rs). For anyone else, and for everyone while it is off, an event level is refused
-//! (lib.rs: "vip_only"), nothing is packed and no prize is paid (prize: None), whatever is held.
+//! THE SWITCH (src/net/suitcase-ids.json `on`, compiled in by build.rs): on means on for everyone
+//! (until 2026-11-10, for VIPs only). While it is off, an event level is refused (lib.rs: "events_off"),
+//! nothing is packed and no prize is paid (prize: None), whatever is held.
 //!
 //! Nonces: a level's pack rides that level's first win's ("first:event:<level>"); the prize's is the
 //! event's ("prize:<event>").
@@ -35,14 +35,10 @@ fn data() -> &'static Value {
     DATA.get_or_init(|| serde_json::from_str(include_str!(concat!(env!("OUT_DIR"), "/suitcases.json"))).expect("suitcases.json"))
 }
 
-/// The events' switch: true only when src/net/suitcase-ids.json says `"on": true`. On means on for VIPs.
+/// The events' switch: true only when src/net/suitcase-ids.json says `"on": true`. On means on for
+/// everyone, VIP or not (the creator, 2026-11-10).
 pub fn on() -> bool {
     data()["on"].as_bool() == Some(true)
-}
-
-/// Are the events open to this player: switched on, and they are VIP?
-pub fn open(vip: bool) -> bool {
-    on() && vip
 }
 
 /// One event, as build.rs compiled it.
@@ -196,13 +192,10 @@ pub fn after(e: Event, before: &[u32], changes: &[Value]) -> Vec<u32> {
 }
 
 /// A full suitcase's prize, once: the event's mark (its Passport stamp) and its table (unless a
-/// stand-in shows the built-in one). None unless the events are open to this player, however full
-/// the suitcase they hold.
-pub fn prize(e: Event, vip: bool) -> Option<Order> {
-    if !open(vip) {
-        return None;
-    }
-    Some(prize_order(e))
+/// stand-in shows the built-in one), for anyone. None while the events are switched off, however
+/// full the suitcase.
+pub fn prize(e: Event) -> Option<Order> {
+    on().then(|| prize_order(e))
 }
 
 /// The prize's mechanics, behind prize's switch.
