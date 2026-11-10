@@ -21,6 +21,7 @@ import { suitcase as platform, type EventItem, type EventPack } from "../net/sui
 import { eventBest, onProgress } from "../net/progress";
 import { currentDaily } from "../net/daily";
 import EVENT_FILE from "../content/levels/events.json";
+import SUITCASE_IDS from "../net/suitcase-ids.json";
 import { eventShown, lookAtEvent } from "./event-switch";
 
 export type { EventItem, EventPack };
@@ -209,10 +210,11 @@ export function eventNamed(id: string): { id: string; theme: string } | null {
 
 /**
  * The dev menu's stand-in figure for what an event item pays (its stand-in events and previews), never what a
- * player reads: that is the channel's config only (src/net/rewards.ts eventItemCoins; the creator, 2026-11-10:
- * 20 an item). The event's prize itself is its table and its Passport stamp.
+ * player reads: that is the channel's config only (src/net/rewards.ts eventItemCoins). Server's one copy, the
+ * figure make-config.mts writes into the config (src/net/suitcase-ids.json finds.coins), so never a literal here.
+ * The event's prize itself is its table and its Passport stamp.
  */
-export const EVENT_ITEM_COINS = 20;
+export const EVENT_ITEM_COINS: number = SUITCASE_IDS.finds.coins;
 
 /** What event `id` pays: its table (and its title), and its Coins in all (its items'); the platform's once read, else Levels' schedule. */
 export function eventPrize(id: string): { table: string; tableTitle?: string; coins: number } | null {

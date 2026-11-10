@@ -3260,7 +3260,7 @@ export async function startApp(): Promise<void> {
       friendActions: () => recentFriendActions.slice(),
       /**
        * The event level's card up now as if the checker had packed `item` (event `event`; `full`: the 10th, its prize
-       * with it; `coins`: what its receipt says the find paid, 50 as a real account's, 0 a guest's, null not said): the
+       * with it; `coins`: what its receipt says the find paid, the stand-in figure as a real account's, 0 a guest's, null not said): the
        * flight, nothing sent.
        */
       packed(item: string, event: string, full = false, coins: number | null = EVENT_ITEM_COINS, vip: Partial<Extract<Verdict, { status: "paid" }>> = {}) {
