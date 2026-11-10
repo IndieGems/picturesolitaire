@@ -1,6 +1,7 @@
 {
   "levels": "124d780d",
-  "function": "0.1.54",
+  "coins": "56cff562",
+  "function": "0.1.56",
   "channel": "dev",
-  "commit": "7bb2da1b"
+  "commit": "9e901c8c"
 }
