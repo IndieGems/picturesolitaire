@@ -113,7 +113,7 @@ import { onVipGift, pretendVip, VIP_DAILY, VIP_WELCOME, type VipGift } from "../
 import { createVipGifts } from "./vip-gifts";
 import { createVipAbout, createVipBadge, pretendVipEnds } from "./vip-about";
 import { onVipTagPress, vipRewardTag, vipSide, type VipSide } from "./vip-tag";
-import { baseCoins, eventItemCoins, vipExtraForBoard } from "../net/rewards";
+import { eventItemCoins, grants } from "../net/rewards";
 import { vipExtraCoins, vipHelpers } from "../net/vip";
 import { wearBackWords } from "./back";
 import { createArchive } from "./daily-archive";
@@ -1829,8 +1829,8 @@ function drawCoins(win: Win, fresh = false): void {
  * What a paid verdict says of VIP, for its tags (vip-tag.ts): whose it was (the claim's own pass read), the base
  * Coins to show (the tag says the extra), and the extra: a VIP's as LANDED (the checker's vipExtra, an earlier
  * win's held extra included; an item level's, the level's and the item's summed), anyone else's (or a held one's)
- * what VIP adds, each payout's own (Server's rewards.ts, else the rule on the whole). Null where the verdict
- * says nothing of VIP (an older checker): the plain card.
+ * what VIP adds, each payout's own (wouldBeExtra). Null where the verdict says nothing of VIP (an older checker):
+ * the plain card.
  */
 function vipOfVerdict(v: Verdict): { side: VipSide; base: number; extra: number } | null {
   if (v.status !== "paid" || !v.vipRead) return null;
@@ -1839,8 +1839,25 @@ function vipOfVerdict(v: Verdict): { side: VipSide; base: number; extra: number 
   if (v.vipRead === "yes" && !v.vipHeld) return { side: "yes", base, extra: v.vipExtra ?? 0 };
   // held (VIP unknown, or a VIP's extra not landed yet: it comes with a later answer, as vipLate): the plain tag, the rule's figure
   const side: VipSide = v.vipRead === "no" ? "no" : "unknown";
-  const board = base > 0 && baseCoins(v.lane, v.board) === base ? vipExtraForBoard(v.lane, v.board) : null;
-  return { side, base, extra: board ?? vipExtraCoins(base) };
+  return { side, base, extra: wouldBeExtra(v, base) };
+}
+
+/**
+ * What VIP would add to a win's base Coins: each grant's own extra, summed, exactly as the checker pays it (a
+ * rounded-up half of each payout, src/net/vip.ts vipExtraCoins). Never the rule on the sum: an event item level's
+ * 5 + 15 pays 3 + 8 = 11 where half of 20 says 10 (QA on 0.126.0). The grants: the board's own first-win ones
+ * (Server's rewards.ts) and, where this win packed an event item, the item's (the verdict's packed.coins). Where
+ * they do not add up to the base (the config not read yet, or a later win that paid only the item): the item's
+ * and the rest as one grant (an event level pays one), else the rule on the whole (a single payout: a day's).
+ */
+function wouldBeExtra(v: Verdict & { status: "paid" }, base: number): number {
+  const sum = (xs: readonly number[]): number => xs.reduce((a, n) => a + n, 0);
+  const item = v.packed && v.packed.coins > 0 && v.packed.coins <= base ? v.packed.coins : 0;
+  const own = grants(v.lane, v.board) ?? [];
+  const parts = item ? [...own, item] : own;
+  if (base > 0 && parts.length && sum(parts) === base) return sum(parts.map(vipExtraCoins));
+  if (item) return vipExtraCoins(item) + (base > item ? vipExtraCoins(base - item) : 0);
+  return vipExtraCoins(base);
 }
 
 /**
