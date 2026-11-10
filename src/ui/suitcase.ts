@@ -7,18 +7,23 @@
 //                   bold "Event!" and "Now playing: Haunted Holiday!" (the creator's words; where that will
 //                   not fit on its line, measured as the top row's title is, "Haunted Holiday!"), and under
 //                   it "4 of 10 found · 12 of 30 levels"; a tap opens the newest event's page.
-//   the event page  a screen of its own: "Event!" and "Now playing: Haunted Holiday!" (a past one's "Past
-//                   event"), the 10-slot suitcase (each item's picture once found, its outline while
-//                   missing), "Play level 13" (the first level not won yet, the page's main action), then
-//                   the past events as a row of cards, close under it so they are seen (the creator could
-//                   not find them at the page's foot), and "Coming soon: Ski Trip · Nov 1"; then the 30
-//                   levels as a grid (won ones ticked; nothing tells which levels hide an item until one
-//                   is won: then it wears a small suitcase, the creator, 2026-10-30, "lets not show which
-//                   puzzles carry the suitcases"; hard ones say so), how it works and the prize. Every
-//                   level is open: tapping one plays it, and its win card comes back here. A past event
-//                   keeps its progress and stays winnable; the newest released is the one now playing.
-//   the preview     an event announced but not released yet (only while none is out): its suitcase in
-//                   outline, when it opens, how it works and its prize; nothing to play yet.
+//   the event page  a screen of its own, laid out for a new player (the creator's pick, 2026-11-10: the old page
+//                   made "very little sense to a new person"). Two tabs at the top switch the whole page:
+//                   This event (home's strip opens it): "Coming soon: Grand Train Journey · Nov 15" (none, no
+//                   line), the event's name ("Ski Trip!"), "2 of 10 found" over the 10-slot suitcase (each
+//                   item's picture once found, its outline while missing), "Play level 3", the page's one action,
+//                   then "Your progress: 2 of 30" over the 30 levels in play order, information only (won ones
+//                   ticked; nothing tells which levels hide an item until one is won: then it wears a small
+//                   suitcase, the creator, 2026-10-30, "lets not show which puzzles carry the suitcases"; the
+//                   next one lit; hard ones say so), how it works and the prize. An event is played IN ORDER
+//                   (the creator, 2026-11-10): Play is always the lowest level not won yet, and no level can be
+//                   picked (the checker refuses one out of order, "out_of_order"). With all 30 won: "Event
+//                   complete!" in Play's place. Past events: a card for each (its name, X of 10 found, Y of 30
+//                   levels), or "No past events yet"; a card opens that event's page, the same but with no tabs
+//                   and no Coming soon, under its "Past event" tag, and its Back goes back to the tab. A past
+//                   event keeps its progress and stays winnable; the newest released is the one now playing.
+//   the preview     an event announced but not released yet (only while none is out): This event's page shows
+//                   its suitcase in outline, when it opens, how it works and its prize; nothing to play yet.
 //   the win card    an event level's first win packs its item: once the checker's verdict says so, the
 //                   item's picture flies into a small suitcase on the card, and the line says "Bran Castle
 //                   packed! 5 of 10". Decoration only: it takes no touch and never holds the card's buttons.
@@ -158,10 +163,11 @@ export function miniCase(cls = "", big = false): HTMLElement {
   return c;
 }
 
-/** "Level 13" plus what it gave, for a level button's name: never whether a level not won yet hides an item. */
-function levelLabel(n: number, won: boolean, found: EventItem | null): string {
+/** "Level 13" plus what it gave, or that it is next, for a level's name: never whether a level not won yet hides an item. */
+function levelLabel(n: number, won: boolean, found: EventItem | null, next: boolean): string {
   if (found) return t("case.levelFound", { n, item: itemName(found) });
   if (won) return t("case.levelWon", { n });
+  if (next) return t("case.levelNext", { n });
   return t("board.level", { level: n });
 }
 
@@ -211,24 +217,61 @@ export function createSuitcase(nav: Nav) {
   screen.hidden = true;
   screen.append(pill, back, scroll);
 
-  /** The event on show: null is the newest (or, with none out, the next one's preview); else an event's id. */
+  /** The tab on show: This event (the newest, or the next one's preview) or Past events. */
+  let tab: "now" | "past" = "now";
+  /** A past event's own page (from the Past events tab, or its level's win card): its id; null for the tabs. */
   let viewing: string | null = null;
   /** Each level's mark (hard, super), from Gameplay's loader once it is in. */
   const marks = new Map<string, "hard" | "super">();
   let marksAsked = false;
 
   back.addEventListener("click", () => {
-    // another event's page goes back to the newest's; the newest's goes home
-    if (viewing && viewing !== suitcases.newest()?.id) {
+    // a past event's page goes back to the Past events tab; the tabs go home
+    if (viewing) {
       viewing = null;
+      tab = "past";
       draw();
       scroll.scrollTop = 0;
     } else nav.home();
   });
 
-  const shown = (): EventPack | null => (viewing ? suitcases.get(viewing) : suitcases.newest());
-  /** The next event to open, while none is out (a VIP's preview). */
+  // the two tabs over the page, switching the whole of it (the passport's tabs, the shown one pressed in)
+  const tabs = el("div", "pp-tabs case-tabs");
+  tabs.setAttribute("role", "tablist");
+  const tabButton = (which: "now" | "past") => {
+    const b = el("button", "btn pp-tab");
+    b.type = "button";
+    b.dataset.press = `case.tab.${which}`;
+    b.setAttribute("role", "tab");
+    b.addEventListener("click", () => {
+      if (tab === which) return;
+      tab = which;
+      draw();
+      scroll.scrollTop = 0;
+    });
+    return b;
+  };
+  const nowTab = tabButton("now");
+  const pastTab = tabButton("past");
+  tabs.append(nowTab, pastTab);
+  function drawTabs(): HTMLElement {
+    for (const [b, which] of [[nowTab, "now"], [pastTab, "past"]] as const) {
+      b.textContent = t(`case.tab.${which}`);
+      b.classList.toggle("pressed", tab === which);
+      b.setAttribute("aria-selected", String(tab === which));
+    }
+    return tabs;
+  }
+
+  /** The events before the newest (every released one but it), newest first. */
+  const pastEvents = (): EventPack[] => {
+    const newest = suitcases.newest()?.id;
+    return suitcases.list().filter((e) => e.id !== newest);
+  };
+  /** The next event to open, while none is out (its preview). */
   const nextUp = (): { id: string; theme: string; release: string } | null => (suitcases.newest() ? null : (suitcases.upcoming()[0] ?? null));
+  /** The level to play next: the lowest one not won yet (the creator, 2026-11-10: an event is played in order). -1 when all are. */
+  const nextLevel = (e: EventPack): number => e.levels.findIndex((id) => !suitcases.won(id));
 
   function slots(e: { items: EventItem[] }): HTMLElement {
     const grid = el("div", "case-slots");
@@ -248,12 +291,13 @@ export function createSuitcase(nav: Nav) {
     return grid;
   }
 
-  /** The page's main action: the first level not won yet; with all won, a line that says so. */
+  /** The page's one action: "Play level 3", the lowest level not won yet; with all won, "Event complete!". */
   function playNext(e: EventPack): HTMLElement {
     const box = el("div", "case-play");
-    const i = e.levels.findIndex((id) => !suitcases.won(id));
+    const i = nextLevel(e);
     if (i < 0) {
-      box.append(el("p", "case-later glass", t("case.allWon")));
+      // the event finish card's own words, "Event complete!" (event-finish.ts)
+      box.append(el("p", "case-later glass", t("finish.title")));
       return box;
     }
     const b = el("button", "btn amber case-daily");
@@ -265,11 +309,20 @@ export function createSuitcase(nav: Nav) {
     return box;
   }
 
-  /** The event's 30 levels, a grid of buttons in play order: won ones ticked, an item's level marked. */
-  function levelGrid(e: EventPack): HTMLElement {
+  /**
+   * "Your progress: 2 of 30" and the event's levels in play order, as information (flat, nothing to tap: the
+   * levels are played in order, by Play): won ones ticked, a won level that hid an item its small suitcase,
+   * the next one lit, hard ones their tag.
+   */
+  function progress(e: EventPack): HTMLElement {
     const box = el("section", "case-levels");
-    const head = el("h2", "", t("case.levels"));
+    const all = e.levels.length || EVENT_LEVELS;
+    const head = el("h2", "", t("case.progress", { won: suitcases.wonCount(e), count: all }));
+    head.id = `case-progress-${e.id}`;
+    box.setAttribute("aria-labelledby", head.id);
     const grid = el("div", "case-level-grid");
+    grid.setAttribute("role", "list");
+    const next = nextLevel(e);
     e.levels.forEach((id, i) => {
       const n = i + 1;
       const won = suitcases.won(id);
@@ -277,21 +330,19 @@ export function createSuitcase(nav: Nav) {
       const hid = suitcases.itemOn(e, id);
       const found = hid && (hid.found || won) ? hid : null;
       const mark = marks.get(id);
-      const b = el("button", `btn case-level${won ? " done" : ""}${found ? " has-item" : ""}${mark ? ` ${mark}` : ""}`);
-      b.type = "button";
-      b.dataset.press = "case.level";
-      b.dataset.level = id;
-      b.append(el("b", "n", String(n)));
-      if (mark) b.append(markTag(mark, true));
+      const sq = el("div", `case-level${won ? " done" : ""}${i === next ? " next" : ""}${found ? " has-item" : ""}${mark ? ` ${mark}` : ""}`);
+      sq.setAttribute("role", "listitem");
+      sq.dataset.level = id;
+      sq.append(el("b", "n", String(n)));
+      if (mark) sq.append(markTag(mark, true));
       if (found) {
         const badge = el("span", "lv-item");
         badge.append(miniCase());
-        b.append(badge);
+        sq.append(badge);
       }
-      if (won) b.insertAdjacentHTML("beforeend", `<svg class="tick" viewBox="0 0 40 32" aria-hidden="true"><path d="M5 17l10 10L36 4"/></svg>`);
-      b.setAttribute("aria-label", `${levelLabel(n, won, found)}${mark ? `, ${markTag(mark).textContent}` : ""}`);
-      b.addEventListener("click", () => nav.playLevel(e.id, id));
-      grid.append(b);
+      if (won) sq.insertAdjacentHTML("beforeend", `<svg class="tick" viewBox="0 0 40 32" aria-hidden="true"><path d="M5 17l10 10L36 4"/></svg>`);
+      sq.setAttribute("aria-label", `${levelLabel(n, won, found, i === next)}${mark ? `, ${markTag(mark).textContent}` : ""}`);
+      grid.append(sq);
     });
     box.append(head, grid);
     return box;
@@ -369,40 +420,70 @@ export function createSuitcase(nav: Nav) {
     return box;
   }
 
-  /** The page's head: "Event!" and "Now playing: Haunted Holiday!", a past one's "Past event" and its name, the next one's "Coming soon". */
-  function hero(tag: string, words: string, past = false): HTMLElement {
+  /** The page's head: the event's name ("Ski Trip!"); a past one's under its quiet "Past event" tag; the next one's "Coming soon". */
+  function hero(tag: string | null, words: string, past = false): HTMLElement {
     const box = el("div", `case-hero${past ? " past" : ""}`);
-    box.append(el("span", "case-hero-tag", tag), el("h2", "", words));
+    if (tag) box.append(el("span", "case-hero-tag", tag));
+    box.append(el("h2", "", words));
     return box;
   }
 
-  /** The past events (every released one but the newest), each a card to its page with how far the player is. */
-  function pastRow(): HTMLElement | null {
-    const newest = suitcases.newest()?.id;
-    const list = suitcases.list().filter((e) => e.id !== newest);
-    if (!list.length) return null;
-    const box = el("div", "case-shelf");
-    box.append(el("h2", "", t("case.shelf")));
-    const row = el("div", "shelf-row");
+  /**
+   * Art's open suitcase round the slots, its plain lining stretched to fit them (a 9-slice, style.css); with
+   * `count`, "2 of 10 found" on its rim like a luggage tag (the creator's layout: on the suitcase, and one row
+   * fewer, so a 360 x 640 phone shows Play under it).
+   */
+  function suitcaseOf(e: { items: EventItem[] }, count?: HTMLElement): HTMLElement {
+    const suitcase = el("div", "case");
+    suitcase.style.setProperty("--case-art", `url("${ART.open}")`);
+    suitcase.append(slots(e));
+    const wrap = el("div", `case-wrap${count ? " counted" : ""}`);
+    if (count) wrap.append(count);
+    wrap.append(suitcase);
+    return wrap;
+  }
+
+  /**
+   * An event's page, the newest's (the This event tab) or a past one's (its own page): its name, the suitcase
+   * and how many of its items are found, Play, the progress, how it works and the prize.
+   */
+  function eventPage(e: EventPack, past: boolean): HTMLElement[] {
+    const head = past ? hero(t("case.pastEvent"), eventTitle(e), true) : hero(null, t("case.themeBang", { theme: themeName(e) }));
+    const found = el("p", "case-count glass");
+    found.append(el("b", "", t("case.foundOf", { found: e.found, all: e.items.length })));
+    return [head, suitcaseOf(e, found), playNext(e), progress(e), howItWorks(e), prize(e)];
+  }
+
+  /** The Past events tab: a card for each, its name and how far the player is, opening its page; or the line that says there are none. */
+  function pastList(): HTMLElement {
+    const list = pastEvents();
+    if (!list.length) return el("p", "case-empty", t("case.pastNone"));
+    const box = el("div", "case-past");
     for (const e of list) {
-      const b = el("button", `btn shelf-case${e.complete ? " full" : ""}`);
+      const b = el("button", `btn past-case${e.complete ? " full" : ""}`);
       b.type = "button";
-      b.dataset.press = "case.shelf";
-      b.append(
-        miniCase("", true),
-        el("b", "", themeName(e)),
+      b.dataset.press = "case.past";
+      b.dataset.event = e.id;
+      const words = el("span", "past-words");
+      words.append(
+        el("b", "", eventTitle(e)),
         el("small", "", t("case.foundOf", { found: e.found, all: e.items.length })),
         el("small", "", t("case.levelsOf", { won: suitcases.wonCount(e), count: e.levels.length || EVENT_LEVELS })),
       );
+      b.append(miniCase("", true), words);
       b.setAttribute("aria-label", `${eventTitle(e)}: ${progressLine(e)}`);
-      b.addEventListener("click", () => open(e.id));
-      row.append(b);
+      b.addEventListener("click", () => {
+        viewing = e.id;
+        draw();
+        scroll.scrollTop = 0;
+        void Promise.all([loadItems(e.id), ensureSuitcase(e.id)]).then(() => !screen.hidden && draw(), () => undefined);
+      });
+      box.append(b);
     }
-    box.append(row);
     return box;
   }
 
-  /** The next event to come, on its own line (information): "Coming soon: Ski Trip · Nov 1". */
+  /** The next event to come, on its own line (information): "Coming soon: Grand Train Journey · Nov 15". */
   function comingSoon(except: string | null): HTMLElement | null {
     const u = suitcases.upcoming().find((x) => x.id !== except);
     return u ? el("p", "case-soon glass", t("case.comingSoon", { theme: themeName(u), date: shortDate(u.release) })) : null;
@@ -411,37 +492,29 @@ export function createSuitcase(nav: Nav) {
   function draw(): void {
     drawTile();
     if (screen.hidden) return;
-    const e = shown();
-    const next = !e && !viewing ? nextUp() : null;
     pill.textContent = t("case.name");
-    if (!e && !next) {
-      scroll.replaceChildren(el("p", "case-empty", t("case.none")));
-      return;
-    }
     const parts: (HTMLElement | null)[] = [];
-    // Art's open suitcase round the slots, its plain lining stretched to fit them (a 9-slice, style.css)
-    const suitcase = el("div", "case");
-    suitcase.style.setProperty("--case-art", `url("${ART.open}")`);
-    const wrap = el("div", "case-wrap");
-    wrap.append(suitcase);
-    if (e) {
-      // the newest released is the one now playing; any other is a past event, still winnable
-      const past = e.id !== suitcases.newest()?.id;
-      const status = el("p", "case-status glass");
-      status.append(el("b", "", t("case.foundOf", { found: e.found, all: e.items.length })), " · ", el("span", "", t("case.levelsOf", { won: suitcases.wonCount(e), count: e.levels.length || EVENT_LEVELS })));
-      suitcase.append(slots(e));
-      const head = past ? hero(t("case.pastEvent"), eventTitle(e), true) : hero(t("case.eventTag"), t("case.nowPlaying", { theme: themeName(e) }));
-      // the past events and the next one close under the suitcase, where a phone shows them: on the newest's page
-      parts.push(head, status, wrap, playNext(e), ...(past ? [] : [pastRow(), comingSoon(null)]), levelGrid(e), howItWorks(e), prize(e));
-    } else if (next) {
-      // an event to come, with none out yet: its suitcase in outline, when it opens, how it works, its prize
-      const data = scheduledFor(next.id);
-      const status = el("p", "case-status glass");
-      status.append(el("b", "", t("case.starts", { date: shortDate(next.release) })), " · ", el("span", "", t("case.previewWhy")));
-      const items: EventItem[] = (data?.items ?? []).map((it) => ({ id: it.id, title: it.title, level: null, found: false }));
-      suitcase.append(slots({ items }));
-      const preview = { id: next.id, theme: next.theme, items, levels: data?.levels ?? [], paid: false, prize: { table: data?.table ?? DEFAULT_TABLE, ...(data?.tableTitle ? { tableTitle: data.tableTitle } : {}), coins: EVENT_ITEM_COINS * items.length } };
-      parts.push(hero(t("case.eventTag"), t("case.comingSoonName", { theme: themeName(next) })), status, wrap, howItWorks(preview), prize(preview), comingSoon(next.id));
+    // a past event's own page: no tabs and no Coming soon (Back is its way back to the Past events tab)
+    const past = viewing ? suitcases.get(viewing) : null;
+    if (past) parts.push(...eventPage(past, true));
+    else {
+      viewing = null;
+      parts.push(drawTabs());
+      if (tab === "past") parts.push(pastList());
+      else {
+        const e = suitcases.newest();
+        const next = e ? null : nextUp();
+        if (e) parts.push(comingSoon(null), ...eventPage(e, false));
+        else if (next) {
+          // an event to come, with none out yet: its suitcase in outline, when it opens, how it works, its prize
+          const data = scheduledFor(next.id);
+          const status = el("p", "case-status glass");
+          status.append(el("b", "", t("case.starts", { date: shortDate(next.release) })), " · ", el("span", "", t("case.previewWhy")));
+          const items: EventItem[] = (data?.items ?? []).map((it) => ({ id: it.id, title: it.title, level: null, found: false }));
+          const preview = { id: next.id, theme: next.theme, items, levels: data?.levels ?? [], paid: false, prize: { table: data?.table ?? DEFAULT_TABLE, ...(data?.tableTitle ? { tableTitle: data.tableTitle } : {}), coins: EVENT_ITEM_COINS * items.length } };
+          parts.push(comingSoon(next.id), hero(null, t("case.comingSoonName", { theme: themeName(next) })), status, suitcaseOf({ items }), howItWorks(preview), prize(preview));
+        } else parts.push(el("p", "case-empty", t("case.none")));
+      }
     }
     scroll.replaceChildren(...parts.filter((p): p is HTMLElement => !!p));
   }
@@ -471,8 +544,12 @@ export function createSuitcase(nav: Nav) {
     fitName();
   }
 
-  /** Open an event's page: the newest (or the next one's preview, with none out), or event `id`. */
+  /**
+   * Open the event screen: the This event tab (home's strip: the newest, or the next one's preview with none
+   * out), or event `id`'s page, a past one's own (its level's win card comes back to it).
+   */
   function open(id: string | null = null): void {
+    tab = "now";
     viewing = id && id !== suitcases.newest()?.id ? id : null;
     screen.hidden = false;
     nav.show();
@@ -481,7 +558,7 @@ export function createSuitcase(nav: Nav) {
     scroll.scrollTop = 0;
     // the event's items (their names and pictures) and, in a built game, its pack; the levels' marks
     // (Gameplay's loader, the first time a page opens): drawn again once they are in
-    const e = shown() ?? nextUp();
+    const e = (viewing ? suitcases.get(viewing) : suitcases.newest()) ?? nextUp();
     if (e) void Promise.all([loadItems(e.id), ensureSuitcase(e.id)]).then(() => !screen.hidden && draw(), () => undefined);
     if (!marksAsked) {
       marksAsked = true;
@@ -532,6 +609,7 @@ export function createSuitcase(nav: Nav) {
     /** Leave the screen (another screen is showing). */
     leave(): void {
       viewing = null;
+      tab = "now";
     },
   };
 }

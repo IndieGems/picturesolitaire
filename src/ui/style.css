@@ -1437,7 +1437,8 @@ html.less-motion .card .gift { animation: none; }
 html.less-motion .mini-case.bump { animation: none; }
 
 /* the screen */
-.suitcase-screen .case-scroll { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+/* 10 px apart: with the tabs and Coming soon over it, a 360 x 640 phone still shows Play under the suitcase */
+.suitcase-screen .case-scroll { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .suitcase-screen .case-scroll > * { width: min(100%, 440px); }
 .case-status { margin: 2px 0 0; padding: 10px 16px; border-radius: 18px; text-align: center; font: 500 15px/1.25 var(--round); color: var(--ink-soft); }
 .case-status b { color: var(--ink); font-weight: 600; }
@@ -1447,6 +1448,12 @@ html.less-motion .mini-case.bump { animation: none; }
    teal floor stretches to the slots while the lid, the corners and the handle keep their shape; the
    border widths are the cuts scaled to the suitcase's width (a container query) */
 .case-wrap { container-type: inline-size; }
+/* "2 of 10 found" on the suitcase's top rim, a luggage tag (information: glass, flat), half over the lid */
+.case-wrap.counted { position: relative; padding-top: 6px; }
+.case-count {
+  position: absolute; z-index: 1; top: 0; left: 50%; translate: -50% 0; max-width: calc(100% - 40px); margin: 0;
+  padding: 6px 16px; border-radius: 999px; text-align: center; font: 600 16px/1.2 var(--round); color: var(--ink);
+}
 .case {
   border-style: solid; border-color: transparent;
   border-width: calc(100cqw * 200 / 1080) calc(100cqw * 100 / 1080) calc(100cqw * 165 / 1080);
@@ -1518,17 +1525,20 @@ html.less-motion .case-slots .slot.arrived .item-pic { animation: none; }
   display: grid; place-items: center; font: 700 12px/1 var(--round); color: var(--ink); background: rgba(255, 255, 255, 0.5);
 }
 
-/* the other events, each a closed suitcase; one still to come is information (glass) */
-.case-shelf h2 { margin: 6px 0 8px; text-align: center; font: 600 18px/1.2 var(--round); color: #eef3f9; }
-.case-shelf .shelf-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.btn.shelf-case { flex-direction: column; gap: 3px; min-height: 104px; padding: 10px 6px; border-radius: 18px; text-align: center; }
-.shelf-case .mini-case { width: 50px; height: 37px; margin-bottom: 2px; }
-.shelf-case b { font: 600 15px/1.1 var(--round); }
-.shelf-case span { font: 500 12.5px/1.15 var(--round); color: var(--ink-soft); overflow-wrap: anywhere; }
-.shelf-case small { font: 600 12px/1.1 var(--round); color: var(--ink-soft); }
-.shelf-case.full small { color: #2e7d5a; }
-/* the next event to come, on its own line under the past events (information) */
-.case-soon { margin: 0; padding: 9px 14px; border-radius: 16px; text-align: center; font: 600 15px/1.3 var(--round); color: var(--ink); }
+/* the two tabs over the page (the passport's, .pp-tabs): This event and Past events; a long name wraps */
+.suitcase-screen .case-tabs { margin: 0; }
+.case-tabs .btn.pp-tab { min-height: 46px; padding: 4px 10px; font-size: 17px; line-height: 1.1; white-space: normal; text-wrap: balance; }
+/* the Past events tab: a card for each, its closed suitcase, its name and how far the player is (buttons: a
+   card opens its page) */
+.case-past { display: flex; flex-direction: column; gap: 14px; }
+.btn.past-case { justify-content: flex-start; gap: 14px; min-height: 76px; padding: 10px 18px 10px 14px; border-radius: 20px; text-align: left; }
+.past-case .mini-case { flex: none; width: 56px; height: 42px; }
+.past-case .past-words { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.past-case b { font: 600 17px/1.15 var(--round); overflow-wrap: break-word; }
+.past-case small { font: 600 13px/1.15 var(--round); color: var(--ink-soft); }
+.past-case.full small { color: #2e7d5a; }
+/* the next event to come, on its own line at the top of This event (information) */
+.case-soon { margin: 0; padding: 6px 14px; border-radius: 16px; text-align: center; font: 600 14px/1.3 var(--round); color: var(--ink); }
 
 /* THE EVENT'S HEAD (suitcase.ts): the bold "Event!" sticker and "Now playing: Haunted Holiday!"; a past
    event's quieter tag. The sticker is information, flat (no lip, no press): the strip and the door wear it too */
@@ -1542,20 +1552,27 @@ html.less-motion .case-slots .slot.arrived .item-pic { animation: none; }
 .case-hero.past .case-hero-tag { rotate: none; background: rgba(255, 255, 255, 0.78); color: var(--ink-soft); box-shadow: none; font-weight: 700; }
 .vip-note .case-hero-tag { align-self: center; margin-bottom: 2px; }
 
-/* THE EVENT'S 30 LEVELS (suitcase.ts): a grid of buttons in play order, five to a row on a phone, six where
-   the column is wider; won ones green and ticked; a won level that hid an item wears Art's small suitcase on
-   its corner (never before it is won: which levels hide one is a secret); a hard one its short tag */
+/* THE EVENT'S 30 LEVELS (suitcase.ts), "Your progress": information, not buttons (an event is played in order,
+   by Play: the creator, 2026-11-10), so flat, with no lip or shadow; in play order, five to a row on a phone, six
+   where the column is wider; won ones green and ticked; the next one lit in amber; a won level that hid an item
+   wears Art's small suitcase on its corner (never before it is won: which levels hide one is a secret); a hard
+   one its short tag. No frosted blur behind each of the 30 (the battery): a plain see-through white */
 .case-levels { display: flex; flex-direction: column; gap: 8px; container-type: inline-size; }
 .case-levels h2 { margin: 0; font: 600 19px/1.2 var(--round); color: #fff; text-shadow: 0 1px 3px rgba(10, 30, 60, 0.55); }
 .case-level-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px 8px; padding-top: 6px; }
 @container (min-width: 430px) { .case-level-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
-.btn.case-level { position: relative; flex-direction: column; gap: 2px; min-width: 0; min-height: 58px; padding: 6px 2px; border-radius: 14px; }
-.btn.case-level .n { font: 700 20px/1 var(--round); color: var(--ink); }
-.btn.case-level.done { background: linear-gradient(180deg, #5fc28b 0%, #3f9e6b 100%); }
-.btn.case-level.done .n { color: #fff; }
+.case-level {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  min-width: 0; min-height: 54px; padding: 6px 2px; border-radius: 14px;
+  background: rgba(255, 255, 255, 0.42); box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.5);
+}
+.case-level .n { font: 700 20px/1 var(--round); color: var(--ink); }
+.case-level.done { background: rgba(63, 158, 107, 0.9); box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.35); }
+.case-level.done .n { color: #fff; }
+.case-level.next { background: rgba(255, 255, 255, 0.92); box-shadow: inset 0 0 0 3px var(--amber-lo); }
 /* the tag may be a touch wider than a narrow tile ("Сложный"): it overlaps the gap, never the next tile */
-.btn.case-level .mark-tag { max-width: calc(100% + 8px); margin: 0 -4px; padding: 1px 3px; font-size: 12px; line-height: 1.1; letter-spacing: -0.01em; white-space: nowrap; }
-.btn.case-level .tick { position: absolute; right: 4px; bottom: 4px; width: 12px; height: 10px; fill: none; stroke: #fff; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+.case-level .mark-tag { max-width: calc(100% + 8px); margin: 0 -4px; padding: 1px 3px; font-size: 12px; line-height: 1.1; letter-spacing: -0.01em; white-space: nowrap; }
+.case-level .tick { position: absolute; right: 4px; bottom: 4px; width: 12px; height: 10px; fill: none; stroke: #fff; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
 .case-level .lv-item { position: absolute; top: -9px; right: -7px; width: 28px; height: 28px; display: grid; place-items: center; pointer-events: none; }
 .case-level .lv-item .mini-case { width: 28px; height: 21px; filter: drop-shadow(0 1px 2px rgba(20, 30, 50, 0.45)); }
 

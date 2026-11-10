@@ -1714,7 +1714,10 @@ function finishedOf(v: Verdict): Finished | null {
 /** An event level's card line: the checker's refusal said plainly, else where the player is in the event. */
 function eventLine(w: Extract<Win, { kind: "event" }>): string {
   const v = w.verdict;
-  if (v?.status === "refused") return t(v.reason === "vip_only" ? "case.refused.vipOnly" : v.reason === "not_released" ? "case.refused.notReleased" : "case.refused.other");
+  // "out_of_order": an event is played in order (the creator, 2026-11-10; checker 0.1.55 on); "vip_only" only from the
+  // checkers before 0.1.54, still on test and release until they move (Server, 2026-11-10)
+  const said: Record<string, string> = { vip_only: "case.refused.vipOnly", not_released: "case.refused.notReleased", out_of_order: "case.refused.order" };
+  if (v?.status === "refused") return t(said[v.reason] ?? "case.refused.other");
   const s = suitcases.get(w.e.event);
   return s ? progressLine(s) : "";
 }
