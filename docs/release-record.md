@@ -115,6 +115,10 @@ Dev: build 0.56.0 (9849bcb, Gem Web SDK 16.0.0), store page 11, config 42, check
     - the challenge route is a third lower.
     Levels 1-5, First Steps and today's daily are unchanged.
   - **Moving it to release** needs checker 0.1.58 and config 67 before the build.
+- 2026-11-10 (evening): **dev has 0.127.0** (the plain build of 215b98d3), with checker 0.1.59 and config 67.
+  - A non-VIP's VIP tag now sums the extra per grant: an item level paying 5 + 15 reads +11, as a VIP is paid. QA PASS.
+  - Checker 0.1.59 logs each platform call and warns on any over 500 ms (Server 673eec5b). Platform calls before the order have stalled since 11-07 on release too; see TODO.md, "Platform calls stall before the order".
+  - **Moving it to release** needs checker 0.1.59 and config 67 before the build. Test is empty; it goes there only on the creator's word, as a `build:release`.
 - 2026-10-30: a bug found after the candidate. A revisited level's own picture could break on its win card or enlarged view (the pack let it go while on screen), fixed in 53865f31 (dev 0.80.0). Test's 0.67.0 still has it, so the next release candidate must include the fix.
 - GSR-018: the creator bought a soundtrack on dev; cosmetic_bought was counted, and the cosmetics funnel reached every step (the release reviewer read it).
 - Russian "монет" for Coins is correct: it is only ever read after a price. A price ending in 1, or in 2–4 outside 11–14, would need another form.
