@@ -1683,10 +1683,8 @@ function packedMoment(v: Verdict, line: HTMLElement): void {
   // the 10th: the prize came with this claim (the verdict's gifts say "suitcase", Server's): once the item
   // has flown in, the event's finish card (its table named only if it LANDED, the verdict's items)
   const fin = finishedOf(v);
-  // the find's own Coins ("+50", Server's packed.coins), beside the line
-  // the find's Coins as the receipt says they were paid: none said, none shown (never a made-up 50)
-  const coins = typeof p.coins === "number" ? p.coins : 0;
-  packedOnCard(line, it, dayItem?.id === p.item ? dayItem.url : "", packed, s?.items.length ?? 10, fin ? { event: fin.event, done: () => finishUi.add(fin) } : null, coins, itemVip(v, coins));
+  // the line names the find, with no amount: its Coins are in the card's chip, summed with the level's (drawCoins)
+  packedOnCard(line, it, dayItem?.id === p.item ? dayItem.url : "", packed, s?.items.length ?? 10, fin ? { event: fin.event, done: () => finishUi.add(fin) } : null);
 }
 
 /** An event item's own VIP figure (vip-tag.ts): the rule on its Coins, whose as the verdict says; null where it says nothing of VIP. */
@@ -1849,11 +1847,15 @@ function vipOfVerdict(v: Verdict): { side: VipSide; base: number; extra: number 
  * A win card's chip with its VIP tags, kept clear of the card's corner key on a narrow card (a 360 px phone), in
  * steps, each only where the one before was not enough: its Coins say "+40" beside the coin (the coin then reads
  * "Coins" aloud), not "+40 Coins"; then the chip goes compact (a smaller coin and figure, 26 px tall), and if it
- * still runs over the key it rises just clear of the key's top, on the card's edge all the same.
+ * still runs over the key it rises just clear of the key's top, on the card's edge all the same (24 px at most: the
+ * top row is above it). The widest chip (Coins, three helpers and both tags: a hard level's first win or a stamp, at
+ * 360 px; QA, 2026-11-10) is still over it then, its tags' 44 px hit layers most of all: the key steps down just clear
+ * of them, still beside the title (whose sides are kept for it), so nothing a finger aims at overlaps.
  */
 function fitChip(chip: HTMLElement, card: HTMLElement): void {
-  if (!chip.querySelector(".vip-reward")) return;
   const key = card.querySelector<HTMLElement>(".corner-key");
+  if (key) key.style.top = "";
+  if (!chip.querySelector(".vip-reward")) return;
   const room = () => (key ? key.offsetLeft : card.clientWidth - 12) - chip.offsetLeft - 6;
   if (chip.offsetWidth <= room()) return;
   const words = chip.querySelector<HTMLElement>(".cc-coins");
@@ -1868,6 +1870,17 @@ function fitChip(chip: HTMLElement, card: HTMLElement): void {
   if (!key || chip.offsetWidth <= room()) return;
   const clear = key.offsetTop - 2 - chip.offsetHeight;
   if (chip.offsetTop > clear) chip.style.top = `${Math.max(clear, -24)}px`;
+  // what still reaches down over the key (in the card's terms, from layout, not the chip's pop-in scale): the chip,
+  // and each tag's hit layer (style.css .btn.vip-reward::after, 44 px square at least, round its middle)
+  const left = key.offsetLeft;
+  const right = left + key.offsetWidth;
+  let low = chip.offsetLeft + chip.offsetWidth > left ? chip.offsetTop + chip.offsetHeight : -Infinity;
+  for (const tag of chip.querySelectorAll<HTMLElement>(".btn.vip-reward")) {
+    const mid = chip.offsetLeft + tag.offsetLeft + tag.offsetWidth / 2;
+    const half = Math.max(tag.offsetWidth, 44) / 2;
+    if (mid + half > left && mid - half < right) low = Math.max(low, chip.offsetTop + tag.offsetTop + tag.offsetHeight / 2 + 22);
+  }
+  if (low + 2 > key.offsetTop) key.style.top = `${Math.ceil(low + 2)}px`;
 }
 
 /** The helpers a verdict says LANDED (after the cap's clamp), by kind; nothing where none did. */

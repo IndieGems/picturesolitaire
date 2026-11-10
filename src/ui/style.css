@@ -2133,10 +2133,6 @@ html.less-motion .btn.daily-go::before, html.battery-saver .btn.daily-go::before
 .cz-mark { align-self: flex-start; padding: 3px 10px; border-radius: 999px; font: 600 12px/1.2 var(--round); color: var(--ink-soft); }
 .cz-mark.lent { color: #8a5a00; background: linear-gradient(180deg, #fff2c8, #ffe29a); border-color: rgba(232, 169, 58, 0.6); }
 
-/* COINS AS "+50" WITH THE ARCADE'S COIN (suitcase.ts): an event item's, beside its line on the win card */
-.find-coins { display: inline-flex; align-items: center; gap: 4px; font: 700 17px/1 var(--round); color: var(--ink); white-space: nowrap; }
-.find-coins .coin-icon { width: 20px; height: 20px; }
-.daily-line.packed .packed-coins { margin-left: 4px; vertical-align: -3px; }
 
 /* AN EVENT FINISHED (event-finish.ts): its own card over the level's, the title, the event's line, the
    stamp coming down into its ring, what was won (the table, the last item's Coins), Continue and the passport */

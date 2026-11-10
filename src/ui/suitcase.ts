@@ -46,7 +46,7 @@ import { shortDate } from "./format";
 import { markTag } from "./marks";
 import { loadItems, suitcaseItem } from "./catalogue";
 import { ensureSuitcase, fileUrl, resident } from "../packs";
-import { vipRewardTag, vipSide, type VipSide } from "./vip-tag";
+import { vipRewardTag, vipSide } from "./vip-tag";
 import { onVip } from "./vip-view";
 import { vipExtraCoins } from "../net/vip";
 import { eventItemCoins, onRewardsChange } from "../net/rewards";
@@ -146,13 +146,6 @@ const itemCoins = (): number => eventItemCoins() ?? EVENT_ITEM_COINS;
 function itemTag(e: { items: { found?: boolean }[] }): HTMLElement | null {
   if (e.items.length && e.items.every((i) => i.found)) return null;
   return vipRewardTag({ coins: vipExtraCoins(itemCoins()) }, vipSide());
-}
-
-/** Coins as "+50" and the Arcade's coin (information; read aloud as "50 Coins"). */
-function coinsChip(n: number, cls = ""): HTMLElement {
-  const chip = el("span", `find-coins${cls ? ` ${cls}` : ""}`); // never "coins-chip": the win card's own Coins chip is that
-  chip.append(el("b", "", `+${n.toLocaleString(locale())}`), coinIcon(20, true, "", n));
-  return chip;
 }
 
 /** A closed suitcase, Art's: the small one (a level's mark, the win card), or the strip's and the list's. */
@@ -628,19 +621,13 @@ export function packedOnCard(
   all: number,
   /** The 10th: the event, and what to do once it has landed (the finish card, app.ts). */
   full: { event: string; done?: () => void } | null = null,
-  /** The Coins the item paid ("+50" beside the line; 0: none said). */
-  coins = EVENT_ITEM_COINS,
-  /** VIP's figure on them, for its tag (vip-tag.ts; null: the verdict says nothing of VIP, no tag). */
-  vip: { side: VipSide; extra: number } | null = null,
 ): void {
   const mini = miniCase("on-card");
   const words = el("span", "packed-words");
+  // the item and the count, no amount: the card's chip says the level's Coins and the item's as ONE total, with its
+  // VIP tag (QA, 2026-11-10: "+60" there and "+50" here read as 110)
   const said = el("span", "", t("case.packedCard", { item: itemName(item), count: packed, all }));
   words.append(said);
-  // the find's Coins at the end of the line, never on a line of its own
-  if (coins > 0) words.append(" ", coinsChip(coins, "packed-coins"));
-  const tag = coins > 0 && vip ? vipRewardTag({ coins: vip.extra }, vip.side) : null;
-  if (tag) words.append(" ", tag);
   line.replaceChildren(mini, words);
   line.classList.add("packed");
   /** It has landed: the latch (Audio's), and the full suitcase's word when this was the 10th, then its card. */
