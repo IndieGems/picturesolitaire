@@ -13,14 +13,16 @@
 // Run it again whenever a level file gains boards: a board with no progression
 // is verified but cannot pay (the function answers "retry", reason "config").
 //
-// THE AMOUNTS (agreed with the lead, 2026-10-24; the game standard's ~500 Coins
-// an hour): about 1.1 Coins per move of the board's stored winning line, rounded
-// to 5; 10 to 40 for a campaign board, 10 to 50 for a challenge board. A
-// campaign board's stored line is A winning line, not the shortest; a challenge
-// board's is its par (the fewest moves found). The line's length stands in for
-// how long a board takes until real minutes per board are measured. The first campaign board, where onboarding is played, pays the
+// THE AMOUNTS (the creator, 2026-11-10: "players get about 500/hr and VIPs 750", for all ordinary
+// play; LANES below): Coins per move of the board's stored winning line, rounded to 5, between a
+// lane's least and most. A trip level 0.75 a move, 10 to 30; a challenge board 0.75, 10 to 35; an
+// event level 0.45, 5 to 15, beside its item's 20 (src/net/suitcase-ids.json). Until config 65 every
+// lane paid 1.1 a move (10 to 40, the challenge route 10 to 50) and an item 50. A campaign board's
+// stored line is A winning line, not the shortest; a challenge board's is its par (the fewest moves
+// found). The line's length stands in for how long a board takes (about 12 moves a minute) until real
+// minutes per board are measured. The first campaign board, where onboarding is played, pays the
 // onboarding prize instead: 100. Campaign boards 2 to 5 pay the welcome, 100 each (WELCOME below:
-// the creator, 2026-11-09). The daily pays 50, once a day.
+// the creator, 2026-11-09). The daily pays 50, once a day; a past day from the archive 25.
 // Every progression is written only by the function (function_may_grant): it
 // replays the win before it moves one.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
@@ -76,6 +78,8 @@ const WELCOME = { boards: 5, coins: 100 };
  */
 const FIRST_STEPS = { board: ONBOARDING.board, coins: 100, achievement: "first-steps" };
 const DAILY_COINS = 50;
+/** A past day's first win, from the archive (the creator, 2026-11-10: 25, was 50; today's daily keeps its 50). */
+const ARCHIVE_COINS = 25;
 /** The daily challenge's copy, which the Arcade shows (platform_display: challenge): English, then UI's
  * translations (the translation pass, 2026-11-02). Players read "level", never "board". The copy is
  * screened as the Arcade's own: Turkish "resmi" also means "official", a reserved word, so the Turkish
@@ -97,17 +101,27 @@ const DAILY_COPY = {
     "zh-Hans": ["今日图片", "拼好今日图片：所有玩家同一关卡。"],
   } as Record<string, [string, string]>,
 };
-// souvenir: the bonus board after each trip, in souvenirs.json (docs/souvenirs.md); paid as its trip's relief board (below)
-// event: an event's 30 levels (docs/vip.md; everyone's since 2026-11-10), in event-levels.json; paid by the campaign's rule, once each
+// THE RATES (the creator, 2026-11-10, through the lead: "players get about 500/hr and VIPs 750"):
+// Coins a move of the stored line, rounded to 5, from `least` to `most`. The pace estimate is the
+// campaign's 3 minutes for its ~37 moves, about 12 moves a minute, until real minutes are measured.
+// campaign: a trip level, about a third below the old 1.1 a move (~25 a level instead of ~37); the cap
+//   30 is the old 40 cut in proportion (a third less is 27, rounded up to 30, which keeps ~500 an hour).
+// challenge: the challenge route (off home), the same third off, its old cap 50 cut to 35.
+// souvenir: the bonus board after each trip, in souvenirs.json (docs/souvenirs.md); paid as its trip's
+//   better-paying relief board (below), so a third less with them; the rate is the fallback only.
+// event: an event's 30 levels (docs/vip.md; everyone's since 2026-11-10), in event-levels.json: 0.45 a
+//   move, 5 to 15 (about 280 an event), beside its items' 20 each (200 an event).
 const LANES = {
-  campaign: { label: "Campaign board", most: 40 },
-  challenge: { label: "Challenge board", most: 50 },
-  souvenir: { label: "Souvenir", most: 40, file: "souvenirs" },
-  event: { label: "Event level", most: 40, file: "event-levels" },
+  campaign: { label: "Campaign board", rate: 0.75, least: 10, most: 30 },
+  challenge: { label: "Challenge board", rate: 0.75, least: 10, most: 35 },
+  souvenir: { label: "Souvenir", rate: 0.75, least: 10, most: 30, file: "souvenirs" },
+  event: { label: "Event level", rate: 0.45, least: 5, most: 15, file: "event-levels" },
 };
+/** Until config 65 (2026-11-10): 1.1 Coins a move, 10 to 40 (the challenge route 10 to 50), and 50 an item found. */
+const OLD = { rate: 1.1, least: 10, most: { campaign: 40, challenge: 50, souvenir: 40, event: 40 }, item: 50, pastDay: 50 };
 
-/** A board's Coins, from the moves of its stored winning line. */
-export const coinsFor = (moves, most) => Math.max(10, Math.min(most, Math.round((moves * 1.1) / 5) * 5));
+/** A board's Coins, from the moves of its stored winning line, by its lane's rate. */
+export const coinsFor = (moves, { rate, least, most }) => Math.max(least, Math.min(most, Math.round((moves * rate) / 5) * 5));
 
 /** A name-based UUID (RFC 4122 version 5) in this game's own namespace, so a board's id never changes. */
 const NAMESPACE = "9c562125-f155-4601-a349-f66ca3c5f2b6"; // the Gem game id
@@ -357,26 +371,29 @@ function localizedOf(c, a, pad) {
 }
 const CAMPAIGN = JSON.parse(readFileSync(join(root, "src/content/levels/campaign.json"), "utf8")).levels;
 /** A Souvenir's Coins (the lead, 2026-10-28): what the better-paying of its trip's relief boards pays. */
-const souvenirCoins = (l, most) => {
+const souvenirCoins = (l, rule) => {
   const trip = TRIPS.find((t) => t.id === l.trip);
   if (!trip) throw new Error(`make-config: souvenir ${l.id}: its trip ${l.trip} is not in trips.json`);
   const relief = rows.filter((r) => r.lane === "campaign" && r.n >= trip.from && r.n <= trip.to && CAMPAIGN[r.n - 1]?.axes?.role === "relief");
   // by the rule's amount, never the welcome's: the welcome is a one-off, not what a relief board pays
-  return relief.length ? Math.max(...relief.map((r) => r.base)) : coinsFor(l.line.length, most);
+  return relief.length ? Math.max(...relief.map((r) => r.base)) : coinsFor(l.line.length, rule);
 };
-for (const [lane, { label, most, file: name }] of Object.entries(LANES)) {
+for (const [lane, rule] of Object.entries(LANES)) {
+  const { label, file: name } = rule;
   const file = join(root, "src/content/levels", `${name ?? lane}.json`);
   if (!existsSync(file)) continue;
   JSON.parse(readFileSync(file, "utf8")).levels.forEach((l, i) => {
     const moves = l.line.length;
-    const base = l.id === ONBOARDING.board ? ONBOARDING.coins : lane === "souvenir" ? souvenirCoins(l, most) : coinsFor(moves, most);
+    const base = l.id === ONBOARDING.board ? ONBOARDING.coins : lane === "souvenir" ? souvenirCoins(l, rule) : coinsFor(moves, rule);
+    // what it paid until config 65, for docs/coins.md (a Souvenir: its trip's relief boards' old pay)
+    const was = l.id === ONBOARDING.board ? ONBOARDING.coins : coinsFor(moves, { rate: OLD.rate, least: OLD.least, most: OLD.most[lane] });
     const welcome = lane === "campaign" && i < WELCOME.boards && l.id !== ONBOARDING.board;
     const coins = welcome ? WELCOME.coins : base;
     // an event level is named by its event and its place in it ("Haunted Holiday level 4")
     const ev = lane === "event" ? EVENTS.find((e) => (e.levels ?? []).includes(l.id)) : undefined;
     if (lane === "event" && !ev) throw new Error(`make-config: event level ${l.id}: no event in events.json lists it`);
     const name = ev ? `${ev.theme} level ${ev.levels.indexOf(l.id) + 1}` : `${label} ${i + 1}`;
-    rows.push({ lane, id: l.id, n: i + 1, label: name, moves, coins, base, welcome, onboarding: l.id === ONBOARDING.board, ...(l.trip ? { trip: l.trip } : {}), ...(ev ? { event: ev.id } : {}) });
+    rows.push({ lane, id: l.id, n: i + 1, label: name, moves, coins, base, was, welcome, onboarding: l.id === ONBOARDING.board, ...(l.trip ? { trip: l.trip } : {}), ...(ev ? { event: ev.id } : {}) });
   });
 }
 
@@ -471,8 +488,8 @@ y.push("          target: { platform_currency_slug: ARCADE_TICKETS }");
 // past day (anyone's since 2026-11-10) in the archive adds one, which pays that day's Coins, as the day itself would have.
 const ARCHIVE_ID = "795d5832-be77-44b1-a949-6ae8ec1c629d";
 y.push("  # THE DAILY ARCHIVE (docs/vip.md): the first verified win of a past day in the archive, anyone's (this");
-y.push("  # month and the two before, with a day of slack) adds one day here, which pays that day's Coins,");
-y.push("  # once (the checker's record says which days were paid). Only the win checker writes it.");
+y.push("  # month and the two before, with a day of slack) adds one day here, which pays a past day's Coins,");
+y.push(`  # ${ARCHIVE_COINS} (the creator, 2026-11-10; was ${OLD.pastDay}), once (the checker's record says which days were paid). Only the win checker writes it.`);
 y.push(`  - id: ${ARCHIVE_ID}`);
 y.push("    slug: daily_archive");
 y.push(`    display_name: "Past daily puzzles"`);
@@ -480,7 +497,7 @@ y.push("    config:");
 y.push("      function_may_grant: true");
 y.push("      platform_grants:");
 y.push("        - mode: on_add");
-y.push(`          per_unit: ${DAILY_COINS}`);
+y.push(`          per_unit: ${ARCHIVE_COINS}`);
 y.push("          target: { platform_currency_slug: ARCADE_TICKETS }");
 // THE VIP EXTRA (docs/vip.md; src/net/vip-extra.json, the rule's one copy): the checker adds a VIP's
 // extra Coins here, 1 Coin a unit, in an order of its own keyed by the reward it rides with.
@@ -516,7 +533,7 @@ if (EVENTS.length || RETIRED.length) {
   y.push("      reset_schedule: { type: monthly, boundary: local }");
   if (SUITCASE.finds) {
     const F = SUITCASE.finds;
-    y.push("  # EACH ITEM FOUND pays its Coins with it (the creator, 2026-10-30: 50 an item, 500 an event, paid as");
+    y.push(`  # EACH ITEM FOUND pays its Coins with it (the creator, 2026-11-10: ${F.coins} an item, ${F.coins * 10} an event, was ${OLD.item}; paid as`);
     y.push("  # the items land; the platform pays at most 100 in one grant): the checker adds one here in the");
     y.push("  # order that grants the item, once per item. Only the win checker writes it.");
     y.push(`  - id: ${F.id}`);
@@ -741,7 +758,7 @@ writeFileSync(CONFIG, text);
     P[uuid5(`board:${r.lane}:${r.id}`)] = { complete: r.lane === "campaign" && r.id === FIRST_STEPS.board ? [r.coins, FIRST_STEPS.coins] : [r.coins] };
   }
   P[DAILY_ID] = { complete: [DAILY_COINS] };
-  P[ARCHIVE_ID] = { unit: DAILY_COINS };
+  P[ARCHIVE_ID] = { unit: ARCHIVE_COINS };
   if (SUITCASE.finds) P[SUITCASE.finds.id] = { unit: SUITCASE.finds.coins };
   const note = "What each paying progression pays in Coins, written by tools/server/make-config.mts with the config (do not edit by hand): complete, an on_complete's grants; unit, an on_add's per unit. Read by the win checker (pay.rs base_grants) to reckon the VIP extra.";
   // one progression a line, so a diff shows which payout moved
@@ -762,16 +779,43 @@ md.push("after it has replayed the board's winning line on the rules, through on
 md.push("board in the game config, so **each board pays once, ever**, and a resent claim or a");
 md.push("replay pays nothing. Written by `node tools/server/make-config.mts`; do not edit by hand.");
 md.push("");
-md.push("**The rule** (agreed with the lead, 2026-10-24): about 1.1 Coins per move of the board's");
-md.push("stored winning line, rounded to 5. Campaign boards 10 to 40, challenge boards 10 to 50.");
-md.push("A campaign board's stored line is a winning line, not necessarily the shortest; a challenge");
-md.push("board's is its par, the fewest moves found. Its length stands in for how long the board");
-md.push(`takes. Campaign board 1 pays the onboarding prize instead, ${ONBOARDING.coins}. The daily puzzle pays`);
-md.push(`${DAILY_COINS}, once a day.`);
+// the pace estimate (the lead, 2026-11-10): the campaign's 3 minutes a level for its ~37 moves, about
+// 12 moves a minute, for every lane, until real minutes per level are measured
+const PACE = 12;
+const VRULE = JSON.parse(readFileSync(join(root, "src/net/vip-extra.json"), "utf8"));
+const vx = (n) => Math.ceil((n * VRULE.coins.num) / VRULE.coins.den);
+const moves = (rs) => rs.reduce((n, r) => n + r.moves, 0);
+const wasSum = (rs) => rs.reduce((n, r) => n + r.was, 0);
+const vipSum = (rs) => rs.reduce((n, r) => n + r.coins + vx(r.coins), 0);
+/** Coins an hour for `coins` earned over `m` moves, at PACE moves a minute. */
+const hourly = (coins, m) => Math.round((coins * 60 * PACE) / Math.max(1, m));
+const fmt = (n) => n.toLocaleString("en-US");
+const rate = (l) => `${LANES[l].rate} a move, ${LANES[l].least} to ${LANES[l].most}`;
+const F0 = SUITCASE.finds;
+md.push('**The rule** (the creator, 2026-11-10, through the lead: "players get about 500/hr and VIPs 750",');
+md.push("for all ordinary play): Coins per move of the board's stored winning line, rounded to 5, from a");
+md.push("lane's least to its most:");
+md.push("");
+md.push(`- a trip level from Level ${WELCOME.boards + 1}: ${rate("campaign")} (a third below the old rate; the cap is the old 40 cut in`);
+md.push("  proportion, a third less being 27, rounded to 30 to keep about 500 an hour);");
+md.push(`- an event level: ${rate("event")}${F0 ? `, and each item found ${F0.coins} more (${F0.coins * 10} an event)` : ""};`);
+md.push(`- the challenge route (off home): ${rate("challenge")}, the same third off;`);
+md.push("- a Souvenir: its trip's better-paying relief board, so a third less with them (below);");
+md.push(`- today's daily puzzle ${DAILY_COINS}, once a day; a past day from the archive ${ARCHIVE_COINS}, once each.`);
+md.push("");
+md.push(`Until config 65 every lane paid ${OLD.rate} a move (${OLD.least} to ${OLD.most.campaign}; the challenge route ${OLD.least} to ${OLD.most.challenge}), an item`);
+md.push(`found ${OLD.item} and a past day ${OLD.pastDay}. **Nothing is taken back**: each board pays once, ever, so a level`);
+md.push("already won keeps what it paid then. A campaign board's stored line is a winning line, not");
+md.push("necessarily the shortest; a challenge board's is its par, the fewest moves found. Its length");
+md.push(`stands in for how long the board takes. Campaign board 1 pays the onboarding prize instead, ${ONBOARDING.coins}.`);
+md.push("");
+md.push(`**The pace estimate** (the lead, 2026-11-10): the campaign's 3 minutes a level for its ~37 moves, about`);
+md.push(`${PACE} moves a minute, for every lane: an event level's ~21 moves are about 1.75 minutes, an event about`);
+md.push("52 minutes. No play-time data yet, so every hourly figure below is this estimate.");
 md.push("");
 {
   const w = rows.filter((r) => r.lane === "campaign" && r.n <= WELCOME.boards);
-  const was = w.map((r) => r.base);
+  const was = w.map((r) => r.was);
   md.push(`**The welcome** (the creator, 2026-11-09: "We want to have given out at least 500 [Coins] within`);
   md.push(`the first 5 levels"; "Just make 1-5 give out 100, and the achievement will make it 600 altogether"):`);
   md.push(`campaign boards 1 to ${WELCOME.boards} pay ${WELCOME.coins} each, ${sum(w)} in all (until config 63 they paid ${was.join("/")}, ${was.reduce((a, b) => a + b, 0)}),`);
@@ -780,75 +824,82 @@ md.push("");
   md.push(`${WELCOME.coins} is the most Coins the platform pays in one grant (its max_per_event), so each is one grant at`);
   md.push("the cap, never more. At 3 minutes a level this is far above the standard's 250 to 1,000 an hour for");
   md.push("its first quarter hour: **a deliberate front-loaded welcome, on the creator's word**, not a rate to");
-  md.push("flag at the release review. Each board pays once, ever, so a player who had already won any of");
-  md.push("boards 1 to 5 keeps what it paid then and is not topped up.");
+  md.push("flag at the release review, and the creator kept it on 2026-11-10. Each board pays once, ever, so a");
+  md.push("player who had already won any of boards 1 to 5 keeps what it paid then and is not topped up.");
   md.push("");
 }
 md.push("**A Souvenir** (the optional all-long bonus board after each trip, `docs/souvenirs.md`) pays");
 md.push("what the better-paying of its trip's relief boards pays, once, ever (the lead, 2026-10-28: the");
-md.push("creator's \"Coins like a relief board\", a bonus for the detour). By the rule its short line, about");
-md.push("13 moves, would pay about 15; as a one-off per trip this adds about 350 Coins to the whole game");
-md.push("and leaves the hourly rate where it is.");
+md.push("creator's \"Coins like a relief board\", a bonus for the detour), so it fell by a third with the trip");
+md.push("levels on 2026-11-10. Its short line (about 14 moves, a minute or so) pays more a minute than a");
+md.push("trip level, but it is one bonus level per trip, never repeated, so it moves no hourly rate.");
 md.push("");
-md.push("## The hourly maths (the standard: about 500 an hour of ordinary play)");
+md.push(`## The hourly maths (the creator: about 500 an hour, VIPs 750; at ${PACE} moves a minute)`);
 md.push("");
-if (camp.length) {
-  const paid = camp.filter((r) => !r.onboarding && !r.welcome);
-  const avg = sum(paid) / paid.length;
-  md.push(`- Campaign: ${camp.length} boards, ${sum(camp)} Coins in all, plus First Steps' ${FIRST_STEPS.coins} (${sum(paid)} from board ${WELCOME.boards + 1} on, by the rule).`);
-  md.push(`  Boards 1 to ${WELCOME.boards}, the welcome: ${sum(camp.filter((r) => r.n <= WELCOME.boards)) + FIRST_STEPS.coins} with First Steps, about ${Math.round(((sum(camp.filter((r) => r.n <= WELCOME.boards)) + FIRST_STEPS.coins) * 60) / (3 * WELCOME.boards))} an hour at 3 minutes a level, on the creator's word.`);
-  md.push(`  From board ${WELCOME.boards + 1}: the design puts a relaxed board at 2 to 4 minutes. At 3 minutes a board, ${Math.round(avg)} a board`);
-  md.push(`  is about ${Math.round((avg * 60) / 3)} Coins an hour; at 2 minutes ${Math.round((avg * 60) / 2)}, at 4 minutes ${Math.round((avg * 60) / 4)}.`);
+md.push("| lane | levels | a level, on average | in all | an hour | an hour, VIP | until config 65 |");
+md.push("| --- | --- | --- | --- | --- | --- | --- |");
+const paid = camp.filter((r) => !r.onboarding && !r.welcome);
+const evs = lane("event");
+const evEvents = EVENTS.filter((e) => (e.levels ?? []).length);
+const itemsPerEvent = F0 ? 10 : 0;
+if (paid.length) {
+  const m = moves(paid);
+  md.push(`| Trip levels from Level ${WELCOME.boards + 1} | ${paid.length} | ${(sum(paid) / paid.length).toFixed(1)} Coins, ${(m / paid.length).toFixed(1)} moves | ${fmt(sum(paid))} | ${hourly(sum(paid), m)} | ${hourly(vipSum(paid), m)} | ${(wasSum(paid) / paid.length).toFixed(1)} a level, ${hourly(wasSum(paid), m)} an hour |`);
+}
+if (evs.length && evEvents.length) {
+  const m = moves(evs) / evEvents.length;
+  const lv = sum(evs) / evEvents.length;
+  const items = F0 ? F0.coins * itemsPerEvent : 0;
+  const vipItems = F0 ? (F0.coins + vx(F0.coins)) * itemsPerEvent : 0;
+  const lvVip = vipSum(evs) / evEvents.length;
+  const old = wasSum(evs) / evEvents.length + OLD.item * itemsPerEvent;
+  md.push(`| Events (${evEvents.length}, ${evs.length / evEvents.length} levels each) | ${evs.length} | ${(sum(evs) / evs.length).toFixed(1)} Coins, ${(moves(evs) / evs.length).toFixed(1)} moves; an event ${Math.round(lv)} + ${items} for its items = ${Math.round(lv + items)} | ${fmt(sum(evs) + items * evEvents.length)} | ${hourly(lv + items, m)} | ${hourly(lvVip + vipItems, m)} (${Math.round(lvVip + vipItems)} an event) | ${Math.round(old)} an event, ${hourly(old, m)} an hour |`);
 }
 if (ch.length) {
-  const avg = sum(ch) / ch.length;
-  md.push(`- Challenge route: ${ch.length} boards, ${sum(ch)} Coins in all, ${Math.round(avg)} a board on average.`);
-  md.push(`  At 4 minutes a board that is about ${Math.round((avg * 60) / 4)} an hour; at 5 minutes ${Math.round((avg * 60) / 5)}.`);
+  const m = moves(ch);
+  md.push(`| Challenge route (off home) | ${ch.length} | ${(sum(ch) / ch.length).toFixed(1)} Coins, ${(m / ch.length).toFixed(1)} moves | ${fmt(sum(ch))} | ${hourly(sum(ch), m)} | ${hourly(vipSum(ch), m)} | ${(wasSum(ch) / ch.length).toFixed(1)} a level, ${hourly(wasSum(ch), m)} an hour |`);
 }
-md.push(`- Daily: ${DAILY_COINS} once a day, on top.`);
 const sv = lane("souvenir");
-// a trip with no souvenirs.json entry has none (the creator, 2026-11-07: none for trips 11-15), so this
-// counts the trips that have one, never "N of all the trips"
-const svTrips = TRIPS.filter((t) => sv.some((r) => r.trip === t.id));
-const svNone = TRIPS.filter((t) => !svTrips.includes(t));
-md.push(sv.length ? `- Souvenirs: ${sv.length}, one each for ${svTrips.length} trips (${svTrips[0].id} to ${svTrips[svTrips.length - 1].id})${svNone.length ? `; ${svNone.map((t) => t.id).join(", ")} have none` : ""}. ${sum(sv)} Coins in all, once each (${sv.map((r) => `${r.id} ${r.coins}`).join(", ")}).` : "- Souvenirs: none dealt yet (Levels' src/content/levels/souvenirs.json).");
-const evs = lane("event");
-if (evs.length) {
-  const avg = sum(evs) / evs.length;
-  const per = EVENTS.filter((e) => (e.levels ?? []).length).map((e) => `${e.id} ${sum(evs.filter((r) => r.event === e.id))}`);
-  md.push(`- Events (everyone's since 2026-11-10, docs/vip.md): ${evs.length} levels, ${sum(evs)} Coins in all, once each, by the campaign's rule (${per.join(", ")}).`);
-  md.push(`  ${Math.round(avg)} a level: at 3 minutes a level about ${Math.round((avg * 60) / 3)} an hour, the campaign's rate.`);
-  const F = SUITCASE.finds;
-  if (F) {
-    const items = EVENTS.reduce((n, e) => n + e.items.length, 0);
-    const perEvent = Math.round(sum(evs) / Math.max(1, EVENTS.filter((e) => (e.levels ?? []).length).length));
-    const bonus = F.coins * 10;
-    md.push(`- Event items (the creator, 2026-10-30): ${F.coins} Coins with each item found, once per item, ${bonus} an event`);
-    md.push(`  (${items} items, ${F.coins * items} in all), paid as each lands, never in one grant over the platform's 100. The`);
-    md.push("  prize for finding all 10 is the event's table and its Passport stamp, no Coins and no helpers. With");
-    md.push(`  its levels (about ${perEvent}), an event pays about ${perEvent + bonus} over its 30 levels: at 3 minutes a level,`);
-    md.push(`  about ${Math.round(((perEvent + bonus) * 60) / 90)} an hour while playing an event, inside the standard's 250 to 1,000. Two events a`);
-    md.push(`  month add ${2 * bonus} Coins of finds a month to a player who finishes both.`);
-  }
-} else {
-  md.push("- Events: none dealt yet (Levels' src/content/levels/event-levels.json).");
+if (sv.length) {
+  const m = moves(sv);
+  // a Souvenir's old pay was its trip's relief boards' old pay: worked out the same way, from their `was`
+  const oldSv = sv.reduce((n, r) => {
+    const trip = TRIPS.find((t) => t.id === r.trip);
+    const relief = rows.filter((x) => x.lane === "campaign" && x.n >= trip.from && x.n <= trip.to && CAMPAIGN[x.n - 1]?.axes?.role === "relief");
+    return n + (relief.length ? Math.max(...relief.map((x) => coinsFor(x.moves, { rate: OLD.rate, least: OLD.least, most: OLD.most.campaign }))) : r.was);
+  }, 0);
+  md.push(`| Souvenirs (one-off bonus) | ${sv.length} | ${(sum(sv) / sv.length).toFixed(1)} Coins, ${(m / sv.length).toFixed(1)} moves | ${fmt(sum(sv))} | (${hourly(sum(sv), m)}) | (${hourly(vipSum(sv), m)}) | ${fmt(oldSv)} in all |`);
 }
-md.push(`- One-time: the welcome (boards 1 to ${WELCOME.boards}), the onboarding prize and First Steps' prize. Replays and campaign boards past the last pay nothing.`);
 {
-  // THE VIP EXTRA (the creator, 2026-11-10; docs/vip.md): each payout's own ceil(base * num / den), beside it
-  const VR = JSON.parse(readFileSync(join(root, "src/net/vip-extra.json"), "utf8"));
-  const x = (n) => Math.ceil((n * VR.coins.num) / VR.coins.den);
-  const paid = camp.filter((r) => !r.onboarding && !r.welcome);
-  const vavg = paid.reduce((a, r) => a + r.coins + x(r.coins), 0) / Math.max(1, paid.length);
-  md.push(`- **VIP** (the creator, 2026-11-10; docs/vip.md): every payout above pays a VIP ${VR.coins.num}/${VR.coins.den} more, rounded up, as its own`);
-  md.push(`  grant (25 +${x(25)}, 50 +${x(50)}, 100 +${x(100)}), and every helper reward ${VR.helpers} times over. From board ${WELCOME.boards + 1} a VIP's board`);
-  md.push(`  averages ${Math.round(vavg)}, about ${Math.round((vavg * 60) / 3)} an hour at 3 minutes, against about ${Math.round((paid.reduce((a, r) => a + r.coins, 0) / Math.max(1, paid.length) * 60) / 3)} without VIP: above the standard's`);
-  md.push("  band for ordinary play, on purpose. **VIP +50% is the Gem Arcade's rule, relayed by the creator on 2026-11-10;");
-  md.push("  they saw the ~1,100 an hour before approving** (through the lead, 2026-11-10). The platform's 4,000 a day per");
-  md.push("  game still holds: a VIP reaches it sooner, and the receipts (so the win card) say what landed.");
+  const dl = JSON.parse(readFileSync(join(root, "src/content/levels/daily.json"), "utf8")).levels ?? [];
+  const dm = dl.length ? dl.reduce((n, l) => n + l.line.length, 0) / dl.length : 20;
+  md.push(`| Today's daily | 1 a day | ${DAILY_COINS} Coins, ${dm.toFixed(1)} moves | ${DAILY_COINS} a day | (once a day) | ${DAILY_COINS + vx(DAILY_COINS)} a day | ${DAILY_COINS} |`);
+  md.push(`| A past day (the archive) | this month and the two before | ${ARCHIVE_COINS} Coins, ${dm.toFixed(1)} moves | ${ARCHIVE_COINS} each | ${hourly(ARCHIVE_COINS, dm)} | ${hourly(ARCHIVE_COINS + vx(ARCHIVE_COINS), dm)} | ${OLD.pastDay} each, ${hourly(OLD.pastDay, dm)} an hour |`);
 }
-md.push("- **Still to measure**: real minutes per board once the creator has played some (the lead's");
-md.push("  note): if boards run much faster or slower than 2 to 4 minutes, change the rule here.");
+md.push("");
+md.push("Read it so:");
+md.push("");
+if (paid.length) {
+  const m = moves(paid);
+  md.push(`- **Trip levels** are the ordinary play: about ${hourly(sum(paid), m)} an hour, ${hourly(vipSum(paid), m)} for a VIP. At 2 minutes a`);
+  md.push(`  level ${Math.round((sum(paid) / paid.length) * 30)}, at 4 minutes ${Math.round((sum(paid) / paid.length) * 15)}. Most levels pay the cap (${paid.filter((r) => r.coins === LANES.campaign.most).length} of ${paid.length} at ${LANES.campaign.most}): their lines are 37 moves or longer.`);
+}
+if (evs.length && F0) {
+  md.push(`- **An event** pays its levels (${LANES.event.least} to ${LANES.event.most} each) and ${F0.coins} with each item found, paid as each lands, never`);
+  md.push(`  in one grant over the platform's 100. The prize for finding all 10 is the event's table and its Passport`);
+  md.push("  stamp, no Coins and no helpers. Each event is open for good, so an event is a one-off of about 52 minutes.");
+}
+md.push(`- **Today's daily** is once a day, on top. **A past day** pays ${ARCHIVE_COINS} (the creator's figure); its short line`);
+md.push("  means a player catching up on the archive earns faster than the trip levels' rate, but only for the days");
+md.push("  the archive holds (this month and the two before), each once.");
+md.push(`- One-time: the welcome (boards 1 to ${WELCOME.boards}), the onboarding prize and First Steps' prize. Replays and campaign boards past the last pay nothing.`);
+md.push(`- **VIP** (the creator, 2026-11-10; docs/vip.md): every payout above pays a VIP ${VRULE.coins.num}/${VRULE.coins.den} more, rounded up, inside`);
+md.push(`  its reward's own order (${LANES.event.least} +${vx(LANES.event.least)}, 10 +${vx(10)}, 20 +${vx(20)}, 25 +${vx(25)}, 30 +${vx(30)}, 50 +${vx(50)}, 100 +${vx(100)}), and every helper reward ${VRULE.helpers} times over.`);
+md.push("  **VIP +50% is the Gem Arcade's rule, relayed by the creator on 2026-11-10**; the rates above put a VIP at");
+md.push("  about 750 an hour, the creator's \"VIPs 750\". The platform's 4,000 a day per game still holds.");
+md.push(`- **Still to measure: real minutes per level.** No play-time data yet; every hourly figure here is the`);
+md.push(`  ${PACE}-moves-a-minute estimate. If levels run much faster or slower, change the rates (LANES in`);
+md.push("  tools/server/make-config.mts), rebuild and upload the win checker, and upload the config.");
 md.push("");
 // THE HELPER SHOP: the singles, the packs and the bundles (the creator, 2026-11-01), all in Coins
 // since 2026-11-10, from the config's helpers catalog (hand-written) and src/net/helper-ids.json, at

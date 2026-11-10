@@ -79,12 +79,14 @@ fn every_lane_reckons_its_base_from_the_config() {
     let d = pay::order(checker::DAILY_ID, "daily", "daily:2026-11-10", true, pay::daily_gift("2026-11-10"), Vec::new(), false).unwrap();
     assert_eq!(pay::base_grants(&d), vec![50]);
     assert_eq!(pay::extra_of(&d).coins, 25);
-    // a past day (the archive, 50 a day) and an event item (50 an item): one unit each
+    // a past day (the archive, 25 a day) and an event item (20 an item): one unit each (the creator, 2026-11-10)
     let past = Order { nonce: "past:2026-11-01".into(), operations: vec![json!({ "type": "progression_add", "progression_definition_id": checker::ARCHIVE_ID, "amount": 1 })], gifts: Vec::new() };
-    assert_eq!(pay::base_grants(&past), vec![50]);
+    assert_eq!(pay::base_grants(&past), vec![25]);
+    assert_eq!(pay::extra_of(&past).coins, 13);
     let ids: Value = serde_json::from_str(&read("../../src/net/suitcase-ids.json")).unwrap();
     let find = Order { nonce: "pack".into(), operations: vec![json!({ "type": "progression_add", "progression_definition_id": ids["finds"]["id"], "amount": 1 })], gifts: Vec::new() };
-    assert_eq!(pay::base_grants(&find), vec![50]);
+    assert_eq!(pay::base_grants(&find), vec![20]);
+    assert_eq!(pay::extra_of(&find).coins, 10);
     // a replay's order (the kit alone) pays no Coins: no Coins extra
     let kit = pay::order(c07, "campaign c07", "first:campaign:c07", false, None, Vec::new(), true).unwrap();
     assert!(pay::base_grants(&kit).is_empty());
