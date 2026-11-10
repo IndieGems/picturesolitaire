@@ -148,10 +148,11 @@ export function mountSettings(parent: HTMLElement = document.body): void {
   offerMenu();
   onFrameState(offerMenu);
   onLocaleChange(offerMenu);
-  // THE PLAYER'S GEMS AND COINS, drawn by the Arcade beside its Gem on every screen (the creator,
-  // 2026-10-30, as Untangled): asked once, held by the SDK until the Arcade connects and sent again on
-  // every reconnect. The game draws no balance of its own; every top row lays out around the corner
-  // they take (gem.viewport.reserved, --gem-reserved-*: style.css's --row-left, --row-right), and a
+  // THE PLAYER'S COINS, drawn by the Arcade beside its Gem on every screen (the creator, 2026-10-30, as
+  // Untangled; Coins only since 2026-11-10, "we are removing gems": nothing in the game is priced in Gems,
+  // so it never asks the Arcade to show them): asked once, held by the SDK until the Arcade connects and
+  // sent again on every reconnect. The game draws no balance of its own; every top row lays out around the
+  // corner they take (gem.viewport.reserved, --gem-reserved-*: style.css's --row-left, --row-right), and a
   // win's Coins fly to them (src/net/claims.ts, cueCoins).
-  gem.setWalletVisible(true, { only: ["GEMS", "ARCADE_TICKETS"] });
+  gem.setWalletVisible(true, { only: ["ARCADE_TICKETS"] });
 }
