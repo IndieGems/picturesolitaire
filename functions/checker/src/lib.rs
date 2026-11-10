@@ -83,6 +83,7 @@ pub mod pay;
 pub mod progress;
 pub mod rules;
 pub mod suitcase;
+pub mod timing;
 pub mod vip;
 
 /// The daily challenge's progression (gem-backend-game-config.yaml): its id and slug.
@@ -152,12 +153,36 @@ mod function {
         body: Value,
     }
 
+    /// One platform call, timed (src/timing.rs): a debug line as it starts, so a call that times out
+    /// shows the request it hung on, and a warning with its time when it is slow. `what` names the
+    /// route only, never a player id. Nothing about the call or its answer changes.
+    fn timed<T>(what: &str, call: impl FnOnce() -> T, said: impl Fn(&T) -> String) -> T {
+        host::log(LogLevel::Debug, &format!("calling {what}"));
+        let started = host::now_ms();
+        let out = call();
+        let ms = host::now_ms().saturating_sub(started);
+        if crate::timing::slow(ms) {
+            host::log(LogLevel::Warn, &format!("slow platform call: {what} took {ms} ms ({})", said(&out)));
+        }
+        out
+    }
+
     fn api(method: &str, path: String, body: Option<Value>) -> Result<Answer, String> {
-        let res = host::call_api(&ApiRequest {
-            method: method.into(),
-            path,
-            body: body.map(|b| b.to_string().into_bytes()).unwrap_or_default(),
-        })?;
+        let what = format!("{method} {}", crate::timing::route(&path));
+        let res = timed(
+            &what,
+            || {
+                host::call_api(&ApiRequest {
+                    method: method.into(),
+                    path,
+                    body: body.map(|b| b.to_string().into_bytes()).unwrap_or_default(),
+                })
+            },
+            |r| match r {
+                Ok(a) => format!("answered {}", a.status),
+                Err(_) => "no answer".into(),
+            },
+        )?;
         Ok(Answer { status: res.status, body: serde_json::from_slice(&res.body).unwrap_or(Value::Null) })
     }
 
@@ -898,7 +923,11 @@ mod function {
             return Err(retry(if passing(rec.status) { "platform" } else { "config" }));
         }
         let url = rec.body["download_url"].as_str().unwrap_or_default();
-        let got = host::download_link(url).map_err(|e| {
+        let got = timed(&format!("save storage download ({key})"), || host::download_link(url), |r| match r {
+            Ok(g) => format!("answered {}", g.status),
+            Err(_) => "refused".into(),
+        })
+        .map_err(|e| {
             host::log(LogLevel::Warn, &format!("save {key}: download refused: {e}"));
             retry("platform")
         })?;
@@ -925,11 +954,15 @@ mod function {
             .flatten()
             .map(|(k, v)| (k.clone(), v.as_str().unwrap_or_default().to_string()))
             .collect();
-        let sent = host::upload_link(&UploadRequest {
+        let upload = UploadRequest {
             url: started.body["upload_url"].as_str().unwrap_or_default().to_string(),
             content_type: "application/json".into(),
             headers,
             body: bytes,
+        };
+        let sent = timed(&format!("save storage upload ({key})"), || host::upload_link(&upload), |r| match r {
+            Ok(s) => format!("answered {}", s.status),
+            Err(_) => "refused".into(),
         })
         .map_err(|e| {
             host::log(LogLevel::Warn, &format!("save {key}: upload refused: {e}"));

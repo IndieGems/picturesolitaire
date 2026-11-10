@@ -32,7 +32,7 @@ try {
   if (ts.status !== 0) throw new Error("the TypeScript side could not write the vectors");
   const rust = spawnSync(
     "cargo",
-    ["test", "--release", "--quiet", "--manifest-path", join(root, "functions/checker/Cargo.toml"), "--test", "vectors", "--test", "progress", "--test", "pay", "--test", "suitcase", "--test", "count", "--test", "vip", "--test", "gift", "--test", "vip_extra", "--", "--nocapture"],
+    ["test", "--release", "--quiet", "--manifest-path", join(root, "functions/checker/Cargo.toml"), "--test", "vectors", "--test", "progress", "--test", "pay", "--test", "suitcase", "--test", "count", "--test", "vip", "--test", "gift", "--test", "vip_extra", "--test", "timing", "--", "--nocapture"],
     { stdio: "inherit", env: { ...process.env, VECTORS: vectors } },
   );
   if (rust.error) throw rust.error;
