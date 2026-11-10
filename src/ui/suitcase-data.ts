@@ -1,10 +1,10 @@
-// THE EVENTS as the screens see them (docs/vip.md, the creator, 2026-10-30): VIP content packs, each 30
+// THE EVENTS as the screens see them (docs/vip.md, the creator, 2026-10-30): content packs, each 30
 // levels of its own with 10 items hidden one per level; finding all 10 wins the event's table (and
-// helpers), once. A VIP plays any released event at any time: no deadline, no swap, nothing from the
-// dailies. The record is the platform's, through Server's src/net/suitcase.ts (events(), event(id),
+// helpers), once. Any player plays any released event at any time (everyone's since 2026-11-10, "no VIP
+// gates"): no deadline, no swap, nothing from the dailies. The record is the platform's, through Server's src/net/suitcase.ts (events(), event(id),
 // upcoming(), lastPrize()); which levels are won is the progress record's (src/net/progress.ts
-// eventBest). Levels' src/content/levels/events.json says what a player who is not a VIP may see of the
-// door (the newest event's name and prize table); the boards themselves are Gameplay's loader's
+// eventBest). Levels' src/content/levels/events.json is the schedule (each event's name, release and prize
+// table: what the Passport draws before the record is in); the boards themselves are Gameplay's loader's
 // (src/game/levels.ts loadEventLevels), loaded only when an event page or level opens.
 //
 // Outside a release build only: a stand-in (the play-test tool's __ps.suitcase, the dev menu's switch), so
@@ -45,8 +45,8 @@ const releaseOf = (e: EventData): string => e.release ?? e.start ?? "";
 export const EVENT_LEVELS = 30;
 
 /**
- * A player who is not a VIP sees the door to the newest event released by their date (Levels' schedule),
- * else the next one to come: its name and prize, never a record.
+ * The newest event released by the player's date (Levels' schedule), else the next one to come: its name and
+ * prize, never a record (an event's preview, the Passport before the record is in).
  */
 export function scheduledEvent(today = currentDaily().date): { e: EventData; released: boolean } | null {
   const real = EVENTS.filter((e) => !e.standIn && releaseOf(e));
@@ -57,10 +57,9 @@ export function scheduledEvent(today = currentDaily().date): { e: EventData; rel
 }
 
 /**
- * The events released before `current` (the door's event, scheduledEvent's) by `today`, newest first: what
- * the locked door tells a player who is not a VIP waits in the event archive (the creator, 2026-11-02:
- * "should see that the haunted event is in the archive to play"). Levels' schedule, never a record: each
- * event joins the list by itself once the next one opens; none before the first.
+ * The events released before `current` (scheduledEvent's) by `today`, newest first: the past events, still
+ * winnable (the Passport's outlines before the record is in). Levels' schedule, never a record: each event
+ * joins the list by itself once the next one opens; none before the first.
  */
 export function pastEvents(current: EventData, today = currentDaily().date): EventData[] {
   const at = releaseOf(current);

@@ -32,14 +32,13 @@
 // opens on Stamps; the stamp and sticker moments always play there, the tabs put away until they are over.
 //
 // EVENT STAMPS (docs/vip.md, the creator, 2026-10-30: a finished event's prize is its table and its
-// stamp; a VIP who lapses keeps what they earned, the lead, 2026-11-01, so anyone else's page holds the
-// stamps they won and nothing more): every released event a VIP can play (suitcase-data.ts), newest first: a finished one's stamp
+// stamp; open to everyone since 2026-11-10, "no VIP gates"): every released event (suitcase-data.ts),
+// newest first: a finished one's stamp
 // (Art's, public/art/stamps/stamp-<event id>.webp, with no lettering: its name is ours, under it, so it
 // is said in the player's language), an unfinished one an empty dashed ring with its name and how many
-// of its items are found; an event still to come, nothing. A player who is not a VIP (the creator,
-// 2026-11-02): the stamps they won, whole, and the event running and the past ones as empty outlines
-// wearing the gold VIP tag, as the locked doors show what VIP opens (lockedEvents). The finish card's
-// See your passport opens it.
+// of its items are found; an event still to come, nothing. Until the platform's record of the events is
+// in: the stamps the player won, whole, and the event running and the past ones (Levels' schedule) as the
+// same empty outlines, anyone's to earn (scheduledEvents). The finish card's See your passport opens it.
 //
 // Its top row is every screen's: the title on the left, Back then the gear at the right
 // end. A trip's stamp is Art's drawing, public/art/stamps/stamp-<trip id>.webp (300 px
@@ -58,9 +57,7 @@ import { souvenirOf, souvenirOpen, souvenirWon, souvenirWords, stickerReady, sti
 import { createAchievementsPage } from "./achievements-page";
 import { named } from "./i18n";
 import { pastEvents, scheduledEvent, suitcases } from "./suitcase-data";
-import { eventDoor, eventShown, onEventShown } from "./event-switch";
-import { vipTag, vipYours } from "./vip-door";
-import { vipNow } from "./vip-view";
+import { eventShown, onEventShown } from "./event-switch";
 import { currentDaily } from "../net/daily";
 
 type Nav = {
@@ -229,13 +226,13 @@ export function eventStamp(id: string, name: string): HTMLElement {
 }
 
 /**
- * The events whose stamps a player who is not a VIP sees as locked outlines (the creator, 2026-11-02): while
- * the event's door shows and the events do not (event-switch.ts), the event running by the door's "today"
- * and the past ones (suitcase-data.ts scheduledEvent and pastEvents, the locked door's own list), newest
- * first; none while the next one has not opened, and never one still to come. Levels' schedule, never a record.
+ * The events drawn as empty outlines while the platform's record of them is not in: while the event is on
+ * (event-switch.ts), the one running today and the past ones (suitcase-data.ts scheduledEvent and
+ * pastEvents), newest first; none while the next one has not opened, and never one still to come. Levels'
+ * schedule, never a record.
  */
-function lockedEvents(): { id: string; theme: string }[] {
-  if (!eventDoor() || eventShown()) return [];
+function scheduledEvents(): { id: string; theme: string }[] {
+  if (!eventShown()) return [];
   const today = currentDaily().date;
   const sch = scheduledEvent(today);
   return sch?.released ? [sch.e, ...pastEvents(sch.e, today)] : [];
@@ -313,10 +310,10 @@ export function createPassport(nav: Nav) {
   }
 
   /**
-   * The Event stamps page: a VIP's, each released event's stamp, or its dashed ring and how far the player
-   * is. Anyone else's (never a VIP, or one who lapsed): the stamps they earned, drawn whole, and each event
-   * the locked door holds (the one running and the past ones, lockedEvents) an empty outline wearing the
-   * gold VIP tag, newest first; never one still to come. None of either: the line that says how.
+   * The Event stamps page: each released event's stamp, or its dashed ring and how far the player is. Until
+   * the platform's record of the events is in: the stamps they earned, drawn whole, and each scheduled one
+   * (the one running and the past ones, scheduledEvents) an empty outline, newest first; never one still to
+   * come. None of either: the line that says how.
    */
   function drawEvents(): void {
     const list = suitcases.list();
@@ -325,21 +322,20 @@ export function createPassport(nav: Nav) {
     if (!list.length) {
       const earned = suitcases.stamps();
       const won = new Set(earned.map((e) => e.id));
-      const locked = lockedEvents();
-      const shown = [...locked, ...earned.filter((e) => !locked.some((l) => l.id === e.id))];
+      const open = scheduledEvents();
+      const shown = [...open, ...earned.filter((e) => !open.some((l) => l.id === e.id))];
       if (!shown.length) return void evPage.replaceChildren(head, el("p", "pp-ev-none", t("passport.eventsNone")));
       for (const e of shown) {
         const name = eventName(e);
         const spot = el("div", "pp-ev-spot");
-        const cell = el("div", `pp-ev ${won.has(e.id) ? "won" : "locked"}`);
+        const cell = el("div", `pp-ev${won.has(e.id) ? " won" : ""}`);
         if (won.has(e.id)) {
           spot.append(eventStamp(e.id, name));
           cell.append(spot, el("b", "pp-ev-name", name), el("small", "pp-ev-line", t("passport.eventDone")));
         } else {
-          // what VIP opens, as the locked doors show it: information, nothing to press
+          // anyone's to earn: the dashed ring, as an unfinished event's, its name under it
           spot.setAttribute("role", "img");
-          spot.setAttribute("aria-label", t("passport.eventLocked", { theme: name }));
-          spot.append(vipTag("pp-ev-tag"));
+          spot.setAttribute("aria-label", t("passport.eventToEarn", { theme: name }));
           cell.append(spot, el("b", "pp-ev-name", name));
         }
         grid.append(cell);
@@ -355,10 +351,9 @@ export function createPassport(nav: Nav) {
       cell.append(spot, el("b", "pp-ev-name", name), el("small", "pp-ev-line", e.paid ? t("passport.eventDone") : t("case.foundOf", { found: e.found, all: e.items.length })));
       grid.append(cell);
     }
-    // a VIP's: the events are theirs through VIP (the creator, 2026-11-02)
-    evPage.replaceChildren(head, ...(vipNow() ? [vipYours("bare pp-ev-yours")] : []), grid);
+    evPage.replaceChildren(head, grid);
   }
-  // the events read again (a prize landed, VIP came or went) while the page is up: drawn again
+  // the events read again (a prize landed) while the page is up: drawn again
   suitcases.onChange(() => {
     if (!screen.hidden && view === "events") drawEvents();
   });

@@ -4,9 +4,9 @@
 //   Home's Daily tile     today's state: ready to play, or done in N moves. It opens THE DAILY PAGE
 //                         (the creator, 2026-10-30: the archive's VIP badge on the tile made the daily
 //                         itself look locked, and it never is)
-//   the Daily page        the past days at the top (the archive: for a VIP a strip of the last days
-//                         and the calendar, daily-archive.ts; for anyone else the archive's locked
-//                         door, about the archive alone, vip-door.ts); then today's friends (Server's
+//   the Daily page        the past days at the top (the archive: a strip of the last days and the
+//                         calendar, daily-archive.ts; open to everyone since 2026-11-10, the
+//                         creator: "no VIP gates"); then today's friends (Server's
 //                         src/net/daily-board.ts, read as the page opens, never on a timer): fewest
 //                         moves first, a tie to whoever finished first (the platform's own
 //                         tie-break); the time each took is shown, never ranked. Those two scroll.
@@ -35,12 +35,10 @@
 //
 // THE ARCHIVE, PROMOTED ONCE TODAY IS PLAYED (the creator, 2026-11-02: "if the player has played the daily
 // we want to promote the archive ... Now play the daily archive!"). Before today is played the page is about
-// today: the past days are a quiet strip at the top (a VIP's days, or the locked door's). Once the record has
-// today's finish, the past days move down into the page's middle, just above today's band, as a big glass card:
-// "Now play the daily archive!", the days large. A VIP's are buttons into each day (a played one ticked), the
-// most recent one missed in amber, the page's main action; anyone else's are drawn locked under the gold VIP tag,
-// with one amber button, "Unlock the archive with VIP", into the VIP boarding pass. Today's Play again stays the
-// band's white button: only the first finish counts.
+// today: the past days are a quiet strip at the top. Once the record has today's finish, the past days move
+// down into the page's middle, just above today's band, as a big glass card: "Now play the daily archive!", the
+// days large, each a button into its day (a played one ticked), the most recent one missed in amber, the page's
+// main action. Today's Play again stays the band's white button: only the first finish counts.
 
 import { loadDaily, type Daily } from "../game/levels";
 import { archiveWindow, currentDaily, onDailyChange, today, type DailyToday } from "../net/daily";
@@ -50,9 +48,7 @@ import { ICONS } from "./icons";
 import { liveAttr, liveText, locale, t } from "./i18n";
 import { clock, shortDate } from "./format";
 import { dailyResult, onProgress } from "../net/progress";
-import { vipTag, vipYours } from "./vip-door";
 import { onArcadePause } from "../gem";
-import { onVip, vipNow } from "./vip-view";
 
 type Nav = {
   /** Back: to home. */
@@ -67,10 +63,6 @@ type Nav = {
   calendar(): void;
   /** A past day from the page's strip: play it (a VIP's). */
   playDate(date: string): void;
-  /** Anyone else's archive: the locked door's screen (vip-door.ts). */
-  door(): void;
-  /** Anyone else's promoted archive card: the VIP screen, its boarding pass (vip-about.ts). */
-  vipPass(): void;
 };
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", words = ""): HTMLElementTagNameMap[K] {
@@ -243,12 +235,11 @@ export function createDaily(nav: Nav) {
   document.addEventListener("visibilitychange", () => (document.hidden ? stopShine() : shineSoon()));
 
   /**
-   * The past days. Before today is played: a VIP's strip of the last week and the calendar, anyone else's
-   * locked door, at the top. Once it is played: the promoted card above today's band (the head of this file).
+   * The past days. Before today is played: the strip of the last week and the calendar, at the top. Once it
+   * is played: the promoted card above today's band (the head of this file).
    */
   function drawArchive(): void {
     if (!day) return;
-    const vip = vipNow();
     const promo = !!dailyResult(day.date);
     // its place: the top before today is played; the middle, just above the band, after
     scroll.replaceChildren(...(promo ? [friendsBox, archiveBox] : [archiveBox, friendsBox]));
@@ -258,8 +249,8 @@ export function createDaily(nav: Nav) {
     const head = promo ? el("h2", "daily-promo-head", t("daily.promoHead")) : el("h2", "daily-section-head", t("daily.pastDays"));
     const strip = el("div", "daily-strip");
     const wd = new Intl.DateTimeFormat(locale(), { weekday: "short", timeZone: "UTC" });
-    // a VIP's main action on the promoted card: the most recent day not played yet, in amber
-    let lead = promo && vip;
+    // the promoted card's main action: the most recent day not played yet, in amber
+    let lead = promo;
     for (let n = 1; n <= 6 && lead; n++) {
       const date = daysBefore(day.date, n);
       if (date >= first && !dailyResult(date)) {
@@ -273,53 +264,19 @@ export function createDaily(nav: Nav) {
       const [y, m, d] = date.split("-").map(Number);
       const won = !!dailyResult(date);
       const words = [el("small", "", wd.format(new Date(Date.UTC(y!, m! - 1, d!)))), el("b", "", String(d))];
-      if (vip) {
-        const b = el("button", `btn daily-day${won ? " done" : ""}${strip.dataset.lead === date ? " amber" : ""}`);
-        b.type = "button";
-        b.dataset.press = "daily.pastDay";
-        b.append(...words);
-        if (won) b.insertAdjacentHTML("beforeend", `<svg class="tick" viewBox="0 0 40 32" aria-hidden="true"><path d="M5 17l10 10L36 4"/></svg>`);
-        b.setAttribute("aria-label", t(won ? "archive.dayDone" : "archive.day", { day: shortDate(date) }));
-        b.addEventListener("click", () => nav.playDate(date));
-        strip.append(b);
-      } else {
-        const s = el("span", "daily-day glass");
-        s.append(...words);
-        strip.append(s);
-      }
+      const b = el("button", `btn daily-day${won ? " done" : ""}${strip.dataset.lead === date ? " amber" : ""}`);
+      b.type = "button";
+      b.dataset.press = "daily.pastDay";
+      b.append(...words);
+      if (won) b.insertAdjacentHTML("beforeend", `<svg class="tick" viewBox="0 0 40 32" aria-hidden="true"><path d="M5 17l10 10L36 4"/></svg>`);
+      b.setAttribute("aria-label", t(won ? "archive.dayDone" : "archive.day", { day: shortDate(date) }));
+      b.addEventListener("click", () => nav.playDate(date));
+      strip.append(b);
     }
-    if (vip) {
-      const cal = btn("daily-calendar", "daily.calendar", t("daily.calendar"));
-      cal.addEventListener("click", () => nav.calendar());
-      // the archive is theirs through VIP (the creator, 2026-11-02): said beside the quiet strip's head, under the card's
-      if (promo) archiveBox.replaceChildren(head, vipYours("bare daily-yours"), el("p", "daily-promo-line", t("daily.promoLine")), strip, cal);
-      else {
-        const row = el("div", "daily-head-row");
-        row.append(head, vipYours("daily-yours"));
-        archiveBox.replaceChildren(row, strip, cal);
-      }
-      archiveBox.classList.remove("locked");
-      return;
-    }
-    if (promo) {
-      // anyone else's, promoted: the days drawn locked under the gold tag, and one way in, the VIP boarding pass
-      const top = el("div", "daily-promo-top");
-      top.append(head, vipTag("daily-promo-tag"));
-      const unlock = btn("amber daily-unlock", "daily.unlock", t("daily.unlock"));
-      unlock.addEventListener("click", () => nav.vipPass());
-      archiveBox.replaceChildren(top, el("p", "daily-promo-line", t("daily.archiveLocked")), strip, unlock);
-      archiveBox.classList.add("locked");
-      return;
-    }
-    // the archive's locked door: the strip dimmed under the padlock and VIP tag, one line on what it is
-    const door = el("button", "daily-door glass");
-    door.type = "button";
-    door.dataset.press = "daily.archiveDoor";
-    door.setAttribute("aria-label", t("archive.badgeLocked"));
-    door.append(strip, vipTag("daily-door-tag"), el("span", "daily-door-line", t("daily.archiveLocked")));
-    door.addEventListener("click", () => nav.door());
-    archiveBox.replaceChildren(head, door);
-    archiveBox.classList.add("locked");
+    const cal = btn("daily-calendar", "daily.calendar", t("daily.calendar"));
+    cal.addEventListener("click", () => nav.calendar());
+    if (promo) archiveBox.replaceChildren(head, el("p", "daily-promo-line", t("daily.promoLine")), strip, cal);
+    else archiveBox.replaceChildren(head, strip, cal);
   }
 
   /**
@@ -414,7 +371,6 @@ export function createDaily(nav: Nav) {
       drawFriends();
     }
   };
-  onVip(redraw);
   onProgress(redraw);
 
   return {

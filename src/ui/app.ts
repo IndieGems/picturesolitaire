@@ -111,7 +111,6 @@ import { friendAction, launchLink, markAnswered, recentFriendActions, watchFrien
 import { currentDaily, today as dailyToday } from "../net/daily";
 import { onVipGift, pretendVip, VIP_DAILY, VIP_WELCOME, type VipGift } from "../net/vip";
 import { createVipGifts } from "./vip-gifts";
-import { createVipDoor } from "./vip-door";
 import { createVipAbout, createVipBadge, pretendVipEnds } from "./vip-about";
 import { wearBackWords } from "./back";
 import { createArchive } from "./daily-archive";
@@ -155,53 +154,18 @@ const dailyUi = createDaily({
   home: () => goHome(),
   show: () => show("daily"),
   play: (d) => openPlay({ kind: "daily", d }),
-  // the page's past days (docs/vip.md): a VIP's calendar and days, or anyone else's locked door
+  // the page's past days (open to everyone since 2026-11-10): the calendar and the days
   calendar: () => archiveUi.open(),
   playDate: (date) => void playPastDay(date, { archive: true }),
-  door: () => vipDoorUi.open({ kind: "archive", today: currentDaily().date }),
-  vipPass: () => vipAboutUi.open(),
 });
-// the events (suitcase.ts, docs/vip.md): VIP packs of 30 levels with 10 items hidden among them; home's strip,
-// each event's page and the other events; for VIPs only (event-switch.ts), a locked door for anyone else
+// the events (suitcase.ts, docs/vip.md): packs of 30 levels with 10 items hidden among them; home's strip, each
+// event's page and the other events; for everyone while the event is on (event-switch.ts)
 const suitcaseUi = createSuitcase({
   home: () => goHome(),
   show: () => show("suitcase"),
   playLevel: (_event, level) => void playEventLevel(level),
-  door: (d) => vipDoorUi.open(d),
 });
-// a locked VIP door's screen (vip-door.ts): what the daily archive or the event holds, and Get VIP; VIP
-// arriving while it is up goes in (the event's page once its record is in: enterEvent)
-const vipDoorUi = createVipDoor({
-  home: () => backFrom("vip"),
-  show: () => show("vip"),
-  enter: (d) => (d.kind === "archive" ? archiveUi.open() : enterEvent()),
-});
-/** How long VIP arriving on the event's door waits for the event's record (read once VIP is on: Server's). */
-const EVENT_WAIT_MS = 8000;
-/**
- * VIP arrived on the event's door (bought there, or Pretend: QA, 2026-11-01, was sent home): the event's
- * page as soon as its record is in, so it never opens on "No event right now"; home only if the record
- * has not come in EVENT_WAIT_MS (the read failed, or there is truly no event). The door stays up meanwhile,
- * its Get VIP gone; a player who leaves it first is left where they went.
- */
-function enterEvent(): void {
-  const ready = () => eventShown() && suitcases.newest() !== null;
-  if (ready()) return void suitcaseUi.open();
-  let settled = false;
-  const go = (inside: boolean) => {
-    if (settled) return;
-    settled = true;
-    off();
-    clearTimeout(timer);
-    if (screen !== "vip") return;
-    if (inside) suitcaseUi.open();
-    else goHome();
-  };
-  const off = suitcases.onChange(() => ready() && go(true));
-  const timer = setTimeout(() => go(ready()), EVENT_WAIT_MS);
-  suitcases.refresh();
-}
-// the daily archive (daily-archive.ts): a VIP's calendar of this month's and the two before's dailies
+// the daily archive (daily-archive.ts): the calendar of this month's and the two before's dailies
 const archiveUi = createArchive({
   home: () => backFrom("archive"),
   show: () => show("archive"),
@@ -378,8 +342,10 @@ suitcases.onChange(() => {
 // a VIP's gifts (vip-gifts.ts): the day's two helpers and the welcome's eight, each paid by the checker
 // (Server's onVipGift), on a card of its own over home once home can take it (giftReady), after the rest
 const vipGifts = createVipGifts({
-  // the welcome card's "Show me the events!": the event's page
-  events: () => suitcaseUi.open(),
+  // the welcome card's "Let's play!": the next level, as home's Next stop opens it (once home is up)
+  play: () => {
+    if (screen === "home") void playNext();
+  },
   ready: () => giftReady(),
   changed: (up) => {
     if (up) return;
@@ -398,7 +364,7 @@ const pokeCards = (): void => {
   vipGifts.poke();
 };
 
-app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, suitcaseUi.screen, vipDoorUi.screen, vipAboutUi.screen, archiveUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, dareVeil, resumeVeil, runOut.element, homeShop.element, cosmeticsUi.screen, unlockUi.veil, finishUi.veil, vipGifts.veil, loadVeil, offlineVeil);
+app.append(home, boardScreen, albumsUi.listScreen, albumsUi.albumScreen, passportUi.screen, routeUi.screen, dailyUi.screen, suitcaseUi.screen, vipAboutUi.screen, archiveUi.screen, albumsUi.viewer, passportUi.viewer, winVeil, winViewer.element, restartVeil, dareVeil, resumeVeil, runOut.element, homeShop.element, cosmeticsUi.screen, unlockUi.veil, finishUi.veil, vipGifts.veil, loadVeil, offlineVeil);
 // every screen's Back says it in words (back.ts; the creator's pick, 2026-11-02)
 wearBackWords(app);
 // the win card's Challenge a friend and Share, and the friends sheet over it (friend-cards.ts)
@@ -406,7 +372,7 @@ const friendCards = createFriendCards(app);
 
 // ---------- state ----------
 
-type Screen = "home" | "board" | "albums" | "album" | "passport" | "challenges" | "daily" | "suitcase" | "cosmetics" | "vip" | "vipAbout" | "archive";
+type Screen = "home" | "board" | "albums" | "album" | "passport" | "challenges" | "daily" | "suitcase" | "cosmetics" | "vipAbout" | "archive";
 /** Where a past day's daily was opened from: the Daily page's days or the archive's calendar. */
 type DailyFrom = { archive: true };
 /**
@@ -560,12 +526,10 @@ function momentOf(run: () => void): void {
 
 /**
  * BACK RETURNS WHERE THE PLAYER CAME FROM (the creator via the lead, 2026-11-02: "a player who looked and
- * didn't buy should land where they were"): the VIP screen (home's badge, the Daily page's unlock), the
- * archive's locked door (home, the Daily page) and the archive's calendar remember the screen that opened
- * them, and their Back goes there: the Daily page, or home. A door VIP went through hands its opener on (the
- * calendar it opened into goes back where the door would have).
+ * didn't buy should land where they were"): the VIP screen and the archive's calendar remember the screen
+ * that opened them, and their Back goes there: the Daily page, or home.
  */
-const RETURNS: readonly Screen[] = ["vipAbout", "vip", "archive"];
+const RETURNS: readonly Screen[] = ["vipAbout", "archive"];
 const openedFrom: Partial<Record<Screen, Screen>> = {};
 /** Back from `s`: to the screen that opened it (the Daily page), else home. */
 function backFrom(s: Screen): void {
@@ -576,7 +540,7 @@ function backFrom(s: Screen): void {
 }
 
 function show(next: Screen): void {
-  if (RETURNS.includes(next) && next !== screen) openedFrom[next] = screen === "vip" ? (openedFrom.vip ?? "home") : screen;
+  if (RETURNS.includes(next) && next !== screen) openedFrom[next] = screen;
   screen = next;
   // the table's weather on home and the menus only, never on a board, its win card or a stamp moment
   // (the creator, 2026-10-28: "too distracting" during a level): a quick fade out, and back on home
@@ -596,7 +560,6 @@ function show(next: Screen): void {
   passportUi.screen.hidden = next !== "passport";
   if (next !== "passport") passportUi.leave();
   routeUi.screen.hidden = next !== "challenges";
-  vipDoorUi.screen.hidden = next !== "vip";
   vipAboutUi.screen.hidden = next !== "vipAbout";
   archiveUi.screen.hidden = next !== "archive";
   dailyUi.screen.hidden = next !== "daily";
@@ -2814,7 +2777,6 @@ onLocaleChange(() => {
   passportUi.redraw();
   dailyUi.redraw();
   suitcaseUi.redraw();
-  vipDoorUi.redraw();
   vipAboutUi.redraw();
   albumsUi.redraw();
   routeUi.redraw();
@@ -3118,12 +3080,10 @@ export async function startApp(): Promise<void> {
       unlocked: (slugs: string[]) => unlockUi.add(slugs.map((slug) => ({ slug }))),
       /** Play as a VIP (docs/vip.md), as the dev menu's switch does: on the play-test frame, no server to ask, so it holds. */
       vip: (on: boolean) => pretendVip(on),
-      /** Show Get VIP on the doors and in Cosmetics (true; "signin", a guest's Sign in), so its words can be seen; its press only logs. As ?vipsale. */
+      /** Show Get VIP on home's VIP screen and in Cosmetics (true; "signin", a guest's Sign in), so its words can be seen; its press only logs. As ?vipsale. */
       vipSale: (on: boolean | "signin") => forceVipSale(on),
       /** The daily archive's calendar (as a VIP's badge opens it). */
       archive: () => archiveUi.open(),
-      /** The locked door's screen for the archive (as a non-VIP's Daily page opens it). */
-      door: () => vipDoorUi.open({ kind: "archive", today: currentDaily().date }),
       /** Home's VIP screen (vip-about.ts), as the badge opens it. */
       vipAbout: () => vipAboutUi.open(),
       /** A member's pass as if it ended at `ms` (null: no end known; undefined: the SDK's word), for the days left. */

@@ -2,14 +2,13 @@
 // and word when that changes. The answer is the server's (Server's src/net/vip.ts): "not VIP" until it
 // lands; on dev the dev menu's "Pretend I'm VIP" changes it (kept in the player's settings, so it holds
 // across reloads and devices). Every screen that differs for a VIP draws the non-VIP way until then, and
-// follows each change while it is up (onVip): a door opens the moment VIP arrives, and locks when it ends.
+// follows each change while it is up (onVip).
 //
-// A NON-VIP MEETS LOCKED DOORS, never a hidden feature (the creator, 2026-10-30, after Untangled): the
-// daily archive's entry and the event's tile wear a padlock and a gold "VIP" tag, and a tap opens a
-// screen of what is inside (vip-door.ts). Cosmetics says the same in a banner (cosmetics.ts), only while
-// VIP lends the Cosmetics (VIP_WEARS_ALL, below: off since 2026-11-02).
+// VIP LOCKS NOTHING (the creator, 2026-11-10: "no VIP gates"): the events, the past events and the daily
+// archive are everyone's, and VIP gives better rewards instead (vip-tag.ts vipPerks). Cosmetics shows a VIP
+// banner only while VIP lends the Cosmetics (VIP_WEARS_ALL, below: off since 2026-11-02).
 //
-// GET VIP, ONE BUTTON for the door's screen and the Cosmetics banner (vipButton; the Arcade sells VIP
+// GET VIP, ONE BUTTON for home's VIP screen and the Cosmetics banner (vipButton; the Arcade sells VIP
 // from 2026-11-01, gem-web#4375; the SDK's docs/arcade-and-store.md §4 and §8-§11):
 //   - it shows only where the Arcade can draw its own VIP sheet (gem.store.showOfferAvailable) and the
 //     VIP pass is in this player's offers (gem.store.offers()), read once the bridge is up and again on
@@ -22,8 +21,8 @@
 //     sheet says what VIP is, in the player's language, sale and all;
 //   - declined (closed, or busy: another Arcade sheet open) shows nothing and never asks again by itself;
 //   - ok, or unavailable/error (the outcome is unknown: they may have paid), asks the server again
-//     (recheckVip). NOTHING HERE OPENS A DOOR: only the server's word does (isVip, onVipChange).
-// A VIP never sees it: the doors are for players who are not, and the Cosmetics banner (while it shows)
+//     (recheckVip). NOTHING HERE MAKES A VIP: only the server's word does (isVip, onVipChange).
+// A VIP never sees it: the VIP screen shows a member their perks instead, and the Cosmetics banner (while it shows)
 // says "yours".
 // Outside a release build, ?vipsale shows Get VIP (?vipsale=signin, the guest's) so its words can be
 // seen where no Arcade answers; its press only logs.
@@ -59,7 +58,7 @@ export const vipNow = (): boolean => isVip();
  * THE ONE SWITCH for VIP lending the Cosmetics (docs/vip.md perk 5): with it on, a VIP wears any
  * table and plays any soundtrack the shop sells without owning it (tables.ts, tracks.ts), Cosmetics
  * marks what is owned and what is lent ("Owned", "With VIP"), offers "Keep it" on a lent one and shows
- * its VIP banner, and the VIP door lists it among the perks (vip-door.ts). The creator turned it OFF on
+ * its VIP banner, and the VIP screen lists it among the perks (vip-tag.ts vipPerks). The creator turned it OFF on
  * 2026-11-02 ("remove the fact that VIP member can use all cosmetics at anytime ... keep it in case we
  * go back to it"): a VIP is then treated exactly as anyone in Cosmetics, and a borrowed choice falls
  * back to the latest one they own (else the default) at the next boot or VIP read. True brings back
@@ -84,7 +83,7 @@ export function onVip(fn: () => void): () => void {
 const saleNow = (): Sale => (vipNow() ? "no" : (forced ?? sale));
 
 /**
- * The one Get VIP button (the door's screen, the Cosmetics banner), or null where VIP cannot be had
+ * The one Get VIP button (home's VIP screen, the Cosmetics banner), or null where VIP cannot be had
  * from here. `cls` places it. Draw it again on onVip.
  */
 export function vipButton(cls: string): HTMLButtonElement | null {
@@ -104,7 +103,7 @@ function getVip(): void {
   if (forced) return void console.info("[vip] Get VIP pressed (?vipsale: nothing opened)");
   void gem.store.showOffer(VIP_SKU).then(({ outcome, reason }) => {
     if (outcome !== "ok") console.info(`[vip] the VIP sheet: ${outcome}${reason ? ` (${reason})` : ""}`);
-    // paid (or pending), or nobody knows: the server is asked; it alone opens a door
+    // paid (or pending), or nobody knows: the server is asked; it alone says who is VIP
     if (outcome === "ok" || reason === "error") recheckVip();
     // closed, or another Arcade sheet open: nothing, and never asked again by itself; anything else
     // (not on sale here any more, a sign-in wanted, the store off): what the button should be now

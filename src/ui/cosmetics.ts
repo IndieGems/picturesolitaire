@@ -52,7 +52,7 @@ import { fitText } from "./fit";
 import { shop, type BuyAnswer, type CosmeticKind } from "./cosmetics-shop";
 import { BUILT_IN_TABLE, chooseTable, chosenTable, knownTable, onTableChange, pickerTables, shopTableArts, tableTitle, thumbOf, warmThumbs, wearTable, type TableArt } from "./tables";
 import { chooseTrack, chosenTrack, onTrackChange, ownedTrackIds, TRACK_LIST, trackTitle, type TrackInfo } from "./tracks";
-import { vipTag } from "./vip-door";
+import { vipTag } from "./vip-tag";
 import { onVip, vipButton, vipLends, vipNow, VIP_WEARS_ALL } from "./vip-view";
 
 type Nav = {

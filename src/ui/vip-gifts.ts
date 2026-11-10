@@ -12,9 +12,10 @@
 // what they'll get with VIP in our game"). The welcome gift's payment is the one seam that already knows this is a
 // membership's first visit (once a membership, again after a lapse), so it is the trigger: no flag of ours, nothing
 // kept. "Welcome, VIP!", what VIP gives here as the boarding pass says it (vip-about.ts vipPassLines, best first,
-// the welcome gift left to its own card), then "Show me the events!" (the gift card at once all the same, then the
-// event's page once it closes: nobody waits for their gift) or "Later" (the gift card at once, then home; Back and
-// Escape too). The calm one: the rays, no fireworks, no sound
+// the welcome gift left to its own card), then "Let's play!" (the gift card at once all the same, then the next
+// level, as home's Next stop opens it, once it closes: nobody waits for their gift; it was "Show me the events!"
+// until the events opened to everyone, 2026-11-10) or "Later" (the gift card at once, then home; Back and Escape
+// too). The calm one: the rays, no fireworks, no sound
 // (the gift card's milestone is the one celebration). Only what the game gives: no price, never "free", nothing of
 // the Arcade's own perks, no other game named.
 //
@@ -36,7 +37,7 @@ import { fireworks } from "./fireworks";
 import { helperPic } from "./helper-shop";
 import { t } from "./i18n";
 import { KINDS, type HelperKind } from "./stock";
-import { vipTag } from "./vip-door";
+import { vipTag } from "./vip-tag";
 import { vipPassLines } from "./vip-about";
 import type { VipGift } from "../net/vip";
 
@@ -53,8 +54,8 @@ interface Opts {
   onStock: (fn: () => void) => () => void;
   /** The most of one helper a player can carry (HELPER_CAP). */
   cap: number;
-  /** The welcome card's "Show me the events!": the event's page. */
-  events: () => void;
+  /** The welcome card's "Let's play!": the next level, as home's Next stop opens it. */
+  play: () => void;
 }
 
 /** A gift waits this long once home can take it, so whatever else home's boot shows comes first. */
@@ -96,8 +97,8 @@ export function createVipGifts(o: Opts) {
   /** The welcomes whose welcome card has been shown, by the payment's id. */
   const welcomed = new Set<string>();
   let timer = 0;
-  /** The welcome card's "Show me the events!" was pressed: the event's page once the gifts' cards close. */
-  let toEvents = false;
+  /** The welcome card's "Let's play!" was pressed: the next level once the gifts' cards close. */
+  let toPlay = false;
   /** The card up now: lands its helpers at once, and takes it down. */
   let current: { land(): void; landed(): boolean; stop(): void } | null = null;
 
@@ -110,18 +111,18 @@ export function createVipGifts(o: Opts) {
     veil.replaceChildren();
     closed(veil);
     o.changed?.(false);
-    if (toEvents) {
-      // the welcome card's "Show me the events!": the gifts that came with it (the day's) at once, then the page
+    if (toPlay) {
+      // the welcome card's "Let's play!": the gifts that came with it (the day's) at once, then the next level
       const next = pending.shift();
       if (next) return show(next);
-      toEvents = false;
-      return o.events();
+      toPlay = false;
+      return o.play();
     }
     // the next (the day's, after the welcome) after a beat of home
     poke();
   }
 
-  /** The welcome card, before the welcome gift's: what VIP gives here, then the events or the gift. */
+  /** The welcome card, before the welcome gift's: what VIP gives here, then play on or the gift. */
   function welcomeCard(g: VipGift): void {
     welcomed.add(g.id);
     const openedAt = performance.now();
@@ -136,9 +137,9 @@ export function createVipGifts(o: Opts) {
     const line = el("p", "vg-line", t("vip.welcome.line"));
     line.id = "vip-gift-sub";
     perks.append(line, vipPassLines(false));
-    const go = el("button", "btn amber next vg-go", t("vip.welcome.events"));
+    const go = el("button", "btn amber next vg-go", t("vip.welcome.play"));
     go.type = "button";
-    go.dataset.press = "vipWelcome.events";
+    go.dataset.press = "vipWelcome.play";
     const later = el("button", "btn vg-later", t("vip.welcome.later"));
     later.type = "button";
     later.dataset.press = "vipWelcome.later";
@@ -150,8 +151,8 @@ export function createVipGifts(o: Opts) {
     go.addEventListener("click", () => {
       // a tap meant for what was under it
       if (performance.now() - openedAt < HOLD_MS) return;
-      // the gift first all the same, then the event's page once it closes
-      toEvents = true;
+      // the gift first all the same, then the next level once it closes
+      toPlay = true;
       toGift();
     });
     later.addEventListener("click", () => {

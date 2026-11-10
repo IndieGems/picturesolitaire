@@ -1,8 +1,6 @@
-// THE DAILY ARCHIVE (docs/vip.md, perk 2; the game standard's "An archive of past dailies keeps this month
-// and the two before it"): a VIP plays past days' daily puzzles from a calendar. Its way in is a round
-// calendar badge on home's Daily tile (the creator's pick, 2026-10-30: the tile itself still plays today
-// in one tap); for a player who is not a VIP the badge wears the padlock and gold VIP tag, and opens the
-// locked door's screen instead (vip-door.ts).
+// THE DAILY ARCHIVE (the game standard's "An archive of past dailies keeps this month and the two before
+// it"): any player plays past days' daily puzzles from a calendar (open to everyone since 2026-11-10, the
+// creator: "no VIP gates"; it was a VIP's until then). Its way in is the Daily page's Calendar (daily.ts).
 //
 //   the calendar   one month a page (after Untangled's): ‹ the month › within the window, Monday first,
 //                  each day of the window a button (won: ticked; today: ringed), days to come greyed,
@@ -14,14 +12,12 @@
 // the 1st of the month two before today, to yesterday; it turns at the player's midnight on the 1st.
 // While the date is still the device's guess the calendar draws from it, and draws again when the
 // platform's lands. Which days are won is the server's record (src/net/progress.ts, dailyResult): the
-// server pays a past day's Coins once, to a VIP, inside the window (with a day of slack), never here.
+// server pays a past day's Coins once, inside the window (with a day of slack), never here.
 
 import { archiveWindow, currentDaily, onDailyChange } from "../net/daily";
 import { onProgress, dailyResult } from "../net/progress";
 import { ICONS } from "./icons";
 import { liveAttr, locale, t } from "./i18n";
-import { onVip, vipNow } from "./vip-view";
-import { vipYours } from "./vip-door";
 
 type Nav = {
   home(): void;
@@ -131,8 +127,7 @@ export function createArchive(nav: Nav) {
       b.addEventListener("click", () => (isToday && done ? nav.results() : nav.play(date)));
       grid.append(b);
     }
-    // the archive is theirs through VIP (the creator, 2026-11-02), said over the month
-    const kids: HTMLElement[] = [vipYours("arc-yours"), head, grid, el("p", "arc-count glass", t("archive.won", { n: won, all: open }))];
+    const kids: HTMLElement[] = [head, grid, el("p", "arc-count glass", t("archive.won", { n: won, all: open }))];
     // today's, not won yet: the way to play it
     if (shown === lastMonth && !dailyResult(today)) {
       const play = el("button", "btn amber next arc-play", t("archive.playToday"));
@@ -144,15 +139,13 @@ export function createArchive(nav: Nav) {
     body.replaceChildren(...kids);
   }
 
-  // the day turned, the platform's date replaced the guess, a day was won, VIP went: drawn again
+  // the day turned, the platform's date replaced the guess, a day was won: drawn again
   const redraw = () => {
     if (screen.hidden) return;
-    if (!vipNow()) return nav.home();
     draw();
   };
   onDailyChange(redraw);
   onProgress(redraw);
-  onVip(redraw);
 
   return {
     screen,

@@ -11,15 +11,16 @@
 //                member, a VIP BOARDING PASS (the creator's pick of four, 2026-11-02, after "act more excited
 //                about this with exclamation marks"): paper, flat, a gold band "FIRST CLASS ✈ VIP", Passenger:
 //                You!, Seat 1A, From Picture Passport, Valid in All of Gem Arcade, the suitcase; "Your VIP
-//                boarding pass" over its four stamped lines, the best first (the creator, 2026-11-02): every
-//                event and its prize table, the daily archive, the day's gift, the welcome gift (what
-//                vip-door.ts vipPerks lists, in the same order, in the pass's words); its barcode stub carrying, red and larger, "Other Gem Arcade games give VIP rewards
+//                boarding pass" over its four stamped lines, the best first (the creator, 2026-11-10, when
+//                VIP stopped locking the events and the archive): 50% more Coins on every reward, double
+//                helpers on every helper reward, the day's gift, the welcome gift (what vip-tag.ts vipPerks
+//                lists, in the same order, in the pass's words); its barcode stub carrying, red and larger, "Other Gem Arcade games give VIP rewards
 //                too!", never which games or what (the Arcade's own sheet lists its perks: the SDK's
 //                arcade-and-store.md, "Never write an offer's perks"); then "Get VIP: board now!" (vip-view.ts
 //                vipButton: Sign in for a guest, nothing where the Arcade cannot sell it). A member reads the
 //                travel picture (the suitcase between two helpers, the gold tag), "You're VIP" and the days
 //                left on the pass, else a thank-you, the perks and the other games' line, and no Get VIP. It
-//                follows VIP coming or going while it is up, as the doors do.
+//                follows VIP coming or going while it is up.
 //
 // The days left are for show only, from the SDK's pass reading (gem.me.passes: the same reading the game's
 // VIP listener hears, src/net/vip.ts), never a decision: who is VIP is the server's word (vipNow). Read once
@@ -31,7 +32,7 @@ import { held } from "../net/pace";
 import { ICONS } from "./icons";
 import { liveAttr, liveText, onLocaleChange, t } from "./i18n";
 import { onVip, vipButton, vipNow } from "./vip-view";
-import { vipPerks, vipTag } from "./vip-door";
+import { vipCoinsPct, vipPerks, vipTag } from "./vip-tag";
 import { helperPic } from "./helper-shop";
 import { VIP_DAILY_SIZE, VIP_WELCOME_SIZE } from "../net/vip";
 
@@ -115,7 +116,7 @@ export function pretendVipEnds(ms: number | null | undefined): void {
  */
 export function vipPassLines(welcome = true): HTMLUListElement {
   const lines = el("ul", "vip-pass-lines");
-  const words = [t("vip.about.pass.events"), t("vip.about.pass.archive"), t("vip.about.pass.daily", { count: VIP_DAILY_SIZE })];
+  const words = [t("vip.about.pass.coins", { pct: vipCoinsPct() }), t("vip.about.pass.helpers"), t("vip.about.pass.daily", { count: VIP_DAILY_SIZE })];
   if (welcome) words.push(t("vip.about.pass.welcome", { count: VIP_WELCOME_SIZE }));
   for (const w of words) {
     const li = el("li");
