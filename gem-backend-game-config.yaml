@@ -6100,7 +6100,7 @@ progressions:
           target: { platform_currency_slug: ARCADE_TICKETS }
   # THE DAILY ARCHIVE (docs/vip.md): the first verified win of a past day in the archive, anyone's (this
   # month and the two before, with a day of slack) adds one day here, which pays a past day's Coins,
-  # 25 (the creator, 2026-11-10; was 50), once (the checker's record says which days were paid). Only the win checker writes it.
+  # 15 (the creator, 2026-11-10; was 50), once (the checker's record says which days were paid). Only the win checker writes it.
   - id: 795d5832-be77-44b1-a949-6ae8ec1c629d
     slug: daily_archive
     display_name: "Past daily puzzles"
@@ -6108,7 +6108,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_add
-          per_unit: 25
+          per_unit: 15
           target: { platform_currency_slug: ARCADE_TICKETS }
   # THE VIP EXTRA (docs/vip.md; the creator, 2026-11-10): +50% on every Coin payout for a VIP, as its
   # own grant INSIDE the reward's own order (the platform pays one order a call): the checker adds the
@@ -6138,7 +6138,7 @@ progressions:
     config:
       completion_threshold: 10
       reset_schedule: { type: monthly, boundary: local }
-  # EACH ITEM FOUND pays its Coins with it (the creator, 2026-11-10: 20 an item, 200 an event, was 50; paid as
+  # EACH ITEM FOUND pays its Coins with it (the creator, 2026-11-10: 15 an item, 150 an event, was 50; paid as
   # the items land; the platform pays at most 100 in one grant): the checker adds one here in the
   # order that grants the item, once per item. Only the win checker writes it.
   - id: b4e6b838-1c85-4d66-9bee-74e2e7cdf093
@@ -6148,7 +6148,7 @@ progressions:
       function_may_grant: true
       platform_grants:
         - mode: on_add
-          per_unit: 20
+          per_unit: 15
           target: { platform_currency_slug: ARCADE_TICKETS }
   # Each event's suitcase paid, and its Passport stamp: moved to 1 by the checker in the same order
   # as its table, so it lands with it or not at all, once. The old months' marks stay declared.

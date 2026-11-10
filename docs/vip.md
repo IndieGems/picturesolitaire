@@ -36,7 +36,7 @@ VIP's alone, behind locked doors (the plan of 2026-10-30, in `git log` of this f
   pictures (none on another level first, none twice within an event), with **10 items, one hidden in
   each of 10 of its levels** (seeded, `itemLevels` in `events-plan.json`: at least one in levels 1–5,
   never 25 or 30). Which levels hide items is never shown: a won item level wears a suitcase. Each
-  item found pays **20 Coins** (200 an event, paid as each lands, so no lump at the end; 50 and 500
+  item found pays **15 Coins** (150 an event, paid as each lands, so no lump at the end; 50 and 500
   until config 65), and finding all 10 wins the event's table and its **stamp in the Passport** (its
   "Event stamps" page), once. Its levels pay 5 to 15 Coins each (0.45 a move: the creator, 2026-11-10,
   about 280 an event; `docs/coins.md`). An event is playable from its release
@@ -66,8 +66,8 @@ landed, its Coins did not.
    order (the platform caps one grant at 100, so a 100 pays 100 and 50). The rule is
    **ceil(base / 2)**: 25 pays +13, 50 pays +25, 100 pays +50. It covers every Coin payout: each
    lane's first win (the campaign, the welcome boards 1–5 included, Souvenirs, the challenge route,
-   event levels), First Steps' prize, the daily's 50, a past day's 25, and each event item's 20
-   (the rates since config 66: `docs/coins.md`).
+   event levels), First Steps' prize, the daily's 50, a past day's 15, and each event item's 15
+   (the rates since config 67: `docs/coins.md`).
 2. **Double helpers on every helper reward**: the guided start's kit (3 of each becomes 6), a hard
    board's first win, a stamp, and the daily's first win. Each grant is clamped at the cap of 20.
 3. **VIP's own gifts, unchanged** (the creator, 2026-11-01, after Jade Match):

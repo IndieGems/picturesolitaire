@@ -11,13 +11,14 @@ lane's least to its most:
 
 - a trip level from Level 6: 0.75 a move, 10 to 30 (a third below the old rate; the cap is the old 40 cut in
   proportion, a third less being 27, rounded to 30 to keep about 500 an hour);
-- an event level: 0.45 a move, 5 to 15, and each item found 20 more (200 an event);
+- an event level: 0.45 a move, 5 to 15, and each item found 15 more (150 an event);
 - the challenge route (off home): 0.75 a move, 10 to 35, the same third off;
 - a Souvenir: its trip's better-paying relief board, so a third less with them (below);
-- today's daily puzzle 50, once a day; a past day from the archive 25, once each.
+- today's daily puzzle 50, once a day; a past day from the archive 15, once each.
 
 Until config 65 every lane paid 1.1 a move (10 to 40; the challenge route 10 to 50), an item
-found 50 and a past day 50. **Nothing is taken back**: each board pays once, ever, so a level
+found 50 and a past day 50; config 66 (dev only) paid 20 an item and 25 a past day, and the creator trimmed both to
+15 and 15 the same day. **Nothing is taken back**: each board pays once, ever, so a level
 already won keeps what it paid then. A campaign board's stored line is a winning line, not
 necessarily the shortest; a challenge board's is its par, the fewest moves found. Its length
 stands in for how long the board takes. Campaign board 1 pays the onboarding prize instead, 100.
@@ -48,25 +49,25 @@ trip level, but it is one bonus level per trip, never repeated, so it moves no h
 | lane | levels | a level, on average | in all | an hour | an hour, VIP | until config 65 |
 | --- | --- | --- | --- | --- | --- | --- |
 | Trip levels from Level 6 | 325 | 26.5 Coins, 37.7 moves | 8,610 | 506 | 762 | 36.6 a level, 700 an hour |
-| Events (6, 30 levels each) | 180 | 9.4 Coins, 20.8 moves; an event 283 + 200 for its items = 483 | 2,895 | 556 | 839 (728 an event) | 1203 an event, 1387 an hour |
+| Events (6, 30 levels each) | 180 | 9.4 Coins, 20.8 moves; an event 283 + 150 for its items = 433 | 2,595 | 499 | 758 (658 an event) | 1203 an event, 1387 an hour |
 | Challenge route (off home) | 20 | 18.3 Coins, 24.4 moves | 365 | 540 | 818 | 27.0 a level, 798 an hour |
 | Souvenirs (one-off bonus) | 10 | 25.0 Coins, 13.8 moves | 250 | (1304) | (1967) | 350 in all |
 | Today's daily | 1 a day | 50 Coins, 19.9 moves | 50 a day | (once a day) | 75 a day | 50 |
-| A past day (the archive) | this month and the two before | 25 Coins, 19.9 moves | 25 each | 903 | 1373 | 50 each, 1806 an hour |
+| A past day (the archive) | this month and the two before | 15 Coins, 19.9 moves | 15 each | 542 | 831 | 50 each, 1806 an hour |
 
 Read it so:
 
 - **Trip levels** are the ordinary play: about 506 an hour, 762 for a VIP. At 2 minutes a
   level 795, at 4 minutes 397. Most levels pay the cap (199 of 325 at 30): their lines are 37 moves or longer.
-- **An event** pays its levels (5 to 15 each) and 20 with each item found, paid as each lands, never
+- **An event** pays its levels (5 to 15 each) and 15 with each item found, paid as each lands, never
   in one grant over the platform's 100. The prize for finding all 10 is the event's table and its Passport
   stamp, no Coins and no helpers. Each event is open for good, so an event is a one-off of about 52 minutes.
-- **Today's daily** is once a day, on top. **A past day** pays 25 (the creator's figure); its short line
-  means a player catching up on the archive earns faster than the trip levels' rate, but only for the days
-  the archive holds (this month and the two before), each once.
+- **Today's daily** is once a day, on top. **A past day** pays 15 (the creator, 2026-11-10): its line is short, so
+  that is about the trip levels' rate for a player catching up on the archive, over the days it holds
+  (this month and the two before), each once.
 - One-time: the welcome (boards 1 to 5), the onboarding prize and First Steps' prize. Replays and campaign boards past the last pay nothing.
 - **VIP** (the creator, 2026-11-10; docs/vip.md): every payout above pays a VIP 1/2 more, rounded up, inside
-  its reward's own order (5 +3, 10 +5, 20 +10, 25 +13, 30 +15, 50 +25, 100 +50), and every helper reward 2 times over.
+  its reward's own order (5 +3, 10 +5, 15 +8, 25 +13, 30 +15, 50 +25, 100 +50), and every helper reward 2 times over.
   **VIP +50% is the Gem Arcade's rule, relayed by the creator on 2026-11-10**; the rates above put a VIP at
   about 750 an hour, the creator's "VIPs 750". The platform's 4,000 a day per game still holds.
 - **Still to measure: real minutes per level.** No play-time data yet; every hourly figure here is the

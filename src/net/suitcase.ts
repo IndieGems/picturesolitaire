@@ -1,6 +1,6 @@
 // THE EVENTS, the platform's word: content packs (docs/vip.md, the creator, 2026-10-30), open to
 // everyone since 2026-11-10 (the creator: VIP gates no content, it gets better rewards instead). Each
-// event is 30 levels of its own, with 10 items hidden one per level; each item found pays 20 Coins with
+// event is 30 levels of its own, with 10 items hidden one per level; each item found pays 15 Coins with
 // it (the creator, 2026-11-10; it was 50), and finding all 10 wins the event's table and its Passport stamp, once (the creator, 2026-10-30).
 // Open from its release date on, for good: no deadline, no swap, no spares, and nothing from the
 // dailies. The screens (src/ui/suitcase.ts, through src/ui/suitcase-data.ts) draw from events() and

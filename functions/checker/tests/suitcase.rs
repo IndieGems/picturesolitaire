@@ -152,10 +152,10 @@ fn a_pack_grants_the_one_item_and_its_coins_and_the_receipt_says_the_count_after
     assert_eq!(suitcase::find_coins(), ids["finds"]["coins"].as_u64().unwrap());
     assert!(suitcase::find_coins() <= 100, "one grant pays at most 100 (the platform's max_per_event)");
     let receipt = vec![
-        json!({ "type": "platform_grant", "progression_definition_id": suitcase::finds_id(), "granted": 20, "requested": 20 }),
+        json!({ "type": "platform_grant", "progression_definition_id": suitcase::finds_id(), "granted": 15, "requested": 15 }),
         json!({ "type": "platform_grant", "progression_definition_id": "the-levels-own", "granted": 10, "requested": 10 }),
     ];
-    assert_eq!(suitcase::coins_found(&receipt), 20, "only the find's grant");
+    assert_eq!(suitcase::coins_found(&receipt), 15, "only the find's grant");
     assert_eq!(ops[0]["type"], "item_grant");
     assert_eq!(ops[0]["item_definition_id"], suitcase::uuid(e, 1));
     assert_eq!(ops[0]["quantity"], 1);

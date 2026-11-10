@@ -16,13 +16,13 @@
 // THE AMOUNTS (the creator, 2026-11-10: "players get about 500/hr and VIPs 750", for all ordinary
 // play; LANES below): Coins per move of the board's stored winning line, rounded to 5, between a
 // lane's least and most. A trip level 0.75 a move, 10 to 30; a challenge board 0.75, 10 to 35; an
-// event level 0.45, 5 to 15, beside its item's 20 (src/net/suitcase-ids.json). Until config 65 every
+// event level 0.45, 5 to 15, beside its item's 15 (src/net/suitcase-ids.json). Until config 65 every
 // lane paid 1.1 a move (10 to 40, the challenge route 10 to 50) and an item 50. A campaign board's
 // stored line is A winning line, not the shortest; a challenge board's is its par (the fewest moves
 // found). The line's length stands in for how long a board takes (about 12 moves a minute) until real
 // minutes per board are measured. The first campaign board, where onboarding is played, pays the
 // onboarding prize instead: 100. Campaign boards 2 to 5 pay the welcome, 100 each (WELCOME below:
-// the creator, 2026-11-09). The daily pays 50, once a day; a past day from the archive 25.
+// the creator, 2026-11-09). The daily pays 50, once a day; a past day from the archive 15.
 // Every progression is written only by the function (function_may_grant): it
 // replays the win before it moves one.
 // @ts-nocheck: Node runs this file; it is not part of the game's TypeScript build.
@@ -78,8 +78,8 @@ const WELCOME = { boards: 5, coins: 100 };
  */
 const FIRST_STEPS = { board: ONBOARDING.board, coins: 100, achievement: "first-steps" };
 const DAILY_COINS = 50;
-/** A past day's first win, from the archive (the creator, 2026-11-10: 25, was 50; today's daily keeps its 50). */
-const ARCHIVE_COINS = 25;
+/** A past day's first win, from the archive (the creator, 2026-11-10: 15, ~540 an hour catching up; was 50, and 25 in config 66; today's daily keeps its 50). */
+const ARCHIVE_COINS = 15;
 /** The daily challenge's copy, which the Arcade shows (platform_display: challenge): English, then UI's
  * translations (the translation pass, 2026-11-02). Players read "level", never "board". The copy is
  * screened as the Arcade's own: Turkish "resmi" also means "official", a reserved word, so the Turkish
@@ -110,7 +110,7 @@ const DAILY_COPY = {
 // souvenir: the bonus board after each trip, in souvenirs.json (docs/souvenirs.md); paid as its trip's
 //   better-paying relief board (below), so a third less with them; the rate is the fallback only.
 // event: an event's 30 levels (docs/vip.md; everyone's since 2026-11-10), in event-levels.json: 0.45 a
-//   move, 5 to 15 (about 280 an event), beside its items' 20 each (200 an event).
+//   move, 5 to 15 (about 280 an event), beside its items' 15 each (150 an event).
 const LANES = {
   campaign: { label: "Campaign board", rate: 0.75, least: 10, most: 30 },
   challenge: { label: "Challenge board", rate: 0.75, least: 10, most: 35 },
@@ -119,6 +119,8 @@ const LANES = {
 };
 /** Until config 65 (2026-11-10): 1.1 Coins a move, 10 to 40 (the challenge route 10 to 50), and 50 an item found. */
 const OLD = { rate: 1.1, least: 10, most: { campaign: 40, challenge: 50, souvenir: 40, event: 40 }, item: 50, pastDay: 50 };
+/** Config 66 (2026-11-10, a few hours on dev): the rates above, but 20 an item found and 25 a past day. */
+const C66 = { item: 20, pastDay: 25 };
 
 /** A board's Coins, from the moves of its stored winning line, by its lane's rate. */
 export const coinsFor = (moves, { rate, least, most }) => Math.max(least, Math.min(most, Math.round((moves * rate) / 5) * 5));
@@ -804,7 +806,8 @@ md.push("- a Souvenir: its trip's better-paying relief board, so a third less wi
 md.push(`- today's daily puzzle ${DAILY_COINS}, once a day; a past day from the archive ${ARCHIVE_COINS}, once each.`);
 md.push("");
 md.push(`Until config 65 every lane paid ${OLD.rate} a move (${OLD.least} to ${OLD.most.campaign}; the challenge route ${OLD.least} to ${OLD.most.challenge}), an item`);
-md.push(`found ${OLD.item} and a past day ${OLD.pastDay}. **Nothing is taken back**: each board pays once, ever, so a level`);
+md.push(`found ${OLD.item} and a past day ${OLD.pastDay}; config 66 (dev only) paid ${C66.item} an item and ${C66.pastDay} a past day, and the creator trimmed both to`);
+md.push(`${F0 ? F0.coins : "?"} and ${ARCHIVE_COINS} the same day. **Nothing is taken back**: each board pays once, ever, so a level`);
 md.push("already won keeps what it paid then. A campaign board's stored line is a winning line, not");
 md.push("necessarily the shortest; a challenge board's is its par, the fewest moves found. Its length");
 md.push(`stands in for how long the board takes. Campaign board 1 pays the onboarding prize instead, ${ONBOARDING.coins}.`);
@@ -889,12 +892,12 @@ if (evs.length && F0) {
   md.push(`  in one grant over the platform's 100. The prize for finding all 10 is the event's table and its Passport`);
   md.push("  stamp, no Coins and no helpers. Each event is open for good, so an event is a one-off of about 52 minutes.");
 }
-md.push(`- **Today's daily** is once a day, on top. **A past day** pays ${ARCHIVE_COINS} (the creator's figure); its short line`);
-md.push("  means a player catching up on the archive earns faster than the trip levels' rate, but only for the days");
-md.push("  the archive holds (this month and the two before), each once.");
+md.push(`- **Today's daily** is once a day, on top. **A past day** pays ${ARCHIVE_COINS} (the creator, 2026-11-10): its line is short, so`);
+md.push("  that is about the trip levels' rate for a player catching up on the archive, over the days it holds");
+md.push("  (this month and the two before), each once.");
 md.push(`- One-time: the welcome (boards 1 to ${WELCOME.boards}), the onboarding prize and First Steps' prize. Replays and campaign boards past the last pay nothing.`);
 md.push(`- **VIP** (the creator, 2026-11-10; docs/vip.md): every payout above pays a VIP ${VRULE.coins.num}/${VRULE.coins.den} more, rounded up, inside`);
-md.push(`  its reward's own order (${LANES.event.least} +${vx(LANES.event.least)}, 10 +${vx(10)}, 20 +${vx(20)}, 25 +${vx(25)}, 30 +${vx(30)}, 50 +${vx(50)}, 100 +${vx(100)}), and every helper reward ${VRULE.helpers} times over.`);
+md.push(`  its reward's own order (${LANES.event.least} +${vx(LANES.event.least)}, 10 +${vx(10)}, 15 +${vx(15)}, 25 +${vx(25)}, 30 +${vx(30)}, 50 +${vx(50)}, 100 +${vx(100)}), and every helper reward ${VRULE.helpers} times over.`);
 md.push("  **VIP +50% is the Gem Arcade's rule, relayed by the creator on 2026-11-10**; the rates above put a VIP at");
 md.push("  about 750 an hour, the creator's \"VIPs 750\". The platform's 4,000 a day per game still holds.");
 md.push(`- **Still to measure: real minutes per level.** No play-time data yet; every hourly figure here is the`);

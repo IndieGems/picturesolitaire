@@ -9,7 +9,7 @@
 //!   - an item is packed by the first verified win of its level, in that win's one order with the
 //!     level's Coins (the level's own progression says "first"), so it lands with them or not at all;
 //!   - each item found pays its Coins with it: one more on the event-items-found progression
-//!     (src/net/suitcase-ids.json `finds`, on_add, 20 a unit: the creator, 2026-11-10, 200 an event, was 50
+//!     (src/net/suitcase-ids.json `finds`, on_add, 15 a unit: the creator, 2026-11-10, 150 an event, was 50
 //!     and 500; paid as the items land, since the platform pays at most 100 in one grant), in the same order;
 //!   - all of an event's items held pays its prize once: the event's own mark (a progression,
 //!     threshold 1, which is also its Passport stamp) moved to 1 in the same order as the event's
