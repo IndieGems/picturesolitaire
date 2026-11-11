@@ -7,6 +7,15 @@
 //   const verdict = claimWin({ lane, board, deal, line, ms, date });  // never block the win card on it
 //   ... verdict.then((v) => cueCoins(v, coinElement));                 // Coins fly only on "paid"
 //
+//   const held = holdWin(claim);   // VIP OFFERED BEFORE THE REWARD (the creator, 2026-11-11; the game
+//   held.preview                   // standard, "upsell before the grant"): the win shows at once, but its
+//   held.send()                    // claim waits until the card sends it (Continue, Get VIP's sheet
+//   held.verdict                   // settled, or the card leaving). preview: what it would pay
+//                                  // (src/net/rewards.ts previewWin), or null. send() is idempotent.
+//     A held claim is never dropped: a page hidden keeps it in the slot unsent (a purchase sheet that
+//     hides the frame must not spend the offer); a page closing sends it with keepalive and keeps it;
+//     the next start sends it, with no offer. Nothing times it out: the card sends it.
+//
 // The game standard's rules for it ("When the server pays, the device follows
 // its word"; "Every game is played online"):
 //   - nothing played is dropped for want of a connection: a claim made offline,
@@ -54,10 +63,15 @@ import { nextToSend, trimHeld } from "./held-wins";
 import { helpers, type Gift, type HelperKind } from "./helpers";
 import { noAnswer, refusalOf } from "./no-answer";
 import { backoff, heard, held, needsLoad, notNow, whenDue } from "./pace";
-import { answered, hold, type HeldWin } from "./progress";
+import { answered, hold, progress, type HeldWin } from "./progress";
 import { accept as acceptSuitcase, suitcase, type EventPack } from "./suitcase";
 import { tableOf } from "./tables";
 import { heardVip, vipFields, vipReady } from "./vip";
+import type { PlatformGrantPreview } from "@indiegems/gem-web-sdk/sdk";
+import { currentDaily } from "./daily";
+import { previewWin, type WinPreview, type WinTargets } from "./rewards";
+
+export type { WinPreview } from "./rewards";
 
 /**
  * "souvenir": the bonus board after a trip (docs/souvenirs.md), sent once its trip is stamped; no n, no date.
@@ -90,8 +104,14 @@ interface Answered {
   board: string;
   /** Moves in the line, counted by the server. */
   moves: number;
-  /** Coins this answer paid now, all of them: the base and the VIP extra (0 on "kept" and "late"). */
+  /** Coins this answer paid now, all of them, a VIP's +50% (the Arcade's) included (0 on "kept" and "late"). */
   coins: number;
+  /**
+   * What landed, grant by grant, in the preview's shape (gem.earnings.fromReceipt over the checker's
+   * receipt: `base` unboosted, `total` what landed, `breakdown` a pass's part). Absent from a checker
+   * that sends no receipt (before 0.1.61), or when it could not be read.
+   */
+  earned?: PlatformGrantPreview[];
   /**
    * THE VIP EXTRA (the creator, 2026-11-10; docs/vip.md; a checker from before it sends none of these).
    * `base`: the base Coins that landed (coins = base + vipExtra). `vipExtra`: the VIP extra's Coins that
@@ -155,6 +175,8 @@ export type Verdict = (
 interface Held {
   /** The claim's own id: the checker applies a claim to the progress record once, however often it is sent. */
   id: string;
+  /** Held by the win card (holdWin) until it sends it: never sent before then, but kept like any unsent claim. */
+  waiting?: true;
   lane: Lane;
   board: string;
   /** What it changes in progress() while it waits (kept with it, for a restart). */
@@ -192,9 +214,50 @@ export function onVerdict(fn: (v: Verdict) => void): () => void {
 /** How many claims are waiting for an answer. */
 export const pendingClaims = (): number => queue.length;
 
+/** A won board's claim, held until the win card sends it (holdWin). */
+export interface HeldClaim {
+  /** What it would pay, from the platform's preview (src/net/rewards.ts), or null: show no offer. */
+  preview: Promise<WinPreview | null>;
+  /** Send it now (idempotent: the same promise every time). */
+  send(): Promise<Verdict>;
+  /** The server's answer, once sent and answered. */
+  verdict: Promise<Verdict>;
+}
+
 /** Send a won board to the checker. Resolves once the server has answered (it may be a while offline). */
 export function claimWin(claim: WinClaim): Promise<Verdict> {
+  return holdWin(claim).send();
+}
+
+/** What a win would pay for, from the record as it is before the win is held (a replay pays nothing). */
+function targetsOf(claim: WinClaim): WinTargets {
+  const p = progress();
+  if (!p.known) return {};
+  switch (claim.lane) {
+    case "campaign":
+      return claim.n === undefined || claim.n >= p.campaign.next ? { board: claim.board } : {};
+    case "challenge":
+      return p.challenge[claim.board] === undefined ? { board: claim.board } : {};
+    case "souvenir":
+      return p.souvenir[claim.board] === undefined ? { board: claim.board } : {};
+    case "event": {
+      const ev = suitcase.events().find((e) => e.levels.includes(claim.board));
+      const item = !!ev?.items.some((i) => i.level === claim.board && !i.found);
+      return { ...(p.event[claim.board] === undefined ? { board: claim.board } : {}), ...(item ? { item } : {}) };
+    }
+    case "daily":
+      if (!claim.date || p.daily[claim.date] !== undefined) return {};
+      return claim.date === currentDaily().date ? { today: true } : { pastDay: true };
+  }
+}
+
+/**
+ * Hold a won board's claim until the win card sends it (VIP offered before the reward: the game
+ * standard). The win shows in progress() at once; the claim waits, unsent, kept like any unsent claim.
+ */
+export function holdWin(claim: WinClaim): HeldClaim {
   const id = crypto.randomUUID();
+  const targets = targetsOf(claim);
   // shown at once: src/net/progress.ts applies the win until the checker answers
   const effect: HeldWin = {
     lane: claim.lane,
@@ -217,7 +280,8 @@ export function claimWin(claim: WinClaim): Promise<Verdict> {
     const v: Verdict = { status: "unframed", lane: claim.lane, board: claim.board };
     answered(id, null, !wins);
     for (const fn of [...listeners]) fn(v);
-    return Promise.resolve(v);
+    const done = Promise.resolve(v);
+    return { preview: Promise.resolve(null), send: () => done, verdict: done };
   }
   const body: Record<string, unknown> = {
     v: 1,
@@ -230,18 +294,45 @@ export function claimWin(claim: WinClaim): Promise<Verdict> {
   };
   if (claim.date) body.date = claim.date;
   if (claim.n !== undefined) body.n = claim.n;
-  return new Promise((resolve) => {
-    queue.push({ id, lane: claim.lane, board: claim.board, effect, body, resolve, tries: 0, notBefore: 0 });
-    // sent at once (keepalive: it outlives a closing page). Kept in the slot only if it has to wait:
-    // now, when it cannot go at once (offline, or the platform asked for a wait), else once it is
-    // still unanswered after KEEP_AFTER_MS; a page hidden or closed first keeps it at once (flushNow)
-    if (!online() || held() > 0 || performance.now() < pauseUntil) void persist();
-    else
-      window.setTimeout(() => {
-        if (queue.some((h) => h.id === id)) void persist();
-      }, KEEP_AFTER_MS);
-    void pump();
+  let h!: Held;
+  const verdict = new Promise<Verdict>((resolve) => {
+    h = { id, lane: claim.lane, board: claim.board, effect, body, resolve, tries: 0, notBefore: Infinity, waiting: true };
+    queue.push(h);
   });
+  // asked only when the card reads it (the preview reads the platform): claimWin never does
+  let preview: Promise<WinPreview | null> | null = null;
+  return {
+    get preview(): Promise<WinPreview | null> {
+      preview ??= previewWin(targets).catch((err: unknown) => {
+        console.warn(`[claims] ${claim.lane} ${claim.board}: no preview: ${refusalOf(err)}`);
+        return null;
+      });
+      return preview;
+    },
+    verdict,
+    send(): Promise<Verdict> {
+      if (h.waiting) release(h);
+      return verdict;
+    },
+  };
+}
+
+/**
+ * A held claim goes: sent at once (keepalive: it outlives a closing page). Kept in the slot only if
+ * it has to wait: now, when it cannot go at once (offline, or the platform asked for a wait), else
+ * once it is still unanswered KEEP_AFTER_MS after it went; a page hidden or closed first keeps it at
+ * once (flushNow).
+ */
+function release(h: Held): void {
+  delete h.waiting;
+  h.notBefore = 0;
+  if (!queue.includes(h)) return;
+  if (!online() || held() > 0 || performance.now() < pauseUntil) void persist();
+  else
+    window.setTimeout(() => {
+      if (queue.includes(h)) void persist();
+    }, KEEP_AFTER_MS);
+  void pump();
 }
 
 /**
@@ -296,8 +387,9 @@ function later(h: Held, how: "platform" | "own" | "slow", err?: unknown): void {
 /** The next send, while the page is shown (a hidden page asks nothing again: showing it pumps). */
 function schedule(): void {
   clearTimeout(timer);
-  if (!queue.length || document.visibilityState === "hidden") return;
-  const next = Math.max(pauseUntil, Math.min(...queue.map((h) => h.notBefore)));
+  const going = queue.filter((h) => !h.waiting);
+  if (!going.length || document.visibilityState === "hidden") return;
+  const next = Math.max(pauseUntil, Math.min(...going.map((h) => h.notBefore)));
   timer = window.setTimeout(() => void pump(), Math.max(50, next - performance.now(), held()));
 }
 
@@ -365,12 +457,14 @@ async function send(h: Held): Promise<void> {
         pack = typeof answer.event === "string" ? suitcase.event(answer.event) : undefined;
       }
     }
+    const earned = await earnedOf(answer.receipt);
     return settle(h, {
       status,
       lane,
       board,
       moves: Number(answer.moves) || 0,
       coins: Number(answer.coins) || 0,
+      ...(earned ? { earned } : {}),
       ...vipOf(answer),
       ...(items.length ? { items } : {}),
       ...(typeof answer.date === "string" ? { date: answer.date } : {}),
@@ -391,6 +485,22 @@ async function send(h: Held): Promise<void> {
   // an event level refused (not released, the events switched off): read the events again
   if (lane === "event") acceptSuitcase(answer);
   return settle(h, { status: "refused", lane, board, reason: String(answer.reason ?? "unknown") });
+}
+
+/**
+ * What a receipt says landed, in the preview's shape (gem.earnings.fromReceipt on each change: a
+ * platform grant becomes { base, total, breakdown }, anything else null). Undefined when the checker
+ * sent no receipt, or it could not be read in 2 s (the verdict does not wait longer for it).
+ */
+async function earnedOf(receipt: unknown): Promise<PlatformGrantPreview[] | undefined> {
+  if (!Array.isArray(receipt)) return undefined;
+  const read = Promise.all(receipt.map((c) => gem.earnings.fromReceipt(c).catch(() => null))).then((xs) => xs.filter((x): x is PlatformGrantPreview => x !== null));
+  const late = new Promise<undefined>((r) => window.setTimeout(() => r(undefined), 2000));
+  try {
+    return await Promise.race([read, late]);
+  } catch {
+    return undefined;
+  }
 }
 
 /** The helpers a verdict says landed, as whole numbers (0 for any it leaves out). */
@@ -605,10 +715,18 @@ export async function resumeClaims(): Promise<void> {
  * The page is going (hidden, closed, or the Arcade is about to close it): one pass. A win never
  * sent yet goes now (keepalive outlives the page), unless the platform asked for a wait; one that
  * was tried already waits its turn, kept in the slot for the next start. The slot is written
- * once, if its list changed.
+ * once, if its list changed. A claim the win card holds (holdWin) is kept in the slot, and sent
+ * only when the page is `closing` (pagehide, the Arcade closing it): a page merely hidden (a
+ * purchase sheet over it) keeps it unsent, so the card can still send it with its offer settled.
  */
-function flushNow(): void {
-  if (performance.now() >= pauseUntil && held() === 0) for (const h of queue) if (h.tries === 0) h.notBefore = 0;
+function flushNow(closing: boolean): void {
+  if (closing)
+    for (const h of queue)
+      if (h.waiting) {
+        delete h.waiting;
+        h.notBefore = 0;
+      }
+  if (performance.now() >= pauseUntil && held() === 0) for (const h of queue) if (h.tries === 0 && !h.waiting) h.notBefore = 0;
   void pump();
   void persist(true);
 }
@@ -621,7 +739,7 @@ if (framed) {
     // what waited on the connection goes now, though never inside a wait the platform named
     failing = 0;
     pauseUntil = performance.now() + held();
-    for (const h of queue) h.notBefore = Math.min(h.notBefore, pauseUntil);
+    for (const h of queue) if (!h.waiting) h.notBefore = Math.min(h.notBefore, pauseUntil);
     void pump();
     void persist();
   });
@@ -629,17 +747,17 @@ if (framed) {
     if (document.visibilityState === "visible") void pump();
     else {
       clearTimeout(timer);
-      if (queue.length) flushNow();
+      if (queue.length) flushNow(false);
     }
   });
   addEventListener("pagehide", () => {
-    if (queue.length) flushNow();
+    if (queue.length) flushNow(true);
     leaving = true;
   });
   addEventListener("pageshow", () => {
     leaving = false;
   });
   onWillTerminate(() => {
-    if (queue.length) flushNow();
+    if (queue.length) flushNow(true);
   });
 }

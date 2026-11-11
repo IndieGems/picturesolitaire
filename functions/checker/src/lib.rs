@@ -252,6 +252,10 @@ mod function {
         riding: bool,
         counted: bool,
         unlocked: Vec<Value>,
+        /// Every Coins grant this call's paying orders landed (their receipts' platform_grant changes,
+        /// as the platform wrote them): the verdict's `receipt`, which the game turns into what landed
+        /// with gem.earnings.fromReceipt (SDK 24: base, total and a pass's part), never sums of ours.
+        receipt: Vec<Value>,
     }
 
     thread_local! {
@@ -313,6 +317,7 @@ mod function {
     /// paid, the extra to hold, and the counters set (with what they unlocked). Every Coin grant is
     /// logged, base or extra, with its outcome, and a suppressed or clamped extra as a warning.
     fn landed(o: &pay::Order, what: &str, changes: &[Value]) {
+        CALL.with(|c| c.borrow_mut().receipt.extend(changes.iter().filter(|c| c["type"] == "platform_grant").cloned()));
         for ch in changes.iter().filter(|c| c["type"] == "platform_grant") {
             let extra = ch["progression_definition_id"] == pay::vip_coins_id();
             let line = format!(
@@ -1256,6 +1261,8 @@ mod function {
         };
         if matches!(verdict["status"].as_str(), Some("paid" | "kept" | "late")) {
             vip_said(player, &mut doc, vip, &mut verdict);
+            // what landed, as the platform's receipts say it (0.1.61 on; src/net/claims.ts `earned`)
+            verdict["receipt"] = json!(CALL.with(|c| c.borrow().receipt.clone()));
         }
         if verdict["status"] != "retry" {
             verdict["progress"] = public(&doc);

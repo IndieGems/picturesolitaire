@@ -1,35 +1,34 @@
-// WHAT A REWARD PAYS, BEFORE IT IS WON: the base Coins of each first win, from the channel's own game
-// config (the platform's figures, the one copy: tools/server/make-config.mts writes them, the win
-// checker pays through them). For the previews UI shows, the VIP extra's above all (the creator,
-// 2026-11-10: +50% Coins for a VIP, src/net/vip.ts vipExtraCoins). What actually landed is always
-// the verdict's (src/net/claims.ts), never this: a board already won, or a day already won, pays
-// nothing, VIP or not, so show a preview only for a reward not yet won.
+// WHAT A REWARD WOULD PAY, BEFORE IT IS WON: the platform's own preview (SDK 24,
+// gem.gameConfig.preview), over the config targets the win checker pays from. Never an amount or a
+// multiplier of ours: the preview figures this player's payout (a VIP's includes the Arcade's +50%,
+// in its breakdown) and what a pass on sale would add (`upsells`), and the platform retunes both
+// without a release of the game (the game standard, "VIP: gate on the pass in config, never multiply
+// in code"). What actually landed is the verdict's (src/net/claims.ts `earned`, from the receipt).
 //
-//   baseCoins(lane, board)        the Coins a board's first win pays, all its grants (Level 1: 200,
-//                                 its onboarding prize and First Steps' prize); null until read, or
-//                                 for a board that pays none. `lane` "daily": the day's (any date)
-//   grants(lane, board)           the same, grant by grant (Level 1: [100, 100]); null until read
-//   vipExtraForBoard(lane, board) the VIP extra on it, each grant's own (Level 1: 50 + 50); null until read
-//   dailyCoins(), pastDayCoins(), eventItemCoins()   the daily's first win of the day, a past day's
-//                                 first win (the archive), an event item found; null until read
-//   rewardsKnown(), onRewardsChange(fn)   the config has been read; hear it land (returns the unsubscribe)
-//   loadRewards()                 read it (once a session; again on a wait that grows if it fails).
-//                                 Any getter above starts it too.
+//   previewWin(t)          what a held win would pay (claims.ts holdWin): { coins, helpers, upsell },
+//                          or null unframed, on a PreviewError, or when nothing would pay
+//   eventItemCoins()       an event item found, the unboosted figure (the preview's `base`); null until read
+//   rewardsKnown(), onRewardsChange(fn)   the figures have been read; hear them land (returns the unsubscribe)
+//   loadRewards()          read them (once a session; again on a wait that grows if it fails). Any
+//                          getter above starts it too.
 //
-// The helper rewards' sizes are src/net/helpers.ts's (KIT, HARD_GIFT, STAMP_GIFT, dailyHelper(date):
-// one of that helper), and their VIP doubling src/net/vip.ts's vipHelpers. Unframed (a plain tab, the
-// play-test tool) there is no config: every figure is null.
+// THE TARGETS (the checker's, functions/checker): a board's first win moves its progression
+// "board_<id>" to complete (on_complete: Level 1 has two grants); an event item found adds 1 to the
+// finds progression (on_add); today's daily completes the daily (on_complete); a past day adds 1 to
+// the archive (on_add). The helpers a win gives come from the checker's own figures until the config
+// carries them as recipes with VIP bonuses (docs/vip.md, "Planned"): `helpers` is null meanwhile.
+// Unframed (a plain tab, the play-test tool) there is no config: every figure is null.
 
+import type { ConfigPreview, PassUpsell, PlatformGrantPreview, PreviewTarget } from "@indiegems/gem-web-sdk/sdk";
 import { gem } from "../gem";
+import type { HelperKind } from "./helpers";
 import { refusalOf } from "./no-answer";
 import { backoff, heard, notNow, whenDue } from "./pace";
 import SUITCASE from "./suitcase-ids.json";
-import { vipExtraCoins } from "./vip";
 
 /** The daily's progression and the archive's (functions/checker/src/lib.rs DAILY_ID, ARCHIVE_ID). */
-const DAILY_ID = "6d1f3b0e-8a52-4c7e-9f14-2b6e0d9a7c31";
-const ARCHIVE_ID = "795d5832-be77-44b1-a949-6ae8ec1c629d";
-const COINS = "ARCADE_TICKETS";
+export const DAILY_ID = "6d1f3b0e-8a52-4c7e-9f14-2b6e0d9a7c31";
+export const ARCHIVE_ID = "795d5832-be77-44b1-a949-6ae8ec1c629d";
 
 const framed = ((): boolean => {
   if (window.self === window.top) return false;
@@ -40,22 +39,23 @@ const framed = ((): boolean => {
   }
 })();
 
-/** Each board progression's Coins grants (by slug "board_<id>"), the daily's, a past day's and an item's. */
-let boards: Map<string, number[]> | null = null;
-let daily: number | null = null;
-let pastDay: number | null = null;
+/** Each board progression's id, by slug ("board_<id>"), from the channel's config. */
+let boards: Map<string, string> | null = null;
 let item: number | null = null;
 let loading: Promise<void> | null = null;
 let tries = 0;
 let retry: (() => void) | null = null;
 const listeners = new Set<() => void>();
 
-type Grant = { mode?: string; amount?: number | null; per_unit?: number | null; target?: { platform_currency_slug?: string | null } };
-const coinsOf = (grants: readonly Grant[] | undefined, mode: "on_complete" | "on_add"): number[] =>
-  (grants ?? [])
-    .filter((g) => g.mode === mode && g.target?.platform_currency_slug === COINS)
-    .map((g) => Math.max(0, Math.floor(Number(mode === "on_add" ? g.per_unit : g.amount) || 0)))
-    .filter((n) => n > 0);
+/** The preview of one target, or null: unframed, or the platform could not preview it (PreviewError). */
+async function previewOf(target: PreviewTarget): Promise<ConfigPreview | null> {
+  try {
+    return await gem.gameConfig.preview(target);
+  } catch (err) {
+    console.warn(`[rewards] no preview of ${JSON.stringify(target)}: ${refusalOf(err)}`);
+    return null;
+  }
+}
 
 async function read(): Promise<void> {
   try {
@@ -65,16 +65,14 @@ async function read(): Promise<void> {
   }
   try {
     const config = await gem.gameConfig.load();
-    const next = new Map<string, number[]>();
-    for (const p of config?.progressions ?? []) {
-      const grants = (p.config as { platform_grants?: Grant[] } | undefined)?.platform_grants;
-      if (p.slug?.startsWith("board_")) next.set(p.slug, coinsOf(grants, "on_complete"));
-      if (p.id === DAILY_ID) daily = coinsOf(grants, "on_complete").reduce((a, n) => a + n, 0) || null;
-      if (p.id === ARCHIVE_ID) pastDay = coinsOf(grants, "on_add")[0] ?? null;
-      if (p.id === SUITCASE.finds.id) item = coinsOf(grants, "on_add")[0] ?? null;
-    }
+    const next = new Map<string, string>();
+    for (const p of config?.progressions ?? []) if (p.slug?.startsWith("board_") && p.id) next.set(p.slug, p.id);
     boards = next;
     tries = 0;
+    // an item found, as the platform figures it: its unboosted payout
+    const found = await previewOf({ progression: SUITCASE.finds.id, add: 1 });
+    const base = found?.platformGrants[0]?.base;
+    item = typeof base === "number" && base > 0 ? Math.floor(base) : null;
     for (const fn of [...listeners]) fn();
   } catch (err) {
     heard(err);
@@ -103,31 +101,7 @@ const ask = (): void => {
   if (!boards) void loadRewards();
 };
 
-/** A board's first win, grant by grant ("daily": the day's); null until read, or for a board that pays none. */
-export function grants(lane: string, board: string): number[] | null {
-  ask();
-  if (lane === "daily") return daily === null ? null : [daily];
-  const g = boards?.get(`board_${board}`);
-  return g && g.length ? [...g] : null;
-}
-
-/** A board's first win in all ("daily": the day's); null until read, or for a board that pays none. */
-export function baseCoins(lane: string, board: string): number | null {
-  const g = grants(lane, board);
-  return g ? g.reduce((a, n) => a + n, 0) : null;
-}
-
-/** The VIP extra on a board's first win: each grant's own ceil(base / 2), added (Level 1: 50 + 50). */
-export function vipExtraForBoard(lane: string, board: string): number | null {
-  const g = grants(lane, board);
-  return g ? g.reduce((a, n) => a + vipExtraCoins(n), 0) : null;
-}
-
-/** The daily's first win of the day. */
-export const dailyCoins = (): number | null => (ask(), daily);
-/** A past day's first win, from the archive. */
-export const pastDayCoins = (): number | null => (ask(), pastDay);
-/** An event item found. */
+/** An event item found, unboosted (the preview's base); null until read. */
 export const eventItemCoins = (): number | null => (ask(), item);
 /** The config's figures have been read this session. */
 export const rewardsKnown = (): boolean => boards !== null;
@@ -136,4 +110,57 @@ export const rewardsKnown = (): boolean => boards !== null;
 export function onRewardsChange(fn: () => void): () => void {
   listeners.add(fn);
   return () => void listeners.delete(fn);
+}
+
+/** What a held win would pay (claims.ts holdWin): its Coins grants, the helpers it gives, and the one upsell. */
+export interface WinPreview {
+  /** Each Coins grant the claim would pay this player: `base` unboosted, `total` theirs, `breakdown` a pass's part. */
+  coins: PlatformGrantPreview[];
+  /** The helpers it would give: null until the config carries them (docs/vip.md, "Planned"); the verdict says what landed. */
+  helpers: Record<HelperKind, number> | null;
+  /** What a pass on sale would add (the first upsell, merged across the claim's targets), or null: offer none. */
+  upsell: PassUpsell | null;
+}
+
+/** What a win would move, as claims.ts works it out from progress() before it holds the win. */
+export interface WinTargets {
+  /** The board's own progression completes: its first win ("board_<id>" by slug). */
+  board?: string;
+  /** An event level's item not held yet: one more found. */
+  item?: boolean;
+  /** Today's daily, its first win of the day. */
+  today?: boolean;
+  /** A past day from the archive, never won. */
+  pastDay?: boolean;
+}
+
+/** Merge the first upsell of each target's preview into one: the same pass, its grants and bonuses together. */
+function merged(previews: ConfigPreview[]): PassUpsell | null {
+  const ups = previews.map((p) => p.upsells[0]).filter((u): u is PassUpsell => !!u);
+  const first = ups[0];
+  if (!first) return null;
+  const same = ups.filter((u) => u.pass === first.pass);
+  return { ...first, platformGrants: same.flatMap((u) => u.platformGrants), bonuses: same.flatMap((u) => u.bonuses) };
+}
+
+/** The preview of a held win; null unframed, when nothing would pay, or when a target cannot be previewed. */
+export async function previewWin(t: WinTargets): Promise<WinPreview | null> {
+  if (!framed) return null;
+  await loadRewards();
+  const targets: PreviewTarget[] = [];
+  if (t.board) {
+    const id = boards?.get(`board_${t.board}`);
+    if (!id) return null; // this channel's config does not pay the board (or could not be read)
+    targets.push({ progression: id });
+  }
+  if (t.item) targets.push({ progression: SUITCASE.finds.id, add: 1 });
+  if (t.today) targets.push({ progression: DAILY_ID });
+  if (t.pastDay) targets.push({ progression: ARCHIVE_ID, add: 1 });
+  if (!targets.length) return null;
+  const previews = await Promise.all(targets.map(previewOf));
+  if (previews.some((p) => p === null)) return null;
+  const all = previews as ConfigPreview[];
+  const coins = all.flatMap((p) => p.platformGrants);
+  if (!coins.length) return null;
+  return { coins, helpers: null, upsell: merged(all) };
 }

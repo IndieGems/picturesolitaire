@@ -91,6 +91,13 @@ export const KIT: Readonly<Record<HelperKind, number>> = IDS.kit.gift;
 export const HARD_GIFT: Readonly<Record<HelperKind, number>> = IDS.hard;
 /** A trip's last board (the passport stamp), instead of the hard gift. */
 export const STAMP_GIFT: Readonly<Record<HelperKind, number>> = IDS.stamp;
+/**
+ * A helper by its game currency's id (a preview's or an upsell's `{ kind: "currency", currencyId }`),
+ * or null for any other currency: so a screen can draw "+1 Hint" with its icon and name no ids.
+ */
+export function helperOfCurrency(currencyId: string): HelperKind | null {
+  return KINDS.find((k) => IDS.kinds[k].currency === currencyId) ?? null;
+}
 /** The helper the daily puzzle's first win pays on a date ("YYYY-MM-DD", the player's own: src/net/daily.ts), by weekday; the checker pays the same. */
 export function dailyHelper(date: string): HelperKind {
   const [y, m, d] = date.split("-").map(Number);
