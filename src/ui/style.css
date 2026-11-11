@@ -1895,6 +1895,14 @@ html.back-down .top-pill:not(.home-note) { right: calc(var(--row-right) + var(--
    (the main action's colour) nor larger. No price, no countdown, nothing moving */
 .upsell { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; padding: 10px 12px 14px; border-radius: 22px; }
 .win .card.pinned > .upsell { flex: none; margin-top: -10px; }
+/* a middle that still scrolls once fitted to the offer (app.ts offerOnWin, settleCard) ends above it, nothing at
+   rest under it (QA on 0.128.0: the Moves and Time labels were) */
+.win .card.pinned > .card-body.scrolls + .upsell { margin-top: 0; }
+/* its pictures, made smaller for it while the card is up: no second pop-in */
+.win .gallery.still .pic { animation: none; }
+/* the offer takes the focus as it comes (never either choice): ringed only for a keyboard */
+.upsell:focus { outline: none; }
+.upsell:focus-visible { outline: 3px solid var(--amber-hi); outline-offset: 2px; }
 .card p.up-head { margin: 0; display: flex; align-items: center; justify-content: center; gap: 6px; font: 600 15px/1.25 var(--round); color: var(--ink); text-align: center; text-wrap: balance; }
 .up-lock { flex: none; display: block; width: 16px; height: 16px; color: #a26a10; }
 .up-lock > .ico { display: block; width: 100%; height: 100%; }

@@ -94,6 +94,8 @@ export function offerUpsell(main: HTMLElement, up: PassUpsell, send: () => void)
   if (!extras.length) return false;
   const panel = el("div", "upsell glass");
   panel.setAttribute("role", "group");
+  // focusable itself (never by Tab): the reward moment's focus, its heading read, with neither choice the default
+  panel.tabIndex = -1;
   const head = el("p", "up-head");
   head.id = `up-head-${Math.random().toString(36).slice(2, 8)}`;
   panel.setAttribute("aria-labelledby", head.id);
@@ -126,15 +128,17 @@ export function offerUpsell(main: HTMLElement, up: PassUpsell, send: () => void)
   panel.append(head, row, choices);
 
   let answered = false;
-  /** The offer answered: the claim goes, and the card's main action is back in its place (the focus with it). */
+  /**
+   * The offer answered: the card's main action is back in its place, with the focus, always (QA on 0.128.0: a tap
+   * that focuses nothing, iOS Safari's, left it unfocused), and the claim goes.
+   */
   const done = (note?: string) => {
-    send();
-    const had = panel.contains(document.activeElement);
     const status = note ? el("p", "up-note", note) : null;
     if (status) status.setAttribute("role", "status");
     panel.replaceWith(...(status ? [status] : []));
     main.hidden = false;
-    if (had) main.focus({ preventScroll: true });
+    if (main.getClientRects().length) main.focus({ preventScroll: true });
+    send();
   };
   later.addEventListener("click", () => {
     if (answered) return;
@@ -152,9 +156,13 @@ export function offerUpsell(main: HTMLElement, up: PassUpsell, send: () => void)
       done(paidNotHeld ? t("upsell.pending", { name: up.name }) : undefined);
     });
   });
+  // the focus where the main action had it (or nowhere yet): the offer itself, never either choice
+  const was = document.activeElement;
+  const focusHere = !was || was === document.body || main.contains(was);
   main.hidden = true;
   main.before(panel);
   fitChoices([get, later]);
+  if (focusHere) panel.focus({ preventScroll: true });
   return true;
 }
 

@@ -1870,8 +1870,9 @@ let previewTimer = 0;
 
 /**
  * The win card is up (showCard) or its preview has come: offer VIP on the win where the preview has an upsell
- * (win-upsell.ts offerUpsell, in place of the card's main action, pinnedCard's .card-main), else
- * send its claim. Once per reward moment: never again once offered or sent.
+ * (win-upsell.ts offerUpsell, in place of the card's main action: its amber .next, on every win card), else send
+ * its claim. Once per reward moment: never again once offered or sent. A card with no main action (a challenge
+ * route's last board) has no offer.
  */
 function offerOnWin(win: Win): void {
   if (!win.held || win.offered || lastWin !== win || winVeil.hidden) return;
@@ -1884,8 +1885,30 @@ function offerOnWin(win: Win): void {
   }
   win.offered = true;
   const up = win.preview?.upsell;
-  const main = winVeil.querySelector<HTMLElement>(".card.pinned > .card-main");
-  if (!up || !main || !offerUpsell(main, up, () => sendWin(win))) sendWin(win);
+  const main = winVeil.querySelector<HTMLElement>(":scope > .card > .next");
+  if (!up || !main || !offerUpsell(main, up, () => sendWin(win))) return sendWin(win);
+  fitOffer();
+}
+
+/**
+ * The VIP offer is taller than the Next it stands in for (QA on 0.128.0: at 360x640 it covered the Moves and Time
+ * labels): the card is fitted again to the room left, its pictures redrawn smaller without a second pop-in. A
+ * pinned card (the campaign's) as when it opened (settleCard: its spacing, then its pictures; its middle scrolls
+ * only past that); a plain one (an event's, a day's, a Souvenir's) by as much as it runs past the screen. A wide
+ * window has the room.
+ */
+function fitOffer(): void {
+  const card = winVeil.querySelector<HTMLElement>(":scope > .card");
+  const gallery = card?.querySelector<HTMLElement>(".gallery");
+  if (!card || !gallery || !winPics || isWide()) return;
+  if (card.classList.contains("pinned")) return settleCard(gallery, winPics.pics, winPics.share, true);
+  const over = winVeil.scrollHeight - winVeil.clientHeight;
+  if (over <= 1) return;
+  const was = gallery.offsetHeight;
+  const less = layoutGallery(winPics.pics, winPics.share, was - over);
+  less.classList.add("still");
+  gallery.replaceWith(less);
+  if (less.offsetHeight >= was) less.replaceWith(gallery);
 }
 
 /** Let a win's held claim go (it goes once: Server's send is idempotent); its reward moment is over. */
@@ -2066,9 +2089,10 @@ function showWin(): void {
  * so nothing at rest sits under the main action (QA, 2026-11-08: ru Level 255, Challenge a friend half under
  * Stamp your passport): first its spacing closes up (.snug), then its pictures give the rest back, down to
  * the least size still worth tapping (layoutGallery; a layout no shorter is not used). Only past that does
- * the middle scroll (pinnedCard). Measured as the card opens, before it is painted.
+ * the middle scroll (pinnedCard). Measured as the card opens, before it is painted; and again when a VIP offer
+ * takes Next's place (offerOnWin: it is taller), `still` then: smaller pictures without their pop-in.
  */
-function settleCard(gallery: HTMLElement, pics: BoardPicture[], share: number): void {
+function settleCard(gallery: HTMLElement, pics: BoardPicture[], share: number, still = false): void {
   const body = gallery.parentElement;
   const card = body?.parentElement;
   if (!body?.classList.contains("card-body") || !card || !body.clientHeight) return;
@@ -2079,6 +2103,7 @@ function settleCard(gallery: HTMLElement, pics: BoardPicture[], share: number): 
   if (left <= 1) return;
   const was = gallery.offsetHeight;
   const less = layoutGallery(pics, share, was - left);
+  if (still) less.classList.add("still");
   gallery.replaceWith(less);
   if (less.offsetHeight >= was) less.replaceWith(gallery);
 }
@@ -2810,8 +2835,6 @@ function pinnedCard(cls: string, head: Array<Node | null>, body: Array<Node | nu
   };
   middle.addEventListener("scroll", edges, { passive: true });
   new ResizeObserver(edges).observe(middle);
-  // the main action, marked: what a win's VIP offer stands in for until it is answered (offerOnWin)
-  main.classList.add("card-main");
   return h("div", { class: `${cls} pinned` }, ...head, middle, main);
 }
 
