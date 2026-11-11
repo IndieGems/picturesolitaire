@@ -17,27 +17,22 @@
 //                lists, in the same order, in the pass's words); its barcode stub carrying, red and larger, "Other Gem Arcade games give VIP rewards
 //                too!", never which games or what (the Arcade's own sheet lists its perks: the SDK's
 //                arcade-and-store.md, "Never write an offer's perks"); then "Get VIP: board now!" (vip-view.ts
-//                vipButton: Sign in for a guest, nothing where the Arcade cannot sell it). A member reads the
+//                vipButton: nothing where the Arcade cannot sell it). A member reads the
 //                travel picture (the suitcase between two helpers, the gold tag), "You're VIP" and the days
 //                left on the pass, else a thank-you, the perks and the other games' line, and no Get VIP. It
 //                follows VIP coming or going while it is up.
 //
-// OVER A CARD (openOver): a reward's VIP tag (vip-tag.ts vipRewardTag) opens this screen over whatever is up, a
-// win card, the event's finish card or page, home, as a layer of its own (z-index over every card but No
-// connection), never a screen change: its Back and Escape close it, and the player is where they were, the
-// card and the board's table still there under it.
-//
-// The days left are for show only, from the SDK's pass reading (gem.me.passes: the same reading the game's
-// VIP listener hears, src/net/vip.ts), never a decision: who is VIP is the server's word (vipNow). Read once
-// a session where nothing has said yet, never retried, and never while the platform has asked everyone to
-// wait (src/net/pace.ts). Information is glass and paper; the only buttons are the badge, Back, the gear and Get VIP.
+// The days left are for show only, from the SDK's pass reading (gem.me.passes, GamePass.daysLeft: whole days,
+// capped at 7, which reads "7+"; never the deprecated endsAt), the pass known by its offer's slug (vip-view.ts
+// vipPassSlug), never a decision: who is VIP is the server's word (vipNow). Read once a session where nothing
+// has said yet, never retried, and never while the platform has asked everyone to wait (src/net/pace.ts).
+// Information is glass and paper; the only buttons are the badge, Back, the gear and Get VIP.
 
 import { gem } from "../gem";
 import { held } from "../net/pace";
 import { ICONS } from "./icons";
-import { liveAttr, liveText, onLocaleChange, t } from "./i18n";
-import { closed, opened } from "./dialogs";
-import { onVip, vipButton, vipNow } from "./vip-view";
+import { liveAttr, liveText, locale, onLocaleChange, t } from "./i18n";
+import { onVip, vipButton, vipNow, vipPassSlug } from "./vip-view";
 import { vipCoinsPct, vipPerks, vipTag } from "./vip-tag";
 import { helperPic } from "./helper-shop";
 import { VIP_DAILY_SIZE, VIP_WELCOME_SIZE } from "../net/vip";
@@ -62,24 +57,19 @@ const STAMP = `<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="2
 /** A member's tick: white on green, ringed in white. */
 const TICK = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="#2e8f5e" stroke="#fff" stroke-width="2.5"/><path d="m7 12.4 3.3 3.2L17.2 8.7" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-// ---------------------------------------------------------------- the pass's end, for show
-const DAY = 24 * 60 * 60 * 1000;
-type Pass = { readonly pass: string; readonly held: boolean; readonly endsAt: string | null };
-/** When the player's VIP pass ends (ms), as the SDK last read it; null: not held, no end, or not read. */
-let endsAt: number | null = null;
-let passHeard = false;
+// ---------------------------------------------------------------- the pass's days left, for show
+/** The SDK's most: 7 means "7 or more" (and a pass with no end). */
+const MOST_DAYS = 7;
+type Pass = { readonly pass: string; readonly held: boolean; readonly daysLeft: number };
+/** The passes as the SDK last read them (null: not read). */
+let passes: readonly Pass[] | null = null;
 let passAsked = false;
 const passListeners = new Set<() => void>();
-/** Outside a release build: the play-test's pretend end (ms), or none (null), over the SDK's word. */
-let pretendEnds: number | null | undefined;
+/** Outside a release build: the play-test's pretend days left, or none (null), over the SDK's word. */
+let pretendDays: number | null | undefined;
 
-function heardPasses(passes: readonly Pass[]): void {
-  passHeard = true;
-  const v = passes.find((p) => p.pass === "vip" && p.held);
-  const ms = v?.endsAt ? Date.parse(v.endsAt) : NaN;
-  const next = Number.isFinite(ms) ? ms : null;
-  if (next === endsAt) return;
-  endsAt = next;
+function heardPasses(next: readonly Pass[]): void {
+  passes = next;
   for (const fn of [...passListeners]) fn();
 }
 
@@ -95,24 +85,31 @@ function listenPasses(): void {
     console.warn("[vip-about] the pass reading could not be heard:", err);
   }
 }
-/** A member's screen with nothing heard yet: one read, this session, for its end date. */
+/** A member's screen with nothing heard yet: one read, this session, for its days left. */
 function askPassOnce(): void {
-  if (passHeard || passAsked || !connected() || held() > 0) return;
+  if (passes || passAsked || !connected() || held() > 0) return;
   passAsked = true;
   gem.me.passes
-    .get("vip")
-    .then((p) => heardPasses([p]))
-    .catch(() => undefined); // no date: the thank-you stands
+    .list()
+    .then(heardPasses)
+    .catch(() => undefined); // no days: the thank-you stands
 }
-/** The days left on the member's pass (1 at the least), or null where its end is not known. */
+/** The days left on the member's VIP pass (1 to 7, 7 meaning 7 or more), or null where it is not known. */
 function daysLeft(): number | null {
-  const ends = pretendEnds !== undefined ? pretendEnds : endsAt;
-  return ends === null ? null : Math.max(1, Math.ceil((ends - Date.now()) / DAY));
+  if (pretendDays !== undefined) return pretendDays;
+  const slug = vipPassSlug();
+  const vip = slug ? passes?.find((p) => p.pass === slug && p.held) : undefined;
+  return vip ? Math.min(MOST_DAYS, Math.max(1, Math.floor(vip.daysLeft))) : null;
 }
-/** Outside a release build: as if the pass ended at `ms` (null: no end known; undefined: the SDK's word again). */
-export function pretendVipEnds(ms: number | null | undefined): void {
+/** The member's line: "3 days of VIP left", "7+ days of VIP left", else the thank-you. */
+function daysLine(days: number | null): string {
+  if (days === null) return t("vip.about.thanks");
+  return days >= MOST_DAYS ? t("vip.about.daysLeftPlus", { n: MOST_DAYS.toLocaleString(locale()) }) : t("vip.about.daysLeft", { count: days });
+}
+/** Outside a release build: as if the pass had `n` days left (null: not known; undefined: the SDK's word again). */
+export function pretendVipDays(n: number | null | undefined): void {
   if (import.meta.env.MODE === "release") return;
-  pretendEnds = ms;
+  pretendDays = n;
   for (const fn of [...passListeners]) fn();
 }
 
@@ -122,7 +119,8 @@ export function pretendVipEnds(ms: number | null | undefined): void {
  */
 export function vipPassLines(welcome = true): HTMLUListElement {
   const lines = el("ul", "vip-pass-lines");
-  const words = [t("vip.about.pass.coins", { pct: vipCoinsPct() }), t("vip.about.pass.helpers"), t("vip.about.pass.daily", { count: VIP_DAILY_SIZE })];
+  const pct = vipCoinsPct();
+  const words = [pct ? t("vip.about.pass.coins", { pct }) : t("vip.about.pass.coinsMore"), t("vip.about.pass.helpers"), t("vip.about.pass.daily", { count: VIP_DAILY_SIZE })];
   if (welcome) words.push(t("vip.about.pass.welcome", { count: VIP_WELCOME_SIZE }));
   for (const w of words) {
     const li = el("li");
@@ -184,7 +182,7 @@ export function createVipAbout(nav: Nav) {
   back.dataset.press = "vipAbout.back";
   back.innerHTML = ICONS.back;
   liveAttr(back, "aria-label", "vip.back");
-  back.addEventListener("click", () => (over ? closeOver() : nav.home()));
+  back.addEventListener("click", () => nav.home());
   const body = el("div", "vip-body vip-about");
   const scroll = el("div", "scroll");
   scroll.append(body);
@@ -248,33 +246,22 @@ export function createVipAbout(nav: Nav) {
     const member = vipNow();
     body.classList.toggle("member", member);
     if (!member) {
-      // the boarding pass, then Get VIP in its words (a guest's Sign in keeps its own)
+      // the boarding pass, then Get VIP in its words
       const get = vipButton("next vip-get vip-pass-get");
-      if (get && get.dataset.press === "vip.get") get.textContent = t("vip.about.pass.get");
+      if (get) get.textContent = t("vip.about.pass.get");
       body.replaceChildren(boardingPass(), ...(get ? [get] : []));
       return;
     }
     listenPasses();
     askPassOnce();
     const note = el("div", "vip-note glass");
-    const days = daysLeft();
-    note.append(el("b", "vip-big", t("vip.about.member")), el("p", "", days === null ? t("vip.about.thanks") : t("vip.about.daysLeft", { count: days })));
+    note.append(el("b", "vip-big", t("vip.about.member")), el("p", "", daysLine(daysLeft())));
     const perks = vipPerks();
     perks.append(el("p", "vip-more", t("vip.about.more")));
     body.replaceChildren(picture(), note, perks);
   }
 
-  /** Up as a layer over a card (openOver), not as the app's screen. */
-  let over = false;
-  function closeOver(): void {
-    if (!over) return;
-    over = false;
-    screen.hidden = true;
-    screen.classList.remove("over");
-    closed(screen);
-  }
-
-  // VIP came or went, or Get VIP came, went or became Sign in; the pass's end was read
+  // VIP came or went, Get VIP came or went, or the pass's offer changed; the passes were read
   onVip(() => {
     if (!screen.hidden) draw();
   });
@@ -286,25 +273,10 @@ export function createVipAbout(nav: Nav) {
     screen,
     /** Open the screen. */
     open(): void {
-      closeOver();
       draw();
       nav.show();
       scroll.scrollTop = 0;
     },
-    /** Open it over whatever is up (a reward's VIP tag): Back and Escape close it, and the player is where they were. */
-    openOver(): void {
-      if (over) return;
-      over = true;
-      screen.classList.add("over");
-      draw();
-      screen.hidden = false;
-      scroll.scrollTop = 0;
-      opened(screen, closeOver);
-    },
-    /** The layer is up (a card, to the app's other cards: they wait). */
-    isOver: (): boolean => over,
-    /** Take the layer down (the app changed screen under it). */
-    closeOver,
     /** The words changed. */
     redraw(): void {
       if (!screen.hidden) draw();

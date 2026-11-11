@@ -22,7 +22,6 @@ import { loadDaily, loadEventLevel, loadLevel, loadSouvenir, type Level } from "
 import { loadChallenges } from "./challenge-data";
 import { today } from "../net/daily";
 import { campaignNext } from "../net/progress";
-import { isVip, onVipChange, vipKnown } from "../net/vip";
 import { eventShown } from "./event-switch";
 import { liveText, t } from "./i18n";
 import type { Play } from "./app";
@@ -73,31 +72,12 @@ async function playOf(p: KeptPlay): Promise<{ play: Play; level: Level } | null>
     return c ? { play: { kind: "challenge", c }, level: c.level } : null;
   }
   if (p.kind === "event") {
-    // a VIP's alone (docs/vip.md): VIP ended since, the level is let go; no word on VIP yet (offline,
-    // slow), it is kept for the next session
-    if (!(await vipHeard(CARRY_WAIT_MS))) throw new Error("no word on VIP yet");
     if (!eventShown()) return null;
     const e = await loadEventLevel(p.id);
     return e ? { play: { kind: "event", e }, level: e } : null;
   }
   const s = await loadSouvenir(p.trip);
   return s ? { play: { kind: "souvenir", s }, level: s } : null;
-}
-
-/** The server's word on VIP has landed, or says yes already (the dev menu's Pretend too): true; `ms` went by without it: false. */
-function vipHeard(ms: number): Promise<boolean> {
-  if (vipKnown() || isVip()) return Promise.resolve(true);
-  return new Promise((done) => {
-    const timer = setTimeout(() => {
-      off();
-      done(vipKnown());
-    }, ms);
-    const off = onVipChange(() => {
-      clearTimeout(timer);
-      off();
-      done(true);
-    });
-  });
 }
 
 /** The play a board is kept as, when it may be carried on to another session; null for the rest. */

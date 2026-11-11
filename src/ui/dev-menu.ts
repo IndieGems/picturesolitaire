@@ -43,9 +43,6 @@ import type { BoardHandle, DevStep } from "./board-api";
 import type { Experiment, Play } from "./app";
 import { suitcases } from "./suitcase-data";
 import { EVENT_ON } from "./event-switch";
-import { pretending, pretendVip } from "../net/vip";
-import { VIP_WEARS_ALL } from "./vip-view";
-import { keepChoice, readChoices } from "./choices";
 
 /** What vite.config.ts stamps in at build time (its `define`). */
 declare const __BUILD_INFO__: { version: string; sdk: string; commit: string; changed: boolean; built: string };
@@ -371,23 +368,9 @@ export function mountDevMenu(host: DevHost): DevMenu {
     everyPicture = on;
     host.showAll(on);
   });
-  // VIP (docs/vip.md): on dev the server takes this switch's word as well as the platform's pass
-  // (src/net/vip.ts); kept in the player's settings, so it holds across reloads and devices
-  const vipSwitch = toggle((on) => {
-    void pretendVip(on);
-    keepChoice("devVip", on ? "1" : "0");
-  });
-  vipSwitch.checked = pretending();
-  void readChoices().then((m) => {
-    if (m.get("devVip") !== "1" || pretending()) return;
-    vipSwitch.checked = true;
-    void pretendVip(true);
-  });
   const switches = el("section");
   switches.append(
     el("h3", "", "Switches"),
-    setting("Pretend I'm VIP", vipSwitch),
-    el("p", "dev-note", `Plays as a Gem Arcade VIP member: the daily VIP gift of 2 helpers, the welcome gift of 8 (once per membership), the daily archive, the event and its archive${VIP_WEARS_ALL ? ", every Cosmetic to wear" : ""}. Helpers are spent as for anyone${VIP_WEARS_ALL ? "" : ", and Cosmetics owned as for anyone (VIP_WEARS_ALL off, 2026-11-02)"}. The server honours it on dev only, and pays the gifts as it would a VIP's. Kept across reloads.`),
     (() => {
       const r = el("div", "dev-row");
       const gift = (kind: "daily" | "welcome") => {
@@ -528,7 +511,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     );
   }
 
-  // the events (docs/vip.md): with Pretend I'm VIP on, the real ones on dev; the stand-in shows a filled page anywhere
+  // the events (docs/vip.md): the platform's on dev; the stand-in shows a filled page anywhere
   const eventState = el("p", "dev-info glass");
   const drawEvent = () => {
     const e = suitcases.newest();
@@ -537,7 +520,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
       : e
         ? `The platform's: ${suitcases.list().map((x) => `${x.theme} ${x.found}/${x.items.length}`).join(", ")}.`
         : EVENT_ON
-          ? "None to show: events are for VIPs (Pretend I'm VIP, above), and the platform has said none yet."
+          ? "None to show: the platform has said none yet."
           : "Off: src/net/suitcase-ids.json's \"on\" is false, so no player sees an event.";
   };
   suitcases.onChange(drawEvent);
@@ -566,7 +549,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
     el(
       "p",
       "dev-note",
-      "With Pretend I'm VIP on, the event page shows the platform's events and their levels play for real on dev. The stand-in fills the page as of a date: the events out by then (the newest 2 levels in, the one before 12 in), the rest coming soon. As of 5 Nov, Ski Trip is now playing and Haunted Holiday is a past event. Its levels play their real boards in practice; nothing is saved or sent.",
+      "With the stand-in off, the event page shows the platform's events and their levels play for real on dev. The stand-in fills the page as of a date: the events out by then (the newest 2 levels in, the one before 12 in), the rest coming soon. As of 5 Nov, Ski Trip is now playing and Haunted Holiday is a past event. Its levels play their real boards in practice; nothing is saved or sent.",
     ),
   );
 

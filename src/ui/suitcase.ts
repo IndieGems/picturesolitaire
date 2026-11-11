@@ -46,9 +46,6 @@ import { shortDate } from "./format";
 import { markTag } from "./marks";
 import { loadItems, suitcaseItem } from "./catalogue";
 import { ensureSuitcase, fileUrl, resident } from "../packs";
-import { vipRewardTag, vipSide } from "./vip-tag";
-import { onVip } from "./vip-view";
-import { vipExtraCoins } from "../net/vip";
 import { eventItemCoins, onRewardsChange } from "../net/rewards";
 
 type Nav = {
@@ -145,13 +142,6 @@ const ART = {
  * and a built-in copy would say the old one. Only the dev menu's stand-in events, unframed, say the stand-in's.
  */
 const itemCoins = (): number | null => eventItemCoins() ?? (suitcases.pretending() ? EVENT_ITEM_COINS : null);
-
-/** VIP's tag on what an item pays (vip-tag.ts), before it is won: while some of `e`'s items are still to find. */
-function itemTag(e: { items: { found?: boolean }[] }): HTMLElement | null {
-  const coins = itemCoins();
-  if (coins === null || (e.items.length && e.items.every((i) => i.found))) return null;
-  return vipRewardTag({ coins: vipExtraCoins(coins) }, vipSide());
-}
 
 /** A closed suitcase, Art's: the small one (a level's mark, the win card), or the strip's and the list's. */
 export function miniCase(cls = "", big = false): HTMLElement {
@@ -356,12 +346,10 @@ export function createSuitcase(nav: Nav) {
     const table = own ? prizeTableName(e.prize, e.prize.tableTitle ?? knownTable(e.prize.table)?.title ?? "") : "";
     const count = e.items.length;
     const steps = el("ol");
-    // what each item pays, once the config has said (no line until then)
+    // what each item pays, its base as the platform's preview says (no line until it has; what VIP would add is
+    // offered on the win card, before the claim: win-upsell.ts)
     const coins = itemCoins();
     const coinsLine = coins === null ? null : el("li", "", t("case.how.coins", { count: coins }));
-    // VIP's tag on what each item pays, while some are still to find (before it is won: vip-tag.ts)
-    const tag = itemTag(e);
-    if (coinsLine && tag) coinsLine.append(" ", tag);
     for (const line of [
       t("case.how.levels", { count: e.levels.length || EVENT_LEVELS }),
       t("case.how.items", { count }),
@@ -412,8 +400,6 @@ export function createSuitcase(nav: Nav) {
       const words = el("span", "", t("case.prizeCoinsEach", { count: each }));
       coinRow.append(el("span", "prize-coin", ""), words);
       coinRow.firstElementChild!.append(coinIcon(28));
-      const tag = itemTag(e);
-      if (tag) words.append(" ", tag);
       rows.append(coinRow);
     }
     box.append(rows);
@@ -574,10 +560,7 @@ export function createSuitcase(nav: Nav) {
   }
 
   suitcases.onChange(() => draw());
-  // VIP came or went, or the config's figures landed: the page's VIP tags say so
-  onVip(() => {
-    if (!screen.hidden) draw();
-  });
+  // the platform's figures landed: what an item pays
   onRewardsChange(() => {
     if (!screen.hidden) draw();
   });
@@ -632,8 +615,8 @@ export function packedOnCard(
 ): void {
   const mini = miniCase("on-card");
   const words = el("span", "packed-words");
-  // the item and the count, no amount: the card's chip says the level's Coins and the item's as ONE total, with its
-  // VIP tag (QA, 2026-11-10: "+60" there and "+50" here read as 110)
+  // the item and the count, no amount: the card's chip says the level's Coins and the item's as ONE total
+  // (QA, 2026-11-10: "+60" there and "+50" here read as 110)
   const said = el("span", "", t("case.packedCard", { item: itemName(item), count: packed, all }));
   words.append(said);
   line.replaceChildren(mini, words);

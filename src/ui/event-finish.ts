@@ -26,7 +26,6 @@ import { eventStamp, sparkles } from "./passport";
 import { eventTitle } from "./suitcase";
 import { EVENT_ITEM_COINS, eventNamed, eventPrize, suitcases } from "./suitcase-data";
 import { BUILT_IN_TABLE, knownTable, thumbOf } from "./tables";
-import { vipRewardTag, type VipSide } from "./vip-tag";
 
 interface Opts {
   /** Whether the screen can take the card now (no play in hand, no finish running, no other card up). */
@@ -44,8 +43,6 @@ export interface Finished {
   table?: string;
   /** The last item's Coins as the checker's receipt says they were paid; absent or 0 (a guest's): no Coins on the card. */
   coins?: number;
-  /** VIP's figure on them, for its tag (vip-tag.ts): whose, and the extra; absent: the verdict says nothing of VIP. */
-  vip?: { side: VipSide; extra: number };
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", text = ""): HTMLElementTagNameMap[K] {
@@ -108,8 +105,6 @@ export function createEventFinish(opts: Opts) {
     if (coins > 0) {
       const coinRow = el("div", "finish-row glass finish-coins");
       coinRow.append(el("b", "", `+${coins.toLocaleString(locale())}`), coinIcon(28, true, "", coins));
-      const tag = f.vip ? vipRewardTag({ coins: f.vip.extra }, f.vip.side) : null;
-      if (tag) coinRow.append(tag);
       prize.append(coinRow);
     }
     const stampLine = el("p", "finish-stamped", t("finish.stamped"));
@@ -167,10 +162,10 @@ export function createEventFinish(opts: Opts) {
     /** Whether the card is up. */
     up: () => !veil.hidden,
     /** Dev only: the card for event `event`, again and again (the seen list skipped); `coins` as its receipt says (the stand-in figure as a real account's, 0 a guest's, null not said). */
-    preview(event: string, coins: number | null = EVENT_ITEM_COINS, vip?: { side: VipSide; extra: number }): void {
+    preview(event: string, coins: number | null = EVENT_ITEM_COINS): void {
       if (import.meta.env.MODE === "release") return;
       const table = eventPrize(event)?.table;
-      pending.push({ event, ...(table && table !== BUILT_IN_TABLE ? { table } : {}), ...(coins === null ? {} : { coins }), ...(vip ? { vip } : {}) });
+      pending.push({ event, ...(table && table !== BUILT_IN_TABLE ? { table } : {}), ...(coins === null ? {} : { coins }) });
       queueMicrotask(poke);
     },
   };
