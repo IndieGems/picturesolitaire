@@ -26,9 +26,9 @@ VIP's alone, behind locked doors (the plan of 2026-10-30, in `git log` of this f
   (`gem.me.passes.on("changed")`: after a store purchase, on resume, after a sign-in, when a pass
   ends) and asks the checker again when the reading differs from the checker's last word;
   `recheckVip()` does the same after Get VIP's sheet or a sign-in (`src/ui/vip-view.ts`).
-- **On dev, a dev-menu "Pretend I'm VIP" toggle** lets the creator and QA see and test every perk,
-  the extras included. The server honours it on dev only, and a release build carries none of it
-  (`tools/no-dev-menu.mjs`).
+- **VIP on dev is an account that holds the pass.** The dev menu's "Pretend I'm VIP" went on
+  2026-11-11: it cannot fake the Arcade's +50%, so it showed a VIP no Arcade pays. The game sends no
+  pretend now; the checker still honours `pretend_vip` on dev (`vip.rs`) until the pass read goes.
 
 ## What everyone gets (no VIP needed)
 
@@ -98,7 +98,7 @@ so a board won earlier as a non-VIP never pays it later. Every level stays winna
 doubled helpers and the gifts working as now until the config takes `bonuses`, then switch before the
 next release). The game standard's rule "VIP: gate on the pass in config, never multiply in code"
 forbids it, and **the release check ECON-08 will flag it**: `vip.rs`, `platform_vip` in `lib.rs`,
-`pay.rs`'s `vip_extra_helpers`, the gifts in `gift.rs`, and the dev Pretend all name VIP in code.
+`pay.rs`'s `vip_extra_helpers`, the gifts in `gift.rs`, and `vip.rs`'s dev `pretend_vip` all name VIP in code.
 The plan that replaces them is the next section.
 
 - **One place computes it**: `functions/checker/src/pay.rs` (`vip_extra_helpers`), from
@@ -153,8 +153,7 @@ progression track's `requires`. Nothing is worked around meanwhile. When they la
   write a progression). A run whose bonus was skipped (the pass lapsed between the two runs) spends
   nothing and tries again another day; no `max_uses`, which would count a skipped run.
 - **Then the pass read goes** (`vip.rs`'s pass parsing, `platform_vip`, one platform call fewer before
-  the order), and the dev Pretend with it: it cannot fake `holds_pass`, so VIP on dev then needs a test
-  account that really holds VIP. `vip-extra.json` and the `vip*` answer fields retire with it.
+  the order), and the checker's dev `pretend_vip` with it (the game sends none since 2026-11-11). `vip-extra.json` and the `vip*` answer fields retire with it.
 
 ## Before the reward: the upsell (the game standard; SDK 24)
 

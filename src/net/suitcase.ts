@@ -43,7 +43,7 @@ import { currentDaily, onDailyChange } from "./daily";
 import { noAnswer, refusalOf } from "./no-answer";
 import { backoff, heard as hearRefusal, whenDue } from "./pace";
 import { onOnline, suspect } from "../ui/online";
-import { heardVip, vipFields, vipReady } from "./vip";
+import { heardVip } from "./vip";
 
 export type EventItem = {
   id: string;
@@ -174,7 +174,7 @@ function place(e: EventPack): void {
 async function read(): Promise<void> {
   try {
     await gem.awaitIdentity(10_000);
-    const a = (await gem.functions.invoke({ v: 1, what: "suitcase", ...vipFields() })).json() as Record<string, unknown>;
+    const a = (await gem.functions.invoke({ v: 1, what: "suitcase" })).json() as Record<string, unknown>;
     heardVip(a);
     if (a.status !== "suitcase" || typeof a.today !== "string") {
       // "retry": the platform was busy, or this channel's config does not know the events yet
@@ -260,7 +260,6 @@ export const suitcase = {
 /** Read the events as the game starts (src/net/progress.ts calls it), which says VIP too, and keep them current. */
 export async function loadSuitcase(): Promise<void> {
   if (!framed || !on) return;
-  await vipReady(); // the dev pretend kept from last time goes with this first read
   await refresh(true);
 }
 

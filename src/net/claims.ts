@@ -66,7 +66,7 @@ import { backoff, heard, held, needsLoad, notNow, whenDue } from "./pace";
 import { answered, hold, progress, type HeldWin } from "./progress";
 import { accept as acceptSuitcase, suitcase, type EventPack } from "./suitcase";
 import { tableOf } from "./tables";
-import { heardVip, vipFields, vipReady } from "./vip";
+import { heardVip } from "./vip";
 import type { PlatformGrantPreview } from "@indiegems/gem-web-sdk/sdk";
 import { currentDaily } from "./daily";
 import { previewWin, type WinPreview, type WinTargets } from "./rewards";
@@ -411,7 +411,7 @@ async function send(h: Held): Promise<void> {
   const { lane, board } = h;
   let answer: Record<string, unknown>;
   try {
-    answer = await invoke({ ...h.body, ...vipFields() }); // the dev pretend as it is now, never stored with the claim
+    answer = await invoke(h.body);
   } catch (err) {
     if (err instanceof GemApiError) {
       // the call reached the platform: decide from its code
@@ -538,9 +538,6 @@ async function pump(): Promise<void> {
       pauseUntil = performance.now() + backoff(++failing, 2000);
       return;
     }
-    // the dev menu's pretend, kept from last time, goes with every claim (vipFields): an event
-    // level sent again at the start must not go before it is restored
-    await vipReady();
     for (;;) {
       const now = performance.now();
       // the platform said not now: nothing goes until its wait is over
