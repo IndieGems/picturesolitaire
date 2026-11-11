@@ -6110,9 +6110,9 @@ progressions:
         - mode: on_add
           per_unit: 15
           target: { platform_currency_slug: ARCADE_TICKETS }
-  # THE VIP EXTRA (docs/vip.md; the creator, 2026-11-10): +50% on every Coin payout for a VIP, as its
-  # own grant INSIDE the reward's own order (the platform pays one order a call): the checker adds the
-  # extra's Coins here, 1 Coin a unit, so it pays with its reward, once ever. Only the win checker writes it.
+  # THE VIP EXTRA's Coins (docs/vip.md): checkers 0.1.55 to 0.1.59 paid our own +50% for a VIP here. Since
+  # 2026-11-11 the Arcade pays VIP's +50% on every Coins grant itself, so nothing writes it (checker 0.1.60
+  # on); it stays declared so its id is never reused.
   - id: 38072584-41bb-4cb2-95cc-8a0455af63a5
     slug: vip_coins
     display_name: "VIP extra Coins"

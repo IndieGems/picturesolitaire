@@ -7,12 +7,12 @@ rules.
 
 **The rule since 2026-11-10** (the creator): **VIP gates no content.** Events, past events and the
 daily archive are open to everyone; a VIP gets better rewards for playing them instead: **+50% on
-every Coin payout and double on every helper reward.** Until then the events and the archive were
+every Coins grant (the Arcade's own since 2026-11-11) and double on every helper reward.** Until then the events and the archive were
 VIP's alone, behind locked doors (the plan of 2026-10-30, in `git log` of this file).
 
 ## Who is VIP
 
-- **The server decides, never the client.** The win checker (`functions/checker`, `vip.rs` and
+- **The server decides, never the client** (a stopgap until config `bonuses` land: below). The win checker (`functions/checker`, `vip.rs` and
   `platform_vip` in `lib.rs`) asks the platform which passes the player who called holds
   (`GET /v1/games/{game}/players/me/passes`, gem-api#4337): VIP is a `vip` entry with `held: true`.
   Listed and not held, or not listed at all, is not VIP. It asks at most once a call, and only on a
@@ -58,30 +58,30 @@ VIP's alone, behind locked doors (the plan of 2026-10-30, in `git log` of this f
 
 ## What VIP adds
 
-Items 1 and 2 pay from checker 0.1.55 and config 65 (dev first). 0.1.54 paid the extra's Coins in an
-order of its own, which the platform suppressed (one call pays once; QA, 2026-11-10): its helpers
-landed, its Coins did not.
-
-1. **The VIP extra on Coins: +50% of every Coin payout**, paid as its own grant inside the reward's own
-   order (the platform caps one grant at 100, so a 100 pays 100 and 50). The rule is
-   **ceil(base / 2)**: 25 pays +13, 50 pays +25, 100 pays +50. It covers every Coin payout: each
-   lane's first win (the campaign, the welcome boards 1–5 included, Souvenirs, the challenge route,
-   event levels), First Steps' prize, the daily's 50, a past day's 15, and each event item's 15
-   (the rates since config 67: `docs/coins.md`).
-2. **Double helpers on every helper reward**: the guided start's kit (3 of each becomes 6), a hard
-   board's first win, a stamp, and the daily's first win. Each grant is clamped at the cap of 20.
-3. **VIP's own gifts, unchanged** (the creator, 2026-11-01, after Jade Match):
+1. **+50% on every Coins grant: the Arcade's, since 2026-11-11** (the creator: "the gem arcade
+   updated yesterday and it now pays the 50% extra for VIPs"; SDK 24, `arcade-economy.md` section 7).
+   The platform adds it to every Coins grant a VIP receives, ours included, and scales the ceilings
+   with it; the config keeps the unboosted amounts (`docs/coins.md`). **The game pays none of it**:
+   checker 0.1.60 on adds no Coins of its own (`src/net/vip-extra.json` `gamePays` false). Checkers
+   0.1.55 to 0.1.59 paid our own +50% inside the reward's order on the `vip_coins` progression, which
+   the platform then boosted too (about 2.25× for a real VIP, dev only: release never ran them). The
+   progression stays declared, written by nothing, so its id is never reused.
+2. **Double helpers on every helper reward**, still the checker's: the guided start's kit (3 of each
+   becomes 6), a hard board's first win, a stamp, and the daily's first win. Each grant is clamped at
+   the cap of 20.
+3. **VIP's own gifts** (the creator, 2026-11-01, after Jade Match; the welcome's rule, 2026-11-11):
    - **a daily VIP gift of 2 helpers** on the player's own date (the platform's), once a date, by the
      day of their week, Monday first: a week brings 5 Hints, 4 Undos and 5 Shuffles (Monday Hint +
      Undo, Tuesday Shuffle + Hint, Wednesday Undo + Shuffle, Thursday Hint + Undo, Friday Shuffle +
      Hint, Saturday Undo + Shuffle, Sunday Hint + Shuffle); a day not opened is not saved up;
-   - **a welcome gift once a membership: 3 Hints, 2 Undos, 3 Shuffles (8).** A membership is told by
-     its end date (`vip_welcome_end`): one bought after the last ended is welcomed again, one extended
-     before it ends is not, a pass with no end (support's) once for good. With the dev Pretend on, the
-     server welcomes the pretend once every 30 days.
+   - **a welcome gift ONCE PER PLAYER, EVER: 3 Hints, 2 Undos, 3 Shuffles (8)** (the creator,
+     2026-11-11: a membership can no longer be told by its pass's end date, which SDK 24 stops
+     sending). From checker 0.1.60 it is paid while `vip_welcome_end` has never been raised, and
+     raises it for good; a player welcomed under the old once-a-membership rule (0.1.47 to 0.1.59,
+     whose mark held that membership's end day) is never welcomed again.
    - Paid by the checker (`{"v":1,"what":"vip_gift"}`, `gift.rs`; when a gift is due: `vip.rs`
      `due`) from two marks it keeps (`vip_gift_day`, `vip_welcome_end`), each gift in its own order
-     with its own key (`vip:<date>`, `vip-welcome:<end day>`), so asking twice pays once. The marks
+     with its own key (`vip:<date>`, `vip-welcome:99999999`), so asking twice pays once. The marks
      decide, not the key: the platform answers a reused key as a success that changed nothing (QA,
      2026-11-02). The game (`src/net/vip.ts`) asks once the server says VIP and whenever the Arcade's
      pass reading changes while it does, hands each gift to the gift cards (UI's) and reads the stock
@@ -92,37 +92,80 @@ is the same for everyone; and **no back pay**: the extra comes only with rewards
 so a board won earlier as a non-VIP never pays it later. Every level stays winnable with no helper
 (AGENTS.md), so VIP never decides whether a level can be won.
 
-## The VIP extra, in the checker
+## The helpers' extra and the gifts, in the checker: A STOPGAP
 
-- **One place computes it**: `functions/checker/src/pay.rs` (`vip_extra_coins`, `vip_extra_helpers`), from
-  `src/net/vip-extra.json`, the one copy of the rule, which `src/net/vip.ts` reads too for the
-  previews UI shows before a reward is won (`vipExtraCoins(base)`, `vipHelpers(gift)`).
-- **The seam for the Arcade's figure**: the creator expects a coming SDK to have the Arcade tell the
-  game the exact VIP extra. That figure replaces the rule at this one place, and **`gamePays`** in
-  `vip-extra.json` turns the game's own payment off, so a VIP is never paid twice.
+**The pass read is a stopgap until gem-development#2246 lands** (the creator, 2026-11-11: keep VIP's
+doubled helpers and the gifts working as now until the config takes `bonuses`, then switch before the
+next release). The game standard's rule "VIP: gate on the pass in config, never multiply in code"
+forbids it, and **the release check ECON-08 will flag it**: `vip.rs`, `platform_vip` in `lib.rs`,
+`pay.rs`'s `vip_extra_helpers`, the gifts in `gift.rs`, and the dev Pretend all name VIP in code.
+The plan that replaces them is the next section.
+
+- **One place computes it**: `functions/checker/src/pay.rs` (`vip_extra_helpers`), from
+  `src/net/vip-extra.json` (`helpers`: 2, double).
 - **One call pays once** (the platform: "a second paying order in the same call is suppressed",
-  `function_invocation_already_granted`, SDK `inventory-and-catalogs.md`). So the extra rides INSIDE
-  the reward's own order, under its key: it pays with the reward, once ever, and a resent claim or a
-  replay pays nothing more. The achievements' counters ride in the same order (0.1.55 on), for the
-  same reason. It goes on the config's `vip_coins` progression (on_add, 1 Coin a unit, written only
-  by the checker).
-- **Reckoned before the order, from what the config pays**: `functions/checker/data/coins.json`,
-  written by make-config with the config, compiled into the checker. `levels-check` (in
-  `npm run build`) stops the game build when that file changed after the uploaded checker was built,
-  as it does for the level data. A ceiling (the day's cap) trims the extra's grant like any other, and
-  the receipt says what landed.
-- **At most one pass read per claim**, just before the order, and only when the claim pays. A passing
-  hiccup reading it (no answer, 429, 5xx) holds the claim, and base and extra pay together later. Any
-  other failure pays the base and holds the extra in the record (`vipOwed` in the progress slot); it
-  is paid inside a later paying claim's order, with the held mark (`vip_extra_held`) raised in it, so
-  the mark, not the record, says what is paid; a claim that reads not VIP drops it. Never lost, never
-  paid to a non-VIP.
-- **The answer says what landed**: `coins` (all), `base`, `vipExtra`, `helpers` (all), `vipHelpers`,
-  `vipLate` (held extras that landed now), `vipRead` (`yes`, `no` or `unknown`) and `vipHeld` (an
-  extra waits). `src/net/claims.ts` types them. The function's log names every grant, base or VIP extra,
-  with its outcome (fired, clamped or suppressed, and why); a short extra is a warning.
-- **The platform's day cap**: 4,000 Coins a day per game (`gemctl platform config`). A VIP reaches it
-  sooner; a grant past it is trimmed, and the receipts (so the answer) say what landed.
+  `function_invocation_already_granted`). So the extra helpers ride INSIDE the reward's own order,
+  under its key: they pay with the reward, once ever. The achievements' counters ride in the same
+  order (0.1.55 on), for the same reason.
+- **At most one pass read per claim**, just before the order, and only when the claim has helpers to
+  pay. A passing hiccup reading it (no answer, 429, 5xx) holds the claim, and base and extra pay
+  together later. Any other failure pays the base and holds the extra in the record (`vipOwed` in the
+  progress slot), paid inside a later paying claim's order with the held mark (`vip_extra_held`)
+  raised in it; a claim that reads not VIP drops it. Held extras from before 0.1.60 pay their helpers
+  alone: their Coins were ours, and the platform's +50% has replaced them.
+- **The answer says what landed**: `helpers` (all), `vipHelpers`, `vipLate` (held extras that
+  landed now), `vipRead` (`yes`, `no` or `unknown`) and `vipHeld`; `vipExtra` (Coins) is 0 from
+  0.1.60. The function's log names every Coins grant with its outcome.
+- **The platform's day cap**: 4,000 Coins a day per game (`gemctl platform config`), scaled for a VIP
+  by the platform; a grant past it is trimmed, and the receipts say what landed.
+
+## Planned, waiting on config `bonuses` (gem-development#2246)
+
+The platform is building `bonuses` (gem-development#2246, WS3; gem-api#5386 for bonuses in
+execute_recipe, #5453 for authoring them; neither merged on 2026-11-11). gemctl's schema (3.33.325)
+has none yet: a recipe and a loot table take no `bonuses`, and `holds_pass` exists only on a
+progression track's `requires`. Nothing is worked around meanwhile. When they land:
+
+- **A helper reward is a recipe the checker runs.** A function a player called may run a recipe for
+  that player (`serverless-functions.md`, "What a function a player called may change"), on the
+  SDK's own route, `POST /v1/inventory/players/{player}/recipes/execute`
+  `{catalog_id, recipe_id, game_id, nonce}`; the platform judges each bonus's `requires` then. An
+  order cannot: its operations are currency, item and progression writes, with no roll, so no bonus
+  ever applies inside the paying order. So the paying order carries the Coins, and right after it the
+  checker runs one recipe per helper reward: the kit (3/3/3), a hard board's first win (1/1/0), a
+  stamp (1/1/1) and the daily's first win (three recipes, one per helper, by weekday). Base grants are
+  today's sizes, clamped at the cap; one bonus each, `requires: [{ kind: holds_pass, pass: vip }]`,
+  the same grants again. The nonce is the reward's key + `:helpers`, so a resend runs once. Helpers
+  are no platform currency, so "one call pays once" does not touch the recipe. A recipe call that
+  fails after the Coins landed is held in the record and run by the next call, same nonce (replacing
+  the held VIP extras).
+- **No client can farm them.** A recipe is server-only unless it sets `client_writable: true` (the
+  schema's default is false: "only your game server may") or carries `platform_prices`; ours set
+  neither. Still to confirm on #2246 (the lead asked there, 2026-11-11): that a function's recipe run
+  counts as "your game server".
+- **The daily gift** is seven recipes, one per weekday's size, with no base grants and a VIP bonus of
+  the day's helpers; the checker runs today's (nonce `vip:<date>`) for whoever asks, and the receipt's
+  `bonus` entry (`applied`) is its only word that the player is VIP: no pass read.
+- **The welcome, once ever**: only after a daily gift whose bonus applied in the same call, while
+  `vip_welcome_end` is still 0 and the player holds no welcome-marker item, the checker runs the
+  welcome recipe: no base grants, a VIP bonus of 3/2/3 plus an `account_bound` marker item, nonce
+  `vip-welcome:<date>`. The marker lands with the helpers and is the once-ever proof (a bonus cannot
+  write a progression). A run whose bonus was skipped (the pass lapsed between the two runs) spends
+  nothing and tries again another day; no `max_uses`, which would count a skipped run.
+- **Then the pass read goes** (`vip.rs`'s pass parsing, `platform_vip`, one platform call fewer before
+  the order), and the dev Pretend with it: it cannot fake `holds_pass`, so VIP on dev then needs a test
+  account that really holds VIP. `vip-extra.json` and the `vip*` answer fields retire with it.
+
+## Before the reward: the upsell (the game standard; SDK 24)
+
+The platform holds nothing back, so VIP is offered **before** a reward is paid, never after (the
+creator, 2026-11-11: on every win, Get VIP and Continue at equal weight, and Continue pays).
+`src/net/claims.ts` `holdWin(claim)` holds the claim while the win card shows the reward and what
+VIP would add, from `gem.gameConfig.preview` over the config targets the claim pays from (the board's
+progression, an event item's finds, the day's or the archive's), never an amount or a multiplier of
+ours; the card sends it on Continue, once Get VIP's sheet settles, or when it leaves. A claim held
+when the page closes is sent then, and nothing played is dropped. After the claim, the answer's
+receipt gives what landed and the pass's part of it (`gem.earnings.fromReceipt`).
 
 ## What the game shows (UI's)
 
@@ -132,7 +175,7 @@ and the answer's fields), and home's VIP badge opens the VIP screen (`src/ui/vip
 gives here, "Other Gem Arcade games give VIP rewards too!" (never naming a game or a reward), and Get
 VIP, which opens the Arcade's own offer sheet (`gem.store.showOffer`); no price, no "free", no
 hurry. A member is shown their VIP where it gives them something, and a welcome card the first time
-the checker pays their welcome (once a membership). When VIP ends, the player keeps everything:
+the checker pays their welcome (once ever). When VIP ends, the player keeps everything:
 stamps, tables, helpers and Coins.
 
 **Every Cosmetic is wearable: OFF since 2026-11-02** (the creator: "disable that but keep it in case

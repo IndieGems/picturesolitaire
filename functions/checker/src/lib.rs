@@ -57,7 +57,8 @@
 //! inside a later paying claim's order with the held mark raised in it (pay::add_held), or dropped by a
 //! claim that reads not VIP. The verdict says what landed: coins (all), base, vipExtra, helpers (all),
 //! vipHelpers, vipLate (held extras that landed now), vipRead (yes, no, unknown) and vipHeld.
-//! src/net/vip-extra.json's gamePays false pays none of it (the Arcade's, then).
+//! Since 2026-11-11 the Arcade pays VIP's +50% Coins itself (src/net/vip-extra.json gamePays false):
+//! the extra here is the doubled helpers alone, until the config carries them as recipe bonuses.
 //!
 //! THE EVENTS ARE PLAYED IN ORDER (the creator, 2026-11-10): an event's level N pays only once its
 //! levels 1 to N-1 are won (the record's "event"); otherwise "out_of_order", with the level that is
@@ -270,9 +271,8 @@ mod function {
                 c.riding = true;
             }
         });
-        if !pay::vip_game_pays() {
-            return Ok(());
-        }
+        // the Coins extra is the Arcade's since 2026-11-11 (gamePays false: extra_of reckons none); the
+        // doubled helpers are still this checker's
         let x = pay::extra_of(o);
         let held = CALL.with(|c| c.borrow().held.clone());
         if x.nothing() && held.is_empty() {
@@ -1097,7 +1097,7 @@ mod function {
     /// all go; the rest are kept for this call's paying order (prepare), when the player is VIP. Reads
     /// the pass (once a call) and the mark only when the record holds some. True if the record changed.
     fn held_before(player: &str, doc: &mut Value, vip: VipWord) -> bool {
-        if !pay::vip_game_pays() || progress::held_extras(doc).is_empty() {
+        if progress::held_extras(doc).is_empty() {
             return false;
         }
         let mut changed = false;

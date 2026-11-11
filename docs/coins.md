@@ -66,10 +66,13 @@ Read it so:
   that is about the trip levels' rate for a player catching up on the archive, over the days it holds
   (this month and the two before), each once.
 - One-time: the welcome (boards 1 to 5), the onboarding prize and First Steps' prize. Replays and campaign boards past the last pay nothing.
-- **VIP** (the creator, 2026-11-10; docs/vip.md): every payout above pays a VIP 1/2 more, rounded up, inside
-  its reward's own order (5 +3, 10 +5, 15 +8, 25 +13, 30 +15, 50 +25, 100 +50), and every helper reward 2 times over.
-  **VIP +50% is the Gem Arcade's rule, relayed by the creator on 2026-11-10**; the rates above put a VIP at
-  about 750 an hour, the creator's "VIPs 750". The platform's 4,000 a day per game still holds.
+- **VIP** (docs/vip.md): **the Arcade pays a VIP +50% on every Coins grant itself, since 2026-11-11** (the creator:
+  "the gem arcade updated yesterday and it now pays the 50% extra for VIPs"; SDK 24, arcade-economy.md section 7),
+  and scales the ceilings with it. Every amount here is the unboosted one, and the game pays no Coins of its own
+  for VIP (checker 0.1.60 on). The VIP column is these amounts and half again, rounded up (5 +3, 10 +5, 15 +8,
+  25 +13, 30 +15, 50 +25, 100 +50): the platform's own rounding may differ by a Coin. That puts a VIP at about 750
+  an hour, the creator's "VIPs 750". Every helper reward is doubled for a VIP by the checker (2 times over; a stopgap until
+  config bonuses land, docs/vip.md). The platform's 4,000 a day per game still holds, scaled for a VIP.
 - **Still to measure: real minutes per level.** No play-time data yet; every hourly figure here is the
   12-moves-a-minute estimate. If levels run much faster or slower, change the rates (LANES in
   tools/server/make-config.mts), rebuild and upload the win checker, and upload the config.

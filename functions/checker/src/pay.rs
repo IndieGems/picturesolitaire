@@ -155,8 +155,8 @@ pub fn order(progression: &str, what: &str, nonce: &str, first: bool, gift: Opti
     Some(o)
 }
 
-/// VIP's welcome mark (helper-ids.json `vip.welcomeEnd`): (id, slug). Its value is the end day of
-/// the membership last welcomed (vip.rs).
+/// VIP's welcome mark (helper-ids.json `vip.welcomeEnd`): (id, slug). Above 0: welcomed, for good
+/// (vip.rs; once per player, ever, since 2026-11-11; before, it held the membership's end day).
 pub fn vip_welcome_mark() -> (&'static str, &'static str) {
     let w = &data()["helpers"]["vip"]["welcomeEnd"];
     (w["progression"].as_str().unwrap_or_default(), w["slug"].as_str().unwrap_or_default())
@@ -169,7 +169,7 @@ pub fn vip_day_mark() -> (&'static str, &'static str) {
     (d["progression"].as_str().unwrap_or_default(), d["slug"].as_str().unwrap_or_default())
 }
 
-/// VIP's welcome gift, once a membership: { hint, undo, shuffle }.
+/// VIP's welcome gift, once per player, ever: { hint, undo, shuffle }.
 pub fn vip_welcome() -> Value {
     sizes(&data()["helpers"]["vip"]["welcome"])
 }
@@ -244,16 +244,18 @@ pub fn none() -> Value {
 // THE VIP EXTRA (the creator, 2026-11-10; docs/vip.md): +50% on every Coin payout and double on every
 // helper reward, for a VIP, paid by this checker beside the base. THE ONE PLACE it is computed, from
 // src/net/vip-extra.json (the rule's one copy; src/net/vip.ts shows the same figures as previews).
-// A coming SDK may have the Arcade tell the game its exact VIP extra (the creator): that figure
-// replaces the rule HERE (vip_extra_coins, vip_extra_helpers), and `gamePays` goes false, so a VIP
-// is never paid twice (vip_game_pays: lib.rs then places nothing and reads no pass for it).
+// SINCE 2026-11-11 THE ARCADE PAYS VIP'S +50% COINS ITSELF (the creator: "the gem arcade updated
+// yesterday and it now pays the 50% extra for VIPs"; SDK 24, arcade-economy.md section 7), on every
+// Coins grant, ours included: `gamePays` is false, so this checker adds no Coins extra (Extra::of,
+// add_extra), and held extras pay their helpers alone. The helpers stay doubled here (the creator:
+// "VIP helpers stay doubled") until the config can carry them as a recipe's `bonuses` (docs/vip.md).
 
 fn vip_rule() -> &'static Value {
     &data()["vipExtra"]
 }
 
-/// The game pays the VIP extra itself (vip-extra.json `gamePays`). False: the Arcade pays it, and
-/// this checker pays none.
+/// The game pays the VIP extra's COINS itself (vip-extra.json `gamePays`). False (since 2026-11-11):
+/// the Arcade pays VIP's +50% Coins, and this checker pays no Coins extra. Helpers are not affected.
 pub fn vip_game_pays() -> bool {
     vip_rule()["gamePays"].as_bool() == Some(true)
 }
@@ -305,7 +307,8 @@ impl Extra {
     /// A reward's extra: each Coin grant that landed (`grants`) its own vip_extra_coins, added, and
     /// the helpers it asked (`asked`) vip_extra_helpers.
     pub fn of(grants: &[i64], asked: &Value) -> Extra {
-        Extra { coins: grants.iter().map(|g| vip_extra_coins(*g)).sum(), helpers: vip_extra_helpers(asked) }
+        let coins = if vip_game_pays() { grants.iter().map(|g| vip_extra_coins(*g)).sum() } else { 0 };
+        Extra { coins, helpers: vip_extra_helpers(asked) }
     }
     pub fn nothing(&self) -> bool {
         self.coins <= 0 && KINDS.iter().all(|k| self.helpers[*k].as_u64().unwrap_or(0) == 0)
@@ -376,7 +379,8 @@ pub fn extra_of(o: &Order) -> Extra {
 /// "earned", clamped at the cap. Nothing for nothing.
 pub fn add_extra(o: &mut Order, x: &Extra, why: &str) {
     let most = vip_rule()["maxGrant"].as_i64().unwrap_or(100).max(1);
-    let mut left = x.coins.max(0);
+    // the Arcade pays VIP's Coins (gamePays false): none here, a held extra's included
+    let mut left = if vip_game_pays() { x.coins.max(0) } else { 0 };
     while left > 0 {
         let n = left.min(most);
         o.operations.push(json!({ "type": "progression_add", "progression_definition_id": vip_coins_id(), "amount": n, "reason": why }));

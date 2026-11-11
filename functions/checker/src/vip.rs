@@ -19,10 +19,11 @@
 //! free; it gives helpers. `due` decides what a VIP is owed on their own date (the platform's, never
 //! the device's): the day's gift, by the day of their week (Monday 1 .. Sunday 7, src/net/helper-ids.json
 //! `vip.daily`), once a date, while the day last given its gift (the progression `vip_gift_day`) is
-//! before today; and the welcome, once a membership, while the end day of the membership last
-//! welcomed (the progression `vip_welcome_end`) is before today. A membership is told by its end:
-//! one that ends after the last one welcomed ended is a new one, so a membership bought after a lapse
-//! is welcomed again and one extended before it lapses is not. lib.rs pays them (`what: "vip_gift"`).
+//! before today; and the welcome, ONCE PER PLAYER, EVER (the creator, 2026-11-11: a membership can no
+//! longer be told by its pass's end date, which SDK 24 stops sending), while the progression
+//! `vip_welcome_end` has never been raised. A player welcomed before (under the old once-a-membership
+//! rule, whose mark held that membership's end day) is never welcomed again. lib.rs pays them
+//! (`what: "vip_gift"`).
 
 use serde_json::Value;
 
@@ -53,10 +54,8 @@ pub fn passes(body: &Value) -> Option<Passes> {
     Some(Passes { held: !held.is_empty(), listed: !vip.is_empty(), count: list.len(), ends })
 }
 
-/// `vip_welcome_end` for a membership with no end: welcomed once, for good.
+/// What a welcome raises `vip_welcome_end` to: welcomed, for good (the welcome is once per player, ever).
 pub const NO_END_DAY: i64 = 99_999_999;
-/// The dev pretend has no membership behind it: it is welcomed as a 30-day one from that day.
-pub const PRETEND_DAYS: i64 = 30;
 
 /// Days from 1970-01-01 of a "YYYY-MM-DD" date. None when malformed.
 pub fn day_number(date: &str) -> Option<i64> {
@@ -82,7 +81,7 @@ pub struct Due {
     pub today: i64,
     /// The day's gift is due: its order nonce, "vip:<date>".
     pub daily: Option<String>,
-    /// The welcome is due: the end day its order raises `vip_welcome_end` to (nonce "vip-welcome:<end>").
+    /// The welcome is due (once ever): what its order raises `vip_welcome_end` to, NO_END_DAY (nonce "vip-welcome:<it>").
     pub welcome: Option<i64>,
 }
 
@@ -94,18 +93,15 @@ impl Due {
 }
 
 /// `today`: the player's date; `welcomed`: `vip_welcome_end` as read (0 never); `gifted`:
-/// `vip_gift_day` as read (0 never); `held`: the platform says they hold `vip` (false: the dev pretend
-/// alone); `ends`: its end day (Passes::ends). None for a malformed date: nothing is owed on a date
-/// that cannot be read. A membership's end is never taken as before today (an end today in UTC can be
-/// the player's tomorrow), so a welcome is never paid twice in a day.
-pub fn due(today: &str, welcomed: i64, gifted: i64, held: bool, ends: Option<i64>) -> Option<Due> {
+/// `vip_gift_day` as read (0 never). None for a malformed date: nothing is owed on a date that cannot
+/// be read. The welcome is due only while `welcomed` is 0: once per player, ever, whatever the pass.
+pub fn due(today: &str, welcomed: i64, gifted: i64) -> Option<Due> {
     let now = day_number(today)?;
-    let end = if held { ends.unwrap_or(NO_END_DAY).max(now) } else { now + PRETEND_DAYS };
     Some(Due {
         day: gift_day(today)?,
         today: now,
         daily: (gifted < now).then(|| format!("vip:{today}")),
-        welcome: (welcomed < now).then_some(end),
+        welcome: (welcomed <= 0).then_some(NO_END_DAY),
     })
 }
 

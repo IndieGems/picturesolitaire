@@ -1,5 +1,6 @@
-//! THE VIP EXTRA (src/pay.rs; docs/vip.md; the creator, 2026-11-10): +50% on every Coin payout and
-//! double on every helper reward, INSIDE the reward's own order (the platform pays one order a call:
+//! THE VIP EXTRA (src/pay.rs; docs/vip.md; the creator, 2026-11-10): double on every helper reward
+//! (since 2026-11-11 the Arcade pays VIP's +50% Coins itself, so this checker adds no Coins: gamePays
+//! false), INSIDE the reward's own order (the platform pays one order a call:
 //! function_invocation_already_granted), reckoned from what the config pays (data/coins.json); and the
 //! record's held extras (src/progress.rs), paid under a mark. On this machine:
 //!   cargo test --release --test vip_extra
@@ -32,10 +33,12 @@ fn the_coins_extra_is_half_of_each_payout_rounded_up() {
     }
     let r = rule();
     assert_eq!((r["coins"]["num"].as_i64(), r["coins"]["den"].as_i64()), (Some(1), Some(2)), "the rule's one copy says +50%");
-    assert_eq!(r["gamePays"], json!(true), "the game pays it until the Arcade does");
-    assert!(pay::vip_game_pays());
-    // each grant of a reward has its own extra: 25 and 25 are 13 + 13, never ceil(50 / 2)
-    assert_eq!(Extra::of(&[25, 25], &pay::none()).coins, 26);
+    // the creator, 2026-11-11: "the gem arcade updated yesterday and it now pays the 50% extra for VIPs"
+    assert_eq!(r["gamePays"], json!(false), "the Arcade pays VIP's Coins since 2026-11-11");
+    assert!(!pay::vip_game_pays());
+    // so no reward reckons a Coins extra here, whatever its grants
+    assert_eq!(Extra::of(&[25, 25], &pay::none()).coins, 0);
+    assert_eq!(Extra::of(&[25, 25], &helpers(1, 0, 0)).helpers, helpers(1, 0, 0), "the helpers are still doubled here");
 }
 
 #[test]
@@ -53,17 +56,17 @@ fn level_1s_order_carries_its_extra_inside_it() {
     let mut o = pay::order(c01, "campaign c01", "first:campaign:c01", true, None, Vec::new(), true).unwrap();
     assert_eq!(pay::base_grants(&o), vec![100, 100], "the config's two grants on Level 1");
     let x = pay::extra_of(&o);
-    assert_eq!(x, Extra { coins: 100, helpers: helpers(3, 3, 3) });
+    assert_eq!(x, Extra { coins: 0, helpers: helpers(3, 3, 3) }, "no Coins: the Arcade adds VIP's +50% to the base itself");
     let before = o.operations.len();
     pay::add_extra(&mut o, &x, "vip extra: campaign c01");
     assert_eq!(o.nonce, "first:campaign:c01", "the reward's own key: once ever");
-    assert_eq!(adds(&o), vec![100], "100 fits one grant");
-    assert_eq!(o.operations.len(), before + 1 + 3, "one add and three helper grants");
+    assert!(adds(&o).is_empty(), "no grant on the VIP Coins progression");
+    assert_eq!(o.operations.len(), before + 3, "three helper grants");
     assert_eq!(pay::asked(&o), helpers(6, 6, 6), "6 of each asked in all");
-    // past the platform's most in one grant: split
+    // a Coins extra handed in (a held one from before 2026-11-11) adds no Coins either
     let mut big = Order::default();
     pay::add_extra(&mut big, &Extra { coins: 130, helpers: pay::none() }, "k");
-    assert_eq!(adds(&big), vec![100, 30]);
+    assert!(adds(&big).is_empty());
     let mut nothing = Order::default();
     pay::add_extra(&mut nothing, &Extra::zero(), "k");
     assert!(nothing.operations.is_empty(), "nothing to pay: nothing added");
@@ -78,15 +81,15 @@ fn every_lane_reckons_its_base_from_the_config() {
     // the daily's first win: 50, so +25
     let d = pay::order(checker::DAILY_ID, "daily", "daily:2026-11-10", true, pay::daily_gift("2026-11-10"), Vec::new(), false).unwrap();
     assert_eq!(pay::base_grants(&d), vec![50]);
-    assert_eq!(pay::extra_of(&d).coins, 25);
+    assert_eq!(pay::extra_of(&d).coins, 0, "the Arcade's");
     // a past day (the archive, 15 a day) and an event item (15 an item): one unit each (the creator, 2026-11-10)
     let past = Order { nonce: "past:2026-11-01".into(), operations: vec![json!({ "type": "progression_add", "progression_definition_id": checker::ARCHIVE_ID, "amount": 1 })], gifts: Vec::new() };
     assert_eq!(pay::base_grants(&past), vec![15]);
-    assert_eq!(pay::extra_of(&past).coins, 8);
+    assert_eq!(pay::extra_of(&past).coins, 0);
     let ids: Value = serde_json::from_str(&read("../../src/net/suitcase-ids.json")).unwrap();
     let find = Order { nonce: "pack".into(), operations: vec![json!({ "type": "progression_add", "progression_definition_id": ids["finds"]["id"], "amount": 1 })], gifts: Vec::new() };
     assert_eq!(pay::base_grants(&find), vec![15]);
-    assert_eq!(pay::extra_of(&find).coins, 8);
+    assert_eq!(pay::extra_of(&find).coins, 0);
     // a replay's order (the kit alone) pays no Coins: no Coins extra
     let kit = pay::order(c07, "campaign c07", "first:campaign:c07", false, None, Vec::new(), true).unwrap();
     assert!(pay::base_grants(&kit).is_empty());
@@ -137,10 +140,12 @@ fn held_extras_pay_under_their_mark_once() {
     let held = progress::held_extras(&d);
     assert_eq!(held.iter().map(|h| (h.0.as_str(), h.2)).collect::<Vec<_>>(), vec![("daily:2026-11-10", 1), ("first:campaign:c09", 2)], "held twice under one key: still one");
     assert_eq!(held[0].1, Extra { coins: 25, helpers: helpers(1, 0, 0) });
-    // paid inside a paying order with the mark raised to the highest number
+    // paid inside a paying order with the mark raised to the highest number: their helpers, and no
+    // Coins (the Arcade's since 2026-11-11)
     let mut o = Order::default();
     pay::add_held(&mut o, &Extra { coins: 44, helpers: helpers(1, 0, 0) }, 2);
-    assert_eq!(adds(&o), vec![44]);
+    assert!(adds(&o).is_empty());
+    assert_eq!(pay::asked(&o), helpers(1, 0, 0));
     let mark = o.operations.iter().find(|op| op["progression_definition_id"] == pay::held_mark_id()).unwrap();
     assert_eq!((mark["type"].as_str(), mark["value"].as_u64()), (Some("progression_max"), Some(2)));
     // the mark says what is paid: those numbered up to it go, the rest stay

@@ -1,6 +1,6 @@
 //! VIP'S GIFTS, paid (the creator, 2026-11-01, after Jade Match; docs/vip.md). {"v":1,"what":"vip_gift"}:
 //! a VIP is given helpers, never free uses: on their own date (the platform's, never the device's),
-//! the welcome when this membership has not had it, then the day's gift, each its own order (pay.rs
+//! the welcome once per player ever (the creator, 2026-11-11), then the day's gift, each its own order (pay.rs
 //! `vip_order`), clamped at the cap. vip.rs `due` decides what is owed; this asks the platform through
 //! `Platform` (lib.rs's live calls, or the stand-in in tests/gift.rs) and says what this call paid.
 //!
@@ -60,8 +60,8 @@ pub fn vip_gift(p: &dyn Platform, vip: Result<bool, &'static str>, passes: Optio
         (Ok(w), Ok(g)) => (w, g),
         (Err(v), _) | (_, Err(v)) => return v,
     };
-    let held = passes.is_some_and(|x| x.held);
-    let Some(due) = vip::due(&today, welcomed, gifted, held, passes.and_then(|x| x.ends)) else {
+    let _ = passes; // the welcome no longer reads the pass's end (once per player, ever)
+    let Some(due) = vip::due(&today, welcomed, gifted) else {
         p.log(&format!("vip gift: the date {today:?} is not a date"));
         return retry("config");
     };

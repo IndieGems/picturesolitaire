@@ -504,9 +504,9 @@ y.push("          target: { platform_currency_slug: ARCADE_TICKETS }");
 // THE VIP EXTRA (docs/vip.md; src/net/vip-extra.json, the rule's one copy): the checker adds a VIP's
 // extra Coins here, 1 Coin a unit, in an order of its own keyed by the reward it rides with.
 const VX = JSON.parse(readFileSync(join(root, "src/net/vip-extra.json"), "utf8"));
-y.push("  # THE VIP EXTRA (docs/vip.md; the creator, 2026-11-10): +50% on every Coin payout for a VIP, as its");
-y.push("  # own grant INSIDE the reward's own order (the platform pays one order a call): the checker adds the");
-y.push("  # extra's Coins here, 1 Coin a unit, so it pays with its reward, once ever. Only the win checker writes it.");
+y.push("  # THE VIP EXTRA's Coins (docs/vip.md): checkers 0.1.55 to 0.1.59 paid our own +50% for a VIP here. Since");
+y.push("  # 2026-11-11 the Arcade pays VIP's +50% on every Coins grant itself, so nothing writes it (checker 0.1.60");
+y.push("  # on); it stays declared so its id is never reused.");
 y.push(`  - id: ${VX.progression.id}`);
 y.push(`    slug: ${VX.progression.slug}`);
 y.push(`    display_name: "VIP extra Coins"`);
@@ -896,10 +896,13 @@ md.push(`- **Today's daily** is once a day, on top. **A past day** pays ${ARCHIV
 md.push("  that is about the trip levels' rate for a player catching up on the archive, over the days it holds");
 md.push("  (this month and the two before), each once.");
 md.push(`- One-time: the welcome (boards 1 to ${WELCOME.boards}), the onboarding prize and First Steps' prize. Replays and campaign boards past the last pay nothing.`);
-md.push(`- **VIP** (the creator, 2026-11-10; docs/vip.md): every payout above pays a VIP ${VRULE.coins.num}/${VRULE.coins.den} more, rounded up, inside`);
-md.push(`  its reward's own order (${LANES.event.least} +${vx(LANES.event.least)}, 10 +${vx(10)}, 15 +${vx(15)}, 25 +${vx(25)}, 30 +${vx(30)}, 50 +${vx(50)}, 100 +${vx(100)}), and every helper reward ${VRULE.helpers} times over.`);
-md.push("  **VIP +50% is the Gem Arcade's rule, relayed by the creator on 2026-11-10**; the rates above put a VIP at");
-md.push("  about 750 an hour, the creator's \"VIPs 750\". The platform's 4,000 a day per game still holds.");
+md.push("- **VIP** (docs/vip.md): **the Arcade pays a VIP +50% on every Coins grant itself, since 2026-11-11** (the creator:");
+md.push("  \"the gem arcade updated yesterday and it now pays the 50% extra for VIPs\"; SDK 24, arcade-economy.md section 7),");
+md.push("  and scales the ceilings with it. Every amount here is the unboosted one, and the game pays no Coins of its own");
+md.push(`  for VIP (checker 0.1.60 on). The VIP column is these amounts and half again, rounded up (${LANES.event.least} +${vx(LANES.event.least)}, 10 +${vx(10)}, 15 +${vx(15)},`);
+md.push(`  25 +${vx(25)}, 30 +${vx(30)}, 50 +${vx(50)}, 100 +${vx(100)}): the platform's own rounding may differ by a Coin. That puts a VIP at about 750`);
+md.push(`  an hour, the creator's "VIPs 750". Every helper reward is doubled for a VIP by the checker (${VRULE.helpers} times over; a stopgap until`);
+md.push("  config bonuses land, docs/vip.md). The platform's 4,000 a day per game still holds, scaled for a VIP.");
 md.push(`- **Still to measure: real minutes per level.** No play-time data yet; every hourly figure here is the`);
 md.push(`  ${PACE}-moves-a-minute estimate. If levels run much faster or slower, change the rates (LANES in`);
 md.push("  tools/server/make-config.mts), rebuild and upload the win checker, and upload the config.");

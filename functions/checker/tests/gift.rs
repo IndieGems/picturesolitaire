@@ -174,12 +174,12 @@ fn a_vip_gets_the_welcome_and_the_days_gift_once_a_date() {
     let pass = held(Some("2026-12-01"));
     let a = gift::vip_gift(&f, Ok(true), pass);
     assert_eq!(kinds(&a), vec!["welcome", "daily"], "welcome first");
-    let end = vip::day_number("2026-12-01").unwrap();
+    let end = vip::NO_END_DAY;
     assert_eq!(a["gifts"][0]["id"], format!("vip-welcome:{end}"));
     assert_eq!(a["gifts"][0]["got"], helpers(3, 2, 3));
     assert_eq!(a["gifts"][1], json!({ "kind": "daily", "id": "vip:2026-11-02", "day": 1, "gift": helpers(1, 1, 0), "got": helpers(1, 1, 0), "after": { "hint": 4, "undo": 3 } }));
     assert_eq!(f.stock(), (4, 3, 3));
-    assert_eq!(f.welcomed() as i64, end, "the membership's end, marked in the welcome's own order");
+    assert_eq!(f.welcomed() as i64, end, "welcomed for good, marked in the welcome's own order");
     assert_eq!(f.gifted() as i64, vip::day_number("2026-11-02").unwrap(), "the day marked in the day's own order");
     // the same date again (a reload, a fresh session, a second device): nothing, and no order placed
     let placed = f.orders.borrow().len();
@@ -195,19 +195,20 @@ fn a_vip_gets_the_welcome_and_the_days_gift_once_a_date() {
 }
 
 #[test]
-fn the_welcome_is_once_a_membership_again_after_a_lapse_never_on_an_extension() {
+fn the_welcome_is_once_per_player_ever_whatever_the_membership() {
+    // the creator, 2026-11-11: once per player, ever (SDK 24 stops sending the pass's end)
     let f = Fake::new("2026-11-02");
     gift::vip_gift(&f, Ok(true), held(Some("2026-12-01")));
-    // extended before it lapsed: the same membership, a later end
-    let ext = gift::vip_gift(f.on("2026-11-20"), Ok(true), held(Some("2026-12-31")));
-    assert_eq!(kinds(&ext), vec!["daily"]);
-    // it lapsed (ended 2026-12-01: the mark still says that end) ... the welcome stays paid
-    assert_eq!(f.welcomed() as i64, vip::day_number("2026-12-01").unwrap());
-    // ... and a membership bought after it ended is a new one
-    let new = gift::vip_gift(f.on("2026-12-10"), Ok(true), held(Some("2027-01-09")));
-    assert_eq!(kinds(&new), vec!["welcome", "daily"]);
-    assert_eq!(f.welcomed() as i64, vip::day_number("2027-01-09").unwrap());
-    assert_eq!(kinds(&gift::vip_gift(f.on("2026-12-11"), Ok(true), held(Some("2027-01-09")))), vec!["daily"]);
+    assert_eq!(f.welcomed() as i64, vip::NO_END_DAY);
+    // extended before it lapsed: no welcome
+    assert_eq!(kinds(&gift::vip_gift(f.on("2026-11-20"), Ok(true), held(Some("2026-12-31")))), vec!["daily"]);
+    // a membership bought after a lapse: still none
+    assert_eq!(kinds(&gift::vip_gift(f.on("2026-12-10"), Ok(true), held(Some("2027-01-09")))), vec!["daily"]);
+    // a player welcomed under the old once-a-membership rule (its mark: that membership's end day),
+    // whose membership has since ended: never welcomed again
+    let old = Fake::new("2027-03-01");
+    old.values.borrow_mut().insert(pay::vip_welcome_mark().0.into(), vip::day_number("2026-12-01").unwrap() as f64);
+    assert_eq!(kinds(&gift::vip_gift(&old, Ok(true), held(Some("2027-04-01")))), vec!["daily"]);
 }
 
 #[test]
@@ -244,7 +245,7 @@ fn gifts_clamp_at_the_cap_and_say_what_landed() {
 fn a_failed_order_pays_nothing_twice_and_says_ask_again() {
     let f = Fake::new("2026-11-02");
     let pass = held(Some("2026-12-01"));
-    let end = vip::day_number("2026-12-01").unwrap();
+    let end = vip::NO_END_DAY;
     // the welcome fails: nothing paid, retry
     f.failing.borrow_mut().insert(format!("vip-welcome:{end}"));
     assert_eq!(gift::vip_gift(&f, Ok(true), pass), json!({ "v": 1, "status": "retry", "reason": "platform" }));
@@ -261,14 +262,14 @@ fn a_failed_order_pays_nothing_twice_and_says_ask_again() {
 }
 
 #[test]
-fn the_dev_pretend_is_welcomed_as_a_thirty_day_membership() {
+fn the_dev_pretend_is_welcomed_once_ever_too() {
     // VIP by the pretend alone (the platform says not held, or could not say)
     let f = Fake::new("2026-11-02");
     let not = vip::passes(&json!({ "passes": [] }));
     assert_eq!(kinds(&gift::vip_gift(&f, Ok(true), not)), vec!["welcome", "daily"]);
-    assert_eq!(f.welcomed() as i64, vip::day_number("2026-11-02").unwrap() + vip::PRETEND_DAYS);
+    assert_eq!(f.welcomed() as i64, vip::NO_END_DAY);
     assert_eq!(kinds(&gift::vip_gift(f.on("2026-11-20"), Ok(true), None)), vec!["daily"]);
-    assert_eq!(kinds(&gift::vip_gift(f.on("2026-12-03"), Ok(true), None)), vec!["welcome", "daily"]);
+    assert_eq!(kinds(&gift::vip_gift(f.on("2026-12-03"), Ok(true), None)), vec!["daily"]);
 }
 
 #[test]
