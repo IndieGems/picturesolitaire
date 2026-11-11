@@ -119,6 +119,13 @@ Dev: build 0.56.0 (9849bcb, Gem Web SDK 16.0.0), store page 11, config 42, check
   - A non-VIP's VIP tag now sums the extra per grant: an item level paying 5 + 15 reads +11, as a VIP is paid. QA PASS.
   - Checker 0.1.59 logs each platform call and warns on any over 500 ms (Server 673eec5b). Platform calls before the order have stalled since 11-07 on release too; see TODO.md, "Platform calls stall before the order".
   - **Moving it to release** needs checker 0.1.59 and config 67 before the build. Test is empty; it goes there only on the creator's word, as a `build:release`.
+- 2026-11-11: **dev has 0.129.0** (the plain build of 83b18f64), with Gem Web SDK 24.0.1, checker 0.1.61 and config 67. The Arcade pays VIP's +50% Coins itself (the creator: "the gem arcade updated yesterday and it now pays the 50% extra for VIPs").
+  - **Our own VIP Coins are off** (Server 20d5bd19). The welcome gift is once per player, ever.
+  - **VIP is offered on every win before its reward is paid**, the creator's pick. The claim is held (Server bbd33a5f), and the card shows the Arcade's preview with Get VIP and Continue at equal weight; there's none on Level 1's guided finish. A VIP's part is shown from the receipt (UI e3920d6f, 83b18f64). The game keeps no VIP maths of its own.
+  - **VIP's doubled helpers and gifts still come from the checker's pass read.** That's the creator's stopgap until the config takes `bonuses` (gem-development#2246), and ECON-08 flags it, so it must switch before the next release (TODO.md).
+  - **QA PASS** on everything that runs without an offer, and on the offer panel through the play-test hook (fit at 360×640 in en, pl and de; equal buttons; focus).
+  - **UNKNOWN live:** the offer itself, Get VIP's sheet, and leaving or closing with the offer up. The store sells no pass to test players on dev yet (offers: []; the test VIP grant is gem-development#2250). The creator can see it on the Pit with their own account.
+  - **Moving it to release** needs checker 0.1.61 and config 67 before the build.
 - 2026-10-30: a bug found after the candidate. A revisited level's own picture could break on its win card or enlarged view (the pack let it go while on screen), fixed in 53865f31 (dev 0.80.0). Test's 0.67.0 still has it, so the next release candidate must include the fix.
 - GSR-018: the creator bought a soundtrack on dev; cosmetic_bought was counted, and the cosmetics funnel reached every step (the release reviewer read it).
 - Russian "монет" for Coins is correct: it is only ever read after a price. A price ending in 1, or in 2–4 outside 11–14, would need another form.
