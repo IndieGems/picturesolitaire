@@ -115,8 +115,10 @@ export function offerUpsell(main: HTMLElement, up: PassUpsell, send: () => void)
   }
   // the two choices: the same button, the same size, neither amber, neither first in weight
   const choices = el("div", "up-choices");
-  const get = el("button", "btn up-choice up-get", t("upsell.get", { name: up.name }));
-  const later = el("button", "btn up-choice up-continue", t("upsell.continue"));
+  const get = el("button", "btn up-choice up-get");
+  const later = el("button", "btn up-choice up-continue");
+  wordsOf(get, t("upsell.get", { name: up.name }));
+  wordsOf(later, t("upsell.continue"));
   for (const b of [get, later]) b.type = "button";
   get.dataset.press = "upsell.get";
   later.dataset.press = "upsell.continue";
@@ -152,5 +154,37 @@ export function offerUpsell(main: HTMLElement, up: PassUpsell, send: () => void)
   });
   main.hidden = true;
   main.before(panel);
+  fitChoices([get, later]);
   return true;
+}
+
+/** A button's words, each unbreakable (a long word wraps whole to its own line, never mid-word), and said as one label. */
+function wordsOf(b: HTMLButtonElement, words: string): void {
+  b.setAttribute("aria-label", words);
+  for (const w of words.split(/\s+/).filter(Boolean)) {
+    const s = el("span", "up-word", w);
+    s.setAttribute("aria-hidden", "true");
+    b.append(s, " ");
+  }
+}
+
+/** The smallest the two choices' words go (never under the 12 px floor, with room to spare). */
+const LEAST_PX = 14;
+
+/**
+ * Every word of both choices on one line within its button (ru "Продолжить" broke mid-word at 18 px in a 121 px
+ * button on a 360 px phone): both step down together, a pixel at a time, so they keep EQUAL weight.
+ */
+function fitChoices(buttons: HTMLButtonElement[]): void {
+  const over = () =>
+    buttons.some((b) => {
+      const cs = getComputedStyle(b);
+      const room = b.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      return [...b.querySelectorAll<HTMLElement>(".up-word")].some((w) => w.offsetWidth > room + 0.5);
+    });
+  let px = parseFloat(getComputedStyle(buttons[0]!).fontSize);
+  while (px > LEAST_PX && over()) {
+    px -= 1;
+    for (const b of buttons) b.style.fontSize = `${px}px`;
+  }
 }

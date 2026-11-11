@@ -1902,7 +1902,8 @@ html.back-down .top-pill:not(.home-note) { right: calc(var(--row-right) + var(--
 .up-extra { display: inline-flex; align-items: center; gap: 5px; font: 700 18px/1 var(--round); color: var(--ink); }
 .up-extra img { flex: none; width: 26px; height: 26px; object-fit: contain; }
 .up-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin-top: 4px; }
-.btn.up-choice { min-width: 0; min-height: 54px; padding: 6px 12px; font-size: 18px; line-height: 1.15; white-space: normal; text-wrap: balance; overflow-wrap: anywhere; }
+.btn.up-choice { min-width: 0; min-height: 54px; padding: 6px 10px; flex-wrap: wrap; column-gap: 0.25em; row-gap: 0; font-size: 18px; line-height: 1.15; white-space: normal; }
+.up-choice .up-word { display: inline-block; white-space: nowrap; }
 /* paid, but VIP not held yet: said once where the offer was (a polite status) */
 .card p.up-note { margin: 0; font: 500 14px/1.3 var(--round); color: var(--ink-soft); text-align: center; text-wrap: balance; }
 .win .card.pinned > p.up-note { flex: none; margin: -8px 0 10px; }

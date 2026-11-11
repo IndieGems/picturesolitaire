@@ -22,8 +22,7 @@ import { noAnswer, refusalOf } from "../net/no-answer";
 import { backoff, heard, held, notNow, whenDue } from "../net/pace";
 import { onOnline, suspect } from "./online";
 
-/** `devVip`: the dev menu's old "Pretend I'm VIP" (gone 2026-11-11: it cannot fake the Arcade's VIP); no switch writes it now, and Server's src/net/vip.ts may still read it. */
-export type ChoiceKey = "table" | "track" | "tableOwned" | "trackOwned" | "devVip";
+export type ChoiceKey = "table" | "track" | "tableOwned" | "trackOwned";
 
 /** Framed by the platform: another origin's frame. The play-test tool's frame is this page's own origin, with nothing behind it (as src/net/helpers.ts reads it). */
 const framed = ((): boolean => {
