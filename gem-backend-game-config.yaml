@@ -421,7 +421,7 @@ analytics_events:
     dimensions:
       where: { values: ["home", "run_out"] }
   - id: helper_bought
-    description: "Helpers bought, confirmed by the platform: which helper (all three for a bundle), one, a pack of 3 or a bundle, from which shop, and the price charged in all, in Coins (a bundle's was in Gems until 2026-11-10)."
+    description: "Helpers bought, confirmed by the platform: which helper (all three for a bundle), one, a pack of 3 or a bundle, from which shop, and the price charged in all, in Coins."
     sources: [client]
     dimensions:
       helper: { values: ["hint", "undo", "shuffle", "all"] }

@@ -1336,9 +1336,9 @@ html.less-motion .shop-item .item-pic.grew { animation: none; }
 .shop-item p.item-say:empty { display: none; }
 .shop-item p.item-say.good { color: #2e7d5a; }
 .home-shop-card p.shop-earn { font-size: 14px; }
-/* THE GEMS BUNDLES (bundle-rows.ts; the creator, 2026-11-01): a glass row each, its picture, its name (the
+/* THE BUNDLES (bundle-rows.ts; the creator, 2026-11-01; in Coins since 2026-11-10): a glass row each, its picture, its name (the
    Starter Kit's "One time only" a flat gold tag: information, not a button) and its contents, and one
-   price button at the right, the Gem as the Arcade draws it. In home's shop above the Coins rows, under
+   price button at the right, the Arcade's Coin beside its price. In home's shop above the single helpers, under
    their heading; on the run-out panel compact, under the Coins */
 .bundle-head { margin: 6px 0 0; align-self: flex-start; font: 700 13px/1.2 var(--round); letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-soft); }
 .bundle-list { display: flex; flex-direction: column; gap: 8px; width: 100%; }

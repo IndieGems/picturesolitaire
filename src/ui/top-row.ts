@@ -1,5 +1,5 @@
 // THE TOP ROW AROUND THE ARCADE'S CONTROLS (the game standard, "The top of the screen has one layout"):
-// the Gem, and the player's Gems and Coins beside it once the game asks for them (src/settings-screen.ts,
+// the Gem (the Arcade's menu button), and the player's Coins beside it once the game asks for them (src/settings-screen.ts,
 // setWalletVisible), are the Arcade's; Back (and the gear, outside the Arcade) sit at the row's right end,
 // level with the Gem, and the title between.
 //

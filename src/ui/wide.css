@@ -156,7 +156,7 @@ html.wide .win .gallery .pic { --fr: 16px; --fw: 3px; }
 
 /* ---------- THE CARDS: centred windows over the dimmed window ---------- */
 
-/* home's shop in two columns: the Gems bundles, then the Coins helpers */
+/* home's shop in two columns: the bundles, then the single helpers (all in Coins) */
 html.wide .home-shop-card.with-bundles {
   display: block; width: min(100%, 860px); columns: 2; column-gap: 28px; column-fill: balance;
 }
