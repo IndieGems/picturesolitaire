@@ -1367,6 +1367,33 @@ mod function {
                 return Ok(json!({ "v": 1, "levels": claim::LEVELS, "coins": crate::pay::COINS }).to_string().into_bytes());
             }
             let asked = serde_json::from_slice::<Value>(&input).unwrap_or(Value::Null);
+            // THE RECIPE PROBE (0.1.62, dev only; the lead, 2026-11-12): before VIP's extras move into
+            // config bonuses (docs/vip.md, "Planned"), check live that this function may run a recipe
+            // for the player who called. {"what":"probe_recipe","catalog","recipe","nonce"} runs one;
+            // {"what":"probe_read","path"} reads one of the caller's own inventory routes
+            // (/v1/inventory/players/<them><path>). Each answers the platform's reply as it came.
+            // Refused on any channel but dev.
+            if asked["what"] == "probe_recipe" || asked["what"] == "probe_read" {
+                if ctx.channel != "dev" {
+                    return Ok(json!({ "v": 1, "status": "refused", "reason": "dev_only" }).to_string().into_bytes());
+                }
+                let answer = if asked["what"] == "probe_recipe" {
+                    let body = json!({ "catalog_id": asked["catalog"], "recipe_id": asked["recipe"], "game_id": ctx.game_id, "nonce": asked["nonce"] });
+                    api("POST", format!("/v1/inventory/players/{player}/recipes/execute"), Some(body))
+                } else {
+                    let path = asked["path"].as_str().unwrap_or("");
+                    if !(path.is_empty() || path.starts_with('/') || path.starts_with('?')) || path.contains("..") {
+                        return Ok(json!({ "v": 1, "status": "refused", "reason": "path" }).to_string().into_bytes());
+                    }
+                    api("GET", format!("/v1/inventory/players/{player}{path}"), None)
+                };
+                return Ok(match answer {
+                    Ok(a) => json!({ "v": 1, "status": "probe", "http": a.status, "body": a.body }),
+                    Err(e) => json!({ "v": 1, "status": "probe", "error": e }),
+                }
+                .to_string()
+                .into_bytes());
+            }
             // VIP for this call (vip.rs), asked of the platform once, and only by a call that needs it
             // (the VIP ask, the VIP gift, the events read, a claim that pays or holds a VIP extra). An answer that asked says it, so the game
             // follows the server; one that did not, or could not, says nothing about VIP, and the
