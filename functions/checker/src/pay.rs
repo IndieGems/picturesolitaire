@@ -43,12 +43,6 @@ fn rewards() -> &'static Value {
     &data()["helpers"]["rewards"]
 }
 
-/// The most of one helper a player can hold (helper-ids.json `cap`, the currencies' max_balance): only
-/// a bound on a replay's work (claim.rs), never a reckoning of what a reward gives.
-pub fn cap() -> u32 {
-    data()["helpers"]["cap"].as_u64().unwrap_or(10) as u32
-}
-
 /// The progression that pays for one campaign or challenge board: its id, as the config has it.
 pub fn board_id(board: &str) -> Option<&'static str> {
     data()["boards"][crate::board_slug(board)].as_str()

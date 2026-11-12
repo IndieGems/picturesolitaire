@@ -74,7 +74,7 @@ from the platform's preview before a reward and from the receipt after; the chec
    progression stays declared, written by nothing, so its id is never reused.
 2. **As many helpers again on every helper reward**, the config's bonus on each reward's recipe:
    the guided start's kit (3 of each becomes 6), a hard board's first win, a stamp, and the daily's
-   first win. A base grant clamps at the cap of 20; a bonus that cannot land whole is skipped by the
+   first win. A base grant clamps at the cap (each helper currency's max_balance, 20); a bonus that cannot land whole is skipped by the
    platform (a VIP near the cap gets the base, clamped, and no extra: as before).
 3. **VIP's own gifts** (the creator, 2026-11-01, after Jade Match; the welcome's rule, 2026-11-11):
    - **a daily VIP gift of 2 helpers** on the player's own date (the platform's), once a date, by the

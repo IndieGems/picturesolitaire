@@ -1,7 +1,11 @@
-// Holds gem-backend-game-config.yaml's helpers to src/net/helper-ids.json, the one copy
-// the game (src/net/helpers.ts) and the win checker (pay.rs, through build.rs) read:
-// each currency's id, slug and cap, the helpers catalog's use and buy recipes, a Coins
-// price on every buy, a buy refused at the cap, the bundles, and the kit's progression;
+// Holds gem-backend-game-config.yaml's helpers to src/net/helper-ids.json, the one copy of
+// their IDS the game (src/net/helpers.ts) and the win checker (pay.rs, through build.rs) read:
+// each currency's id and slug, the helpers catalog's use and buy recipes, the bundles' recipes,
+// and the kit's progression. Every FIGURE is the config's alone (the creator, 2026-11-12: "never
+// copy amounts from the config into code"), which the game reads at run time: this checks only
+// that the config's figures keep the shop's rules (one cap for all three, every buy refused at it,
+// a Coins price on each, a pack and a bundle cheaper than the same helpers one at a time, the
+// Starter Kit once ever), never that they equal a number of ours;
 // and the rewards catalog (docs/vip.md) to tools/server/helper-rewards.json, the amounts'
 // one copy: every recipe declared, server-only, its base what the file says (clamped at the
 // cap), and one VIP bonus of the same again (VIP's gifts: the bonus alone).
@@ -16,6 +20,7 @@ import { fileURLToPath } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const IDS = JSON.parse(readFileSync(join(root, "src/net/helper-ids.json"), "utf8"));
 const HR = JSON.parse(readFileSync(join(root, "tools/server/helper-rewards.json"), "utf8"));
+const EN = JSON.parse(readFileSync(join(root, "locales/en.json"), "utf8"));
 const yaml = readFileSync(join(root, "gem-backend-game-config.yaml"), "utf8").replace(/\r/g, "");
 
 let failed = 0;
@@ -29,50 +34,71 @@ const entry = (id) => {
   return m ? m[2] : "";
 };
 
+/** A currency's cap (its max_balance), or NaN. */
+const capOf = (id) => Number(/\n *max_balance: (\d+)\n/.exec(`\n${entry(id)}\n`)?.[1]);
+const CAPS = Object.values(IDS.kinds).map((k) => capOf(k.currency));
+/** The cap, one for all three (the screens say "N of each"). */
+const CAP = CAPS[0];
+check("the three helpers share one cap (" + CAPS.join(", ") + ")", CAPS.every((c) => Number.isInteger(c) && c > 0 && c === CAP));
+const price = (e) => Number(/currency: ARCADE_TICKETS, price: (\d+) \}/.exec(e)?.[1]);
+/** What an entry grants of each helper, refused at the cap (overflow: fail); and how many grants it has of anything. */
+const grantsOf = (e) => ({
+  helpers: Object.fromEntries(Object.entries(IDS.kinds).map(([k, v]) => [k, Number(new RegExp("currency_grant, currency_slug: " + v.slug + ", amount: (\\d+), overflow: fail \\}").exec(e)?.[1] ?? 0)])),
+  all: (e.match(/type: (currency_grant|item_grant|progression_\w+)/g) ?? []).length,
+});
 for (const [kind, k] of Object.entries(IDS.kinds)) {
   const c = entry(k.currency);
-  check(`${kind}: the currency ${k.currency} is declared as ${k.slug}`, c.includes(`slug: ${k.slug}\n`));
-  check(`${kind}: capped at ${IDS.cap}`, c.includes(`max_balance: ${IDS.cap}\n`));
-  check(`${kind}: no client may write it`, c.includes("client_writable: false"));
-  check(`${kind}: no daily top-up (one bucket that never resets)`, (c.match(/{ name: /g) || []).length === 1 && c.includes("reset_interval: never"));
+  check(kind + ": the currency " + k.currency + " is declared as " + k.slug, c.includes("slug: " + k.slug + "\n"));
+  check(kind + ": no client may write it", c.includes("client_writable: false"));
+  check(kind + ": no daily top-up (one bucket that never resets)", (c.match(/{ name: /g) || []).length === 1 && c.includes("reset_interval: never"));
   const use = entry(k.use);
-  check(`${kind}: use-${kind} consumes 1 ${k.slug}`, use.includes(`slug: use-${kind}\n`) && use.includes(`currency_consume, currency_slug: ${k.slug}, amount: 1 }`));
+  check(kind + ": use-" + kind + " consumes 1 " + k.slug, use.includes("slug: use-" + kind + "\n") && use.includes("currency_consume, currency_slug: " + k.slug + ", amount: 1 }"));
+  // the single and the pack: each grants its own helper alone, refused at the cap, for Coins. The words
+  // on the buttons are UI's ("1 Hint", "3 Hints", locales/en.json shop.buy, shop.buy3): held to the
+  // config here until they are worded from its figure (stock.size)
   const buy = entry(k.buy);
-  check(`${kind}: buy-${kind} grants 1 ${k.slug}, refused at the cap`, buy.includes(`slug: buy-${kind}\n`) && buy.includes(`currency_grant, currency_slug: ${k.slug}, amount: 1, overflow: fail }`));
-  check(`${kind}: buy-${kind} has a Coins price`, /currency: ARCADE_TICKETS, price: \d+ \}/.test(buy));
-  // the pack of 3: refused at the cap, cheaper than three singles, never under 100 Coins
   const pack = entry(k.buy3);
-  const price = (e) => Number(/currency: ARCADE_TICKETS, price: (\d+) \}/.exec(e)?.[1]);
-  check(`${kind}: the pack grants 3 ${k.slug}, refused at the cap`, pack.includes(`currency_grant, currency_slug: ${k.slug}, amount: 3, overflow: fail }`));
-  check(`${kind}: the pack saves on three singles, and costs at least 100`, price(pack) < 3 * price(buy) && price(pack) >= 100);
+  const one = grantsOf(buy);
+  const three = grantsOf(pack);
+  check(kind + ": buy-" + kind + " grants its helper alone, refused at the cap", buy.includes("slug: buy-" + kind + "\n") && one.all === 1 && one.helpers[kind] > 0);
+  check(kind + ": buy-" + kind + " has a Coins price", price(buy) > 0);
+  check(kind + ": the pack grants its helper alone, more than the single, refused at the cap", three.all === 1 && three.helpers[kind] > one.helpers[kind] && three.helpers[kind] <= CAP);
+  check(kind + ": the pack saves on its helpers bought singly, and costs at least 100", price(pack) < (three.helpers[kind] / one.helpers[kind]) * price(buy) && price(pack) >= 100);
+  for (const [key, n] of [["buy", one.helpers[kind]], ["buy3", three.helpers[kind]]]) {
+    const words = String(EN["shop." + key + "." + kind] ?? "");
+    const said = /^(\d+) /.exec(words)?.[1];
+    if (said !== undefined) check(kind + ": UI's words \"" + words + "\" say what the config grants (" + n + ")", Number(said) === n);
+  }
 }
 // THE BUNDLES (the creator, 2026-11-01; in Coins since 2026-11-10, when the Arcade dropped Gems:
 // 100 Gems became 500 Coins): all three helpers, refused at the cap, one price and it in Coins, a
-// round one (a multiple of 500), the Starter Kit once ever, and always cheaper than the same helpers
-// bought one at a time for Coins
-const single = (kind) => Number(/currency: ARCADE_TICKETS, price: (\d+) \}/.exec(entry(IDS.kinds[kind].buy))?.[1]);
+// round one (a multiple of 500), the Starter Kit once ever (its recipe's max_uses: the game reads it),
+// and always cheaper than the same helpers bought one at a time for Coins
+const single = (kind) => {
+  const e = entry(IDS.kinds[kind].buy);
+  return price(e) / grantsOf(e).helpers[kind];
+};
 check("four bundles, in shop order", (IDS.bundles ?? []).map((b) => b.name).join() === "starter,small,medium,large");
+check("the bundles hold ids only (the config holds their figures)", (IDS.bundles ?? []).every((b) => Object.keys(b).sort().join() === "id,name,slug"));
+check("helper-ids.json holds no cap (the config's max_balance is the one)", !("cap" in IDS));
 for (const b of IDS.bundles ?? []) {
   const e = entry(b.id);
-  check(`${b.name}: the recipe ${b.id} is declared as ${b.slug}, a purchase`, e.includes(`slug: ${b.slug}\n`) && e.includes("recipe_type: purchase\n"));
-  for (const [kind, n] of Object.entries(b.grants)) {
-    const slug = IDS.kinds[kind]?.slug;
-    check(`${b.name}: grants ${n} ${slug}, refused at the cap`, !!slug && n > 0 && n <= IDS.cap && e.includes(`currency_grant, currency_slug: ${slug}, amount: ${n}, overflow: fail }`));
-  }
-  check(`${b.name}: nothing else granted`, (e.match(/type: (currency_grant|item_grant|progression_\w+)/g) ?? []).length === Object.keys(b.grants).length);
-  const price = Number(/currency: ARCADE_TICKETS, price: (\d+) \}/.exec(e)?.[1]);
-  check(`${b.name}: a round Coins price (${price})`, price > 0 && price % 500 === 0);
-  check(`${b.name}: one price, in Coins`, (e.match(/\{ currency: /g) ?? []).length === 1);
-  check(`${b.name}: the unframed stand-in price is the config's`, b.coinsUnframed === price);
-  check(`${b.name}: ${b.once ? "once ever (max_uses 1)" : "no use limit"}`, b.once === /\n *max_uses: 1\n/.test(`\n${e}\n`));
-  const coins = Object.entries(b.grants).reduce((sum, [kind, n]) => sum + n * single(kind), 0);
-  check(`${b.name}: cheaper than its helpers one at a time (${coins} Coins of them, for ${price})`, price < coins);
+  check(b.name + ": the recipe " + b.id + " is declared as " + b.slug + ", a purchase", e.includes("slug: " + b.slug + "\n") && e.includes("recipe_type: purchase\n"));
+  const g = grantsOf(e);
+  check(b.name + ": grants all three helpers and nothing else, each within the cap and refused at it", Object.values(g.helpers).every((n) => n > 0 && n <= CAP) && g.all === 3);
+  const p = price(e);
+  check(b.name + ": a round Coins price (" + p + ")", p > 0 && p % 500 === 0);
+  check(b.name + ": one price, in Coins", (e.match(/\{ currency: /g) ?? []).length === 1);
+  const once = /\n *max_uses: 1\n/.test("\n" + e + "\n");
+  check(b.name + ": " + (b.name === "starter" ? "once ever (max_uses 1)" : "no use limit"), once === (b.name === "starter") && (once || !/max_uses:/.test(e)));
+  const coins = Object.entries(g.helpers).reduce((sum, [kind, n]) => sum + n * single(kind), 0);
+  check(b.name + ": cheaper than its helpers one at a time (" + coins + " Coins of them, for " + p + ")", p < coins);
 }
 // THE HELPER REWARDS (docs/vip.md; the creator, 2026-11-12): the rewards catalog, server-only, every
 // amount from helper-rewards.json, and VIP's part a bonus the platform judges (holds_pass vip), never code
 const R = IDS.rewards ?? {};
 const sum = (g) => Object.values(g ?? {}).reduce((a, n) => a + n, 0);
-const onlyHelpers = (g) => Object.entries(g ?? {}).every(([k, n]) => k in IDS.kinds && Number.isInteger(n) && n >= 0 && n <= IDS.cap);
+const onlyHelpers = (g) => Object.entries(g ?? {}).every(([k, n]) => k in IDS.kinds && Number.isInteger(n) && n >= 0 && n <= CAP);
 check("rewards: the rewards catalog is declared", yaml.includes(`- id: ${R.catalog?.id}\n    slug: ${R.catalog?.slug}\n`));
 /** What an entry grants of each helper: base (the recipe's grants, clamped) and bonus (its one VIP bonus). */
 const split = (e) => {

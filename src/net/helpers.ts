@@ -1,9 +1,17 @@
 // THE HELPER STOCK: Hint, Undo and Shuffle, the player's own, carried from board to
 // board (creator, 2026-10-27; AGENTS.md). The game's one door to it, for play and the
-// screens. The stock is the platform's (three game currencies, at most 10 each,
-// gem-backend-game-config.yaml): this module reads it, takes uses from it and buys
-// for it, and never adds to it. Gifts are paid by the win checker (functions/checker,
+// screens. The stock is the platform's (three game currencies, each capped by its
+// max_balance, gem-backend-game-config.yaml): this module reads it, takes uses from it and
+// buys for it, and never adds to it. Gifts are paid by the win checker (functions/checker,
 // pay.rs), whose verdict says what landed; the count is read again after every answer.
+//
+// EVERY FIGURE OF THE SHOP IS THE CONFIG'S, never this file's (the creator, 2026-11-12: "never
+// copy amounts from the config into code"; ECON-08): each helper's cap (its currency's
+// max_balance), what each buy grants (its recipe's currency_grant: the single, the pack), each
+// bundle's contents (its recipe's grants) and limit (max_uses), and every price, all read in the
+// one gem.gameConfig.load() of a session (readConfig). Until that read lands a figure is unknown,
+// and AN UNKNOWN FIGURE OFFERS NOTHING: a buy whose size, cap or price is unknown has no price, and
+// a bundle whose contents, price or caps are unknown is not listed. Never a guessed number.
 //
 //   count(k) > 0?  act  spend(k)   a use is taken AFTER the act, so Undo stays instant:
 //                                  the count drops at once and the platform takes it behind,
@@ -14,7 +22,7 @@
 //                                  late sends nothing again, so no use is taken twice). "none":
 //                                  the platform had none left (spent on another device); the
 //                                  count is read again and the act stands.
-//   buy(k, pack)                   one, or a pack of 3, for Coins, through the ARCADE'S purchase
+//   buy(k, buy)                    the single or the pack, for Coins, through the ARCADE'S purchase
 //                                  sheet (gem.purchases.request) wherever it can draw one: since
 //                                  2026-11-04 the platform refuses a website guest's direct Coins
 //                                  spend (403 guest_upgrade_required), and the sheet shows a guest
@@ -22,6 +30,7 @@
 //                                  sheet (a TV, an older Arcade) is it the direct purchase. One
 //                                  that would pass the cap is refused before anything is asked
 //                                  (fits). Never retried by itself.
+//   cap(k), size(k, buy)           the config's cap and what a buy grants; null while unknown.
 //   price(k), affordable(k)        the price is the config's alone. The player's Coins are
 //                                  read only to grey a button: the Arcade's wallet is the one
 //                                  place they are shown ("No counter", platform rules).
@@ -33,11 +42,14 @@
 //                                  (fitsBundle), and the platform refuses each grant at the cap too
 //                                  (overflow: fail). The Starter Kit sells once per player, ever:
 //                                  whether it still can is the platform's count of its uses
-//                                  (recipeUsage), never a flag of ours. Its recipe is the one sold
-//                                  for Gems before, so a kit bought then still counts its use.
+//                                  (recipeUsage) against its recipe's max_uses, never a flag of
+//                                  ours. Its recipe is the one sold for Gems before, so a kit
+//                                  bought then still counts its use.
 //
-// Unframed (the play-test tool) there is no platform: 3 of each, for this page only.
-// Dev-menu practice and the lessons never spend.
+// Unframed there is no platform and no config, so nothing is on sale. The dev server's page (the
+// play-test tool) gets a SAMPLE stock to try the board's helpers with (SAMPLE_STOCK, in no build);
+// the shops' sample figures are the screens' pretend (src/ui/stock.ts). Dev-menu practice and the
+// lessons never spend.
 
 import { gem } from "../gem";
 import { onOnline } from "../ui/online";
@@ -56,17 +68,20 @@ export type SpendAnswer = "spent" | "held" | "none";
  */
 export type BuyAnswer = "ok" | "short" | "full" | "failed" | "declined" | "unknown";
 export type Gift = "kit" | "hard" | "stamp" | "daily" | "suitcase";
-/** One helper, or a pack of 3. */
-export type Pack = 1 | 3;
+/**
+ * Which of a helper's two buy recipes (src/net/helper-ids.json `buy`, `buy3`): the single or the pack. A
+ * NAME, never a count: what each grants is its recipe's, the config's (size()).
+ */
+export type Buy = "one" | "pack";
 /** A bundle (src/net/helper-ids.json `bundles`; its recipe is `buy-starter-kit`, `buy-bundle-<slug>`). */
 export type BundleSlug = "starter" | "small" | "medium" | "large";
 export interface Bundle {
   slug: BundleSlug;
-  /** What it grants of each helper. */
+  /** What it grants of each helper: its recipe's grants, the config's. */
   contents: Readonly<Record<HelperKind, number>>;
-  /** Its Coins price, from the game config; null until read (or not on sale on this channel). */
+  /** Its Coins price, the config's (a listed bundle always has one). */
   coins: number | null;
-  /** Sold once per player, ever (the Starter Kit). */
+  /** Sold once per player, ever: its recipe's max_uses is 1 (the Starter Kit). */
   once: boolean;
 }
 /**
@@ -83,8 +98,6 @@ export interface Bundle {
 export type BundleAnswer = "ok" | "declined" | "short" | "full" | "gone" | "unknown" | "failed";
 
 const KINDS: readonly HelperKind[] = ["hint", "undo", "shuffle"];
-/** The most of one helper a player can hold (each currency's max_balance). */
-export const HELPER_CAP: number = IDS.cap;
 // What a reward gives (the kit, a hard board's first win, a trip's last board, the daily's) is the
 // config's alone (docs/vip.md; the creator, 2026-11-12): src/net/rewards.ts previews it (previewKit,
 // previewWin), and a verdict says what landed. No figure of it is in the game's code.
@@ -108,37 +121,55 @@ const framed = ((): boolean => {
   }
 })();
 const zero = (): Record<HelperKind, number> => ({ hint: 0, undo: 0, shuffle: 0 });
+const nulls = (): Record<HelperKind, number | null> => ({ hint: null, undo: null, shuffle: null });
 
+/**
+ * A SAMPLE stock for the dev server's unframed page (the play-test tool, with no platform behind it), to
+ * try the board's helpers with: made up, not any figure of the config's. import.meta.env.DEV is false in
+ * every build, so no build carries it (a built game, unframed, holds none).
+ */
+const SAMPLE_STOCK: Readonly<Record<HelperKind, number>> | null = import.meta.env.DEV ? { hint: 3, undo: 3, shuffle: 3 } : null;
 /** The platform's last-read totals (uses not yet taken are still in them). */
-const stock: Record<HelperKind, number> = framed ? zero() : { hint: 3, undo: 3, shuffle: 3 };
+const stock: Record<HelperKind, number> = !framed && SAMPLE_STOCK ? { ...SAMPLE_STOCK } : zero();
 /** Uses made and not yet taken by the platform, oldest kind first. */
 const owed: HelperKind[] = [];
 /** Each owed use's caller, answered once it settles (or "held" at its first failure). */
 const waiting: { kind: HelperKind; answer: (a: SpendAnswer) => void }[] = [];
-/** Coins prices, of one and of a pack of 3. */
-const prices: Record<Pack, Record<HelperKind, number | null>> = { 1: { hint: null, undo: null, shuffle: null }, 3: { hint: null, undo: null, shuffle: null } };
-/** The bundles, in shop order, and each one's Coins price (null until read). */
-type BundleIds = { name: BundleSlug; slug: string; id: string; grants: Record<HelperKind, number>; once: boolean; coinsUnframed: number };
+// THE CONFIG'S FIGURES (readConfig): each null until read, and null when the config does not say.
+/** Each helper's cap: its currency's max_balance. */
+let caps = nulls();
+/** What each buy grants of its helper: its recipe's one currency_grant. */
+let sizes: Record<Buy, Record<HelperKind, number | null>> = { one: nulls(), pack: nulls() };
+/** Each buy's Coins price. */
+let prices: Record<Buy, Record<HelperKind, number | null>> = { one: nulls(), pack: nulls() };
+/** The bundles' ids, in shop order (helper-ids.json holds ids only). */
+type BundleIds = { name: BundleSlug; slug: string; id: string };
 const BUNDLES = (IDS as unknown as { bundles: BundleIds[] }).bundles;
 const bundleOf = (slug: BundleSlug): BundleIds | undefined => BUNDLES.find((b) => b.name === slug);
-/** Unframed (the play-test tool, no config): the stand-in prices, held to the config by tools/server/helpers-check.mts. */
-const bundlePrice = new Map<BundleSlug, number>(framed ? [] : BUNDLES.map((b) => [b.name, b.coinsUnframed]));
+/** A bundle's figures, the config's: what its recipe grants of each helper, its Coins price, its max_uses (null: no limit). */
+interface BundleFigures {
+  contents: Record<HelperKind, number>;
+  coins: number;
+  maxUses: number | null;
+}
+/** The bundles whose figures the config gave in full (helpers only, and a Coins price). */
+let bundleFigures = new Map<BundleSlug, BundleFigures>();
 /**
- * The platform's id of Coins (`gemctl platform config`), to pick a bundle's Coins price: a channel
- * whose config still prices it otherwise (before config 64) shows no row, never another currency's
- * number as Coins.
+ * The platform's id of Coins (`gemctl platform config`), to pick a Coins price: a channel whose config
+ * prices a recipe otherwise (a bundle before config 64) shows no row, never another currency's number as
+ * Coins.
  */
 const COINS_ID = "00000000-0000-0000-0000-000000000006";
-/** The Starter Kit's uses, the platform's count (recipeUsage); null until read. Read once a session, and again after a try at it. */
-let starterUses: number | null = null;
+/** Each limited bundle's uses (the Starter Kit's), the platform's count (recipeUsage); absent until read. Read once a session, and again after a try at it. */
+const uses = new Map<BundleSlug, number>();
 let usageReading = false;
 let usageTries = 0;
 let usageRetry: (() => void) | null = null;
 let bundleBuying = false;
-/** The prices are read (once a session); the waiting ask again while not, and how many failed in a row. */
-let pricesRead = false;
-let priceRetry: (() => void) | null = null;
-let priceTries = 0;
+/** The config is read (once a session); the waiting ask again while not, and how many failed in a row. */
+let configRead = false;
+let configRetry: (() => void) | null = null;
+let configTries = 0;
 let coins: number | null = null;
 let known = !framed;
 let sending = false;
@@ -175,50 +206,104 @@ async function readStock(fresh: boolean): Promise<boolean> {
   }
 }
 
+/** A whole number above 0, or null. */
+const positive = (x: unknown): number | null => (typeof x === "number" && Number.isInteger(x) && x > 0 ? x : null);
+type Recipe = { grants?: readonly unknown[] | null; platform_prices?: readonly { platform_currency_id?: string; price?: number }[]; max_uses?: number | null };
+/** A recipe's Coins price (its price in the platform's Coins, never another currency's), or null. */
+const coinsPrice = (r: Recipe | undefined): number | null => positive(r?.platform_prices?.find((x) => x.platform_currency_id === COINS_ID)?.price);
 /**
- * The prices, once a session. With no identity yet (a play token refused or still on its way) they
- * are not known yet: nothing is asked, and they are asked again on a wait that grows
- * (src/net/pace.ts), quietly. (SDK 16.1.0's gameConfig.load() asked with no identity builds its
- * path from an empty game id and throws a TypeError, QA 2026-10-30 finding 4: never ask it so.)
+ * What a recipe grants of each helper (its currency_grants, by the helpers' currency ids), or null when
+ * it grants anything else too or nothing at all: a row could not say what it gives.
  */
-async function readPrices(): Promise<void> {
-  if (pricesRead) return;
+function helpersIn(r: Recipe | undefined): Record<HelperKind, number> | null {
+  const out = zero();
+  let any = false;
+  for (const g of r?.grants ?? []) {
+    const op = g as { type?: string; currency_id?: string; amount?: unknown };
+    const k = op.type === "currency_grant" ? KINDS.find((x) => IDS.kinds[x].currency === op.currency_id) : undefined;
+    const n = positive(op.amount);
+    if (!k || n === null) return null;
+    out[k] += n;
+    any = true;
+  }
+  return any ? out : null;
+}
+
+/**
+ * THE SHOP'S FIGURES, all the config's, once a session: each helper's cap, what each buy grants and
+ * costs, and each bundle's contents, Coins price and limit. Each is set only from a read that landed:
+ * a read that fails leaves the last one (none, before the first: nothing on sale). With no identity yet
+ * (a play token refused or still on its way) nothing is asked, and it is asked again on a wait that grows
+ * (src/net/pace.ts), quietly. (SDK 16.1.0's gameConfig.load() asked with no identity builds its path from
+ * an empty game id and throws a TypeError, QA 2026-10-30 finding 4: never ask it so.)
+ */
+async function readConfig(): Promise<void> {
+  if (configRead) return;
   try {
     await gem.awaitIdentity(10_000);
   } catch {
-    return pricesLater();
+    return configLater();
   }
   try {
     const config = await gem.gameConfig.load();
-    const recipes = config?.catalogs.find((c) => c.id === IDS.catalog)?.recipes ?? [];
+    const recipes: Recipe[] = (config?.catalogs.find((c) => c.id === IDS.catalog)?.recipes ?? []) as Recipe[];
+    const recipe = (id: string): Recipe | undefined => recipes.find((x) => (x as { id?: string }).id === id);
+    const nextCaps = nulls();
+    const nextSizes: typeof sizes = { one: nulls(), pack: nulls() };
+    const nextPrices: typeof prices = { one: nulls(), pack: nulls() };
     for (const k of KINDS) {
-      for (const [pack, id] of [[1, IDS.kinds[k].buy], [3, IDS.kinds[k].buy3]] as const) {
-        prices[pack][k] = recipes.find((x) => x.id === id)?.platform_prices?.[0]?.price ?? null;
+      nextCaps[k] = positive(config?.currency(IDS.kinds[k].currency)?.max_balance);
+      for (const [buy, id] of [["one", IDS.kinds[k].buy], ["pack", IDS.kinds[k].buy3]] as const) {
+        const r = recipe(id);
+        const g = helpersIn(r);
+        // a buy says "N Hints": it grants its own helper and nothing else
+        nextSizes[buy][k] = g && KINDS.every((x) => x === k || g[x] === 0) ? g[k] : null;
+        nextPrices[buy][k] = coinsPrice(r);
       }
     }
+    const nextBundles = new Map<BundleSlug, BundleFigures>();
     for (const b of BUNDLES) {
-      const all = recipes.find((x) => x.id === b.id)?.platform_prices ?? [];
-      const p = all.find((x) => x.platform_currency_id === COINS_ID)?.price;
-      if (typeof p === "number") bundlePrice.set(b.name, p);
-      else bundlePrice.delete(b.name); // not on sale on this channel's config: no price, so no row
+      const r = recipe(b.id);
+      const contents = helpersIn(r);
+      const price = coinsPrice(r);
+      // not on sale on this channel's config, or it grants more than helpers: no row
+      if (contents && price !== null) nextBundles.set(b.name, { contents, coins: price, maxUses: positive(r?.max_uses) });
     }
-    pricesRead = true;
-    priceTries = 0;
+    caps = nextCaps;
+    sizes = nextSizes;
+    prices = nextPrices;
+    bundleFigures = nextBundles;
+    configRead = true;
+    configTries = 0;
   } catch (err) {
     heard(err);
-    console.warn(`[helpers] the prices could not be read: ${refusalOf(err)}`);
-    if (notNow(err)) pricesLater();
+    console.warn(`[helpers] the shop's figures could not be read: ${refusalOf(err)}`);
+    if (notNow(err)) configLater();
   }
 }
 
-/** Ask for the prices again in a while (one waiting ask at a time), and say so when they land. */
-function pricesLater(): void {
-  priceRetry?.();
-  priceRetry = whenDue(backoff(++priceTries, 5000), () => {
-    priceRetry = null;
-    void readPrices().then(() => pricesRead && changed());
+/** Ask for the config again in a while (one waiting ask at a time), and say so when it lands. */
+function configLater(): void {
+  configRetry?.();
+  configRetry = whenDue(backoff(++configTries, 5000), () => {
+    configRetry = null;
+    void readConfig().then(() => configRead && changed());
   });
 }
+
+/** Buy `b` of helper k, with every figure it needs known: what it grants, the cap, the Coins price. null: not offered. */
+function offer(k: HelperKind, b: Buy): { size: number; cap: number; price: number } | null {
+  const size = sizes[b][k];
+  const cap = caps[k];
+  const price = prices[b][k];
+  return size === null || cap === null || price === null ? null : { size, cap, price };
+}
+
+/** `n` more of helper k would pass its cap. False while the cap is unknown: nothing is known to pass it. */
+const passes = (k: HelperKind, n: number): boolean => {
+  const c = caps[k];
+  return c !== null && count(k) + n > c;
+};
 
 async function readCoins(): Promise<void> {
   try {
@@ -234,18 +319,21 @@ async function readCoins(): Promise<void> {
 }
 
 /**
- * The Starter Kit's uses, the platform's count (recipeUsage), one read at a time. Asked the first
- * time a screen wants to know (bundleOpen), and after a try at the kit; a read that fails is
- * unknown (null stays), and is asked again on a wait that grows (src/net/pace.ts).
+ * The limited bundles' uses (the Starter Kit's: its recipe's max_uses, the config's), the platform's
+ * count (recipeUsage), one read at a time. Asked the first time a screen wants to know (bundleOpen),
+ * and after a try at one; a read that fails is unknown (nothing kept), and is asked again on a wait that
+ * grows (src/net/pace.ts).
  */
 async function readUsage(): Promise<void> {
-  const kit = BUNDLES.find((b) => b.once);
-  if (!framed || !kit || usageReading) return;
+  const limited = BUNDLES.filter((b) => bundleFigures.get(b.name)?.maxUses != null);
+  if (!framed || !limited.length || usageReading) return;
   if (held() > 0) return usageLater(held());
   usageReading = true;
   try {
-    const u = await gem.me.mutations.recipeUsage(kit.id);
-    starterUses = Math.max(0, u?.useCount ?? 0); // null: never used
+    for (const b of limited) {
+      const u = await gem.me.mutations.recipeUsage(b.id);
+      uses.set(b.name, Math.max(0, u?.useCount ?? 0)); // null: never used
+    }
     usageTries = 0;
     changed();
   } catch (err) {
@@ -265,9 +353,16 @@ function usageLater(ms: number): void {
   });
 }
 
-/** The helpers of a bundle that would pass the cap with what is held now (empty: it fits). */
-function overCap(b: BundleIds): HelperKind[] {
-  return KINDS.filter((k) => (b.grants[k] ?? 0) > 0 && count(k) + b.grants[k] > HELPER_CAP);
+/** The helpers of a bundle that would pass the cap with what is held now (empty: it fits, or its figures are unknown). */
+function overCap(slug: BundleSlug): HelperKind[] {
+  const f = bundleFigures.get(slug);
+  return f ? KINDS.filter((k) => f.contents[k] > 0 && passes(k, f.contents[k])) : [];
+}
+
+/** The bundle's figures, when it can be offered: the config gave them, and the cap of every helper in it. */
+function bundleOffer(slug: BundleSlug): BundleFigures | null {
+  const f = bundleFigures.get(slug);
+  return f && KINDS.every((k) => f.contents[k] === 0 || caps[k] !== null) ? f : null;
 }
 
 /** Read the stock again (after a checker answer, a buy, a resume): one read at a time, and one more behind it at most. */
@@ -459,11 +554,11 @@ async function resume(): Promise<void> {
   void pump();
 }
 
-/** The catalog moved (nothing was charged): read the prices again for the next try. */
-function pricesMoved(): void {
-  pricesRead = false;
+/** The catalog moved (nothing was charged): read the config again for the next try (the last figures stand until it lands). */
+function configMoved(): void {
+  configRead = false;
   gem.gameConfig.refresh();
-  void readPrices().then(() => changed());
+  void readConfig().then(() => changed());
 }
 
 /** What one Coins purchase came to, by either route (pay). */
@@ -491,7 +586,7 @@ interface Paid {
  */
 async function pay(recipe: string, what: string): Promise<Paid> {
   const moved = (reason: string): void => {
-    if (reason === "price_mismatch" || reason === "config_version_stale" || reason === "not_purchasable") pricesMoved();
+    if (reason === "price_mismatch" || reason === "config_version_stale" || reason === "not_purchasable") configMoved();
   };
   if (gem.frame?.parentSupports("purchases")) {
     let res: { outcome: string; reason?: string };
@@ -539,9 +634,24 @@ export const helpers = {
   count,
   /** The first read has landed this session. */
   known: (): boolean => known,
-  full: (k: HelperKind): boolean => count(k) >= HELPER_CAP,
-  /** One, or a pack, would still fit under the cap. */
-  fits: (k: HelperKind, pack: Pack = 1): boolean => count(k) + pack <= HELPER_CAP,
+  /** At the cap (the config's): false while the cap is unknown. */
+  full: (k: HelperKind): boolean => passes(k, 1),
+  /**
+   * The cap of helper k, the config's (its currency's max_balance); with no k, the one cap all three
+   * share. null while unknown (or, with no k, if they differ).
+   */
+  cap(k?: HelperKind): number | null {
+    if (k) return caps[k];
+    const all = KINDS.map((x) => caps[x]);
+    return all.every((c) => c !== null && c === all[0]) ? all[0]! : null;
+  },
+  /** What buy `b` of helper k grants, the config's (its recipe's grant); null while unknown. */
+  size: (k: HelperKind, b: Buy = "one"): number | null => sizes[b][k],
+  /** Buy `b` would not pass the cap. False only when that is known: true while the cap or the size is unknown (and then it has no price). */
+  fits: (k: HelperKind, b: Buy = "one"): boolean => {
+    const n = sizes[b][k];
+    return n === null || !passes(k, n);
+  },
   /** Call AFTER the act (the screens check count(k) > 0 first). The count drops at once. */
   spend(k: HelperKind): Promise<SpendAnswer> {
     if (!framed) {
@@ -555,59 +665,68 @@ export const helpers = {
     void pump();
     return p;
   },
-  /** The Coins price of one or a pack of 3, from the game config; null until read (or no such pack). */
-  price: (k: HelperKind, pack: Pack = 1): number | null => prices[pack][k],
+  /**
+   * The Coins price of buy `b` of helper k, the config's: null until read, or while what it grants or the
+   * cap is unknown (an unknown figure offers nothing), or when the config sells no such buy.
+   */
+  price: (k: HelperKind, b: Buy = "one"): number | null => offer(k, b)?.price ?? null,
   /** The player's Coins cover the price; null while unknown. For greying a button only. */
-  affordable: (k: HelperKind, pack: Pack = 1): boolean | null => {
-    const p = prices[pack][k];
+  affordable: (k: HelperKind, b: Buy = "one"): boolean | null => {
+    const p = offer(k, b)?.price ?? null;
     return coins === null || p === null ? null : coins >= p;
   },
   /**
-   * Buy one or a pack of 3 for Coins (call from the Buy press, nothing awaited first): pay(), the
+   * Buy the single or the pack for Coins (call from the Buy press, nothing awaited first): pay(), the
    * Arcade's sheet where it can draw one, else the direct purchase. The stock is read again before it
-   * answers. Not enough Coins is "short" by either route, never a top-up.
+   * answers. Not enough Coins is "short" by either route, never a top-up. One with a figure unknown
+   * (it has no price either) is "failed", with nothing asked.
    */
-  async buy(k: HelperKind, pack: Pack = 1): Promise<BuyAnswer> {
+  async buy(k: HelperKind, b: Buy = "one"): Promise<BuyAnswer> {
     if (!framed) return "failed";
-    if (!helpers.fits(k, pack)) return "full";
-    const r = await pay(pack === 3 ? IDS.kinds[k].buy3 : IDS.kinds[k].buy, pack === 3 ? `3 ${k}s` : `a ${k}`);
+    const o = offer(k, b);
+    if (!o) return "failed";
+    if (count(k) + o.size > o.cap) return "full";
+    const r = await pay(b === "pack" ? IDS.kinds[k].buy3 : IDS.kinds[k].buy, b === "pack" ? `the pack of ${k}s` : `a ${k}`);
     if (r.outcome === "ok") return "ok";
     if (r.outcome === "closed") return "declined";
     if (r.outcome === "unknown") return "unknown";
     if (r.outcome === "lost") return "failed";
     if (r.reason === "insufficient_funds") return "short";
-    if (r.reason === "item_max_stack_exceeded" || !helpers.fits(k, pack)) return "full";
+    // the cap was known to ask (offer): a "full" can always say it
+    if (r.reason === "item_max_stack_exceeded" || !helpers.fits(k, b)) return "full";
     return r.direct ? "failed" : "declined";
   },
-  /** The bundles, in the order to show (Starter Kit, Small, Medium, Large), with their Coins prices. */
+  /**
+   * The bundles that can be offered, in the order to show (Starter Kit, Small, Medium, Large): each with
+   * its contents, Coins price and limit from the config, and the cap of every helper in it known. None
+   * until the config is read.
+   */
   bundles: (): Bundle[] =>
-    BUNDLES.map((b) => {
-      const coins = bundlePrice.get(b.name) ?? null;
-      return { slug: b.name, contents: { ...b.grants }, coins, once: b.once };
+    BUNDLES.flatMap((b) => {
+      const f = bundleOffer(b.name);
+      return f ? [{ slug: b.name, contents: { ...f.contents }, coins: f.coins, once: f.maxUses === 1 }] : [];
     }),
   /** The player's Coins cover this bundle; null while either is unknown. For greying a row only: it stays pressable. */
   bundleAffordable: (slug: BundleSlug): boolean | null => {
-    const p = bundlePrice.get(slug);
+    const p = bundleOffer(slug)?.coins;
     return coins === null || p === undefined ? null : coins >= p;
   },
   /**
-   * Can this bundle be bought (the platform's word): the Starter Kit only while its uses are 0,
-   * null while not known yet (the first ask reads it, and onChange says when it lands); every
-   * other bundle, always true.
+   * Can this bundle be bought (the platform's word): one with a limit (its recipe's max_uses: the Starter
+   * Kit's) only while its uses are below it, null while not known yet (the first ask reads it, and
+   * onChange says when it lands); one with none, true; one that cannot be offered, false.
    */
   bundleOpen(slug: BundleSlug): boolean | null {
-    const b = bundleOf(slug);
-    if (!b) return false;
-    if (!b.once) return true;
-    if (!framed) return starterUses === null || starterUses < 1;
-    if (starterUses === null) void readUsage();
-    return starterUses === null ? null : starterUses < 1;
+    const f = bundleOffer(slug);
+    if (!f) return false;
+    if (f.maxUses === null) return true;
+    if (!framed) return false;
+    const n = uses.get(slug);
+    if (n === undefined) void readUsage();
+    return n === undefined ? null : n < f.maxUses;
   },
-  /** The helpers this bundle would take past HELPER_CAP, with what is held now (empty: it fits). */
-  fitsBundle: (slug: BundleSlug): HelperKind[] => {
-    const b = bundleOf(slug);
-    return b ? overCap(b) : [];
-  },
+  /** The helpers this bundle would take past the cap, with what is held now (empty: it fits). */
+  fitsBundle: (slug: BundleSlug): HelperKind[] => overCap(slug),
   /**
    * Buy a bundle for Coins, by the same route as a pack (pay(): the Arcade's sheet, which confirms the
    * spend in its own words and price and shows a guest its sign-up card, else the direct purchase).
@@ -618,16 +737,12 @@ export const helpers = {
    */
   buyBundle(slug: BundleSlug): Promise<BundleAnswer> {
     const b = bundleOf(slug);
-    if (!b) return Promise.resolve("failed");
-    if (overCap(b).length) return Promise.resolve("full");
-    if (b.once && starterUses !== null && starterUses >= 1) return Promise.resolve("gone");
-    if (!framed) {
-      // the stand-in (the play-test tool): the stock grows on this page only
-      for (const k of KINDS) stock[k] += b.grants[k] ?? 0;
-      if (b.once) starterUses = 1;
-      changed();
-      return Promise.resolve("ok");
-    }
+    const f = bundleOffer(slug);
+    // no such bundle, or one that cannot be offered (a figure unknown; unframed, none can): nothing asked
+    if (!b || !f || !framed) return Promise.resolve("failed");
+    if (overCap(slug).length) return Promise.resolve("full");
+    const used = uses.get(slug);
+    if (f.maxUses !== null && used !== undefined && used >= f.maxUses) return Promise.resolve("gone");
     if (bundleBuying) return Promise.resolve("declined");
     bundleBuying = true;
     // pay() asks first thing, so the sheet opens in the press's own turn
@@ -635,13 +750,13 @@ export const helpers = {
       .then(async (r): Promise<BundleAnswer> => {
         if (r.outcome === "closed") return "declined";
         // anything the platform answered may have moved the kit's uses too (pay() read the stock)
-        if (b.once) await readUsage();
+        if (f.maxUses !== null) await readUsage();
         if (r.outcome === "ok") return "ok";
         // no reliable answer, or a direct purchase that got none: the player may have paid
         if (r.outcome === "unknown" || r.outcome === "lost") return "unknown";
         if (r.reason === "insufficient_funds") return "short";
         if (r.reason === "recipe_max_uses_exceeded" || r.reason === "already_owned") return "gone";
-        if (overCap(b).length) return "full";
+        if (overCap(slug).length) return "full";
         // any other refusal: on the sheet, nothing said (a guest shown the Arcade's sign-up card among
         // them); the direct purchase refused
         return r.direct ? "failed" : "declined";
@@ -693,7 +808,7 @@ export async function loadHelpers(): Promise<void> {
   } catch {
     // no identity yet: the reads below fail and are tried again on the connection's return
   }
-  await Promise.all([readStock(false), readPrices(), readCoins()]);
+  await Promise.all([readStock(false), readConfig(), readCoins()]);
   changed();
   // a purchase finished after its call had answered (SDK 21.1.0: a guest who made an account on the
   // Arcade's offer and bought there, maybe after a reload): the SDK confirmed it and refreshed gem.me;

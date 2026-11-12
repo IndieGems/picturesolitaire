@@ -61,12 +61,14 @@ save_schemas:
     max_size_bytes: 65536
 
 # THE HELPERS (creator, 2026-10-27; AGENTS.md): Hint, Undo and Shuffle are the
-# player's own stock, carried from board to board, at most 10 of each, never in
-# a save. The ids are src/net/helper-ids.json's (tools/server/helpers-check.mts
-# holds the two together). Earned stock never resets and there is no daily top-up.
-# Gifts are paid by the win checker, straight into "earned" and clamped at the
-# cap: the kit (3 of each) at the end of board 1, a hard board's first win 1 Hint
-# and 1 Undo, a trip's last board 1 of each. More are bought with Coins below, or in
+# player's own stock, carried from board to board, at most each currency's
+# max_balance, never in a save. The ids are src/net/helper-ids.json's
+# (tools/server/helpers-check.mts holds the two together); EVERY FIGURE IS THIS
+# FILE'S ALONE (the creator, 2026-11-12: "never copy amounts from the config into
+# code"): the cap, what each buy and bundle grants, the Starter Kit's max_uses and the
+# prices, read by the game at run time (src/net/helpers.ts). Earned stock never resets
+# and there is no daily top-up. Rewards are the rewards catalog's recipes below, run
+# by the win checker and clamped at the cap. More are bought with Coins below, or in
 # bundles of all three, for Coins too (Gems until 2026-11-10). The cap is 20 of each (the creator, 2026-11-01; it was 10).
 currencies:
   - id: cb0abfc5-ef5e-4342-9943-241b126afd54
@@ -98,7 +100,7 @@ catalogs:
   # Using a helper: a consume with nothing granted, run by the game after the act.
   # Buying one: 1 for Coins (ARCADE_TICKETS, whose spend scope is `any`). A buy
   # at the cap is refused before anything is charged (the grant's overflow: fail).
-  # The prices are set HERE and nowhere else: the game reads them from this file.
+  # The prices and what each buy grants are set HERE and nowhere else: the game reads them from this file.
   - id: 330c9600-3e06-4829-bdfe-e26b6e6889f2
     slug: helpers
     display_name: Helpers
@@ -184,9 +186,10 @@ catalogs:
       # helpers one at a time (the Starter Kit once per player, ever: max_uses 1). In Coins since
       # 2026-11-10 (the creator: no Gems in the Arcade; 100 Gems became 500 Coins), on the SAME
       # recipes, so a Starter Kit bought with Gems still counts its one use (docs/coins.md).
-      # Ids and grants: src/net/helper-ids.json `bundles` (tools/server/helpers-check.mts holds
-      # them together). Every grant is refused at the cap (overflow: fail); the game asks only
-      # when all three fit (src/net/helpers.ts fitsBundle), the same route as a Coins pack.
+      # Ids: src/net/helper-ids.json `bundles` (tools/server/helpers-check.mts holds them together);
+      # the grants, the price and the Starter Kit's max_uses are this file's alone, read by the game.
+      # Every grant is refused at the cap (overflow: fail); the game asks only when all three fit
+      # (src/net/helpers.ts fitsBundle), the same route as a Coins pack.
       - id: f6235bfe-6f97-5c90-8bb4-0e956a5f0978
         slug: buy-starter-kit
         recipe_type: purchase

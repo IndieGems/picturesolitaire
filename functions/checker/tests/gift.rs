@@ -23,6 +23,15 @@ fn ids() -> Value {
     read("src/net/helper-ids.json")
 }
 const KINDS: [&str; 3] = ["hint", "undo", "shuffle"];
+/// A helper's cap as the game config declares it (its currency's max_balance): the fake platform
+/// clamps at it, as the real one does. The checker itself holds no cap.
+fn cap_of(kind: &str) -> i64 {
+    let yaml = std::fs::read_to_string(root("gem-backend-game-config.yaml")).unwrap().replace('\r', "");
+    let id = ids()["kinds"][kind]["currency"].as_str().unwrap().to_string();
+    let at = yaml.find(&format!("- id: {id}\n")).expect("the currency is declared");
+    let line = yaml[at..].lines().find(|l| l.trim_start().starts_with("max_balance:")).expect("it has a max_balance");
+    line.trim_start().trim_start_matches("max_balance:").trim().parse().unwrap()
+}
 
 /// What a recipe gives as the config says: (base, bonus helpers, bonus grants the welcome's item).
 fn recipe_of(id: &str) -> (Value, Value, bool) {
@@ -107,16 +116,15 @@ impl Platform for Fake {
             return Ok(Vec::new()); // the key ran before: its first run's answer, nothing granted
         }
         let (base, bonus, item) = recipe_of(recipe);
-        let cap = ids()["cap"].as_i64().unwrap();
         let mut out = Vec::new();
         for k in KINDS {
             let n = base[k].as_i64().unwrap_or(0);
             let have = *self.stock.borrow().get(k).unwrap_or(&0);
             if n > 0 {
-                self.change(k, n.min(cap - have).max(0), &mut out);
+                self.change(k, n.min(cap_of(k) - have).max(0), &mut out);
             }
         }
-        let fits = KINDS.iter().all(|k| *self.stock.borrow().get(*k).unwrap_or(&0) + bonus[*k].as_i64().unwrap_or(0) <= cap);
+        let fits = KINDS.iter().all(|k| *self.stock.borrow().get(*k).unwrap_or(&0) + bonus[*k].as_i64().unwrap_or(0) <= cap_of(k));
         let (outcome, reason) = match (*self.vip.borrow(), fits) {
             (false, _) => ("skipped", Some("requirement_unmet")),
             (true, false) => ("skipped", Some("would_exceed")),
@@ -209,10 +217,11 @@ fn a_welcome_that_could_not_run_says_ask_again_and_comes_on_a_later_day() {
 #[test]
 fn a_full_stock_skips_a_bonus_that_cannot_land_and_the_cap_is_never_passed() {
     let f = Fake::new("2026-11-02", true);
-    f.holding(20, 20, 20);
+    let full = (cap_of("hint"), cap_of("undo"), cap_of("shuffle"));
+    f.holding(full.0, full.1, full.2);
     let a = gift::vip_gift(&f);
     assert_eq!(a["gifts"], json!([]), "a bonus that cannot land is skipped: nothing given");
-    assert_eq!(f.stock(), (20, 20, 20));
+    assert_eq!(f.stock(), full);
 }
 
 #[test]

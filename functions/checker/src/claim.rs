@@ -16,9 +16,10 @@ use serde_json::Value;
 use crate::rules::{self, Action, Deal, Picture};
 
 /// Shuffles one line may hold. Helpers are the player's own stock since 2026-10-27 (a
-/// VIP's too, since 2026-11-01), and the board caps none: a full pouch is 20
-/// (src/net/helper-ids.json `cap`), and a player may buy more mid-board, so this is only a bound on the replay's work, far
-/// past real play (a real win refused here would leave its board unwon).
+/// VIP's too, since 2026-11-01), and the board caps none: a full pouch is the Shuffles currency's
+/// max_balance in the game config (20 since 2026-11-01; tests/pay.rs reads it there), and a player may
+/// buy more mid-board, so this is only a bound on the replay's work, far past real play (a real win
+/// refused here would leave its board unwon).
 ///
 /// NO CHECK THAT EACH SHUFFLE WAS PAID FOR, on purpose (the lead, 2026-10-27, as
 /// mahjong-solitaire ships): every board is winnable with no helper, so a forged win

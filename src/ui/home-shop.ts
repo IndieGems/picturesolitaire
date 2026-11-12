@@ -6,7 +6,7 @@
 //   carries ("You have 3"), and two price buttons, one ("1 for 150 ◉") and a pack of 3
 //   ("3 for 400 ◉"). Under them, one plain line when a button is greyed: "Not enough
 //   Coins yet", or that there is no room ("You're already carrying the most Hints you can
-//   (the cap, HELPER_CAP)", "Room for 2 more Hints"); and after a purchase, what came ("+3 Hints"). One line
+//   (the cap, the config's)", "Room for 2 more Hints"); and after a purchase, what came ("+3 Hints"). One line
 //   at the foot: "Hard boards and trips also give free tools."
 //
 // Above them, "Bundles" (the creator, 2026-11-01): the bundles of all three, in Coins (bundle-rows.ts), the

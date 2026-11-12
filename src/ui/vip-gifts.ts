@@ -52,7 +52,7 @@ interface Opts {
   count: (k: HelperKind) => number;
   /** Hear the stock change (stock.ts onChange); returns the unsubscribe. */
   onStock: (fn: () => void) => () => void;
-  /** The most of one helper a player can carry (HELPER_CAP). */
+  /** The most of one helper a player can carry: the config's, read live (stock.cap); a gift is handed over only once it is known (Server's vip.ts). */
   cap: number;
   /** The welcome card's "Let's play!": the next level, as home's Next stop opens it. */
   play: () => void;

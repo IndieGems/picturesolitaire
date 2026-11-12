@@ -13,9 +13,9 @@
 // The player's Coins are never drawn: the Arcade's wallet shows them. Short of Coins, the answer says so
 // in the shop's own words ("Not enough Coins yet."), and never opens a store.
 //
-//   - A bundle that would pass the cap (HELPER_CAP, src/net/helper-ids.json) is LEFT OUT, never a faded
-//     Buy; one line says why ("Use some Undos first to make room for the other bundles. You can carry
-//     20 of each."), its number the cap's.
+//   - A bundle that would pass the cap (stock.cap, the config's) is LEFT OUT, never a faded Buy; one
+//     line says why ("Use some Undos first to make room for the other bundles. You can carry N of
+//     each."), its number the cap's. A bundle is listed only once the config gave its figures and the cap.
 //   - A row shows only once the config has priced it on this channel, and none where the Arcade cannot
 //     draw its purchase sheet (a TV, an older Arcade); the Starter Kit only once the platform has said
 //     it is still the player's to buy.

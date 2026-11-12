@@ -1,11 +1,28 @@
 {
-  "note": "The helper stock's ids: one copy, read by src/net/helpers.ts, src/net/rewards.ts, src/net/vip.ts, the win checker (functions/checker/build.rs) and tools/server/make-config.mts, and held to gem-backend-game-config.yaml by tools/server/helpers-check.mts. NO REWARD AMOUNT IS HERE (the creator, 2026-11-12): what a reward gives is the config's alone (tools/server/helper-rewards.json, the generator's), read by the game from the platform's preview and by the checker from the receipt. Prices are the config's alone too. `rewards`: the server-only recipes the win checker runs (docs/vip.md): `kit` once ever, `hard` and `stamp` on a campaign board's first win, `daily` the daily puzzle's first win by the player's weekday (Monday first, ISO 1..7), `vipGift` VIP's gift by weekday (Monday first), `vipWelcome` VIP's welcome, once per player ever, whose `welcomeItem` is the account-bound marker it grants. `kit.progression`: the kit's mark, set by the kit's recipe. `oldMarks.welcomeEnd`, `oldMarks.dayMark`: the marks checkers before 0.1.63 raised; the welcome mark is still read (a player welcomed by one of them is not welcomed again), the day mark by nothing. `bundles`: the bundles in shop order: each recipe's id and what it grants of each helper (every grant refused at the cap); `once`: max_uses 1, ever; `coinsUnframed`: a stand-in price for a page with no config (the play-test tool), held to the config's Coins price by helpers-check.",
-  "cap": 20,
+  "note": "The helper stock's IDS, and nothing but ids (the creator, 2026-11-12: \"never copy amounts from the config into code\"; ECON-08): one copy, read by src/net/helpers.ts, src/net/rewards.ts, src/net/vip.ts, the win checker (functions/checker/build.rs) and tools/server/make-config.mts, and held to gem-backend-game-config.yaml by tools/server/helpers-check.mts. NO FIGURE IS HERE: each helper's cap is its currency's max_balance, what a buy, a pack or a bundle grants is its recipe's, the Starter Kit's once-only is its recipe's max_uses, and every price is the config's; the game reads them all in its gem.gameConfig.load() (src/net/helpers.ts readConfig). What a reward gives is the config's too (tools/server/helper-rewards.json, the generator's), read by the game from the platform's preview and by the checker from the receipt. `kinds`: each helper's currency, its use recipe, and its two buy recipes (`buy` the single, `buy3` the pack: names, never sizes). `rewards`: the server-only recipes the win checker runs (docs/vip.md): `kit` once ever, `hard` and `stamp` on a campaign board's first win, `daily` the daily puzzle's first win by the player's weekday (Monday first, ISO 1..7), `vipGift` VIP's gift by weekday (Monday first), `vipWelcome` VIP's welcome, once per player ever, whose `welcomeItem` is the account-bound marker it grants. `kit.progression`: the kit's mark, set by the kit's recipe. `oldMarks.welcomeEnd`, `oldMarks.dayMark`: the marks checkers before 0.1.63 raised; the welcome mark is still read (a player welcomed by one of them is not welcomed again), the day mark by nothing. `bundles`: the bundles' recipes, in shop order (name, slug, id).",
   "catalog": "330c9600-3e06-4829-bdfe-e26b6e6889f2",
   "kinds": {
-    "hint": { "currency": "cb0abfc5-ef5e-4342-9943-241b126afd54", "slug": "hints", "use": "39de65a1-e48c-4267-8117-9fb505ca803d", "buy": "fad7c2dc-ea26-4ddc-ad8e-119bc60525d1", "buy3": "70474853-f503-4ad6-aef9-e7792cd6d333" },
-    "undo": { "currency": "f05a54c9-1920-4a36-889d-c03244e8291c", "slug": "undos", "use": "acb411f6-085a-4974-b1c5-db7afe170ad0", "buy": "e092faaf-a8e4-4ae9-b43b-bb36d88fd455", "buy3": "ab91e4a5-f7a5-4749-a09a-8cd1a8836d62" },
-    "shuffle": { "currency": "3b52bc66-7b5e-4c8b-a280-0df1f829694f", "slug": "shuffles", "use": "5f8077cf-eafe-4cb1-b915-1dfc445e7f85", "buy": "973ad69a-2bf2-4286-a587-762f6c1cada1", "buy3": "319f145c-70ae-4170-b1c3-ede7675dcb7e" }
+    "hint": {
+      "currency": "cb0abfc5-ef5e-4342-9943-241b126afd54",
+      "slug": "hints",
+      "use": "39de65a1-e48c-4267-8117-9fb505ca803d",
+      "buy": "fad7c2dc-ea26-4ddc-ad8e-119bc60525d1",
+      "buy3": "70474853-f503-4ad6-aef9-e7792cd6d333"
+    },
+    "undo": {
+      "currency": "f05a54c9-1920-4a36-889d-c03244e8291c",
+      "slug": "undos",
+      "use": "acb411f6-085a-4974-b1c5-db7afe170ad0",
+      "buy": "e092faaf-a8e4-4ae9-b43b-bb36d88fd455",
+      "buy3": "ab91e4a5-f7a5-4749-a09a-8cd1a8836d62"
+    },
+    "shuffle": {
+      "currency": "3b52bc66-7b5e-4c8b-a280-0df1f829694f",
+      "slug": "shuffles",
+      "use": "5f8077cf-eafe-4cb1-b915-1dfc445e7f85",
+      "buy": "973ad69a-2bf2-4286-a587-762f6c1cada1",
+      "buy3": "319f145c-70ae-4170-b1c3-ede7675dcb7e"
+    }
   },
   "kit": {
     "progression": "a99673df-c47a-4837-b77a-d8420cdf74e3",
@@ -111,50 +128,22 @@
     {
       "name": "starter",
       "slug": "buy-starter-kit",
-      "id": "f6235bfe-6f97-5c90-8bb4-0e956a5f0978",
-      "grants": {
-        "hint": 5,
-        "undo": 5,
-        "shuffle": 5
-      },
-      "once": true,
-      "coinsUnframed": 1000
+      "id": "f6235bfe-6f97-5c90-8bb4-0e956a5f0978"
     },
     {
       "name": "small",
       "slug": "buy-bundle-small",
-      "id": "59b4c5ad-1a53-578e-8d0a-539418a1a392",
-      "grants": {
-        "hint": 2,
-        "undo": 1,
-        "shuffle": 1
-      },
-      "once": false,
-      "coinsUnframed": 500
+      "id": "59b4c5ad-1a53-578e-8d0a-539418a1a392"
     },
     {
       "name": "medium",
       "slug": "buy-bundle-medium",
-      "id": "aeea4935-baad-5f85-aaed-fb11aaf62186",
-      "grants": {
-        "hint": 3,
-        "undo": 3,
-        "shuffle": 3
-      },
-      "once": false,
-      "coinsUnframed": 1000
+      "id": "aeea4935-baad-5f85-aaed-fb11aaf62186"
     },
     {
       "name": "large",
       "slug": "buy-bundle-large",
-      "id": "8c6cc8a1-ba56-5d2f-95ae-3faa6bd09c23",
-      "grants": {
-        "hint": 8,
-        "undo": 8,
-        "shuffle": 8
-      },
-      "once": false,
-      "coinsUnframed": 2500
+      "id": "8c6cc8a1-ba56-5d2f-95ae-3faa6bd09c23"
     }
   ]
 }

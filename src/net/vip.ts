@@ -22,14 +22,16 @@
 //   previewVipGifts()   the day's gift and the welcome in helpers in all, from the config's bonus grants
 //                       (the preview): { daily, welcome }, null where it cannot say
 //   onVipGift(fn)       hear each gift the checker gave (welcome before daily), once per id; one given
-//                       before anything listens is handed to the first listener. Returns the unsubscribe
+//                       before anything listens is handed to the first listener, and none before the cap
+//                       is known (the config's, src/net/helpers.ts: the gift card says it when the cap
+//                       clamped a gift, so it never shows one it would have to guess). Returns the unsubscribe
 //
 // Unframed (a plain tab, the play-test tool) there is no platform: isVip() stays false.
 
 import { gem, onArcadePause } from "../gem";
 import { currentDaily, onDailyChange } from "./daily";
 import IDS from "./helper-ids.json";
-import type { HelperKind } from "./helpers";
+import { helpers, type HelperKind } from "./helpers";
 import { noAnswer, refusalOf } from "./no-answer";
 import { backoff, heard as paced, held, whenDue } from "./pace";
 import { helpersOf, previewRecipe, weekdayIndex } from "./rewards";
@@ -212,7 +214,21 @@ export function onVipGift(fn: (g: VipGift) => void): () => void {
   return () => void giftListeners.delete(fn);
 }
 
+/** Gifts given before the cap was known (the config not read yet), handed on once it is. */
+const capWait: VipGift[] = [];
+let capHeard: (() => void) | null = null;
+
 function hand(g: VipGift): void {
+  if (helpers.cap() === null) {
+    capWait.push(g);
+    capHeard ??= helpers.onChange(() => {
+      if (helpers.cap() === null) return;
+      capHeard?.();
+      capHeard = null;
+      for (const w of capWait.splice(0)) hand(w);
+    });
+    return;
+  }
   if (!giftListeners.size) {
     unheard.push(g);
     return;

@@ -79,8 +79,12 @@ Read it so:
 
 ## The helper shop (cap 20 of each)
 
-Prices are the config's alone (`gem-backend-game-config.yaml`, the helpers catalog), at the standard's
-500 Coins to the dollar. Every buy is refused at the cap before anything is charged.
+Every figure here is the config's alone (`gem-backend-game-config.yaml`, the helpers catalog): the cap
+(each helper currency's max_balance), what each buy and bundle gives, the Starter Kit's once-only (its
+max_uses 1) and the prices, at the standard's 500 Coins to the dollar. **The game holds none of them**
+(the creator, 2026-11-12: "never copy amounts from the config into code"): it reads them in its one
+config load (`src/net/helpers.ts`), and until that lands it offers no pack and no bundle, as with no
+price. `src/net/helper-ids.json` holds only the ids. Every buy is refused at the cap before anything is charged.
 
 | product | Coins | worth |
 |---|---|---|

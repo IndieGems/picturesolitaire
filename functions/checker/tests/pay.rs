@@ -14,13 +14,23 @@ fn ids() -> Value {
     serde_json::from_str(&std::fs::read_to_string(root("src/net/helper-ids.json")).unwrap()).unwrap()
 }
 
+/// The Shuffles currency's max_balance, as the game config declares it (the checker holds no cap: the
+/// platform clamps every grant at it, so nothing reads it at run time).
+fn shuffle_cap() -> u32 {
+    let yaml = std::fs::read_to_string(root("gem-backend-game-config.yaml")).unwrap().replace('\r', "");
+    let id = ids()["kinds"]["shuffle"]["currency"].as_str().unwrap().to_string();
+    let at = yaml.find(&format!("- id: {id}\n")).expect("the Shuffles currency is declared");
+    let rest = &yaml[at..];
+    let line = rest.lines().find(|l| l.trim_start().starts_with("max_balance:")).expect("it has a max_balance");
+    line.trim_start().trim_start_matches("max_balance:").trim().parse().unwrap()
+}
+
 #[test]
 fn a_line_may_hold_a_full_pouch_of_shuffles_and_more_bought_mid_board() {
-    // the cap is helper-ids.json's (20 since 2026-11-01; the platform clamps every grant at the
-    // currency's max_balance, so nothing here reads it at run time): five full pouches in a line
-    assert_eq!(pay::cap() as u64, ids()["cap"].as_u64().unwrap());
-    assert_eq!(pay::cap(), 20);
-    assert!(SHUFFLES >= 5 * pay::cap());
+    // five full pouches in a line, at the config's cap
+    let cap = shuffle_cap();
+    assert!(cap > 0);
+    assert!(SHUFFLES >= 5 * cap, "SHUFFLES {SHUFFLES} is under five pouches of {cap}");
 }
 
 #[test]

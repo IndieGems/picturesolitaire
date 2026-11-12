@@ -972,8 +972,9 @@ md.push(`  ${PACE}-moves-a-minute estimate. If levels run much faster or slower,
 md.push("  tools/server/make-config.mts), rebuild and upload the win checker, and upload the config.");
 md.push("");
 // THE HELPER SHOP: the singles, the packs and the bundles (the creator, 2026-11-01), all in Coins
-// since 2026-11-10, from the config's helpers catalog (hand-written) and src/net/helper-ids.json, at
-// the standard's 500 Coins to the dollar. tools/server/helpers-check.mts holds the two together.
+// since 2026-11-10, at the standard's 500 Coins to the dollar. Every figure (the cap, what each buy
+// and bundle grants, the prices) is the config's helpers catalog's (hand-written), read here from the
+// YAML; src/net/helper-ids.json gives only the ids (tools/server/helpers-check.mts holds the two together).
 {
   const HIDS = JSON.parse(readFileSync(join(root, "src/net/helper-ids.json"), "utf8"));
   const cfg = readFileSync(join(root, "gem-backend-game-config.yaml"), "utf8").replace(/\r/g, "");
@@ -982,10 +983,22 @@ md.push("");
   const NAME = { hint: ["Hint", "Hints"], undo: ["Undo", "Undos"], shuffle: ["Shuffle", "Shuffles"] };
   const dollars = (d) => `$${d.toFixed(2)}`;
   const one = Object.fromEntries(Object.entries(HIDS.kinds).map(([k, v]) => [k, priced(v.buy, "ARCADE_TICKETS")]));
-  md.push(`## The helper shop (cap ${HIDS.cap} of each)`);
+  /** What a recipe grants of each helper (its currency_grants), by kind; only the kinds it grants. */
+  const grantsOf = (id) =>
+    Object.fromEntries(
+      Object.entries(HIDS.kinds)
+        .map(([k, v]) => [k, Number(new RegExp(`currency_grant, currency_slug: ${v.slug}, amount: (\\d+)`).exec(entry(id))?.[1] ?? 0)])
+        .filter(([, n]) => n > 0),
+    );
+  const caps = [...new Set(Object.values(HIDS.kinds).map((v) => Number(/\n *max_balance: (\d+)\n/.exec(`\n${entry(v.currency)}\n`)?.[1])))];
+  md.push(`## The helper shop (cap ${caps.join(" / ")} of each)`);
   md.push("");
-  md.push("Prices are the config's alone (`gem-backend-game-config.yaml`, the helpers catalog), at the standard's");
-  md.push("500 Coins to the dollar. Every buy is refused at the cap before anything is charged.");
+  md.push("Every figure here is the config's alone (`gem-backend-game-config.yaml`, the helpers catalog): the cap");
+  md.push("(each helper currency's max_balance), what each buy and bundle gives, the Starter Kit's once-only (its");
+  md.push("max_uses 1) and the prices, at the standard's 500 Coins to the dollar. **The game holds none of them**");
+  md.push("(the creator, 2026-11-12: \"never copy amounts from the config into code\"): it reads them in its one");
+  md.push("config load (`src/net/helpers.ts`), and until that lands it offers no pack and no bundle, as with no");
+  md.push("price. `src/net/helper-ids.json` holds only the ids. Every buy is refused at the cap before anything is charged.");
   md.push("");
   md.push("| product | Coins | worth |");
   md.push("|---|---|---|");
@@ -993,7 +1006,8 @@ md.push("");
     const c1 = priced(v.buy, "ARCADE_TICKETS");
     const c3 = priced(v.buy3, "ARCADE_TICKETS");
     md.push(`| 1 ${NAME[k][0]} | ${c1} | ${dollars(c1 / 500)} |`);
-    md.push(`| 3 ${NAME[k][1]} | ${c3} | ${dollars(c3 / 500)} (${dollars(c3 / 1500)} each) |`);
+    const n3 = grantsOf(v.buy3)[k];
+    md.push(`| ${n3} ${NAME[k][1]} | ${c3} | ${dollars(c3 / 500)} (${dollars(c3 / 500 / n3)} each) |`);
   }
   md.push("");
   md.push("**The bundles** (the creator, 2026-11-01): all three helpers at once, bought the same way as a");
@@ -1014,9 +1028,10 @@ md.push("");
   };
   for (const b of HIDS.bundles) {
     const price = priced(b.id, "ARCADE_TICKETS");
-    const coins = Object.entries(b.grants).reduce((s, [k, n]) => s + n * one[k], 0);
-    const count = Object.values(b.grants).reduce((s, n) => s + n, 0);
-    const gives = Object.entries(b.grants).map(([k, n]) => `${n} ${NAME[k][n === 1 ? 0 : 1]}`).join(", ");
+    const grants = grantsOf(b.id);
+    const coins = Object.entries(grants).reduce((s, [k, n]) => s + n * one[k], 0);
+    const count = Object.values(grants).reduce((s, n) => s + n, 0);
+    const gives = Object.entries(grants).map(([k, n]) => `${n} ${NAME[k][n === 1 ? 0 : 1]}`).join(", ");
     const saves = Math.round((1 - price / coins) * 100);
     md.push(`| ${b.name === "starter" ? "Starter Kit" : `${b.name[0].toUpperCase()}${b.name.slice(1)}`} | ${gives} | ${price} (${dollars(price / 500)}) | ${coins} (${dollars(coins / 500)}) | ${saves}% | ${dollars(price / 500 / count)} | ${COUNTERPART[b.name] ?? ""} |`);
   }
