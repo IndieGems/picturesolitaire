@@ -541,6 +541,7 @@
   "win.gift.shuffle_other": "+{{count}} Shuffles",
   "win.gift.undo_one": "+{{count}} Undo",
   "win.gift.undo_other": "+{{count}} Undos",
+  "win.helpersOwed": "Your helpers will come with your next win.",
   "win.home": "Home",
   "win.kitLanded": "Your travel kit has landed",
   "win.moves": "Moves",

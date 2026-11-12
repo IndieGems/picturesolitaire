@@ -1777,6 +1777,8 @@ function drawCoins(win: Win, fresh = false): void {
   const paid = card ? paidOf(win) : null;
   if (!paid || !card) return;
   const { coins, pass, tools, gifts, landed } = paid;
+  // a helper reward the checker could not run just now: the next verified win runs it (Server's helpersOwed)
+  if (landed && (v as { helpersOwed?: true } | undefined)?.helpersOwed) oweNote(card);
   // the guide's finish card says its travel kit up front: each tool that landed is ringed and flies to its
   // button. Its Coins, as many as LANDED (none for a guest: the platform pays a guest no Coins), take the
   // same chip on the card's top edge as any card's, so nothing on it moves when they come
@@ -1942,6 +1944,20 @@ function fitOffer(): void {
   less.classList.add("still");
   gallery.replaceWith(less);
   if (less.offsetHeight >= was) less.replaceWith(gallery);
+}
+
+/**
+ * A win whose helpers could not be paid just now (the verdict's `helpersOwed`: the next verified win pays them,
+ * never twice): one quiet line over the card's main action, information (glass, a polite status), so a player who
+ * expected helpers knows they are coming (the lead, 2026-11-12). The card makes room as for the VIP offer.
+ */
+function oweNote(card: HTMLElement): void {
+  if (card.querySelector(".owed-note")) return;
+  const main = card.querySelector<HTMLElement>(":scope > .next");
+  if (!main) return;
+  const note = liveText(h("p", { class: "owed-note glass", role: "status" }), "win.helpersOwed");
+  main.before(note);
+  fitOffer();
 }
 
 /** Let a win's held claim go (it goes once: Server's send is idempotent); its reward moment is over. */
