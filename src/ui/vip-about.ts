@@ -4,8 +4,10 @@
 //
 //   the badge    a round gold button beside home's wordmark (home.ts), in the button material: the VIP tag's
 //                gold, a crown and "VIP". Every 6 s it gives a small shake and then a glint crosses it, while
-//                the player is not a member; never with less motion or the battery saver (style.css). A
-//                member's is still, with a green tick. It shows once the first board is done, as the Shop
+//                the player is not a member and VIP is on sale here (vip-view.ts vipOnSale); never with less
+//                motion or the battery saver (style.css). A member's is still, with a green tick; so is a
+//                non-member's where VIP is not sold (the lead, 2026-11-12: nothing to buy behind it), and it
+//                still opens the screen. It shows once the first board is done, as the Shop
 //                does, never in the guided start.
 //   the screen   "VIP" in the top row, Back home and the gear as every screen has. For a player who is not a
 //                member, a VIP BOARDING PASS (the creator's pick of four, 2026-11-02, after "act more excited
@@ -32,7 +34,7 @@ import { gem } from "../gem";
 import { held } from "../net/pace";
 import { ICONS } from "./icons";
 import { liveAttr, liveText, locale, onLocaleChange, t } from "./i18n";
-import { onVip, vipButton, vipNow, vipPassSlug } from "./vip-view";
+import { onVip, vipButton, vipNow, vipOnSale, vipPassSlug } from "./vip-view";
 import { vipCoinsPct, vipPerks, vipTag } from "./vip-tag";
 import { helperPic } from "./helper-shop";
 import { VIP_DAILY_SIZE, VIP_WELCOME_SIZE } from "../net/vip";
@@ -155,8 +157,11 @@ export function createVipBadge(open: () => void) {
   badge.addEventListener("click", () => open());
   const draw = (): void => {
     const member = vipNow();
+    // nothing to buy behind it here: still, no shake and no glint
+    const still = !member && !vipOnSale();
     badge.classList.toggle("member", member);
-    glint.hidden = member;
+    badge.classList.toggle("still", still);
+    glint.hidden = member || still;
     tick.hidden = !member;
     word.textContent = t("vip.tag");
     badge.setAttribute("aria-label", t(member ? "home.vipMember" : "home.vip"));

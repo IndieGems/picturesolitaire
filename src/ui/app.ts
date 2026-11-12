@@ -110,7 +110,7 @@ import { currentTrip, loadTripOf, tripById, tripDone, tripEndingAt, tripOf, trip
 import { challengeCard, comparePanel, createFriendCards, outcomeOf, type ChallengeView } from "./friend-cards";
 import { friendAction, launchLink, markAnswered, recentFriendActions, watchFriends, type Dare, type Launch } from "../net/friends";
 import { currentDaily, today as dailyToday } from "../net/daily";
-import { onVipGift, VIP_DAILY, VIP_WELCOME, type VipGift } from "../net/vip";
+import { onVipGift, type VipGift } from "../net/vip";
 import { createVipGifts } from "./vip-gifts";
 import { createVipAbout, createVipBadge, pretendVipDays } from "./vip-about";
 import { eventItemCoins } from "../net/rewards";
@@ -1634,12 +1634,23 @@ function giftReady(): boolean {
 const GIFT_CARRY_CAP_MS = 6000;
 
 /**
- * The dev menu's and the play-test tool's VIP gift, as the checker pays one: its helpers clamped by the cap
- * against the stock; `pay`: into __ps.stock's pretend counts (the play-test tool's; else nothing is paid).
+ * A DEV SAMPLE, never the config's figures (the creator, 2026-11-12: no amounts from the config in code): the
+ * helpers in the dev menu's and the play-test tool's stand-in VIP gifts, there to see the cards by. What a VIP
+ * really gets is the config's, and the checker's to pay.
+ */
+const DEV_SAMPLE_GIFT: Readonly<Record<"daily" | "welcome", Readonly<Record<HelperKind, number>>>> = {
+  daily: { undo: 0, hint: 1, shuffle: 1 },
+  welcome: { undo: 3, hint: 3, shuffle: 3 },
+};
+
+/**
+ * The dev menu's and the play-test tool's VIP gift, shaped as the checker pays one: the dev sample's helpers (or
+ * `over.gift`) clamped by the cap against the stock; `pay`: into __ps.stock's pretend counts (the play-test
+ * tool's; else nothing is paid).
  */
 function standInGift(kind: "daily" | "welcome", over: Partial<VipGift> = {}, pay = false): VipGift {
   const day = over.day ?? ((new Date().getDay() + 6) % 7) + 1;
-  const gift = { ...(kind === "welcome" ? VIP_WELCOME : (VIP_DAILY[day - 1] ?? VIP_DAILY[0]!)) };
+  const gift = { ...(over.gift ?? DEV_SAMPLE_GIFT[kind]) };
   const got = { undo: 0, hint: 0, shuffle: 0 };
   const after: Record<HelperKind, number> = { undo: 0, hint: 0, shuffle: 0 };
   for (const k of KINDS) {
@@ -1723,9 +1734,9 @@ function finishedOf(v: Verdict): Finished | null {
 /** An event level's card line: the checker's refusal said plainly, else where the player is in the event. */
 function eventLine(w: Extract<Win, { kind: "event" }>): string {
   const v = w.verdict;
-  // "out_of_order": an event is played in order (the creator, 2026-11-10; checker 0.1.55 on); "vip_only" only from the
-  // checkers before 0.1.54, still on test and release until they move (Server, 2026-11-10)
-  const said: Record<string, string> = { vip_only: "case.refused.vipOnly", not_released: "case.refused.notReleased", out_of_order: "case.refused.order" };
+  // "out_of_order": an event is played in order (the creator, 2026-11-10; checker 0.1.55 on). VIP gates nothing, so
+  // no refusal names it (the last checker that could went with 0.1.54); anything else is said plainly
+  const said: Record<string, string> = { not_released: "case.refused.notReleased", out_of_order: "case.refused.order" };
   if (v?.status === "refused") return t(said[v.reason] ?? "case.refused.other");
   const s = suitcases.get(w.e.event);
   return s ? progressLine(s) : "";
@@ -3276,7 +3287,7 @@ export async function startApp(): Promise<void> {
       tryTable: (a: TryTable | null) => tryTable(a),
       /** As if a win's verdict said these achievements unlocked (slugs, achievements.ts): the card, once the screen can take it; nothing unlocks. */
       unlocked: (slugs: string[]) => unlockUi.add(slugs.map((slug) => ({ slug }))),
-      /** Show Get VIP on home's VIP screen and in Cosmetics, so its words can be seen; its press only logs. As ?vipsale. */
+      /** Show Get VIP on home's VIP screen (and home's badge shakes), so its words can be seen; its press only logs. As ?vipsale. */
       vipSale: (on: boolean) => forceVipSale(on),
       /** The daily archive's calendar (as a VIP's badge opens it). */
       archive: () => archiveUi.open(),
@@ -3303,9 +3314,10 @@ export async function startApp(): Promise<void> {
       /** The first-5x5 banner over the board in hand, as on a player's first 5x5 board (nothing is saved). */
       bigger: () => showBanners([{ cls: "big", text: t("board.bigger") }]),
       /**
-       * A VIP's gift as the checker would pay it ("daily": `day` 1-7, Monday first, else today's; "welcome"):
-       * clamped by the cap against the stock, paid into __ps.stock's pretend counts (turned on), and
-       * shown as Server's onVipGift would hand it. `over` replaces any of its fields (a `got` of your own).
+       * A VIP's gift shaped as the checker would pay it ("daily": `day` 1-7, Monday first, else today's; "welcome"),
+       * of the dev sample's helpers (DEV_SAMPLE_GIFT, never the config's) or `over.gift`: clamped by the cap
+       * against the stock, paid into __ps.stock's pretend counts (turned on), and shown as Server's onVipGift
+       * would hand it. `over` replaces any of its fields (a `got` of your own).
        */
       vipGift: (kind: "daily" | "welcome", over?: Partial<VipGift>) => vipGifts.add(standInGift(kind, over, true)),
       /** A pretend board:stuck, to see the notice (the board's own word clears it). */

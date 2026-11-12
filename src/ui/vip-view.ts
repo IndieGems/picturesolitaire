@@ -5,11 +5,11 @@
 // asked of gem.gameConfig.preview (win-upsell.ts), never worked out here (the standard's "VIP: gate on the
 // pass in config, never multiply in code").
 //
-// VIP LOCKS NOTHING (the creator, 2026-11-10: "no VIP gates"): the events, the past events and the daily
-// archive are everyone's. Cosmetics shows a VIP banner only while VIP lends the Cosmetics (VIP_WEARS_ALL,
-// below: off since 2026-11-02).
+// VIP LOCKS NOTHING AND LENDS NOTHING (the creator, 2026-11-10: "no VIP gates"; 2026-11-12: VIP lending the
+// Cosmetics went, an unlock on VIP state in code, which the standard's ECON-08 refuses): the events, the past
+// events, the daily archive and the Cosmetics are everyone's, as they are.
 //
-// GET VIP, ONE BUTTON for home's VIP screen and the Cosmetics banner (vipButton; the SDK's
+// GET VIP, ONE BUTTON for home's VIP screen (vipButton; the SDK's
 // docs/arcade-and-store.md §8, §10 and "A pass, by its slug: showPass"):
 //   - it shows only where the Arcade can draw its own sheet (gem.store.showOfferAvailable) and its offers
 //     hold the pass that raises Coins (offers(): kind "pass" with a Coins earn multiplier). The pass's slug
@@ -25,9 +25,9 @@
 //     itself; ok, pending, or unavailable/error (the outcome is unknown: they may have paid), asks the server
 //     again (recheckVip). NOTHING HERE MAKES A VIP: only the server's word does (isVip, onVipChange);
 //   - focus goes back to the button that opened the sheet when it closes.
-// A VIP never sees it: the VIP screen shows a member their perks instead, and the Cosmetics banner (while it
-// shows) says "yours". Outside a release build, ?vipsale shows Get VIP so its words can be seen where no
-// Arcade answers; its press only logs.
+// A VIP never sees it: the VIP screen shows a member their perks instead. Outside a release build, ?vipsale
+// shows Get VIP so its words can be seen where no Arcade answers; its press only logs. vipOnSale() says
+// whether it would show (home's badge is still while it would not: nothing to buy behind it).
 
 import type { ArcadeOffer, ShowPassOutcome } from "@indiegems/gem-web-sdk/sdk";
 import { gem, onArcadePause } from "../gem";
@@ -57,22 +57,6 @@ const saleListeners = new Set<() => void>();
 /** This player is a VIP, by the server's last word (false until it lands). */
 export const vipNow = (): boolean => isVip();
 
-/**
- * THE ONE SWITCH for VIP lending the Cosmetics (docs/vip.md perk 5): with it on, a VIP wears any
- * table and plays any soundtrack the shop sells without owning it (tables.ts, tracks.ts), Cosmetics
- * marks what is owned and what is lent ("Owned", "With VIP"), offers "Keep it" on a lent one and shows
- * its VIP banner, and the VIP screen lists it among the perks (vip-tag.ts vipPerks). The creator turned it OFF on
- * 2026-11-02 ("remove the fact that VIP member can use all cosmetics at anytime ... keep it in case we
- * go back to it"): a VIP is then treated exactly as anyone in Cosmetics, and a borrowed choice falls
- * back to the latest one they own (else the default) at the next boot or VIP read. True brings back
- * docs/vip.md perk 5 as it was; its words (cosmetics.vipBanner, cosmetics.vipYours, cosmetics.withVip,
- * vip.perk.cosmetics) stay in every locale, unused while it is off.
- */
-export const VIP_WEARS_ALL: boolean = false;
-
-/** Does VIP lend this player the shop's tables and tracks now? Only with the switch on, and only for a VIP. */
-export const vipLends = (): boolean => VIP_WEARS_ALL && vipNow();
-
 /** The VIP pass's slug, from the Arcade's offers (null until they say, or where it is not sold): for show, never a reward. */
 export const vipPassSlug = (): string | null => pass?.slug ?? null;
 
@@ -91,8 +75,11 @@ export function onVip(fn: () => void): () => void {
 
 const saleNow = (): Sale => (vipNow() ? "no" : forced ? "offer" : sale);
 
+/** Could this player get VIP from here now (Get VIP would show)? False for a VIP, and wherever the Arcade does not sell it. Hear changes with onVip. */
+export const vipOnSale = (): boolean => saleNow() === "offer";
+
 /**
- * The one Get VIP button (home's VIP screen, the Cosmetics banner), or null where VIP cannot be had
+ * The one Get VIP button (home's VIP screen), or null where VIP cannot be had
  * from here. `cls` places it. Draw it again on onVip.
  */
 export function vipButton(cls: string): HTMLButtonElement | null {

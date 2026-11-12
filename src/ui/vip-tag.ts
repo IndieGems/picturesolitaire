@@ -11,7 +11,7 @@
 
 import { ICONS } from "./icons";
 import { locale, t } from "./i18n";
-import { VIP_WEARS_ALL, vipCoinsExtra } from "./vip-view";
+import { vipCoinsExtra } from "./vip-view";
 import { coinIcon } from "./coin";
 import { helperPic } from "./helper-shop";
 import { VIP_DAILY_SIZE, VIP_WELCOME_SIZE } from "../net/vip";
@@ -53,8 +53,7 @@ export function vipCoinsPct(): string | null {
 /**
  * What VIP gives in this game, as home's VIP screen lists it for a member (vip-about.ts; the boarding pass
  * says the same in its own words, vipPassLines), the best first (the creator, 2026-11-10): 50% more Coins on
- * every reward, double helpers on every helper reward, the day's gift and the welcome gift; and the Cosmetics
- * only while VIP lends them (vip-view.ts VIP_WEARS_ALL: off since 2026-11-02, so four rows). Ours to say; the
+ * every reward, double helpers on every helper reward, the day's gift and the welcome gift. Ours to say; the
  * Arcade's own perks are its sheet's. Information (glass): the Coins' figure is the Arcade's offer's, the
  * gifts' sizes the checker's (src/net/vip.ts, from helper-ids.json).
  */
@@ -62,17 +61,11 @@ export function vipPerks(): HTMLElement {
   const box = el("div", "vip-perks glass");
   box.append(el("b", "vip-perks-head", t("vip.perks")));
   const list = el("ul");
-  const art = (src: string) => {
-    const img = el("img");
-    Object.assign(img, { src: `${import.meta.env.BASE_URL}art/${src}`, alt: "", draggable: false, decoding: "async" });
-    return img;
-  };
   const rows: Array<[Node, string]> = [
     [coinIcon(32, false), ((pct) => (pct ? t("vip.perk.coins", { pct }) : t("vip.perk.coinsMore")))(vipCoinsPct())],
     [helperPic("undo", 3), t("vip.perk.helpers")],
     [helperPic("hint"), t("vip.perk.daily", { count: VIP_DAILY_SIZE })],
     [helperPic("shuffle", 3), t("vip.perk.welcome", { count: VIP_WELCOME_SIZE })],
-    ...(VIP_WEARS_ALL ? ([[art("cosmetics-tile.webp"), t("vip.perk.cosmetics")]] as Array<[Node, string]>) : []),
   ];
   for (const [pic, words] of rows) {
     const li = el("li");

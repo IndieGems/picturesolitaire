@@ -1,9 +1,9 @@
 // THE PLAYER'S CHOICES THAT FOLLOW THEM: which table, which soundtrack (the Cosmetics screen,
 // cosmetics.ts; the creator, 2026-10-29). Kept with the player's own settings, gem.me.settings
 // (AGENTS.md's table: "a difficulty, a level counter" follow the player), under the keys "table"
-// and "track", and "tableOwned" and "trackOwned" (the latest of each the player owns, for a VIP's
-// borrowed choice to fall back to: docs/vip.md); only what the player chose is ever written, never a
-// default.
+// and "track", and "tableOwned" and "trackOwned" (the latest of each the player owns, for a choice
+// made while VIP lent the Cosmetics, 2026-10-30 to 11-02, to fall back to); only what the player
+// chose is ever written, never a default.
 //
 // ONE READ FOR BOTH: the boot asks for the player's settings once (gem.me.settings.list()), and
 // tables.ts and tracks.ts share it, so the track added no call to the boot. A read that gets no

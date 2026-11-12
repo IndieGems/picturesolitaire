@@ -27,14 +27,9 @@
 // THE TRY-OUT obeys the sound: while the game is muted, its volume is at nothing, or the
 // Arcade's Music switch is off, Listen says "The music is off" instead of playing silence.
 //
-// FOR A VIP (docs/vip.md perk 5), BEHIND ONE SWITCH, OFF (vip-view.ts VIP_WEARS_ALL: the creator turned
-// it off on 2026-11-02, the code kept to turn it back on). With it off a VIP sees this screen exactly as
-// anyone: every row owned or for sale, no marks, no "Keep it", and no VIP banner above the tabs. With it
-// on, every table and track sold can be worn without owning it (tables.ts, tracks.ts lend it): it offers
-// Use, or says "In use", and a mark tells owned from lent ("Owned", "With VIP"); buying for keeps stays
-// open on a lent one ("Keep it: 2,000 coins"); the banner shows (a non-VIP's Get VIP, a VIP's "yours").
-// Event tables stay prizes: never lent. A lent choice that may no longer be worn (VIP ended, or the
-// switch off) falls back to one the player owns.
+// A VIP SEES THIS SCREEN EXACTLY AS ANYONE (the creator, 2026-11-02, then 2026-11-12: VIP lending every
+// table and track sold was an unlock on VIP state in code, which the standard's ECON-08 refuses, so it is
+// gone; git has it, and it could only come back as config).
 //
 // Information is glass (the tiles, "In use", the lines); only the buttons are buttons. Every
 // button is a 44 px target or more at 360 x 640, focusable, and Escape ends a try-on.
@@ -50,10 +45,8 @@ import { liveAttr, liveText, locale, named, onLocaleChange, t } from "./i18n";
 import { ICONS } from "./icons";
 import { fitText } from "./fit";
 import { shop, type BuyAnswer, type CosmeticKind } from "./cosmetics-shop";
-import { BUILT_IN_TABLE, chooseTable, chosenTable, knownTable, onTableChange, pickerTables, shopTableArts, tableTitle, thumbOf, warmThumbs, wearTable, type TableArt } from "./tables";
+import { chooseTable, chosenTable, knownTable, onTableChange, pickerTables, shopTableArts, tableTitle, thumbOf, warmThumbs, wearTable, type TableArt } from "./tables";
 import { chooseTrack, chosenTrack, onTrackChange, ownedTrackIds, TRACK_LIST, trackTitle, type TrackInfo } from "./tracks";
-import { vipTag } from "./vip-tag";
-import { onVip, vipButton, vipLends, vipNow, VIP_WEARS_ALL } from "./vip-view";
 
 type Nav = {
   /** Back: to home. */
@@ -64,9 +57,8 @@ type Nav = {
 type Tab = "tables" | "music";
 /** A tile's state: chosen, owned (Use), for sale (its price), or an event's to win (information). */
 type State = "inUse" | "owned" | "sale" | "locked";
-/** `lent`: worn through VIP, not owned (it can still be bought to keep). */
-type TableRow = { art: TableArt; state: State; lockedEvent?: { id: string; theme: string }; lent?: boolean };
-type TrackRow = { info: TrackInfo; state: State; lent?: boolean };
+type TableRow = { art: TableArt; state: State; lockedEvent?: { id: string; theme: string } };
+type TrackRow = { info: TrackInfo; state: State };
 
 const COVER = (id: string) => `${import.meta.env.BASE_URL}art/tracks/${id}-cover.webp`;
 
@@ -120,12 +112,8 @@ export function createCosmetics(nav: Nav) {
   const panel = el("div", "cz-panel");
   panel.id = "cz-panel";
   panel.setAttribute("role", "tabpanel");
-  // VIP, above the tabs (the creator, 2026-10-30), only while VIP lends the Cosmetics (VIP_WEARS_ALL: off
-  // since 2026-11-02, so not on the screen at all): a non-VIP's banner, every table and soundtrack theirs
-  // with VIP, and Get VIP (a guest's Sign in) where the Arcade sells it here: vip-view.ts; a VIP's one quiet line
-  const vipBox = el("div", "cz-vip");
   const scroll = el("div", "scroll");
-  scroll.append(...(VIP_WEARS_ALL ? [vipBox] : []), tabs, panel);
+  scroll.append(tabs, panel);
 
   // the try-on's panel at the foot, over the table being tried
   const tryOn = el("div", "cz-tryon");
@@ -170,22 +158,17 @@ export function createCosmetics(nav: Nav) {
     const owned = new Set(picker.filter((p) => !p.lockedEvent).map((p) => p.art.id));
     const sold = new Set(forSale.map((a) => a.id));
     const mine = (a: TableArt): State => (a.id === chosenTable() ? "inUse" : "owned");
-    // while VIP lends (VIP_WEARS_ALL), a VIP wears any table sold: not theirs, it is lent (an event's prize never is)
-    const vip = vipLends();
     return [
       ...picker.filter((p) => !p.lockedEvent && !sold.has(p.art.id)).map((p) => ({ art: p.art, state: mine(p.art) })),
-      ...forSale.map((art): TableRow => (owned.has(art.id) ? { art, state: mine(art) } : vip ? { art, state: mine(art), lent: true } : { art, state: "sale" })),
+      ...forSale.map((art): TableRow => (owned.has(art.id) ? { art, state: mine(art) } : { art, state: "sale" })),
       ...(eventShown() ? picker.filter((p) => p.lockedEvent).map((p) => ({ art: p.art, state: "locked" as State, lockedEvent: p.lockedEvent! })) : []),
     ];
   }
 
   async function readTracks(): Promise<TrackRow[]> {
     const owned = await ownedTrackIds();
-    const vip = vipLends();
     const mine = (id: string): State => (id === chosenTrack() ? "inUse" : "owned");
-    return TRACK_LIST.filter((x) => x.kind !== "table" || owned.has(x.id)).map((info): TrackRow =>
-      owned.has(info.id) ? { info, state: mine(info.id) } : vip && info.kind === "shop" ? { info, state: mine(info.id), lent: true } : { info, state: "sale" },
-    );
+    return TRACK_LIST.filter((x) => x.kind !== "table" || owned.has(x.id)).map((info): TrackRow => (owned.has(info.id) ? { info, state: mine(info.id) } : { info, state: "sale" }));
   }
 
   /** Read what is owned and chosen, and draw the tab shown. */
@@ -214,16 +197,16 @@ export function createCosmetics(nav: Nav) {
       b.addEventListener("click", () => void use(kind, id));
       return b;
     }
-    return priceButton(kind, id, name, "cosmetics.price");
+    return priceButton(kind, id, name);
   }
 
-  /** A price, to buy (`key`: "cosmetics.price", or "cosmetics.keep" on a lent one: "Keep it: 2,000" and the coin). */
-  function priceButton(kind: CosmeticKind, id: string, name: string, key: string): HTMLButtonElement {
+  /** A price, to buy: "2,000" and the coin. */
+  function priceButton(kind: CosmeticKind, id: string, name: string): HTMLButtonElement {
     const price = shop.price(id);
-    const b = btn(key === "cosmetics.keep" ? "cz-buy cz-keep shop-buy" : "cz-buy shop-buy", `cosmetics.buy.${kind}`);
+    const b = btn("cz-buy shop-buy", `cosmetics.buy.${kind}`);
     const words = el("span", "buy-words");
     if (price === null) words.textContent = "…";
-    else words.append(...sayPrice(key, price));
+    else words.append(...sayPrice("cosmetics.price", price));
     b.append(words);
     b.disabled = price === null;
     b.classList.toggle("short", price !== null && shop.affordable(id) === false);
@@ -232,12 +215,12 @@ export function createCosmetics(nav: Nav) {
     return b;
   }
 
-  /** A tile's line: the last answer on it, else why its price is greyed or missing (a lent one shows its price too). */
-  function line(id: string, state: State, lent = false): HTMLElement {
+  /** A tile's line: the last answer on it, else why its price is greyed or missing. */
+  function line(id: string, state: State): HTMLElement {
     const p = el("p", "cz-say");
     p.setAttribute("role", "status");
     const last = said.get(id);
-    const priced = state === "sale" || lent;
+    const priced = state === "sale";
     if (last) {
       p.textContent = last.text;
       p.classList.toggle("good", last.good);
@@ -246,17 +229,11 @@ export function createCosmetics(nav: Nav) {
     return p;
   }
 
-  /** For a VIP while VIP lends: owned, or lent through VIP (information). Nothing on everyone's own, for anyone not VIP, or with VIP_WEARS_ALL off. */
-  function mark(lent: boolean, everyones: boolean): HTMLElement | null {
-    if (!vipLends() || (!lent && everyones)) return null;
-    return el("span", `cz-mark glass${lent ? " lent" : ""}`, t(lent ? "cosmetics.withVip" : "cosmetics.owned"));
-  }
-
   // ROWS (the creator, 2026-10-30: everything pushed to the left, two actions wrapped under a small
   // icon, the right half empty): every row of both tabs the same height in every state, a big picture
   // at the left, the name and its mark in the middle, and the actions in a column of one width at the
-  // right, vertically centred: one, or two stacked (Use over "Keep it", Listen over the price).
-  /** One row: its picture, the middle (name, mark, its line), the actions' column. */
+  // right, vertically centred: one, or two stacked (Listen over the price).
+  /** One row: its picture, the middle (name, its line), the actions' column. */
   function rowOf(cls: string, id: string, pic: HTMLElement, middle: (HTMLElement | null)[], acts: HTMLElement[]): HTMLElement {
     const row = el("section", `cz-row glass ${cls}`);
     row.dataset.id = id;
@@ -270,7 +247,7 @@ export function createCosmetics(nav: Nav) {
 
   function tableTile(r: TableRow): HTMLElement {
     const name = tableTitle(r.art);
-    const cls = `cz-table ${r.state}${r.lent ? " lent" : ""}`;
+    const cls = `cz-table ${r.state}`;
     // a picture that is pressed, as a postcard is: raised in its frame, no button face
     const look = el("button", "cz-look cz-pic");
     look.type = "button";
@@ -291,10 +268,7 @@ export function createCosmetics(nav: Nav) {
       return rowOf(cls, r.art.id, frame, [el("b", "cz-name", name), el("small", "cz-how", t("cosmetics.tableLocked", { event }))], []);
     }
     look.addEventListener("click", () => void startTryOn(r.art.id));
-    const acts = [action("table", r.art.id, r.state, name)];
-    // lent through VIP: still for sale, to keep
-    if (r.lent) acts.push(priceButton("table", r.art.id, name, "cosmetics.keep"));
-    return rowOf(cls, r.art.id, look, [el("b", "cz-name", name), mark(!!r.lent, r.art.id === BUILT_IN_TABLE), line(r.art.id, r.state, r.lent)], acts);
+    return rowOf(cls, r.art.id, look, [el("b", "cz-name", name), line(r.art.id, r.state)], [action("table", r.art.id, r.state, name)]);
   }
 
   function trackRow(r: TrackRow): HTMLElement {
@@ -313,13 +287,13 @@ export function createCosmetics(nav: Nav) {
       eq.append(el("i"), el("i"), el("i"));
       cover.append(eq);
     }
-    const middle: (HTMLElement | null)[] = [el("b", "cz-name", name), mark(!!r.lent, r.info.kind === "free")];
+    const middle: (HTMLElement | null)[] = [el("b", "cz-name", name)];
     if (r.info.kind === "free") middle.push(el("small", "cz-how", t("cosmetics.free")));
     else if (r.info.kind === "table" && r.info.table) {
       const art = knownTable(r.info.table);
       middle.push(el("small", "cz-how", t("cosmetics.withTable", { table: art ? tableTitle(art) : r.info.table })));
     }
-    middle.push(line(id, r.state, r.lent));
+    middle.push(line(id, r.state));
     const acts: HTMLElement[] = [];
     if (r.state === "sale") {
       const listen = btn("cz-listen", "cosmetics.listen");
@@ -337,35 +311,15 @@ export function createCosmetics(nav: Nav) {
       acts.push(listen);
     }
     acts.push(action("track", id, r.state, name));
-    if (r.lent) acts.push(priceButton("track", id, name, "cosmetics.keep"));
-    return rowOf(`cz-track ${r.state}${r.lent ? " lent" : ""}`, id, cover, middle, acts);
+    return rowOf(`cz-track ${r.state}`, id, cover, middle, acts);
   }
 
   /** "December", in the player's language (a locked event table's month). */
   const monthName = (month: string) =>
     new Intl.DateTimeFormat(document.documentElement.lang || "en", { month: "long", timeZone: "UTC" }).format(new Date(`${month}-01T00:00:00Z`));
 
-  /** The VIP banner (information, glass), and its one button when VIP can be had from here; none with VIP_WEARS_ALL off. */
-  function drawVip(): void {
-    if (!VIP_WEARS_ALL) return;
-    if (vipNow()) {
-      const tag = el("span", "vip-tag", t("vip.tag"));
-      tag.setAttribute("aria-hidden", "true");
-      vipBox.className = "cz-vip glass member";
-      vipBox.replaceChildren(tag, el("p", "", t("cosmetics.vipYours")));
-      return;
-    }
-    vipBox.className = "cz-vip glass";
-    const words = el("div", "cz-vip-words");
-    words.append(vipTag(), el("p", "", t("cosmetics.vipBanner")));
-    vipBox.replaceChildren(words);
-    const get = vipButton("cz-vip-get");
-    if (get) vipBox.append(get);
-  }
-
   function draw(): void {
     if (busy) return;
-    drawVip();
     for (const [b, which] of [
       [tabTables, "tables"],
       [tabMusic, "music"],
@@ -509,9 +463,7 @@ export function createCosmetics(nav: Nav) {
     const act = action("table", r.art.id, r.state, name);
     // the focus goes to the price or Use as it opens (dialogs.ts); "In use" is no button
     if (act instanceof HTMLButtonElement) act.classList.add("next");
-    card.append(act);
-    if (r.lent) card.append(priceButton("table", r.art.id, name, "cosmetics.keep"));
-    card.append(line(r.art.id, r.state, r.lent));
+    card.append(act, line(r.art.id, r.state));
     // drawn again while up (the table laid, a purchase): the focus stays where it was, or goes to the action
     const had = tryOn.contains(document.activeElement) ? ((document.activeElement as HTMLElement).dataset.press ?? "") : null;
     tryOn.replaceChildren(card);
@@ -538,8 +490,6 @@ export function createCosmetics(nav: Nav) {
   });
   onTableChange(redraw);
   onTrackChange(redraw);
-  // VIP came or went: what is lent, the marks and the banner (while VIP lends; with it off, the redraw changes nothing)
-  onVip(redraw);
   onLocaleChange(redraw);
   // the sound switched off or on while listening: the line and the playing bars follow
   onMutedChange(() => {

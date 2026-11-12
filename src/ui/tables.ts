@@ -24,13 +24,10 @@
 // chose is stored.
 // A chosen table they no longer own falls back to the default.
 //
-// A VIP WORE ANY TABLE SOLD (docs/vip.md perk 5, the creator, 2026-10-30), and the lending is now behind
-// one switch, OFF (vip-view.ts VIP_WEARS_ALL, the creator, 2026-11-02): with it off a VIP wears only what
-// they own, as anyone. With it on, the shop's tables, owned or not, never an event's prize. Either way
-// "table" keeps the latest choice, owned or borrowed, and "tableOwned" the latest one they own: a
-// borrowed one that may not be worn (the switch off, or VIP ended) falls back to their latest owned
-// choice (the default if none) at boot or on the next VIP read, the setting kept for the switch or VIP
-// coming back. Ownership
+// A VIP WEARS ONLY WHAT THEY OWN, as anyone (VIP lending the shop's tables went on 2026-11-12: an unlock
+// on VIP state in code, which the standard's ECON-08 refuses). "table" keeps the latest choice and
+// "tableOwned" the latest one they own, which a choice from that lending (2026-10-30 to 11-02) that is not
+// theirs falls back to at boot (the default if none). Ownership
 // stays the platform inventory's: nothing here says what is owned. The first
 // screen never waits for any of it: it draws on the default and changes over
 // once the choice and the ownership have been read.
@@ -52,7 +49,6 @@ import { TABLES } from "../net/tables";
 import { keepChoice, readChoices } from "./choices";
 import EVENT_FILE from "../content/levels/events.json";
 import { eventShown } from "./event-switch";
-import { onVip, vipLends } from "./vip-view";
 import { t } from "./i18n";
 import { ownFile, ownJson } from "./own-file";
 
@@ -166,12 +162,10 @@ export function warmThumbs(): void {
 
 let chosen = BUILT_IN_TABLE;
 let fallback = BUILT_IN_TABLE;
-/** The player's latest choice, as read or made (null: none, the default); it may be borrowed, by a VIP while VIP lends. */
+/** The player's latest choice, as read or made (null: none, the default). */
 let wanted: string | null = null;
 /** The latest table they chose that they own (null: none read or made). */
 let ownedPick: string | null = null;
-/** The boot's read of the choice is done: from then on, a change of VIP puts on what it allows. */
-let booted = false;
 /** The player chose a table this session: what the boot read finds later never overrides it. */
 let touched = false;
 const listeners = new Set<() => void>();
@@ -214,40 +208,14 @@ export async function shopTableArts(): Promise<TableArt[]> {
     .filter((a): a is TableArt => !!a && !a.souvenir);
 }
 
-/** A table this player is lent while VIP (sold, and not theirs; never while VIP_WEARS_ALL is off): the Cosmetics screen marks it. */
-export async function lentTable(id: string): Promise<boolean> {
-  if (!vipLends()) return false;
-  const [mine, sold] = await Promise.all([ownedTableArts(), shopTableArts()]);
-  return !mine.some((a) => a.id === id) && sold.some((a) => a.id === id);
-}
+/** What this player may wear: a table they own (the default is everyone's). */
+const wearable = async (id: string): Promise<TableArt | undefined> => (await ownedTableArts()).find((a) => a.id === id);
 
-/** What this player may wear now: one they own, or, while VIP lends (VIP_WEARS_ALL), one sold (never an event's prize). */
-async function wearable(id: string): Promise<{ art: TableArt; own: boolean } | undefined> {
-  const own = (await ownedTableArts()).find((a) => a.id === id);
-  if (own) return { art: own, own: true };
-  if (!vipLends()) return undefined;
-  const lent = (await shopTableArts()).find((a) => a.id === id);
-  return lent ? { art: lent, own: false } : undefined;
-}
-
-/** The table to show for the player's choices: the latest if they may wear it, else the latest they own, else the default. */
+/** The table to show for the player's choices: the latest if they own it, else the latest they own, else the default. */
 async function settleChoice(): Promise<TableArt | undefined> {
   const m = await loadManifest();
-  const first = wanted ? await wearable(wanted) : undefined;
-  if (first) return first.art;
-  const own = ownedPick ? await wearable(ownedPick) : undefined;
-  if (own?.own) return own.art;
-  return m.tables.find((x) => x.id === m.default);
+  return (wanted ? await wearable(wanted) : undefined) ?? (ownedPick ? await wearable(ownedPick) : undefined) ?? m.tables.find((x) => x.id === m.default);
 }
-
-// VIP came or went (or was read again): what may be worn may change (a borrowed table on while VIP lends,
-// or back to one they own)
-onVip(() => {
-  if (!booted) return;
-  void settleChoice().then((a) => {
-    if (a && a.id !== chosen) void apply(a);
-  });
-});
 
 /** A picker's row: a table to choose, or one shown locked with the month whose suitcase wins it ("2026-12"). */
 export type PickerTable = { art: TableArt; lockedEvent: { id: string; theme: string } | null };
@@ -474,7 +442,6 @@ export async function startTables(): Promise<void> {
     const a = !wanted || wanted === m.default ? m.tables.find((x) => x.id === m.default) : await settleChoice();
     if (a && !touched) await apply(a);
   } finally {
-    booted = true;
     choiceSettled();
   }
 }
@@ -487,19 +454,18 @@ let choiceSettled!: () => void;
  */
 export const tableChoiceRead: Promise<void> = new Promise((r) => (choiceSettled = r));
 
-/** The player chose a table (one they own, or a sold one VIP lends): show it, and keep their choice. */
+/** The player chose a table they own: show it, and keep their choice. */
 export async function chooseTable(id: string): Promise<void> {
   touched = true;
-  const w = await wearable(id);
-  if (!w || w.art.id === chosen) return;
-  wanted = w.art.id;
-  if (w.own) ownedPick = w.art.id;
+  const art = await wearable(id);
+  if (!art || art.id === chosen) return;
+  wanted = ownedPick = art.id;
   // chosen on a board that wears its own (the settings over a Souvenir): theirs from now on, there too
   worn = null;
-  await apply(w.art);
+  await apply(art);
   if (pretending()) return;
-  keepChoice(SETTING, w.art.id);
-  if (w.own) keepChoice(SETTING_OWNED, w.art.id);
+  keepChoice(SETTING, art.id);
+  keepChoice(SETTING_OWNED, art.id);
 }
 
 /** The default table's id (the manifest's: the sunny day). */

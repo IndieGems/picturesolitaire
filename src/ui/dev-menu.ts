@@ -380,7 +380,7 @@ export function mountDevMenu(host: DevHost): DevMenu {
       r.append(btn("amber", "Show the VIP gift", () => gift("daily")), btn("", "Show the welcome gift", () => gift("welcome")));
       return r;
     })(),
-    el("p", "dev-note", "The cards over home, as a VIP sees them when the checker pays: nothing is paid, saved or sent."),
+    el("p", "dev-note", "The cards over home, as a VIP sees them when the checker pays, with sample helpers (not the real gift's): nothing is paid, saved or sent."),
     setting("Endless helpers", endlessSwitch),
     el("p", "dev-note", "While it's on, every level you open is practice."),
     speedSet,
