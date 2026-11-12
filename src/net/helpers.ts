@@ -85,24 +85,15 @@ export type BundleAnswer = "ok" | "declined" | "short" | "full" | "gone" | "unkn
 const KINDS: readonly HelperKind[] = ["hint", "undo", "shuffle"];
 /** The most of one helper a player can hold (each currency's max_balance). */
 export const HELPER_CAP: number = IDS.cap;
-/** Board 1's kit, once ever: what its finish card promises (the checker pays the same file's numbers). */
-export const KIT: Readonly<Record<HelperKind, number>> = IDS.kit.gift;
-/** A hard or super campaign board's first win. */
-export const HARD_GIFT: Readonly<Record<HelperKind, number>> = IDS.hard;
-/** A trip's last board (the passport stamp), instead of the hard gift. */
-export const STAMP_GIFT: Readonly<Record<HelperKind, number>> = IDS.stamp;
+// What a reward gives (the kit, a hard board's first win, a trip's last board, the daily's) is the
+// config's alone (docs/vip.md; the creator, 2026-11-12): src/net/rewards.ts previews it (previewKit,
+// previewWin), and a verdict says what landed. No figure of it is in the game's code.
 /**
  * A helper by its game currency's id (a preview's or an upsell's `{ kind: "currency", currencyId }`),
  * or null for any other currency: so a screen can draw "+1 Hint" with its icon and name no ids.
  */
 export function helperOfCurrency(currencyId: string): HelperKind | null {
   return KINDS.find((k) => IDS.kinds[k].currency === currencyId) ?? null;
-}
-/** The helper the daily puzzle's first win pays on a date ("YYYY-MM-DD", the player's own: src/net/daily.ts), by weekday; the checker pays the same. */
-export function dailyHelper(date: string): HelperKind {
-  const [y, m, d] = date.split("-").map(Number);
-  const weekday = new Date(Date.UTC(y!, (m ?? 1) - 1, d ?? 1)).getUTCDay();
-  return IDS.daily[Number.isFinite(weekday) ? weekday : 0] as HelperKind;
 }
 
 const COINS = "ARCADE_TICKETS";

@@ -1,0 +1,71 @@
+{
+  "note": "THE HELPER REWARDS' AMOUNTS, read by tools/server/make-config.mts ALONE, which writes them into the game config as the rewards catalog's recipes (docs/vip.md). Never read by the game or the win checker: they learn what a reward gives from the config (the preview before, the receipt after; the creator, 2026-11-12: \"never copy amounts from the config into code\"). `kit`: once ever, at the end of board 1; `hard`: a hard or super campaign board's first win; `stamp`: a trip's last board's first win (instead of hard); `daily`: the daily puzzle's first win of the player's day, one helper by weekday, MONDAY FIRST (ISO 1..7); `vip.daily`: VIP's gift of each weekday, Monday first; `vip.welcome`: VIP's welcome, once per player, ever. Every reward but VIP's gifts has a base for everyone and a VIP bonus of the same again (`requires: holds_pass vip`); VIP's gifts are a bonus alone.",
+  "kit": {
+    "hint": 3,
+    "undo": 3,
+    "shuffle": 3
+  },
+  "hard": {
+    "hint": 1,
+    "undo": 1,
+    "shuffle": 0
+  },
+  "stamp": {
+    "hint": 1,
+    "undo": 1,
+    "shuffle": 1
+  },
+  "daily": [
+    "undo",
+    "hint",
+    "undo",
+    "hint",
+    "undo",
+    "shuffle",
+    "hint"
+  ],
+  "vip": {
+    "daily": [
+      {
+        "hint": 1,
+        "undo": 1,
+        "shuffle": 0
+      },
+      {
+        "hint": 1,
+        "undo": 0,
+        "shuffle": 1
+      },
+      {
+        "hint": 0,
+        "undo": 1,
+        "shuffle": 1
+      },
+      {
+        "hint": 1,
+        "undo": 1,
+        "shuffle": 0
+      },
+      {
+        "hint": 1,
+        "undo": 0,
+        "shuffle": 1
+      },
+      {
+        "hint": 0,
+        "undo": 1,
+        "shuffle": 1
+      },
+      {
+        "hint": 1,
+        "undo": 0,
+        "shuffle": 1
+      }
+    ],
+    "welcome": {
+      "hint": 3,
+      "undo": 2,
+      "shuffle": 3
+    }
+  }
+}

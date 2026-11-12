@@ -12,7 +12,7 @@
 import { spawnSync } from "node:child_process";
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { coinsHash, levelsHash, root } from "./levels-hash.mts";
+import { levelsHash, root } from "./levels-hash.mts";
 
 const version = process.argv[2];
 if (!version || !/^[A-Za-z0-9._-]{1,64}$/.test(version)) {
@@ -39,11 +39,9 @@ if (up.status !== 0) {
 const asked = sh("gemctl", ["function", "invoke", "--channel", "dev", "--data", '{"v":1,"what":"levels"}']);
 const line = asked.stdout.split("\n").find((l) => l.startsWith("output:"));
 let levels = null;
-let coins = null;
 try {
   const said = JSON.parse(JSON.parse(line.slice("output:".length).trim()));
   levels = said.levels;
-  coins = said.coins ?? null;
 } catch {
   console.error(`upload: the uploaded function did not say which boards it knows:\n${asked.stdout}${asked.stderr}`);
   process.exit(1);
@@ -53,11 +51,5 @@ if (levels !== now) {
   console.error(`upload: the uploaded function knows boards ${levels}, but src/content/levels is ${now}: rebuild (node tools/server/build.mts) and upload again`);
   process.exit(1);
 }
-// and the Coins it reckons the VIP extra from (functions/checker/data/coins.json, make-config's)
-const paysNow = coinsHash();
-if (coins !== paysNow) {
-  console.error(`upload: the uploaded function reckons Coins from ${coins ?? "nothing"}, but functions/checker/data/coins.json is ${paysNow}: rebuild (node tools/server/build.mts) and upload again`);
-  process.exit(1);
-}
-writeFileSync(join(root, "functions/checker/data/levels-stamp.json"), JSON.stringify({ levels, coins, function: version, channel: "dev", commit: commit + dirty }, null, 2) + "\n");
-console.log(`upload: function ${version} on dev knows these boards (${levels}) and these Coins (${coins}); stamp written. Commit functions/checker/data.`);
+writeFileSync(join(root, "functions/checker/data/levels-stamp.json"), JSON.stringify({ levels, function: version, channel: "dev", commit: commit + dirty }, null, 2) + "\n");
+console.log(`upload: function ${version} on dev knows these boards (${levels}); stamp written. Commit functions/checker/data.`);

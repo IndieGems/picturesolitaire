@@ -217,7 +217,7 @@ pub fn prize_order(e: Event) -> Order {
     if let Some(t) = e["table"]["uuid"].as_str() {
         ops.push(json!({ "type": "item_grant", "item_definition_id": t, "quantity": 1, "overflow": "clamp", "reason": why }));
     }
-    Order { nonce: format!("prize:{}", name(e)), operations: ops, gifts: vec!["suitcase"] }
+    Order { nonce: format!("prize:{}", name(e)), operations: ops, gifts: vec!["suitcase"], runs: Vec::new() }
 }
 
 /// The event as the game reads it (src/net/suitcase.ts adds the titles): its levels in play order,

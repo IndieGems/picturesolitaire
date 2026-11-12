@@ -234,3 +234,33 @@ fn a_board_that_left_the_campaign_counts_a_win_and_moves_nothing() {
     assert_eq!(d["campaign"]["won"], 1);
     assert_eq!(d["restored"], json!(["x"]));
 }
+
+#[test]
+fn a_reward_that_could_not_run_is_owed_by_its_key_until_it_runs() {
+    let mut d = progress::empty();
+    assert!(progress::owed_runs(&d).is_empty());
+    progress::owe_run(&mut d, "first:campaign:c07:helpers", "r-hard", "hard");
+    progress::owe_run(&mut d, "kit:helpers", "r-kit", "kit");
+    progress::owe_run(&mut d, "kit:helpers", "r-kit", "kit");
+    assert_eq!(
+        progress::owed_runs(&d),
+        vec![("first:campaign:c07:helpers".to_string(), "r-hard".to_string(), "hard".to_string()), ("kit:helpers".to_string(), "r-kit".to_string(), "kit".to_string())],
+        "once a key"
+    );
+    // the record's own rules keep it
+    let back = progress::normal(Some(d.clone()));
+    assert_eq!(progress::owed_runs(&back).len(), 2);
+    assert!(progress::settle_run(&mut d, "kit:helpers"));
+    assert!(!progress::settle_run(&mut d, "kit:helpers"));
+    assert!(progress::settle_run(&mut d, "first:campaign:c07:helpers"));
+    assert!(d.get("helpersOwed").is_none(), "nothing owed: no list left in the record");
+}
+
+#[test]
+fn the_vip_extras_older_checkers_held_are_dropped_on_read() {
+    let mut d = progress::empty();
+    d["vipOwed"] = json!({ "daily:2026-11-10": { "coins": 25, "helpers": { "hint": 1 }, "n": 1 } });
+    d["vipOwedSeq"] = json!(1);
+    let back = progress::normal(Some(d));
+    assert!(back.get("vipOwed").is_none() && back.get("vipOwedSeq").is_none());
+}

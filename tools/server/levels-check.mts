@@ -12,31 +12,14 @@
 
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { coinsHash, levelsHash, root } from "./levels-hash.mts";
+import { levelsHash, root } from "./levels-hash.mts";
 
 const STAMP = join(root, "functions/checker/data/levels-stamp.json");
 const now = levelsHash();
 const stamp = existsSync(STAMP) ? JSON.parse(readFileSync(STAMP, "utf8")) : null;
 
-// the Coins too: the checker reckons a VIP's extra from functions/checker/data/coins.json (make-config's)
-const pays = coinsHash();
-// a stamp from a checker before 0.1.55 records no Coins (it reckoned no VIP extra from them): it passes
-if (stamp?.levels === now && stamp.coins === undefined) console.warn("levels-check: the stamp records no Coins (a checker before 0.1.55): not compared");
-if (stamp?.levels === now && stamp.coins !== undefined && stamp.coins !== pays) {
-  console.error(
-    [
-      "",
-      "levels-check: STOP. What a win pays (functions/checker/data/coins.json, from make-config) changed since the win checker was last uploaded.",
-      `  Coins in this build: ${pays}; Coins the uploaded checker reckons from: ${stamp?.coins ?? "none recorded"} (function ${stamp.function} on ${stamp.channel}).`,
-      "  A VIP's extra would be reckoned from the old figures until the checker is updated (the server member's job):",
-      "    node tools/server/build.mts, then node tools/server/upload.mts <version>, then commit functions/checker/data/",
-      "",
-    ].join("\n"),
-  );
-  process.exit(1);
-}
 if (stamp?.levels === now) {
-  console.log(`levels-check: the win checker on ${stamp.channel} (function ${stamp.function}) knows these boards (${now}) and these Coins (${pays})`);
+  console.log(`levels-check: the win checker on ${stamp.channel} (function ${stamp.function}) knows these boards (${now})`);
 } else {
   console.error(
     [

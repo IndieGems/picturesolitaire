@@ -34,15 +34,5 @@ export function levelsDirty(): string {
   return spawnSync("git", ["status", "--porcelain", "--", "src/content/levels"], { cwd: root, encoding: "utf8" }).stdout.trim();
 }
 
-/**
- * THE COINS' FINGERPRINT: FNV-1a (32-bit) of functions/checker/data/coins.json (what each paying
- * progression pays, written by make-config), line endings as "\n", as the win checker's build.rs
- * computes it (canon.rs fnv32). The checker reckons the VIP extra from that file before the reward's
- * order, so levels-check stops the game build when it changed after the uploaded checker was built.
- */
-export function coinsHash(): string {
-  const text = readFileSync(join(root, "functions/checker/data/coins.json"), "utf8").replace(/\r/g, "");
-  let h = 0x811c9dc5;
-  for (const b of new TextEncoder().encode(text)) h = Math.imul(h ^ b, 0x01000193) >>> 0;
-  return h.toString(16).padStart(8, "0");
-}
+// (THE COINS' FINGERPRINT, of functions/checker/data/coins.json, went in 0.1.63 with the VIP extra it
+// served: the win checker holds no Coins figure of the config's.)

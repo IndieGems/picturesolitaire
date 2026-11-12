@@ -71,8 +71,8 @@ Read it so:
   and scales the ceilings with it. Every amount here is the unboosted one, and the game pays no Coins of its own
   for VIP (checker 0.1.60 on). The VIP column is these amounts and half again, rounded up (5 +3, 10 +5, 15 +8,
   25 +13, 30 +15, 50 +25, 100 +50): the platform's own rounding may differ by a Coin. That puts a VIP at about 750
-  an hour, the creator's "VIPs 750". Every helper reward is doubled for a VIP by the checker (2 times over; a stopgap until
-  config bonuses land, docs/vip.md). The platform's 4,000 a day per game still holds, scaled for a VIP.
+  an hour, the creator's "VIPs 750". Every helper reward gives a VIP as many again, as a bonus in the config's
+  rewards catalog that the platform judges (docs/vip.md). The platform's 4,000 a day per game still holds, scaled for a VIP.
 - **Still to measure: real minutes per level.** No play-time data yet; every hourly figure here is the
   12-moves-a-minute estimate. If levels run much faster or slower, change the rates (LANES in
   tools/server/make-config.mts), rebuild and upload the win checker, and upload the config.

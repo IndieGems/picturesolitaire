@@ -29,7 +29,7 @@
 //   suitcase.onChange(fn)    hear any change. Returns the unsubscribe.
 //
 // Read from the checker ({"v":1,"what":"suitcase"}, which also pays a full suitcase found unpaid)
-// when the game starts (the answer says VIP too, so src/net/vip.ts asks nothing of its own), when
+// when the game starts, when
 // the player's day turns (an event may have been released), and after an event level is refused; a
 // verdict that carries its event (claims.ts)
 // keeps it current with no read. A read that gets no answer is tried again with a
@@ -43,7 +43,6 @@ import { currentDaily, onDailyChange } from "./daily";
 import { noAnswer, refusalOf } from "./no-answer";
 import { backoff, heard as hearRefusal, whenDue } from "./pace";
 import { onOnline, suspect } from "../ui/online";
-import { heardVip } from "./vip";
 
 export type EventItem = {
   id: string;
@@ -175,7 +174,6 @@ async function read(): Promise<void> {
   try {
     await gem.awaitIdentity(10_000);
     const a = (await gem.functions.invoke({ v: 1, what: "suitcase" })).json() as Record<string, unknown>;
-    heardVip(a);
     if (a.status !== "suitcase" || typeof a.today !== "string") {
       // "retry": the platform was busy, or this channel's config does not know the events yet
       throw new Error(`the checker answered ${String(a.status)} ${String(a.reason ?? "")}`);
@@ -257,7 +255,7 @@ export const suitcase = {
   },
 };
 
-/** Read the events as the game starts (src/net/progress.ts calls it), which says VIP too, and keep them current. */
+/** Read the events as the game starts (src/net/progress.ts calls it), and keep them current. */
 export async function loadSuitcase(): Promise<void> {
   if (!framed || !on) return;
   await refresh(true);

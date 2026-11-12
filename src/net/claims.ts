@@ -66,10 +66,9 @@ import { backoff, heard, held, needsLoad, notNow, whenDue } from "./pace";
 import { answered, hold, progress, type HeldWin } from "./progress";
 import { accept as acceptSuitcase, suitcase, type EventPack } from "./suitcase";
 import { tableOf } from "./tables";
-import { heardVip } from "./vip";
 import type { PlatformGrantPreview } from "@indiegems/gem-web-sdk/sdk";
 import { currentDaily } from "./daily";
-import { previewWin, type WinPreview, type WinTargets } from "./rewards";
+import { helperRecipes, previewWin, type WinPreview, type WinTargets } from "./rewards";
 
 export type { WinPreview } from "./rewards";
 
@@ -113,24 +112,16 @@ interface Answered {
    */
   earned?: PlatformGrantPreview[];
   /**
-   * THE VIP EXTRA (the creator, 2026-11-10; docs/vip.md; a checker from before it sends none of these).
-   * `base`: the base Coins that landed (coins = base + vipExtra). `vipExtra`: the VIP extra's Coins that
-   * landed (+50% of each payout, 0 for a player not VIP), earlier wins' held extras included (vipLate).
-   * `vipHelpers`: the VIP extra's helpers that landed (the doubling), counted in `helpers` too.
-   * `vipLate`: of vipExtra and vipHelpers, what came from earlier wins whose VIP read had failed.
-   * `vipRead`: this answer's pass read, "yes", "no" or "unknown"; absent when it needed none (nothing
-   * paid, nothing held). `vipHeld`: an extra is held (VIP unknown, or its order failed): it lands with a
-   * later answer, as `vipLate`, if the player is VIP then, and never for a player who is not.
+   * Each helper reward's VIP bonus as the platform judged it when its recipe ran (checker 0.1.63 on;
+   * docs/vip.md): applied (its helpers are in `helpers`) or skipped (with the platform's reason).
+   * Absent or empty when the win ran no reward. Never names a pass.
    */
-  base?: number;
-  vipExtra?: number;
-  vipHelpers?: Record<HelperKind, number>;
-  vipLate?: { coins: number; helpers: Record<HelperKind, number> };
-  vipRead?: "yes" | "no" | "unknown";
-  vipHeld?: boolean;
+  bonuses?: { gift: Gift; outcome: "applied" | "skipped"; reason?: string }[];
+  /** A helper reward could not run just now: the next verified win runs it (by the same key, never twice). */
+  helpersOwed?: true;
   /** Items this win granted now, by slug: the onboarding keepsake table, on campaign board 1 (src/net/tables.ts). */
   items?: string[];
-  /** Helpers that LANDED now, after the cap's clamp (src/net/helpers.ts): 0s when none were given. */
+  /** Helpers that LANDED now, after the cap's clamp (src/net/helpers.ts), a VIP's bonus included: 0s when none were given. */
   helpers?: Record<HelperKind, number>;
   /** What they were given for: the kit (board 1's end, or the next win of a player past it), a hard board's first win, a trip's last board, the daily puzzle's first win of the day, a full Daily Suitcase (its helpers are in `helpers` too). */
   gifts?: Gift[];
@@ -234,8 +225,12 @@ function targetsOf(claim: WinClaim): WinTargets {
   const p = progress();
   if (!p.known) return {};
   switch (claim.lane) {
-    case "campaign":
-      return claim.n === undefined || claim.n >= p.campaign.next ? { board: claim.board } : {};
+    case "campaign": {
+      if (!(claim.n === undefined || claim.n >= p.campaign.next)) return {};
+      // its reward (a hard board's, a trip's last board's), and the kit at board 1's end
+      const recipes = helperRecipes({ lane: "campaign", board: claim.board, first: true, kit: claim.n === 1 });
+      return { board: claim.board, ...(recipes.length ? { recipes } : {}) };
+    }
     case "challenge":
       return p.challenge[claim.board] === undefined ? { board: claim.board } : {};
     case "souvenir":
@@ -247,7 +242,9 @@ function targetsOf(claim: WinClaim): WinTargets {
     }
     case "daily":
       if (!claim.date || p.daily[claim.date] !== undefined) return {};
-      return claim.date === currentDaily().date ? { today: true } : { pastDay: true };
+      if (claim.date !== currentDaily().date) return { pastDay: true };
+      // today's first win: the day's helper reward, by weekday
+      return { today: true, recipes: helperRecipes({ lane: "daily", board: claim.board, first: true, date: claim.date }) };
   }
 }
 
@@ -427,7 +424,6 @@ async function send(h: Held): Promise<void> {
     suspect();
     return later(h, "platform", err);
   }
-  heardVip(answer);
   const status = answer.status;
   // "order": an earlier campaign win is still on its way; it goes first, this one follows soon.
   // "platform": the checker's own calls were refused for now, which holds the queue as ours would.
@@ -465,7 +461,7 @@ async function send(h: Held): Promise<void> {
       moves: Number(answer.moves) || 0,
       coins: Number(answer.coins) || 0,
       ...(earned ? { earned } : {}),
-      ...vipOf(answer),
+      ...bonusesOf(answer),
       ...(items.length ? { items } : {}),
       ...(typeof answer.date === "string" ? { date: answer.date } : {}),
       ...(typeof answer.ms === "number" ? { ms: answer.ms } : {}),
@@ -510,18 +506,17 @@ function landedOf(x: unknown): Record<HelperKind, number> {
   return { hint: n(h.hint), undo: n(h.undo), shuffle: n(h.shuffle) };
 }
 
-/** The VIP extra's fields of a paying answer (Answered's), only those the checker sent. */
-function vipOf(a: Record<string, unknown>): Pick<Answered, "base" | "vipExtra" | "vipHelpers" | "vipLate" | "vipRead" | "vipHeld"> {
-  const n = (v: unknown): number => Math.max(0, Math.floor(Number(v) || 0));
-  const late = (a.vipLate && typeof a.vipLate === "object" ? a.vipLate : null) as { coins?: unknown; helpers?: unknown } | null;
-  return {
-    ...(a.base !== undefined ? { base: n(a.base) } : {}),
-    ...(a.vipExtra !== undefined ? { vipExtra: n(a.vipExtra) } : {}),
-    ...(a.vipHelpers !== undefined ? { vipHelpers: landedOf(a.vipHelpers) } : {}),
-    ...(late ? { vipLate: { coins: n(late.coins), helpers: landedOf(late.helpers) } } : {}),
-    ...(a.vipRead === "yes" || a.vipRead === "no" || a.vipRead === "unknown" ? { vipRead: a.vipRead } : {}),
-    ...(a.vipHeld === true ? { vipHeld: true } : {}),
-  };
+const GIFTS: readonly Gift[] = ["kit", "hard", "stamp", "daily", "suitcase"];
+
+/** The reward bonuses' judgements and the owed mark of a paying answer (Answered's), only those the checker sent. */
+function bonusesOf(a: Record<string, unknown>): Pick<Answered, "bonuses" | "helpersOwed"> {
+  const list = (Array.isArray(a.bonuses) ? a.bonuses : [])
+    .filter((b): b is { gift: Gift; outcome: "applied" | "skipped"; reason?: unknown } => {
+      const x = b as { gift?: unknown; outcome?: unknown } | null;
+      return !!x && GIFTS.includes(x.gift as Gift) && (x.outcome === "applied" || x.outcome === "skipped");
+    })
+    .map((b) => ({ gift: b.gift, outcome: b.outcome, ...(typeof b.reason === "string" ? { reason: b.reason } : {}) }));
+  return { ...(list.length ? { bonuses: list } : {}), ...(a.helpersOwed === true ? { helpersOwed: true as const } : {}) };
 }
 
 /** Send what is due, one claim at a time (a player's calls are budgeted per minute). */

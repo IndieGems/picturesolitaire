@@ -129,9 +129,9 @@ fn main() {
 
     // WHAT A WIN PAYS WITH (OUT_DIR/pay.json): each board's progression id (the config's, from
     // tools/server/make-config.mts's uuid5, so an order can name it), the campaign boards whose
-    // first win gives a gift ("hard": a hard or super mark; "stamp": a trip's last board, which
-    // wins over "hard"), the helper ids and gift sizes (src/net/helper-ids.json), and the VIP extra's
-    // rule (src/net/vip-extra.json, its one copy: pay.rs vip_extra_*).
+    // first win gives a reward ("hard": a hard or super mark; "stamp": a trip's last board, which
+    // wins over "hard"), and the helper ids and the reward recipes' ids (src/net/helper-ids.json).
+    // No amount: what a reward gives is the config's alone (docs/vip.md; the creator, 2026-11-12).
     let mut boards = serde_json::Map::new();
     let mut gifts = serde_json::Map::new();
     let read = |p: &Path| -> Value {
@@ -160,17 +160,7 @@ fn main() {
         }
     }
     let helpers = read(&Path::new(&here).join("../../src/net/helper-ids.json"));
-    let vip_extra = read(&Path::new(&here).join("../../src/net/vip-extra.json"));
-    // WHAT EACH PAYING PROGRESSION PAYS (data/coins.json, make-config's, the config's figures): the VIP
-    // extra is reckoned from it before the reward's order (the platform pays one order a call). Its
-    // fingerprint goes in the "levels" answer, and levels-check stops the game build when the file
-    // changed after the uploaded checker was built.
-    let coins_file = Path::new(&here).join("data/coins.json");
-    println!("cargo:rerun-if-changed={}", coins_file.display());
-    let coins_text = fs::read_to_string(&coins_file).unwrap_or_else(|e| panic!("{}: {e}", coins_file.display())).replace('\r', "");
-    println!("cargo:rustc-env=PICTURE_MEND_COINS={}", fnv32(&coins_text));
-    let coins: Value = serde_json::from_str(&coins_text).unwrap_or_else(|e| panic!("{}: {e}", coins_file.display()));
-    let pay = json!({ "boards": boards, "gifts": gifts, "helpers": helpers, "vipExtra": vip_extra, "coins": coins });
+    let pay = json!({ "boards": boards, "gifts": gifts, "helpers": helpers });
     fs::write(Path::new(&env::var("OUT_DIR").unwrap()).join("pay.json"), pay.to_string()).unwrap();
 
     // THE ACHIEVEMENTS' COUNTERS (OUT_DIR/counts.json, read by src/count.rs): each counter's slug,

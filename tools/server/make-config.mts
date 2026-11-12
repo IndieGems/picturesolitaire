@@ -4,8 +4,9 @@
 // lines in gem-backend-game-config.yaml (appending it the first time), and
 // writes docs/coins.md, the table of what each board pays and the hourly maths. It also writes
 // the table and soundtrack items (src/net/tables.json, src/net/tracks.json) and, in its own
-// marked block in the catalogs list, the Cosmetics screen's catalog of Coins offers, and the
-// achievements' counter progressions (src/net/achievements.json, which gains its ids here).
+// marked block in the catalogs list, the Cosmetics screen's catalog of Coins offers, in another the
+// helper rewards' catalog (from tools/server/helper-rewards.json, the amounts' one copy: docs/vip.md),
+// and the achievements' counter progressions (src/net/achievements.json, which gains its ids here).
 //
 //   node tools/server/make-config.mts
 //
@@ -433,11 +434,11 @@ for (const r of rows) {
   }
 }
 {
-  // the kit's mark (src/net/helper-ids.json): set by the checker in the same order as the kit
+  // the kit's mark (src/net/helper-ids.json): set by the kit's own recipe, with the kit
   const KIT = JSON.parse(readFileSync(join(root, "src/net/helper-ids.json"), "utf8")).kit;
-  y.push("  # THE HELPER KIT: 3 of each helper, once ever, at the end of board 1 (the guided start),");
-  y.push("  # or on the next win of a player already past it. The win checker pays it into the");
-  y.push("  # helper currencies and sets this to 1 in the same order, so it is paid once or not at all.");
+  y.push("  # THE HELPER KIT, once ever, at the end of board 1 (the guided start), or on the next win of a player");
+  y.push("  # already past it: the rewards catalog's helpers-kit, which the win checker runs and which sets this");
+  y.push("  # to 1 with the kit, so it is given once or not at all.");
   y.push(`  - id: ${KIT.progression}`);
   y.push(`    slug: ${KIT.slug}`);
   y.push(`    display_name: "Helper kit"`);
@@ -445,20 +446,20 @@ for (const r of rows) {
   y.push("      completion_threshold: 1");
 }
 {
-  // VIP's welcome gift (docs/vip.md, src/net/helper-ids.json `vip`): the checker raises this to the end
-  // day of the membership it welcomes, in the same order as the gift, so one membership is welcomed once
-  const W = JSON.parse(readFileSync(join(root, "src/net/helper-ids.json"), "utf8")).vip.welcomeEnd;
-  y.push("  # VIP'S WELCOME GIFT, once a membership (docs/vip.md): the end day (days from 1970-01-01) of the");
-  y.push("  # membership last welcomed, raised by the win checker in the order that pays the gift. A");
-  y.push("  # membership whose end is after it is a new one. Only the win checker writes it.");
+  // VIP's welcome gift (docs/vip.md, src/net/helper-ids.json `oldMarks`): raised by checkers before 0.1.63 with
+  // the gift; read since, so a player they welcomed is not welcomed again (the welcome item says it now)
+  const W = JSON.parse(readFileSync(join(root, "src/net/helper-ids.json"), "utf8")).oldMarks.welcomeEnd;
+  y.push("  # VIP'S WELCOME, as checkers before 0.1.63 recorded it (docs/vip.md): above 0, the player was welcomed");
+  y.push("  # then, and never is again. Written by nothing now (the rewards catalog's vip-welcome grants an");
+  y.push("  # account-bound item instead); read by the win checker.");
   y.push(`  - id: ${W.progression}`);
   y.push(`    slug: ${W.slug}`);
   y.push(`    display_name: "VIP welcome"`);
   y.push("    config: {}");
-  // and the day's gift: the day number last paid, raised in that gift's own order
-  const D = JSON.parse(readFileSync(join(root, "src/net/helper-ids.json"), "utf8")).vip.dayMark;
-  y.push("  # VIP'S DAILY GIFT, once a date (docs/vip.md): the day (days from 1970-01-01, the player's own date)");
-  y.push("  # last given its gift, raised by the win checker in the order that pays it. Only the checker writes it.");
+  // and the day's gift's old mark: read and written by nothing since 0.1.63, kept so its id is never reused
+  const D = JSON.parse(readFileSync(join(root, "src/net/helper-ids.json"), "utf8")).oldMarks.dayMark;
+  y.push("  # VIP'S DAILY GIFT's old mark (docs/vip.md): the day checkers before 0.1.63 last gave the gift. Read and");
+  y.push("  # written by nothing now (the gift's recipe is once a date by its key); kept so its id is never reused.");
   y.push(`  - id: ${D.progression}`);
   y.push(`    slug: ${D.slug}`);
   y.push(`    display_name: "VIP daily gift"`);
@@ -501,27 +502,23 @@ y.push("      platform_grants:");
 y.push("        - mode: on_add");
 y.push(`          per_unit: ${ARCHIVE_COINS}`);
 y.push("          target: { platform_currency_slug: ARCADE_TICKETS }");
-// THE VIP EXTRA (docs/vip.md; src/net/vip-extra.json, the rule's one copy): the checker adds a VIP's
-// extra Coins here, 1 Coin a unit, in an order of its own keyed by the reward it rides with.
-const VX = JSON.parse(readFileSync(join(root, "src/net/vip-extra.json"), "utf8"));
-y.push("  # THE VIP EXTRA's Coins (docs/vip.md): checkers 0.1.55 to 0.1.59 paid our own +50% for a VIP here. Since");
-y.push("  # 2026-11-11 the Arcade pays VIP's +50% on every Coins grant itself, so nothing writes it (checker 0.1.60");
-y.push("  # on); it stays declared so its id is never reused.");
-y.push(`  - id: ${VX.progression.id}`);
-y.push(`    slug: ${VX.progression.slug}`);
-y.push(`    display_name: "VIP extra Coins"`);
-y.push("    config:");
-y.push("      function_may_grant: true");
-y.push("      platform_grants:");
-y.push("        - mode: on_add");
-y.push("          per_unit: 1");
-y.push("          target: { platform_currency_slug: ARCADE_TICKETS }");
-y.push("  # THE VIP EXTRAS HELD (docs/vip.md): the highest held extra (VIP unreadable at its win) paid since,");
-y.push("  # raised by the win checker in the order that pays them. Only the checker writes it.");
-y.push(`  - id: ${VX.heldMark.id}`);
-y.push(`    slug: ${VX.heldMark.slug}`);
-y.push(`    display_name: "VIP extras held, paid"`);
-y.push("    config: {}");
+// THE VIP EXTRA's two progressions, retired (docs/vip.md): checkers 0.1.55 to 0.1.59 paid our own +50%
+// Coins on the first and marked held extras on the second. The Arcade pays VIP's +50% itself since
+// 2026-11-11, and VIP's helpers are config bonuses since 0.1.63: nothing writes either, they pay nothing,
+// and they stay declared so their ids are never reused.
+const RETIRED_VIP = [
+  { id: "38072584-41bb-4cb2-95cc-8a0455af63a5", slug: "vip_coins", name: "VIP extra Coins (retired)" },
+  { id: "25879b21-0671-472e-8f4e-644ffc4cf1f4", slug: "vip_extra_held", name: "VIP extras held (retired)" },
+];
+y.push("  # THE VIP EXTRA's progressions, retired (docs/vip.md): checkers 0.1.55 to 0.1.59 wrote them. The Arcade");
+y.push("  # pays VIP's +50% Coins itself (2026-11-11) and VIP's helpers are the rewards catalog's bonuses (0.1.63):");
+y.push("  # nothing writes these, they pay nothing, and they stay declared so their ids are never reused.");
+for (const p of RETIRED_VIP) {
+  y.push(`  - id: ${p.id}`);
+  y.push(`    slug: ${p.slug}`);
+  y.push(`    display_name: ${JSON.stringify(p.name)}`);
+  y.push("    config: {}");
+}
 if (EVENTS.length || RETIRED.length) {
   y.push("  # THE EVENTS (docs/vip.md): packs of 30 levels each, everyone's (their Coins: the board progressions");
   y.push("  # above), with 10 items hidden one per level. This old challenge stays declared and is written by");
@@ -682,6 +679,24 @@ if (EVENTS.length || RETIRED.length) {
     }
   }
 }
+{
+  // VIP's welcome marker (docs/vip.md): granted by the welcome's own bonus, with its helpers, so the
+  // welcome is once per player, ever; account-bound, never sold, never written by the game
+  const WI = JSON.parse(readFileSync(join(root, "src/net/helper-ids.json"), "utf8")).rewards.welcomeItem;
+  y.push("# VIP's welcome, given (docs/vip.md): the rewards catalog's vip-welcome grants one with its helpers, as");
+  y.push("# its VIP bonus, so it lands only with them; the win checker reads it so the welcome is once per player,");
+  y.push("# ever. Account-bound, never sold, never written by the game.");
+  if (!TABLES.length && !TRACKS.length && !(EVENTS.length || RETIRED.length)) y.push("items:");
+  y.push(`  - id: ${WI.id}`);
+  y.push(`    slug: ${WI.slug}`);
+  y.push(`    display_name: "VIP welcome gift"`);
+  y.push("    item_type: item");
+  y.push("    category: progression");
+  y.push("    fungible: true");
+  y.push("    stack_size: 1");
+  y.push("    transfer_policy: none");
+  y.push("    client_writable: false");
+}
 y.push(END);
 const block = y.join("\n");
 
@@ -747,26 +762,74 @@ else text = text.replace(/\n*$/, "\n\n") + block + "\n";
     process.exit(1);
   }
 }
+// THE HELPER REWARDS (docs/vip.md; the creator, 2026-11-12): their own marked block in the catalogs
+// list, written there the first time (before the cosmetics block). Server-only recipes the win checker
+// runs for the player who called it; amounts from tools/server/helper-rewards.json, their one copy.
+{
+  const R_BEGIN = "  # >>> rewards: generated by tools/server/make-config.mts from tools/server/helper-rewards.json; do not edit by hand";
+  const R_END = "  # <<< rewards";
+  const HR = JSON.parse(readFileSync(join(root, "tools/server/helper-rewards.json"), "utf8"));
+  const HI = JSON.parse(readFileSync(join(root, "src/net/helper-ids.json"), "utf8"));
+  const R = HI.rewards;
+  const KINDS = ["hint", "undo", "shuffle"];
+  const slugOf = (k) => HI.kinds[k].slug;
+  const grants = (g, indent, base) =>
+    KINDS.filter((k) => (g[k] ?? 0) > 0).map((k) => `${indent}- { type: currency_grant, currency_slug: ${slugOf(k)}, amount: ${g[k]}${base ? ", bucket: earned, overflow: clamp" : ""} }`);
+  const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  const c = [R_BEGIN];
+  c.push("  # THE HELPER REWARDS (docs/vip.md; the creator, 2026-11-12): server-only recipes (no client_writable,");
+  c.push("  # no price: a client is refused), run by the win checker for the player who called it, right after a");
+  c.push("  # win's paying order, each with a key of its own so a resend never gives twice. Each gives everyone its");
+  c.push("  # base and a VIP the same again, as a bonus the platform judges when it runs (holds_pass: vip): the game");
+  c.push("  # never reads VIP and never multiplies. Base grants clamp at the cap; a bonus that cannot land is");
+  c.push("  # skipped and changes nothing. VIP's gifts are a bonus alone: nothing for a player not VIP.");
+  c.push(`  - id: ${R.catalog.id}`);
+  c.push(`    slug: ${R.catalog.slug}`);
+  c.push("    display_name: Rewards");
+  c.push("    recipes:");
+  const recipe = (r, name, base, bonus, extra = []) => {
+    c.push(`      - id: ${r.id}`);
+    c.push(`        slug: ${r.slug}`);
+    c.push("        recipe_type: claim");
+    c.push(`        display_name: ${JSON.stringify(name)}`);
+    const g = [...extra, ...(base ? grants(base, "          ", true) : [])];
+    if (g.length) {
+      c.push("        grants:");
+      c.push(...g);
+    }
+    c.push("        bonuses:");
+    c.push("          - id: vip");
+    c.push("            requires: [{ kind: holds_pass, pass: vip }]");
+    c.push("            grants:");
+    c.push(...grants(bonus.helpers, "              ", false));
+    for (const it of bonus.items ?? []) c.push(`              - { type: item_grant, item_definition_slug: ${it}, quantity: 1, account_bound: true }`);
+  };
+  recipe(R.kit, "Helper kit", HR.kit, { helpers: HR.kit }, [`          - { type: progression_set, progression_definition_id: ${HI.kit.progression}, value: 1, reason: "the helper kit" }`]);
+  recipe(R.hard, "A hard level's first win", HR.hard, { helpers: HR.hard });
+  recipe(R.stamp, "A trip's last level: the stamp", HR.stamp, { helpers: HR.stamp });
+  R.daily.forEach((r, i) => {
+    const one = { [HR.daily[i]]: 1 };
+    recipe(r, `The daily puzzle's first win, ${DAYS[i]}`, one, { helpers: one });
+  });
+  R.vipGift.forEach((r, i) => recipe(r, `VIP's daily gift, ${DAYS[i]}`, null, { helpers: HR.vip.daily[i] }));
+  recipe(R.vipWelcome, "VIP's welcome gift", null, { helpers: HR.vip.welcome, items: [R.welcomeItem.slug] });
+  c.push(R_END);
+  const ra = text.indexOf(R_BEGIN);
+  const rb = text.indexOf(R_END);
+  if (ra >= 0 && rb > ra) text = text.slice(0, ra) + c.join("\n") + text.slice(rb + R_END.length);
+  else {
+    const at = text.indexOf("  # >>> cosmetics:");
+    if (at < 0) {
+      console.error("make-config: gem-backend-game-config.yaml has no cosmetics block to put the rewards catalog before");
+      process.exit(1);
+    }
+    text = text.slice(0, at) + c.join("\n") + "\n" + text.slice(at);
+  }
+}
 writeFileSync(CONFIG, text);
 
-// WHAT EACH PAYING PROGRESSION PAYS, for the win checker (functions/checker/data/coins.json, compiled in
-// by its build.rs): the VIP extra rides INSIDE the reward's own order (the platform pays one order a
-// call), so the checker reckons it from these before it orders. The same figures as the config above.
-// tools/server/levels-check.mts stops the game build when this file changed after the uploaded checker
-// was built (its hash is in functions/checker/data/levels-stamp.json): rebuild and upload it then.
-{
-  const P = {};
-  for (const r of rows) {
-    P[uuid5(`board:${r.lane}:${r.id}`)] = { complete: r.lane === "campaign" && r.id === FIRST_STEPS.board ? [r.coins, FIRST_STEPS.coins] : [r.coins] };
-  }
-  P[DAILY_ID] = { complete: [DAILY_COINS] };
-  P[ARCHIVE_ID] = { unit: ARCHIVE_COINS };
-  if (SUITCASE.finds) P[SUITCASE.finds.id] = { unit: SUITCASE.finds.coins };
-  const note = "What each paying progression pays in Coins, written by tools/server/make-config.mts with the config (do not edit by hand): complete, an on_complete's grants; unit, an on_add's per unit. Read by the win checker (pay.rs base_grants) to reckon the VIP extra.";
-  // one progression a line, so a diff shows which payout moved
-  const lines = Object.entries(P).map(([id, v]) => `  ${JSON.stringify(id)}: ${JSON.stringify(v)}`);
-  writeFileSync(join(root, "functions/checker/data/coins.json"), `{\n "note": ${JSON.stringify(note)},\n "progressions": {\n${lines.join(",\n")}\n }\n}\n`);
-}
+// (functions/checker/data/coins.json, the VIP extra's reckoning, went with it in 0.1.63: the checker
+// holds no Coins figure of the config's.)
 
 // ---------------------------------------------------------------- docs/coins.md
 const lane = (name) => rows.filter((r) => r.lane === name);
@@ -784,8 +847,9 @@ md.push("");
 // the pace estimate (the lead, 2026-11-10): the campaign's 3 minutes a level for its ~37 moves, about
 // 12 moves a minute, for every lane, until real minutes per level are measured
 const PACE = 12;
-const VRULE = JSON.parse(readFileSync(join(root, "src/net/vip-extra.json"), "utf8"));
-const vx = (n) => Math.ceil((n * VRULE.coins.num) / VRULE.coins.den);
+// the Arcade's +50% for a VIP (arcade-economy.md section 7), for this page's VIP column only: an estimate,
+// rounded up; the game itself never reckons it (the preview and the receipt say what a VIP gets)
+const vx = (n) => Math.ceil(n / 2);
 const moves = (rs) => rs.reduce((n, r) => n + r.moves, 0);
 const wasSum = (rs) => rs.reduce((n, r) => n + r.was, 0);
 const vipSum = (rs) => rs.reduce((n, r) => n + r.coins + vx(r.coins), 0);
@@ -901,8 +965,8 @@ md.push("  \"the gem arcade updated yesterday and it now pays the 50% extra for 
 md.push("  and scales the ceilings with it. Every amount here is the unboosted one, and the game pays no Coins of its own");
 md.push(`  for VIP (checker 0.1.60 on). The VIP column is these amounts and half again, rounded up (${LANES.event.least} +${vx(LANES.event.least)}, 10 +${vx(10)}, 15 +${vx(15)},`);
 md.push(`  25 +${vx(25)}, 30 +${vx(30)}, 50 +${vx(50)}, 100 +${vx(100)}): the platform's own rounding may differ by a Coin. That puts a VIP at about 750`);
-md.push(`  an hour, the creator's "VIPs 750". Every helper reward is doubled for a VIP by the checker (${VRULE.helpers} times over; a stopgap until`);
-md.push("  config bonuses land, docs/vip.md). The platform's 4,000 a day per game still holds, scaled for a VIP.");
+md.push(`  an hour, the creator's "VIPs 750". Every helper reward gives a VIP as many again, as a bonus in the config's`);
+md.push("  rewards catalog that the platform judges (docs/vip.md). The platform's 4,000 a day per game still holds, scaled for a VIP.");
 md.push(`- **Still to measure: real minutes per level.** No play-time data yet; every hourly figure here is the`);
 md.push(`  ${PACE}-moves-a-minute estimate. If levels run much faster or slower, change the rates (LANES in`);
 md.push("  tools/server/make-config.mts), rebuild and upload the win checker, and upload the config.");

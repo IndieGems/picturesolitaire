@@ -24,9 +24,11 @@
 //!     "owed": { "2026-10-03": { "coins": true, "pack": false } },  a past day decided and not yet
 //!                                             confirmed paid (lib.rs, the archive): sent again, then cleared
 //!                                             ("pack" is always false now: a daily packs nothing)
-//!     "vipOwed": { "daily:2026-11-10": { "coins": 25, "helpers": {...} } },  VIP extras held (docs/vip.md):
-//!                                             VIP unknown at the reward, or its order failed; paid (or, not
-//!                                             VIP, dropped) by a later call that reads VIP; absent when none
+//!     "helpersOwed": { "first:campaign:c07:helpers": { "recipe": "<id>", "gift": "hard" } },  helper
+//!                                             rewards whose recipe could not run after their win's order
+//!                                             landed (lib.rs): run by the next verified win, by the same
+//!                                             key (never twice), then cleared; absent when none. (Until
+//!                                             0.1.63, "vipOwed" held VIP extras: dropped on read.)
 //!     "imported": { "from": "campaign" },   only on a record begun before 0.1.28 from an old device save; read by nothing
 //!     "seen": ["<claim id>", ...] }          the last claims applied, so a resent claim changes nothing
 
@@ -69,6 +71,12 @@ pub fn normal(doc: Option<Value>) -> Value {
     }
     if !d["campaign"]["won"].is_u64() {
         d["campaign"]["won"] = json!(0);
+    }
+    // the VIP extras checkers 0.1.55 to 0.1.62 held: VIP's helpers are the config's bonuses now, judged
+    // when a recipe runs, never later (the platform holds no missed bonus), so nothing pays these
+    if let Some(m) = d.as_object_mut() {
+        m.remove("vipOwed");
+        m.remove("vipOwedSeq");
     }
     d["v"] = json!(1);
     d
@@ -231,46 +239,36 @@ pub fn settle(doc: &mut Value, date: &str) {
     }
 }
 
-/// THE VIP EXTRAS HELD (docs/vip.md): a reward paid while the player's VIP could not be read (anything
-/// but a passing hiccup, which holds the whole claim instead) keeps what its extra would be, by its key
-/// (the nonce of the order that paid the reward) and a number (1, 2, ... in the order held), until a
-/// later paying claim reads VIP: then they are paid inside that claim's order with the held mark
-/// (pay::add_held) raised to the highest number paid, so the mark, never this list, says what is paid;
-/// for a player not VIP they are dropped. Held twice under one key, it is still one.
-pub fn hold_extra(doc: &mut Value, key: &str, extra: &crate::pay::Extra) {
-    if !doc["vipOwed"].is_object() {
-        doc["vipOwed"] = json!({});
+/// THE HELPER REWARDS OWED (docs/vip.md): a win's helper recipe that could not run after its order
+/// landed (no answer, or a refusal that may pass) is kept by its key, to be run by the next verified
+/// win. The key makes a second run of one that did land harmless: the platform answers the first.
+pub fn owe_run(doc: &mut Value, nonce: &str, recipe: &str, gift: &str) {
+    if !doc["helpersOwed"].is_object() {
+        doc["helpersOwed"] = json!({});
     }
-    if doc["vipOwed"].get(key).is_some() {
-        return;
-    }
-    let n = doc["vipOwedSeq"].as_u64().unwrap_or(0) + 1;
-    doc["vipOwedSeq"] = json!(n);
-    let mut v = extra.to_json();
-    v["n"] = json!(n);
-    doc["vipOwed"][key] = v;
+    doc["helpersOwed"][nonce] = json!({ "recipe": recipe, "gift": gift });
 }
 
-/// The extras held: (key, extra, number), by number.
-pub fn held_extras(doc: &Value) -> Vec<(String, crate::pay::Extra, u64)> {
-    let mut out: Vec<(String, crate::pay::Extra, u64)> = doc["vipOwed"]
+/// The helper rewards owed: (key, recipe, gift), in key order.
+pub fn owed_runs(doc: &Value) -> Vec<(String, String, String)> {
+    doc["helpersOwed"]
         .as_object()
-        .map(|m| m.iter().map(|(k, v)| (k.clone(), crate::pay::Extra::from_json(v), v["n"].as_u64().unwrap_or(0))).collect())
-        .unwrap_or_default();
-    out.sort_by_key(|(_, _, n)| *n);
-    out
+        .map(|m| {
+            m.iter()
+                .filter_map(|(k, v)| Some((k.clone(), v["recipe"].as_str()?.to_string(), v["gift"].as_str().unwrap_or("helpers").to_string())))
+                .collect()
+        })
+        .unwrap_or_default()
 }
 
-/// Drop the held extras numbered `upto` or lower (paid: the held mark reads at least that). True if
-/// any went. The last one takes the list with it (the number keeps counting).
-pub fn drop_held(doc: &mut Value, upto: u64) -> bool {
-    let Some(m) = doc["vipOwed"].as_object_mut() else { return false };
-    let before = m.len();
-    m.retain(|_, v| v["n"].as_u64().unwrap_or(0) > upto);
-    let gone = m.len() != before;
+/// One owed reward ran (or ran before): it is owed no more. True if the record changed. The last one
+/// takes the list with it.
+pub fn settle_run(doc: &mut Value, nonce: &str) -> bool {
+    let Some(m) = doc["helpersOwed"].as_object_mut() else { return false };
+    let gone = m.remove(nonce).is_some();
     if m.is_empty() {
         if let Some(d) = doc.as_object_mut() {
-            d.remove("vipOwed");
+            d.remove("helpersOwed");
         }
     }
     gone
