@@ -143,12 +143,14 @@ in a channel only when BOTH a build and a store page are assigned.
 Write player-facing text in English, in `locales/en.json`. The game
 text, store copy and friend-challenge lines are in all 12 Arcade
 locales (creator, 2026-10-29): a new or changed line shows in English
-until the next translation. **Translate only when the lead or the
-creator asks, or at the `release` promotion**, never for an upload or a
-dev or test promote, and only what is new or changed since each locale
-was written (`gemctl:localization`; `gemctl:release-checklist` checks
-them). At release also dry-run the store copy (`gemctl store upload
---dry-run`), rebuild, and have the creator inspect a translated locale.
+until the next translation. **A push to test counts as a release**
+(creator, 2026-11-12): before it, tell the creator what is untranslated,
+translate it, dry-run the store copy (`gemctl store upload --dry-run`),
+then build and push. Otherwise translate only when the lead or the
+creator asks, never for an upload or a dev promote, and only what is
+new or changed since each locale was written (`gemctl:localization`;
+`node tools/i18n/check.mjs --strict` and `gemctl:release-checklist`
+check them).
 
 ## The Gem Web SDK (platform bridge)
 
