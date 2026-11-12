@@ -37,7 +37,7 @@ import { fireworks } from "./fireworks";
 import { helperPic } from "./helper-shop";
 import { t } from "./i18n";
 import { KINDS, type HelperKind } from "./stock";
-import { vipTag } from "./vip-tag";
+import { vipGiftSizes, vipTag } from "./vip-tag";
 import { vipPassLines } from "./vip-about";
 import type { VipGift } from "../net/vip";
 
@@ -411,6 +411,8 @@ export function createVipGifts(o: Opts) {
       if (!g || (g.kind !== "daily" && g.kind !== "welcome") || seen.has(g.id)) return;
       if (!KINDS.some((k) => whole(g.gift?.[k]) > 0)) return;
       seen.add(g.id);
+      // the welcome card says VIP's gifts by the preview's sizes: asked now, while the card waits for home
+      if (g.kind === "welcome") vipGiftSizes();
       take(g);
     },
     /** The screen changed: a waiting gift may come now. */

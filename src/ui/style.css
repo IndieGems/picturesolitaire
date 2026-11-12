@@ -1383,6 +1383,9 @@ html.less-motion .card .gift { animation: none; }
 .card .kit-row { display: flex; justify-content: center; gap: 8px; }
 .card .kit .tool { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px 6px 8px; font: 600 17px/1 var(--round); }
 .card .kit .tool .ico { width: 24px; height: 24px; }
+/* its count's room kept while the preview is out, so the row never moves when "×3" comes */
+.card .kit .tool .n { min-width: 1.6em; }
+.card .kit .tool[hidden] { display: none; }
 .card .kit .tool.landed { box-shadow: inset 0 0 0 2px var(--amber-lo); }
 
 /* the Shuffle lesson's little card on the way to board 4 */
@@ -1899,7 +1902,8 @@ html.back-down .top-pill:not(.home-note) { right: calc(var(--row-right) + var(--
 .card p.up-head { margin: 0; display: flex; align-items: center; justify-content: center; gap: 6px; font: 600 15px/1.25 var(--round); color: var(--ink); text-align: center; text-wrap: balance; }
 .up-lock { flex: none; display: block; width: 16px; height: 16px; color: #a26a10; }
 .up-lock > .ico { display: block; width: 100%; height: 100%; }
-.up-extras { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; }
+/* the Coins and three helpers in one row on a 360 px phone (256 px inside the panel); a longer figure wraps */
+.up-extras { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 12px; }
 .up-extra { display: inline-flex; align-items: center; gap: 5px; font: 700 18px/1 var(--round); color: var(--ink); }
 .up-extra img { flex: none; width: 26px; height: 26px; object-fit: contain; }
 .up-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin-top: 4px; }

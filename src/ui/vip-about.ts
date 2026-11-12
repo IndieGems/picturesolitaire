@@ -35,9 +35,8 @@ import { held } from "../net/pace";
 import { ICONS } from "./icons";
 import { liveAttr, liveText, locale, onLocaleChange, t } from "./i18n";
 import { onVip, vipButton, vipNow, vipOnSale, vipPassSlug } from "./vip-view";
-import { vipCoinsPct, vipPerks, vipTag } from "./vip-tag";
+import { giftWords, onVipGiftSizes, vipCoinsPct, vipGiftSizes, vipPerks, vipTag } from "./vip-tag";
 import { helperPic } from "./helper-shop";
-import { VIP_DAILY_SIZE, VIP_WELCOME_SIZE } from "../net/vip";
 
 type Nav = {
   home(): void;
@@ -117,13 +116,19 @@ export function pretendVipDays(n: number | null | undefined): void {
 
 /**
  * What VIP gives here, best first, as the boarding pass's stamped lines: more Coins on every reward, double helpers
- * on every helper reward, the day's gift, and (`welcome`) the welcome gift. The pass's own words, wherever they are said.
+ * on every helper reward, the day's gift, and (`welcome`) the welcome gift. The pass's own words, wherever they are
+ * said; the gifts' sizes the preview's (vip-tag.ts vipGiftSizes), with no figure where it has not said one.
  */
 export function vipPassLines(welcome = true): HTMLUListElement {
   const lines = el("ul", "vip-pass-lines");
   const pct = vipCoinsPct();
-  const words = [pct ? t("vip.about.pass.coins", { pct }) : t("vip.about.pass.coinsMore"), t("vip.about.pass.helpers"), t("vip.about.pass.daily", { count: VIP_DAILY_SIZE })];
-  if (welcome) words.push(t("vip.about.pass.welcome", { count: VIP_WELCOME_SIZE }));
+  const gifts = vipGiftSizes();
+  const words = [
+    pct ? t("vip.about.pass.coins", { pct }) : t("vip.about.pass.coinsMore"),
+    t("vip.about.pass.helpers"),
+    giftWords(gifts.daily, "vip.about.pass.daily", "vip.about.pass.dailyMore"),
+    welcome ? giftWords(gifts.welcome, "vip.about.pass.welcome", "vip.about.pass.welcomeMore") : null,
+  ].filter((w): w is string => w !== null);
   for (const w of words) {
     const li = el("li");
     const stamp = el("span", "vip-pass-stamp");
@@ -271,6 +276,10 @@ export function createVipAbout(nav: Nav) {
     if (!screen.hidden) draw();
   });
   passListeners.add(() => {
+    if (!screen.hidden) draw();
+  });
+  // the gifts' sizes came from the preview
+  onVipGiftSizes(() => {
     if (!screen.hidden) draw();
   });
 

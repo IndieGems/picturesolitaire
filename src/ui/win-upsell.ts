@@ -34,6 +34,7 @@ import { helperOfCurrency, type HelperKind } from "../net/helpers";
 import { ICONS } from "./icons";
 import { coinIcon } from "./coin";
 import { helperPic } from "./helper-shop";
+import { KINDS } from "./stock";
 import { locale, t } from "./i18n";
 import { openPass } from "./vip-view";
 
@@ -73,7 +74,11 @@ function extrasOf(up: PassUpsell): Extra[] {
       const k = helperOfCurrency(g.currencyId);
       if (k && g.amount > 0) tools.set(k, (tools.get(k) ?? 0) + Math.floor(g.amount));
     }
-  for (const [k, n] of tools) out.push({ pic: helperPic(k), n, words: t(`win.gift.${k}`, { count: n }) });
+  // in the chip's order (Undo, Hint, Shuffle), whatever order the config's bonuses list them in
+  for (const k of KINDS) {
+    const n = tools.get(k);
+    if (n) out.push({ pic: helperPic(k), n, words: t(`win.gift.${k}`, { count: n }) });
+  }
   return out;
 }
 

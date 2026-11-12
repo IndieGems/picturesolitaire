@@ -503,6 +503,7 @@
   "vip.reward.coins": "VIP +{{n}}",
   "vip.reward.gotCoins_one": "VIP: {{n}} more Coin",
   "vip.reward.gotCoins_other": "VIP: {{n}} more Coins",
+  "vip.reward.helpersApplied": "VIP bonus: extra helpers",
   "vip.tag": "VIP",
   "vip.welcome.later": "Later",
   "vip.welcome.line": "Here's what VIP gives you in Picture Passport!",

@@ -82,7 +82,7 @@ import { createViewer } from "./viewer";
 import { closed, cornerKey, opened } from "./dialogs";
 import { boardAt, markAt, markTag, markWords, pretendMarks, type Mark } from "./marks";
 import { allDone, awaitingRecord, createHome, nextBoard, warmTripStamp } from "./home";
-import { KINDS, KIT, stock, type HelperKind } from "./stock";
+import { KINDS, stock, type HelperKind } from "./stock";
 import { createRunOut } from "./helper-shop";
 import { createHomeShop } from "./home-shop";
 import { createCosmetics } from "./cosmetics";
@@ -113,7 +113,7 @@ import { currentDaily, today as dailyToday } from "../net/daily";
 import { onVipGift, type VipGift } from "../net/vip";
 import { createVipGifts } from "./vip-gifts";
 import { createVipAbout, createVipBadge, pretendVipDays } from "./vip-about";
-import { eventItemCoins } from "../net/rewards";
+import { eventItemCoins, previewKit } from "../net/rewards";
 import { wearBackWords } from "./back";
 import { createArchive } from "./daily-archive";
 import { forceVipSale } from "./vip-view";
@@ -1797,11 +1797,16 @@ function drawCoins(win: Win, fresh = false): void {
       const tool = kit?.querySelector<HTMLElement>(`.tool.${k}`);
       if (!tool || !tools[k]) continue;
       tool.classList.add("landed");
+      tool.hidden = false;
       // what landed (the checker's: a VIP's kit doubled), in place of what was said up front
+      tool.setAttribute("aria-label", t(`win.gift.${k}`, { count: tools[k]! }));
       const n = tool.querySelector<HTMLElement>(".n");
       if (n) n.textContent = `×${tools[k]}`;
       if (!win.flown) flyTool(k, tool.querySelector(".ico") ?? tool, 0);
     }
+    // a bonus that applied to the kit (a VIP's), said once, politely
+    const bonus = bonusWords(v);
+    if (bonus && !kit.querySelector(".kit-bonus")) kit.append(h("span", { class: "sr-only kit-bonus", role: "status" }, bonus));
     win.flown = true;
     return;
   }
@@ -1829,6 +1834,13 @@ function drawCoins(win: Win, fresh = false): void {
   // the daily's first win of the day pays a helper (Server's rotation): said, for a screen reader, as what it is
   else if (gifts.includes("daily") && glyphs.length)
     chip.setAttribute("aria-label", `${coinWords}${t("win.gift.daily")}: ${glyphs.map(([k]) => t(`win.gift.${k}`, { count: tools[k]! })).join(", ")}`);
+  // a bonus that applied to its helpers, said as it lands, in the same polite region
+  const bonus = landed && glyphs.length ? bonusWords(v) : "";
+  if (bonus) {
+    const label = chip.getAttribute("aria-label");
+    if (label) chip.setAttribute("aria-label", `${label}. ${bonus}`);
+    else chip.append(h("span", { class: "sr-only" }, bonus));
+  }
   card.querySelector(".coins-chip")?.remove();
   card.append(chip);
   fitChip(chip, card);
@@ -1873,6 +1885,16 @@ function passPart(into: HTMLElement, pass: number, landed: boolean): void {
   tick.innerHTML = ICONS.check;
   into.append(h("span", { class: "vip-reward member", "aria-hidden": "true" }, tick, h("span", { class: "vr-words" }, t("vip.reward.coins", { n }))));
   if (landed) into.append(h("span", { class: "sr-only" }, t("vip.reward.gotCoins", { n, count: pass })));
+}
+
+/**
+ * A bonus that APPLIED to a win's helpers, by the checker's own word (the verdict's `bonuses`: one per reward bonus
+ * its recipes judged; the config's only ones are VIP's): "VIP bonus: extra helpers", said in a polite live region
+ * as it lands (the SDK's upsell rules: "Announce an applied bonus"), never a figure of ours. Empty where none did.
+ */
+function bonusWords(v: Verdict | undefined): string {
+  const judged = (v as { bonuses?: readonly { outcome?: string }[] } | undefined)?.bonuses;
+  return judged?.some((b) => b.outcome === "applied") ? t("vip.reward.helpersApplied") : "";
 }
 
 /** How long a win's card waits for its preview once it is up; past it, the claim goes with no offer (the player is never held). */
@@ -2157,18 +2179,29 @@ function settlePrize(card: HTMLElement, v: Extract<Verdict, { status: "paid" }>,
  */
 function showMilestone(gallery: HTMLElement): void {
   const prize = guidePrize();
-  // the travel kit, said up front (the checker grants it with this win: one copy of its size, Server's
-  // helpers.ts); each tool is ringed as it lands, with what landed (a VIP's doubled), and flies to its button
-  const kitSize = KIT;
+  // the travel kit, said up front: its tools, each with how many once the platform's preview says (Server's
+  // previewKit: the config's figures for this player, never ours, the creator 2026-11-12; a tool it gives none of
+  // goes); each is ringed as it lands, with what landed (a VIP's doubled: the config's bonus), and flies to its button
   const kit = h(
     "div",
     { class: "kit" },
     h("span", { class: "kit-head" }, t("guide.kit")),
-    h(
-      "div",
-      { class: "kit-row" },
-      ...KINDS.map((k) => h("span", { class: `tool ${k} glass`, "aria-label": t(`win.gift.${k}`, { count: kitSize[k] }) }, icon(k), h("span", { class: "n", "aria-hidden": "true" }, `×${kitSize[k]}`))),
-    ),
+    h("div", { class: "kit-row" }, ...KINDS.map((k) => h("span", { class: `tool ${k} glass`, "aria-label": t(`board.${k}`) }, icon(k), h("span", { class: "n", "aria-hidden": "true" })))),
+  );
+  void previewKit().then(
+    (said) => {
+      if (!said || !kit.isConnected) return;
+      for (const k of KINDS) {
+        const tool = kit.querySelector<HTMLElement>(`.tool.${k}`);
+        // what landed is the word once it has
+        if (!tool || tool.classList.contains("landed")) continue;
+        const n = Math.floor(said[k] ?? 0);
+        tool.hidden = !(n > 0);
+        tool.setAttribute("aria-label", t(`win.gift.${k}`, { count: n }));
+        tool.querySelector(".n")!.textContent = `×${n}`;
+      }
+    },
+    () => undefined,
   );
   const card = h(
     "div",

@@ -16,8 +16,6 @@ import { helpers, HELPER_CAP, type Bundle, type BundleAnswer, type BundleSlug, t
 import { shopStats, type ShopWhere } from "./board-stats";
 
 export type { Bundle, BundleAnswer, BundleSlug, BuyAnswer, HelperKind, Pack, SpendAnswer };
-/** Board 1's travel kit, as the checker grants it (one copy, the checker's own: Server's helpers.ts). */
-export { KIT, dailyHelper } from "../net/helpers";
 export const KINDS: readonly HelperKind[] = ["undo", "hint", "shuffle"];
 export const PACKS: readonly Pack[] = [1, 3];
 
